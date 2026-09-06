@@ -8,29 +8,37 @@ const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8
 const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
+const factionComponentStyles = readFileSync("card-design/faction-component.css", "utf8");
 const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8");
 const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
-const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing"];
+const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing", "Rite of Shattering", "Rite of Consecration", "Rite of Equivalence"];
 const riteArtworkPaths = [
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
 ];
 const ritualArtworkPath = "images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png";
 const ritualCardBackPath = "images/artwork/cardbacks/mystics/ritual-of-ascension.png";
 
 describe("Mystics Rite card prototypes", () => {
-  it("adds all three double-sided Rites and the Ritual to the unified card-review page", () => {
+  it("adds all six double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
-    expect(reviewPage).toContain('href="#rite-cards"');
+    expect(reviewPage).toContain('data-catalog-kind="rite"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
-    expect(reviewPage).toContain('<span data-rite-count>3</span> double-sided Rites');
+    expect(reviewPage).not.toContain('data-rite-count>3</span>');
+    expect(reviewPage).toContain('<span data-rite-count>6</span> double-sided Rites');
+    for (const shortName of ["Echoes", "Blood", "Crossing", "Shattering", "Consecration", "Equivalence"]) {
+      expect(reviewPage).toContain(shortName);
+    }
     expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
     expect(mysticsAuthority.rites.map((item: any) => item.name)).toEqual(riteNames);
-    expect(riteRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
+    expect(riteRenderer).toContain("import { loadRenderGame } from './render-context.mjs'");
     expect(riteRenderer).toContain("RITES.map(reviewPair).join('')");
     expect(riteRenderer).toContain("ritualReview()");
   });
@@ -40,9 +48,10 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('data-faction="mystics"');
     expect(riteRenderer).toContain("rite-faction-emblem");
     expect(riteRenderer).not.toContain("value-medallion");
-    expect(leaderStyles).toContain("--component-heading-height: 0.50in");
-    expect(leaderStyles).toContain("--component-subheading-font-size: 6.25pt");
-    expect(leaderStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(factionComponentStyles).toContain("--component-heading-height: 0.50in");
+    expect(factionComponentStyles).toContain("--component-subheading-font-size: 6.25pt");
+    expect(factionComponentStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(leaderStyles).toContain('@import url("./faction-component.css")');
     expect(riteStyles).toContain("grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in");
     expect(riteStyles).toContain("font-size: var(--component-subheading-font-size, 6.25pt)");
     expect(riteStyles).toContain("width: var(--component-subheading-icon-size, 0.18in)");
@@ -56,7 +65,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("RITE_SOURCE");
   });
 
-  it("uses the uploaded artwork on all three incomplete Rite faces and the Ritual face", () => {
+  it("uses approved artwork for every Rite face", () => {
     for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
     expect(existsSync(ritualArtworkPath)).toBe(true);
     expect(existsSync(ritualCardBackPath)).toBe(true);
@@ -64,11 +73,23 @@ describe("Mystics Rite card prototypes", () => {
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
     ]);
     expect(mysticsAuthority.ritual.artwork).toBe("/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png");
     expect(mysticsAuthority.ritual.cardBack).toBe("/images/artwork/cardbacks/mystics/ritual-of-ascension.png");
     expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
     expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
+    expect(riteRenderer).toContain('Artwork pending for ${esc(rite.name)}');
+    expect(riteRenderer).toContain('rite.reminder?.text');
+    expect(riteRenderer).toContain('currentDisplayVersion = currentGame.displayVersion');
+    expect(riteRenderer).toContain('data-has-reminder="true"');
+    expect(riteStyles).toContain('.rite-reminder');
+    expect(riteStyles).not.toContain('border-top: 0.5px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent)');
+    expect(ruleColumnStyles).toContain(".rite-card .card-rules > .rite-reminder");
+    expect(ruleColumnStyles).toContain("grid-column: 2 / -1");
+    expect(ruleColumnStyles).toContain("margin-left: 0");
     expect(riteRenderer).toContain("function ritualArtwork()");
     expect(riteRenderer).toContain('<img src="${esc(RITUAL.artwork)}"');
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");
@@ -89,6 +110,10 @@ describe("Mystics Rite card prototypes", () => {
   it("turns every completed face into the same count-based progression reference", () => {
     expect(mysticsAuthority.unlocks.map((item: any) => item.count)).toEqual(["1 Rite", "2 Rites", "3 Rites", "Ritual"]);
     expect(mysticsAuthority.unlocks.map((item: any) => item.name)).toEqual(["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]);
+    expect(mysticsAuthority.unlocks[0].text).toContain("after applying the Action, Gambit, or Tactic effect");
+    expect(mysticsAuthority.unlocks[0].text).not.toContain("Gambit, Tactic, or Gambit or Tactic");
+    expect(mysticsAuthority.unlocks[1].text).toContain("before dice are rolled in a battle,");
+    expect(mysticsAuthority.unlocks[1].text).not.toContain("battle involving you");
     expect(mysticsAuthority.unlocks.at(-1).headerLines).toEqual(["Ritual of", "Ascension"]);
     expect(riteRenderer).toContain("UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : []");
     expect(riteRenderer).toContain("rite-unlock-section--ritual");
@@ -120,9 +145,12 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("Ratified");
   });
 
-  it("uses reclaimed completed-Rite space for artwork while retaining a finite cap", () => {
-    expect(riteRenderer).toContain("const artMax = completed ? '1.24' : '1.48'");
-    expect(riteRenderer).toContain("const artMin = completed ? '0.78' : '0.92'");
+  it("uses the normal playable-card artwork fitting range for every Rite face", () => {
+    expect(riteRenderer).toContain('data-art-max="1.72"');
+    expect(riteRenderer).toContain('data-art-min="0.62"');
+    expect(riteRenderer).not.toContain("const artMax = completed");
+    expect(riteRenderer).not.toContain("const artMin = completed");
+    expect(riteStyles).toContain("--art-height: 1.72in");
     expect(riteStyles).toContain("font-size: calc(5.45pt * var(--rules-scale))");
     expect(riteStyles).toContain("--minimum-rules-scale: 0.82");
   });

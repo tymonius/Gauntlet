@@ -25,12 +25,12 @@ No playable-card identity, cost, text, effect, allegiance, starter Deck, Territo
 
 ## Repair policy
 
-The frozen releases/v0.7.0/ package remains unchanged. Its manifest hashes continue to identify the exact published snapshot.
+The live complete authority at game-data/current-game.json is corrected so current tooling does not continue propagating the stale summary fields. A regression test derives card counts and total Deckbuilding Value from the actual playable-card records and requires the summary metadata and faction card_count fields to match.
 
-The live complete authority at game-data/current-game.json is corrected so current tooling does not continue propagating the stale summary fields. A regression test now derives card counts and total Deckbuilding Value from the actual playable-card records and requires the summary metadata and faction card_count fields to match.
+Because v0.7.0 remains the current published release and its Rulebook/package are maintained through the post-release rematerialization workflow, the same metadata correction is also applied to the maintained v0.7.0 publication package. The repair changes only derived summaries and Rulebook pool counts; it does not add, remove, or alter any playable card.
 
-This is a metadata-consistency correction to the live authority, not a retroactive rewrite of the published v0.7.0 package.
+The v0.7.0 materializer now derives card_pool_summary and faction card_count from gameplay.cards before regenerating the canonical JSON, manifest hashes, and Rulebook booklet.
 
 ## Follow-through
 
-The next published release must be generated from a complete current authority that already passes the summary-consistency regression. Its frozen canonical data and manifest will therefore contain corrected metadata from the outset.
+Future published releases must be generated from a complete current authority that already passes the summary-consistency regression. Published Rulebook pool counts must be checked against the actual canonical playable-card array rather than inherited summary metadata.

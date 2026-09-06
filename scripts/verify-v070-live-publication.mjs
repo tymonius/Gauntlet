@@ -149,6 +149,18 @@ if (
 if (!canonical.faction_feature_taxonomy?.actionProfiles?.['1 Action'] || !canonical.faction_features) {
   throw new Error('Public v0.7.0 canonical data is missing the Faction Feature taxonomy.');
 }
+const diplomats = canonical.gameplay.factions.find(faction => faction.id === 'diplomats');
+if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+  throw new Error('Public v0.7.0 canonical Peace Treaty threshold is not six.');
+}
+if (
+  !rulebookText.includes('Ratify six different Proposals')
+  || !rulebookText.includes('if six different Proposals are ratified')
+  || rulebookText.includes('Ratify five different Proposals')
+  || rulebookText.includes('if five different Proposals are ratified')
+) {
+  throw new Error('Public v0.7.0 Rulebook Peace Treaty threshold is not synchronized to six.');
+}
 if (!canonical.leaders.every(leader => Array.isArray(leader.sections) && leader.sections.every(section => !Array.isArray(section) && section.classification && section.name))) {
   throw new Error('Public v0.7.0 canonical Leader data is not using structured sections.');
 }

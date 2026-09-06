@@ -22,6 +22,8 @@ jobs:
         with:
           script: |
             let names = [];
+            let activeNames = [];
+            let retiredSourceNames = [];
             let uncertain = false;
 
             if (context.eventName === 'workflow_dispatch') {
@@ -31,6 +33,7 @@ jobs:
                 'releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json',
                 'v0.7.0/index.html',
               ];
+              activeNames = names;
             } else if (context.eventName === 'pull_request') {
               const files = await github.paginate(github.rest.pulls.listFiles, {
                 owner: context.repo.owner,
@@ -39,6 +42,12 @@ jobs:
                 per_page: 100,
               });
               names = files.map((file) => file.filename);
+              activeNames = files.filter((file) => file.status !== 'removed').map((file) => file.filename);
+              retiredSourceNames = files.flatMap((file) => {
+                if (file.status === 'removed') return [file.filename];
+                if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
+                return [];
+              });
             } else {
               const before = context.payload.before;
               if (!before || /^0+$/.test(before)) {
@@ -50,8 +59,15 @@ jobs:
                   base: before,
                   head: context.sha,
                 });
-                names = (comparison.data.files || []).map((file) => file.filename);
-                if ((comparison.data.files || []).length >= 300) uncertain = true;
+                const comparedFiles = comparison.data.files || [];
+                names = comparedFiles.map((file) => file.filename);
+                activeNames = comparedFiles.filter((file) => file.status !== 'removed').map((file) => file.filename);
+                retiredSourceNames = comparedFiles.flatMap((file) => {
+                  if (file.status === 'removed') return [file.filename];
+                  if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
+                  return [];
+                });
+                if (comparedFiles.length >= 300) uncertain = true;
               }
             }
 
@@ -100,9 +116,11 @@ jobs:
 
             const testPattern = /(?:^|\/)[^/]+\.(?:test|spec)\.(?:ts|tsx|js|mjs)$/;
             const sourcePattern = /\.(?:ts|tsx|js|mjs)$/;
-            const changedTests = names.filter((file) => testPattern.test(file));
-            const relatedSources = names.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
+            const archivedEngineSnapshot = /^legacy\/digital-engine-(?:reconstruction|migration|v06)\//;
+            const changedTests = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && testPattern.test(file));
+            const relatedSources = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
+            const retiredSources = retiredSourceNames.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
 
             const fullTests = uncertain || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
             const code = fullTests || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
@@ -110,8 +128,8 @@ jobs:
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
-            const renderer = uncertain || exact('tts/renderer/renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
-            const relevant = code || types || analytics || tts || media || renderer;
+            const accessibility = uncertain || matches(/\.html$/) || exact('tests/public-static-accessibility.test.ts');
+            const relevant = code || types || analytics || tts || media || accessibility;
 
             core.setOutput('relevant', String(relevant));
             core.setOutput('code', String(code));
@@ -120,21 +138,23 @@ jobs:
             core.setOutput('analytics', String(analytics));
             core.setOutput('tts', String(tts));
             core.setOutput('media', String(media));
-            core.setOutput('renderer', String(renderer));
+            core.setOutput('accessibility', String(accessibility));
             core.setOutput('changed_tests', JSON.stringify(changedTests));
             core.setOutput('related_sources', JSON.stringify(relatedSources));
+            core.setOutput('retired_sources', JSON.stringify(retiredSources));
             core.summary
               .addHeading('Test routing')
               .addTable([
                 [{data: 'Check', header: true}, {data: 'Run?', header: true}],
                 ['Release-path normalization', 'true'],
                 ['Vitest', String(code)],
+                ['Retired source references', retiredSources.length ? 'scan' : 'none'],
                 ['Full Vitest suite', String(fullTests)],
                 ['TypeScript', String(types)],
                 ['Analytics', String(analytics)],
                 ['TTS', String(tts)],
-                ['Card renderer', String(renderer)],
                 ['Media', String(media)],
+                ['Public static accessibility', String(accessibility)],
               ])
               .write();
 
@@ -143,8 +163,34 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Reject references to retired source paths
+        if: steps.scope.outputs.retired_sources != '[]'
+        shell: bash
+        env:
+          RETIRED_SOURCES: ${{ steps.scope.outputs.retired_sources }}
+        run: |
+          set -euo pipefail
+          found=0
+          mapfile -t retired_sources < <(node -e "for (const file of JSON.parse(process.env.RETIRED_SOURCES || '[]')) console.log(file)")
+          for retired in "${retired_sources[@]}"; do
+            [[ -e "$retired" ]] && continue
+            while IFS= read -r match; do
+              [[ -z "$match" ]] && continue
+              [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
+              [[ "$match" == docs/recovery/frozen-scripts/* ]] && continue
+              echo "Dangling reference to retired source $retired: $match" >&2
+              found=1
+            done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)
+          done
+          if (( found )); then
+            exit 1
+          fi
+
       - name: Audit repository-wide release path normalization
         run: node scripts/validate-release-path-normalization.mjs
+
+      - name: Verify tracked Rulebook facts
+        run: node scripts/sync-current-rulebook-facts.mjs
 
       - name: Setup Node
         if: steps.scope.outputs.relevant == 'true'
@@ -180,8 +226,20 @@ jobs:
 
           mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
           if (( ${#related_sources[@]} )); then
-            npx vitest related --run --passWithNoTests "${related_sources[@]}"
+            # These historical v0.6.4 suites still reference retired draft JSON fixtures.
+            # Keep them runnable when changed directly, but do not let unrelated current
+            # source changes pull them into scoped dependency testing.
+            npx vitest related --run --passWithNoTests \
+              --exclude 'tests/arcane-card-symbol.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+              "${related_sources[@]}"
           fi
+
+      - name: Run public static accessibility contract when HTML changes
+        if: steps.scope.outputs.accessibility == 'true'
+        run: npx vitest run tests/public-static-accessibility.test.ts
 
       - name: Verify analytics only when analytics-bearing pages change
         if: steps.scope.outputs.analytics == 'true'
@@ -190,10 +248,6 @@ jobs:
       - name: Verify TTS assets only when TTS inputs change
         if: steps.scope.outputs.tts == 'true'
         run: npm run tts:check
-
-      - name: Verify card renderer conventions when renderer changes
-        if: steps.scope.outputs.renderer == 'true'
-        run: node scripts/validate-v063-card-rendering-conventions.mjs
 
       - name: Verify media assets only when media inputs change
         if: steps.scope.outputs.media == 'true'

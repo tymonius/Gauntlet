@@ -48,12 +48,12 @@ const SUBJECT_PRESENTATIONS = [
   },
   {
     subject: /^Peace Treaty$/i,
-    answer: "You do not win immediately. At the start of your next turn, after Capture and before Draw, you win if five different Proposals are ratified.",
+    answer: "You do not win immediately. At the start of your next turn, after Capture and before Draw, you win if six different Proposals are ratified.",
     details: "The five ratified Proposals must still be present at that victory check."
   },
   {
     subject: /^Transmutation$/i,
-    answer: "Once per turn before dice are rolled in a battle involving you, put one card from Hand in your Graveyard and add its value to your battle total.",
+    answer: "Once per turn before dice are rolled in a battle, put one card from Hand in your Graveyard and add its value to your battle total.",
     details: "Transmutation unlocks after your second completed Rite. The card is not played, so none of its printed effects apply. Spirit Walker uses it normally."
   },
   {
@@ -169,7 +169,16 @@ function splitSentences(raw) {
 }
 
 function clean(value) {
-  return String(value || "").replace(/\s+/g, " ").trim();
+  return stripUnsupportedMarkdown(String(value || ""))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripUnsupportedMarkdown(value) {
+  return String(value || "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/`([^`]+)`/g, "$1");
 }
 
 if (typeof document !== "undefined" && !document.querySelector("link[data-gauntlet-rules-answer-styles]")) {

@@ -1,3 +1,12 @@
+const deckbuilder = window.GAUNTLET_DECKBUILDER;
+if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
+const productionPrint = () => {
+  const renderer = deckbuilder.feature("productionPrintRenderer");
+  if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
+  return renderer;
+};
+
 const CUSTOM_PRINT_STYLE_URL = "custom-print.css?v=20260823-2";
 const CARDS_PER_SHEET = 9;
 const COLUMNS = 3;
@@ -140,11 +149,8 @@ function disableCustomPrinting() {
 }
 
 async function loadCatalog() {
-  let game = window.GAUNTLET_CURRENT_GAME_DATA;
-  if (!game?.componentContract) {
-    const module = await import("../game-data/current-game.mjs");
-    game = await module.loadCurrentGame();
-  }
+  let game = deckbuilder.currentGame();
+  if (!game?.componentContract) game = await deckbuilder.bootstrap();
   if (!game?.cards?.length || !game?.territories?.length || !game?.leaders?.length) throw new Error("Current-game card authority is incomplete.");
   catalog = buildCatalog(game);
   catalogByKey = new Map(catalog.map(entry => [entry.key, entry]));
@@ -167,7 +173,7 @@ function buildCatalog(game) {
   }
   for (const leader of game.leaders || []) {
     const faction = leader.faction || "shared";
-    entries.push(makeEntry(`leader:${faction}:${leader.id}`, leader.name, "Leader", faction, factionNames.get(faction) || faction, "portrait", "standardBack", { surface: "component", kind: "leader", id: `${faction}-${leader.id}` }));
+    entries.push(makeEntry(`leader:${faction}:${leader.id}`, leader.name, "Leader", faction, factionNames.get(faction) || faction, "portrait", "standardBack", { surface: "leader", id: `${faction}-${leader.id}` }));
   }
 
   const contractComponents = [
@@ -177,11 +183,6 @@ function buildCatalog(game) {
   for (const component of contractComponents) {
     const entry = componentCatalogEntry(component, factionNames);
     if (entry) entries.push(entry);
-  }
-
-  const ritual = game.mystics?.ritual;
-  if (ritual?.id && !entries.some(entry => entry.key === `ritual:${ritual.id}`)) {
-    entries.push(makeEntry(`ritual:${ritual.id}`, ritual.name || "Ritual of Ascension", "Ritual", "mystics", factionNames.get("mystics") || "Mystics", "portrait", "specialBack", { surface: "component", kind: "ritual", id: ritual.id }));
   }
 
   const categoryIndex = category => {
@@ -197,30 +198,25 @@ function makeEntry(key, name, category, faction, factionLabel, orientation, back
 
 function componentCatalogEntry(component, factionNames) {
   if ((component.designStatus || "final") === "placeholder") return null;
-  const render = renderDescriptorForComponent(component);
-  if (!render) return null;
-  const faction = component.faction || "shared";
-  const orientation = component.id === "financiers-deed" || component.family === "deed-card" || component.orientation === "landscape" ? "landscape" : "portrait";
-  const backPolicy = component.id === "financiers-capital-ledger" ? "ledgerDuplex" : (component.backPolicy || "standardBack");
-  return makeEntry(`component:${component.id}`, component.name, componentCategory(component), faction, factionNames.get(faction) || (faction === "shared" ? "Shared" : faction), orientation, backPolicy, render);
-}
 
-function renderDescriptorForComponent(component) {
-  const explicit = component.renderSource || {};
-  const surface = String(explicit.surface || "");
-  const componentId = String(explicit.componentId || "").trim();
-  if (component.id === "financiers-capital-ledger") return { surface: "component", kind: "supplemental", id: "financiers-capital-ledger" };
-  if (component.id === "financiers-deed") return { surface: "component", kind: "supplemental", id: "financiers-deed" };
-  if (/supplemental-card\.js$/i.test(surface) && componentId) return { surface: "component", kind: "supplemental", id: componentId };
-  if (/reference-card\.js$/i.test(surface)) return { surface: "component", kind: "reference", id: componentId || component.id };
-  if (/proposal-card\.js$/i.test(surface)) return { surface: "component", kind: "proposal", id: componentId || component.id.replace(/^diplomats-proposal-/, "") };
-  if (/rite-card\.js$/i.test(surface)) return { surface: "component", kind: "rite", id: componentId || component.id.replace(/^mystics-rite-/, "") };
-  if (component.family === "reference-card") return { surface: "component", kind: "reference", id: component.id };
-  if (component.family === "tracker") return { surface: "component", kind: componentId ? "tracker" : "supplemental", id: componentId || component.id };
-  if (component.family === "proposal-treaty-card") return { surface: "component", kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
-  if (component.family === "rite-card") return { surface: "component", kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
-  if (component.family === "ledger" || component.family === "deed-card") return { surface: "component", kind: "supplemental", id: componentId || component.id };
-  return { surface: "component", kind: "supplemental", id: componentId || component.id };
+  let descriptor;
+  try {
+    descriptor = productionPrint().componentDescriptor(component.id);
+  } catch {
+    return null;
+  }
+
+  const faction = component.faction || descriptor.faction || "shared";
+  return makeEntry(
+    `component:${component.id}`,
+    component.name,
+    componentCategory(component),
+    faction,
+    factionNames.get(faction) || (faction === "shared" ? "Shared" : faction),
+    descriptor.orientation || "portrait",
+    descriptor.backPolicy || "standardBack",
+    { surface: "component", id: component.id },
+  );
 }
 
 function componentCategory(component) {
@@ -230,6 +226,7 @@ function componentCategory(component) {
   if (component.family === "tracker") return "Tracker";
   if (component.family === "proposal-treaty-card") return "Proposal / Treaty";
   if (component.family === "rite-card") return "Rite";
+  if (component.family === "ritual-card") return "Ritual";
   return "Supplemental card";
 }
 
@@ -399,24 +396,38 @@ function customPageHtml(sheet, includeStandardBacks, backStyle, isLast) {
 }
 
 function reverseCellHtml(entry, includeStandardBacks, backStyle) {
-  if (entry.backPolicy === "ledgerDuplex") return cardFrameHtml(entry, "front");
   if (intrinsicReverse(entry)) return cardFrameHtml(entry, "reverse");
   if (includeStandardBacks && entry.backPolicy === "standardBack") return backFrameHtml(backFactionForEntry(entry, backStyle));
   return "";
 }
 
 function cardFrameHtml(entry, side) {
+  const renderer = productionPrint();
   let src;
-  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production`;
-  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}`;
-  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}`;
+  if (entry.render.surface === "card") {
+    src = renderer.cardSource(entry.render.id);
+  } else if (entry.render.surface === "territory") {
+    src = renderer.territorySource(entry.render.id);
+  } else if (entry.render.surface === "leader") {
+    src = renderer.frameSource({
+      faceId: `leader:${entry.render.id}`,
+      kind: "leader",
+      id: entry.render.id,
+      side,
+      orientation: entry.orientation,
+    });
+  } else {
+    src = renderer.componentSource(entry.render.id, side);
+  }
+
   const frame = `<iframe class="custom-render-frame" data-custom-render-frame data-custom-render-kind="face" src="${escapeHtml(src)}" title="${escapeHtml(`${entry.name} ${side} production render`)}" scrolling="no" loading="eager"></iframe>`;
   return entry.orientation === "landscape" ? `<div class="custom-landscape-rotate">${frame}</div>` : frame;
 }
 
 function backFrameHtml(faction) {
   const safeFaction = BACK_VARIANTS.has(faction) ? faction : "intelligence";
-  return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="/tts/back-renderer/index.html?faction=${encodeURIComponent(safeFaction)}&rotation=180" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
+  const src = productionPrint().backSource(safeFaction);
+  return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="${escapeHtml(src)}" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
 }
 function canonicalBackFactionForEntry(entry) {
   if (entry.render.surface === "card" || entry.render.surface === "territory") return "intelligence";
@@ -426,7 +437,7 @@ function backFactionForEntry(entry, selected) {
   if (selected && selected !== "per-card" && BACK_VARIANTS.has(selected)) return selected;
   return canonicalBackFactionForEntry(entry);
 }
-function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack" || entry.backPolicy === "ledgerDuplex"; }
+function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack"; }
 function mirrorIndexForLongEdge(index) { const row = Math.floor(index / COLUMNS); const column = index % COLUMNS; return row * COLUMNS + (COLUMNS - 1 - column); }
 function setStatus(message, kind = "") { if (!ui.customPrintStatus) return; ui.customPrintStatus.textContent = message; ui.customPrintStatus.className = `custom-print-summary custom-print-status${kind ? ` ${kind}` : ""}`; }
 function normalize(value) { return String(value || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, " ").trim(); }

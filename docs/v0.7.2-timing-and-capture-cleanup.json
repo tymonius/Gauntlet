@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "v0.7.2",
+  "status": "approved-design",
+  "scope": "Action-phase wording cleanup and restoration of Capture versus Front Line advancement semantics",
+  "principles": {
+    "phaseRestrictedActions": "A card Action restricted to one Action phase uses visible player-facing wording of the form 'Play only during [phase].' Delayed effects that resolve during a later phase are stated in a separate sentence.",
+    "captureVsFrontLine": {
+      "capture": "Capture language changes control of the specified Territory. If a direct capture would violate the contiguous Front Line or another rule prevents it, an 'if able' instruction does not change control.",
+      "advanceFrontLine": "Advance Front Line language changes control of the next opposing Territory immediately beyond that player's Front Line. It does not mean 'capture the Territory occupied by the player' unless that Territory is itself the next opposing Territory beyond the Front Line.",
+      "rulebookRequirement": "The v0.7.2 Rulebook must state this distinction explicitly in the Front Line, Occupation, and Capture rules."
+    }
+  },
+  "actionTimingChanges": [
+    {
+      "cardId": "neutral-advance-guard",
+      "name": "Advance Guard",
+      "effect": "Action",
+      "actionPhase": "Opening",
+      "text": "Play only during Opening. During your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle."
+    },
+    {
+      "cardId": "neutral-forced-march",
+      "name": "Forced March",
+      "effect": "Action",
+      "actionPhase": "Opening",
+      "text": "Play only during Opening. During your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
+    },
+    {
+      "cardId": "military-invasion",
+      "name": "Invasion",
+      "effect": "Action",
+      "actionPhase": "Opening",
+      "text": "Play only during Opening. During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance."
+    },
+    {
+      "cardId": "mystics-fate-s-toll",
+      "name": "Fate's Toll",
+      "effect": "Action",
+      "actionPhase": "Opening",
+      "text": "Play only during Opening. Put one other card from your Hand in your Graveyard. During your Movement this turn, you may move one additional Position."
+    },
+    {
+      "cardId": "financiers-foreclosure",
+      "name": "Foreclosure",
+      "effect": "Action",
+      "actionPhase": "Denouement",
+      "text": "Play only during Denouement. If the next opposing Territory immediately beyond your Front Line is unoccupied and you own its Deed, advance your Front Line 1."
+    },
+    {
+      "cardId": "military-give-chase",
+      "name": "Give Chase",
+      "effect": "Action",
+      "actionPhase": "Denouement",
+      "text": "Play only during Denouement if you won a battle you initiated this turn. Advance 1 Position. Then put this card in your Graveyard."
+    },
+    {
+      "cardId": "military-battlefield-promotion",
+      "name": "Battlefield Promotion",
+      "effect": "Action",
+      "actionPhase": "Denouement",
+      "textChange": false,
+      "note": "Printed Action text already uses the approved 'Play only during Denouement' house style. Add matching action_phase metadata for machine-readable consistency."
+    }
+  ],
+  "captureTerminologyChanges": [
+    {
+      "cardId": "financiers-foreclosure",
+      "name": "Foreclosure",
+      "effect": "Gambit/Tactic",
+      "text": "In the Aftermath, if you initiated and won this battle on a Territory whose Deed you owned when the battle began, capture that Territory, if able, instead of becoming the occupier."
+    },
+    {
+      "cardId": "neutral-assimilation",
+      "name": "Assimilation",
+      "effect": "Asset",
+      "text": "In the Aftermath, if you initiated and won this battle on a Territory the opponent controls, you may put this card in your Graveyard to capture that Territory, if able, instead of occupying it."
+    },
+    {
+      "cardId": "neutral-assimilation",
+      "name": "Assimilation",
+      "effect": "Gambit/Tactic",
+      "text": "In the Aftermath, if you win as the attacker on a Territory the opponent controls, capture that Territory, if able, instead of occupying it. Then put this card in your Graveyard."
+    },
+    {
+      "authorityTarget": "military.commandant.orders.fortify",
+      "name": "Fortify",
+      "text": "Capture the Territory you occupy, if able.",
+      "duplicates": [
+        "gameplay.factions[military].leaders[commandant]",
+        "gameplay.faction_rules.military.fortify",
+        "Rulebook Commandant Leader Ability"
+      ]
+    },
+    {
+      "authorityTarget": "financiers.executive.hostileTakeover",
+      "name": "Hostile Takeover",
+      "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.",
+      "duplicates": [
+        "gameplay.factions[financiers].leaders[executive]",
+        "Rulebook Executive Leader Ability"
+      ]
+    },
+    {
+      "proposalId": "diplomatic-recognition",
+      "name": "Diplomatic Recognition",
+      "accepted": "The Diplomat captures the Territory they occupy, if able. The accepting player withdraws, then draws two cards.",
+      "refused": "If the Diplomat wins, they capture the Territory they occupy during the Aftermath, if able. The Diplomat gains no Influence for imposing this Proposal.",
+      "compactAccepted": "Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.",
+      "compactRefused": "If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal.",
+      "duplicates": [
+        "full proposal authority",
+        "compact proposal card authority",
+        "Rulebook Diplomatic Recognition"
+      ]
+    },
+    {
+      "cardId": "military-shock-and-awe",
+      "name": "Shock and Awe",
+      "effect": "Gambit/Tactic",
+      "mode": "Consolidate",
+      "replacement": "Consolidate — Capture that Territory, if able; Command = 2.",
+      "note": "Only the Consolidate clause changes; the rest of the Gambit/Tactic effect remains unchanged."
+    }
+  ],
+  "integrationRequirements": {
+    "currentAuthority": [
+      "Promote game-data/current-game.json to v0.7.2-candidate when these changes are integrated into current development.",
+      "Apply every player-facing text change to both effects[] and any duplicated convenience fields such as action, asset, or gambit_tactic.",
+      "Add or normalize action_phase metadata for every phase-restricted Action listed above.",
+      "Update all duplicated Leader, faction-rule, Proposal, compact-reference, and other current-authority representations together."
+    ],
+    "rulebook": [
+      "Promote rulebook/player-facing/current-rulebook.md to Version 0.7.2 Candidate at candidate integration.",
+      "Update Fortify, Hostile Takeover, and Diplomatic Recognition to the approved Capture wording.",
+      "Add the explicit Capture versus Advance Front Line distinction to Chapter 8.",
+      "Keep the rule that ordinary Actions may be taken in Opening or Denouement unless a more specific timing restriction applies."
+    ],
+    "surfaces": [
+      "Card Reference and production renderers must receive the visible phase restriction from the canonical effect text rather than relying on hidden metadata.",
+      "Card footers and other current-version surfaces should follow currentGame.displayVersion and therefore show the v0.7.2 candidate/release identity when promoted."
+    ],
+    "releaseBoundary": "Published v0.7.1 artifacts remain immutable. These changes belong to v0.7.2 development and must not be backported into the frozen v0.7.1 package."
+  }
+}

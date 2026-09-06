@@ -1,9 +1,14 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { factions: FACTIONS } = deckbuilder;
+  const constructionRules = () => deckbuilder.constructionRules();
+
   const params = new URLSearchParams(window.location.search);
   const factionId = String(params.get("faction") || "").trim();
   const leaderId = String(params.get("leader") || "").trim();
-  const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
-  const requestedLeader = faction?.leaders.find(item => item.id === leaderId);
+  let faction = null;
+  let requestedLeader = null;
   const STARTER_FACTION_COLORS = {
     military: "#9e262c",
     diplomats: "#264f91",
@@ -13,20 +18,9 @@
     inquisition: "#a67a27"
   };
 
-  if (faction) {
-    state.factionId = faction.id;
-    state.leaderId = requestedLeader?.id || faction.leaders[0]?.id || "";
-  }
-
   if (params.get("starter") !== "1") return;
 
-  const leader = requestedLeader;
-  if (!faction || !leader) return;
-
-  state.deckName = "";
-  state.deck = {};
-  state.territories = [];
-
+  let leader = null;
   let panel = null;
   let status = null;
   let printButton = null;
@@ -36,12 +30,36 @@
 
   document.addEventListener("DOMContentLoaded", init);
 
-  function init() {
-    injectPanel();
-    requestAnimationFrame(waitForStarterData);
+  async function init() {
+    try {
+      await deckbuilder.bootstrap();
+
+      faction = FACTIONS.find(item => item.id === factionId && item.status === "ready") || null;
+      requestedLeader = faction?.leaders.find(item => item.id === leaderId) || null;
+      leader = requestedLeader;
+      if (!faction || !leader) return;
+
+      deckbuilder.replaceDeckState({
+        deckName: "",
+        factionId: faction.id,
+        leaderId: leader.id,
+        deck: {},
+        selectedCardId: null,
+      });
+      deckbuilder.feature("territories")?.setSelectedIds?.([]);
+      deckbuilder.feature("mysticsRites")?.setSelectedIds?.([]);
+      deckbuilder.renderFactionOptions();
+      deckbuilder.render();
+      injectPanel();
+      requestAnimationFrame(waitForStarterData);
+    } catch (error) {
+      console.error("Unable to initialize starter handoff", error);
+    }
   }
 
   function injectPanel() {
+    const rules = constructionRules();
+    const territoryLabel = `${rules.territoriesPerPlayer} Territor${rules.territoriesPerPlayer === 1 ? "y" : "ies"}`;
     const app = document.getElementById("app");
     const setup = app?.querySelector(".setup-panel");
     if (!app || !setup || document.getElementById("starterHandoffPanel")) return;
@@ -55,7 +73,7 @@
       <div class="starter-handoff-copy">
         <p class="eyebrow">New-player print mode</p>
         <h2>${escapeHandoffHtml(leader.name)} of the ${escapeHandoffHtml(faction.name)}</h2>
-        <p id="starterHandoffStatus">Loading the recommended starter Deck and its three Territories…</p>
+        <p id="starterHandoffStatus">Loading the recommended starter Deck and its ${territoryLabel}…</p>
         <div class="starter-handoff-actions">
           <button id="starterHandoffPrint" type="button" disabled>Print starter Deck</button>
           <a class="button-like secondary" href="../start/">Change faction or Leader</a>
@@ -81,7 +99,7 @@
   }
 
   function waitForStarterData() {
-    const api = window.GAUNTLET_STARTER_DECKS;
+    const api = deckbuilder.feature("starterDecks");
     if (api?.isReady?.()) {
       applyStarterDeck(api);
       return;
@@ -112,7 +130,9 @@
       backsCheckbox.checked = Boolean(baseBacksCheckbox?.checked);
       printButton.disabled = false;
       panel?.classList.add("is-ready");
-      setStatus(`${preset.name} is loaded: ${Number(preset.cardCount) || 30} cards, three Territories, the ${leader.name} Leader, strategy notes, references, and required printable components.`, "success");
+      const rules = constructionRules();
+      const territoryLabel = `${rules.territoriesPerPlayer} Territor${rules.territoriesPerPlayer === 1 ? "y" : "ies"}`;
+      setStatus(`${preset.name} is loaded: ${Number(preset.cardCount) || rules.minimumCards} cards, ${territoryLabel}, the ${leader.name} Leader, strategy notes, references, and required printable components.`, "success");
       panel?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 120);
   }

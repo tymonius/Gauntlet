@@ -21,6 +21,14 @@
     renderStandalone(data.standalone || []);
   }
 
+  function focusReplacement(list, key, headingId) {
+    const card = key
+      ? [...list.querySelectorAll("[data-host-record-key]")].find(item => item.dataset.hostRecordKey === String(key))
+      : null;
+    const target = card?.querySelector("a[href], button:not([disabled])") || document.getElementById(headingId);
+    target?.focus({ preventScroll: true });
+  }
+
   function renderEvents(events) {
     el.eventList.replaceChildren();
     if (!events.length) {
@@ -30,12 +38,11 @@
       return;
     }
 
-    events
-      .slice()
-      .sort(sortRecent)
-      .forEach((event) => {
+    const orderedEvents = events.slice().sort(sortRecent);
+    orderedEvents.forEach((event, index) => {
         const card = document.createElement("article");
         card.className = "host-event-card";
+        card.dataset.hostRecordKey = String(event.code || event.dashboardUrl || event.sheetSerial || index);
         const title = event.sheetSerial || "Game-night event";
         card.innerHTML = `
           <div class="host-event-head">
@@ -46,11 +53,11 @@
             </div>
           </div>
           <div class="host-record-actions">
-            ${linkButton(event.dashboardUrl, "Open event dashboard", true)}
-            ${linkButton(event.participantUrl, "Preview participant onboarding")}
-            ${button("Copy participant link", "copy-participant")}
-            ${linkButton(event.registrationControlsUrl, "Registration controls")}
-            ${button("Forget event", "forget-event", true)}
+            ${linkButton(event.dashboardUrl, "Open event dashboard", true, true, title)}
+            ${linkButton(event.participantUrl, "Preview participant onboarding", false, true, title)}
+            ${button("Copy participant link", "copy-participant", false, title)}
+            ${linkButton(event.registrationControlsUrl, "Registration controls", false, true, title)}
+            ${button("Forget event", "forget-event", true, title)}
           </div>
           <div class="host-table-list">
             <div class="host-table-heading">Table sessions</div>
@@ -61,9 +68,12 @@
         card.querySelector('[data-action="copy-participant"]')?.addEventListener("click", () => copy(event.participantUrl, "Participant link copied."));
         card.querySelector('[data-action="forget-event"]')?.addEventListener("click", () => {
           if (!window.confirm(`Forget ${title} on this browser? This does not close the event.`)) return;
+          const neighbor = orderedEvents[index + 1] || orderedEvents[index - 1] || null;
+          const neighborKey = neighbor ? String(neighbor.code || neighbor.dashboardUrl || neighbor.sheetSerial || "") : "";
           registry.forgetEvent(event.code);
           setStatus("Event removed from Host Home.");
           render();
+          focusReplacement(el.eventList, neighborKey, "events-title");
         });
 
         renderTables(card.querySelector("[data-table-list]"), event.games || []);
@@ -88,15 +98,16 @@
       .forEach((game, index) => {
         const row = document.createElement("div");
         row.className = "host-table-row";
+        const tableLabel = `Table ${index + 1} · ${game.sheetSerial || "Unlabeled session"}`;
         row.innerHTML = `
           <div>
-            <strong>Table ${index + 1} · ${escapeHtml(game.sheetSerial || "Unlabeled session")}</strong>
+            <strong>${escapeHtml(tableLabel)}</strong>
             <small>Created ${escapeHtml(formatDate(game.createdAt))}</small>
           </div>
           <div class="host-record-actions">
-            ${linkButton(withPreview(game.joinUrl), "Preview player page", false, false)}
-            ${linkButton(game.joinUrl, "Open clean player page")}
-            ${button("Copy player link", "copy-table")}
+            ${linkButton(withPreview(game.joinUrl), "Preview player page", false, false, tableLabel)}
+            ${linkButton(game.joinUrl, "Open clean player page", false, true, tableLabel)}
+            ${button("Copy player link", "copy-table", false, tableLabel)}
           </div>
         `;
         row.querySelector('[data-action="copy-table"]')?.addEventListener("click", () => copy(game.joinUrl, "Table player link copied."));
@@ -113,33 +124,36 @@
       return;
     }
 
-    sessions
-      .slice()
-      .sort(sortRecent)
-      .forEach((session) => {
+    const orderedSessions = sessions.slice().sort(sortRecent);
+    orderedSessions.forEach((session, index) => {
         const card = document.createElement("article");
         card.className = "host-standalone-card";
         const identity = session.sessionId || session.code || session.hostUrl;
+        card.dataset.hostRecordKey = String(identity || index);
+        const title = session.sheetSerial || "Coded playtest sheet";
         card.innerHTML = `
           <div class="host-standalone-head">
             <div>
               <p class="eyebrow">Standalone session</p>
-              <h3>${escapeHtml(session.sheetSerial || "Coded playtest sheet")}</h3>
+              <h3>${escapeHtml(title)}</h3>
               <p class="host-meta">${escapeHtml(session.status || "Saved")} · ${escapeHtml(formatDate(session.createdAt))}</p>
             </div>
           </div>
           <div class="host-record-actions">
-            ${linkButton(session.hostUrl, "Open host controls", true)}
-            ${linkButton(session.joinUrl, "Open player page")}
-            ${button("Copy player link", "copy-standalone")}
-            ${button("Forget", "forget-standalone", true)}
+            ${linkButton(session.hostUrl, "Open host controls", true, true, title)}
+            ${linkButton(session.joinUrl, "Open player page", false, true, title)}
+            ${button("Copy player link", "copy-standalone", false, title)}
+            ${button("Forget", "forget-standalone", true, title)}
           </div>
         `;
         card.querySelector('[data-action="copy-standalone"]')?.addEventListener("click", () => copy(session.joinUrl, "Player link copied."));
         card.querySelector('[data-action="forget-standalone"]')?.addEventListener("click", () => {
+          const neighbor = orderedSessions[index + 1] || orderedSessions[index - 1] || null;
+          const neighborKey = neighbor ? String(neighbor.sessionId || neighbor.code || neighbor.hostUrl || "") : "";
           registry.forgetStandalone(identity);
           setStatus("Standalone session removed from Host Home.");
           render();
+          focusReplacement(el.standaloneList, neighborKey, "standalone-title");
         });
         el.standaloneList.append(card);
       });
@@ -188,14 +202,16 @@
     }
   }
 
-  function linkButton(href, label, primary = false, newTab = true) {
+  function linkButton(href, label, primary = false, newTab = true, context = "") {
     if (!href) return "";
     const target = newTab ? ' target="_blank" rel="noopener"' : "";
-    return `<a${primary ? ' class="primary"' : ""} href="${escapeAttribute(href)}"${target}>${escapeHtml(label)}</a>`;
+    const accessibleName = context ? ` aria-label="${escapeAttribute(`${label} — ${context}`)}"` : "";
+    return `<a${primary ? ' class="primary"' : ""} href="${escapeAttribute(href)}"${target}${accessibleName}>${escapeHtml(label)}</a>`;
   }
 
-  function button(label, action, danger = false) {
-    return `<button${danger ? ' class="danger"' : ""} type="button" data-action="${escapeAttribute(action)}">${escapeHtml(label)}</button>`;
+  function button(label, action, danger = false, context = "") {
+    const accessibleName = context ? ` aria-label="${escapeAttribute(`${label} — ${context}`)}"` : "";
+    return `<button${danger ? ' class="danger"' : ""} type="button" data-action="${escapeAttribute(action)}"${accessibleName}>${escapeHtml(label)}</button>`;
   }
 
   function emptyMessage(message) {

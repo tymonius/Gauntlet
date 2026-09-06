@@ -317,6 +317,8 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
       territories,
       recommendedTerritoryOrder: orderNames.map((name) => territoryBySelectedName.get(name).id),
       territoryOrderGuidance: deck.territoryOrderGuidance || null,
+      selectedRites: Array.isArray(deck.selectedRites) ? [...deck.selectedRites] : [],
+      recommendedRiteOrder: Array.isArray(deck.recommendedRiteOrder) ? [...deck.recommendedRiteOrder] : [],
     };
   });
 

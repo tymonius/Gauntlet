@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Choose a faction and leader, build your deck, and battle across a six-card battlefield to break through your opponent's line." />
@@ -40,23 +45,28 @@
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
-  <link rel="stylesheet" href="site.css?v=20260802-1" />
+  <link rel="stylesheet" href="site.css?v=20260903-1" />
   <link rel="stylesheet" href="newsletter.css" />
   <link rel="stylesheet" href="factions/homepage.css" />
   <link rel="stylesheet" href="gameplay-showcase.css" />
   <link rel="stylesheet" href="homepage-card-showcase.css" />
+  <link rel="stylesheet" href="homepage-rules-arbiter.css?v=20260903-1" />
   <link rel="stylesheet" href="declaration-typography.css" />
-  <link rel="stylesheet" href="rules-assistant/widget.css" />
+  <link rel="stylesheet" href="rules-assistant/widget.css?v=20260903-1" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
+      <a href="/playtest/">Playtest</a>
       <a href="/rulebook/">Rules</a>
       <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
@@ -65,10 +75,10 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Current canonical playtest edition · v0.7.0</p>
+        <p class="eyebrow">Current canonical playtest edition · v0.7.1</p>
         <h1 id="hero-title">Run the <span class="hero-title-accent">Gauntlet.</span></h1>
         <p class="hero-lede">
           Choose a faction and leader, build your deck, and fight through the opponent's line to win the final battle.
@@ -186,7 +196,7 @@
         </div>
         <div class="card-showcase-copy">
           <p>Every faction brings its own tools, tempo, and pressure to the same battlefield. Neutral cards add a shared tactical vocabulary that any deck can draw on.</p>
-          <a class="button secondary" href="card-reference/">Browse all 128 cards</a>
+          <a class="button secondary" href="card-reference/">Browse all 142 cards</a>
         </div>
       </div>
       <figure
@@ -254,15 +264,30 @@
     </section>
 
     <section id="rules-assistant" class="section assistant-section">
-      <div>
+      <div class="assistant-copy">
         <p class="eyebrow declaration-overline">Rules support at the table</p>
-        <h2>Ask the Rules Arbiter.</h2>
+        <h2>Ask the Chief Justice.</h2>
         <p>
-          Use the floating <strong>Ask the rules</strong> control to look up card text, battle timing, territory interactions, faction systems, and victory conditions from the published v0.7.0 sources.
+          Use the floating <strong>Ask the Chief Justice</strong> control to settle questions of card text, battle timing, Territory interactions, faction systems, and victory conditions from the published rules and cards.
         </p>
-        <p class="assistant-note">The source passages remain visible with every answer. When the AI service is unavailable, exact canonical source lookup still works in the browser.</p>
+        <p>
+          The Chief Justice identifies the controlling rule or distinction and states the result plainly. Where the written rules do not decide the matter, he issues a provisional ruling so play may continue.
+        </p>
+        <p class="assistant-note">
+          The relevant rulebook and card sources are included with each answer, so the ruling can be checked against the written rules. If the AI service is unavailable, the Chief Justice falls back to direct canonical source lookup rather than leaving the table without rules support.
+        </p>
+        <button class="button primary assistant-open" type="button" data-open-rules-assistant>Ask the Chief Justice</button>
       </div>
-      <button class="button primary assistant-open" type="button" data-open-rules-assistant>Ask a rule question</button>
+      <figure class="assistant-portrait" aria-hidden="true">
+        <img
+          src="/images/rules-arbiter/chief-justice-homepage.webp"
+          alt=""
+          width="1214"
+          height="1295"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
     </section>
 
     <section id="tools" class="section tools-section">
@@ -274,18 +299,18 @@
         <a class="tool-card" href="start/">
           <span>New-player setup</span>
           <h3>Start Playing</h3>
-          <p>Learn the shared game flow, choose a faction and leader, and load the matching recommended starter deck ready to print.</p>
-          <strong>Choose your first deck →</strong>
+          <p>Learn the shared game flow, choose a faction and Leader, then start a tracked TTS self-serve playtest or prepare the matching starter Deck for physical play.</p>
+          <strong>Choose your first side →</strong>
         </a>
         <a class="tool-card" href="rulebook/">
           <span>Canonical rules</span>
           <h3>Browser Rulebook</h3>
-          <p>Read and search the complete v0.7.0 rules in a responsive format, with direct section links and the Rules Arbiter close at hand.</p>
+          <p>Read and search the complete v0.7.1 rules in a responsive format, with direct section links and the Rules Arbiter close at hand.</p>
           <strong>Read the rulebook →</strong>
         </a>
         <a class="tool-card" href="deckbuilder/">
           <span>Build and print</span>
-          <h3>v0.7.0 Deckbuilder</h3>
+          <h3>v0.7.1 Deckbuilder</h3>
           <p>Load a ready-to-play leader deck or build your own, check it against the current rules, save it in your browser, and print a complete playtest package.</p>
           <strong>Open Deckbuilder →</strong>
         </a>
@@ -296,14 +321,14 @@
           <strong>Open Card Reference →</strong>
         </a>
         <a class="tool-card" href="playtest/">
-          <span>Record results</span>
-          <h3>Playtest Sheet</h3>
-          <p>Use the one-page questionnaire after a game and preserve observations for structured testing.</p>
-          <strong>Open Playtest Sheet →</strong>
+          <span>Self-serve playtesting</span>
+          <h3>Playtest Gauntlet</h3>
+          <p>Create a two-player tracked game, play remotely in Tabletop Simulator or physically, link rules questions, and submit separate player feedback.</p>
+          <strong>Start a playtest →</strong>
         </a>
-        <a class="tool-card" href="v0.7.0/">
+        <a class="tool-card" href="v0.7.1/">
           <span>Canonical package</span>
-          <h3>v0.7.0 Release</h3>
+          <h3>v0.7.1 Release</h3>
           <p>Download the printable Rulebook, canonical gameplay data, starter Decks, provenance, and release manifest.</p>
           <strong>Browse release →</strong>
         </a>
@@ -342,22 +367,27 @@
     </section>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="rulebook/">Browser Rulebook</a>
-      <a href="card-reference/">Card Reference</a>
-      <a href="releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf">Rulebook booklet</a>
-      <a href="docs/README.md">Documentation</a>
-      <a href="rules-arbiter/">Rules Arbiter</a>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
       <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
-      <a href="#updates">Project updates</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <noscript>
@@ -365,7 +395,7 @@
   </noscript>
   <script type="module" src="homepage-card-showcase.js"></script>
   <script type="module" src="homepage-tts.js?v=20260827-1"></script>
-  <script type="module" src="rules-assistant/widget.js"></script>
+  <script type="module" src="rules-assistant/widget.js?v=20260903-1"></script>
   <script>
     document.addEventListener("click", (event) => {
       const trigger = event.target.closest("[data-open-rules-assistant]");

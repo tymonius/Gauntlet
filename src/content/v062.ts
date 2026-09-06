@@ -3,7 +3,7 @@ import {
   buildV062CanonicalData,
   NEW_CARD_NAMES,
   V062_VERSION,
-} from '../../v0.6.2/data/canonical-data.js';
+} from '../../legacy/public-versions/v0.6.2/data/canonical-data.js';
 import type {
   CanonicalContentIndex,
   CanonicalFaction,

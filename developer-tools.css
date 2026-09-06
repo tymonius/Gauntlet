@@ -228,8 +228,8 @@
 .developer-rules-page input:focus,
 .developer-rules-page select:focus,
 .developer-rules-page textarea:focus {
-  outline: 2px solid rgba(163,115,56,.22);
-  outline-offset: 1px;
+  outline: 3px solid var(--developer-gold);
+  outline-offset: 2px;
   border-color: var(--developer-gold);
 }
 

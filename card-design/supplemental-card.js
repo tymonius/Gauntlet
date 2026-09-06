@@ -1,11 +1,11 @@
-import './deed-card.js';
+import { deedCardMarkup } from './deed-card.js';
 import {
   fitReferenceCard,
   loadReferenceRecords,
   referenceCardMarkup,
 } from './reference-card.js';
 import { capitalLedgerMarkup } from './capital-ledger.js';
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderGame } from './render-context.mjs';
 
 const FACTION_LABELS = Object.freeze({
   military: 'Military',
@@ -24,40 +24,10 @@ const TRACKER_TITLE_MIN_PT = 9.5;
 // Physical print geometry is presentation data, not gameplay authority. The
 // identity, quantity, status, back policy, and tracked value all come from the
 // current-game component contract; only the drawn scale/layout lives here.
-const TRACKER_PRESENTATION = Object.freeze({
-  'military-command-tracker': {
-    max: 4,
-    labelSize: 11.2,
-    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Command value.',
-  },
-  'diplomats-influence-tracker': {
-    max: 10,
-    labelSize: 7.9,
-    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Influence value.',
-  },
-  'financiers-capital-limit-tracker': {
-    max: 15,
-    labelSize: 6.8,
-    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Capital Limit value.',
-  },
-  'intelligence-intel-tracker': {
-    max: 12,
-    labelSize: 7.2,
-    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Intel value.',
-  },
-  'intelligence-operation-progress-tracker': {
-    max: 8,
-    labelSize: 6.8,
-    instruction: 'Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward to align the bottom edge of the Intel Tracker with the line above your current Operation Progress value.',
-  },
-  'inquisition-conviction-tracker': {
-    max: 4,
-    labelSize: 10.4,
-    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Conviction value.',
-  },
-});
-
 const root = document.querySelector('#supplementalReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 let currentDisplayVersion = 'Current';
 let supplementalGroups = [];
 
@@ -106,6 +76,7 @@ function presentationComponent(component) {
   return {
     contractId: component.id,
     id: rendererId(component),
+    family: component.family,
     referenceId: hasReferenceFaces ? component.id : '',
     ledger,
     name: component.name,
@@ -116,15 +87,12 @@ function presentationComponent(component) {
     type: componentType(component),
     detail: componentDetail(component),
     quantity: Number(component.quantity ?? component.quantityPerPlayer) || 1,
-    // The approved Capital Ledger is an identical-face duplex consumable. Until
-    // the component contract is promoted from its legacy standardBack state,
-    // the production catalog still presents the approved physical geometry.
-    doubleSided: ledger || component.backPolicy === 'twoSided',
+    doubleSided: component.backPolicy === 'twoSided',
     designStatus: designStatus(component),
     productionStatus: component.productionStatus,
-    backPolicy: ledger ? 'twoSided' : component.backPolicy,
+    backPolicy: component.backPolicy,
     deckInclusion: component.deckInclusion || '',
-    tracker: component.family === 'tracker' ? TRACKER_PRESENTATION[component.id] || null : null,
+    tracker: component.family === 'tracker' ? component.presentation?.tracker || null : null,
   };
 }
 
@@ -146,6 +114,58 @@ function buildSupplementalGroups(currentGame) {
   ].filter(group => group.cards.length);
 }
 
+function isolatedComponentRenderId() {
+  if (!/\/component-render\.html$/.test(window.location.pathname)) return '';
+  return String(new URLSearchParams(window.location.search).get('id') || '').trim();
+}
+
+function filterSupplementalGroups(groups) {
+  const isolatedId = isolatedComponentRenderId();
+  let filteredGroups = groups;
+
+  // The standalone production renderer only needs the one requested
+  // supplemental component. Rendering and fitting every current tracker and
+  // reference card in every iframe makes Deckbuilder print sheets fan out into
+  // many redundant full-catalog hydrations; reference faces can then miss the
+  // production-render timeout under normal browser concurrency.
+  if (isolatedId) {
+    filteredGroups = groups
+      .map(group => ({
+        ...group,
+        cards: group.cards.filter(component => (
+          component.id === isolatedId
+          || component.contractId === isolatedId
+          || component.referenceId === isolatedId
+        )),
+      }))
+      .filter(group => group.cards.length);
+  }
+
+  if (!catalogFilter) return filteredGroups;
+
+  const familyForType = {
+    tracker: 'tracker',
+    reference: 'reference-card',
+    ledger: 'ledger',
+    deed: 'deed-card',
+  };
+
+  return filteredGroups
+    .filter(group => catalogFilter.factionMatches(group.faction))
+    .map(group => {
+      let cards = group.cards;
+      if (catalogFilter.type !== 'all' && catalogFilter.type !== 'supplemental') {
+        const family = familyForType[catalogFilter.type];
+        cards = family ? cards.filter(component => component.family === family) : [];
+      }
+      if (catalogFilter.sort === 'name') {
+        cards = cards.slice().sort((a, b) => a.name.localeCompare(b.name));
+      }
+      return { ...group, cards };
+    })
+    .filter(group => group.cards.length);
+}
+
 function supplementalTypeLine(component) {
   return `<div class="supplemental-type-line"><span class="supplemental-faction-emblem" aria-hidden="true"></span><span>${esc(component.type)}</span></div>`;
 }
@@ -160,7 +180,7 @@ function placeholderArtwork(component, faceLabel = '') {
 }
 
 function trackerMarks(component, resourceName) {
-  const { max } = component.tracker;
+  const { scaleMaximum: max } = component.tracker;
   return Array.from({ length: max }, (_, index) => index + 1).map(value => {
     const linePosition = (value / max) * 100;
     const bandBottom = ((value - 1) / max) * 100;
@@ -172,33 +192,25 @@ function trackerMarks(component, resourceName) {
   }).join('');
 }
 
-function trackerCapLabel(component, resourceName) {
-  if (component.contractId === 'intelligence-operation-progress-tracker') return '';
-  if (component.contractId === 'financiers-capital-limit-tracker') return 'Maximum Capital Limit · Uncapped';
-  return Number.isFinite(component.resourceMaximum)
-    ? `Standard ${resourceName} cap · ${component.resourceMaximum}`
-    : `Standard ${resourceName} cap · none`;
-}
-
-function trackerTitle(component, resourceName) {
-  return component.contractId === 'intelligence-operation-progress-tracker'
-    ? resourceName
-    : `${resourceName} Tracker`;
-}
-
 function trackerFace(component, faction, factionLabel) {
   if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
-  const { max, labelSize, instruction } = component.tracker;
+  const {
+    scaleMaximum: max,
+    labelSizePt: labelSize,
+    instruction,
+    title,
+    capLabel,
+    titleLetterSpacingEm,
+  } = component.tracker;
   const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
-  const capLabel = trackerCapLabel(component, resourceName);
-  const title = trackerTitle(component, resourceName);
+  const titleSpacing = titleLetterSpacingEm == null ? '' : ` style="letter-spacing:${Number(titleLetterSpacingEm)}em"`;
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
-        <h3>${esc(title)}</h3>
+        <h3${titleSpacing}>${esc(title)}</h3>
         ${capLabel
           ? `<p class="tracker-cap">${esc(capLabel)}</p>`
           : '<p class="tracker-cap tracker-cap-empty" aria-hidden="true"></p>'}
@@ -328,9 +340,24 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
   </article>`;
 }
 
+function canonicalComponentOrientation(component) {
+  return component.family === 'deed-card' ? 'landscape' : 'portrait';
+}
+
+function canonicalComponentRenderSource(component, side = 'front') {
+  const faceId = `component:${component.contractId || component.referenceId || component.id}:${side}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
+}
+
+function canonicalComponentFrame(component, label, side = 'front') {
+  const landscape = canonicalComponentOrientation(component) === 'landscape';
+  return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(canonicalComponentRenderSource(component, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+}
+
 function componentFace(component, faction, factionLabel, faceLabel = '') {
   if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);
+  if (component.family === 'deed-card') return deedCardMarkup();
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
@@ -354,43 +381,65 @@ function componentSpecimen(component, faction, factionLabel) {
         ? `${designLabel} · identical duplex ledger`
         : `${designLabel} · ${quantityText}`;
 
+  if (catalogFilter) {
+    const orientationClass = canonicalComponentOrientation(component) === 'landscape' ? ' supplemental-review-landscape' : '';
+    if (component.doubleSided) {
+      return `<article class="supplemental-review-item supplemental-review-pair${orientationClass}" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+        <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
+        <div class="supplemental-face-grid">
+          <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong></p>${canonicalComponentFrame(component, `${component.name} front`, 'front')}</div>
+          <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong></p>${canonicalComponentFrame(component, `${component.name} reverse`, 'reverse')}</div>
+        </div>
+      </article>`;
+    }
+
+    return `<article class="supplemental-review-item${orientationClass}" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
+      <div class="supplemental-face-grid supplemental-single-face-grid">
+        <div class="supplemental-face">${canonicalComponentFrame(component, component.name)}</div>
+      </div>
+    </article>`;
+  }
+
   if (component.doubleSided) {
     const faceDescription = component.ledger
       ? 'Identical ledger face'
       : component.referenceId
         ? 'Loading current face'
         : 'Design placeholder';
-    return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+    return `<article class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
         <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
         <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
-    </section>`;
+    </article>`;
   }
 
-  return `<section class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+  return `<article class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
     <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
     <div class="supplemental-face-grid supplemental-single-face-grid">
       <div class="supplemental-face">${componentFace(component, faction, factionLabel)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function groupMarkup(group) {
   return `<section class="review-faction-block supplemental-faction-block" id="supplemental-${esc(group.faction)}" aria-labelledby="supplemental-${esc(group.faction)}-title">
     <div class="review-faction-heading screen-only">
       <h3 id="supplemental-${esc(group.faction)}-title">${esc(group.factionLabel)}</h3>
-      <span>${group.cards.length} design ${group.cards.length === 1 ? 'slot' : 'slots'}</span>
+      <span>${group.cards.length} component ${group.cards.length === 1 ? 'design' : 'designs'}</span>
     </div>
-    <div class="supplemental-review-grid">${group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('')}</div>
+    <div class="supplemental-review-grid supplemental-faction-grid">
+      ${group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('')}
+    </div>
   </section>`;
 }
 
-function renderSupplementalMarkup() {
+function renderSupplementalMarkup(metricGroups = supplementalGroups) {
   if (!root) return;
-  const uniqueCount = supplementalGroups.reduce((sum, group) => sum + group.cards.length, 0);
-  const physicalCount = supplementalGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
+  const uniqueCount = metricGroups.reduce((sum, group) => sum + group.cards.length, 0);
+  const physicalCount = metricGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
   root.dataset.supplementalDesignCount = String(uniqueCount);
   root.dataset.supplementalPhysicalCount = String(physicalCount);
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
@@ -425,9 +474,14 @@ function hydrateReferenceElement(loadingCard, rendered) {
 
 async function hydrateReferenceCards() {
   if (!root) return;
-  const records = await loadReferenceRecords();
-  const recordsById = new Map(records.map(record => [record.id, record]));
   const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  if (!referenceComponents.length) {
+    root.dataset.referenceCardsReady = 'true';
+    return;
+  }
+  const requestedReferenceIds = referenceComponents.map(({ component }) => component.referenceId);
+  const records = await loadReferenceRecords(requestedReferenceIds);
+  const recordsById = new Map(records.map(record => [record.id, record]));
   const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
   if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
 
@@ -464,12 +518,30 @@ async function hydrateReferenceCards() {
 
 async function renderCurrentSupplementals() {
   if (!root) return;
+  if (catalogFilter && !catalogFilter.typeMatches('supplemental', 'tracker', 'reference', 'ledger', 'deed')) {
+    root.replaceChildren();
+    return;
+  }
   try {
-    const currentGame = await loadCurrentGame();
+    const currentGame = await loadRenderGame();
     currentDisplayVersion = currentGame.displayVersion;
-    supplementalGroups = buildSupplementalGroups(currentGame);
+    const allGroups = buildSupplementalGroups(currentGame);
+    supplementalGroups = filterSupplementalGroups(allGroups);
     root.dataset.currentGameAuthority = currentGame.authorityUrl;
-    renderSupplementalMarkup();
+    renderSupplementalMarkup(allGroups);
+    if (catalogFilter) {
+      // The developer catalog consumes the same canonical component frames as
+      // Deckbuilder and TTS. Direct tracker/reference fitting stays inside each
+      // component-render iframe and cannot diverge in the outer catalog.
+      root.dataset.referenceCardsReady = 'true';
+      root.dataset.trackerLayoutsReady = 'true';
+      return;
+    }
+
+    // Supplemental fitting must use the same explicitly loaded production
+    // fonts as every other production surface. document.fonts.ready alone can
+    // resolve before the Typekit faces have been requested, which made long
+    // reference titles fit against a fallback font and then change after load.
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {

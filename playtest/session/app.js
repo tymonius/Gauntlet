@@ -16,7 +16,8 @@
     "../host-registry.js?v=20260731-2",
     "../guide-link.js?v=20260731-1",
     "event-game.js?v=20260731-1",
-    "app-core.js?v=20260731-1"
+    "app-core.js?v=20260731-1",
+    "busy-focus-accessibility.js?v=20260903-1"
   ]).finally(() => {
     if (released) return;
     released = true;

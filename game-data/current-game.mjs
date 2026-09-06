@@ -1,3 +1,6 @@
+import { resolveArtDirection } from './art-direction.mjs';
+import { requireCurrentArray, validateCurrentGameAuthority } from './current-game-validation.mjs';
+
 export const CURRENT_GAME_AUTHORITY_URL = '/game-data/current-game.json';
 
 let currentGamePromise = null;
@@ -13,11 +16,6 @@ async function loadJson(url) {
   return response.json();
 }
 
-function requireArray(value, label) {
-  if (!Array.isArray(value)) throw new Error(`Current-game authority expected ${label} to be an array.`);
-  return value;
-}
-
 export function slugify(value) {
   return String(value || '')
     .toLowerCase()
@@ -26,147 +24,25 @@ export function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
-function validateLeader(leader) {
-  if (!leader?.id || !leader?.faction || !leader?.name) {
-    throw new Error('A current Leader definition is incomplete.');
-  }
-  const sections = requireArray(leader.sections, `${leader.id} Leader sections`);
-  if (!sections.length) throw new Error(`Current Leader ${leader.id} has no sections.`);
-
-  const classifications = new Set(['Faction Victory', 'Leader Ability', 'Resource', 'Progression']);
-  for (const section of sections) {
-    if (!section?.name || !classifications.has(section.classification)) {
-      throw new Error(`Current Leader ${leader.id} has an invalid section classification.`);
-    }
-    if (section.items !== undefined) {
-      const items = requireArray(section.items, `${leader.id} grouped Leader Ability items`);
-      if (section.classification !== 'Leader Ability' || !items.length) {
-        throw new Error(`Current Leader ${leader.id} groups items outside a Leader Ability.`);
-      }
-      for (const item of items) {
-        if (!item?.name || !item?.text) {
-          throw new Error(`Current Leader ${leader.id} has an incomplete grouped ability.`);
-        }
-      }
-    }
-  }
-  if (!sections.some(section => section.classification === 'Faction Victory')) {
-    throw new Error(`Current Leader ${leader.id} is missing Faction Victory.`);
-  }
-  if (!sections.some(section => section.classification === 'Leader Ability')) {
-    throw new Error(`Current Leader ${leader.id} is missing Leader Ability.`);
-  }
-}
-
-function legacySectionText(section) {
-  if (section?.text) return section.text;
-  if (Array.isArray(section?.items)) {
-    return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
-  }
-  return '';
-}
-
 function runtimeLeader(source) {
-  const leader = clone(source);
-  leader.sections = requireArray(leader.sections, `${leader.id} Leader sections`).map(section => {
-    const resolved = { ...section };
-    Object.defineProperty(resolved, Symbol.iterator, {
-      enumerable: false,
-      configurable: false,
-      value: function* legacyLeaderSectionTuple() {
-        yield resolved.name;
-        yield legacySectionText(resolved);
-        yield resolved.cost || '';
-      },
-    });
-    return resolved;
-  });
-  return leader;
-}
-
-function validateFactionFeatures(authority) {
-  const taxonomy = authority.factionFeatureTaxonomy;
-  if (!taxonomy?.factionFeature || !taxonomy?.leaderAbility || !taxonomy?.actionProfiles) {
-    throw new Error('Current-game authority is missing the Faction Feature taxonomy.');
-  }
-  const profiles = new Set(['1 Action', 'No Action', 'Automatic']);
-  for (const profile of profiles) {
-    if (!taxonomy.actionProfiles[profile]) throw new Error(`Faction Feature taxonomy is missing ${profile}.`);
-  }
-
-  for (const factionId of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
-    for (const feature of requireArray(authority.factionFeatures?.[factionId], `${factionId} Faction Features`)) {
-      if (!feature?.name || !profiles.has(feature.profile) || !feature?.timing) {
-        throw new Error(`Current ${factionId} Faction Feature is incomplete.`);
-      }
-    }
-  }
-  if (authority.factionFeatures.military.length) {
-    throw new Error('Military Orders are Leader Abilities and must not appear as shared Military Faction Features.');
-  }
-}
-
-function validateAuthority(authority) {
-  if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
-    throw new Error('Invalid complete current-game authority.');
-  }
-  if (!authority.version || !authority.displayVersion || !authority.gameplay || !authority.provenance) {
-    throw new Error('Current-game authority is missing identity, gameplay, or provenance.');
-  }
-  for (const forbidden of ['sources', 'resolution', 'baseVersion', 'factionOverrides']) {
-    if (Object.prototype.hasOwnProperty.call(authority, forbidden)) {
-      throw new Error(`Current-game authority still exposes transitional field ${forbidden}.`);
-    }
-  }
-
-  const gameplay = authority.gameplay;
-  requireArray(gameplay.cards, 'playable cards');
-  requireArray(gameplay.territories, 'Territories');
-  requireArray(gameplay.factions, 'factions');
-  requireArray(authority.proposals, 'Proposals');
-  requireArray(authority.starterDecks?.decks, 'starter Decks');
-  requireArray(authority.leaders, 'Leaders');
-  validateFactionFeatures(authority);
-  authority.leaders.forEach(validateLeader);
-
-  const ids = new Set();
-  for (const card of gameplay.cards) {
-    if (!card?.id || !card?.name || ids.has(card.id)) throw new Error(`Duplicate or incomplete playable card ${card?.id || '(missing id)'}.`);
-    ids.add(card.id);
-  }
-  const territoryIds = new Set();
-  for (const territory of gameplay.territories) {
-    if (!territory?.id || territoryIds.has(territory.id)) throw new Error(`Duplicate or incomplete Territory ${territory?.id || '(missing id)'}.`);
-    territoryIds.add(territory.id);
-  }
-
-  const active = JSON.stringify({
-    gameplay: authority.gameplay,
-    proposals: authority.proposals,
-    arcaneSymbol: authority.arcaneSymbol,
-    factionFeatureTaxonomy: authority.factionFeatureTaxonomy,
-    factionFeatures: authority.factionFeatures,
-    leaders: authority.leaders,
-    mystics: authority.mystics,
-  });
-  const retired = active.match(/\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu);
-  if (retired) throw new Error(`Current-game authority still contains retired terminology: ${retired[0]}.`);
+  return clone(source);
 }
 
 async function resolveCurrentGame() {
   const authority = await loadJson(CURRENT_GAME_AUTHORITY_URL);
-  validateAuthority(authority);
+  validateCurrentGameAuthority(authority);
 
   const gameplay = clone(authority.gameplay);
   const cards = gameplay.cards.map(clone);
   const territories = gameplay.territories.map(clone);
   const factions = gameplay.factions.map(faction => ({
     ...clone(faction),
-    leaders: requireArray(faction.leaders, `${faction.id} Leaders`).map(runtimeLeader),
+    leaders: requireCurrentArray(faction.leaders, `${faction.id} Leaders`).map(runtimeLeader),
   }));
   const leaders = authority.leaders.map(runtimeLeader);
   const starterDeckData = clone(authority.starterDecks);
   const starterDecks = starterDeckData.decks.map(clone);
+  const visualPolicy = clone(authority.visualPolicy || {});
   const artDirection = clone(authority.artDirection || {});
   const componentContract = clone(authority.componentContract || {});
 
@@ -174,6 +50,7 @@ async function resolveCurrentGame() {
     schemaVersion: authority.schemaVersion,
     authority: authority.authority,
     authorityUrl: CURRENT_GAME_AUTHORITY_URL,
+    visualAuthorityUrl: CURRENT_GAME_AUTHORITY_URL,
     version: authority.version,
     displayVersion: authority.displayVersion,
     status: authority.status,
@@ -196,6 +73,7 @@ async function resolveCurrentGame() {
     starterDecks: Object.freeze(starterDecks),
     starterDeckData: Object.freeze(starterDeckData),
     arcaneSymbol: Object.freeze(clone(authority.arcaneSymbol || {})),
+    visualPolicy: Object.freeze(visualPolicy),
     artDirection: Object.freeze(artDirection),
     mystics: Object.freeze(clone(authority.mystics || {})),
     componentContract: Object.freeze(componentContract),
@@ -206,14 +84,47 @@ async function resolveCurrentGame() {
     findLeader(faction, id) { return factions.find(item => item.id === faction)?.leaders.find(leader => leader.id === id) || null; },
     findFactionFeatures(faction) { return clone(authority.factionFeatures[faction] || []); },
     findStarterDeck(faction, leader) { return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null; },
-    artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
+    artDirectionFor(id) { return clone(resolveArtDirection(visualPolicy, artDirection, id)); },
     slugify,
   });
 }
 
+function requestedRulesetMode() {
+  if (typeof window === 'undefined') return '';
+  return new URLSearchParams(window.location.search).get('rules') || '';
+}
+
+function explicitlyRequestsReleasedRuleset() {
+  return requestedRulesetMode() === 'released';
+}
+
+function bridgedRenderGame() {
+  if (typeof window === 'undefined' || window === window.top) return null;
+  try {
+    const bridge = window.top.__gauntletFaceAuthorityBridge
+      || window.top.__gauntletProductionAuthorityBridge;
+    const runtime = bridge?.runtime;
+    if (!runtime?.cards?.length || !runtime?.territories?.length || !runtime?.componentContract) return null;
+
+    const requestedMode = requestedRulesetMode();
+    if (requestedMode && bridge.rulesetMode && requestedMode !== bridge.rulesetMode) return null;
+    return runtime;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveRequestedGame() {
+  const bridged = bridgedRenderGame();
+  if (bridged) return bridged;
+  if (!explicitlyRequestsReleasedRuleset()) return resolveCurrentGame();
+  const { loadPublishedGame } = await import('./ruleset.mjs');
+  return loadPublishedGame();
+}
+
 export function loadCurrentGame() {
   if (!currentGamePromise) {
-    currentGamePromise = resolveCurrentGame().catch(error => {
+    currentGamePromise = resolveRequestedGame().catch(error => {
       currentGamePromise = null;
       throw error;
     });

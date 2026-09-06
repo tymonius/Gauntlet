@@ -18,6 +18,7 @@
       "printSheets", "clearBatch", "sessionList", "printBatch"
     ]) el[id] = document.getElementById(id);
 
+    el.generationStatus.tabIndex = -1;
     el.batchForm.addEventListener("submit", generateBatch);
     el.downloadManifest.addEventListener("click", downloadManifest);
     el.printSheets.addEventListener("click", () => window.print());
@@ -36,8 +37,12 @@
     );
     if (!confirmed) return;
 
-    setBusy(true);
+    const busyReturnTarget = document.activeElement instanceof HTMLElement && el.batchForm.contains(document.activeElement)
+      ? document.activeElement
+      : el.generateButton;
     setStatus("Checking the session service…");
+    el.generationStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       await checkService();
       sheetTemplate ||= await loadSheetTemplate();
@@ -54,7 +59,7 @@
         batchId,
         label,
         generatedAt: new Date().toISOString(),
-        rulesVersion: "v0.6.3",
+        rulesVersion: "v0.7.1",
         sessionApiOrigin: API_ORIGIN
       };
 
@@ -83,6 +88,7 @@
       el.resultPanel.hidden = false;
       el.printSheets.disabled = false;
       setStatus(`${sessions.length} coded sheet${sessions.length === 1 ? "" : "s"} ready.`, "success");
+      el.resultPanel.focus({ preventScroll: true });
       el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       console.error(error);
@@ -95,9 +101,11 @@
         el.resultSummary.textContent = "This is a partial batch. Its created sessions are already live. Download the host manifest before leaving this page.";
         el.resultPanel.hidden = false;
         el.printSheets.disabled = true;
+        el.resultPanel.focus({ preventScroll: true });
       }
     } finally {
       setBusy(false);
+      if (el.resultPanel.hidden && busyReturnTarget?.isConnected) busyReturnTarget.focus({ preventScroll: true });
     }
   }
 
@@ -105,7 +113,7 @@
     const response = await fetch(`${API_ORIGIN}/health`, { cache: "no-store" });
     if (!response.ok) throw new Error(`Session service health check failed (${response.status}).`);
     const health = await response.json();
-    if (health.version !== "v0.6.3") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
+    if (health.version !== "v0.7.1") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
     if (!health.database) throw new Error("Session service database is not configured.");
     if (!health.sessionCreationConfigured) throw new Error("Session creation secret is not configured.");
   }
@@ -118,7 +126,7 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        rulesVersion: "v0.6.3",
+        rulesVersion: "v0.7.1",
         metadata
       })
     });
@@ -131,7 +139,7 @@
   }
 
   async function loadSheetTemplate() {
-    const response = await fetch("../index.html", { cache: "no-store" });
+    const response = await fetch("../sheet/", { cache: "no-store" });
     if (!response.ok) throw new Error("The printable playtest sheet template could not be loaded.");
     const documentSource = new DOMParser().parseFromString(await response.text(), "text/html");
     const template = documentSource.querySelector(".playtest-sheet");
@@ -224,6 +232,7 @@
     el.resultPanel.hidden = true;
     el.printSheets.disabled = false;
     setStatus("Rendered batch cleared. Existing sessions remain live until closed.");
+    el.generateButton.focus({ preventScroll: true });
   }
 
   function setBusy(busy) {

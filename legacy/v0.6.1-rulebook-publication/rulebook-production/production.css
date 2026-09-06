@@ -1,0 +1,249 @@
+/* Production extensions for the publication system approved in PR #357.
+   These rules add long-form flow, semantic continuation pages, faction accents,
+   and booklet output without redefining the approved page geometry or type roles. */
+
+.production-document{--active-accent:var(--crimson)}
+#reader-root{width:5.5in;margin:0 auto}
+#booklet-root{display:none}
+.production-document .page{--page-accent:var(--active-accent)}
+.production-document .page-inner{gap:0}
+.production-document .page[data-faction="Military"]{--page-accent:#8f1f25}
+.production-document .page[data-faction="Diplomats"]{--page-accent:#244b8f}
+.production-document .page[data-faction="Financiers"]{--page-accent:#276744}
+.production-document .page[data-faction="Intelligence"]{--page-accent:#34373b}
+.production-document .page[data-faction="Mystics"]{--page-accent:#603d78}
+.production-document .page[data-faction="Inquisition"]{--page-accent:#9a6e21}
+.production-document .page[data-faction] .chapter-number,
+.production-document .page[data-faction] .faction-name,
+.production-document .page[data-faction] .leader-name,
+.production-document .page[data-faction] .flavor-overline,
+.production-document .page[data-faction] .part-label{color:var(--page-accent)}
+.production-document .page[data-faction] .faction-rule,
+.production-document .page[data-faction] .reference-step .num{background:var(--page-accent)}
+.production-document .page[data-faction] .callout{border-left-color:var(--page-accent)}
+.production-document .page[data-faction] .rule-box{border-color:color-mix(in srgb,var(--page-accent) 58%,#a37338)}
+
+.production-flow{flex:1;min-height:0;overflow:hidden;font-family:var(--body);font-size:9pt;line-height:1.31}
+.production-flow>*:first-child{margin-top:0}
+.production-flow p{margin:0 0 7px}
+.production-flow strong{font-weight:700}
+.production-flow em{font-style:italic}
+.production-flow code{font-family:var(--ui);font-size:.88em}
+.production-flow a{color:inherit;text-decoration:none}
+.production-flow h2,.production-flow h3,.production-flow h4,.production-flow h5{break-after:avoid;page-break-after:avoid}
+.production-flow h2{margin:14px 0 7px;padding-top:7px;border-top:1px solid var(--line-dark);font-size:15pt;line-height:1.05}
+.production-flow h3{margin:11px 0 5px;font-size:11.8pt;line-height:1.08}
+.production-flow h4{margin:9px 0 4px;font-family:var(--ui);font-size:7.4pt;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.production-flow h5{margin:7px 0 3px;font-size:8.6pt;font-weight:700}
+.production-flow ul,.production-flow ol{margin:0 0 8px;padding-left:18px}
+.production-flow li{margin:0 0 3px;padding-left:2px}
+.production-flow li::marker{font-family:var(--ui);font-size:.78em;font-weight:700}
+.production-flow blockquote{margin:8px 0;padding:8px 10px;border-left:4px solid var(--page-accent,var(--crimson));background:#efe5d4;font-size:8.6pt;line-height:1.3}
+.production-flow blockquote p{margin:0 0 5px}.production-flow blockquote p:last-child{margin-bottom:0}
+.production-flow table{width:100%;margin:7px 0 10px;border-collapse:collapse;font-family:var(--ui);font-size:6.6pt;line-height:1.2}
+.production-flow th,.production-flow td{padding:4px 5px;border-top:1px solid var(--line);vertical-align:top;text-align:left}
+.production-flow th{font-size:6pt;font-weight:800;letter-spacing:.045em;text-transform:uppercase}
+.production-flow tbody tr:last-child td{border-bottom:1px solid var(--line)}
+.production-flow .continuation-label{margin:0 0 8px;color:#5c5a55;font-family:var(--ui);font-size:6.4pt;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.production-flow .source-divider{height:1px;margin:9px 0;background:var(--line)}
+.production-flow .print-image{max-height:3.1in;margin:8px auto;object-fit:contain;filter:grayscale(1) contrast(1.08);mix-blend-mode:multiply}
+.production-flow .keep-group{break-inside:avoid;page-break-inside:avoid}
+.production-flow .split-fragment{margin-top:0}
+
+/* Continuation pages already repeat the chapter identity in the running head
+   and continuation label. A slightly tighter vertical rhythm lets short final
+   sections remain with the preceding material without shrinking the approved
+   body type or changing the first-page chapter composition. */
+.continuation-page .production-flow p{margin-bottom:5px}
+.continuation-page .production-flow h2{margin:11px 0 5px;padding-top:6px}
+.continuation-page .production-flow h3{margin:8px 0 3px}
+.continuation-page .production-flow h4{margin:7px 0 3px}
+.continuation-page .production-flow h5{margin:6px 0 2px}
+.continuation-page .production-flow ul,
+.continuation-page .production-flow ol{margin-bottom:6px}
+.continuation-page .production-flow li{margin-bottom:2px}
+.continuation-page .production-flow .source-divider{margin:7px 0}
+
+/* The Setup play-area inventory is a compact reference list. Two columns keep
+   its introductory sentence and the inventory together on the chapter page. */
+.page[data-anchor="3. Setup"] .production-flow ul:last-of-type{
+  columns:2;
+  column-gap:18px;
+  column-rule:1px solid var(--line);
+}
+.page[data-anchor="3. Setup"] .production-flow ul:last-of-type li{
+  break-inside:avoid;
+}
+
+.frontmatter-page .page-title{font-size:27pt}
+.frontmatter-page .frontmatter-lead{font-size:10.1pt;line-height:1.38}
+.frontmatter-page .golden-rules{margin-top:8px;display:grid;gap:5px}
+.frontmatter-page .golden-rules div{padding:7px 8px;border:1px solid var(--line);font-size:7.4pt;line-height:1.26}
+
+.production-toc .page-title{margin-bottom:8px}
+.production-toc .contents-grid{margin-top:2px}
+.production-toc .toc-entry{padding:3px 0;font-size:6.8pt}
+.production-toc .toc-group{margin-bottom:9px}
+.production-toc .toc-heading{padding-bottom:2px}
+.production-toc .reading-guide{font-size:7pt}
+
+.part-opener .part-index{grid-template-columns:1fr 1fr}
+.part-opener .part-index .toc-page{float:right;font-size:6.8pt}
+
+.chapter-page .chapter-title-row{margin-bottom:10px}
+.chapter-page .chapter-title-row h2{font-size:27pt}
+.chapter-page .rule-box{margin-bottom:10px;font-size:8.7pt;line-height:1.3}
+.chapter-page .rule-box .body-copy{font-size:8.8pt}
+.chapter-page .complete-rules-label{margin:2px 0 7px;color:#4f4d48;font-family:var(--ui);font-size:6.5pt;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+
+.faction-opener .faction-summary-grid{margin-bottom:9px}
+.faction-opener .faction-stats{font-size:6.8pt}
+.faction-opener .faction-stats div{grid-template-columns:54px 1fr;padding:3px 0}
+.faction-opener .faction-overview{font-size:8.5pt;line-height:1.3}
+
+.leader-page .leader-grid{grid-template-columns:1.02fr 1.32fr}
+.leader-page .leader-portrait{min-height:225px}
+.leader-page .leader-portrait img{max-height:230px}
+.leader-page .leader-copy>p{font-size:8.7pt}
+.leader-page .leader-ability{margin-top:7px}
+.leader-page .leader-ability p{font-size:8.1pt}
+.leader-page .order-list{margin-top:9px}
+.leader-page .order{padding:6px 0 5px}
+.leader-page .order h4{font-size:6.8pt}
+.leader-page .order p{font-size:7pt}
+.leader-page .leader-notes{margin-top:8px;font-size:7.2pt;line-height:1.28}
+
+.quick-reference-page .reference-columns{margin-top:5px}
+.quick-reference-page .reference-step{padding:3px 0}
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+.glossary-entry{padding-top:5px;border-top:1px solid var(--line);font-size:7.2pt;line-height:1.26}
+.glossary-entry strong{display:block;margin-bottom:2px;font-family:var(--ui);font-size:6.5pt;letter-spacing:.05em;text-transform:uppercase}
+
+.intentional-blank .page-inner{justify-content:center;align-items:center}
+.intentional-blank .blank-mark{width:32px;border-top:1px solid var(--line)}
+.intentional-blank .blank-note{margin-top:8px;color:#85817a;font-family:var(--ui);font-size:5.8pt;letter-spacing:.13em;text-transform:uppercase}
+.intentional-blank .footer-rule,.intentional-blank .folio{display:none}
+
+.production-document[data-mode="booklet"]{background:#cbc9c4}
+.production-document[data-mode="booklet"] #reader-root{display:none}
+.production-document[data-mode="booklet"] #booklet-root{display:block}
+.production-document[data-mode="booklet"] .spread-sheet{background:#c9c7c2}
+.production-document[data-mode="booklet"] .spread-sheet::after{width:10px;background:linear-gradient(90deg,rgba(0,0,0,.08),transparent 45%,rgba(255,255,255,.12))}
+.production-document[data-mode="booklet"] .imposition-label{display:none}
+
+.production-document.grayscale-preflight #reader-root,
+.production-document.grayscale-preflight #booklet-root{filter:grayscale(1)}
+
+@media screen{
+  #reader-root>.page{margin:0 auto 18px;box-shadow:0 8px 28px rgba(0,0,0,.16)}
+  .production-document[data-mode="booklet"] .spread-sheet{margin:0 auto 18px;box-shadow:0 8px 28px rgba(0,0,0,.16)}
+}
+
+@media print{
+  #reader-root{margin:0}
+  #reader-root>.page{margin:0;box-shadow:none}
+  .production-document[data-mode="booklet"] .spread-sheet{margin:0;box-shadow:none}
+}
+
+
+/* Current publishing mark when the active Rulebook source carries it. */
+.production-flow img[alt="TDS Games publisher mark"]{
+  width:.55in;
+  max-width:.55in;
+  max-height:.7in;
+  height:auto;
+  margin:8px 0 6px;
+  object-fit:contain;
+  filter:none;
+  mix-blend-mode:normal;
+}
+
+
+/* Compact the terminal publication colophon so publisher/imprint lines and
+   the legal playtest notice remain on a single approved reader page without
+   reducing normal Rulebook body type. */
+.page.colophon .production-flow{
+  font-size:7.8pt;
+  line-height:1.22;
+}
+.page.colophon .production-flow p{
+  margin-bottom:4px;
+}
+.page.colophon .production-flow img[alt="TDS Games publisher mark"]{
+  width:.42in;
+  max-width:.42in;
+  max-height:.48in;
+  margin:4px 0;
+}
+
+.page.colophon .colophon-block{max-width:4.35in}
+.page.colophon .colophon-block .flavor-overline{
+  margin-bottom:8px;
+  font-size:16pt;
+  line-height:1.05;
+}
+.page.colophon .colophon-block h2{
+  margin-bottom:8px;
+  font-size:22pt;
+  line-height:1.02;
+}
+.page.colophon .colophon-source p{
+  margin-bottom:4px;
+  font-size:8pt;
+  line-height:1.24;
+}
+.page.colophon .colophon-source img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:3px 0;
+}
+
+.page.colophon .publication-lockup{
+  display:grid;
+  grid-template-columns:.44in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  margin:3px 0 7px;
+}
+.page.colophon .publication-lockup img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:0;
+}
+.page.colophon .publication-lockup-copy p{
+  margin:0 0 3px;
+}
+.page.colophon .publication-lockup-copy p:last-child{
+  margin-bottom:0;
+}
+.page.colophon .publication-lockup + p{
+  margin-top:5px;
+}
+
+.back-cover .back-publisher-lockup{
+  display:grid;
+  grid-template-columns:.5in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+}
+.back-cover .back-publisher-mark{
+  width:.44in;
+  max-width:.44in;
+  max-height:.52in;
+  margin:0;
+  object-fit:contain;
+}
+.back-cover .back-publisher-copy{
+  min-width:0;
+}
+.back-cover .back-restrictions{
+  margin-top:5px;
+}
+
+.page.colophon .colophon-meta{
+  padding-top:8px;
+  font-size:7pt;
+  line-height:1.3;
+}

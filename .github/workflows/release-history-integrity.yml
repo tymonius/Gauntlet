@@ -16,10 +16,10 @@ on:
       - 'releases/v0.6.3-reconstructed/**'
       - 'releases/v0.6.3-withdrawn/**'
       - 'releases/v0.6.3/**'
-      - 'v0.6.2/**'
+      - 'legacy/public-versions/v0.6.2/**'
       - 'artifacts/v0.6.3/**'
       - 'scripts/build-v062-release.mjs'
-      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   push:
     branches: [main]
@@ -36,10 +36,10 @@ on:
       - 'releases/v0.6.3-reconstructed/**'
       - 'releases/v0.6.3-withdrawn/**'
       - 'releases/v0.6.3/**'
-      - 'v0.6.2/**'
+      - 'legacy/public-versions/v0.6.2/**'
       - 'artifacts/v0.6.3/**'
       - 'scripts/build-v062-release.mjs'
-      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   workflow_dispatch:
 

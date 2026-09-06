@@ -1,23 +1,40 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="canonical" href="https://gauntlet.run/rulebook/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/rulebook/" />
+  <meta property="og:title" content="Gauntlet v0.7.1 Browser Rulebook" />
+  <meta property="og:description" content="Read the complete canonical Gauntlet v0.7.1 Rulebook." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1 Browser Rulebook" />
+  <meta name="twitter:description" content="Read the complete canonical Gauntlet v0.7.1 Rulebook." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Read the complete canonical Gauntlet v0.7.0 Rulebook." />
-  <title>Gauntlet v0.7.0 Browser Rulebook</title>
+  <meta name="description" content="Read the complete canonical Gauntlet v0.7.1 Rulebook." />
+  <title>Gauntlet v0.7.1 Browser Rulebook</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="../brand.css" />
@@ -26,18 +43,22 @@
   <link rel="stylesheet" href="publication.css" />
   <link rel="stylesheet" href="leader-portraits.css" />
   <link rel="stylesheet" href="card-anatomy.css" />
-  <link rel="stylesheet" href="../rules-assistant/widget.css" />
+  <link rel="stylesheet" href="../rules-assistant/widget.css?v=20260903-1" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body data-ruleset-mode="released">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="rulebook-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav class="header-actions" aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
-      <a href="/rulebook/" aria-current="page">Rules</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
       <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
       <a href="/card-reference/">Card Reference</a>
@@ -47,20 +68,20 @@
 
   <section class="rulebook-hero">
     <div class="hero-copy">
-      <p class="eyebrow" data-rulebook-eyebrow>Canonical rules · version 0.7.0</p>
+      <p class="eyebrow" data-rulebook-eyebrow>Canonical rules · version 0.7.1</p>
       <h1>Official Browser Rulebook</h1>
       <p class="hero-lede">The complete shared rules and faction systems, presented for comfortable reading at the table or on the go.</p>
       <div class="ruleset-switch" role="group" aria-label="Rulebook ruleset" data-ruleset-switch hidden>
         <button type="button" data-ruleset="released" aria-pressed="true">
           <span>Released</span>
-          <strong>v0.7.0</strong>
+          <strong>v0.7.1</strong>
         </button>
-        <button type="button" data-ruleset="candidate" aria-pressed="false" hidden disabled>
-          <span>Pre-publication view</span>
-          <strong>v0.7.0</strong>
+        <button type="button" data-ruleset="candidate" aria-pressed="false">
+          <span>Release candidate</span>
+          <strong data-candidate-version>v0.7.1 candidate</strong>
         </button>
       </div>
-      <p class="ruleset-note" data-candidate-rules-note hidden>Published v0.7.0 Rulebook is current.</p>
+      <p class="ruleset-note" data-candidate-rules-note hidden></p>
       <p class="source-status" data-rulebook-status aria-live="polite">Loading the canonical rulebook…</p>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -68,7 +89,7 @@
     </div>
     <div class="hero-actions" aria-label="Rulebook actions">
       <button type="button" data-open-rules-assistant>Ask the Rules Arbiter</button>
-      <a data-published-booklet href="../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf">Printable booklet</a>
+      <a data-published-booklet href="../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">Printable booklet</a>
     </div>
   </section>
 
@@ -76,7 +97,7 @@
     Contents and search
   </button>
 
-  <main class="rulebook-shell">
+  <main id="main-content" tabindex="-1" class="rulebook-shell">
     <aside id="rulebook-sidebar" class="rulebook-sidebar" data-rulebook-sidebar>
       <form class="rulebook-search" role="search" data-rulebook-search>
         <label for="rulebook-search-input">Search this rulebook</label>
@@ -93,7 +114,7 @@
 
       <div class="source-links">
         <strong data-rulebook-print-heading>Print the released rulebook</strong>
-        <a data-published-booklet href="../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf">Printable booklet</a>
+        <a data-published-booklet href="../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">Printable booklet</a>
         <span data-rulebook-print-note>Print double-sided, flip on the short edge, then fold and saddle stitch.</span>
       </div>
     </aside>
@@ -103,32 +124,45 @@
         <span class="loading-mark" aria-hidden="true">G</span>
         <div>
           <strong>Opening the rulebook</strong>
-          <p>Loading the canonical v0.7.0 rules.</p>
+          <p>Loading the canonical v0.7.1 rules.</p>
         </div>
       </div>
     </article>
   </main>
 
-  <footer>
-    <a class="brand footer-brand" href="/" aria-label="Gauntlet home">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
-    <div>
-      <p data-rulebook-footer-version><strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.</p>
-      <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <noscript>
     <div class="noscript">
       JavaScript is required for the browser-rendered rulebook. Use the
-      <a href="../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf">printable booklet</a> instead.
+      <a href="../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">printable booklet</a> instead.
     </div>
   </noscript>
 
-  <script type="module" src="../rules-assistant/widget.js"></script>
+  <script type="module" src="../rules-assistant/widget.js?v=20260903-1"></script>
   <script type="module" src="app.js"></script>
+  <script type="module" src="mobile-toc-focus.js?v=20260903-1"></script>
   <script type="module" src="card-anatomy.js"></script>
   <script type="module" src="leader-portraits.js"></script>
 </body>

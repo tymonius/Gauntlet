@@ -17,7 +17,7 @@
 
     document.addEventListener("click", handleDocumentClick);
     document.addEventListener("keydown", handleKeydown);
-    backdrop.addEventListener("click", closePreview);
+    backdrop.addEventListener("click", () => closePreview());
 
     if (typeof mobileQuery.addEventListener === "function") {
       mobileQuery.addEventListener("change", syncViewportMode);
@@ -38,7 +38,44 @@
   }
 
   function handleKeydown(event) {
+    if (event.key === "Tab" && open) {
+      trapModalFocus(event);
+      return;
+    }
     if (event.key === "Escape" && open) closePreview();
+  }
+
+  function trapModalFocus(event) {
+    if (!preview) return;
+
+    const focusable = Array.from(preview.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+    )).filter(element => element instanceof HTMLElement && !element.hidden && element.getClientRects().length > 0);
+
+    if (!focusable.length) {
+      event.preventDefault();
+      preview.focus?.({ preventScroll: true });
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (!preview.contains(active)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+      return;
+    }
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus({ preventScroll: true });
+      return;
+    }
+    if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+    }
   }
 
   function openPreview() {
@@ -66,7 +103,7 @@
     preview.querySelector(".mobile-reference-preview-close")?.focus({ preventScroll: true });
   }
 
-  function closePreview() {
+  function closePreview(restoreFocus = true) {
     if (!preview) return;
 
     open = false;
@@ -75,6 +112,7 @@
     document.body.classList.remove("mobile-reference-preview-open");
     preview.setAttribute("aria-hidden", mobileQuery.matches ? "true" : "false");
 
+    if (!restoreFocus) return;
     const selectedRow = document.querySelector(".reference-row.selected");
     if (selectedRow instanceof HTMLElement) {
       selectedRow.focus({ preventScroll: true });
@@ -90,7 +128,7 @@
     closeButton.className = "mobile-reference-preview-close";
     closeButton.setAttribute("aria-label", "Close card details");
     closeButton.textContent = "×";
-    closeButton.addEventListener("click", closePreview);
+    closeButton.addEventListener("click", () => closePreview());
     preview.prepend(closeButton);
     return closeButton;
   }
@@ -99,7 +137,7 @@
     if (!preview) return;
 
     if (!mobileQuery.matches) {
-      closePreview();
+      closePreview(false);
       preview.removeAttribute("role");
       preview.removeAttribute("aria-modal");
       preview.removeAttribute("aria-hidden");

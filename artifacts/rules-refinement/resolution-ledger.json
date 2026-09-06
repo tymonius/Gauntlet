@@ -1,0 +1,214 @@
+{
+  "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
+  "updatedAt": "2026-09-06T08:11:05.017Z",
+  "entries": [
+    {
+      "id": "available-choice-rule-v071",
+      "status": "resolved",
+      "rootCause": "source_specificity",
+      "interactionIds": [
+        "e51db4e3-04d8-4b64-8ce2-16cccad37425",
+        "62972827-f4ac-4988-afe2-072a0ca2a15c",
+        "be288392-b248-4d91-afed-1bbebf368f53",
+        "bb4dd8aa-c23e-4dd6-bc12-5f7fc0917b55",
+        "f9ae058b-e4de-4140-bd1f-189879e77678"
+      ],
+      "caseIds": [
+        "impossible-choice-generic",
+        "penance-empty-hand-provisional"
+      ],
+      "resolutionSurface": "rules_authority",
+      "summary": "Added the shared rule that a required choice may select only an actually available option; Penance and Property Dues inherit that rule from current game authority.",
+      "resolvedAt": "2026-09-05T21:07:18.000Z",
+      "binding": {
+        "pullRequest": 1463,
+        "commit": "d4fb1c52a9e73c4167f0748bb096d6699e13c114",
+        "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    },
+    {
+      "id": "neutral-observers-fog-order-v071",
+      "status": "resolved",
+      "rootCause": "source_specificity",
+      "interactionIds": [
+        "d1596d7d-5c81-4c3b-9bdd-e227137231de"
+      ],
+      "caseIds": [
+        "neutral-observers-fog-of-war-order"
+      ],
+      "resolutionSurface": "rules_authority",
+      "summary": "Current v0.7.1 card authority explicitly states that Neutral Observers overrides other Gambit-order effects but does not change Tactic order, so Fog may still determine Tactic order.",
+      "resolvedAt": "2026-09-05T21:07:18.000Z",
+      "binding": {
+        "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    },
+    {
+      "id": "specific-over-general-destination-precedence-v071",
+      "status": "resolved",
+      "rootCause": "source_specificity",
+      "interactionIds": [
+        "68f45477-391b-4024-8423-7f12193afc43"
+      ],
+      "caseIds": [
+        "redemption-attrition-destination-conflict"
+      ],
+      "resolutionSurface": "rules_authority",
+      "summary": "Current v0.7.1 authority resolves the Redemption and Attrition destination conflict through the Golden Rule that the more specific conflicting effect controls.",
+      "resolvedAt": "2026-09-05T21:07:18.000Z",
+      "binding": {
+        "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "e611c48e-1eb7-44dc-b5ba-eb7d80d01ddb",
+        "13c19e69-b302-4e9b-b171-ee43aab0dfe8",
+        "c042abf8-cf9e-4849-8888-c797ec4dfe6f"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "PR #1435 fixed the reviewed Gambit/Tactic destination follow-up sequence by preserving terse referents, promoting explicit destination authority, and requiring concrete destination values; #1441 generalized recency-aware conversational retrieval.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "1d78ba0c-8e2e-437c-97a8-b1caeb39589e"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "PR #1435 fixed the exact reviewed destination follow-up chain, including terse corrections such as 'no, their destinations'; #1441 generalized the conversation-focus behavior.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-completeness-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "0c558191-c1d6-4f53-a717-63d254102939"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The opening Gambit/Tactic distinction turn belongs to the exact reviewed destination conversation fixed and regression-covered by PR #1435.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-other-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "529b85e1-37a2-4532-8116-0717fa1d2a17"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "This reviewed follow-up is part of the same exact Gambit/Tactic destination conversation fixed and regression-covered by PR #1435.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "deterministic-out-of-scope-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "f69aeda4-5334-415d-b396-122fb3ceaaea",
+        "58803435-2351-465e-9dbc-4cccce9ec8b0",
+        "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
+        "6372e467-23a7-420e-8717-4685d50226e5",
+        "487240d8-48e2-4936-b840-06307d498211",
+        "4506c963-531c-46c5-880f-7b7027824878"
+      ],
+      "caseIds": [
+        "scope-strategy-lore-costume-version-history"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Added a deterministic current-v0.7.1 scope precheck for the reviewed strategy, lore/history, costume/visual-design, morality/design, and version-history request families. These requests now return source-free out_of_scope results before corpus retrieval or model-budget reservation, while deck-construction and Leader rules questions continue to the canonical Rules Arbiter.",
+      "resolvedAt": "2026-09-06T01:54:00.000Z",
+      "binding": {
+        "commit": "fcd901d702aaa4b9136cb36e417aecb6afbe2e93",
+        "behaviorRevision": "v071-scope-20260905-1"
+      }
+    },
+    {
+      "id": "explicit-classification-discipline-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "29c07af4-a646-4ded-86d5-f1a55353297c",
+        "49bca11f-0eff-4793-b258-0d973cd9df2b",
+        "0062503d-ec55-4e41-b82e-e3dd5112f279",
+        "d67cc0b1-c2cf-4dfd-930e-9816fee4980b",
+        "e7557f50-6f39-46f3-b83e-960b6e2b291b",
+        "532bca54-b2cc-428b-9c1f-cff785fc1330",
+        "4e443831-6f34-4104-a477-1fe80725b36a",
+        "7ef95ae6-ef18-4e38-ac88-ec0fdc9c8aee",
+        "7fbccdc7-1cf6-47d4-8a56-953ee8515c4f",
+        "bd5ca08e-3dcd-42bc-b361-3ded8d9c9969",
+        "f12b3b83-cfe5-4635-9e7e-55cee81e0493",
+        "47900d8a-cd15-4398-9c3b-1b90aa00595d",
+        "f50d4e37-3c24-4e37-8a8a-cab58a17cc1f",
+        "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
+        "ab92804c-691b-4857-aee8-539c7efccfd3",
+        "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
+        "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+      ],
+      "caseIds": [
+        "reviewed-correct-should-be-explicit"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "These reviewed interactions had correct substantive rulings, current authority, sufficient retrieval, and only an overly weak classification. PR #1419 tightened the current v0.7.1 explicit-versus-inferred boundary and added deterministic classification-contract coverage; later behavior revisions retain that boundary.",
+      "resolvedAt": "2026-09-04T20:50:44.000Z",
+      "binding": {
+        "pullRequest": 1419,
+        "commit": "0a46040320ee801da299da02d89c34e3aedcfc92",
+        "behaviorRevision": "v071-qa-20260903-10"
+      }
+    },
+    {
+      "id": "intelligence-surveillance-interference-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Force the complete v0.7.1 Surveillance/Interference procedure into Intelligence interaction retrieval and require the Arbiter to preserve prerequisites, separate costs and timings, destinations, replacement/pass choices, revision rights, and no-reopen rules.",
+      "interactionIds": [
+        "121ea8a8-717e-454c-a60f-491ef6f2e52f"
+      ],
+      "resolvedAt": "2026-09-06T08:11:05.017Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-1"
+      }
+    }
+  ]
+}

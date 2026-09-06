@@ -18,17 +18,28 @@ const EXPECTED_CHOICES = [
   ["inquisition", "witch-hunter"]
 ] as const;
 
+const FACTION_RULEBOOK_CHAPTERS = [
+  ["military", "13-military", "# 13. Military"],
+  ["diplomats", "14-diplomats", "# 14. Diplomats"],
+  ["financiers", "15-financiers", "# 15. Financiers"],
+  ["intelligence", "16-intelligence", "# 16. Intelligence"],
+  ["mystics", "17-mystics", "# 17. Mystics"],
+  ["inquisition", "18-inquisition", "# 18. Inquisition"]
+] as const;
+
 describe("standalone new-player onboarding", () => {
-  it("provides a public four-step path with no event-session dependency", () => {
+  it("provides a public five-step path with no event-session dependency", () => {
     const html = read("start/index.html");
     const app = read("start/app.js");
 
     expect(html).toContain("Your first game");
-    expect(html).toContain("Step 1 · Understand");
-    expect(html).toContain("Step 2 · Choose");
-    expect(html).toContain("Step 3 · Learn");
-    expect(html).toContain("Step 4 · Print");
-    expect(html.match(/class=\"intro-card/g)).toHaveLength(9);
+    expect(html).toContain("Step 1 · Know the goal");
+    expect(html).toContain("Step 2 · Choose a side");
+    expect(html).toContain("Step 3 · Learn to play");
+    expect(html).toContain("Step 4 · Learn your faction");
+    expect(html).toContain("Step 5 · Play");
+    expect(html).toContain('id="learnFaction"');
+    expect(html).toContain('id="factionLesson"');
     expect(html.match(/name=\"faction\"/g)).toHaveLength(6);
 
     expect(html).not.toContain("displayName");
@@ -53,21 +64,69 @@ describe("standalone new-player onboarding", () => {
     }
   });
 
-  it("provides a non-empty first-game tip for every recommended starter Deck", () => {
+  it("keeps starter Deck selection simple and provides Leader-specific first-game guidance", () => {
     const app = read("start/app.js");
-    const deckbuilderStarter = read("deckbuilder/starter-decks.js");
+
+    expect(app).not.toContain("starter-first-game-tips.json");
+    expect(app).toContain("Gauntlet players can build their own Decks from a large pool of cards.");
+    expect(app).toContain("this recommended Deck is already built for your chosen Leader");
+    expect(app.match(/firstGame:\s*\[/g)).toHaveLength(EXPECTED_CHOICES.length);
+    expect(app).toContain("leader.firstGame.map");
+
+    for (const [, leader] of EXPECTED_CHOICES) {
+      expect(app).toContain(`id: "${leader}"`);
+    }
+  });
+
+  it("keeps faction lessons conceptual and distinguishes Run the Gauntlet from faction victories", () => {
+    const html = read("start/index.html");
+    const app = read("start/app.js");
+    const css = read("start/styles.css");
+
+    expect(html).toContain("How it fits into Gauntlet");
+    expect(html).toContain("Your ways to win");
+    expect(html).toContain('<ul id="factionLessonSteps"></ul>');
+    expect(app.match(/fit:\s*\[/g)).toHaveLength(6);
+    expect(app.match(/victory:\s*\{/g)).toHaveLength(6);
+    expect(app).toContain('<strong>Run the Gauntlet</strong>');
+    expect(app).toContain('<strong>Faction victory</strong>');
+    expect(app).not.toContain("Shared victory");
+    expect(app).not.toContain("battle involving you");
+    expect(css).toContain("#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}");
+    expect(css).toContain("[hidden]{display:none!important}");
+    expect(css).toContain(".faction-lesson-hero::after");
+  });
+
+  it("uses faction guides for exploration and exact rulebook chapters after the lesson", () => {
+    const html = read("start/index.html");
+    const app = read("start/app.js");
+    const rulebook = read("rulebook/player-facing/current-rulebook.md");
+
+    expect(app).toContain('el.factionGuideLink.href = `../rulebook/#${RULEBOOK_FACTION_ANCHORS[state.factionId]}`');
+    expect(app).toContain('el.factionGuideLink.textContent = `Open the ${faction.name} rulebook chapter ↗`');
+    expect(html).toContain('id="factionGuideLink" class="text-link" href="../rulebook/"');
+
+    for (const [factionId, anchor, heading] of FACTION_RULEBOOK_CHAPTERS) {
+      expect(html).toContain(`href="../factions/${factionId}/"`);
+      expect(app).toContain(`${factionId}: "${anchor}"`);
+      expect(rulebook).toContain(heading);
+    }
+  });
+
+  it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
+    const starter = read("deckbuilder/starter-decks.js");
     const authority = JSON.parse(read("game-data/current-game.json"));
-    const catalog = authority.starterDecks;
-    const tipCatalog = JSON.parse(read("deckbuilder/starter-first-game-tips.json"));
-    const tips = tipCatalog.tips || {};
+    const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === "mystics");
 
-    expect(app).toContain("starter-first-game-tips.json");
-    expect(deckbuilderStarter).toContain('const STARTER_TIP_SOURCE = "starter-first-game-tips.json"');
-    expect(Object.keys(tips)).toHaveLength(EXPECTED_CHOICES.length);
+    expect(starter).toContain("Recommended Rite order");
+    expect(starter).toContain("recommendedRiteNames(preset)");
+    expect(starter).toContain("starter-print-rites");
+    expect(mystics).toHaveLength(2);
 
-    for (const deck of catalog.decks) {
-      expect(typeof tips[deck.id]).toBe("string");
-      expect(tips[deck.id].trim().length).toBeGreaterThan(0);
+    for (const deck of mystics) {
+      expect(deck.selectedRites).toHaveLength(3);
+      expect(deck.recommendedRiteOrder).toHaveLength(3);
+      expect([...deck.recommendedRiteOrder].sort()).toEqual([...deck.selectedRites].sort());
     }
   });
 
@@ -94,13 +153,13 @@ describe("standalone new-player onboarding", () => {
     expect(deckbuilder.indexOf("starter-decks.js")).toBeLessThan(deckbuilder.indexOf("starter-handoff.js"));
   });
 
-  it("keeps the current v0.7.0 start path as the homepage first-time call to action", () => {
+  it("keeps the current v0.7.1 start path as the homepage first-time call to action", () => {
     const homepage = read("index.html");
     expect(homepage).toContain('<a href="/start/">Start</a>');
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
-    expect(homepage).toContain("Current canonical playtest edition · v0.7.0");
+    expect(homepage).toContain("Current canonical playtest edition · v0.7.1");
     expect(homepage).toContain("New-player setup");
-    expect(homepage).toContain("Choose your first deck");
+    expect(homepage).toContain("Choose your first side");
     expect(homepage).not.toContain('href="v0.6.2/start/"');
   });
 

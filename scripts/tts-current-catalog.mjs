@@ -1,7 +1,9 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-import { dirname, extname, join, relative, resolve, sep } from 'node:path';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { resolveFirstArtwork } from '../card-design/card-artwork-resolver.js';
+import { resolveArtDirection } from '../game-data/art-direction.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const CURRENT_ALIAS_ROOT = join(ROOT, 'tts', 'generated', 'current');
@@ -25,9 +27,7 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
-const ART_EXTENSIONS = new Set(['.png', '.webp', '.jpg', '.jpeg']);
 const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
-const TTS_RELEASE_TARGET_SOURCE = 'config/tts-release-target.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
 
@@ -89,36 +89,26 @@ export async function resolvePublishedTtsRelease() {
 // published release. Its release identity is explicit so current-game source
 // provenance can remain pinned to the approved source bundle until cutover.
 export async function resolveCurrentTtsRelease() {
-  const [authority, published, target] = await Promise.all([
+  const [authority, published] = await Promise.all([
     loadCurrentGameAuthority(),
     resolvePublishedTtsRelease(),
-    readJson(TTS_RELEASE_TARGET_SOURCE),
   ]);
   const sourceVersion = String(authority.version || '').trim();
-  const version = String(target.releaseTag || '').trim();
+  const displayVersion = String(authority.displayVersion || sourceVersion).trim();
 
-  if (target.schemaVersion !== 1) throw new Error(`${TTS_RELEASE_TARGET_SOURCE} has an unsupported schemaVersion.`);
-  if (!version) throw new Error(`${TTS_RELEASE_TARGET_SOURCE} does not declare releaseTag.`);
   if (!sourceVersion) throw new Error(`${CURRENT_GAME_SOURCE} does not declare a current version.`);
-  if (String(target.currentGameAuthority || '').replace(/^\/+/, '') !== CURRENT_GAME_SOURCE) {
-    throw new Error(`${TTS_RELEASE_TARGET_SOURCE} must target ${CURRENT_GAME_SOURCE}.`);
-  }
-  if (String(target.sourceVersion || '').trim() !== sourceVersion) {
-    throw new Error(`TTS release target sourceVersion ${target.sourceVersion || 'missing'} does not match current-game source ${sourceVersion}.`);
-  }
 
   return Object.freeze({
-    version,
-    displayVersion: String(target.displayVersion || version),
+    version: sourceVersion,
+    displayVersion,
     sourceVersion,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     starterDecksSource: CURRENT_GAME_SOURCE,
     releasePackageRoot: 'game-data',
-    outputRoot: join(ROOT, 'tts', 'generated', version),
+    outputRoot: join(ROOT, 'tts', 'generated', sourceVersion),
     currentGameSource: CURRENT_GAME_SOURCE,
     authorityProvenance: Object.freeze({ ...(authority.provenance || {}) }),
-    ttsReleaseTargetSource: TTS_RELEASE_TARGET_SOURCE,
-    targetStatus: String(target.status || ''),
+    targetStatus: String(authority.status || ''),
     publishedVersion: published.version,
     lifecycleSource: LIFECYCLE_SOURCE,
     githubReleaseContractSource: GITHUB_RELEASE_CONTRACT_SOURCE,
@@ -163,7 +153,11 @@ export async function loadCurrentLeaders() {
       faction: factionId,
       factionLabel: leader.factionLabel || factionId,
       canonicalImage: leader.image || null,
-      artDirection: authority.artDirection?.[`${factionId}-${id}`] || authority.artDirection?.[id] || leader.artDirection || null,
+      artDirection: resolveArtDirection(
+        authority.visualPolicy,
+        authority.artDirection || {},
+        authority.artDirection?.[`${factionId}-${id}`] ? `${factionId}-${id}` : id,
+      ),
       source: CURRENT_GAME_SOURCE,
     }));
   }
@@ -222,49 +216,18 @@ function territoryFromCanonical(territory, source) {
   };
 }
 
-async function walkImages(directory, files = []) {
-  let entries;
+async function repositoryArtworkExists(source) {
+  const relativeSource = String(source || '').replace(/^\/+/, '');
+  if (!relativeSource) return false;
   try {
-    entries = await readdir(directory, { withFileTypes: true });
+    await access(join(ROOT, relativeSource));
+    return true;
   } catch (error) {
-    if (error.code === 'ENOENT') return files;
+    if (error?.code === 'ENOENT') return false;
     throw error;
   }
-
-  for (const entry of entries) {
-    const fullPath = join(directory, entry.name);
-    if (entry.isDirectory()) await walkImages(fullPath, files);
-    else if (ART_EXTENSIONS.has(extname(entry.name).toLowerCase())) files.push(fullPath);
-  }
-  return files;
 }
 
-function artworkKeys(file) {
-  const base = slugify(file.slice(0, -extname(file).length).split(sep).at(-1));
-  const keys = new Set([base]);
-  keys.add(base.replace(/-(?:alt|alternate|v\d+|\d+)$/, ''));
-  return [...keys].filter(Boolean);
-}
-
-async function buildArtworkIndex() {
-  const files = await walkImages(join(ROOT, 'images', 'artwork', 'cards'));
-  const index = new Map();
-  for (const file of files) {
-    for (const key of artworkKeys(file)) {
-      if (!index.has(key)) index.set(key, []);
-      index.get(key).push(file);
-    }
-  }
-  return index;
-}
-
-function chooseArtwork(card, artworkIndex) {
-  const matches = artworkIndex.get(slugify(card.name)) || [];
-  if (!matches.length) return null;
-  const factionFolder = `${sep}${card.faction}${sep}`;
-  const preferred = matches.find((path) => path.includes(factionFolder)) || matches[0];
-  return relative(ROOT, preferred).split(sep).join('/');
-}
 
 function stableCardSort(a, b) {
   const groupDifference = GROUP_ORDER.indexOf(a.faction) - GROUP_ORDER.indexOf(b.faction);
@@ -288,21 +251,20 @@ export async function buildCatalog() {
   const playableCards = gameplay.cards
     .map((card) => ({
       ...playableCardFromCanonical(card, CURRENT_GAME_SOURCE),
-      artDirection: artDirection[card.id] || card.artDirection || null,
+      artDirection: resolveArtDirection(authority.visualPolicy, artDirection, card.id),
     }))
     .sort(stableCardSort);
   const territories = gameplay.territories
     .map((territory) => ({
       ...territoryFromCanonical(territory, CURRENT_GAME_SOURCE),
-      artDirection: artDirection[territory.id] || territory.artDirection || null,
+      artDirection: resolveArtDirection(authority.visualPolicy, artDirection, territory.id),
     }))
     .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
-  const artworkIndex = await buildArtworkIndex();
-  const cardsWithArtwork = playableCards.map((card) => ({
+  const cardsWithArtwork = await Promise.all(playableCards.map(async (card) => ({
     ...card,
-    artwork: chooseArtwork(card, artworkIndex),
-  }));
+    artwork: await resolveFirstArtwork(card, card.faction, repositoryArtworkExists),
+  })));
 
   const ids = [...cardsWithArtwork, ...territories].map((item) => item.id);
   if (new Set(ids).size !== ids.length) throw new Error('Duplicate current-game component IDs detected.');
@@ -329,7 +291,6 @@ export async function buildCatalog() {
       canonicalDataSource: CURRENT_GAME_SOURCE,
       canonicalDataVersion: release.sourceVersion,
       starterDecksSource: release.starterDecksSource,
-      ttsReleaseTargetSource: release.ttsReleaseTargetSource,
     },
     counts,
     playableCards: cardsWithArtwork,
@@ -354,7 +315,6 @@ export async function writeCatalog(catalog) {
     displayVersion: release.displayVersion,
     sourceVersion: release.sourceVersion,
     currentGameAuthority: CURRENT_GAME_SOURCE,
-    ttsReleaseTargetSource: release.ttsReleaseTargetSource,
     publishedVersion: release.publishedVersion,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     canonicalDataVersion: catalog.release.canonicalDataVersion,

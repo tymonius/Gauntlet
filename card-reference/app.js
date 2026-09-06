@@ -1,6 +1,6 @@
+import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
+
 const RULEBOOK_URL = '../rulebook/';
-const CARD_RENDER_WIDTH = 240;
-const CARD_RENDER_HEIGHT = 336;
 const CARD_RENDER_MAX_WIDTH = 420;
 
 const FACTION_LABELS = {
@@ -12,6 +12,32 @@ const FACTION_LABELS = {
   mystics: 'Mystics',
   inquisition: 'Inquisition'
 };
+
+const REFERENCE_TYPE_LABELS = Object.freeze({
+  card: 'Playable card',
+  leader: 'Leader',
+  proposal: 'Proposal',
+  rite: 'Rite',
+  ritual: 'Ritual',
+  reference: 'Reference card',
+  tracker: 'Tracker card',
+  ledger: 'Ledger',
+  deed: 'Deed card',
+  territory: 'Territory'
+});
+
+const TYPE_SORT_ORDER = Object.freeze([
+  'card',
+  'leader',
+  'proposal',
+  'rite',
+  'ritual',
+  'reference',
+  'tracker',
+  'ledger',
+  'deed',
+  'territory'
+]);
 
 const state = {
   entries: [],
@@ -37,18 +63,27 @@ async function init() {
     const currentGame = await loadCurrentGame();
     state.version = currentGame.displayVersion;
     document.title = `Gauntlet ${state.version} Card Reference`;
+    const otherComponents = [
+      ...currentGame.sharedComponents,
+      ...currentGame.components
+    ].filter(component => component.cardLike);
+
     state.entries = [
       ...currentGame.cards.map(normalizeCard),
+      ...currentGame.leaders.map(normalizeLeader),
+      ...otherComponents.map(component => normalizeComponent(component, currentGame)),
       ...currentGame.territories.map(normalizeTerritory)
     ].sort(sortEntries);
 
     applyHashSelection();
 
     const cardCount = state.entries.filter(entry => entry.type === 'card').length;
+    const otherCardCount = state.entries.filter(entry => entry.type !== 'card' && entry.type !== 'territory').length;
     const territoryCount = state.entries.filter(entry => entry.type === 'territory').length;
     el.cardTotal.textContent = cardCount;
+    el.otherCardTotal.textContent = otherCardCount;
     el.territoryTotal.textContent = territoryCount;
-    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded from current-game authority`;
+    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${otherCardCount} other cards + ${territoryCount} Territories loaded from current-game authority`;
     el.app.hidden = false;
     render();
   } catch (error) {
@@ -76,23 +111,129 @@ function normalizeCard(card) {
     uniqueRule: card.unique_rule || '',
     sections: normalizeEffects(card.effects),
     rulesNotes: normalizeNotes(card.rules_notes),
-    rendererUrl: `../card-design/card-review-render.html?card=${encodeURIComponent(card.id)}`
+    orientation: 'portrait',
+    faces: [{ label: 'Card', orientation: 'portrait', rendererUrl: buildFaceRendererUrl(`card:${card.id}`) }],
+    rendererUrl: buildFaceRendererUrl(`card:${card.id}`)
   };
 }
 
 function normalizeTerritory(territory) {
   const arena = Boolean(territory.arena) || String(territory.type).toLowerCase() === 'arena';
+  const rendererUrl = buildFaceRendererUrl(`territory:${territory.id}`);
   return {
     id: territory.id || `territory-${slugify(territory.name)}`,
     type: 'territory',
+    categoryLabel: arena ? 'Arena' : 'Territory',
     name: territory.name,
     faction: 'territory',
     factionLabel: arena ? 'Arena' : 'Territory',
     arena,
     sections: normalizeEffects(territory.effects, 'Effect'),
     rulesNotes: normalizeNotes(territory.rules_notes),
-    rendererUrl: `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`
+    orientation: 'landscape',
+    faces: [{ label: arena ? 'Arena' : 'Territory', orientation: 'landscape', rendererUrl }],
+    rendererUrl
   };
+}
+
+function normalizeLeader(leader) {
+  const faction = slugify(leader.faction || 'neutral');
+  const faceId = `leader:${faction}-${leader.id}`;
+  const rendererUrl = buildFaceRendererUrl(faceId);
+  return {
+    id: `leader-${faction}-${leader.id}`,
+    type: 'leader',
+    categoryLabel: REFERENCE_TYPE_LABELS.leader,
+    name: leader.name,
+    faction,
+    factionLabel: leader.factionLabel || FACTION_LABELS[faction] || faction,
+    sections: {},
+    rulesNotes: [],
+    searchText: JSON.stringify(leader),
+    orientation: 'portrait',
+    faces: [{ label: 'Leader', orientation: 'portrait', rendererUrl }],
+    rendererUrl
+  };
+}
+
+function normalizeComponent(component, currentGame) {
+  const type = componentTypeForFamily(component.family);
+  if (!type) throw new Error(`Unsupported card-like component family ${component.family} for ${component.id}.`);
+
+  const faction = slugify(component.faction || 'neutral');
+  const orientation = componentRenderOrientation(component);
+  const faces = componentFaces(component, orientation);
+  const linkedData = linkedComponentData(component, currentGame);
+
+  return {
+    id: `component-${component.id}`,
+    type,
+    categoryLabel: REFERENCE_TYPE_LABELS[type],
+    name: component.name,
+    faction,
+    factionLabel: faction === 'neutral' ? 'Universal' : (FACTION_LABELS[faction] || faction),
+    sections: {},
+    rulesNotes: [],
+    searchText: JSON.stringify({ component, linkedData }),
+    faces,
+    rendererUrl: faces[0].rendererUrl
+  };
+}
+
+function componentTypeForFamily(family) {
+  return ({
+    'proposal-treaty-card': 'proposal',
+    'rite-card': 'rite',
+    'ritual-card': 'ritual',
+    'reference-card': 'reference',
+    tracker: 'tracker',
+    ledger: 'ledger',
+    'deed-card': 'deed'
+  })[family] || '';
+}
+
+function componentRenderOrientation(component) {
+  return component.family === 'deed-card' ? 'landscape' : 'portrait';
+}
+
+function componentFaces(component, orientation = 'portrait') {
+  const face = (label, side = 'front') => ({
+    label,
+    orientation,
+    rendererUrl: buildFaceRendererUrl(`component:${component.id}:${side}`)
+  });
+
+  if (component.family === 'proposal-treaty-card') {
+    return [face('Proposal'), face(component.reverse || 'Treaty Article', 'reverse')];
+  }
+  if (component.family === 'rite-card') {
+    return [face('Rite'), face(component.reverse || 'Completed', 'reverse')];
+  }
+  if (component.family === 'ritual-card') {
+    return [face('Ritual'), face('Ritual back', 'reverse')];
+  }
+  if (component.family === 'reference-card') {
+    return [face('Front'), face(component.reverse || 'Reverse', 'reverse')];
+  }
+
+  return [face(REFERENCE_TYPE_LABELS[componentTypeForFamily(component.family)] || 'Card')];
+}
+
+function linkedComponentData(component, currentGame) {
+  if (component.family === 'proposal-treaty-card') {
+    const id = component.id.replace(/^diplomats-proposal-/, '');
+    return currentGame.proposals.find(proposal => proposal.id === id) || null;
+  }
+  if (component.family === 'rite-card') {
+    const id = String(component.renderSource?.componentId || component.id.replace(/^mystics-rite-/, '')).trim();
+    return currentGame.mystics?.rites?.find(rite => rite.id === id) || null;
+  }
+  if (component.family === 'ritual-card') return currentGame.mystics?.ritual || null;
+  return null;
+}
+
+function buildFaceRendererUrl(faceId) {
+  return `../card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
 }
 
 function normalizeEffects(effects, unlabeledName = 'Text') {
@@ -115,7 +256,7 @@ function normalizeNotes(notes) {
 function cacheElements() {
   for (const id of [
     'app', 'dataStatus', 'filters', 'searchInput', 'typeFilter', 'factionFilter',
-    'costFilter', 'clearFilters', 'cardTotal', 'territoryTotal', 'resultCount',
+    'costFilter', 'clearFilters', 'cardTotal', 'otherCardTotal', 'territoryTotal', 'resultCount',
     'resultSummary', 'resultList', 'preview'
   ]) el[id] = document.getElementById(id);
 }
@@ -161,20 +302,25 @@ function clearFilters() {
 
 function syncFilterAvailability() {
   const territoriesOnly = state.type === 'territory';
+  const costRelevant = state.type === 'all' || state.type === 'card';
+
   if (territoriesOnly) {
     state.faction = 'all';
-    state.cost = 'all';
     el.factionFilter.value = 'all';
+  }
+  if (!costRelevant) {
+    state.cost = 'all';
     el.costFilter.value = 'all';
   }
+
   el.factionFilter.disabled = territoriesOnly;
-  el.costFilter.disabled = territoriesOnly;
+  el.costFilter.disabled = !costRelevant;
 }
 
 function filteredEntries() {
   return state.entries.filter(entry => {
     if (state.type !== 'all' && entry.type !== state.type) return false;
-    if (state.faction !== 'all' && (entry.type !== 'card' || entry.faction !== state.faction)) return false;
+    if (state.faction !== 'all' && (entry.type === 'territory' || entry.faction !== state.faction)) return false;
     if (state.cost !== 'all' && (entry.type !== 'card' || entry.cost !== Number(state.cost))) return false;
     if (!state.query) return true;
 
@@ -186,7 +332,8 @@ function filteredEntries() {
       entry.uniqueRule || '',
       ...Object.keys(entry.sections),
       ...Object.values(entry.sections),
-      ...(entry.rulesNotes || [])
+      ...(entry.rulesNotes || []),
+      entry.searchText || ''
     ].join(' ').toLowerCase();
 
     return searchable.includes(state.query);
@@ -200,7 +347,7 @@ function render() {
 
   if (!entries.length) {
     el.resultList.className = 'reference-list empty-state';
-    el.resultList.textContent = 'No cards or Territories match the current filters.';
+    el.resultList.textContent = 'No cards, components, or Territories match the current filters.';
     renderPreview(null);
     return;
   }
@@ -214,13 +361,13 @@ function render() {
     row.type = 'button';
     row.className = `reference-row${entry.id === state.selectedId ? ' selected' : ''}`;
     row.dataset.faction = entry.faction;
-    row.setAttribute('role', 'option');
-    row.setAttribute('aria-selected', String(entry.id === state.selectedId));
+    if (entry.id === state.selectedId) row.setAttribute('aria-current', 'true');
     row.innerHTML = `
       <span>
         <span class="reference-row-title">${escapeHtml(entry.name)}</span>
         <span class="reference-row-meta">
           <span class="pill">${escapeHtml(entry.factionLabel)}</span>
+          ${entry.type !== 'card' && entry.type !== 'territory' ? `<span class="pill">${escapeHtml(entry.categoryLabel)}</span>` : ''}
           ${entry.type === 'card' ? `<span class="pill">Cost ${entry.cost}</span>` : ''}
         </span>
       </span>
@@ -236,17 +383,22 @@ function render() {
 function buildResultSummary() {
   const parts = [];
   if (state.query) parts.push(`matching “${state.query}”`);
-  if (state.type !== 'all') parts.push(state.type === 'card' ? 'playable cards only' : 'Territories only');
+  if (state.type !== 'all') parts.push(`${REFERENCE_TYPE_LABELS[state.type] || state.type} only`);
   if (state.faction !== 'all') parts.push(FACTION_LABELS[state.faction] || state.faction);
   if (state.cost !== 'all') parts.push(`cost ${state.cost}`);
-  return parts.length ? parts.join(' · ') : `All ${state.version} playable cards and Territories.`;
+  return parts.length ? parts.join(' · ') : `All ${state.version} cards and Territories.`;
 }
 
 function selectEntry(id) {
+  const restoreResultFocus = document.activeElement instanceof HTMLElement
+    && document.activeElement.classList.contains('reference-row');
   state.selectedId = id;
   const nextHash = `#${encodeURIComponent(id)}`;
   if (window.location.hash !== nextHash) history.replaceState(null, '', nextHash);
   render();
+  if (restoreResultFocus) {
+    el.resultList.querySelector('.reference-row.selected')?.focus({ preventScroll: true });
+  }
 }
 
 function applyHashSelection() {
@@ -262,9 +414,18 @@ function renderPreview(entry) {
   if (!entry) {
     el.preview.className = 'reference-preview empty-state';
     delete el.preview.dataset.faction;
-    el.preview.textContent = 'Select a result to view its full card.';
+    el.preview.removeAttribute('aria-label');
+    el.preview.textContent = 'Select a result to view its complete production component.';
     return;
   }
+
+  const faces = entry.faces?.length ? entry.faces : [{ label: 'Front', orientation: entry.orientation || 'portrait', rendererUrl: entry.rendererUrl }];
+  const activeFace = faces[0];
+  const kicker = entry.type === 'territory'
+    ? (entry.arena ? 'Arena' : 'Territory')
+    : entry.type === 'card'
+      ? `${entry.factionLabel} card`
+      : `${entry.factionLabel} · ${entry.categoryLabel}`;
 
   el.preview.className = 'reference-preview rendered-preview';
   el.preview.dataset.faction = entry.faction;
@@ -272,15 +433,28 @@ function renderPreview(entry) {
   el.preview.innerHTML = `
     <div class="rendered-card-header">
       <div>
-        <p class="preview-kicker">${entry.type === 'territory' ? (entry.arena ? 'Arena' : 'Territory') : `${escapeHtml(entry.factionLabel)} card`}</p>
+        <p class="preview-kicker">${escapeHtml(kicker)}</p>
         <h3>${escapeHtml(entry.name)}</h3>
       </div>
       ${entry.type === 'card' ? `<span class="pill rendered-card-cost">Cost ${entry.cost}</span>` : ''}
     </div>
+    ${faces.length > 1 ? `
+      <div class="preview-face-switch" role="group" aria-label="${escapeHtml(entry.name)} faces">
+        ${faces.map((face, index) => `
+          <button
+            type="button"
+            class="button secondary face-toggle${index === 0 ? ' active' : ''}"
+            data-face-index="${index}"
+            aria-pressed="${index === 0 ? 'true' : 'false'}"
+          >${escapeHtml(face.label)}</button>
+        `).join('')}
+      </div>
+    ` : ''}
     <div class="render-stage-shell" data-render-stage>
       <iframe
         class="rendered-card-frame"
-        src="${escapeHtml(entry.rendererUrl)}"
+        src="${escapeHtml(activeFace.rendererUrl)}"
+        data-render-orientation="${escapeHtml(activeFace.orientation || entry.orientation || 'portrait')}"
         title="${escapeHtml(entry.name)} complete rendered card"
         loading="eager"
         scrolling="no"
@@ -288,15 +462,38 @@ function renderPreview(entry) {
     </div>
     <div class="preview-actions">
       <button id="copyLink" class="button secondary" type="button">Copy direct link</button>
-      <a class="button secondary" href="${escapeHtml(entry.rendererUrl)}" target="_blank" rel="noopener">Open standalone render</a>
+      <a id="standaloneRender" class="button secondary" href="${escapeHtml(activeFace.rendererUrl)}" target="_blank" rel="noopener">Open standalone render</a>
       <a class="button secondary" href="${RULEBOOK_URL}">Open Browser Rulebook</a>
       <a class="button secondary" href="../deckbuilder/">Open Deckbuilder</a>
     </div>
-    <p class="preview-source">Complete card face rendered with the shared production card pipeline and current-game authority.</p>
+    <p class="preview-source">Complete production component rendered with the shared card pipeline and current-game authority.</p>
   `;
 
   document.getElementById('copyLink')?.addEventListener('click', copyDirectLink);
+  el.preview.querySelectorAll('[data-face-index]').forEach(button => {
+    button.addEventListener('click', () => switchPreviewFace(entry, Number(button.dataset.faceIndex)));
+  });
   installRenderScaling();
+}
+
+function switchPreviewFace(entry, faceIndex) {
+  const faces = entry.faces?.length ? entry.faces : [];
+  const face = faces[faceIndex];
+  if (!face) return;
+
+  const frame = el.preview.querySelector('.rendered-card-frame');
+  const standalone = document.getElementById('standaloneRender');
+  if (frame) {
+    frame.src = face.rendererUrl;
+    frame.dataset.renderOrientation = face.orientation || entry.orientation || 'portrait';
+  }
+  if (standalone) standalone.href = face.rendererUrl;
+
+  el.preview.querySelectorAll('[data-face-index]').forEach(button => {
+    const active = Number(button.dataset.faceIndex) === faceIndex;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
 }
 
 function installRenderScaling() {
@@ -315,11 +512,15 @@ function scaleRenderStage(stage) {
   const frame = stage.querySelector('.rendered-card-frame');
   if (!frame) return;
 
+  const orientation = frame.dataset.renderOrientation === 'landscape' ? 'landscape' : 'portrait';
+  const surface = PRODUCTION_SURFACES[orientation];
   const availableWidth = Math.max(0, stage.clientWidth);
-  const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || CARD_RENDER_WIDTH);
-  const scale = targetWidth / CARD_RENDER_WIDTH;
+  const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || surface.widthCssPx);
+  const scale = targetWidth / surface.widthCssPx;
 
-  stage.style.height = `${CARD_RENDER_HEIGHT * scale}px`;
+  frame.style.width = `${surface.widthCssPx}px`;
+  frame.style.height = `${surface.heightCssPx}px`;
+  stage.style.height = `${surface.heightCssPx * scale}px`;
   frame.style.transform = `translateX(-50%) scale(${scale})`;
 }
 
@@ -337,7 +538,9 @@ async function copyDirectLink(event) {
 }
 
 function sortEntries(a, b) {
-  if (a.type !== b.type) return a.type === 'card' ? -1 : 1;
+  if (a.type !== b.type) {
+    return TYPE_SORT_ORDER.indexOf(a.type) - TYPE_SORT_ORDER.indexOf(b.type);
+  }
   return a.name.localeCompare(b.name);
 }
 

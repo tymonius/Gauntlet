@@ -1,0 +1,603 @@
+{
+  "version": 2,
+  "purpose": "Evidence-backed remediation queue for legacy-unresolved governed assets.",
+  "batches": [
+    {
+      "id": "leader-artwork-2026-09-04",
+      "description": "Faction leader normalized artwork and accepted design-sheet/sketch images.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "conversation_export": "04_Faction_Leader_Archetypes.md from the user-provided 2026-07-09 ChatGPT export",
+        "repository_log": "docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md",
+        "introduction_commit": "4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/alchemist.png",
+          "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"
+        },
+        {
+          "path": "images/ambassador.png",
+          "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"
+        },
+        {
+          "path": "images/banker.png",
+          "evidence": "accepted session artifact banker_leader_card_reference_sheet.png"
+        },
+        {
+          "path": "images/commandant.png",
+          "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"
+        },
+        {
+          "path": "images/executive.png",
+          "evidence": "accepted session artifact executive_of_the_east_india_company.png"
+        },
+        {
+          "path": "images/general.png",
+          "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"
+        },
+        {
+          "path": "images/grand inquisitor.png",
+          "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"
+        },
+        {
+          "path": "images/ranger.png",
+          "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"
+        },
+        {
+          "path": "images/senator.png",
+          "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"
+        },
+        {
+          "path": "images/sketches/alchemist.png",
+          "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/ambassador.png",
+          "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"
+        },
+        {
+          "path": "images/sketches/banker.png",
+          "introduction_commit": "7c17c85404dec0f01d9182af691a1f02cdb9b2ae",
+          "evidence": "accepted session artifact banker_leader_card_reference_sheet.png; first repository upload is byte-identical to current file"
+        },
+        {
+          "path": "images/sketches/commandant.png",
+          "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"
+        },
+        {
+          "path": "images/sketches/executive.png",
+          "evidence": "accepted session artifact executive_of_the_east_india_company.png"
+        },
+        {
+          "path": "images/sketches/general.png",
+          "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"
+        },
+        {
+          "path": "images/sketches/grand inquisitor.png",
+          "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"
+        },
+        {
+          "path": "images/sketches/ranger.png",
+          "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"
+        },
+        {
+          "path": "images/sketches/senator.png",
+          "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"
+        },
+        {
+          "path": "images/sketches/spirit walker.png",
+          "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/spymaster.png",
+          "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/witch hunter.png",
+          "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"
+        },
+        {
+          "path": "images/spirit walker.png",
+          "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"
+        },
+        {
+          "path": "images/spymaster.png",
+          "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"
+        },
+        {
+          "path": "images/witch hunter.png",
+          "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"
+        }
+      ]
+    },
+    {
+      "id": "all-card-artwork-user-attestation-2026-09-04",
+      "description": "All canonical Gauntlet card artwork under images/artwork/cards, based on direct project-owner provenance attestation.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation in the Gauntlet project conversation immediately following PR #1440: all canonical card artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction. Repository path images/artwork/cards defines this canonical corpus; retained File Library generation records corroborate many individual cards.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "Primary provenance attestation applies uniformly to the canonical card-art corpus; individual prompt recovery is corroborating evidence rather than a prerequisite."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05, directly attesting that all canonical card artwork was generated by OpenAI image generation under the user's direction.",
+        "repository_tracker": "docs/artwork/card-artwork-tracker.md",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/artwork/cards/"
+      ]
+    },
+    {
+      "id": "faction-symbols-user-attestation-2026-09-04",
+      "description": "The six active faction symbols, generated as concepts under user direction and manually refined in Illustrator.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott, using OpenAI-generated concepts directed by Tymon Scott",
+        "source": "Direct project-owner attestation in the Gauntlet project conversation: the active faction-symbol designs are a hybrid of OpenAI-generated designs created under Tymon Scott's direction and Tymon Scott's manual cleanup/refinement in Adobe Illustrator.",
+        "rights": "Project-created final artwork with project-authorized human modifications. The generated concept stage is covered by OpenAI Terms of Use (https://openai.com/policies/terms-of-use/). No third-party source artwork is known to have been incorporated. This record does not assert copyrightability or uniqueness.",
+        "notes": "This batch covers the six active final faction symbols only; historical candidate files are not inferred into the same provenance class."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05.",
+        "repository_reference": "images/faction-symbols/README.md",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/faction-symbols/diplomats.svg"
+        },
+        {
+          "path": "images/faction-symbols/financiers.svg"
+        },
+        {
+          "path": "images/faction-symbols/inquisition.svg"
+        },
+        {
+          "path": "images/faction-symbols/intelligence.svg"
+        },
+        {
+          "path": "images/faction-symbols/military.svg"
+        },
+        {
+          "path": "images/faction-symbols/mystics.svg"
+        }
+      ]
+    },
+    {
+      "id": "card-parchment-backgrounds-user-attestation-2026-09-04",
+      "description": "Generated parchment/background textures used by Gauntlet card designs.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation in the Gauntlet project conversation: the parchment background textures were generated by OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05.",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/artwork/card-backgrounds/"
+      ]
+    },
+    {
+      "id": "card-backs-user-attestation-2026-09-04",
+      "description": "Gauntlet card-back composites assembled from already-accounted-for project assets.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Direct project-owner attestation in the Gauntlet project conversation: card backs are project-created composites assembled from existing Gauntlet assets, principally faction icons and the Gauntlet wordmark.",
+        "rights": "Project-created composite using component assets governed separately in the Gauntlet provenance ledger. No additional third-party source artwork is known to have been incorporated.",
+        "notes": "Component-asset provenance remains independently governed; this record documents the card-back composite itself."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05.",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96"
+      },
+      "asset_prefixes": [
+        "images/artwork/cardbacks/",
+        "images/card-backs/"
+      ]
+    },
+    {
+      "id": "gauntlet-wordmark-user-attestation-2026-09-04",
+      "description": "Gauntlet wordmark/logo family derived from licensed P22 Declaration Blackletter letterforms and manually modified in Illustrator.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott",
+        "source": "Direct project-owner attestation: the Gauntlet wordmark and derived logo/icon variants began from P22 Declaration Blackletter and were manually modified in Adobe Illustrator. P22 Declaration Pro is available through Adobe Fonts from P22 Type Foundry.",
+        "rights": "Adobe Fonts permits commercial design use, including logos, and permits modifying type after rasterizing or converting it to outlines; finished graphics may be distributed independently of the font subscription. Font software itself is not redistributed under this record. See https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html and https://fonts.adobe.com/fonts/p22-declaration-pro.",
+        "notes": "This provenance record covers the modified finished logo artwork, not redistribution or relicensing of P22 font software."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05.",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96",
+        "license_reference": "https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html",
+        "font_reference": "https://fonts.adobe.com/fonts/p22-declaration-pro"
+      },
+      "assets": [
+        {
+          "path": "images/Gauntlet-G.svg"
+        },
+        {
+          "path": "images/Gauntlet.svg"
+        },
+        {
+          "path": "images/branding/Gauntlet.ai"
+        },
+        {
+          "path": "images/branding/Gauntlet.png"
+        },
+        {
+          "path": "images/branding/gauntlet-icon.png"
+        }
+      ]
+    },
+    {
+      "id": "tds-games-mark-user-attestation-2026-09-04",
+      "description": "TDS Games mark authored directly by Tymon Scott.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott",
+        "source": "Direct project-owner attestation in the Gauntlet project conversation: the TDS logo was created by Tymon Scott.",
+        "rights": "Project-owner-authored artwork; project use authorized by its creator Tymon Scott."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05.",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96"
+      },
+      "assets": [
+        {
+          "path": "images/branding/tds-games-mark.svg"
+        }
+      ]
+    },
+    {
+      "id": "tripo3d-character-models-user-attestation-2026-09-04",
+      "description": "Paid-plan Tripo3D character models generated from Gauntlet character designs.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "Tripo3D generation directed by Tymon Scott",
+        "source": "Direct project-owner attestation: these 3D assets were generated on a paid Tripo3D plan approximately two to three weeks before 2026-09-04, using Gauntlet character designs previously generated by OpenAI under Tymon Scott's direction as inputs.",
+        "rights": "Tripo's Terms for Paid Users state that paid users generally have broad rights in their Inputs and Outputs, including use, modification, distribution, licensing, and deriving revenue, subject to the agreement and applicable law. See https://www.tripo3d.ai/terms, section 5.2.2. Input artwork provenance is governed separately in the Gauntlet ledger. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "Commercial-use basis depends on the paid-plan status attested by the project owner and the paid-user terms in force at generation time."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-04/05: paid Tripo3D plan; models created about two or three weeks earlier from OpenAI-generated Gauntlet character designs.",
+        "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96",
+        "terms_reference": "https://www.tripo3d.ai/terms"
+      },
+      "assets": [
+        {
+          "path": "images/3d/Alchemist.zip"
+        },
+        {
+          "path": "images/3d/Ambassador.zip"
+        },
+        {
+          "path": "images/3d/Banker.zip"
+        },
+        {
+          "path": "images/3d/Commandant.zip"
+        },
+        {
+          "path": "images/3d/General.zip"
+        }
+      ]
+    },
+    {
+      "id": "leader-card-derivatives-2026-09-05",
+      "description": "Historical leader-card crops and wrappers derived from already-resolved Gauntlet leader artwork.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history identifies these files as leader-card crops/cleanups of the established Gauntlet leader artwork. Representative SVG wrappers directly embed the corresponding already-governed leader image (for example images/leader-cards/alchemist.svg embeds ../alchemist.png). July 18, 2026 history includes commits such as a144d3392304b6527700d981369934c4a4caca83 (Add Alchemist leader-card crop) and 75ccfacc71b7dd596bce7a85b7ea05000b5833ab (Add Spirit Walker leader-card crop), plus crop-header cleanup commits for other leaders.",
+        "rights": "Project-created derivative presentation/crop of Gauntlet leader artwork whose source provenance is already explicit in this ledger. No additional third-party source artwork is known to have been incorporated.",
+        "notes": "This record covers the crop/wrapper asset; underlying leader artwork provenance remains independently governed."
+      },
+      "evidence_basis": {
+        "repository_history": "images/leader-cards history on 2026-07-18, including explicit leader-card crop and crop-cleanup commits.",
+        "repository_structure": "SVG variants directly reference the corresponding governed leader artwork.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "asset_prefixes": [
+        "images/leader-cards/"
+      ]
+    },
+    {
+      "id": "card-back-pattern-derived-2026-09-05",
+      "description": "Deterministic monochrome card-back lattice composed from the active faction symbols.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history documents card-design/card-back-pattern.svg as a deterministic, self-contained, flattened vector card-back pattern assembled from the approved faction symbol paths. Relevant history includes commits 1cbdae298e9a76cc6f9e1401d14578609186eb90 (Flatten card-back symbol pattern into one SVG surface), fd860f5637bce62f509e5d94b90b6c0f039dca85 (Make card-back pattern self-contained and bake its rotation), and b0eb132938514a2f18f0c60b7909c23f2bad64f6 (Restore deterministic monochrome card-back pattern).",
+        "rights": "Project-created deterministic composite using active faction symbols whose provenance is separately governed in this ledger."
+      },
+      "evidence_basis": {
+        "repository_history": "Documented flattened/self-contained card-back symbol pattern history on 2026-09-03.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "assets": [
+        {
+          "path": "card-design/card-back-pattern.svg"
+        }
+      ]
+    },
+    {
+      "id": "deckbuilder-qr-derived-2026-09-05",
+      "description": "Project-generated QR code for the canonical Gauntlet deckbuilder URL.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history documents images/qr/gauntlet-v0.6-deckbuilder.svg as the Gauntlet deckbuilder QR code and repeatedly updates/restores its destination to gauntlet.run. Relevant commits include e3d03c68c182c4ea61947019485b4b09f7ca07b9, f8577f4bcc717577c2b9380ce7717b9bfb6fe168, 75045d622a8225e9141533c1ecaa62fd276e565b, and 61586adee38266f77a5219f0dedc10a585be138b.",
+        "rights": "Project-generated functional encoding of the project-controlled deckbuilder URL; no third-party creative source artwork is incorporated."
+      },
+      "evidence_basis": {
+        "repository_history": "Canonical v0.6 release and deckbuilder QR destination-update history.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "assets": [
+        {
+          "path": "images/qr/gauntlet-v0.6-deckbuilder.svg"
+        }
+      ]
+    },
+    {
+      "id": "command-tent-gameplay-painting-2026-09-05",
+      "description": "Generated homepage gameplay-showcase painting.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Gauntlet project conversation on 2026-07-29 records creation of a painted command-tent gameplay showcase matching the established Gauntlet art style; the resulting generated gameplay artwork was named gauntlet-command-tent-gameplay-painting and added to the repository in commit d4cedd89f6db666df86c93e3d76fbe17358d4e5d. The current WebP is the restored/optimized repository form of that project artwork.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_conversation": "Gauntlet homepage/gameplay artwork work on 2026-07-29.",
+        "repository_history": "d4cedd89f6db666df86c93e3d76fbe17358d4e5d and later restore history.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/site/gauntlet-command-tent-gameplay-painting.webp"
+        }
+      ]
+    },
+    {
+      "id": "mystics-rite-completed-composite-2026-09-05",
+      "description": "Completed-side Mystics Rite graphic composed for Gauntlet from generated residue parchment and licensed outlined/display typography.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+        "source": "Gauntlet project conversation on 2026-08-13/14 records the iterative creation and user selection of the Mystics Rite completed-side parchment/residue image, followed by adding the word Completed in P22 Declaration Pro rather than relying on generated text. The repository file images/artwork/supplemental/mystics/rite-completed.webp is the resulting supplemental graphic; repository history includes full-resolution restoration on 2026-08-14.",
+        "rights": "Project-created composite. The source image-generation stage is covered by OpenAI Terms of Use (https://openai.com/policies/terms-of-use/). Adobe Fonts permits commercial design and logo/display use of licensed fonts and conversion to outlines/raster in finished graphics; font software is not redistributed under this record. See https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "The finished supplemental graphic is governed as a project composite; generated image residue and typography licensing are documented as component provenance."
+      },
+      "evidence_basis": {
+        "project_conversation": "Mystics completed-side graphic development and selection, 2026-08-13/14.",
+        "repository_history": "Full-resolution Rite artwork restore/upload history on 2026-08-14.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750",
+        "rights_reference": "https://openai.com/policies/terms-of-use/",
+        "font_license_reference": "https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/supplemental/mystics/rite-completed.webp"
+        }
+      ]
+    },
+    {
+      "id": "3d-2d-reference-assets-owner-attestation-2026-09-05",
+      "description": "2D character references and turnaround assets used in the Gauntlet 3D workflow.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+        "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+        "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/3d/2d assets/"
+      ]
+    },
+    {
+      "id": "reference-reserve-artwork-owner-attestation-2026-09-05",
+      "description": "Gauntlet environment, faction, leader, and reserve/reference artwork.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/artwork/reference/"
+      ]
+    },
+    {
+      "id": "hero-sketches-owner-attestation-2026-09-05",
+      "description": "Historical Gauntlet hero sketch and hero-plate artwork outside the accepted leader-design-sheet batch.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/sketches/hero sketch.png"
+        },
+        {
+          "path": "images/sketches/hero-plates/alchemist-executive-ambassador.png"
+        },
+        {
+          "path": "images/sketches/hero-plates/ranger-commandant-senator.png"
+        },
+        {
+          "path": "images/sketches/hero-plates/witch-hunter-banker-spymaster.png"
+        },
+        {
+          "path": "images/sketches/hero-sketches/hero sketch 2.png"
+        },
+        {
+          "path": "images/sketches/hero-sketches/hero sketch 3.png"
+        },
+        {
+          "path": "images/sketches/hero-sketches/hero sketch 4.png"
+        },
+        {
+          "path": "images/sketches/hero-sketches/hero sketch.png"
+        }
+      ]
+    },
+    {
+      "id": "diplomats-wax-seal-owner-attestation-2026-09-05",
+      "description": "Diplomats supplemental Ratified wax-seal artwork.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that the Diplomats wax-seal image was generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/supplemental/diplomats/ratified-wax-seal.webp"
+        }
+      ]
+    },
+    {
+      "id": "faction-symbol-candidates-owner-attestation-2026-09-05",
+      "description": "Historical/candidate Military faction-symbol artwork.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/faction-symbols/candidates/"
+      ]
+    },
+    {
+      "id": "chief-justice-art-owner-attestation-2026-09-05",
+      "description": "Chief Justice / Rules Arbiter imagery.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that the Chief Justice / Rules Arbiter images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "asset_prefixes": [
+        "images/rules-arbiter/"
+      ]
+    },
+    {
+      "id": "remaining-site-art-owner-attestation-2026-09-05",
+      "description": "Remaining Gauntlet site artwork not covered by the command-tent showcase batch.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Direct project-owner attestation on 2026-09-05 that the remaining site images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/site/gauntlet-tts-playtest-table.webp"
+        },
+        {
+          "path": "images/artwork/site/homepage-hero-three-leaders.webp"
+        }
+      ]
+    },
+    {
+      "id": "social-preview-composite-owner-attestation-2026-09-05",
+      "description": "Gauntlet social-preview composite assembled from generated Gauntlet imagery.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "OpenAI/ChatGPT compositing under Tymon Scott's direction",
+        "source": "Direct project-owner attestation on 2026-09-05 that the social image was composited from other images generated through OpenAI/ChatGPT under Tymon Scott's direction. Repository PR #364 (https://github.com/tymonius/Gauntlet/pull/364) independently documents the social preview artwork and notes that a temporary image-generation workflow produced the committed asset.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. The final composition is a project-created arrangement of those generated Gauntlet inputs."
+      },
+      "evidence_basis": {
+        "project_owner_attestation": "Gauntlet project conversation, 2026-09-05.",
+        "repository_history": "PR #364, Add social preview metadata and artwork.",
+        "identity_commit": "c9298f61c4a1d734b7652d6b262d67b22fee71d6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/social/gauntlet-og-1200x630-v2.jpg"
+        }
+      ]
+    },
+    {
+      "id": "deed-ornament-replacement-2026-09-05",
+      "description": "Replacement Deed ornamental divider, manually created in Illustrator from OpenAI-generated source artwork after retiring the prior externally traced ornament.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+        "source": "Direct project-owner attestation on 2026-09-05: the replacement card-design/deed-ornamental-divider.svg was created manually in Adobe Illustrator from an ornament image generated by OpenAI/ChatGPT under Tymon Scott's direction. This replacement supersedes the prior divider that had been traced from an externally found ornament. The replacement SVG also contains Adobe XMP/C2PA provenance metadata from the Illustrator export.",
+        "rights": "Project-created final vector artwork. The generated source stage is covered by OpenAI Terms of Use, which assign to the user OpenAI's right, title, and interest, if any, in Output to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). Manual Illustrator construction/editing is project-authored. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "The prior external-source traced ornament is no longer present in the current governed asset. This record applies only to the replacement binary introduced at the documented identity checkpoint."
+      },
+      "evidence_basis": {
+        "user_attestation": "Gauntlet project conversation, 2026-09-05: project owner supplied ornament.svg and stated that it was created in Illustrator from the OpenAI-generated ornament image.",
+        "identity_commit": "bdcd916a0105fe32b7117a27ffe899cfe0e6e1e6",
+        "rights_reference": "https://openai.com/policies/terms-of-use/",
+        "embedded_metadata": "Adobe XMP/C2PA provenance metadata in the replacement SVG."
+      },
+      "assets": [
+        {
+          "path": "card-design/deed-ornamental-divider.svg"
+        }
+      ]
+    }
+  ]
+}

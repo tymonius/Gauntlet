@@ -130,6 +130,7 @@
       session = { ...session, participantCount: Number(session.participantCount || 0) + 1 };
       setFormStatus(el.joinStatus, "Joined.", "success");
       renderSession();
+      el.joinedPanel.focus({ preventScroll: true });
     } catch (error) {
       console.error(error);
       setFormStatus(el.joinStatus, error.message || "The session could not be joined.", "error");
@@ -177,6 +178,7 @@
       });
       setFormStatus(el.closeStatus, "Session closed and QR code retired.", "success");
       renderSession();
+      el.statusPill.focus({ preventScroll: true });
     } catch (error) {
       console.error(error);
       setFormStatus(el.closeStatus, error.message || "The session could not be closed.", "error");
@@ -271,9 +273,10 @@
   function showError(title, message) {
     setLoading(false);
     el.sessionApp.hidden = true;
-    el.errorPanel.hidden = false;
     el.errorTitle.textContent = title;
     el.errorMessage.textContent = message;
+    el.errorPanel.hidden = false;
+    el.errorPanel.focus({ preventScroll: true });
     el.sheetSerial.textContent = "Unavailable";
     el.sessionStatus.textContent = "Use printed serial";
   }

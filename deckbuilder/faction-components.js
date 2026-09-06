@@ -1,13 +1,11 @@
 (() => {
-  const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension";
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const deckState = () => deckbuilder.deckState();
 
-  state.currentFactionComponentsReady = false;
-
-  const baseRenderAll = renderAll;
-  renderAll = function renderAllWithFactionComponents() {
-    baseRenderAll();
-    renderFactionComponents();
-  };
+  deckbuilder.registerRenderHook(renderFactionComponents);
 
   document.addEventListener("DOMContentLoaded", installFactionComponentDisplay);
 
@@ -27,215 +25,106 @@
     }
 
     try {
-      const currentGame = state.currentGameData || await import("../game-data/current-game.mjs").then(module => module.loadCurrentGame());
-      state.currentGameData ||= currentGame;
-      bridgeSharedReferencesIntoPrintAuthority(currentGame);
-      hydrateLegacyPrintPackages(currentGame);
-      state.currentFactionComponentsReady = true;
-      document.body.dataset.currentFactionComponents = "ready";
+      const currentGame = deckbuilder.currentGame() || await deckbuilder.bootstrap();
+      hydratePrintPackages(currentGame);
     } catch (error) {
       console.error("Unable to project deck components from current-game authority", error);
-      document.body.dataset.currentFactionComponents = "error";
     }
 
-    renderFactionComponents();
+    deckbuilder.render();
   }
 
-  function sharedReferencePrintCandidate(component) {
-    const bridged = { ...component };
-    // The legacy production replacement matcher is faction-scoped. A shared
-    // every-deck reference has no canonical faction, so expose the currently
-    // selected faction only on this browser-side print candidate. The canonical
-    // shared component remains unchanged, while the getter stays correct if the
-    // player changes factions after the Deckbuilder has loaded.
-    Object.defineProperty(bridged, "faction", {
-      enumerable: true,
-      configurable: false,
-      get: () => String(state.factionId || "").trim().toLowerCase(),
-    });
-    return Object.freeze(bridged);
+  function printComponentType(component) {
+    if (component.family === "tracker") return "tracker";
+    if (component.family === "reference-card" || component.family === "ritual-card") return "reference";
+    if (component.family === "ledger") return "capital";
+    if (component.family === "deed-card") return "deed-set";
+    return null;
   }
 
-  function bridgeSharedReferencesIntoPrintAuthority(currentGame) {
-    const factionComponents = currentGame.components || [];
-    const knownIds = new Set(factionComponents.map(component => component.id));
-    const sharedReferences = (currentGame.sharedComponents || []).filter(component => (
-      component.family === "reference-card"
-      && component.cardLike
-      && component.deckInclusion === "every-deck"
-      && component.productionStatus === "ready"
-      && !knownIds.has(component.id)
-    ));
-    if (!sharedReferences.length) return;
-
-    // The production print replacement layer historically searches the resolved
-    // faction-component array. Give that browser-only print view ready shared
-    // references as faction-compatible match candidates without changing the
-    // canonical shared-component definitions.
-    const printSharedReferences = sharedReferences.map(sharedReferencePrintCandidate);
-    state.currentGameData = Object.freeze({
-      ...currentGame,
-      components: Object.freeze([...factionComponents, ...printSharedReferences]),
-    });
-    document.body.dataset.sharedReferencePrintBridge = "ready";
-  }
-
-  function normalize(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim();
-  }
-
-  function componentAliases(component) {
-    const values = new Set([
-      component.name,
-      String(component.name || "").replace(/\b(reference|tracker|card|ledger)\b/gi, " "),
-      component.trackedValue?.name,
-      component.referenceFaces?.front?.title,
-      component.referenceFaces?.reverse?.title,
-    ]);
-    return [...values].map(normalize).filter(Boolean);
-  }
-
-  function legacyComponentLabel(component) {
-    return component.title || component.name || component.id || "";
-  }
-
-  function legacyMatchesContract(legacy, contract) {
-    const legacyNames = [
-      legacyComponentLabel(legacy),
-      legacy.subtitle,
-      legacy.type,
-    ].map(normalize).filter(Boolean);
-    const aliases = componentAliases(contract);
-    if (legacyNames.some(name => aliases.includes(name))) return true;
-
-    if (contract.family === "tracker" && legacy.type === "tracker") {
-      const tracked = normalize(contract.trackedValue?.name);
-      return tracked && legacyNames.some(name => name.includes(tracked));
-    }
-    if (contract.family === "ledger" && legacy.type === "capital") return /capital/.test(normalize(contract.name));
-    if (contract.family === "deed-card" && legacy.type === "deed-set") return /deed/.test(normalize(contract.name));
-    if (contract.family === "reference-card" && ["reference", "purge"].includes(legacy.type)) {
-      return aliases.some(alias => legacyNames.some(name => name.includes(alias) || alias.includes(name)));
-    }
-    return false;
-  }
-
-  function annotateLegacyComponents(packageData, contractComponents) {
-    for (const legacy of packageData.components || []) {
-      const contract = contractComponents.find(component => legacyMatchesContract(legacy, component));
-      if (!contract) continue;
-      legacy.contractId = contract.id;
-      legacy.contractFamily = contract.family;
-      legacy.designStatus = contract.designStatus || "final";
-      legacy.productionStatus = contract.productionStatus;
-      legacy.backPolicy = contract.backPolicy;
-      legacy.renderSource = contract.renderSource || null;
-    }
-  }
-
-  function sharedReferenceProjection(component) {
+  function projectPrintComponent(component, currentGame) {
+    const type = printComponentType(component);
+    if (!type) return null;
+    const ritual = component.family === "ritual-card" ? currentGame.mystics?.ritual : null;
     return {
-      type: "reference",
+      type,
+      kind: component.renderSource?.kind || "",
       id: component.id,
       contractId: component.id,
       title: component.name,
-      subtitle: "Universal reference",
-      sections: [{ label: "Reference", text: "Production universal reference card." }],
-      footer: "Shared reference — included in every Deck",
+      subtitle: ritual ? "Mystics victory ritual" : "",
+      note: `Production ${component.name}.`,
+      sections: ritual ? [
+        { label: "Begin", text: ritual.begin },
+        { label: "Convergence", text: ritual.convergence },
+        { label: "Complete", text: ritual.complete },
+        { label: "Interruption", text: ritual.interrupted },
+      ] : [{ label: "Component", text: `Production ${component.name}.` }],
+      count: component.quantity,
       designStatus: component.designStatus || "final",
       productionStatus: component.productionStatus,
       backPolicy: component.backPolicy,
+      renderSource: component.renderSource || null,
     };
   }
 
-  function hydrateLegacyPrintPackages(currentGame) {
-    const packages = window.GAUNTLET_V06_SUPPLEMENTALS || (window.GAUNTLET_V06_SUPPLEMENTALS = {});
-    const contractComponents = currentGame.components || [];
-    const sharedReferences = (currentGame.sharedComponents || []).filter(component => (
-      component.family === "reference-card"
-      && component.cardLike
-      && component.deckInclusion === "every-deck"
+  function hydratePrintPackages(currentGame) {
+    const sharedCardComponents = (currentGame.sharedComponents || []).filter(component => (
+      component.cardLike && component.deckInclusion === "every-deck"
     ));
+    const packages = {};
 
-    for (const [factionId, packageData] of Object.entries(packages)) {
-      packageData.components ||= [];
-      for (const shared of sharedReferences) {
-        const existing = packageData.components.find(component => component.contractId === shared.id || component.id === shared.id);
-        const projected = sharedReferenceProjection(shared);
-        if (existing) Object.assign(existing, projected);
-        else packageData.components.unshift(projected);
-      }
+    for (const faction of currentGame.factions || []) {
+      const factionComponents = (currentGame.components || []).filter(component => (
+        component.faction === faction.id
+        && !["proposal-treaty-card", "rite-card"].includes(component.family)
+      ));
+      const components = [...sharedCardComponents, ...factionComponents]
+        .map(component => projectPrintComponent(component, currentGame))
+        .filter(Boolean);
 
-      annotateLegacyComponents(
-        packageData,
-        [
-          ...sharedReferences,
-          ...contractComponents.filter(component => component.faction === factionId),
+      packages[faction.id] = {
+        summary: [
+          "Selected Leader Card",
+          ...sharedCardComponents.map(component => component.name),
+          ...factionComponents.map(component => component.quantity > 1
+            ? `${component.quantity} × ${component.name}`
+            : component.name),
         ],
-      );
+        leaderImages: Object.fromEntries((faction.leaders || []).map(leader => [leader.id, leader.image || ""])),
+        components,
+      };
     }
 
-    const diplomats = packages.diplomats;
-    if (diplomats) {
-      diplomats.proposals = (currentGame.proposals || []).map((proposal, index) => ({
+    if (packages.diplomats) {
+      packages.diplomats.proposals = (currentGame.proposals || []).map((proposal, index) => ({
         ...proposal,
         number: Number(proposal.number) || index + 1,
         contractId: `diplomats-proposal-${proposal.id}`,
       }));
     }
 
-    const mystics = packages.mystics;
-    if (mystics) {
-      mystics.rites = (currentGame.mystics?.rites || []).map(rite => ({
+    if (packages.mystics) {
+      packages.mystics.rites = (currentGame.mystics?.rites || []).map(rite => ({
         id: rite.id,
         contractId: `mystics-rite-${rite.id}`,
         name: rite.name,
         beginning: rite.begin,
         completion: rite.complete,
+        reminder: rite.reminder?.text || "",
         interruption: rite.interrupted,
       }));
 
-      const ritual = currentGame.mystics?.ritual;
-      if (ritual) {
-        mystics.summary ||= [];
-        const summaryLabel = `${ritual.name} card`;
-        if (!mystics.summary.includes(summaryLabel)) mystics.summary.push(summaryLabel);
-
-        mystics.components ||= [];
-        const existing = mystics.components.find(component => component.id === MYSTICS_RITUAL_COMPONENT_ID);
-        const ritualComponent = {
-          type: "reference",
-          kind: "ritual",
-          id: MYSTICS_RITUAL_COMPONENT_ID,
-          contractId: MYSTICS_RITUAL_COMPONENT_ID,
-          title: ritual.name,
-          subtitle: "Mystics victory ritual",
-          sections: [
-            { label: "Begin", text: ritual.begin },
-            { label: "Convergence", text: ritual.convergence },
-            { label: "Complete", text: ritual.complete },
-            { label: "Interruption", text: ritual.interrupted },
-          ],
-          footer: "Supplemental Ritual card — not a Playable Deck card",
-          backPolicy: "specialBack",
-          designStatus: "final",
-          productionStatus: "ready",
-          renderSource: { surface: "card-design/rite-card.js", componentId: ritual.id },
-        };
-        if (existing) Object.assign(existing, ritualComponent);
-        else mystics.components.push(ritualComponent);
-      }
     }
+
+    deckbuilder.registerFeature("supplementalPackages", packages);
   }
 
   function componentMeta(component, shared = false) {
     if (shared && component.family === "reference-card") return "Shared reference · every deck";
     if (component.family === "proposal-treaty-card") return "Double-sided Proposal / Treaty Article";
     if (component.family === "rite-card") return "Double-sided incomplete / completed Rite";
+    if (component.family === "ritual-card") return "Supplemental Ritual card";
     if (component.family === "tracker") return "Supplemental tracker";
     if (component.family === "reference-card") return "Supplemental reference";
     if (component.family === "ledger") return "Supplemental ledger";
@@ -255,11 +144,12 @@
     const container = document.getElementById("deckFactionComponents");
     if (!container) return;
 
-    const faction = typeof getFaction === "function" ? getFaction() : null;
-    const leader = faction?.leaders?.find(item => item.id === state.leaderId);
-    const currentGame = state.currentGameData;
+    const faction = deckbuilder.getFaction();
+    const leader = deckbuilder.getLeader();
+    const current = deckState();
+    const currentGame = deckbuilder.currentGame();
 
-    if (!faction || !leader || !currentGame || !state.currentFactionComponentsReady) {
+    if (!faction || !leader || !currentGame || !deckbuilder.feature("supplementalPackages")) {
       container.className = "deck-list empty-state";
       container.textContent = "Loading current deck components…";
       return;
@@ -269,9 +159,13 @@
       component.cardLike && component.deckInclusion === "every-deck"
     ));
     const components = (currentGame.components || []).filter(component => (
-      component.faction === state.factionId
+      component.faction === current.factionId
       && component.deckInclusion !== "every-deck"
+      && !(current.factionId === "mystics" && component.family === "rite-card")
     ));
+    const selectedRiteItems = current.factionId === "mystics"
+      ? (ritesApi()?.selectedRites?.() || [])
+      : [];
     const items = [
       ...sharedComponents.map(component => ({
         name: component.quantityPerPlayer > 1 ? `${component.quantityPerPlayer} × ${component.name}` : component.name,
@@ -284,15 +178,12 @@
       ...components.map(component => ({
         name: component.quantity > 1 ? `${component.quantity} × ${component.name}` : component.name,
         meta: `${componentMeta(component)} · ${designMeta(component)}`,
+      })),
+      ...selectedRiteItems.map(rite => ({
+        name: rite.name,
+        meta: "Selected Rite · Double-sided incomplete / completed Rite",
       }))
     ];
-
-    if (state.factionId === "mystics" && currentGame.mystics?.ritual) {
-      items.push({
-        name: currentGame.mystics.ritual.name,
-        meta: "Supplemental Ritual card · Final design",
-      });
-    }
 
     container.className = "deck-list";
     container.innerHTML = items.map(item => `

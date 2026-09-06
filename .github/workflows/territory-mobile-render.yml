@@ -1,0 +1,59 @@
+name: Territory Mobile Render
+
+on:
+  pull_request:
+    paths:
+      - "game-data/**"
+      - "card-design/**"
+      - "design-tokens.css"
+      - "images/artwork/**"
+      - "scripts/validate-territory-mobile-render.mjs"
+      - ".github/workflows/territory-mobile-render.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  territory-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install matching Playwright package
+        run: npm install --no-audit --no-fund --no-save playwright@1.62.1
+
+      - name: Validate Territory mobile render stability
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+
+          ready=false
+          for attempt in {1..50}; do
+            if curl -fsS http://127.0.0.1:4173/card-design/ > /dev/null; then
+              ready=true
+              break
+            fi
+            sleep 0.1
+          done
+
+          if [[ "$ready" != "true" ]]; then
+            cat /tmp/gauntlet-territory-server.log >&2 || true
+            exit 1
+          fi
+
+          TERRITORY_TEST_BASE_URL=http://127.0.0.1:4173 node scripts/validate-territory-mobile-render.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-territory-mobile-specimens
+          path: |
+            card-design/generated/leaders/territory-mobile-*.png
+            card-design/generated/leaders/territory-mobile-render-metrics.json
+          if-no-files-found: error

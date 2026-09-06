@@ -1,0 +1,18 @@
+{
+  "version": "v0.6.4-candidate",
+  "base_version": "v0.6.3",
+  "mechanics_changed": false,
+  "change_type": "visual-identification-and-rules-clarification",
+  "general_rule": {
+    "id": "arcane-symbol",
+    "heading": "Arcane symbol",
+    "placement": "Part I > Chapter 2 > Printed card effects",
+    "body": "Arcane cards are marked with the Mystics sigil. The sigil is shown in the card's faction color, or the Neutral color on Neutral cards. The symbol's shape identifies the Arcane trait; its color reflects the card's allegiance."
+  },
+  "mystics_rule": {
+    "id": "arcane-trait",
+    "heading": "Arcane trait",
+    "placement": "Part III > Mystics > Mystics-specific rules > Arcane trait",
+    "body": "Arcane is a trait, not faction allegiance. Mystics cards are Arcane, and cards from other pools may also have the trait. Arcane cards are marked with the Mystics sigil, shown in the card's faction color or the Neutral color on Neutral cards. The symbol's shape identifies the Arcane trait; its color reflects the card's allegiance."
+  }
+}

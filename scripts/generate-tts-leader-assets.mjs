@@ -11,11 +11,15 @@ import {
   loadTtsComponentContract,
   resolveFactionBackFile,
 } from './tts-component-contract.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
-const CARD_WIDTH = 400;
-const CARD_HEIGHT = 560;
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const DEVICE_SCALE_FACTOR = surfaceDeviceScale('portrait');
 const FIRST_LEADER_DECK_ID = 100;
 
 function jsonText(value) {
@@ -180,7 +184,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 1600, height: 1000 },
-    deviceScaleFactor: CARD_WIDTH / CSS_CARD_WIDTH,
+    deviceScaleFactor: DEVICE_SCALE_FACTOR,
   });
   const page = await context.newPage();
 
@@ -191,12 +195,8 @@ async function renderLeaderAssets(release, leaders, componentContract) {
 
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
-      const url = new URL('/card-design/component-print-render.html', baseUrl);
-      url.searchParams.set('kind', 'leader');
-      url.searchParams.set('id', `${leader.faction}-${leader.id}`);
-      url.searchParams.set('side', 'front');
-      url.searchParams.set('orientation', 'portrait');
-      url.searchParams.set('version', displayVersion);
+      const url = new URL('/card-design/face-render.html', baseUrl);
+      url.searchParams.set('id', `leader:${leader.faction}-${leader.id}`);
 
       await page.goto(url.toString(), { waitUntil: 'load' });
       await page.waitForFunction(() => (
@@ -267,7 +267,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         releasePackageRoot: release.releasePackageRoot,
         publishedVersion: release.publishedVersion || release.version,
       },
-      sourceSurface: 'card-design/component-print-render.html',
+      sourceSurface: 'card-design/face-render.html',
       componentContract: 'config/tts-component-contract.json',
       output: {
         cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },

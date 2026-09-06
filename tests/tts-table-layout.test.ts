@@ -13,33 +13,40 @@ function zoneContainsPoint(zone: any, x: number, z: number) {
     && Math.abs(z - zone.posZ) <= zone.scaleZ / 2;
 }
 
+function close(a: number, b: number, tolerance = 0.001) {
+  return Math.abs(a - b) <= tolerance;
+}
+
 const TEST_ENVIRONMENT = {
   TableURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Table.png',
   SkyURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Panorama.png',
 };
 
 describe('authoritative TTS table layout', () => {
-  it('keeps every player workspace visible, including the one-card Hand parking area', () => {
+  it('uses functional east/west workspace grouping with wide private strips', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
 
     for (const label of [
-      'Leader & References',
-      'Draw Pile',
-      'Discard Pile',
+      'Draw',
+      'Discard',
       'Graveyard',
-      'Hand',
+      'Private / Hand',
       'Asset Bank',
-      'Faction Zone',
+      'Faction / Leader & References',
     ]) {
       expect(labels.filter(value => value === label)).toHaveLength(4);
     }
-    expect(text).toHaveLength(28);
+    expect(labels.filter(value => value === 'Gambits')).toHaveLength(4);
+    expect(labels.filter(value => value === 'Tactics')).toHaveLength(4);
+    expect(text).toHaveLength(32);
 
-    const whiteHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
-    const greenHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
-    expect(whiteHandSnap?.Rotation.y).toBe(180);
-    expect(greenHandSnap?.Rotation.y).toBe(0);
+    const whitePrivate = buildTableSnapPoints().filter(point => point.Position.z === -18.65);
+    const greenPrivate = buildTableSnapPoints().filter(point => point.Position.z === 18.65);
+    expect(whitePrivate).toHaveLength(6);
+    expect(greenPrivate).toHaveLength(6);
+    expect(whitePrivate.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(greenPrivate.every(point => point.Rotation.y === 0)).toBe(true);
   });
 
   it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
@@ -52,110 +59,120 @@ describe('authoritative TTS table layout', () => {
     ]);
     expect(territory.every(point => point.Rotation === undefined)).toBe(true);
     expect(deeds).toHaveLength(16);
-    expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
+    expect(deeds.every(point => Math.abs(point.Position.x) === 3.95)).toBe(true);
     expect(deeds.every(point => point.Rotation === undefined)).toBe(true);
-    expect(snaps).toHaveLength(78);
+    expect(snaps).toHaveLength(108);
     expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);
   });
 
-  it('anchors Leader & References snaps at the player-side bottom edge of the workspace', () => {
+  it('groups both Asset Banks and the shared Battle Zone on the west side', () => {
     const snaps = buildTableSnapPoints();
-    const whiteLeaderSnaps = snaps.filter(point =>
-      Math.abs(point.Position.z - (-18.6)) < 0.001 && [-16.3, -13.6, -10.9, -8.2].some(x => Math.abs(point.Position.x - x) < 0.001));
-    const greenLeaderSnaps = snaps.filter(point =>
-      Math.abs(point.Position.z - 18.6) < 0.001 && [16.3, 13.6, 10.9, 8.2].some(x => Math.abs(point.Position.x - x) < 0.001));
-    expect(whiteLeaderSnaps).toHaveLength(4);
-    expect(greenLeaderSnaps).toHaveLength(4);
-    expect(whiteLeaderSnaps.every(point => point.Rotation.y === 180)).toBe(true);
-    expect(greenLeaderSnaps.every(point => point.Rotation.y === 0)).toBe(true);
+    const whiteAssets = snaps.filter(point => point.Position.z === -8.3 && point.Position.x < -6);
+    const greenAssets = snaps.filter(point => point.Position.z === 8.3 && point.Position.x < -6);
+    const whiteBattle = snaps.filter(point => point.Position.z === -2.15);
+    const greenBattle = snaps.filter(point => point.Position.z === 2.15);
 
-    const lines = buildTableVectorLines();
-    const whiteLeaderLines = lines.filter(line => {
+    expect(whiteAssets).toHaveLength(7);
+    expect(greenAssets).toHaveLength(7);
+    expect(whiteBattle).toHaveLength(10);
+    expect(greenBattle).toHaveLength(10);
+    expect(whiteBattle.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(greenBattle.every(point => point.Rotation.y === 0)).toBe(true);
+
+    const battleLines = buildTableVectorLines().filter(line => {
       const xs = line.points3.map(point => point.x);
       const zs = line.points3.map(point => point.z);
-      return Math.abs(Math.min(...xs) - (-17.55)) < 0.001
-        && Math.abs(Math.max(...xs) - (-6.95)) < 0.001
-        && Math.abs(Math.min(...zs) - (-20.35)) < 0.001
-        && Math.abs(Math.max(...zs) - (-11.45)) < 0.001;
+      return close(Math.min(...xs), -18.7) && close(Math.max(...xs), -6.1)
+        && close(Math.min(...zs), -4.3) && close(Math.max(...zs), 4.3);
     });
-    expect(whiteLeaderLines).toHaveLength(2);
-
-    const text = buildTableTextObjects();
-    const whiteLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
-    const greenLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
-    expect(whiteLabel?.Transform.posZ).toBeCloseTo(-20.69, 6);
-    expect(greenLabel?.Transform.posZ).toBeCloseTo(20.69, 6);
+    expect(battleLines).toHaveLength(2);
   });
 
-  it('uses normal Faction Zone magnets without a second Deed-stack magnet system', () => {
+  it('merges Faction, Leader, and reference space on the east side while preserving Faction magnets', () => {
     const snaps = buildTableSnapPoints();
     const faction = snaps.filter(point => point.Tags?.includes('gauntlet-faction-zone'));
     const whiteFaction = faction.filter(point => point.Position.z < 0);
     const greenFaction = faction.filter(point => point.Position.z > 0);
-
     expect(whiteFaction).toHaveLength(12);
     expect(greenFaction).toHaveLength(12);
     expect(whiteFaction.every(point => point.Rotation.y === 180)).toBe(true);
     expect(greenFaction.every(point => point.Rotation.y === 0)).toBe(true);
+
+    const leaderXs = [7.65, 10.15, 12.65, 15.15];
+    const whiteLeader = snaps.filter(point => point.Position.z === -13.4 && leaderXs.includes(point.Position.x));
+    const greenLeader = snaps.filter(point => point.Position.z === 13.4 && leaderXs.includes(point.Position.x));
+    expect(whiteLeader).toHaveLength(4);
+    expect(greenLeader).toHaveLength(4);
+
+    const factionLines = buildTableVectorLines().filter(line => {
+      const xs = line.points3.map(point => point.x);
+      const zs = line.points3.map(point => point.z);
+      return Math.min(...xs) === 6.15 && Math.max(...xs) === 16.65
+        && (Math.min(...zs) === -15.3 || Math.min(...zs) === 4.7);
+    });
+    expect(factionLines).toHaveLength(4);
   });
 
-  it('draws the visible Hand parking rectangles and only the six primary Territory guides', () => {
+  it('keeps Graveyards isolated at the outer east edge', () => {
+    const snaps = buildTableSnapPoints();
+    const whiteGraveyard = snaps.find(point => point.Position.x === 18.7 && point.Position.z === -15.1);
+    const greenGraveyard = snaps.find(point => point.Position.x === 18.7 && point.Position.z === 15.1);
+    expect(whiteGraveyard?.Rotation.y).toBe(180);
+    expect(greenGraveyard?.Rotation.y).toBe(0);
+  });
+
+  it('draws compact workspace guides, the shared Battle Zone, and only the six primary Territory guides', () => {
     const lines = buildTableVectorLines();
-    expect(lines).toHaveLength(40);
+    expect(lines).toHaveLength(38);
 
     const territoryLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
       return Math.min(...xs) === -1.9 && Math.max(...xs) === 1.9;
     });
     expect(territoryLines).toHaveLength(12);
-    expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
-    expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
 
-    const whiteHandLines = lines.filter(line => {
+    const whitePrivateLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
-        && Math.min(...zs) === -20.25 && Math.max(...zs) === -16.25;
+      return close(Math.min(...xs), -7) && close(Math.max(...xs), 7)
+        && close(Math.min(...zs), -20.1) && close(Math.max(...zs), -17.2);
     });
-    const greenHandLines = lines.filter(line => {
+    const greenPrivateLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
-        && Math.min(...zs) === 16.25 && Math.max(...zs) === 20.25;
+      return close(Math.min(...xs), -7) && close(Math.max(...xs), 7)
+        && close(Math.min(...zs), 17.2) && close(Math.max(...zs), 20.1);
     });
-    expect(whiteHandLines).toHaveLength(2);
-    expect(greenHandLines).toHaveLength(2);
+    expect(whitePrivateLines).toHaveLength(2);
+    expect(greenPrivateLines).toHaveLength(2);
   });
 
-  it('keeps Reserve hand zones outside the tabletop parking areas', () => {
+  it('keeps Reserve hand zones outside the wide tabletop private areas', () => {
     const white = handZoneTransform('White');
     const green = handZoneTransform('Green');
     const whiteParking = parkingHiddenZoneTransform('White');
     const greenParking = parkingHiddenZoneTransform('Green');
 
-    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
-    expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -22.7, rotY: 0, scaleX: 14, scaleY: 6, scaleZ: 4 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 22.7, rotY: 180, scaleX: 14, scaleY: 6, scaleZ: 4 });
+    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, rotY: 0, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
+    expect(greenParking).toMatchObject({ posX: 0, posY: 3, rotY: 180, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
+    expect(whiteParking.posZ).toBeCloseTo(-19.05, 6);
+    expect(greenParking.posZ).toBeCloseTo(19.05, 6);
 
-    // Parking is deliberately outside the actual Hand zone, so a card placed
-    // on the tabletop stays parked instead of being swallowed back into Reserve.
-    expect(zoneContainsPoint(white, 0, -18.25)).toBe(false);
-    expect(zoneContainsPoint(green, 0, 18.25)).toBe(false);
-    expect(zoneContainsPoint(whiteParking, 0, -18.25)).toBe(true);
-    expect(zoneContainsPoint(greenParking, 0, 18.25)).toBe(true);
-    // Hidden parking deliberately overlaps the inward edge of Reserve so a card
-    // never becomes public while crossing between the two private areas.
-    expect(zoneContainsPoint(whiteParking, 0, -21.25)).toBe(true);
-    expect(zoneContainsPoint(greenParking, 0, 21.25)).toBe(true);
+    expect(zoneContainsPoint(white, 0, -18.65)).toBe(false);
+    expect(zoneContainsPoint(green, 0, 18.65)).toBe(false);
+    expect(zoneContainsPoint(whiteParking, 0, -18.65)).toBe(true);
+    expect(zoneContainsPoint(greenParking, 0, 18.65)).toBe(true);
+    expect(zoneContainsPoint(whiteParking, 0, -20.7)).toBe(true);
+    expect(zoneContainsPoint(greenParking, 0, 20.7)).toBe(true);
 
-    // Draw/Discard and Graveyard remain ordinary public table workspaces.
-    expect(zoneContainsPoint(white, -1.55, -13.55)).toBe(false);
-    expect(zoneContainsPoint(white, 1.55, -13.55)).toBe(false);
-    expect(zoneContainsPoint(white, 17.15, -17.75)).toBe(false);
-    expect(zoneContainsPoint(green, 1.55, 13.55)).toBe(false);
-    expect(zoneContainsPoint(green, -1.55, 13.55)).toBe(false);
-    expect(zoneContainsPoint(green, -17.15, 17.75)).toBe(false);
+    expect(zoneContainsPoint(white, -1.6, -14.25)).toBe(false);
+    expect(zoneContainsPoint(white, 1.6, -14.25)).toBe(false);
+    expect(zoneContainsPoint(white, 18.7, -15.1)).toBe(false);
+    expect(zoneContainsPoint(green, -1.6, 14.25)).toBe(false);
+    expect(zoneContainsPoint(green, 1.6, 14.25)).toBe(false);
+    expect(zoneContainsPoint(green, 18.7, 15.1)).toBe(false);
   });
 
   it('serializes only TTS-native hand transforms and does not commandeer the camera', () => {
@@ -181,9 +198,9 @@ describe('authoritative TTS table layout', () => {
     };
 
     const result = applyTableLayout(Object.assign(save, TEST_ENVIRONMENT));
-    expect(result.textObjectCount).toBe(28);
-    expect(result.vectorLineCount).toBe(40);
-    expect(result.snapPointCount).toBe(78);
+    expect(result.textObjectCount).toBe(32);
+    expect(result.vectorLineCount).toBe(38);
+    expect(result.snapPointCount).toBe(108);
 
     const white = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'White');
     const green = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Green');
@@ -196,8 +213,8 @@ describe('authoritative TTS table layout', () => {
 
     // Native Hand rotations own TTS seat/camera orientation. Tabletop card
     // snaps deliberately use the opposite rotations so cards face each player.
-    const whiteTableCard = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
-    const greenTableCard = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
+    const whiteTableCard = buildTableSnapPoints().find(point => point.Position.x === -5.5 && point.Position.z === -18.65);
+    const greenTableCard = buildTableSnapPoints().find(point => point.Position.x === -5.5 && point.Position.z === 18.65);
     expect(whiteTableCard?.Rotation.y).toBe(180);
     expect(greenTableCard?.Rotation.y).toBe(0);
 
@@ -211,7 +228,7 @@ describe('authoritative TTS table layout', () => {
     expect(parkingZones.every((object: any) => object.FogReverseHiding === false)).toBe(true);
     expect(parkingZones.every((object: any) => object.Hands === false)).toBe(true);
     expect(fogZones.some((object: any) => object.GUID === 'other-fog')).toBe(true);
-    expect(save.Note).toContain('tabletop Hand parking area is a separate player-private Hidden Zone');
+    expect(save.Note).toContain('wide private tabletop Hand parking strip');
     expect(save.LuaScript).toBe('-- unrelated global script');
     expect(save.LuaScript).not.toContain('gauntletSeatCamera');
 

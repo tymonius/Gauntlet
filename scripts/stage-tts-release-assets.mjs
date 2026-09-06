@@ -55,6 +55,14 @@ function releaseUrl(repository, tag, name) {
   return `https://github.com/${repository}/releases/download/${tag}/${encodeURIComponent(name)}`;
 }
 
+function contentVersionedUrl(url, digest) {
+  if (!/^[a-f0-9]{64}$/i.test(String(digest || ''))) {
+    throw new Error(`Cannot cache-bust TTS asset URL without a SHA-256 digest: ${url}`);
+  }
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${digest.slice(0, 12)}`;
+}
+
 function addAsset(records, seenNames, sourceFile, releaseAsset, kind, metadata = {}) {
   if (seenNames.has(releaseAsset)) throw new Error(`Duplicate staged TTS release asset name: ${releaseAsset}`);
   seenNames.add(releaseAsset);
@@ -100,6 +108,9 @@ async function stageReleaseAssets() {
     throw new Error(`Supplemental manifest must declare starter-faction save assembly; found ${supplementalManifest.placement?.assembly || 'missing'}.`);
   }
 
+  const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
+  await generateTtsRulebookReader();
+
   const prefix = assetPrefix(release.version);
   const records = [];
   const seenNames = new Set();
@@ -113,6 +124,15 @@ async function stageReleaseAssets() {
       environment.kind,
     );
   }
+
+  addAsset(
+    records,
+    seenNames,
+    'rulebook-reader.pdf',
+    `${prefix}_Rulebook.pdf`,
+    'rulebook-reader',
+    { pageFormat: 'half-letter', pageOrder: 'reading' },
+  );
 
   for (const sheet of cardManifest.sheets || []) {
     addAsset(
@@ -234,11 +254,15 @@ async function stageReleaseAssets() {
     const info = await ensureFile(sourcePath);
     const targetPath = join(STAGING_ROOT, record.releaseAsset);
     await copyFile(sourcePath, targetPath);
+    const digest = await sha256(sourcePath);
     staged.push({
       ...record,
       bytes: info.size,
-      sha256: await sha256(sourcePath),
-      url: releaseUrl(repository, release.version, record.releaseAsset),
+      sha256: digest,
+      url: contentVersionedUrl(
+        releaseUrl(repository, release.version, record.releaseAsset),
+        digest,
+      ),
     });
   }
 
@@ -253,7 +277,8 @@ async function stageReleaseAssets() {
     publication: {
       host: 'github-release-assets',
       mutableAssetNames: true,
-      note: 'The publication workflow replaces only these deterministic TTS-named assets on the existing current GitHub Release. The release tag itself is not moved.',
+      cachePolicy: 'sha256-query',
+      note: 'The publication workflow replaces only these deterministic TTS-named assets on the existing current GitHub Release. Generated TTS URLs append each asset SHA-256 prefix so TTS cannot reuse stale cached bytes after an in-place asset replacement. The release tag itself is not moved.',
     },
     backPolicy: starterManifest.backPolicy,
     supplemental: {
@@ -284,4 +309,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { STAGING_ROOT, stageReleaseAssets };
+export { STAGING_ROOT, contentVersionedUrl, stageReleaseAssets };

@@ -1,39 +1,62 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="theme-color" content="#8f1f25" />
   <meta name="description" content="Compare all six Gauntlet factions, their play styles, signature mechanics, victory conditions, and Leaders.">
+  <link rel="canonical" href="https://gauntlet.run/factions/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/factions/" />
+  <meta property="og:title" content="Factions — Gauntlet" />
+  <meta property="og:description" content="Compare all six Gauntlet factions, their play styles, signature mechanics, victory conditions, and Leaders." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Factions — Gauntlet" />
+  <meta name="twitter:description" content="Compare all six Gauntlet factions, their play styles, signature mechanics, victory conditions, and Leaders." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <title>Factions — Gauntlet</title>
   <link rel="stylesheet" href="../site.css">
   <link rel="stylesheet" href="factions.css">
-  <link rel="stylesheet" href="../rules-assistant/widget.css">
+  <link rel="stylesheet" href="../rules-assistant/widget.css?v=20260903-1">
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body class="factions-hub">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span>      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+    </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
+      <a href="/playtest/">Playtest</a>
       <a href="/rulebook/">Rules</a>
-      <a href="/factions/" aria-current="page">Factions</a>
+      <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
       <a href="/card-reference/">Card Reference</a>
       <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="factions-intro">
       <p class="eyebrow">Six institutions · twelve Leaders</p>
       <h1>Choose how <span>you wield power.</span></h1>
@@ -42,7 +65,7 @@
     <section class="faction-hub-grid" aria-label="Gauntlet factions">
       <a class="faction-hub-card faction-military" href="military/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/military.svg')"></span>
-        <p class="hub-kicker">Command · maximum 2</p>
+        <p class="hub-kicker">Direct action · battlefield control</p>
         <h2>Military</h2>
         <p>Military turns battlefield victories into Command, then spends that Command on Orders that extend movement, strengthen attacks or defenses, drive enemies back, and secure captured ground.</p>
         <small>General · Commandant</small>
@@ -50,7 +73,7 @@
       </a>
       <a class="faction-hub-card faction-diplomats" href="diplomats/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/diplomats.svg')"></span>
-        <p class="hub-kicker">Influence · 0–10</p>
+        <p class="hub-kicker">Negotiation · leverage</p>
         <h2>Diplomats</h2>
         <p>Diplomats use Influence and Terms to turn an impending battle into a negotiation. The opponent may accept a settlement—or refuse and fight after the Diplomat has shaped the consequences.</p>
         <small>Ambassador · Senator</small>
@@ -58,7 +81,7 @@
       </a>
       <a class="faction-hub-card faction-financiers" href="financiers/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/financiers.svg')"></span>
-        <p class="hub-kicker">Capital · dynamic limit</p>
+        <p class="hub-kicker">Engine-building · compounding advantage</p>
         <h2>Financiers</h2>
         <p>Financiers convert cards and Territory control into Capital, Capital into Deeds, and Deeds into recurring income—or ownership of the entire Gauntlet.</p>
         <small>Banker · Executive</small>
@@ -66,7 +89,7 @@
       </a>
       <a class="faction-hub-card faction-intelligence" href="intelligence/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/intelligence.svg')"></span>
-        <p class="hub-kicker">Intel and Operation Progress</p>
+        <p class="hub-kicker">Hidden objectives · information</p>
         <h2>Intelligence</h2>
         <p>Intelligence pursues hidden Missions, accumulates Intel, studies opposing battle choices, and turns operational progress into a secret route to victory.</p>
         <small>Ranger · Spymaster</small>
@@ -74,7 +97,7 @@
       </a>
       <a class="faction-hub-card faction-mystics" href="mystics/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/mystics.svg')"></span>
-        <p class="hub-kicker">Three Rites · no tracked resource</p>
+        <p class="hub-kicker">Combos · sacrifice and recovery</p>
         <h2>Mystics</h2>
         <p>Mystics bind, sacrifice, exchange, and recover cards while completing three public Rites that unlock increasingly powerful ways to use the Graveyard and the cards in hand.</p>
         <small>Alchemist · Spirit Walker</small>
@@ -82,7 +105,7 @@
       </a>
       <a class="faction-hub-card faction-inquisition" href="inquisition/">
         <span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/inquisition.svg')"></span>
-        <p class="hub-kicker">Conviction · maximum 4</p>
+        <p class="hub-kicker">Disruption · suppression</p>
         <h2>Inquisition</h2>
         <p>The Inquisition sends opposing battle cards permanently to the Graveyard, gains Conviction from those losses, and spends it to suppress Assets, hands, and Discard Piles.</p>
         <small>Grand Inquisitor · Witch Hunter</small>
@@ -94,11 +117,28 @@
       <p>The factions represent methods of power within a broadly shared early-modern civilization: force, diplomacy, finance, intelligence, ritual practice, and institutional judgment. Their rivalries can represent armies, courts, orders, guilds, expeditions, offices, or coalitions competing over contested ground.</p>
     </section>
   </main>
-  <footer>
-    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
-    <div class="footer-links"><a href="../rulebook/">Browser Rulebook</a><a href="../deckbuilder/">Deckbuilder</a><a href="https://github.com/tymonius/Gauntlet">GitHub</a></div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
+    </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
-  <script type="module" src="../rules-assistant/widget.js"></script>
+  <script type="module" src="../rules-assistant/widget.js?v=20260903-1"></script>
 </body>
 </html>

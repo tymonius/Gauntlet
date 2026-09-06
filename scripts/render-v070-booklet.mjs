@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
+import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
+import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
@@ -87,6 +89,23 @@ async function waitForServer(url) {
   throw new Error(`Rulebook production server did not become ready: ${lastError?.message || 'unknown error'}`);
 }
 
+function frozenCardAnatomyFiguresAreUsable() {
+  return [
+    [CARD_ANATOMY_PATH, 10000],
+    [ARCANE_TRAIT_PATH, 5000],
+  ].every(([file, minimumBytes]) =>
+    fs.existsSync(file) && fs.statSync(file).size >= minimumBytes
+  );
+}
+
+async function ensureCardAnatomyFigures() {
+  if (frozenCardAnatomyFiguresAreUsable()) {
+    console.log('Preserving frozen v0.7.0 Card Anatomy figures for release errata.');
+    return;
+  }
+  await renderCardAnatomyFigures();
+}
+
 async function renderCardAnatomyFigures() {
   fs.mkdirSync(RELEASE_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
@@ -141,7 +160,21 @@ for (const required of [RULEBOOK_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE
   if (!fs.existsSync(required)) throw new Error(`Missing v0.7.0 source artifact: ${relative(required)}.`);
 }
 
-const rulebook = fs.readFileSync(RULEBOOK_PATH, 'utf8').replace(/\r\n/g, '\n');
+const canonical = applyV070CanonicalCorrections(JSON.parse(fs.readFileSync(CANONICAL_PATH, 'utf8')));
+fs.writeFileSync(CANONICAL_PATH, jsonText(canonical));
+
+const sourceRulebook = fs.readFileSync(RULEBOOK_PATH, 'utf8').replace(/\r\n/g, '\n');
+const semanticRulebook = applyV070RulebookCorrections(sourceRulebook);
+const synchronizedRulebook = synchronizeKnownRulebookClaims(semanticRulebook, canonical);
+const rulebook = synchronizedRulebook.output;
+validateKnownRulebookClaims(rulebook, canonical);
+if (rulebook !== sourceRulebook) {
+  fs.writeFileSync(RULEBOOK_PATH, rulebook);
+  if (synchronizedRulebook.changes.length) {
+    console.log('Synchronized maintained v0.7.0 Rulebook facts from canonical data:');
+    for (const change of synchronizedRulebook.changes) console.log(`- ${change.label}`);
+  }
+}
 const chapter11 = extractChapter11(rulebook);
 const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 
@@ -155,7 +188,7 @@ const server = spawn('python', ['-m', 'http.server', '8000'], {
 });
 try {
   await waitForServer('http://127.0.0.1:8000/rulebook/');
-  await renderCardAnatomyFigures();
+  await ensureCardAnatomyFigures();
 
   run('python', ['rulebook-design/build_proofs.py']);
   run('python', ['rulebook-production/build_fidelity_gate.py']);
@@ -212,7 +245,6 @@ if (provenance.release_version !== RELEASE_VERSION || provenance.source_version 
   throw new Error('v0.7.0 source provenance is incomplete.');
 }
 
-const canonical = JSON.parse(fs.readFileSync(CANONICAL_PATH, 'utf8'));
 const starters = JSON.parse(fs.readFileSync(STARTERS_PATH, 'utf8'));
 const publicRoutes = {
   start: '/start/',

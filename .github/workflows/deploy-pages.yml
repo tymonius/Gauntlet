@@ -8,7 +8,6 @@ on:
     paths:
       - 'media/**'
       - 'game-data/**'
-      - 'config/tts-release-target.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'images/artwork/cards/**'
@@ -17,6 +16,10 @@ on:
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'legacy/public-compatibility/**'
+      - 'legacy/public-versions/v0.6.2/**'
+      - 'legacy/public-versions/v0.6.3/**'
+      - 'legacy/public-versions/v0.7.0/**'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
@@ -29,6 +32,9 @@ permissions:
 
 concurrency:
   group: pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  # PR previews may supersede themselves, but production must be allowed to finish.
+  # With cancel-in-progress disabled for main, GitHub keeps one active production deploy
+  # and at most one pending replacement, so rapid merges cannot starve the live site.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -46,19 +52,82 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Stage tracked website
+      - name: Stage explicit public website
         shell: bash
         run: |
           set -euo pipefail
           site="$RUNNER_TEMP/gauntlet-pages"
           rm -rf "$site"
           mkdir -p "$site"
-          git archive --format=tar HEAD | tar -xf - -C "$site"
 
-          # Keep the public site below GitHub Pages' 1 GB published-site limit.
-          # These are authoring/reconstruction/generated surfaces, not live site dependencies.
+          # GitHub Pages is a deployment artifact, not a mirror of the repository.
+          # Preserve stable public/application paths while excluding source-only,
+          # historical-authoring, CI, and repository-maintenance roots by default.
+          public_directories=(
+            about
+            accessibility
+            assets
+            card-design
+            card-reference
+            changelog
+            config
+            contact
+            deckbuilder
+            factions
+            faq
+            game-data
+            images
+            playtest
+            press
+            privacy
+            releases
+            rulebook
+            rules-arbiter
+            rules-assistant
+            start
+            tts
+            v0.7.1
+          )
+
+          root_public_files=(404.html CNAME index.html)
+          while IFS= read -r -d '' file; do
+            root_public_files+=("${file#./}")
+          done < <(
+            find . -maxdepth 1 -type f \
+              \( -name '*.css' -o -name '*.js' -o -name '*.ico' -o -name '*.png' \
+                 -o -name '*.svg' -o -name '*.webp' -o -name '*.jpg' -o -name '*.jpeg' \
+                 -o -name '*.webmanifest' -o -name '*.xml' -o -name '*.txt' \) \
+              -print0
+          )
+
+          git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
+            | tar -xf - -C "$site"
+
+          # Keep historical source under legacy/ while materializing real files at the stable
+          # public version URLs without exposing the legacy source boundary itself.
+          for version in v0.6.2 v0.6.3 v0.7.0; do
+            source="legacy/public-versions/$version"
+            target="$site/$version"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Retired browser applications also live under legacy/, but retain their historical
+          # public URL roots in the deployed Pages artifact.
+          for surface in deckbuilder-v0.5 deckbuilder-v0.6 faction-sheets; do
+            source="legacy/public-compatibility/$surface"
+            target="$site/$surface"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Keep large authoring/source subsets out of the deployed artifact while retaining
+          # the production asset namespaces that current public pages consume.
           rm -rf \
-            "$site/artifacts" \
             "$site/images/3d" \
             "$site/images/sketches" \
             "$site/images/tools" \
@@ -74,6 +143,21 @@ jobs:
 
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete
+
+          # v0.6.0 preserves multiple equivalent Rulebook export variants for archival/legal
+          # provenance. Keep the canonical booklet on Pages, but omit redundant large exports
+          # that are not referenced by any live public page.
+          rm -f \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf"
+
+          # Source-only repository roots must never re-enter Pages implicitly. Add a path to
+          # public_directories above only when it is intentionally part of the deployed site.
+          for excluded in \
+            .github artifacts docs governance legacy media rulebook-design rulebook-production \
+            scripts src tests workers; do
+            test ! -e "$site/$excluded"
+          done
 
           test -s "$site/index.html"
           test -s "$site/CNAME"
@@ -209,7 +293,12 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
-
+          test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
+          test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
+          test -s "$SITE_DIR/faction-sheets/index.html"
+          test -s "$SITE_DIR/v0.6.2/index.html"
+          test -s "$SITE_DIR/v0.6.3/index.html"
+          test -s "$SITE_DIR/v0.7.0/index.html"
           for image in \
             "hero sketch.png" \
             "general.png" \

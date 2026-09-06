@@ -1,0 +1,110 @@
+.mystics-rites-panel[hidden],
+#riteMetricCard[hidden],
+#deckRitesSection[hidden] {
+  display: none !important;
+}
+
+.mystics-rites-panel {
+  border-top: 4px solid #5b2a72;
+}
+
+.rite-browser {
+  display: grid;
+  grid-template-columns: minmax(250px, .8fr) minmax(280px, 1.2fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.compact-rite-list {
+  display: grid;
+  gap: 8px;
+}
+
+.compact-rite-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(255, 252, 244, .62);
+  cursor: default;
+}
+
+.compact-rite-row.selected {
+  border-color: rgba(91, 42, 114, .7);
+  box-shadow: inset 3px 0 0 #5b2a72;
+}
+
+.compact-rite-row.chosen {
+  background: rgba(91, 42, 114, .08);
+}
+
+.compact-rite-row button {
+  min-height: 36px;
+  padding-inline: 12px;
+}
+
+.rite-preview {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 252, 244, .48);
+}
+
+.deckbuilder-rite-render-stage {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  overflow: hidden;
+}
+
+.deckbuilder-rite-render-frame {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 240px;
+  height: 336px;
+  border: 0;
+  transform-origin: top center;
+  background: transparent;
+  pointer-events: none;
+}
+
+.rite-preview-copy {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.42;
+}
+
+.rite-preview-copy p {
+  margin: 0;
+}
+
+.rite-preview-copy strong {
+  color: var(--ink);
+}
+
+.rite-preview-reminder {
+  padding: 7px 9px;
+  border-left: 2px solid #5b2a72;
+  background: rgba(91, 42, 114, .06);
+}
+
+.rendered-rite-preview-actions {
+  margin-top: 12px;
+}
+
+#deckRites .deck-row {
+  border-left: 3px solid #5b2a72;
+}
+
+@media (max-width: 920px) {
+  .rite-browser {
+    grid-template-columns: 1fr;
+  }
+}

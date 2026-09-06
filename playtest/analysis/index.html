@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -25,8 +30,11 @@
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="styles.css?v=20260815-1" />
   <style>[hidden]{display:none!important}</style>
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header analysis-header">
     <a class="brand" href="../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -40,7 +48,7 @@
     </nav>
   </header>
 
-  <main class="analysis-main">
+  <main id="main-content" tabindex="-1" class="analysis-main">
     <section class="analysis-hero">
       <div>
         <p class="eyebrow">Owner research workspace</p>
@@ -90,6 +98,8 @@
         <article><span>Play again</span><strong id="metricReplay">—</strong><small>among submitted responses</small></article>
         <article><span>Average duration</span><strong id="metricDuration">—</strong><small>completed or stopped games</small></article>
         <article><span>Arbiter questions</span><strong id="metricArbiter">0</strong><small>attributed where tracking was available</small></article>
+        <article><span>Play method</span><strong id="metricPlayMode">—</strong><small id="metricPlayModeDetail"></small></article>
+        <article><span>Live flags</span><strong id="metricDiagnostics">0</strong><small>timestamped player observations</small></article>
         <article><span>Rules versions</span><strong id="metricVersions">0</strong><small id="metricVersionsDetail"></small></article>
       </section>
 
@@ -101,6 +111,7 @@
         <div class="filter-grid">
           <label>Status<select id="filterStatus"><option value="all">All games</option><option value="closed">Submitted</option><option value="open">Open</option></select></label>
           <label>Rules version<select id="filterVersion"><option value="all">All versions</option></select></label>
+          <label>Play method<select id="filterPlayMode"><option value="all">All methods</option><option value="physical">Physical tabletop</option><option value="tts">Tabletop Simulator</option><option value="unspecified">Not recorded</option></select></label>
           <label>Faction<select id="filterFaction"><option value="all">All factions</option></select></label>
           <label>Leader<select id="filterLeader"><option value="all">All Leaders</option></select></label>
           <label>Created after<input id="filterFrom" type="date" /></label>
@@ -139,12 +150,23 @@
         </section>
       </section>
 
+      <section class="analysis-grid">
+        <section class="analysis-panel" aria-labelledby="decision-title">
+          <div class="section-heading"><p class="eyebrow">Winner / loser experience</p><h2 id="decision-title">When did the game feel decided?</h2></div>
+          <div id="decisionSummary" class="outcome-summary"></div>
+        </section>
+        <section class="analysis-panel" aria-labelledby="diagnostic-title">
+          <div class="section-heading"><p class="eyebrow">Live observations</p><h2 id="diagnostic-title">What players marked during play.</h2></div>
+          <div id="diagnosticSummary" class="outcome-summary"></div>
+        </section>
+      </section>
+
       <section class="analysis-panel breakdown-panel" aria-labelledby="breakdown-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Faction and Leader comparison</p><h2 id="breakdown-title">Response patterns by side.</h2></div>
           <p>Small sample sizes are shown explicitly; averages are not presented as balance conclusions.</p>
         </div>
-        <div class="table-scroll"><table><thead><tr><th>Faction / Leader</th><th>Responses</th><th>Wins</th><th>Play again</th><th>Fun</th><th>Pacing</th><th>Decisions</th><th>Rules clarity</th></tr></thead><tbody id="breakdownRows"></tbody></table></div>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Faction and Leader comparison table"><table><thead><tr><th scope="col">Faction / Leader</th><th scope="col">Responses</th><th scope="col">Wins</th><th scope="col">Play again</th><th scope="col">Fun</th><th scope="col">Pacing</th><th scope="col">Decisions</th><th scope="col">Rules clarity</th></tr></thead><tbody id="breakdownRows"></tbody></table></div>
       </section>
 
       <section class="analysis-panel" aria-labelledby="written-title">
@@ -165,12 +187,32 @@
     </section>
   </main>
 
-  <footer>
-    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
+    </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="complete-responses.js?v=20260804-1" defer></script>
   <script src="app.js?v=20260802-1" defer></script>
+  <script src="focus-accessibility.js?v=20260903-1" defer></script>
+  <script src="refresh-focus-accessibility.js?v=20260903-1" defer></script>
 </body>
 </html>

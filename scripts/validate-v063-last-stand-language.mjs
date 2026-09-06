@@ -12,11 +12,11 @@ const RULEBOOK_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79
 const CANONICAL_SHA256 = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c';
 
 const targets = [
-  'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
-  'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Implementation_Ledger.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Implementation_Ledger.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
   'index.html',
   'start/index.html',
   'factions/military/index.html',
@@ -99,22 +99,25 @@ for (const [relativePath, expectedHash] of certifiedInputs) {
 }
 
 for (const [relativePath, required] of [
-  ['docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
+  ['docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
   ['releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md', 'The resulting contest is a Last Stand battle.'],
   ['releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json', 'force the opponent to make a Last Stand'],
 ]) {
   failures += requireText(relativePath, required, `PR #171 terminology: ${JSON.stringify(required)}`);
 }
 
-// Live consumers must authenticate the recovered authority before applying the
-// publication-language correction.
-failures += requireText('rulebook/app.js', "normalizeV063LastStandText", 'Last Stand publication normalizer');
+// The current Browser Rulebook consumes its published release authority
+// directly. Historical v0.6.3 publication transforms remain confined to the
+// archived v0.6.3 corpus and publication tooling.
+failures += requireText('rulebook/app.js', 'RELEASE_MANIFEST_URL', 'published release-manifest binding');
+failures += requireText('rulebook/app.js', 'manifest?.binding_sources?.rulebook', 'manifest Rulebook binding');
 failures += requireOrder(
   'rulebook/app.js',
-  'if (actualHash !== SOURCE_SHA256)',
-  'const markdown = publicRulebookSource',
-  'Rulebook must verify the certified hash before applying publication terminology.',
+  'const { rulebook, sourceUrl } = await loadReleaseManifest();',
+  'if (actualHash !== rulebook.sha256)',
+  'Rulebook must load its published binding before verifying the published source hash.',
 );
+failures += requireText('rulebook/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
 failures += requireText('rules-assistant/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
 failures += requireOrder(
   'rules-assistant/v063-public-corpus.js',

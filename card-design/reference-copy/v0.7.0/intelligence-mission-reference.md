@@ -12,11 +12,8 @@
 
 | Feature | Use |
 |---|---|
-| Start Mission | 1 Action · Denouement |
-| Complete Mission | 1 Action · Denouement |
-| Abort Mission | 1 Action · Denouement |
-| Start Special Operation | 1 Action · Denouement |
-| Complete Special Operation | 1 Action · Denouement |
+| Missions | 1 Action · Denouement |
+| Special Operations | 1 Action · Denouement |
 
 ### Start a Mission
 

@@ -8,10 +8,20 @@ const browserApp = read('rulebook/app.js');
 
 describe('Maintained current Rulebook source', () => {
   it('is the direct current-development player-facing authority', () => {
-    expect(currentRulebook).toContain('**Version 0.7.0**');
+    expect(currentRulebook).toMatch(/\*\*Version 0\.7\.1(?: Candidate)?\*\*/);
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
+    expect(currentRulebook).toMatch(/choose exactly three(?:<!--[^>]+-->)? different Rites from the six(?:<!--[^>]+-->)?-Rite pool/);
+    expect(currentRulebook).toContain('### Rite of Shattering');
+    expect(currentRulebook).toContain('### Rite of Consecration');
+    expect(currentRulebook).toContain('### Rite of Equivalence');
+    expect(currentRulebook).toMatch(/Ratify six(?:<!--[^>]+-->)? different Proposals/);
+    expect(currentRulebook).toMatch(/if six(?:<!--[^>]+-->)? different Proposals are ratified/);
+    expect(currentRulebook).toContain("spend Influence for Leverage to increase the Diplomat's battle total");
+    expect(currentRulebook).toContain('| Battle Total bonus | Total Influence cost |');
+    expect(currentRulebook).not.toContain('Ratify five different Proposals');
+    expect(currentRulebook).not.toContain('if five different Proposals are ratified');
     expect(browserApp).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
     expect(browserApp).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
     expect(browserApp).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');

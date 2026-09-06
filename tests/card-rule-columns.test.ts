@@ -10,6 +10,10 @@ describe("shared portrait-card rule columns", () => {
     expect(ruleColumnStyles).toContain(".gauntlet-card .card-rules:has(> :is(.rule-section, .leader-rule-section, .rite-unlock-section))");
     expect(ruleColumnStyles).toContain("grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr)");
     expect(ruleColumnStyles).toContain("grid-template-columns: subgrid !important");
+    expect(ruleColumnStyles).toContain(".card-rules > .card-reminder");
+    expect(ruleColumnStyles).toContain(".rite-card .card-rules > .rite-reminder");
+    expect(ruleColumnStyles).toContain("grid-column: 2 / -1");
+    expect(ruleColumnStyles).toContain("margin-left: 0");
   });
 
   it("keeps one aligned dynamic heading track per card with type-specific safety caps", () => {

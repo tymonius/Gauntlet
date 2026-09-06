@@ -1,0 +1,244 @@
+import { describe, expect, it } from 'vitest';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types/v06';
+import { applyGameAction } from './apply-exfiltration';
+import { initializeGame } from './initialize';
+import { createV06StandardBoard } from './v06-board';
+
+function participant(playerId: PlayerID): BattleParticipantState {
+  return {
+    playerId,
+    passedHandCommit: true,
+    passedBattleDrawPlay: true,
+    hasDrawnBattleCards: true,
+    battleDraw: [],
+    battleDrawPlayed: [],
+    battleDrawCount: 3,
+    battleDrawPlayLimit: 1,
+    rerollsRemaining: 0,
+    modifiers: 0,
+    retreated: false,
+  };
+}
+
+function played(cardId: string, owner: PlayerID, origin: 'hand' | 'battle_draw'): BattlePlayedCard {
+  return { cardId, owner, origin, faceDown: false, canceled: false };
+}
+
+function game(): GameState {
+  const playerOne = {
+    id: 'player_1',
+    name: 'Attacker',
+    factionId: 'intelligence',
+    leaderName: 'Ranger',
+    deck: ['a'],
+    territories: ['t1', 't2', 't3'],
+  };
+  const playerTwo = {
+    id: 'player_2',
+    name: 'Defender',
+    factionId: 'intelligence',
+    leaderName: 'Spymaster',
+    deck: ['b'],
+    territories: ['t4', 't5', 't6'],
+  };
+  const state = initializeGame({
+    id: 'intelligence-exfiltration-battle',
+    version: 'v0.6.0',
+    openingHandSize: 0,
+    shuffleDecks: false,
+    players: [playerOne, playerTwo],
+  });
+  const topology = createV06StandardBoard([playerOne, playerTwo]);
+  state.board = topology.board;
+  const origin = state.board.spaces.find((space) => space.index === 2)!;
+  const location = state.board.spaces.find((space) => space.index === 3)!;
+  for (const space of state.board.spaces) space.occupant = undefined;
+  origin.occupant = 'player_1';
+  location.occupant = 'player_2';
+  state.players.player_1.occupiedSpaceId = origin.id;
+  state.players.player_2.occupiedSpaceId = location.id;
+  state.phase = 'battle';
+  state.activePlayer = 'player_1';
+  state.priorityPlayer = 'player_1';
+  state.battle = {
+    id: 'battle-1',
+    stage: 'resolution',
+    location: location.id,
+    attackerOrigin: origin.id,
+    attacker: { ...participant('player_1'), diceRoll: 6 },
+    defender: { ...participant('player_2'), diceRoll: 1 },
+    tiePolicy: 'defender',
+    effectsResolved: ['before_battle_resolution'],
+  };
+  return state;
+}
+
+describe('Exfiltration Battle effect', () => {
+  it('offers the losing defender one additional retreat after normal battle resolution', () => {
+    let state = game();
+    state.battle!.defender.handCommit = played('intelligence-exfiltration', 'player_2', 'hand');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.recentBattleResult).toMatchObject({
+      battleId: 'battle-1',
+      winner: 'player_1',
+      loser: 'player_2',
+    });
+    expect(state.players.player_2.occupiedSpaceId).toBe('space-4');
+    expect(state.pendingIntelligenceChoice).toMatchObject({
+      kind: 'exfiltration_battle_withdraw',
+      playerId: 'player_2',
+      destinationId: 'space-5',
+      remainingUses: 1,
+    });
+    expect(state.players.player_2.zones.graveyard).toContain('intelligence-exfiltration');
+  });
+
+  it('moves the loser one additional position while preserving the resolved battle outcome', () => {
+    let state = game();
+    state.battle!.defender.handCommit = played('intelligence-exfiltration', 'player_2', 'hand');
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+    const recentResult = structuredClone(state.recentBattleResult);
+    const contested = structuredClone(state.board.spaces.find((space) => space.id === 'space-3'));
+
+    state = applyGameAction(state, {
+      type: 'resolve_intelligence_choice',
+      playerId: 'player_2',
+      choice: 'withdraw',
+    }).state;
+
+    expect(state.pendingIntelligenceChoice).toBeUndefined();
+    expect(state.players.player_2.occupiedSpaceId).toBe('space-5');
+    expect(state.board.spaces.find((space) => space.id === 'space-5')?.occupant).toBe('player_2');
+    expect(state.board.spaces.find((space) => space.id === 'space-4')?.occupant).toBeUndefined();
+    expect(state.board.spaces.find((space) => space.id === 'space-3')).toEqual(contested);
+    expect(state.recentBattleResult).toEqual(recentResult);
+  });
+
+  it('offers a losing attacker an additional retreat toward their own end', () => {
+    let state = game();
+    state.battle!.attacker.diceRoll = 1;
+    state.battle!.defender.diceRoll = 6;
+    state.battle!.attacker.handCommit = played('intelligence-exfiltration', 'player_1', 'hand');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.recentBattleResult?.loser).toBe('player_1');
+    expect(state.players.player_1.occupiedSpaceId).toBe('space-2');
+    expect(state.pendingIntelligenceChoice).toMatchObject({
+      kind: 'exfiltration_battle_withdraw',
+      playerId: 'player_1',
+      destinationId: 'player_1-before-gauntlet',
+    });
+  });
+
+  it('allows the loser to decline the additional retreat', () => {
+    let state = game();
+    state.battle!.defender.battleDrawPlayed = [played('intelligence-exfiltration', 'player_2', 'battle_draw')];
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    state = applyGameAction(state, {
+      type: 'resolve_intelligence_choice',
+      playerId: 'player_2',
+      choice: 'pass',
+    }).state;
+
+    expect(state.pendingIntelligenceChoice).toBeUndefined();
+    expect(state.players.player_2.occupiedSpaceId).toBe('space-4');
+    expect(state.players.player_2.zones.discard).toContain('intelligence-exfiltration');
+  });
+
+  it('does not offer Exfiltration to the winner', () => {
+    let state = game();
+    state.battle!.attacker.handCommit = played('intelligence-exfiltration', 'player_1', 'hand');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.recentBattleResult?.winner).toBe('player_1');
+    expect(state.pendingIntelligenceChoice?.kind).not.toBe('exfiltration_battle_withdraw');
+  });
+
+  it('does not offer a negated Exfiltration', () => {
+    let state = game();
+    state.battle!.defender.handCommit = {
+      ...played('intelligence-exfiltration', 'player_2', 'hand'),
+      negated: true,
+    };
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.recentBattleResult?.loser).toBe('player_2');
+    expect(state.pendingIntelligenceChoice?.kind).not.toBe('exfiltration_battle_withdraw');
+  });
+
+  it('does not open from a stale prior result when the current battle ties and rerolls', () => {
+    let state = game();
+    state.battle!.tiePolicy = 'reroll';
+    state.battle!.attacker.diceRoll = 4;
+    state.battle!.defender.diceRoll = 4;
+    state.battle!.defender.handCommit = played('intelligence-exfiltration', 'player_2', 'hand');
+    state.recentBattleResult = {
+      battleId: 'old-battle',
+      turn: state.turn - 1,
+      winner: 'player_1',
+      loser: 'player_2',
+      attacker: 'player_1',
+      defender: 'player_2',
+      location: 'space-3',
+      attackerOrigin: 'space-2',
+      retreatDirection: 1,
+    };
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.battle?.id).toBe('battle-1');
+    expect(state.battle?.stage).toBe('dice');
+    expect(state.pendingIntelligenceChoice?.kind).not.toBe('exfiltration_battle_withdraw');
+  });
+
+  it('resolves multiple Exfiltration cards one at a time', () => {
+    let state = game();
+    state.battle!.defender.handCommit = played('intelligence-exfiltration', 'player_2', 'hand');
+    state.battle!.defender.battleDrawPlayed = [played('intelligence-exfiltration', 'player_2', 'battle_draw')];
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+    expect(state.pendingIntelligenceChoice).toMatchObject({ remainingUses: 2, destinationId: 'space-5' });
+
+    state = applyGameAction(state, {
+      type: 'resolve_intelligence_choice',
+      playerId: 'player_2',
+      choice: 'withdraw',
+    }).state;
+    expect(state.players.player_2.occupiedSpaceId).toBe('space-5');
+    expect(state.pendingIntelligenceChoice).toMatchObject({ remainingUses: 1, destinationId: 'space-6' });
+
+    state = applyGameAction(state, {
+      type: 'resolve_intelligence_choice',
+      playerId: 'player_2',
+      choice: 'pass',
+    }).state;
+    expect(state.pendingIntelligenceChoice).toBeUndefined();
+    expect(state.players.player_2.occupiedSpaceId).toBe('space-5');
+  });
+
+  it('does not offer an additional retreat after the loser reaches their own end', () => {
+    let state = game();
+    const origin = state.board.spaces.find((space) => space.index === 6)!;
+    const location = state.board.spaces.find((space) => space.index === 7)!;
+    for (const space of state.board.spaces) space.occupant = undefined;
+    origin.occupant = 'player_1';
+    location.occupant = 'player_2';
+    state.players.player_1.occupiedSpaceId = origin.id;
+    state.players.player_2.occupiedSpaceId = location.id;
+    state.battle!.attackerOrigin = origin.id;
+    state.battle!.location = location.id;
+    state.battle!.defender.handCommit = played('intelligence-exfiltration', 'player_2', 'hand');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(state.recentBattleResult?.loser).toBe('player_2');
+    expect(state.players.player_2.occupiedSpaceId).toBe('player_2-before-gauntlet');
+    expect(state.pendingIntelligenceChoice?.kind).not.toBe('exfiltration_battle_withdraw');
+  });
+});

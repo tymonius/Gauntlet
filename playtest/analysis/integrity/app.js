@@ -37,6 +37,10 @@
       "dialogStatus", "cancelExclude"
     ]) el[id] = document.getElementById(id);
 
+    for (const target of [el.integrityApp, el.activeRecords, el.excludedRecords]) {
+      if (target) target.tabIndex = -1;
+    }
+
     el.accessForm?.addEventListener("submit", unlock);
     el.refreshData?.addEventListener("click", refresh);
     el.lockPage?.addEventListener("click", lock);
@@ -67,6 +71,7 @@
       el.integrityApp.hidden = false;
       render();
       setConnection("Protected data loaded", "");
+      focusRegion(el.integrityApp);
     } catch (error) {
       setStatus(el.accessStatus, error.message || "Integrity data could not be loaded.", "error");
     } finally {
@@ -126,13 +131,13 @@
           <h4>Seat ${number(player.seatIndex)} · ${escapeHtml(player.displayName)}</h4>
           <p><strong>${escapeHtml(player.leader || "Unknown Leader")}</strong> · ${escapeHtml(factionName(player.faction))}</p>
           ${response ? `<p>Questionnaire submitted ${escapeHtml(formatDate(response.submittedAt))}. Fun ${number(response.fun)}/5 · Rules ${number(response.rulesClarity)}/5 · Play again ${response.playAgain ? "Yes" : "No"}.</p>
-          <button class="button danger small" type="button" data-exclude-type="response" data-exclude-id="${escapeAttribute(player.participantId)}" data-exclude-label="${escapeAttribute(`${game.sheetSerial} · Seat ${player.seatIndex} · ${player.displayName}`)}">Exclude response</button>` : "<p>No questionnaire response is present.</p>"}
+          <button class="button danger small" type="button" data-exclude-type="response" data-exclude-id="${escapeAttribute(player.participantId)}" data-exclude-label="${escapeAttribute(`${game.sheetSerial} · Seat ${player.seatIndex} · ${player.displayName}`)}" aria-label="${escapeAttribute(`Exclude response — ${game.sheetSerial} · Seat ${player.seatIndex} · ${player.displayName}`)}">Exclude response</button>` : "<p>No questionnaire response is present.</p>"}
         </article>`;
       }).join("");
       return `<details class="integrity-game">
         <summary><div><h3>${escapeHtml(game.sheetSerial)}</h3><div class="record-meta">${escapeHtml(game.rulesVersion)} · ${escapeHtml(formatDate(game.createdAt))} · ${(game.players || []).map((player) => escapeHtml(player.leader || "Unknown")).join(" vs. ") || "Players pending"}</div></div><span class="status-pill ${escapeAttribute(game.status)}">${escapeHtml(game.status)}</span></summary>
         <div class="integrity-game-content">
-          <div class="record-actions"><button class="button danger small" type="button" data-exclude-type="game" data-exclude-id="${escapeAttribute(game.sessionId)}" data-exclude-label="${escapeAttribute(`${game.sheetSerial} · complete game record`)}">Exclude entire game</button></div>
+          <div class="record-actions"><button class="button danger small" type="button" data-exclude-type="game" data-exclude-id="${escapeAttribute(game.sessionId)}" data-exclude-label="${escapeAttribute(`${game.sheetSerial} · complete game record`)}" aria-label="${escapeAttribute(`Exclude entire game — ${game.sheetSerial}`)}">Exclude entire game</button></div>
           <div class="player-integrity-grid">${players || "<p>No players joined.</p>"}</div>
         </div>
       </details>`;
@@ -166,7 +171,7 @@
       <div><h3>${escapeHtml(title)}</h3><div class="record-meta">${escapeHtml(meta)}</div>
       <p class="exclusion-reason">${escapeHtml(reasonLabel(exclusion.reasonCode))} · excluded by ${escapeHtml(exclusion.excludedBy)} on ${escapeHtml(formatDate(exclusion.excludedAt))}</p>
       ${exclusion.reasonNote ? `<p class="exclusion-note">${escapeHtml(exclusion.reasonNote)}</p>` : ""}</div>
-      <button class="button secondary small" type="button" data-restore-id="${escapeAttribute(exclusion.id)}" data-restore-label="${escapeAttribute(title)}">Restore record</button>
+      <button class="button secondary small" type="button" data-restore-id="${escapeAttribute(exclusion.id)}" data-restore-label="${escapeAttribute(title)}" aria-label="${escapeAttribute(`Restore record — ${title}`)}">Restore record</button>
     </article>`;
   }
 
@@ -215,6 +220,7 @@
       el.excludeDialog.close();
       render();
       setConnection("Dataset updated", "");
+      focusRegion(el.excludedRecords);
     } catch (error) {
       setStatus(el.dialogStatus, error.message || "The record could not be excluded.", "error");
     } finally {
@@ -236,6 +242,7 @@
       });
       render();
       setConnection("Record restored", "");
+      focusRegion(el.activeRecords);
     } catch (error) {
       window.alert(error.message || "The record could not be restored.");
       button.disabled = false;
@@ -256,6 +263,12 @@
     try { payload = await response.json(); } catch { /* handled below */ }
     if (!response.ok) throw new Error(payload?.error || `Integrity service returned ${response.status}.`);
     return payload;
+  }
+
+  function focusRegion(target) {
+    if (!target || target.hidden) return;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function setBusy(form, busy) {

@@ -1,4 +1,7 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
   const EMAIL_STORAGE_KEY = "gauntlet-print-request-host-email-v1";
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const el = {};
@@ -74,18 +77,22 @@
   }
 
   function deckIsValid() {
-    try { return Boolean(validateDeck().valid); }
+    try { return Boolean(deckbuilder.validate().valid); }
     catch { return document.getElementById("validityText")?.textContent?.trim() === "Valid"; }
   }
 
   function buildRequest() {
-    const deck = currentDeckData();
-    const validation = validateDeck();
+    const deck = deckbuilder.serialize();
+    const validation = deckbuilder.validate();
     const factionName = document.getElementById("factionSelect")?.selectedOptions?.[0]?.textContent?.replace(/\s+—.*$/, "").trim() || deck.factionId;
     const leaderName = document.getElementById("leaderSelect")?.selectedOptions?.[0]?.textContent?.trim() || deck.leaderId;
     const playerName = el.printRequestPlayerName.value.trim();
     const note = el.printRequestNote.value.trim();
     const territories = Array.isArray(deck.territories) ? deck.territories.map(item => item.name || item.id).filter(Boolean) : [];
+    const riteById = new Map((deckbuilder.currentGame()?.mystics?.rites || []).map(rite => [rite.id, rite.name]));
+    const rites = deck.factionId === "mystics"
+      ? (deck.selectedRites || []).map(id => riteById.get(id) || id)
+      : [];
     const json = JSON.stringify(deck, null, 2);
     const subject = `Gauntlet Deck printing request — ${playerName} — ${deck.name}`;
     const lines = [
@@ -96,8 +103,9 @@
       `Faction: ${factionName}`,
       `Leader: ${leaderName}`,
       `Playable cards: ${validation.cardCount}`,
-      `Deck value: ${validation.pointTotal}/60`,
+      `Deck value: ${validation.pointTotal}/${validation.constructionRules.maximumDeckbuildingValue}`,
       `Territories: ${territories.length ? territories.join(" → ") : "None selected"}`,
+      ...(deck.factionId === "mystics" ? [`Rites: ${rites.length ? rites.join(", ") : "None selected"}`] : []),
       ...(note ? [`Note: ${note}`] : []),
       "",
       "HOST INSTRUCTIONS",

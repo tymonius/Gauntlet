@@ -1,57 +1,79 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="description" content="Search the Gauntlet v0.7.0 production card set and view complete production-rendered card faces with artwork." />
-  <title>Gauntlet v0.7.0 Card Reference</title>
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
+  <title>Gauntlet v0.7.1 Card Reference</title>
   <link rel="canonical" href="https://gauntlet.run/card-reference/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/card-reference/" />
+  <meta property="og:title" content="Gauntlet v0.7.1 Card Reference" />
+  <meta property="og:description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1 Card Reference" />
+  <meta name="twitter:description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="stylesheet" href="site.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="faction-colors.css" />
   <link rel="stylesheet" href="mobile-card-preview.css" />
   <link rel="stylesheet" href="rendered-card-preview.css" />
-  <link rel="stylesheet" href="card-inspection.css" />
+  <link rel="stylesheet" href="../card-design/card-inspector.css?v=20260905-2" />
   <link rel="stylesheet" href="../arcane-trait-markers.css" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="../start/">Start</a>
-      <a href="../#game">Game</a>
-      <a href="../rulebook/">Rules</a>
-      <a href="../factions/">Factions</a>
-      <a href="../deckbuilder/">Deckbuilder</a>
-      <a href="../card-reference/" aria-current="page">Card Reference</a>
-      <a href="../rules-arbiter/">Rules Arbiter</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
-  <main class="reference-main">
+  <main id="main-content" tabindex="-1" class="reference-main">
     <section class="reference-hero" aria-labelledby="reference-title">
       <div>
-        <p class="eyebrow">Quick rules lookup · v0.7.0 production</p>
+        <p class="eyebrow">Quick rules lookup · v0.7.1 production</p>
         <h1 id="reference-title">Card <span>Reference.</span></h1>
-        <p class="reference-lede">Search the current v0.7.0 production card set and Territories, then inspect the complete production-rendered card face with its approved artwork.</p>
+        <p class="reference-lede">Search every current v0.7.1 production card and Territory — including Leaders, Proposals, Rites, reference cards, trackers, and faction support cards — then inspect the complete production-rendered face.</p>
       </div>
       <div class="source-status" aria-live="polite">
         <span>Reference status</span>
-        <strong id="dataStatus">Loading v0.7.0 production card data…</strong>
+        <strong id="dataStatus">Loading v0.7.1 production card data…</strong>
       </div>
     </section>
 
@@ -73,9 +95,17 @@
         <label>
           Reference type
           <select id="typeFilter">
-            <option value="all">Playable cards + Territories</option>
-            <option value="card">Playable cards only</option>
-            <option value="territory">Territories only</option>
+            <option value="all">All cards + Territories</option>
+            <option value="card">Playable cards</option>
+            <option value="leader">Leaders</option>
+            <option value="proposal">Proposals</option>
+            <option value="rite">Rites</option>
+            <option value="ritual">Rituals</option>
+            <option value="reference">Reference cards</option>
+            <option value="tracker">Tracker cards</option>
+            <option value="ledger">Ledgers</option>
+            <option value="deed">Deed cards</option>
+            <option value="territory">Territories</option>
           </select>
         </label>
 
@@ -107,6 +137,7 @@
 
         <div class="reference-metrics" aria-label="Reference totals">
           <div><strong id="cardTotal">0</strong><span>Playable cards</span></div>
+          <div><strong id="otherCardTotal">0</strong><span>Other cards</span></div>
           <div><strong id="territoryTotal">0</strong><span>Territories</span></div>
         </div>
       </form>
@@ -115,41 +146,48 @@
         <div class="browser-heading">
           <div>
             <p class="eyebrow">Current reference</p>
-            <h2><span id="resultCount">0</span> matches</h2>
+            <h2 aria-live="polite" aria-atomic="true"><span id="resultCount">0</span> matches</h2>
           </div>
           <p id="resultSummary" class="result-summary"></p>
         </div>
 
         <div class="reference-browser">
-          <div id="resultList" class="reference-list" role="listbox" aria-label="Reference results"></div>
-          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its full card.</article>
+          <div id="resultList" class="reference-list" role="region" aria-label="Reference results"></div>
+          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its complete production component.</article>
         </div>
       </section>
     </section>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Current v0.7.0 production card reference.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="../rulebook/">Browser Rulebook</a>
-      <a href="../deckbuilder/">Deckbuilder</a>
-      <a href="../rules-arbiter/">Rules Arbiter</a>
-      <a href="../v0.7.0/">v0.7.0 Release</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <noscript>
     <p class="noscript">JavaScript is required to load and search the current card reference.</p>
   </noscript>
-  <script src="app.js" defer></script>
-  <script src="rendered-card-scaling.js" defer></script>
+  <script type="module" src="app.js"></script>
   <script src="mobile-card-preview.js" defer></script>
-  <script src="card-inspection.js" defer></script>
+  <script src="../card-design/card-inspector.js?v=20260905-2" defer></script>
   <script src="../arcane-trait-markers.js" defer></script>
 </body>
 </html>

@@ -39,3 +39,69 @@
 .review-actions{margin-bottom:1rem}.review-content{display:grid;gap:1rem}.review-card{padding:1.5rem;border:1px solid var(--tracked-line);background:var(--tracked-panel)}.review-card h3{margin:0 0 .8rem;font-size:1.6rem}.review-card dl{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}.review-card dl div{padding:.75rem;background:rgba(255,255,255,.45)}.review-card dt{color:var(--tracked-muted);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.review-card dd{margin:.25rem 0 0}.review-list{display:grid;gap:.6rem;padding:0;list-style:none}.review-list li{padding:.75rem;border-left:4px solid var(--bronze);background:rgba(255,255,255,.45)}
 @media(max-width:920px){.tracked-hero,.create-layout,.tracked-summary,.share-panel,.joined-panel{grid-template-columns:1fr}.summary-metrics{grid-template-columns:1fr 1fr}.summary-metrics div:nth-child(2){border-right:0}.summary-metrics div:nth-child(-n+2){border-bottom:1px solid var(--tracked-line)}.three-field-grid{grid-template-columns:1fr 1fr}.share-panel .qr-code{justify-self:start;width:260px}}
 @media(max-width:650px){.site-header nav{display:none}.tracked-main{width:min(100% - 24px,720px)}.tracked-hero{padding:3rem 0;gap:2rem}.tracked-hero h1{font-size:3.7rem}.tracked-principles,.two-field-grid,.three-field-grid,.player-cards,.check-grid,.rating-grid{grid-template-columns:1fr}.tracked-principles span{border-right:0;border-bottom:1px solid var(--line)!important}.tracked-principles span:last-child{border-bottom:0!important}.tracked-panel{padding:1.3rem}.summary-metrics{grid-template-columns:1fr 1fr}.share-panel .qr-code{justify-self:center}.rating-card{grid-template-columns:1fr}.review-card dl{grid-template-columns:1fr}.players-section,.feedback-section,.review-section{padding:3rem 0}}
+
+.transport-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+.transport-panel h2 { margin: .25rem 0 .6rem; }
+.transport-panel p { max-width: 72ch; }
+.transport-matchup { font-weight: 700; }
+.transport-actions { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; }
+
+.diagnostic-panel {
+  margin: 1.4rem 0;
+  padding: 1.2rem;
+  border: 1px solid rgba(49,42,34,.18);
+  background: #f8f4ed;
+}
+.diagnostic-panel h3 { margin: .2rem 0 .45rem; }
+.diagnostic-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: .65rem;
+  margin-top: 1rem;
+}
+.diagnostic-grid .button {
+  min-height: 3.4rem;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.decision-experience {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(49,42,34,.18);
+  background: #f8f4ed;
+}
+.decision-experience .eyebrow { margin: 0; }
+
+@media (max-width: 800px) {
+  .transport-panel { align-items: stretch; flex-direction: column; }
+  .transport-actions { justify-content: flex-start; }
+  .diagnostic-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) {
+  .diagnostic-grid { grid-template-columns: 1fr; }
+}
+
+.transport-references { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.8rem; justify-content:flex-end; }
+.transport-references a { font-weight:700; font-size:.9rem; }
+
+.companion-panel { margin:1.4rem 0; padding:1.2rem; border:1px solid rgba(49,42,34,.18); background:#fff; }
+.companion-heading { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1rem; }
+.companion-heading h3 { margin:.2rem 0 0; }
+.companion-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem; }
+.companion-grid details { border:1px solid rgba(49,42,34,.15); padding:.8rem 1rem; background:#f8f4ed; }
+.companion-grid summary { cursor:pointer; font-weight:700; }
+.companion-grid ol,.companion-grid ul { margin:.8rem 0 .2rem; padding-left:1.25rem; }
+.companion-grid li { margin:.38rem 0; line-height:1.4; }
+@media (max-width:800px) {
+  .transport-references { justify-content:flex-start; }
+  .companion-heading { align-items:stretch; flex-direction:column; }
+  .companion-grid { grid-template-columns:1fr; }
+}

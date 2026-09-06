@@ -160,7 +160,7 @@ export function renderMarkdown(source) {
         index += 1;
       }
 
-      html.push('<div class="table-scroll"><table><thead><tr>');
+      html.push('<div class="table-scroll" tabindex="0"><table><thead><tr>');
       headers.forEach((cell) => html.push(`<th scope="col">${renderInline(cell)}</th>`));
       html.push('</tr></thead><tbody>');
       rows.forEach((row) => {

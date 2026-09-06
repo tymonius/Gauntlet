@@ -3,7 +3,7 @@
   "release_version": "v0.7.0",
   "name": "Illustrated Cards & Tabletop Simulator",
   "status": "current",
-  "authority_set_id": "1267adcd3a2b23209259c45474454b96f83a5340c23f9e26222b549df142128d",
+  "authority_set_id": "5f424f1b293ec3aa592fa50ce374be08ef48cfdcc94369ba4697fe9a38d00953",
   "publication_date": "2026-08-27",
   "current_package_path": "releases/v0.7.0/",
   "source_provenance": {
@@ -14,11 +14,11 @@
   "binding_sources": {
     "rulebook": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md",
-      "sha256": "7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653"
+      "sha256": "7e9ffe0359989110d09a84e9cb426bfaba0e88feb5b3e6f7446e04961ad6b18f"
     },
     "canonical_data": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json",
-      "sha256": "98259cf438774e95fc71d76b537cd834a718dcbba6fd26f83a1f6a034f45266e"
+      "sha256": "af5efe9d345b4e1d1fe7aca43c16c9d8904d70e908e70fd507cfe4052a60f48e"
     },
     "approved_starters": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json",
@@ -26,15 +26,15 @@
     },
     "source_provenance": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json",
-      "sha256": "78de3bcd8680ac9c3a645a8aaa88d579caca7a62a9776b9a71bfbcdf409de386"
+      "sha256": "e5ad499330bbd5fd3350e37db9a9acbcebe93bf2d6b1b120c5dd9348870ed615"
     },
     "card_anatomy_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "665dac4afcaa653abe6fe6068c48904ba31882520271fbee5819ad831ec15a9e"
+      "sha256": "b752cabdcb970025ad388d651f551e0139cadf5eacf8bebf9a8f499932083458"
     },
     "arcane_trait_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png",
-      "sha256": "6fbea3481d31b7df9d733b9cbc3aa53370312401cfa2820c3f6525e78a86fac1"
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970"
     }
   },
   "counts": {
@@ -72,35 +72,35 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "c97c0a6dd5f3dc3cad384736d2ec5a20c5f0df638b2fa50d8ec808dc1b0505b3",
-      "bytes": 30986158
+      "sha256": "1d42372eb73109fa98fab4d285b61f7152f5a572f1c116b04d1b4b4d58b27dc6",
+      "bytes": 30987804
     }
   ],
   "payload_files": [
     {
       "path": "Gauntlet_v0.7.0_Rulebook.md",
-      "sha256": "7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653",
-      "bytes": 114444
+      "sha256": "7e9ffe0359989110d09a84e9cb426bfaba0e88feb5b3e6f7446e04961ad6b18f",
+      "bytes": 114499
     },
     {
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
-      "sha256": "c97c0a6dd5f3dc3cad384736d2ec5a20c5f0df638b2fa50d8ec808dc1b0505b3",
-      "bytes": 30986158
+      "sha256": "1d42372eb73109fa98fab4d285b61f7152f5a572f1c116b04d1b4b4d58b27dc6",
+      "bytes": 30987804
     },
     {
       "path": "Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "665dac4afcaa653abe6fe6068c48904ba31882520271fbee5819ad831ec15a9e",
-      "bytes": 1494649
+      "sha256": "b752cabdcb970025ad388d651f551e0139cadf5eacf8bebf9a8f499932083458",
+      "bytes": 1495307
     },
     {
       "path": "Gauntlet_v0.7.0_Arcane_Trait_Mark.png",
-      "sha256": "6fbea3481d31b7df9d733b9cbc3aa53370312401cfa2820c3f6525e78a86fac1",
-      "bytes": 216854
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970",
+      "bytes": 217031
     },
     {
       "path": "Gauntlet_v0.7.0_Canonical_Data.json",
-      "sha256": "98259cf438774e95fc71d76b537cd834a718dcbba6fd26f83a1f6a034f45266e",
-      "bytes": 254111
+      "sha256": "af5efe9d345b4e1d1fe7aca43c16c9d8904d70e908e70fd507cfe4052a60f48e",
+      "bytes": 254110
     },
     {
       "path": "Gauntlet_v0.7.0_Starter_Decks.json",
@@ -109,8 +109,8 @@
     },
     {
       "path": "Gauntlet_v0.7.0_Source_Provenance.json",
-      "sha256": "78de3bcd8680ac9c3a645a8aaa88d579caca7a62a9776b9a71bfbcdf409de386",
-      "bytes": 1391
+      "sha256": "e5ad499330bbd5fd3350e37db9a9acbcebe93bf2d6b1b120c5dd9348870ed615",
+      "bytes": 1638
     }
   ],
   "rulebook_booklet_provenance": {
@@ -123,13 +123,13 @@
     "approved_v063_production_adapter_reused": true,
     "card_anatomy_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "665dac4afcaa653abe6fe6068c48904ba31882520271fbee5819ad831ec15a9e",
+      "sha256": "b752cabdcb970025ad388d651f551e0139cadf5eacf8bebf9a8f499932083458",
       "source_card": "military-unbroken-ranks",
       "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks"
     },
     "arcane_trait_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png",
-      "sha256": "6fbea3481d31b7df9d733b9cbc3aa53370312401cfa2820c3f6525e78a86fac1",
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970",
       "source_card": "mystics-witchcraft",
       "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=mystics-witchcraft"
     }

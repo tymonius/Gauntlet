@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "releaseTag": "v0.7.0",
-  "displayVersion": "v0.7.0",
-  "sourceVersion": "v0.7.0",
+  "releaseTag": "v0.7.1",
+  "displayVersion": "v0.7.1",
+  "sourceVersion": "v0.7.1",
   "currentGameAuthority": "game-data/current-game.json",
   "status": "release-candidate"
 }

@@ -23,6 +23,9 @@ test('art direction source round-trips without eval', () => {
     'z-card': { focusY: 0.4 },
   });
   assert.deepEqual(normalizeArtDirection({ focusX: 62.5 }), { focusX: 0.625 });
+  const explicit = { fit: 'cover', focusX: 0.5, focusY: 0.4182, smart: false, zoom: 1 };
+  assert.deepEqual(normalizeArtDirection(explicit), explicit);
+  assert.deepEqual(updateArtDirectionMap({}, 'explicit-card', explicit), { 'explicit-card': explicit });
   assert.deepEqual(updateArtDirectionMap({ 'a-card': { focusX: 0.6 } }, 'a-card', {}), {});
 });
 
@@ -64,9 +67,10 @@ test('GitHub validation failure is a no-op only when branches are identical', ()
   assert.equal(__sessionTest.isNoOpValidation(422, 'Other failure', true), false);
 });
 
-test('publish readiness waits only while GitHub mergeability is unresolved', () => {
+test('publish readiness waits while GitHub mergeability or status checks are unresolved', () => {
   assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: null, mergeable_state: 'unknown' }), true);
   assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: undefined, mergeable_state: 'unknown' }), true);
+  assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: true, mergeable_state: 'unstable' }), true);
   assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: true, mergeable_state: 'clean' }), false);
   assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: false, mergeable_state: 'dirty' }), false);
   assert.equal(__testReady.mergeabilityPending({ state: 'closed', mergeable: null, mergeable_state: 'unknown' }), false);

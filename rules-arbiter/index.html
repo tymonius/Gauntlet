@@ -1,48 +1,88 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Ask gameplay questions against the current Gauntlet v0.7.0 rules." />
-  <title>Gauntlet v0.7.0 Rules Arbiter</title>
+  <meta name="description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
+  <title>Chief Justice — Gauntlet Rules Arbiter</title>
   <link rel="canonical" href="https://gauntlet.run/rules-arbiter/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/rules-arbiter/" />
+  <meta property="og:title" content="Chief Justice — Gauntlet Rules Arbiter" />
+  <meta property="og:description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Chief Justice — Gauntlet Rules Arbiter" />
+  <meta name="twitter:description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260903-2" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="arbiter-header">
-    <a class="brand" href="../" aria-label="Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong></a>
+    <a class="brand" href="../" aria-label="Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong>      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+    </a>
     <nav aria-label="Primary navigation">
-      <a href="../start/">Start</a>
-      <a href="../#game">Game</a>
-      <a href="../rulebook/">Rules</a>
-      <a href="../factions/">Factions</a>
-      <a href="../deckbuilder/">Deckbuilder</a>
-      <a href="../card-reference/">Card Reference</a>
-      <a href="../rules-arbiter/" aria-current="page">Rules Arbiter</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
-  <main class="arbiter-shell">
+  <main id="main-content" tabindex="-1" class="arbiter-shell">
     <section class="arbiter-panel">
-      <p class="eyebrow">Rules support · v0.7.0</p>
-      <h1>Rules Arbiter</h1>
-      <p class="lede">Ask about setup, cards, battles, faction systems, Territories, or victory conditions. Answers include the relevant current Rulebook sources so you can verify the ruling at the table.</p>
+      <div class="arbiter-heading">
+        <p class="eyebrow">Gauntlet Rules Arbiter · v0.7.1</p>
+        <h1>Chief Justice</h1>
+      </div>
+
+      <p class="lede">Bring a rules question to the Chief Justice. He answers from the current published rules and cards, identifies the controlling rule or distinction, and includes the relevant sources so the ruling can be checked at the table.</p>
+
+      <div class="arbiter-persona">
+        <figure class="arbiter-portrait">
+          <img
+            src="/images/rules-arbiter/chief-justice-rules-arbiter.webp"
+            alt="The Chief Justice seated behind a judicial bench"
+            width="900"
+            height="600"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </figure>
+        <blockquote class="arbiter-voice">
+          <p>Present the question clearly, and I will determine what the rules require.</p>
+        </blockquote>
+      </div>
 
       <div class="source-boundary">
-        <strong>At the table:</strong>
-        the Arbiter distinguishes explicit rules from interpretations and provisional rulings when the written rules do not fully resolve a situation.
+        <strong>How rulings work:</strong>
+        the Chief Justice distinguishes explicit rules from interpretations and clearly identified provisional rulings when the written rules do not fully resolve a situation.
       </div>
 
       <div class="question-chips" aria-label="Suggested questions">
@@ -54,12 +94,12 @@
 
       <form id="arbiterForm" class="arbiter-form">
         <label for="question"><strong>Rules question</strong></label>
-        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, factions, Territories, or victory."></textarea>
-        <button type="submit">Ask the Rules Arbiter</button>
+        <textarea id="question" maxlength="600" placeholder="Set out the rules question as it arose at the table." required></textarea>
+        <button type="submit">Ask the Chief Justice</button>
       </form>
 
-      <p id="arbiterStatus" class="arbiter-status">Connecting to the current Rules Arbiter…</p>
-      <div id="answer" class="arbiter-answer" aria-live="polite"></div>
+      <p id="arbiterStatus" class="arbiter-status" role="status" aria-live="polite">Connecting to the Chief Justice…</p>
+      <div id="answer" class="arbiter-answer" aria-live="polite" aria-atomic="true"></div>
     </section>
 
     <aside class="authority-card">
@@ -67,16 +107,31 @@
       <p><a href="../rulebook/">Browser Rulebook</a></p>
       <p><a href="../card-reference/">Card Reference</a></p>
       <p><a href="../deckbuilder/">Deckbuilder</a></p>
-      <p class="small">Answers include source passages. If the network service is unavailable, this page falls back to local Rulebook lookup.</p>
+      <p class="small">Rulings include source passages. If the AI service is unavailable, this page falls back to direct local Rulebook lookup.</p>
     </aside>
   </main>
 
-  <footer>
-    <a class="brand footer-brand" href="../" aria-label="Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong></a>
-    <div>
-      <p><strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.</p>
-      <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script type="module" src="app.js"></script>

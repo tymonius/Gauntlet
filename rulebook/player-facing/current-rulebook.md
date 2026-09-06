@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.0**
+**Version 0.7.1**
 
 ---
 
@@ -99,7 +99,7 @@ Most ordinary playable cards use the same frame. Read these elements when constr
 2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
 3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
 4. **Artwork** — The card's illustration.
-5. **Effect heading** — Names the effect's role or timing, such as **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Overlay**, **Mission**, or another faction-specific heading.
+5. **Effect heading** — Names the effect's role or timing. Current printed headings are **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Mission**, **Overlay**, **Terms**, **Sanctions**, and **Reaction**.
 6. **Effect text** — Resolve only the printed effect being used unless a rule says otherwise.
 7. **Metadata footer** — Shows faction at left, **Unique** in the center when applicable, and the rules version at right.
 
@@ -111,18 +111,24 @@ Territories and faction supplemental components use specialized layouts and are 
 
 ## Printed card effects
 
-A card may have several printed effects. The way it is used determines which effect applies.
+A card may show multiple effect headings. The heading tells you the role, timing, or procedure that governs that block of text. A heading does not grant any other role or play permission unless the card or another rule says so. Some headings are faction-specific; those are identified below.
 
-- **Action:** normally play from Hand by taking an Action during Opening or Denouement.
-- **Gambit:** set from Hand during a battle.
-- **Tactic:** choose from Reserve during a battle.
-- **Gambit/Tactic:** may be used as either a Gambit or a Tactic.
+- **Action:** Normally play the card from Hand by taking an Action during Opening or Denouement. Follow any more specific timing printed in the effect.
+- **Asset:** The card may be banked from Hand using its inherent **Bank** Action unless it has a printed special banking procedure. Its Asset effect applies while it is banked, subject to its own timing and conditions.
+- **Gambit:** Set the card from Hand as a Gambit during a battle. Its Gambit effect normally applies when Gambits are revealed unless it gives a later timing.
+- **Tactic:** Choose the card from Reserve as a Tactic during a battle. Its Tactic effect normally applies when Tactics are revealed unless it gives a later timing.
+- **Gambit/Tactic:** The card is eligible for either role. Use the source, timing, and normal destination of the role in which it was used.
+- **Mission:** *(Intelligence only.)* An Intelligence requirement used when the card is started as an Active Mission or Special Operation. Starting a Mission is not playing the card for another printed effect; follow the Intelligence procedures in Chapter 16.
+- **Overlay:** A persistent effect that applies while the card is the active, exposed Overlay on a Territory. Overlay rules appear in Chapter 12.
+- **Terms:** *(Diplomats only.)* A Diplomat effect used while offering or resolving Terms at the timing stated by the card. **Accepted —** and **Refused —** clauses printed within a Terms effect apply only for the corresponding response.
+- **Sanctions:** *(Diplomats only.)* After an opponent refuses your Terms, you may use the card's Sanctions effect from Hand. Resolve it immediately unless the effect gives a later timing. A Sanction that remains in play stays associated with that opponent and follows the shared Sanctions rules.
+- **Reaction:** A directly permitted effect used when its stated trigger occurs. A Reaction does not spend an Action unless it expressly says otherwise; follow its printed source, timing, and destination.
 
-Only the printed effect being used applies unless a rule says otherwise.
+Only the printed effect being used applies unless a rule says otherwise. Using a card through a heading does not also apply its other printed effects merely because they are on the same card.
 
 Setting a Gambit or choosing a Tactic places the card in battle without applying its effect immediately. Gambit and Tactic effects apply at their normal reveal stages even when an effect causes the card to become face up early, unless that effect says otherwise.
 
-Faction cards may contain other headings. Those headings use the procedure stated in the relevant faction chapter and do not make a card eligible as a Gambit or Tactic unless it also has a Gambit, Tactic, or Gambit/Tactic effect.
+A **Mission**, **Overlay**, **Terms**, **Sanctions**, or **Reaction** heading does not make a card eligible as a Gambit or Tactic unless it also has a **Gambit**, **Tactic**, or **Gambit/Tactic** effect.
 
 ### Arcane symbol
 
@@ -293,7 +299,7 @@ An Action may be used to:
 - use one **Faction Feature** or **Leader Ability** marked **1 Action**, when its timing permits; or
 - discard one Asset you control.
 
-A **Faction Feature** is a named rule, option, procedure, passive effect, or special mechanic shared by a faction. A **Leader Ability** is supplied specifically by your chosen Leader.
+A **Faction Feature** is a named faction-specific mechanic shared by a faction. A Faction Feature may have several uses, modes, or procedures; those remain parts of the same Feature rather than becoming separate Features. A **Leader Ability** is supplied specifically by your chosen Leader and may provide a specific option used through a shared Faction Feature.
 
 Neither term implies whether an Action is spent. Each Feature or Ability states the properties that matter in play: **1 Action**, **No Action**, or **Automatic**, together with its timing, resource cost, frequency, and other limits as applicable.
 
@@ -357,9 +363,9 @@ To play a card for its Action effect:
 
 ### Faction Features
 
-A **Faction Feature** is a named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction.
+A **Faction Feature** is a named faction-specific mechanic shared by the faction.
 
-Names such as **Terms**, **Purge**, **Mission**, **Rite**, **Surveillance**, and similar faction mechanics remain the names of those Features; they are not separate top-level rules categories.
+Names such as **Orders**, **Terms**, **Deeds**, **Missions**, **Surveillance**, **Rites**, and **Purge** are Features. A Feature may contain several related procedures or uses. For example, Surveillance covers both Gambit and Tactic surveillance rather than treating those as separate Faction Features.
 
 The faction chapter and Faction Reference state each Feature's Action profile, timing, resource cost, frequency, and other limits. A Feature marked **1 Action** may be used only by spending an Action at a legal timing. A Feature marked **No Action** or **Automatic** does not consume the player's normal Action.
 
@@ -369,7 +375,7 @@ A **Leader Ability** is a mechanic supplied specifically by the chosen Leader.
 
 Leader Abilities use the same **1 Action**, **No Action**, and **Automatic** profiles as Faction Features. Their timing, resource costs, frequency, and other limits are stated on the Leader Card and in the relevant faction chapter.
 
-Military **Orders** are the named Leader Ability for the General and Commandant. Each individual Order states its Command cost and timing.
+Military **Orders** are a shared Faction Feature. The individual Orders available to the chosen Leader are that Leader's Leader Abilities. Each Order states its Command cost and timing.
 
 ### Discarding an Asset as an Action
 
@@ -800,6 +806,8 @@ Choose exactly three different Territory Cards.
 
 Prepare all components required by the chosen faction and Leader.
 
+If you chose Mystics, choose exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from the six<!-- RULE-FACT:mystics.rites.count:word -->-Rite pool as part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
+
 Unless a rule says otherwise, supplemental components:
 
 - are not part of the Deck;
@@ -823,6 +831,10 @@ Use this chapter when card effects interact with one another or with the normal 
 - An effect applies only at its stated timing and cannot be canceled after it has applied.
 
 ## Simultaneous effects and choices
+
+### Choosing among options
+
+When a rule or effect requires a choice, choose from the options that are actually available. If no valid option is available, that choice is ignored.
 
 ### Shared timing
 
@@ -1173,12 +1185,14 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction Features | None. |
 | Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
-| Faction pool | 13 Military card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.military.count:number --> Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
 
-Military has no shared Faction Feature that spends an Action. **Orders** are Leader Abilities, not Faction Features. Each Order states its Command cost and timing and does not spend an Action. Playing a Military card for its Action effect still uses the normal Action rules.
+- **Orders — No Action · At each Order's stated timing · Listed Command.** Spend Command to use one of the Orders supplied by your chosen Leader. **Orders** is the shared Military Faction Feature; each individual Order is a Leader Ability. The General provides Onward, Rally, and Rout. The Commandant provides Entrench, Repel, and Fortify.<!-- RULE-FACT:faction-features.military.orders -->
+
+Playing a Military card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1263,7 +1277,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
-Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
+Accepted or successfully imposed Proposals become Treaty Articles. Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
 ## Complete rules
 
@@ -1274,12 +1288,16 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Starting value | 1 Influence. |
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
-| Proposal set | Nine double-sided Proposal / Treaty Article cards. |
-| Faction pool | 13 Diplomat card titles. |
+| Proposal set | Nine<!-- RULE-FACT:proposals.count:word-cap --> double-sided Proposal / Treaty Article cards. |
+| Faction pool | 15<!-- RULE-FACT:cards.diplomats.count:number --> Diplomat card titles. |
+| Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
 ## Faction Features
 
-**Terms** and **Leverage** are Diplomat Faction Features marked **No Action**. Terms is used during Onset before other pre-Gambit effects, and Leverage is used before dice are rolled after refused Terms. Playing a Diplomat card for its Action effect still uses the normal Action rules.
+- **Terms — No Action · During Onset.** Offer one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses; accepted Terms end the battle sequence, while refused Terms continue toward battle.<!-- RULE-FACT:faction-features.diplomats.terms -->
+- **Leverage — No Action · Before dice after refused Terms · Triangular Influence cost.** Spend available Influence to increase the Diplomat's battle total. +1 / +2 / +3 / +4 costs 1 / 3 / 6 / 10 Influence; the progression continues without a fixed maximum. Staked Influence cannot be spent as Leverage.<!-- RULE-FACT:faction-features.diplomats.leverage -->
+
+Playing a Diplomat card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1369,9 +1387,9 @@ Withdrawal produces no winner. Return the Stake and do not impose the Proposal.
 
 #### Leverage
 
-Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage:
+Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage to increase the Diplomat's battle total:
 
-| Bonus | Total Influence cost |
+| Battle Total bonus | Total Influence cost |
 |---:|---:|
 | +1 | 1 |
 | +2 | 3 |
@@ -1384,7 +1402,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
 
-At the start of the Diplomat's turn, after the Capture step and before the Draw step, if five different Proposals are ratified, the Diplomat wins through the Peace Treaty.
+At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified, the Diplomat wins through the Peace Treaty.
 
 ## Leaders
 
@@ -1525,19 +1543,19 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
-| Faction pool | 13 Financier card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.financiers.count:number --> Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
 
-Financiers have the following shared Faction Features marked **1 Action · Denouement**:
+- **Treasury — 1 Action · Denouement.** Place one card from Hand face up in Treasury. Its value increases your Capital limit.<!-- RULE-FACT:faction-features.financiers.treasury -->
+- **Deeds — 1 Action · Denouement · Current Deed cost.** Buy an unowned Deed or buy out an opposing Financier's Deed by paying its full current cost.<!-- RULE-FACT:faction-features.financiers.deeds -->
+- **Play the Market — 1 Action · Denouement · Discard 1 card from Hand.** Roll one die and gain Capital according to the result.<!-- RULE-FACT:faction-features.financiers.play-the-market -->
+- **Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total. +1 / +2 / +3 / +4 costs 1 / 3 / 6 / 10 Capital; the progression continues without a fixed maximum.<!-- RULE-FACT:faction-features.financiers.subsidize -->
+- **Financial Capacity — No Action · After Capture.** If your Treasury value is greater than the number of Territories you control, you may take one Action in Opening and one Action in Denouement that turn. At least one must be a Financier Faction Feature marked 1 Action.<!-- RULE-FACT:faction-features.financiers.financial-capacity -->
+- **Income — Automatic · After Capture.** Gain 1 Capital for each Deed you own.<!-- RULE-FACT:faction-features.financiers.income -->
 
-- **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
-- **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
-- **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
-**Hostile Takeover — Executive Leader Ability:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, spend 1 Action during Denouement to buy or buy out its Deed; a successful purchase also gives you control of that Territory.
-
-When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on a Financier Faction Feature marked **1 Action**. **Line of Credit** is the Banker's Leader Ability. **Subsidize** is a shared Faction Feature marked **No Action**; neither is part of the 1-Action feature list above.
+**Hostile Takeover** is the Executive's Leader Ability. **Line of Credit** is the Banker's Leader Ability. Neither is a shared Faction Feature.
 
 ## Components and setup
 
@@ -1726,20 +1744,17 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Battle tools | Surveillance and Interference. |
 | Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
-| Faction pool | 13 Intelligence card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.intelligence.count:number --> Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
 
-Intelligence has the following Faction Features marked **1 Action · Denouement**:
+- **Missions — 1 Action · Denouement · Abort cost: Intel equal to Mission value.** Spend an Action to start an eligible Mission, complete a satisfied Active Mission, or abort the Active Mission. Starting places the card face down; completing grants 1 Operation Progress and Intel equal to its value; aborting sends it to the Discard Pile after paying its Intel cost.<!-- RULE-FACT:faction-features.intelligence.missions -->
+- **Special Operations — 1 Action · Denouement · Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel.** When ready, spend an Action to start a Special Operation. On a later Denouement, if its requirement is satisfied and readiness remains valid, spend an Action, reveal it, pay the completion cost, and win immediately.<!-- RULE-FACT:faction-features.intelligence.special-operations -->
+- **Surveillance — No Action · After opposing Gambit or Tactic choice · 1 Intel per revealed card · Once per battle at each stage.** After the opponent sets a face-down Gambit, spend 1 Intel to reveal it. After the opponent chooses face-down Tactics, spend 1 Intel per Tactic you reveal. The Gambit and Tactic opportunities are separate.<!-- RULE-FACT:faction-features.intelligence.surveillance -->
+- **Interference — No Action · Immediately after reveal or face-up opposing choice · 2 Intel per removed card.** Immediately after revealing an opposing card through Surveillance, pay 2 additional Intel per card to return a Gambit to Hand or a Tactic to Reserve; its owner may replace it from the same source. If an opposing effect sets or chooses a card face up, you may use Interference directly at that response timing for 2 Intel.<!-- RULE-FACT:faction-features.intelligence.interference -->
 
-- **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
-- **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
-- **Abort a Mission:** Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
-- **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
-- **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
-
-**Surveillance** and **Interference** are shared Faction Features marked **No Action**. **Fieldcraft** and **Mission Control** are Leader Abilities. Mission Control may start a Mission without spending an Action because that Leader Ability expressly permits it.
+**Fieldcraft** and **Mission Control** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
 
@@ -1904,7 +1919,9 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
+Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected **Rites**. A Mystics game package chooses exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from a pool of six<!-- RULE-FACT:mystics.rites.count:word -->. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
+
+The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
@@ -1912,40 +1929,51 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 | Element | Mystics rule |
 |---|---|
-| Victory | Run the Gauntlet or complete the Ritual of Ascendance. |
+| Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
-| Trait | All thirteen Mystics cards have the Arcane trait. |
-| Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
-| Faction Features | Begin a Rite and Begin the Ritual of Ascendance — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
+| Trait | All fifteen<!-- RULE-FACT:cards.mystics.arcane_count:word --> Mystics cards have the Arcane trait. |
+| Rite pool | Six Rites; choose exactly three during game-package construction. |
+| Progression | First completed Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
+| Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
-| Faction pool | 13 Mystics card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.mystics.count:number --> Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
 
-Mystics have the following Faction Features marked **1 Action · Denouement**:
+- **Rites — 1 Action · Denouement · Printed Begin cost.** Choose one incomplete selected Rite you may legally begin, reveal it, and follow its Begin instruction. Rite completion and interruption then follow that Rite's printed conditions automatically.<!-- RULE-FACT:faction-features.mystics.rites -->
+- **Invocation — No Action · After applying an Arcane card effect · Once per turn.** After applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:faction-features.mystics.invocation -->
+- **Transmutation — No Action · Before dice · Put 1 card from Hand in Graveyard · Once per turn.** Put one card from Hand in your Graveyard and add its value to your battle total.<!-- RULE-FACT:faction-features.mystics.transmutation -->
+- **Ritual of Ascension — 1 Action · Denouement after 3 Rites · Bind 3 Arcane cards.** After completing all three selected Rites, bind one Arcane card from Hand, one from the Discard Pile, and one from the Graveyard to begin the Ritual.<!-- RULE-FACT:faction-features.mystics.ritual-of-ascension -->
+- **Convergence — Automatic · During a Ritual battle you initiated.** Add +1 to your battle total for each card bound to the Ritual.<!-- RULE-FACT:faction-features.mystics.convergence -->
 
-- **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
-- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
-
-Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
+**Materia Prima** and **Guardians of the Circle** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
+
+The six-Rite pool is:
+
+- **Rite of Echoes**
+- **Rite of Blood**
+- **Rite of Crossing**
+- **Rite of Shattering**
+- **Rite of Consecration**
+- **Rite of Equivalence**
 
 A Mystics game package includes:
 
 - one Mystics Leader Card: **Alchemist** or **Spirit Walker**;
 - one Mystics Reference Card;
-- three double-sided Rite cards: **Rite of Echoes**, **Rite of Blood**, and **Rite of Crossing**; and
+- exactly three different double-sided Rite cards chosen from the six-Rite pool; and
 - any Mystics cards included in the Deck.
 
-Place all three Rite cards incomplete side up. Mystics use no resource tracker.
+Rite selection is part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. When you begin a Rite, reveal it. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
 
 ## Rites and progression
 
 ### How it works
 
-During Denouement, take an Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
+During Denouement, take an Action and begin one of your selected Rites by following its **Begin** instruction. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
 Once its condition is met on a later turn, complete it and unlock the next Faction Feature. Completed Rites remain complete.
 
@@ -1953,19 +1981,21 @@ Once its condition is met on a later turn, complete it and unlock the next Facti
 
 #### Beginning a Rite
 
-During Denouement, take an Action to begin one incomplete Rite by paying its beginning cost.
+During Denouement, take an Action to begin one incomplete selected Rite by following its **Begin** instruction.
 
 - You may have only one begun but incomplete Rite.
-- You may begin any uncompleted Rite; there is no required order.
+- You may begin any uncompleted selected Rite; there is no required order.
+- A Rite is **active** from the time it is begun until it is completed, interrupted, or reset.
 - A Rite cannot complete during the turn it begins.
 - Only one Rite may be completed per turn.
 - If interrupted, it resets and paid costs are not returned unless stated.
+- If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.
 
 #### Progression
 
-- Complete the first Rite to unlock **Invocation**.
-- Complete the second Rite to unlock **Transmutation**.
-- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
+- Complete the first selected Rite to unlock **Invocation**.
+- Complete the second selected Rite to unlock **Transmutation**.
+- Complete the third selected Rite to unlock **Convergence** and permission to begin the **Ritual of Ascension**.
 
 #### Bound cards
 
@@ -1973,56 +2003,73 @@ Bound cards follow the shared rules. If a Rite or Ritual binding ends without an
 
 #### Invocation
 
-> Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:mystics.invocation.text -->
 
 A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect is applied.
 
 #### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
+> Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.<!-- RULE-FACT:mystics.transmutation.text -->
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
-## The three Rites
+## The six Rites
 
 ### Rite of Echoes
 
-**Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.
+**Begin:** Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.
 
-> **Completion:** On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.
+> **Complete:** On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.
 
-On completion:
-
-- move the selected Graveyard card to your Discard Pile;
-- put the bound Hand card in your Graveyard;
-- apply the completing card normally; and
-- flip Rite of Echoes to its completed side.
-
-If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite.
+**Interrupted:** If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite.
 
 ### Rite of Blood
 
-**Beginning cost:** Put one card from your Hand in your Graveyard.
+**Begin:** Put one card from your Hand in your Graveyard.
 
-> **Completion:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
+> **Complete:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
 
-Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.
+*Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion.*
 
-If you lose a battle before completion, reset the Rite.
+**Interrupted:** If you lose a battle before completion, reset this Rite.
 
 ### Rite of Crossing
 
-You may use the **Begin a Rite** Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
+**Begin:** You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
-**Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
+> **Complete:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.
 
-> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
+**Interrupted:** If before then you cease to occupy that Territory, reset this Rite.
 
-## Ritual of Ascendance and Convergence
+### Rite of Shattering
+
+**Begin:** Put one banked Asset in your Graveyard.
+
+> **Complete:** In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.
+
+**Interrupted:** If you lose that battle, Retreat +1 and reset this Rite.
+
+### Rite of Consecration
+
+**Begin:** Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.
+
+> **Complete:** On a later turn, complete this Rite after you win a battle on the consecrated Territory.
+
+**Interrupted:** If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite.
+
+### Rite of Equivalence
+
+**Begin:** Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.
+
+> **Complete:** Complete when you play the exchanged card for one of its printed effects.
+
+**Interrupted:** If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite.
+
+## Ritual of Ascension and Convergence
 
 ### How it works
 
-After completing all three Rites, spend 1 Action during an Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
+After completing all three selected Rites, spend 1 Action during Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
@@ -2030,13 +2077,13 @@ Initiate a battle while all three remain bound. Convergence adds +1 for each Rit
 
 #### Beginning the Ritual
 
-After completing all three Rites, during an Denouement, spend 1 Action to bind:
+After completing all three selected Rites, during Denouement, spend 1 Action to bind:
 
 - one Arcane card from your Hand;
 - one Arcane card from your Discard Pile; and
 - one Arcane card from your Graveyard.
 
-This begins the Ritual of Ascendance.
+This begins the Ritual of Ascension.
 
 #### Convergence
 
@@ -2116,20 +2163,19 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
-| Faction pool | 13 Inquisition card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.inquisition.count:number --> Inquisition card titles. |
+| Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 
 ## Faction Features
 
-**Purge is an Inquisition Faction Feature marked 1 Action · Opening or Denouement · Once per turn.**
+- **Purge — 1 Action · Opening or Denouement · Listed Conviction · Once per turn.** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn; Purge never permits two Actions in one phase.<!-- RULE-FACT:faction-features.inquisition.purge -->
+- **Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.conviction -->
+- **Condemnation — Automatic · Aftermath.** During the Aftermath of battles involving you, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.<!-- RULE-FACT:faction-features.inquisition.condemnation -->
+- **Blasphemy — Automatic · Opposing Arcane Action or reveal.** Gain 1 Conviction whenever an opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.blasphemy -->
+- **Purification — Automatic · Opponent's start-of-turn Draw.** After the opponent's normal start-of-turn draw attempt, if they draw no cards because both their Draw Pile and Discard Pile are empty, win immediately.<!-- RULE-FACT:faction-features.inquisition.purification -->
 
-> **Purge — Faction Feature · 1 Action · Opening or Denouement · Once per turn:** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn.
-
-- Purge may occupy either Action phase.
-- The other Action must occupy the other phase.
-- Purge never permits two Actions in one phase.
-- You may spend an Action on Purge no more than once per turn.
-- A Purge directly permitted without taking an Action, such as Final Judgment, is separate and does not consume the once-per-turn permission to spend an Action on Purge or activate the two-phase permission.
+**Final Judgment** and **Relentless Pursuit** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
 
@@ -2325,8 +2371,10 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 # Copyright and Playtest Use
 
-Gauntlet is an unpublished playtest project.
+![TDS Games publisher mark](../../images/branding/tds-games-mark.svg)
 
-Copyright © 2026 Tymon Scott. All rights reserved.
+<!-- PUBLISHING-FACT:imprint.statement -->Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 
 Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.

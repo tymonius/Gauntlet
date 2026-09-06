@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   buildDeckImporterConfig,
   installDeckImporter,
+  installStarterTemplateObjects,
+  MAX_TTS_IMPORTER_LUA_BYTES,
+  validateGeneratedLuaStrings,
   isDeckImporterReleaseVersion,
   TTS_DECK_IMPORTER_MIN_VERSION,
 } from '../scripts/tts-deck-importer.mjs';
@@ -14,6 +17,14 @@ const releaseAssets = {
     'backs/standard.png': 'https://example.invalid/v0.7.0/backs/standard.png',
     'sheets/cards.png': 'https://example.invalid/v0.7.0/sheets/cards.png',
     'territory-sheets/territories.png': 'https://example.invalid/v0.7.0/territory-sheets/territories.png',
+    'supplementals/fronts/mystics-rite-echoes.png': 'https://example.invalid/v0.7.0/rites/echoes-front.png',
+    'supplementals/reverses/mystics-rite-echoes-completed.png': 'https://example.invalid/v0.7.0/rites/echoes-back.png',
+    'supplementals/fronts/mystics-rite-blood.png': 'https://example.invalid/v0.7.0/rites/blood-front.png',
+    'supplementals/reverses/mystics-rite-blood-completed.png': 'https://example.invalid/v0.7.0/rites/blood-back.png',
+    'supplementals/fronts/mystics-rite-equivalence.png': 'https://example.invalid/v0.7.0/rites/equivalence-front.png',
+    'supplementals/reverses/mystics-rite-equivalence-completed.png': 'https://example.invalid/v0.7.0/rites/equivalence-back.png',
+    'supplementals/fronts/mystics-ritual-of-ascension.png': 'https://example.invalid/v0.7.0/rites/ritual-front.png',
+    'supplementals/reverses/mystics-ritual-of-ascension.png': 'https://example.invalid/v0.7.0/rites/ritual-back.png',
   },
 };
 const catalog = {
@@ -61,19 +72,129 @@ const starterManifest = {
     territoriesPerPlayer: 3,
     maximumArenas: 1,
   },
-  decks: [{
-    id: 'military-general-starter',
-    factionId: 'military',
-    leaderId: 'general',
-    leader: { name: 'General' },
-    back: { file: 'backs/standard.png' },
-  }],
+  decks: [
+    {
+      id: 'military-general-starter',
+      factionId: 'military',
+      leaderId: 'general',
+      leader: { name: 'General' },
+      back: { file: 'backs/standard.png' },
+    },
+    {
+      id: 'mystics-alchemist-starter',
+      factionId: 'mystics',
+      leaderId: 'alchemist',
+      leader: { name: 'Alchemist' },
+      selectedRites: ['echoes', 'blood', 'equivalence'],
+      back: { file: 'backs/standard.png' },
+    },
+  ],
+};
+
+function starterTemplateBag(starterId: string, faction: string, includeRites = false) {
+  const objects: any[] = [
+    {
+      Name: 'DeckCustom',
+      Nickname: `${faction} Starter Deck`,
+      GUID: 'deck01',
+      GMNotes: `gauntlet:starter-deck:${starterId}`,
+      DeckIDs: [100, 101],
+      CustomDeck: { '1': { FaceURL: 'old', BackURL: 'old' } },
+      ContainedObjects: [
+        { Name: 'CardCustom', GUID: 'card01', Nickname: 'Prototype Card', CardID: 100, CustomDeck: { '1': {} }, Tags: ['gauntlet-playable'] },
+        { Name: 'CardCustom', GUID: 'card02', Nickname: 'Other Card', CardID: 101, CustomDeck: { '1': {} } },
+      ],
+    },
+    {
+      Name: 'DeckCustom',
+      Nickname: `${faction} Territories`,
+      GUID: 'terr01',
+      GMNotes: `gauntlet:starter-territories:${starterId}`,
+      DeckIDs: [20000, 20001],
+      CustomDeck: { '200': { FaceURL: 'old', BackURL: 'old' } },
+      ContainedObjects: [
+        { Name: 'CardCustom', GUID: 'terr02', Nickname: 'Territory Prototype', CardID: 20000, CustomDeck: { '200': {} }, Tags: ['gauntlet-territory'] },
+        { Name: 'CardCustom', GUID: 'terr03', Nickname: 'Other Territory', CardID: 20001, CustomDeck: { '200': {} } },
+      ],
+    },
+    { Name: 'CardCustom', GUID: 'lead01', Nickname: 'Leader', GMNotes: 'leader-template' },
+    { Name: 'PlayerPawn', GUID: 'pawn01', Nickname: 'Player Token' },
+  ];
+  if (includeRites) {
+    objects.splice(2, 0, {
+      Name: 'DeckCustom',
+      Nickname: 'Rites + Ritual',
+      GUID: 'rite01',
+      GMNotes: 'gauntlet:supplemental-stack:rites-rituals',
+      DeckIDs: [20600, 20700, 22300, 22400],
+      CustomDeck: { '206': {}, '207': {}, '223': {}, '224': {} },
+      ContainedObjects: [
+        { Name: 'CardCustom', GUID: 'rite02', Nickname: 'Rite Prototype', CardID: 20600, CustomDeck: { '206': {} }, Tags: ['gauntlet-faction-zone'] },
+        { Name: 'CardCustom', GUID: 'rite03', Nickname: 'Other Rite', CardID: 20700, CustomDeck: { '207': {} } },
+      ],
+    });
+  }
+  return {
+    Name: 'Bag',
+    GUID: includeRites ? 'bag002' : 'bag001',
+    Transform: { posX: 20, posY: 1.4, posZ: 4, rotX: 0, rotY: 180, rotZ: 0, scaleX: 1, scaleY: 1, scaleZ: 1 },
+    Nickname: `${starterId} Kit`,
+    GMNotes: `gauntlet:starter-kit:${starterId}`,
+    Locked: false,
+    Grid: true,
+    Snap: true,
+    Autoraise: true,
+    Sticky: true,
+    Tooltip: true,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    IgnoreFoW: false,
+    MeasureMovement: false,
+    DragSelectable: true,
+    ContainedObjects: objects,
+  };
+}
+
+const supplementalManifest = {
+  gameVersion: version,
+  ready: [
+    {
+      id: 'mystics-rite-echoes',
+      name: 'Rite of Echoes',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 20600, deckId: 206, faceFile: 'supplementals/fronts/mystics-rite-echoes.png', backFile: 'supplementals/reverses/mystics-rite-echoes-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-rite-blood',
+      name: 'Rite of Blood',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 20700, deckId: 207, faceFile: 'supplementals/fronts/mystics-rite-blood.png', backFile: 'supplementals/reverses/mystics-rite-blood-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-rite-equivalence',
+      name: 'Rite of Equivalence',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 22300, deckId: 223, faceFile: 'supplementals/fronts/mystics-rite-equivalence.png', backFile: 'supplementals/reverses/mystics-rite-equivalence-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-ritual-of-ascension',
+      name: 'Ritual of Ascension',
+      faction: 'mystics',
+      family: 'ritual-card',
+      tts: { cardId: 22400, deckId: 224, faceFile: 'supplementals/fronts/mystics-ritual-of-ascension.png', backFile: 'supplementals/reverses/mystics-ritual-of-ascension.png', numWidth: 1, numHeight: 1 },
+    },
+  ],
 };
 
 describe('TTS Deckbuilder importer', () => {
   it('is a v0.7.1-and-later release feature', () => {
     expect(TTS_DECK_IMPORTER_MIN_VERSION).toBe('v0.7.1');
     expect(isDeckImporterReleaseVersion('v0.7.0')).toBe(false);
+    expect(isDeckImporterReleaseVersion('v0.7.1-candidate')).toBe(true);
     expect(isDeckImporterReleaseVersion('v0.7.1')).toBe(true);
     expect(isDeckImporterReleaseVersion('v0.7.2')).toBe(true);
     expect(isDeckImporterReleaseVersion('v1.0.0')).toBe(true);
@@ -87,6 +208,7 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
 
@@ -108,6 +230,86 @@ describe('TTS Deckbuilder importer', () => {
       starterName: undefined,
       leaderName: 'General',
     });
+    expect(config.selectedRiteCount).toBe(3);
+    expect(config.rites.equivalence).toMatchObject({
+      name: 'Rite of Equivalence',
+      cardId: 22300,
+      deckId: 223,
+      frontUrl: 'https://example.invalid/v0.7.0/rites/equivalence-front.png',
+      backUrl: 'https://example.invalid/v0.7.0/rites/equivalence-back.png',
+    });
+    expect(config.ritual).toMatchObject({
+      name: 'Ritual of Ascension',
+      cardId: 22400,
+      deckId: 224,
+    });
+  });
+
+  it('stores pruned immutable starter templates as individually addressable off-table objects', () => {
+    const config = buildDeckImporterConfig({
+      version,
+      catalog,
+      cardManifest,
+      territoryManifest,
+      starterManifest,
+      supplementalManifest,
+      releaseAssets,
+    });
+    const sourceBag = starterTemplateBag('military-general-starter', 'military');
+    const mysticsBag = starterTemplateBag('mystics-alchemist-starter', 'mystics', true);
+    const save: any = { ObjectStates: [sourceBag, mysticsBag] };
+
+    const runtimeConfig = installStarterTemplateObjects(save, config);
+    const templates = save.ObjectStates.filter((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:internal:deck-import-template:')
+    );
+
+    expect(templates).toHaveLength(2);
+    expect(templates.every((object: any) => object.Locked === true && object.DragSelectable === false)).toBe(true);
+    expect(templates.every((object: any) => object.Transform.posZ === 100)).toBe(true);
+
+    const template = templates.find((object: any) =>
+      object.GMNotes === 'gauntlet:internal:deck-import-template:military-general-starter'
+    );
+    const deck = template.ContainedObjects.find((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:starter-deck:')
+    );
+    const territories = template.ContainedObjects.find((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:starter-territories:')
+    );
+    const mysticsTemplate = templates.find((object: any) =>
+      object.GMNotes === 'gauntlet:internal:deck-import-template:mystics-alchemist-starter'
+    );
+    const rites = mysticsTemplate.ContainedObjects.find((object: any) =>
+      object.GMNotes === 'gauntlet:supplemental-stack:rites-rituals'
+    );
+
+    expect(runtimeConfig.starters['military:general'].templateGuid).toBe(template.GUID);
+    expect(runtimeConfig.starters['mystics:alchemist'].templateGuid).toBe(mysticsTemplate.GUID);
+    expect(runtimeConfig.starters['military:general'].spawnState).toEqual({
+      transform: { rotX: 0, rotY: 180, rotZ: 0, scaleX: 1, scaleY: 1, scaleZ: 1 },
+      locked: false,
+      grid: true,
+      snap: true,
+      autoraise: true,
+      sticky: true,
+      tooltip: true,
+      gridProjection: false,
+      hideWhenFaceDown: false,
+      hands: false,
+      ignoreFoW: false,
+      measureMovement: false,
+      dragSelectable: true,
+    });
+    expect(deck.DeckIDs).toEqual([]);
+    expect(deck.CustomDeck).toEqual({});
+    expect(deck.ContainedObjects).toHaveLength(1);
+    expect(territories.ContainedObjects).toHaveLength(1);
+    expect(rites.ContainedObjects).toHaveLength(1);
+
+    // Capturing templates must not mutate visible starter kits.
+    expect(sourceBag.GUID).toBe('bag001');
+    expect(sourceBag.ContainedObjects[0].ContainedObjects).toHaveLength(2);
   });
 
   it('installs an idempotent Global UI and Lua importer', () => {
@@ -117,10 +319,14 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
     const save = {
-      ObjectStates: [],
+      ObjectStates: [
+        starterTemplateBag('military-general-starter', 'military'),
+        starterTemplateBag('mystics-alchemist-starter', 'mystics', true),
+      ],
       LuaScript: 'function existing() end',
       XmlUI: '<Text text="Existing" />',
     };
@@ -130,10 +336,46 @@ describe('TTS Deckbuilder importer', () => {
 
     expect(save.LuaScript).toContain('function existing() end');
     expect(save.LuaScript).toContain('function gauntletImportDeck');
-    expect(save.LuaScript).toContain('gauntlet:starter-kit:');
+    expect(save.LuaScript).toContain('pcall(function() return player.color end)');
+    expect(save.LuaScript).toContain('UI.show("gauntlet-deck-import-panel")');
+    expect(save.LuaScript).toContain('UI.hide("gauntlet-deck-import-open")');
+    expect(save.LuaScript).not.toContain('UI.getValue("gauntlet-deck-import-code")');
+    expect(save.LuaScript).toContain('templateGuid');
+    expect(save.LuaScript).toContain('getObjectFromGUID(guid)');
+    expect(save.LuaScript).toContain('templateObject.getData()');
+    expect(save.LuaScript).toContain('function gauntletRestoreStarterBagState');
+    expect(save.LuaScript).toContain('bagData.Transform.scaleX = tonumber(transform.scaleX) or 1');
+    expect(save.LuaScript).toContain('bagData.Locked = state.locked == true');
+    expect(save.LuaScript).toContain('bagData.DragSelectable = state.dragSelectable ~= false');
+    expect(save.LuaScript).not.toContain('getAllObjects()');
+    expect(save.LuaScript).not.toContain('.getJSON()');
+    expect(save.LuaScript).not.toContain('JSON.encode(');
+    expect(save.LuaScript).not.toContain('official " .. validated.starter.leaderName .. " starter kit is not on the table');
+    expect(save.LuaScript).toContain('function gauntletBuildMysticsRiteStack');
+    expect(save.LuaScript).toContain('GAUNTLET_DECK_IMPORT.selectedRiteCount');
+    expect(save.LuaScript).toContain('gauntlet:supplemental:mystics-ritual-of-ascension');
+    expect(save.LuaScript).toContain('bagData.Description = "Custom Deckbuilder starter kit\\n\\n"');
+    expect(save.LuaScript).not.toContain(`bagData.Description = "Custom Deckbuilder starter kit
+
+"`);
+    expect(Buffer.byteLength(save.LuaScript, 'utf8')).toBeLessThan(MAX_TTS_IMPORTER_LUA_BYTES);
+    expect(save.LuaScript).not.toContain('"template":{');
+    expect(save.ObjectStates.filter((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:internal:deck-import-template:')
+    )).toHaveLength(2);
     expect((save.LuaScript.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
-    expect(save.XmlUI).toContain('IMPORT CUSTOM STARTER KIT');
+    expect(save.XmlUI).toContain('DECK IMPORT');
+    expect(save.XmlUI).toContain('IMPORT STARTER KIT');
+    expect(save.XmlUI).toContain('visibility="White|Green"');
+    expect(save.XmlUI).toContain('lineType="MultiLineNewLine"');
+    expect(save.XmlUI).toContain('onEndEdit="gauntletDeckImportChanged"');
     expect((save.XmlUI.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
+  });
+
+  it('rejects raw newlines inside generated Lua quoted strings', () => {
+    expect(() => validateGeneratedLuaStrings('local value = "broken\nstring"')).toThrow(/raw newline/i);
+    expect(validateGeneratedLuaStrings('local value = "safe\\nstring"')).toBe(true);
+    expect(validateGeneratedLuaStrings('local payload = [[line one\nline two]]')).toBe(true);
   });
 
   it('rejects mismatched generated versions', () => {
@@ -143,6 +385,7 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest: { ...cardManifest, gameVersion: 'v0.6.3' },
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     })).toThrow(/version mismatch/i);
   });

@@ -1,5 +1,5 @@
 name = "gauntlet-rules-assistant"
-main = "worker-entry.js"
+main = "admin-refinement-worker.js"
 compatibility_date = "2026-07-29"
 
 [vars]
@@ -11,6 +11,9 @@ RULES_SEMANTIC_PLANNER = "off"
 RULES_VERIFIER = "off"
 RULES_SOURCE_LIMIT = "8"
 RULES_SOURCE_EXCERPT_LENGTH = "1000"
+RULES_MODEL_REQUESTS_PER_IP_HOUR = "12"
+RULES_MODEL_REQUESTS_PER_DAY = "50"
+RULES_MODEL_REQUESTS_PER_MONTH = "200"
 
 [[d1_databases]]
 binding = "DB"

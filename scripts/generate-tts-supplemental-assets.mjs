@@ -7,19 +7,28 @@ import {
   resolveCurrentTtsRelease,
   ROOT,
 } from './tts-current-catalog.mjs';
-import { loadTtsComponentContract } from './tts-component-contract.mjs';
+import {
+  loadTtsComponentContract,
+  TTS_COMPONENT_CONTRACT_AUTHORITY,
+} from './tts-component-contract.mjs';
+import { loadCurrentGameAuthority } from './current-game-authority.mjs';
 import {
   buildReadyTrackerRecord,
   captureProductionTracker,
 } from './tts-sliding-trackers.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
-const CARD_WIDTH = 400;
-const CARD_HEIGHT = 560;
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const DEVICE_SCALE_FACTOR = surfaceDeviceScale('portrait');
 const FIRST_SUPPLEMENTAL_DECK_ID = 200;
 const SUPPORTED_RENDERERS = new Map([
   ['rite-card', 'rite-card'],
+  ['ritual-card', 'ritual-card'],
   ['reference-card', 'reference-card'],
   ['tracker', 'sliding-tracker'],
 ]);
@@ -314,8 +323,8 @@ function readyCardBase(component, renderer) {
   if (!component.cardLike || component.tts?.representation !== 'card') {
     throw new Error(`Ready supplemental component ${component.id} cannot use ${renderer}: expected a card-like TTS card.`);
   }
-  if (component.backPolicy !== 'twoSided') {
-    throw new Error(`Ready supplemental component ${component.id} must be explicitly two-sided before card export; found ${component.backPolicy || 'missing'}.`);
+  if (!['twoSided', 'specialBack'].includes(component.backPolicy)) {
+    throw new Error(`Ready supplemental component ${component.id} must declare an intrinsic reverse before card export; found ${component.backPolicy || 'missing'}.`);
   }
 
   return {
@@ -334,18 +343,53 @@ function readyCardBase(component, renderer) {
   };
 }
 
-async function readyRiteRecord(component, renderer, markdown) {
+function currentRiteBlocks(rite) {
+  const lines = [
+    `**Begin:** ${rite.begin}`,
+    '',
+    `**Complete:** ${rite.complete}`,
+  ];
+  if (rite.reminder?.text) lines.push('', `*${rite.reminder.text}*`);
+  lines.push('', `**Interrupted:** ${rite.interrupted}`);
+  return parseMarkdownBlocks(lines, rite.name);
+}
+
+async function readyRiteRecord(component, renderer, currentGame) {
   if (!component.reverseArtwork) {
     throw new Error(`Ready supplemental component ${component.id} is two-sided but has no reverseArtwork.`);
   }
   await access(join(ROOT, component.reverseArtwork));
+  const riteId = String(component.id || '').replace(/^mystics-rite-/, '');
+  const rite = (currentGame.mystics?.rites || []).find(item => item.id === riteId);
+  if (!rite) throw new Error(`Current-game authority has no Rite matching ${component.id}.`);
+  if (rite.name !== component.name) {
+    throw new Error(`Rite component ${component.id} does not match current-game name ${rite.name}.`);
+  }
   return {
     ...readyCardBase(component, renderer),
     reverseArtwork: component.reverseArtwork,
     front: {
-      sourceHeading: component.name,
-      blocks: parseRiteBlocks(markdown, component.name),
+      sourceHeading: rite.name,
+      blocks: currentRiteBlocks(rite),
     },
+  };
+}
+
+async function readyRitualRecord(component, renderer, currentGame) {
+  const ritual = currentGame.mystics?.ritual;
+  if (!ritual?.id || component.id !== `mystics-ritual-of-${ritual.id}`) {
+    throw new Error(`Current-game authority has no Ritual matching ${component.id}.`);
+  }
+  if (ritual.name !== component.name) {
+    throw new Error(`Ritual component ${component.id} does not match current-game name ${ritual.name}.`);
+  }
+  if (!component.specialBackFile) {
+    throw new Error(`Ready Ritual component ${component.id} has no specialBackFile.`);
+  }
+  await access(join(ROOT, component.specialBackFile));
+  return {
+    ...readyCardBase(component, renderer),
+    specialBackFile: component.specialBackFile,
   };
 }
 
@@ -364,13 +408,15 @@ async function readyReferenceRecord(component, renderer, markdown) {
   };
 }
 
-async function readyRecord(component, sourceCache) {
+async function readyRecord(component, sourceCache, currentGame) {
   const renderer = SUPPORTED_RENDERERS.get(component.family);
   if (!renderer) {
     throw new Error(`Ready supplemental component ${component.id} has no supported exporter for family ${component.family}.`);
   }
 
   if (component.family === 'tracker') return buildReadyTrackerRecord(component, renderer);
+  if (component.family === 'rite-card') return readyRiteRecord(component, renderer, currentGame);
+  if (component.family === 'ritual-card') return readyRitualRecord(component, renderer, currentGame);
 
   let markdown = sourceCache.get(component.source);
   if (!markdown) {
@@ -378,14 +424,16 @@ async function readyRecord(component, sourceCache) {
     sourceCache.set(component.source, markdown);
   }
 
-  if (component.family === 'rite-card') return readyRiteRecord(component, renderer, markdown);
   if (component.family === 'reference-card') return readyReferenceRecord(component, renderer, markdown);
   throw new Error(`Ready supplemental component ${component.id} reached unsupported exporter ${renderer}.`);
 }
 
 export async function buildSupplementalCatalog(componentContract = null) {
   const contract = componentContract || await loadTtsComponentContract();
-  const release = await resolveCurrentTtsRelease();
+  const [release, currentGame] = await Promise.all([
+    resolveCurrentTtsRelease(),
+    loadCurrentGameAuthority(),
+  ]);
   const sourceCache = new Map();
   const ready = [];
   const pending = [];
@@ -395,7 +443,7 @@ export async function buildSupplementalCatalog(componentContract = null) {
   const factionSupplementals = (contract.components || []).map((component) => normalizedSupplementalComponent(component));
 
   for (const component of [...sharedSupplementals, ...factionSupplementals]) {
-    if (component.productionStatus === 'ready') ready.push(await readyRecord(component, sourceCache));
+    if (component.productionStatus === 'ready') ready.push(await readyRecord(component, sourceCache, currentGame));
     else pending.push(pendingRecord(component));
   }
 
@@ -404,7 +452,7 @@ export async function buildSupplementalCatalog(componentContract = null) {
     catalog: {
       schemaVersion: 3,
       gameVersion: release.version,
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: TTS_COMPONENT_CONTRACT_AUTHORITY,
       sourcePolicy: 'card faces are captured only from card-design production render authority; pending components remain cataloged but produce no TTS objects',
       readyCount: ready.length,
       pendingCount: pending.length,
@@ -432,24 +480,9 @@ function generatedReverseFileFor(record) {
   return `supplementals/reverses/${record.id}.png`;
 }
 
-function productionComponentRequest(record) {
-  if (record.renderer === 'reference-card') {
-    return { kind: 'reference', id: record.id };
-  }
-  if (record.renderer === 'rite-card') {
-    return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') };
-  }
-  throw new Error(`No card-design production component request for ${record.id} (${record.renderer}).`);
-}
-
 async function captureCard(page, baseUrl, record, side, outputPath, displayVersion) {
-  const request = productionComponentRequest(record);
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
-  url.searchParams.set('kind', request.kind);
-  url.searchParams.set('id', request.id);
-  url.searchParams.set('side', side);
-  url.searchParams.set('orientation', 'portrait');
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${record.id}:${side}`);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');
@@ -503,7 +536,7 @@ export async function renderSupplementalAssets(release, catalog) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 320, height: 420 },
-    deviceScaleFactor: CARD_WIDTH / CSS_CARD_WIDTH,
+    deviceScaleFactor: DEVICE_SCALE_FACTOR,
   });
   const page = await context.newPage();
 

@@ -50,6 +50,15 @@
   grid-template-columns: minmax(0, 2.5in);
 }
 
+.supplemental-review-landscape {
+  grid-column: 1 / -1;
+}
+
+.supplemental-review-landscape .supplemental-face-grid {
+  grid-template-columns: minmax(0, 3.5in);
+}
+
+
 /* site.css intentionally styles the public page footer with a constrained
    width and auto margins. Card metadata also uses semantic <footer> elements,
    so keep those global page rules from leaking into production card faces. */
@@ -127,87 +136,6 @@
 .supplemental-requirement p {
   font-size: calc(6.2pt * var(--rules-scale));
   line-height: 1.14;
-}
-
-/* ---------- Financier Deed ----------
-   The Deed is a landscape ownership marker that sits beside a Territory. It
-   deliberately reuses the ordinary Financiers faction frame and approved
-   parchment source, with no iconography, footer, rules, or decorative marks. */
-
-#supplemental-financiers-deed {
-  grid-column: 1 / -1;
-}
-
-#supplemental-financiers-deed .supplemental-single-face-grid {
-  grid-template-columns: 3.5in;
-}
-
-#supplemental-financiers-deed .supplemental-face {
-  width: 3.5in;
-}
-
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] {
-  width: 3.5in;
-  height: 2.5in;
-}
-
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  background-color: var(--card-parchment);
-  background-image: none;
-}
-
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior > * {
-  display: none;
-}
-
-/* The approved faction parchment is portrait-oriented. Rotate that exact
-   source once, matching the landscape Territory treatment rather than
-   generating or compositing a separate raster asset. */
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
-  position: absolute;
-  z-index: 0;
-  top: 50%;
-  left: 50%;
-  width: 70.15%;
-  height: 142.55%;
-  background-color: var(--card-parchment);
-  background-image: var(--parchment-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  content: "";
-  transform: translate(-50%, -50%) rotate(90deg);
-  transform-origin: center;
-  pointer-events: none;
-}
-
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  inset: auto;
-  margin: 0;
-  background: none;
-  color: var(--card-ink);
-  content: "Deed";
-  font-family:
-    "P22 Declaration W01 Blackletter",
-    "P22 Declaration Blackletter",
-    var(--font-flavor);
-  font-size: 42pt;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: 0.015em;
-  line-height: 1;
-  text-align: center;
-  text-transform: none;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-  pointer-events: none;
 }
 
 /* ---------- Sliding trackers ----------
@@ -296,15 +224,6 @@
   white-space: nowrap;
 }
 
-/* Operation Progress only overruns the standard title rail by about one
-   character. Preserve the standard tracker title size and recover that width
-   by removing the extra display tracking. The component-local selector also
-   survives the inspection dialog's cloned-card rendering. */
-.sliding-tracker-card[data-component-id="operation-progress-tracker"] .tracker-heading h3 {
-  font-size: 12.2pt;
-  letter-spacing: 0;
-}
-
 .tracker-cap {
   grid-column: 1 / -1;
   margin: 0.04in 0 0;
@@ -330,10 +249,6 @@
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.16;
-}
-
-.sliding-tracker-card[data-component-id="operation-progress-tracker"] .tracker-instructions {
-  top: 0.37in;
 }
 
 .tracker-scale {
@@ -422,14 +337,6 @@
   color: var(--component-accent-ink);
 }
 
-/* The reverse Diplomat face has a longer historical title than the tracker
-   heading rail can carry at the standard display setting. Keep it on one line
-   and reduce only this face enough to preserve the full title. */
-.reference-card[data-component-id="diplomats-reference"][data-reference-side="reverse"] .reference-face-title {
-  font-size: 10.9pt;
-  letter-spacing: 0.018em;
-}
-
 @media screen and (max-width: 760px) {
   .supplemental-review-grid,
   .supplemental-face-grid {
@@ -440,9 +347,6 @@
     grid-column: auto;
   }
 
-  #supplemental-financiers-deed {
-    grid-column: auto;
-  }
 }
 
 @media print {
@@ -461,14 +365,6 @@
 
   .supplemental-single-face-grid {
     grid-template-columns: 2.5in;
-  }
-
-  #supplemental-financiers-deed {
-    grid-column: 1 / -1;
-  }
-
-  #supplemental-financiers-deed .supplemental-single-face-grid {
-    grid-template-columns: 3.5in;
   }
 
   .tracker-faction-emblem,

@@ -23,7 +23,8 @@ describe('TTS final save promotion', () => {
   it('keeps promotion explicit and outside ordinary package generation', () => {
     expect(packageJson.scripts['tts:save:promote']).toBe('node scripts/promote-tts-save.mjs');
     expect(packageJson.scripts['tts:package']).not.toContain('tts:save:promote');
-    expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
+    expect(packageJson.scripts['tts:check']).toContain('node --check scripts/promote-tts-save.mjs');
+    expect(packageJson.scripts['tts:check']).not.toContain('promote-tts-save.mjs --check');
   });
 
   it('tracks the passed and explicitly Workshop-approved v0.7.0 manual-QA record', () => {

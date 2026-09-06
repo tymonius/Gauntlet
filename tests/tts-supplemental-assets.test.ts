@@ -9,7 +9,9 @@ const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', '
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
-const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const referenceTemplate = readFileSync('card-design/face-templates/reference.mjs', 'utf8');
 const riteDesign = readFileSync('card-design/rite-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
 const referenceDividerCss = readFileSync('card-design/reference-divider-rules.css', 'utf8');
@@ -17,6 +19,7 @@ const universalReferenceCss = readFileSync('card-design/universal-reference.css'
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 function allReferenceComponents() {
@@ -43,9 +46,28 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toMatch(/readyCount\s*[:=]\s*\d+|pendingCount\s*[:=]\s*\d+/);
   });
 
+  it('packages the full current Mystics Rite pool and Ritual from physical component authority', async () => {
+    const physicalReadyRites = contract.components.filter((component: any) =>
+      component.family === 'rite-card' && component.productionStatus === 'ready'
+    );
+    const ritual = contract.components.find((component: any) => component.family === 'ritual-card');
+    expect(currentGame.mystics.rites).toHaveLength(6);
+    expect(physicalReadyRites).toHaveLength(currentGame.mystics.rites.length);
+    expect(physicalReadyRites.every((component: any) => component.deckInclusion === 'selected-rite')).toBe(true);
+    expect(ritual).toMatchObject({
+      id: 'mystics-ritual-of-ascension',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+    });
+
+    const { catalog } = await buildSupplementalCatalog(contract);
+    expect(catalog.ready.some((component: any) => component.id === ritual.id && component.renderer === 'ritual-card')).toBe(true);
+    expect(generator).toContain("['ritual-card', 'ritual-card']");
+    expect(generator).toContain('component:${record.id}:${side}');
+  });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
-    expect(riteCards).toHaveLength(3);
+    expect(riteCards).toHaveLength(currentGame.mystics.rites.length);
     expect(riteCards.every((component: any) => component.productionStatus === 'ready')).toBe(true);
     expect(riteCards.every((component: any) => component.backPolicy === 'twoSided')).toBe(true);
     expect(new Set(riteCards.map((component: any) => component.reverseArtwork)).size).toBe(1);
@@ -58,15 +80,20 @@ describe('TTS supplemental component exports', () => {
     const bloodText = JSON.stringify(blood?.front?.blocks || []);
     const crossingText = JSON.stringify(crossing?.front?.blocks || []);
 
-    expect(echoesText).toContain('Gambit, Tactic, or Gambit or Tactic effect');
-    expect(bloodText).toContain('without setting a Gambit or choosing a Tactic');
-    expect(crossingText).toContain('during Denouement');
+    expect(echoesText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'echoes').complete);
+    expect(bloodText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'blood').complete);
+    expect(crossingText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'crossing').begin);
     expect(crossingText).not.toContain('Ritual of Ascendance');
-    expect(generator).toContain('/card-design/component-print-render.html');
-    expect(generator).toContain("return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') }");
+    expect(generator).toContain('/card-design/face-render.html');
+    expect(generator).toContain('component:${record.id}:${side}');
+    expect(generator).not.toContain('/card-design/component-render.html');
     expect(generator).not.toContain('/tts/supplemental-renderer/');
     expect(riteDesign).toContain('class="rite-faction-emblem"');
     expect(riteDesign).toContain('completedArtwork(rite)');
+    expect(faceRuntime).toContain('const game = await loadRenderGame()');
+    expect(faceRuntime).toContain('window.GAUNTLET_ART_DIRECTION = game.artDirection || {}');
+    expect(faceRuntime).toContain('await loadProductionFonts()');
+    expect(faceRuntime).not.toContain('preloadProductionFonts');
   });
 
   it('treats every physical reference card as ready public two-sided material', async () => {
@@ -104,9 +131,10 @@ describe('TTS supplemental component exports', () => {
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).toContain('Direct Purges');
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).not.toContain('Final Judgment');
 
-    expect(generator).toContain("return { kind: 'reference', id: record.id }");
-    expect(componentRenderer).toContain('"reference"');
-    expect(componentRenderer).toContain('versionOverride');
+    expect(generator).toContain('component:${record.id}:${side}');
+    expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
+    expect(referenceTemplate).toContain('spec.provenance.displayVersion');
+    expect(faceSpec).toContain("if (face.template === 'reference')");
     expect(referenceCss).toContain('.reference-watermark');
     expect(referenceCss).toContain('.reference-table');
     expect(referenceDividerCss).toContain('border-top: 0 !important');
@@ -132,12 +160,14 @@ describe('TTS supplemental component exports', () => {
     expect(intel.trackedValue.maximum).toBeNull();
     expect(progress.trackedValue.maximum).toBeNull();
 
-    expect(productionSupplementals).toMatch(/'military-command-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
-    expect(productionSupplementals).toMatch(/'diplomats-influence-tracker'\s*:\s*\{[\s\S]*?max:\s*10/);
-    expect(productionSupplementals).toMatch(/'financiers-capital-limit-tracker'\s*:\s*\{[\s\S]*?max:\s*15/);
-    expect(productionSupplementals).toMatch(/'intelligence-intel-tracker'\s*:\s*\{[\s\S]*?max:\s*12/);
-    expect(productionSupplementals).toMatch(/'intelligence-operation-progress-tracker'\s*:\s*\{[\s\S]*?max:\s*8/);
-    expect(productionSupplementals).toMatch(/'inquisition-conviction-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
+    expect(command.presentation?.tracker?.scaleMaximum).toBe(4);
+    expect(trackers.find((component: any) => component.id === 'diplomats-influence-tracker')?.presentation?.tracker?.scaleMaximum).toBe(10);
+    expect(capitalLimit.presentation?.tracker?.scaleMaximum).toBe(15);
+    expect(intel.presentation?.tracker?.scaleMaximum).toBe(12);
+    expect(progress.presentation?.tracker?.scaleMaximum).toBe(8);
+    expect(trackers.find((component: any) => component.id === 'inquisition-conviction-tracker')?.presentation?.tracker?.scaleMaximum).toBe(4);
+    expect(productionSupplementals).toContain('component.presentation?.tracker');
+    expect(productionSupplementals).not.toContain('const TRACKER_PRESENTATION');
 
     const { catalog } = await buildSupplementalCatalog(contract);
     const readyTrackers = catalog.ready.filter((component: any) => component.representation === 'sliding-tracker');
@@ -149,9 +179,11 @@ describe('TTS supplemental component exports', () => {
 
   it('maps the actual rendered registration lines onto the live tracker collider', () => {
     expect(generator).toContain('captureProductionTracker');
-    expect(trackerHelper).toContain('/card-design/component-print-render.html');
-    expect(trackerHelper).toContain("url.searchParams.set('kind', 'tracker')");
-    expect(trackerHelper).toContain("url.searchParams.set('version', displayVersion)");
+    expect(trackerHelper).toContain('/card-design/face-render.html');
+    expect(trackerHelper).toContain('component:${componentId}:front');
+    expect(trackerHelper).not.toContain('/card-design/component-render.html');
+    expect(trackerHelper).not.toContain("url.searchParams.set('kind'");
+    expect(trackerHelper).not.toContain("url.searchParams.set('version'");
     expect(trackerHelper).toContain('.tracker-registration-line');
     expect(trackerHelper).toContain('registrationFraction: rendererTravelPx / rect.height');
     expect(trackerHelper).toContain('{ value: 0, rendererTravelPx: 0, registrationFraction: 0 }');
@@ -197,7 +229,7 @@ describe('TTS supplemental component exports', () => {
 
   it('fails closed when a ready supplemental family or required representation input has no exporter', () => {
     expect(generator).toContain('Ready supplemental component ${component.id} has no supported exporter');
-    expect(generator).toContain('must be explicitly two-sided before card export');
+    expect(generator).toContain('must declare an intrinsic reverse before card export');
     expect(generator).toContain('is two-sided but has no reverseArtwork');
     expect(generator).toContain('must declare referenceFaces.front and referenceFaces.reverse');
     expect(generator).toContain('reference selector must declare heading and depth');
@@ -214,7 +246,11 @@ describe('TTS supplemental component exports', () => {
     expect(stager).toContain("'supplemental-tracker-face'");
     expect(stager).toContain('_Supplemental_Manifest.json');
     expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
-    expect(assembler).toContain("component.deckInclusion === 'every-deck' || component.faction === starter.factionId");
+    expect(assembler).toContain('function componentAppliesToStarter');
+    expect(assembler).toContain("component?.deckInclusion === 'every-deck'");
+    expect(assembler).toContain("component?.family === 'rite-card'");
+    expect(assembler).toContain('selectedRites.includes(riteIdFromComponent(component))');
+    expect(assembler).toContain('ready.filter(component => componentAppliesToStarter(component, starter))');
     expect(assembler).toContain("component.productionStatus !== 'ready'");
     expect(assembler).toContain('cleanPriorAssembly(save, trackerTags)');
     expect(assembler).toContain('SUPPLEMENTAL_GUID_NOTE_PREFIX');
@@ -234,18 +270,18 @@ describe('TTS supplemental component exports', () => {
     expect(packageJson.scripts['tts:check']).toContain('tts-supplemental-geometry.mjs');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:supplementals');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:save:assemble');
-    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).toContain('validate-current-authoritative-save.mjs');
     expect(workflow).toContain('scripts/generate-tts-supplemental-assets.mjs');
     expect(workflow).toContain('scripts/assemble-tts-supplemental-save.mjs');
     expect(workflow).toContain('scripts/tts-supplemental-geometry.mjs');
     expect(workflow).toContain('Generate ready supplemental components');
     expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
-    expect(workflow).toContain('Refresh current Mystics Rite and Ritual components');
     expect(workflow).toContain('if [[ "$render_supplementals" == "true" ]]');
     expect(workflow).toContain('render_finalized=true');
-    expect(workflow).toContain('render_mystics=true');
+    expect(workflow).not.toContain('render_mystics');
+    expect(workflow).not.toContain('render-current-mystics-assets.mjs');
     expect(workflow).toContain('Assemble supplemental starter-kit contents');
-    expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
+    expect(workflow).toContain('Validate authoritative current TTS save contract');
     expect(workflow).toContain('run: npm run tts:save:assemble');
   });
 

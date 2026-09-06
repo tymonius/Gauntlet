@@ -1,149 +1,128 @@
 # Gauntlet Playtest Tools
 
-**Current canonical tabletop release:** v0.6.3 — Third Playtest Revision  
-**Coded-session service baseline:** v0.6.3
+**Current canonical tabletop release:** v0.7.0 — Illustrated Cards & Tabletop Simulator  
+**Current session-service baseline:** v0.7.0
 
-Public pages:
+The playtest subsystem supports three collection modes around one common evidence pipeline:
 
-- Printable sheet: `https://gauntlet.run/playtest/`
-- Formal session page: `https://gauntlet.run/playtest/session/?code=<SESSION-TOKEN>`
-- Coded batch generator: `https://gauntlet.run/playtest/batch/`
+1. **Self-serve tracked playtest** — the default public workflow. Two players create/join one tracked game, choose factions and Leaders, play in Tabletop Simulator or physically, link Rules Arbiter questions, record live diagnostic flags, submit one shared result, and submit separate private player responses.
+2. **Facilitated game-night playtest** — organizer-created events, rosters, child game sessions, table QR codes, and controlled matchups.
+3. **Standalone / retrospective feedback** — records feedback for games that were not tracked live without inventing a verified shared timeline.
 
-This directory contains the routine human-playtest questionnaire and its linked formal-session workflow. The certified reconstructed v0.6.3 package does not contain the withdrawn release's standalone Formal Playtest Sheet PDF; use the live `/playtest/` print source for current v0.6.3 sessions.
-
-The browser pages and coded-session infrastructure are active development surfaces rather than immutable release artifacts. New sessions created by the live workflow use the v0.6.3 runtime contract, while older stored sessions retain their persisted rules version and remain addressable by their existing session tokens.
-
-## Printable sheet
-
-The current v0.6.3 printable playtest sheet is the live browser surface:
-
-- `https://gauntlet.run/playtest/`
-
-Print on Letter paper at Actual Size / 100%, with browser or printer headers and footers disabled.
-
-The live `/playtest/` page is the browser source used by the playtest workflow. Update its HTML/CSS source rather than editing generated PDFs independently.
-
-## Unique session codes
-
-Each coded formal sheet receives:
-
-- one unique join QR code;
-- one short human-readable sheet serial;
-- one linked digital session record; and
-- one private host key retained in the facilitator's batch manifest.
-
-The batch generator creates the digital session before printing. Scanning a sheet opens or joins that pre-existing session. Rules Arbiter questions asked through the linked session are attached automatically. Closing the session preserves its record but blocks future joins and playtest events, retiring the printed QR code.
-
-The human-readable serial is a fallback for damaged QR codes, manual session lookup, and reconciliation between a paper sheet and digital records.
-
-### Version and serial contract
-
-New v0.6.3 standalone and table-game sessions use serials such as:
+The public entry point is:
 
 ```text
-G063-ABCD2345
+https://gauntlet.run/playtest/
 ```
 
-Game-night event containers use the `EV063-…` prefix. The session service reports `v0.6.3` from its health endpoint and stores the rules version with each session.
+Use the physical tabletop when both players are together in person. Use Tabletop Simulator when the players are in different locations. Both routes use the same tracked-session, Rules Arbiter, feedback, and analysis pipeline.
 
-Older v0.6.1 records are not rewritten during the cutover. Reading an existing session returns the rules version and serial already stored with that record, preserving historical attribution. They are historical records, not a supported path for creating new v0.6.1 sessions or new current play through the legacy ruleset.
+## Public self-serve playtest path
 
-### Coded batch procedure
+The ordinary journey is:
 
-1. Deploy and configure the playtest-session Worker described in [`workers/playtest-sessions/README.md`](../workers/playtest-sessions/README.md).
-2. Open `/playtest/batch/` and enter the number of sheets, an optional batch label, and the facilitator creation key.
-3. Generate the batch. Every resulting session is live immediately.
-4. Download the private host manifest before printing or leaving the page.
-5. Print the rendered sheets.
-6. After each session, open its host URL from the manifest and close it. The QR code is then retired.
+1. open `/playtest/`;
+2. continue through `/start/` to browse factions and choose a Leader;
+3. create a public tracked game at `/playtest/tracked/`;
+4. share the join link with the second player;
+5. use the physical tabletop if the players are together, or the v0.7.0 TTS Workshop mod if they are remote;
+6. record the game start;
+7. ask Rules Arbiter questions from the joined player device;
+8. optionally record timestamped diagnostic flags during play;
+9. submit the shared factual result; and
+10. have both players submit their private responses.
 
-The QR contains only the public join URL. The host key and host URL appear only in the downloaded facilitator manifest and must not be distributed with the player sheets.
+The tracked game closes automatically after exactly one shared result and both player responses are present.
 
-### Print-page parameters
+New tracked sessions use `G070-…` serials. Public creation is rate-limited and does not require the facilitator secret.
 
-The single-sheet print source accepts optional query parameters:
+## Live diagnostic flags
+
+During a tracked game, either authenticated player may mark:
+
+- I don't know what happens next;
+- a rule is unclear;
+- I have no meaningful option;
+- this feels decided;
+- a battle feels repeated or futile; or
+- a component / TTS problem occurred.
+
+These are timestamped observations, not diagnoses. The analysis record retains the submitting player and time.
+
+The private postgame response also records when the result first felt decided, whether meaningful decisions remained afterward, and what the player believes most determined the result. This directly supports the winner/loser experience investigation without exposing one player's answers to the other through the public session view.
+
+## Tabletop Simulator
+
+Current public Workshop item:
 
 ```text
-/playtest/?serial=G063-ABCD2345&qr=<URL-ENCODED-QR-IMAGE-URL>
+https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 ```
 
-- `serial` replaces the blank sheet-serial line.
-- `qr` supplies the QR-code image displayed in the reserved square.
-- With neither parameter, the page renders a blank reusable worksheet with a placeholder QR area.
+For remote v0.7.0 self-serve tests, each player uses the locked TTS starter kit matching the Leader selected in the tracked session.
 
-The batch generator does not depend on remote QR-image URLs. It creates QR images in the browser and inserts them directly into cloned copies of the governing sheet template.
+Deckbuilder → TTS custom-Deck import remains gated to v0.7.1. The self-serve session and feedback pipeline is transport-independent and will also support the native digital client later.
 
-## Digital session page
+## Physical play
 
-The session page allows participants to:
+Self-serve physical play remains supported.
 
-- join as a player, facilitator, or observer, with an optional name or playtest ID;
-- record game start, completion, or a stopped-game reason;
-- save short factual session notes;
-- ask the Rules Arbiter with automatic session linkage; and
-- view the session's participant and Arbiter-question counts.
+- Use `/start/` and the Deckbuilder for faction/Leader selection and printable starter packages.
+- Use the same `/playtest/tracked/` session for timing, Arbiter linkage, live flags, results, and private feedback.
+- The printable formal questionnaire is preserved at `/playtest/sheet/`.
+- The coded batch generator remains at `/playtest/batch/`.
 
-A session opened with its private host URL also exposes the close-and-retire control. Closed sessions remain readable but reject new participants and playtest events.
+The batch generator uses the dedicated `/playtest/sheet/` template rather than the public playtest portal.
 
-The session page displays the rules version stored on the session record. The embedded unversioned Rules Arbiter is the current v0.6.3 Arbiter; legacy v0.6.1 session records are retained for historical review rather than automatically reopening historical adjudication behavior. Explicitly versioned Arbiter routes remain separate compatibility/history surfaces.
+## Facilitated game nights
 
-## What the sheet captures
+The existing event workflow remains available:
 
-### Session identity and timing
+- `/playtest/host/` — organizer home;
+- `/playtest/onboarding/` — event participant faction/Leader selection;
+- `/playtest/guide/` — organizer/player guide;
+- `/playtest/session/` — coded formal game session;
+- `/playtest/batch/` — coded sheet generation.
 
-- date, session/group, facilitator, sheet serial, and digital session link;
-- instruction and setup time;
-- game time;
-- total session time;
-- time spent on rules lookup; and
-- test type.
+New current event containers use `EV070-…`; current game sessions use `G070-…`.
 
-### Players and onboarding
+Organizer-created top-level sessions still require `SESSION_ADMIN_TOKEN`. That secret is not used by the public tracked-game API.
 
-- faction, Leader, and Deck used by each player;
-- whether the Deck was recommended, modified, or custom;
-- whether each player saw the faction introduction before selection; and
-- whether that introduction prepared the player for the faction.
+## Feedback and analysis
 
-### Outcome and completion status
+- `/playtest/feedback/` — standalone one-player feedback.
+- `/playtest/retrospective/` — reconstruct a game with explicit retrospective provenance.
+- `/playtest/analysis/` — protected compiled research view/export.
+- `/playtest/analysis/integrity/` — data-integrity/exclusion controls.
 
-- first player, winner or no winner, rounds, battles, and Rules Arbiter questions;
-- victory route; and
-- whether the session ended through normal victory, concession, external interruption, rules blocker, component/technical failure, or another reason.
+Tracked records preserve:
 
-External-interruption sessions should be retained for qualitative, onboarding, rules, and production evidence but excluded from completed-game pacing, victory-route, and matchup-balance statistics.
+- rules version;
+- play transport;
+- faction and Leader selections;
+- player seats;
+- lifecycle events;
+- diagnostic flags;
+- linked Rules Arbiter questions;
+- shared result;
+- separate player responses; and
+- automatic/manual closure provenance.
 
-### Ratings and diagnostic feedback
+Older stored v0.6.1/v0.6.3 records are not rewritten. Reads remain version-preserving.
 
-- overall fun;
-- pacing;
-- meaningful decisions;
-- battle tension;
-- rules clarity;
-- faction and Leader clarity;
-- table organization;
-- replay interest;
-- snowballing, futile attacks, repetitive battles, lost agency, card-flow problems, or rules/component interruptions; and
-- short written feedback on strengths, weaknesses, confusion, balance, memorable decisions, and the next issue to investigate.
+## Version and serial contract
 
-## Rules Arbiter linkage
+New current records:
 
-Every linked Arbiter record should retain:
+```text
+G070-ABCD2345
+EV070-ABCD2345
+```
 
-- exact question and answer;
-- rules version actually used for the ruling;
-- cited source and section;
-- answer classification and confidence;
-- session identifier and sheet serial;
-- whether the ruling changed play; and
-- reviewer correction or follow-up.
+Historical `G061`, `G063`, `EV061`, and `EV063` records remain historical evidence.
 
-The session service links interactions into the playtest-session records. New formal sessions are v0.6.3 and therefore align with the current unversioned Arbiter. Explicitly versioned legacy Arbiter routes remain available as separate historical/compatibility surfaces; the existence of a stored `G061-…` record does not automatically switch the current embedded widget to a legacy ruleset.
+## Governing principle
 
-The Rules Arbiter must not invent precedence. Where the current adjudication system makes a provisional ruling, it must distinguish that ruling from written canon and retain it for review.
+Record what happened before proposing a fix. One unusual game is evidence, not a verdict. Deterministic exploits, impossible resolutions, and repeatable blockers warrant faster escalation; balance, pacing, snowballing, and faction-experience claims require repeated observations.
 
-## Interpretation rule
-
-Record what happened before proposing a fix. One unusual game is evidence, not a verdict; deterministic exploits, impossible resolutions, or repeatable play blockers warrant faster escalation.
-
-The complete testing standard remains [`docs/Gauntlet_Playtest_Targets_and_Metrics.md`](../docs/Gauntlet_Playtest_Targets_and_Metrics.md).
+The complete testing standard remains [Gauntlet Playtest Targets and Metrics](../docs/Gauntlet_Playtest_Targets_and_Metrics.md).

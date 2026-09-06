@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "release_version": "v0.7.1",
+  "source_version": "v0.7.1",
+  "authority_set_id": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "current_game_authority": "game-data/current-game.json",
+  "current_rulebook_authority": "rulebook/player-facing/current-rulebook.md",
+  "historical_derivation": {
+    "historicalBaseVersion": "v0.6.3",
+    "transitionalSourceVersion": "v0.6.4-candidate",
+    "note": "The historical and approved-design inputs below document how the current authority was derived. They are provenance only, not runtime inputs, override layers, or current authorities.",
+    "historicalInputs": {
+      "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+      "cardChanges": "/docs/v0.6.4-card-additions.json",
+      "territories": "/docs/v0.6.4-territories.json",
+      "proposals": "/docs/v0.6.4-diplomat-proposals.json",
+      "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
+      "rules": "/docs/v0.6.4-rules.json",
+      "componentContract": "/config/tts-component-contract.json",
+      "starterDecks": "/deckbuilder/starter-decks.json"
+    },
+    "currentDevelopmentInputs": {
+      "mysticsRites": "/docs/v0.7.1-mystics-rites.json"
+    }
+  },
+  "publication_derived_assets": {
+    "card_anatomy_figure": "releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png"
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "proposals": 9,
+    "starter_decks": 12
+  }
+}

@@ -1,9 +1,19 @@
 (() => {
-  const EXPECTED_DECK_COUNT = 12;
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const currentGame = () => deckbuilder.currentGame();
+  const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
+
   let starterDecks = [];
+  let expectedDeckCount = 0;
   let starterLoadError = null;
   let printing = false;
 
+  deckbuilder.registerRenderHook(syncCurrentButton);
   document.addEventListener("DOMContentLoaded", installAllStarterPrintButton);
 
   function installAllStarterPrintButton() {
@@ -11,23 +21,22 @@
     if (!button) return;
 
     button.addEventListener("click", printAllStarterDecks);
+    syncButton(button);
     loadStarterDecks();
-
-    const readyCheck = window.setInterval(() => {
-      syncButton(button);
-      if (starterLoadError || isReady()) window.clearInterval(readyCheck);
-    }, 100);
   }
 
   async function loadStarterDecks() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
+      const currentGame = await deckbuilder.bootstrap();
+      expectedDeckCount = (currentGame.factions || [])
+        .reduce((sum, faction) => sum + (faction.leaders || []).length, 0);
+      if (!expectedDeckCount) throw new Error("Current-game authority exposes no Leaders for starter Deck coverage.");
+
       starterDecks = Array.isArray(currentGame.starterDecks)
         ? currentGame.starterDecks.map(deck => ({ ...deck }))
         : [];
-      if (starterDecks.length !== EXPECTED_DECK_COUNT) {
-        throw new Error(`Expected ${EXPECTED_DECK_COUNT} starter Decks but found ${starterDecks.length}.`);
+      if (starterDecks.length !== expectedDeckCount) {
+        throw new Error(`Expected one starter Deck per Leader (${expectedDeckCount}) but found ${starterDecks.length}.`);
       }
     } catch (error) {
       starterLoadError = error;
@@ -39,27 +48,34 @@
   }
 
   function isReady() {
-    const starterApi = window.GAUNTLET_STARTER_DECKS;
+    const starterApi = deckbuilder.feature("starterDecks");
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
+    const mysticsRitesReady = ritesApi()?.isReady?.() === true;
 
     return Boolean(
-      starterDecks.length === EXPECTED_DECK_COUNT &&
+      expectedDeckCount > 0 && starterDecks.length === expectedDeckCount &&
       starterTipsReady &&
-      state.cards?.length &&
-      state.territoryPool?.length &&
+      mysticsRitesReady &&
+      cardCatalog().length &&
+      territoriesApi()?.isReady?.() &&
       !document.getElementById("printDeckButton")?.disabled
     );
+  }
+
+  function syncCurrentButton() {
+    const button = document.getElementById("printAllStarterDecksButton");
+    if (button) syncButton(button);
   }
 
   function syncButton(button) {
     if (printing) return;
 
     button.disabled = !isReady();
-    button.textContent = "Print all 12 starter decks";
+    button.textContent = expectedDeckCount ? `Print all ${expectedDeckCount} starter decks` : "Print all starter decks";
     button.title = starterLoadError
       ? "The starter Deck definitions could not be loaded"
       : isReady()
-        ? "Open one printable package containing all twelve complete recommended starter Decks"
+        ? `Open one printable package containing all ${expectedDeckCount} complete recommended starter Decks`
         : "Waiting for card, Territory, and starter Deck data";
   }
 
@@ -78,16 +94,16 @@
 
     printing = true;
     button.disabled = true;
-    button.textContent = `Preparing 0 of ${EXPECTED_DECK_COUNT}…`;
-    outputWindow.document.write(`<!doctype html><title>Preparing all starter Decks</title><body style="font-family:Arial,sans-serif;padding:2rem"><h1>Preparing all twelve starter Decks…</h1><p>This window will open the print dialog when the complete package is ready.</p></body>`);
+    button.textContent = `Preparing 0 of ${expectedDeckCount}…`;
+    outputWindow.document.write(`<!doctype html><title>Preparing all starter Decks</title><body style="font-family:Arial,sans-serif;padding:2rem"><h1>Preparing all ${expectedDeckCount} starter Decks…</h1><p>This window will open the print dialog when the complete package is ready.</p></body>`);
     outputWindow.document.close();
 
     try {
       starterDecks.forEach((preset, index) => {
-        button.textContent = `Preparing ${index + 1} of ${EXPECTED_DECK_COUNT}…`;
+        button.textContent = `Preparing ${index + 1} of ${expectedDeckCount}…`;
         applyStarterDeckToState(preset);
 
-        const validation = validateDeck();
+        const validation = deckbuilder.validate();
         if (!validation.valid) {
           throw new Error(`${preset.name} failed Deckbuilder validation while preparing the combined print package.`);
         }
@@ -108,7 +124,7 @@
       window.alert(`Unable to prepare all starter Decks: ${error.message || error}`);
     } finally {
       restoreState(snapshot);
-      renderAll();
+      deckbuilder.render();
       printing = false;
       syncButton(button);
     }
@@ -116,34 +132,33 @@
 
   function snapshotState() {
     return {
-      deckName: state.deckName,
-      factionId: state.factionId,
-      leaderId: state.leaderId,
-      deck: { ...state.deck },
-      territories: [...(state.territories || [])],
-      selectedCardId: state.selectedCardId,
-      selectedTerritoryId: state.selectedTerritoryId
+      core: deckState(),
+      territories: territoriesApi()?.selectedIds?.() || [],
+      rites: ritesApi()?.selectedIds?.() || [],
     };
   }
 
   function restoreState(snapshot) {
-    state.deckName = snapshot.deckName;
-    state.factionId = snapshot.factionId;
-    state.leaderId = snapshot.leaderId;
-    state.deck = { ...snapshot.deck };
-    state.territories = [...snapshot.territories];
-    state.selectedCardId = snapshot.selectedCardId;
-    state.selectedTerritoryId = snapshot.selectedTerritoryId;
+    deckbuilder.replaceDeckState(snapshot.core);
+    territoriesApi()?.setSelectedIds?.(snapshot.territories || []);
+    ritesApi()?.setSelectedIds?.(snapshot.rites || []);
+  }
+
+  function starterRiteIds(preset) {
+    if (preset.factionId !== "mystics") return [];
+    if (Array.isArray(preset.selectedRites)) return [...preset.selectedRites];
+    const riteApi = ritesApi();
+    return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
   function applyStarterDeckToState(preset) {
-    const faction = FACTIONS.find(item => item.id === preset.factionId);
+    const faction = deckbuilder.factions.find(item => item.id === preset.factionId);
     const leader = faction?.leaders?.find(item => item.id === preset.leaderId);
     if (!faction || !leader) throw new Error(`Missing faction or Leader for ${preset.name}.`);
 
     const deck = {};
     for (const item of preset.cards || []) {
-      const card = state.cards.find(candidate =>
+      const card = cardCatalog().find(candidate =>
         candidate.name === item.name &&
         (candidate.faction === "neutral" || candidate.faction === preset.factionId)
       );
@@ -151,42 +166,33 @@
       deck[card.id] = Number(item.quantity);
     }
 
+    const territoryPool = currentGame()?.territories || [];
     const territories = (preset.territories || []).map(name => {
-      const territory = state.territoryPool.find(candidate => candidate.name === name);
+      const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) throw new Error(`${preset.name} references missing Territory ${name}.`);
       return territory.id;
     });
 
-    state.deckName = `${leader.name} — ${preset.name}`;
-    state.factionId = preset.factionId;
-    state.leaderId = preset.leaderId;
-    state.deck = deck;
-    state.territories = territories;
+    deckbuilder.replaceDeckState({
+      deckName: `${leader.name} — ${preset.name}`,
+      factionId: preset.factionId,
+      leaderId: preset.leaderId,
+      deck,
+      selectedCardId: null,
+    });
+    territoriesApi()?.setSelectedIds?.(territories);
+    ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
   }
 
   function captureCurrentPrintDocument() {
-    const printButton = document.getElementById("printDeckButton");
-    const inheritedOpen = window.open;
-    let captured = "";
-
-    const fakeDocument = {
-      write(value) { captured += String(value); },
-      close() {}
-    };
-    const fakeWindow = {
-      document: fakeDocument,
-      focus() {}
-    };
-
-    window.open = () => fakeWindow;
-    try {
-      printButton.click();
-    } finally {
-      window.open = inheritedOpen;
+    const printApi = deckbuilder.feature("printDeck");
+    if (typeof printApi?.buildDocument !== "function") {
+      throw new Error("The Deckbuilder print document API is unavailable.");
     }
 
-    if (!captured) throw new Error("The Deckbuilder did not generate a printable document.");
-    return captured;
+    const documentHtml = printApi.buildDocument();
+    if (!documentHtml) throw new Error("The Deckbuilder did not generate a printable document.");
+    return documentHtml;
   }
 
   function combinePrintDocuments(documents) {
@@ -195,18 +201,14 @@
     const first = parsed[0];
     if (!first) throw new Error("No starter Deck print documents were generated.");
 
-    parsed.forEach(frameIntelligencePortraits);
-
     const links = [...first.head.querySelectorAll("link")].map(link => link.outerHTML).join("\n");
     const styles = [...new Set(parsed.flatMap(documentNode =>
       [...documentNode.head.querySelectorAll("style")].map(style => style.textContent)
     ))];
 
-    let printScript = "";
+    const printScripts = [...first.body.querySelectorAll("script")].map(script => script.outerHTML);
     const bodies = parsed.map((documentNode, index) => {
-      const scripts = [...documentNode.body.querySelectorAll("script")];
-      if (!printScript && scripts.length) printScript = scripts[scripts.length - 1].textContent;
-      scripts.forEach(script => script.remove());
+      documentNode.body.querySelectorAll("script").forEach(script => script.remove());
 
       const firstPage = documentNode.body.querySelector(".first-page");
       if (index > 0 && firstPage) firstPage.classList.add("bulk-deck-start");
@@ -218,7 +220,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>All 12 Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")} Starter Decks</title>
+<title>All ${expectedDeckCount} Gauntlet ${escapeHtml(currentGameLabel())} Starter Decks</title>
 ${links}
 ${styles.map(style => `<style>${style}</style>`).join("\n")}
 <style>
@@ -227,39 +229,9 @@ ${styles.map(style => `<style>${style}</style>`).join("\n")}
 </head>
 <body class="all-starter-decks-print">
 ${bodies}
-<script>${printScript}<\/script>
+${printScripts.join("\n")}
 </body>
 </html>`;
-  }
-
-  function frameIntelligencePortraits(documentNode) {
-    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
-      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
-      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
-
-      const card = image.closest(".leader-card");
-      const art = image.closest(".leader-art");
-      if (!card || !art) return;
-
-      card.classList.add("intelligence-leader-card", `${leaderName}-leader-card`);
-      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
-      art.style.setProperty("height", "1.37in", "important");
-      art.style.setProperty("min-height", "1.37in", "important");
-      art.style.setProperty("max-height", "1.37in", "important");
-
-      image.style.setProperty("position", "absolute", "important");
-      image.style.setProperty("left", "0", "important");
-      image.style.setProperty("right", "auto", "important");
-      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
-      image.style.setProperty("bottom", "auto", "important");
-      image.style.setProperty("width", "100%", "important");
-      image.style.setProperty("height", "auto", "important");
-      image.style.setProperty("min-width", "100%", "important");
-      image.style.setProperty("max-width", "none", "important");
-      image.style.setProperty("object-fit", "fill", "important");
-      image.style.setProperty("object-position", "initial", "important");
-      image.style.setProperty("transform", "none", "important");
-    });
   }
 
   function escapeHtml(value) {

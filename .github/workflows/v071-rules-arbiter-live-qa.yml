@@ -1,0 +1,186 @@
+name: v0.7.1 Rules Arbiter live answer QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Paid API test scope
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+      confirm_paid_api:
+        description: I understand this workflow makes paid OpenAI API calls
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  live-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Require paid-API confirmation
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Paid API confirmation was not provided."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure paid QA scope
+        run: |
+          if [ "${{ inputs.scope }}" = "full" ]; then
+            echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+            echo "Running the full paid Rules Arbiter benchmark."
+          else
+            echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
+            echo "Running a 10-case representative paid Rules Arbiter smoke test."
+          fi
+
+      - name: Verify frozen v0.7.1 corpus matches current authority
+        run: |
+          set -euo pipefail
+          node scripts/build-v071-release-source.mjs
+          corpus_files=(
+            releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md
+            releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json
+            releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json
+            releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json
+          )
+          if ! git diff --exit-code -- "${corpus_files[@]}"; then
+            echo "::error::The tracked v0.7.1 published corpus is stale. Merge the generated release refresh before spending on live Rules Arbiter QA."
+            exit 1
+          fi
+          node <<'NODE'
+          const { appendFileSync, readFileSync } = await import("node:fs");
+          const manifest = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json", "utf8"));
+          const provenance = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json", "utf8"));
+          const expected = String(provenance.authority_set_id || "").trim();
+          if (!expected || manifest.authority_set_id !== expected) {
+            console.error("The v0.7.1 manifest and source provenance do not identify the same authority set.");
+            process.exit(1);
+          }
+          appendFileSync(process.env.GITHUB_ENV, `EXPECTED_RULES_AUTHORITY_SET=${expected}\n`);
+          console.log(`Expected Rules Arbiter authority set: ${expected}`);
+          NODE
+
+      - name: Wait for deployed Rules Arbiter revision
+        env:
+          RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
+        run: |
+          node <<'NODE'
+          const { readFileSync } = await import("node:fs");
+          const workerSource = readFileSync("rules-assistant/worker-v071.js", "utf8");
+          const revisionMatch = workerSource.match(/export const BEHAVIOR_REVISION = "([^"]+)"/);
+          if (!revisionMatch) {
+            console.error("Could not resolve BEHAVIOR_REVISION from rules-assistant/worker-v071.js.");
+            process.exit(1);
+          }
+          const expected = revisionMatch[1];
+          const endpoint = process.env.RULES_HEALTH_ENDPOINT;
+          const attempts = 40;
+          const delayMs = 15000;
+
+          for (let attempt = 1; attempt <= attempts; attempt += 1) {
+            try {
+              const response = await fetch(endpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.behaviorRevision || "missing";
+              console.log(`Deploy check ${attempt}/${attempts}: ${actual}`);
+              if (response.ok && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Deploy check ${attempt}/${attempts}: ${error.message}`);
+            }
+            if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, delayMs));
+          }
+
+          console.error(`Production Rules Arbiter never reported behavior revision ${expected}.`);
+          process.exit(1);
+          NODE
+
+      - name: Verify published corpus and refresh Worker cache
+        env:
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json
+          RULES_CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_RULES_AUTHORITY_SET;
+          const manifestEndpoint = process.env.RULES_PUBLIC_MANIFEST;
+          const corpusEndpoint = process.env.RULES_CORPUS_HEALTH_ENDPOINT;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          let published = false;
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const url = `${manifestEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authority_set_id || "missing";
+              console.log(`Published corpus check ${attempt}/120: ${actual}`);
+              if (response.ok && actual === expected) {
+                published = true;
+                break;
+              }
+            } catch (error) {
+              console.log(`Published corpus check ${attempt}/120: ${error.message}`);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          if (!published) {
+            console.error(`gauntlet.run never published Rules Arbiter authority set ${expected}. No paid QA calls were made.`);
+            process.exit(1);
+          }
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const url = `${corpusEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authoritySetId || "missing";
+              console.log(`Worker corpus check ${attempt}/20: ${actual}`);
+              if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+
+          console.error(`Production Rules Arbiter did not load authority set ${expected}. No paid QA calls were made.`);
+          process.exit(1);
+          NODE
+
+      - name: Run live Rules Arbiter QA
+        id: qa
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+        run: node scripts/run-v071-live-rules-qa.mjs
+
+      - name: Upload live QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v071-rules-arbiter-live-qa
+          path: artifacts/rules-qa/v071-live-answer-run.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce live QA result
+        if: steps.qa.outcome != 'success'
+        run: exit 1

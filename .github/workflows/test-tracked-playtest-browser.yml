@@ -8,6 +8,7 @@ on:
       - "playtest/tracked/**"
       - "workers/playtest-sessions/**"
       - "rules-assistant/migrations/0005_tracked_playtests.sql"
+      - "rules-assistant/migrations/0010_playtest_decision_experience.sql"
       - "tests/tracked-playtest-system.test.ts"
       - "scripts/test_tracked_playtest_e2e.mjs"
       - ".github/workflows/test-tracked-playtest-browser.yml"
@@ -66,16 +67,18 @@ jobs:
             const playerOne = {
               participantId: '11111111-1111-4111-8111-111111111111',
               participantToken: 'player-one-access-token-abcdefghijklmnopqrstuvwxyz',
-              displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', responseSubmitted: false
+              displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador',
+              selectionReasonCaptured: true, responseSubmitted: false
             };
             const playerTwo = {
               participantId: '22222222-2222-4222-8222-222222222222',
-              displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General', responseSubmitted: false
+              displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General',
+              selectionReasonCaptured: true, responseSubmitted: false
             };
             const game = {
               sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-              sheetSerial: 'G061-TRACK001', rulesVersion: 'v0.6.1', status: 'open', lifecycleState: 'joining',
-              createdAt: '2026-08-02T12:00:00.000Z', closedAt: null, players: [playerOne], playerCount: 1,
+              sheetSerial: 'G071-TRACK001', rulesVersion: 'v0.7.1', status: 'open', lifecycleState: 'joining',
+              playMode: 'tts', createdAt: '2026-08-02T12:00:00.000Z', closedAt: null, players: [playerOne], playerCount: 1,
               resultSubmitted: false, responseCount: 0, arbiterQuestionCount: 0, complete: false
             };
             let result = null;
@@ -96,7 +99,7 @@ jobs:
                   joinUrl: `${origin}/playtest/tracked/?code=${token}`,
                   reviewUrl: `${origin}/playtest/tracked/?code=${token}&host=${hostKey}`,
                   participantId: playerOne.participantId, participantToken: playerOne.participantToken,
-                  seatIndex: 1, faction: playerOne.faction, leader: playerOne.leader, createdAt: game.createdAt
+                  seatIndex: 1, faction: playerOne.faction, leader: playerOne.leader, playMode: 'tts', createdAt: game.createdAt
                 });
               }
               if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
@@ -135,8 +138,10 @@ jobs:
             let response = await page.goto(`${origin}/playtest/tracked/`, { waitUntil: 'networkidle' });
             if (!response?.ok()) throw new Error(`Tracked page returned ${response?.status()}`);
             await page.fill('#createName', 'Alice');
+            await page.selectOption('#createPlayMode', 'tts');
             await page.selectOption('#createFaction', 'diplomats');
             await page.selectOption('#createLeader', 'ambassador');
+            await page.fill('#createSelectionReason', 'Negotiation and political leverage sounded most interesting.');
             await Promise.all([
               page.waitForURL(new RegExp(`/playtest/tracked/\\?code=${token}`)),
               page.click('#createForm button[type="submit"]')
@@ -165,8 +170,10 @@ jobs:
             await page.click('#resultForm button[type="submit"]');
             await page.waitForSelector('#responseSection:not([hidden])');
 
-            await page.fill('#factionInterest', 'Negotiation and political leverage interested me.');
             for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+            await page.selectOption('#feltDecidedWhen', 'late');
+            await page.selectOption('#agencyAfterDecided', 'some');
+            await page.fill('#decisiveCause', 'A late counterattack changed the available paths.');
             await page.selectOption('#playAgain', 'yes');
             await page.fill('#responseComments', 'The Terms decisions were memorable.');
             await page.click('#responseForm button[type="submit"]');
@@ -177,7 +184,7 @@ jobs:
             game.status = 'closed';
             game.lifecycleState = 'submitted';
             game.complete = true;
-            responses.push({ participantId: playerTwo.participantId, displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General', fun: 5, pacing: 4, meaningfulDecisions: 4, battleTension: 5, rulesClarity: 4, factionClarity: 5, tableOrganization: 4, expectationMatch: 5, leaderDistinction: 5, playAgain: true, factionInterest: 'Direct pressure', comments: '' });
+            responses.push({ participantId: playerTwo.participantId, displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General', fun: 5, pacing: 4, meaningfulDecisions: 4, battleTension: 5, rulesClarity: 4, factionClarity: 5, tableOrganization: 4, expectationMatch: 5, leaderDistinction: 5, feltDecidedWhen: 'at_end', agencyAfterDecided: 'yes', decisiveCause: 'The final battle remained live.', playAgain: true, factionInterest: 'Direct pressure', comments: '' });
             await page.reload({ waitUntil: 'networkidle' });
             await page.waitForSelector('#completionPanel:not([hidden])');
             await page.waitForSelector('#reviewPanel:not([hidden])');

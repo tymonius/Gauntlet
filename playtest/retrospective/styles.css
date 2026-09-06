@@ -14,7 +14,7 @@
 .retrospective-form{display:grid;gap:1rem}
 .retrospective-form label{display:grid;gap:.38rem;font-weight:700}
 .retrospective-form input,.retrospective-form select{width:100%;min-height:3rem;padding:.65rem .75rem;border:1px solid #8f775e;background:#fffdf8;color:#211d19;font:inherit}
-.retrospective-form input:focus,.retrospective-form select:focus{outline:3px solid rgba(143,31,37,.18);border-color:#8f1f25}
+.retrospective-form input:focus,.retrospective-form select:focus{outline:3px solid var(--bronze);border-color:#8f1f25}
 .two-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 .saved-choice-note,.form-status{min-height:1.4rem;margin:0;color:#625342}
 .form-status.error{color:#8f1f25;font-weight:700}

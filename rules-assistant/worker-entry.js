@@ -1,6 +1,7 @@
 import v061Worker from "./worker-v061.js";
 import v063Worker from "./worker-v063.js";
-import worker from "./worker-v070.js";
+import v070Worker from "./worker-v070.js";
+import worker from "./worker-v071.js";
 import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
 import smartWorker from "./smart-worker.js";
@@ -8,6 +9,7 @@ import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
 import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
 import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
+import { handleLiveReviewExport } from "./review-export.js";
 import { handleReviewIntelligence } from "./review-intelligence.js";
 
 const ADMIN_PAGE = ADMIN_PAGE_WITH_RULES_INTELLIGENCE || ADMIN_PAGE_WITH_INCREMENTAL_EXPORT;
@@ -83,9 +85,9 @@ export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
         <span class="brand-mark" aria-hidden="true">G</span>
         <span>Gauntlet</span>
       </a>
-      <p>Unpublished pre-release playtest project.</p>
+      <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p>
     </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <p class="copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
   </footer>`;
 
   return html
@@ -127,6 +129,10 @@ export function allowSiteAssets(contentSecurityPolicy, origin = DEFAULT_SITE_ORI
   return policy;
 }
 
+function withoutPaidModel(env) {
+  return { ...env, OPENAI_API_KEY: undefined };
+}
+
 function rewriteVersionedPath(request) {
   const versionedUrl = new URL(request.url);
   versionedUrl.pathname = versionedUrl.pathname.includes("health") ? "/api/health" : "/api/rules";
@@ -159,19 +165,38 @@ export default {
       url.pathname === "/api/v061/rules" || url.pathname === "/v061/rules" ||
       url.pathname === "/api/v061/health" || url.pathname === "/v061/health"
     ) {
-      return v061Worker.fetch(rewriteVersionedPath(request), env, context);
+      return v061Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
     }
 
     if (
       url.pathname === "/api/v063/rules" || url.pathname === "/v063/rules" ||
       url.pathname === "/api/v063/health" || url.pathname === "/v063/health"
     ) {
-      return v063Worker.fetch(rewriteVersionedPath(request), env, context);
+      return v063Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
     }
 
     if (
       url.pathname === "/api/v070/rules" || url.pathname === "/v070/rules" ||
       url.pathname === "/api/v070/health" || url.pathname === "/v070/health"
+    ) {
+      return v070Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
+    }
+
+    if (
+      request.method === "GET" &&
+      [
+        "/corpus-health",
+        "/api/corpus-health",
+        "/v071/corpus-health",
+        "/api/v071/corpus-health"
+      ].includes(url.pathname)
+    ) {
+      return worker.fetch(request, env, context);
+    }
+
+    if (
+      url.pathname === "/api/v071/rules" || url.pathname === "/v071/rules" ||
+      url.pathname === "/api/v071/health" || url.pathname === "/v071/health"
     ) {
       return worker.fetch(rewriteVersionedPath(request), env, context);
     }
@@ -179,11 +204,12 @@ export default {
     // The unversioned public Rules Arbiter follows the current canonical release.
     if (url.pathname === "/api/health" || url.pathname === "/health") return worker.fetch(request, env, context);
 
-    // Preserve historical clients while the unversioned route advances to v0.7.0.
+    // Preserve historical clients while the unversioned route advances to v0.7.1.
     if (url.pathname === "/api/rules" || url.pathname === "/rules") {
       const requestedVersion = await requestedRulesVersion(request);
-      if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);
-      if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, env, context);
+      if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, withoutPaidModel(env), context);
+      if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, withoutPaidModel(env), context);
+      if (requestedVersion === "v0.7.0") return v070Worker.fetch(request, withoutPaidModel(env), context);
       return worker.fetch(request, env, context);
     }
 
@@ -192,15 +218,19 @@ export default {
       url.pathname === "/api/v062/rules" || url.pathname === "/v062/rules" ||
       url.pathname === "/api/v062/health" || url.pathname === "/v062/health"
     ) {
-      return publishedWorker.fetch(request, env, context);
+      return publishedWorker.fetch(request, withoutPaidModel(env), context);
     }
 
     if (url.pathname.startsWith("/api/v062-candidate/") || url.pathname.startsWith("/v062-candidate/")) {
-      return candidateWorker.fetch(rewriteCandidatePath(request), env, context);
+      return candidateWorker.fetch(rewriteCandidatePath(request), withoutPaidModel(env), context);
     }
 
     if (url.pathname === "/api/admin/review-export-checkpoint") {
       return handleReviewExportCheckpoint(request, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/admin/export") {
+      return handleLiveReviewExport(request, env);
     }
 
     if (

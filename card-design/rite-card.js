@@ -1,4 +1,4 @@
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderGame } from './render-context.mjs';
 
 let RITES = [];
 let RITUAL = {};
@@ -7,6 +7,9 @@ let COMPLETED_RITE_ART_SOURCE = '/images/artwork/supplemental/mystics/rite-compl
 let currentDisplayVersion = 'Current';
 
 const root = document.querySelector('#riteReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -16,6 +19,15 @@ function esc(value) {
     "'": '&#39;',
     '"': '&quot;',
   })[character]);
+}
+
+function componentRenderSource(kind, id, side = 'front') {
+  const componentId = kind === 'ritual' ? `mystics-ritual-of-${id}` : `mystics-rite-${id}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(`component:${componentId}:${side}`)}`;
+}
+
+function componentReviewFrame(kind, id, label, side = 'front') {
+  return `<iframe class="component-review-frame" loading="lazy" src="${esc(componentRenderSource(kind, id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
 }
 
 function riteTypeLabel(label = 'Rite') {
@@ -36,6 +48,11 @@ function unlockSection(unlock) {
 }
 
 function incompleteArtwork(rite) {
+  if (!rite.artwork) {
+    return `<figure class="card-art" aria-label="Artwork pending for ${esc(rite.name)}">
+      <span>Artwork pending</span>
+    </figure>`;
+  }
   return `<figure class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}">
     <img src="${esc(rite.artwork)}" alt="Artwork for ${esc(rite.name)}" />
   </figure>`;
@@ -65,13 +82,12 @@ function riteFace(rite, completed = false) {
   const type = completed ? 'Completed Rite' : 'Rite';
   const rules = completed
     ? UNLOCKS.map(unlockSection).join('')
-    : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${ruleSection('Interrupted', rite.interrupted)}`;
+    : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${rite.reminder?.text ? `<p class="rite-reminder"><em>${esc(rite.reminder.text)}</em></p>` : ''}${ruleSection('Interrupted', rite.interrupted)}`;
   const art = completed ? completedArtwork(rite) : incompleteArtwork(rite);
-  const artMax = completed ? '1.24' : '1.48';
-  const artMin = completed ? '0.78' : '0.92';
-  const dense = completed || rite.id === 'crossing' || rite.id === 'echoes' ? ' dense-card' : '';
+  const hasReminder = Boolean(!completed && rite.reminder?.text);
+  const dense = completed || hasReminder || rite.id === 'crossing' || rite.id === 'echoes' ? ' dense-card' : '';
 
-  return `<article class="gauntlet-card faction-component-card rite-card mystic-card${dense}${completed ? ' completed-rite-card' : ''}" data-faction="mystics" data-art-max="${artMax}" data-art-min="${artMin}" data-title-min="9" aria-label="${esc(rite.name)} ${esc(type)} card" data-current-game-authority="/game-data/current-game.json">
+  return `<article class="gauntlet-card faction-component-card rite-card mystic-card${dense}${completed ? ' completed-rite-card' : ''}" data-faction="mystics" data-art-max="1.72" data-art-min="0.62" data-title-min="9"${hasReminder ? ' data-has-reminder="true"' : ''} aria-label="${esc(rite.name)} ${esc(type)} card" data-current-game-authority="/game-data/current-game.json">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(rite.name)}</h3>
@@ -106,49 +122,52 @@ function ritualFace() {
 }
 
 function reviewPair(rite) {
-  return `<section class="rite-review-pair" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="rite-${esc(rite.id)}-title">${esc(rite.name)}</h3>
-      <span>Double-sided Rite</span>
-    </div>
+  const faces = catalogFilter
+    ? `<div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Rite`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Completed Rite`, 'reverse')}</div>`
+    : `<div class="rite-face">${riteFace(rite, false)}</div>
+      <div class="rite-face">${riteFace(rite, true)}</div>`;
+
+  return `<article class="rite-review-pair catalog-pair-tile" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="rite-${esc(rite.id)}-title">${esc(rite.name)}</strong>
+      <span>Rite</span>
+    </header>
     <div class="rite-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Rite</strong><span>Incomplete face</span></p>
-        ${riteFace(rite, false)}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Completed</strong><span>Progression reference</span></p>
-        ${riteFace(rite, true)}
-      </div>
+      ${faces}
     </div>
-  </section>`;
+  </article>`;
 }
 
 function ritualReview() {
-  return `<section class="rite-review-pair ritual-review" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="ritual-ascension-title">${esc(RITUAL.name)}</h3>
-      <span>Single-sided Ritual · dedicated card back</span>
-    </div>
+  const faces = catalogFilter
+    ? `<div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual back`, 'reverse')}</div>`
+    : `<div class="rite-face">${ritualFace()}</div>
+      <div class="rite-face">${ritualCardBack()}</div>`;
+
+  return `<article class="rite-review-pair ritual-review catalog-pair-tile" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="ritual-ascension-title">${esc(RITUAL.name)}</strong>
+      <span>Ritual</span>
+    </header>
     <div class="rite-face-grid ritual-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Ritual</strong><span>Victory card</span></p>
-        ${ritualFace()}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Back</strong><span>Ritual working sheet</span></p>
-        ${ritualCardBack()}
-      </div>
+      ${faces}
     </div>
-  </section>`;
+  </article>`;
 }
 
 async function renderRites() {
   if (!root) return;
+  if (catalogFilter && (!catalogFilter.typeMatches('rite') || !catalogFilter.factionMatches('mystics'))) {
+    root.replaceChildren();
+    return;
+  }
   try {
-    const currentGame = await loadCurrentGame();
+    const currentGame = await loadRenderGame();
     const mystics = currentGame.mystics || {};
     RITES = Array.isArray(mystics.rites) ? mystics.rites : [];
+    if (catalogFilter?.sort === 'name') RITES = RITES.slice().sort((a, b) => a.name.localeCompare(b.name));
     RITUAL = mystics.ritual || {};
     UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : [];
     COMPLETED_RITE_ART_SOURCE = mystics.completedArtwork || COMPLETED_RITE_ART_SOURCE;

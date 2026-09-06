@@ -8,17 +8,24 @@
   const code = String(params.get("code") || "").trim();
   if (!TOKEN_PATTERN.test(code)) return;
 
+  const focusScript = document.createElement("script");
+  focusScript.src = "busy-focus-accessibility.js?v=20260903-1";
+  focusScript.async = false;
+  document.head.append(focusScript);
+
   const storagePrefix = `gauntlet_tracked_${code.slice(0, 16)}`;
   let hostKey = String(params.get("host") || "").trim() || readStorage(`${storagePrefix}_host`);
   let controls = null;
   let closedPanel = null;
   let currentSession = null;
+  let lastFocusedElement = null;
 
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
     installStyles();
     installPanels();
+    installTransitionFocus();
     bindEvents();
     void refresh();
     window.setInterval(() => void refresh(), 5000);
@@ -45,12 +52,13 @@
         <button id="closeSession" type="button" class="button secondary">Close session</button>
         <button id="cancelSession" type="button" class="button danger">Cancel session</button>
       </div>
-      <p id="sessionEndStatus" class="form-status" aria-live="polite"></p>`;
+      <p id="sessionEndStatus" class="form-status" role="status" aria-live="polite" tabindex="-1"></p>`;
 
     closedPanel = document.createElement("section");
     closedPanel.id = "manualClosurePanel";
     closedPanel.className = "tracked-panel manual-closure-panel";
     closedPanel.hidden = true;
+    closedPanel.tabIndex = -1;
 
     const sharePanel = document.getElementById("sharePanel");
     const playersSection = document.querySelector(".players-section");
@@ -61,6 +69,68 @@
     const summary = document.querySelector(".tracked-summary");
     if (summary) summary.insertAdjacentElement("afterend", closedPanel);
     else document.getElementById("sessionApp")?.prepend(closedPanel);
+  }
+
+  function installTransitionFocus() {
+    const focusTargets = ["joinedPanel", "resultSection", "responseSection", "completionPanel"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    focusTargets.forEach((element) => { element.tabIndex = -1; });
+
+    document.addEventListener("focusin", (event) => {
+      if (event.target instanceof Element) lastFocusedElement = event.target;
+    });
+
+    const observed = [
+      document.getElementById("joinPanel"),
+      document.getElementById("resultSection"),
+      document.getElementById("responseSection"),
+      controls,
+    ].filter(Boolean);
+
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type !== "attributes" || record.attributeName !== "hidden") continue;
+        const panel = record.target;
+        if (!(panel instanceof HTMLElement)) continue;
+
+        if (!panel.hidden) {
+          if (
+            panel.id === "resultSection" &&
+            ["showCompletedResult", "showStoppedResult"].includes(lastFocusedElement?.id || "")
+          ) focusTransitionTarget(panel);
+          continue;
+        }
+
+        if (!(lastFocusedElement instanceof Node) || !panel.contains(lastFocusedElement)) continue;
+
+        if (panel.id === "joinPanel") {
+          focusTransitionTarget(document.getElementById("joinedPanel"));
+        } else if (panel.id === "resultSection") {
+          focusTransitionTarget(document.getElementById("responseSection"));
+        } else if (panel.id === "responseSection") {
+          const completionPanel = document.getElementById("completionPanel");
+          focusTransitionTarget(
+            completionPanel && !completionPanel.hidden
+              ? completionPanel
+              : document.getElementById("joinedPanel")
+          );
+        } else if (panel.id === "sessionEndControls") {
+          focusTransitionTarget(closedPanel);
+        }
+      }
+    });
+
+    observed.forEach((element) => observer.observe(element, { attributes: true, attributeFilter: ["hidden"] }));
+  }
+
+  function focusTransitionTarget(element) {
+    if (!(element instanceof HTMLElement) || element.hidden) return;
+    window.requestAnimationFrame(() => {
+      if (element.hidden) return;
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   function bindEvents() {
@@ -118,8 +188,13 @@
       : "Close this session? Existing data will be preserved, but no one will be able to join or submit more feedback.");
     if (!confirmed) return;
 
-    setBusy(true);
+    const returnFocusTo = document.activeElement instanceof HTMLElement && controls.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     setStatus(cancel ? "Cancelling session…" : "Closing session…");
+    const busyStatus = controls.querySelector("#sessionEndStatus");
+    if (returnFocusTo && busyStatus instanceof HTMLElement) busyStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       const reason = controls.querySelector("#sessionEndReason")?.value.trim() || "";
       const payload = await request(`/api/tracked-games/${encodeURIComponent(code)}/close`, {
@@ -138,6 +213,12 @@
       setStatus(error.message || "The session could not be ended.", "error");
     } finally {
       setBusy(false);
+      if (
+        returnFocusTo &&
+        document.activeElement === busyStatus &&
+        returnFocusTo.isConnected &&
+        !controls.hidden
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 

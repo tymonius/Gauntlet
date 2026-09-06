@@ -1,25 +1,37 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { PRODUCTION_SURFACES } from "../card-design/production-surface.mjs";
 
 const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
-const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
-const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
+const territoryTemplate = readFileSync("card-design/face-templates/territory.mjs", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
+const faceRuntime = readFileSync("card-design/face-render.mjs", "utf8");
+const preparation = readFileSync("card-design/face-preparation.mjs", "utf8");
+const rendererStyles = readFileSync("card-design/territory-card-renderer.css", "utf8");
 const playableStyles = readFileSync("card-design/card-design.css", "utf8");
 const refinedPlayableStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
 const specimenPage = readFileSync("card-design/index.html", "utf8");
 const reviewScript = readFileSync("card-design/card-review.js", "utf8");
 const territoryReviewPage = readFileSync("card-design/territory-review-render.html", "utf8");
-const territoryReviewScript = readFileSync("card-design/territory-review-render.js", "utf8");
 const dedicatedSpecimenPage = readFileSync("card-design/territories/index.html", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
 describe("TTS Territory assets", () => {
-  it("uses landscape component dimensions", () => {
-    expect(generator).toContain("const TERRITORY_WIDTH = 560");
-    expect(generator).toContain("const TERRITORY_HEIGHT = 400");
-    expect(generator).toContain("const CSS_TERRITORY_WIDTH = 336");
-    expect(generator).toContain("const CSS_TERRITORY_HEIGHT = 240");
+  it("uses the shared landscape production-surface dimensions", () => {
+    expect(PRODUCTION_SURFACES.landscape).toMatchObject({
+      widthIn: 3.5,
+      heightIn: 2.5,
+      widthCssPx: 336,
+      heightCssPx: 240,
+      widthRasterPx: 560,
+      heightRasterPx: 400,
+    });
+    expect(generator).toContain("surfaceRasterPixels('landscape')");
+    expect(generator).toContain("surfaceCssPixels('landscape')");
+    expect(generator).toContain("surfaceDeviceScale('landscape')");
+    expect(generator).not.toContain("const TERRITORY_WIDTH = 560");
+    expect(generator).not.toContain("const CSS_TERRITORY_WIDTH = 336");
     expect(sharedStyles).toContain("width: 3.5in");
     expect(sharedStyles).toContain("height: 2.5in");
   });
@@ -27,7 +39,7 @@ describe("TTS Territory assets", () => {
   it("reuses one shared Gauntlet-family frame in the renderer and specimen pages", () => {
     expect(rendererStyles).toContain("@import url('/card-design/territory-card.css')");
     expect(specimenPage).toContain('href="territory-card.css"');
-    expect(territoryReviewPage).toContain('/tts/territory-renderer/territory-renderer.css');
+    expect(faceSpec).toContain("'/card-design/territory-card-renderer.css'");
     expect(dedicatedSpecimenPage).toContain('href="../territory-card.css"');
     expect(sharedStyles).toContain("padding: 0.075in");
     expect(sharedStyles).toContain("border-radius: 0.125in");
@@ -36,11 +48,11 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("border: 1px solid var(--card-keyline");
     expect(sharedStyles).toContain("var(--parchment-image)");
     expect(sharedStyles).not.toContain(".territory-complexity");
-    expect(renderer).not.toContain("value-medallion");
+    expect(territoryTemplate).not.toContain("value-medallion");
   });
 
   it("uses the approved Neutral parchment rotated for the landscape face", () => {
-    expect(renderer).toContain("/images/artwork/card-backgrounds/neutral-parchment-v2.png");
+    expect(preparation).toContain("/images/artwork/card-backgrounds/neutral-parchment-v2.png");
     expect(dedicatedSpecimenPage).toContain("neutral-parchment-v2.png");
     expect(sharedStyles).toContain(".territory-interior::before");
     expect(sharedStyles).toContain("width: 70.15%");
@@ -61,10 +73,10 @@ describe("TTS Territory assets", () => {
   });
 
   it("uses the normal playable-card artwork frame without a text divider", () => {
-    expect(renderer).toContain('class="territory-art"');
-    expect(renderer).toContain("Artwork pending");
-    expect(renderer).toContain("territoryArtworkCandidates");
-    expect(renderer).toContain("/images/artwork/cards/territories/");
+    expect(territoryTemplate).toContain('class="territory-art"');
+    expect(territoryTemplate).toContain("Artwork pending");
+    expect(faceSpec).toContain("territoryArtworkCandidates");
+    expect(faceSpec).toContain("/images/artwork/cards/territories/");
     expect(existsSync("images/artwork/cards/territories/high-ground.jpg")).toBe(true);
     expect(existsSync("images/artwork/cards/territories/arena-grand-melee.png")).toBe(true);
     expect(sharedStyles).toContain(".territory-body {");
@@ -84,8 +96,8 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("border-top: 0");
     expect(dedicatedSpecimenPage).toContain("same mounted-print frame as a normal card");
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
-    expect(territoryReviewScript).toContain("/tts/territory-renderer/territory-renderer.js");
-    expect(territoryReviewScript).toContain("/tts/artwork-crop.js");
+    expect(faceRuntime).toContain("loadClassicScript('/card-design/artwork-crop.js'");
+    expect(faceRuntime).toContain("window.GauntletArtworkCrop.apply");
     expect(dedicatedSpecimenPage).toContain('class="territory-art has-image"');
   });
 
@@ -104,16 +116,16 @@ describe("TTS Territory assets", () => {
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
     expect(reviewScript).toContain("const current = await currentGame()");
     expect(reviewScript).toContain("current.territories || []");
-    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary,current.displayVersion)");
-    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas,current.displayVersion)");
+    expect(reviewScript).toContain("territories.map(territory => territoryItem(territory, current.displayVersion))");
+    expect(reviewScript).toContain("const arenas = territories.filter(territory => territory.arena)");
     expect(reviewScript).toContain('class="territory-review-frame"');
-    expect(reviewScript).toContain("territory-review-render.html?territory=");
-    expect(territoryReviewScript).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
-    expect(territoryReviewScript).toContain("const currentGame = await loadCurrentGame()");
-    expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");
-    expect(territoryReviewScript).toContain("source: currentGame.authorityUrl");
-    expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
-    expect(territoryReviewPage).toContain("Gauntlet v0.7.0 Territory Review Render");
+    expect(reviewScript).toContain("faceRenderSource(`territory:${territory.id}`)");
+    expect(faceSpec).toContain("(game.territories || []).find(item => item.id === id)");
+    expect(territoryTemplate).toContain("const territory = spec.content.territory;");
+    expect(faceRuntime).toContain("document.body.dataset.gameplayAuthority = spec.provenance.gameplay");
+    expect(faceSpec).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
+    expect(territoryReviewPage).toContain('data-legacy-face-route="territory"');
+    expect(territoryReviewPage).toContain('/card-design/legacy-face-redirect.mjs');
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });
@@ -146,21 +158,21 @@ describe("TTS Territory assets", () => {
   });
 
   it("uses restrained Arena accents", () => {
-    expect(renderer).toContain("territory.arena ? ' arena' : ''");
-    expect(renderer).toContain("territory.name.replace(/^Arena:\\s*/i, '')");
+    expect(territoryTemplate).toContain("territory.arena ? ' arena' : ''");
+    expect(territoryTemplate).toContain("replace(/^Arena:\\s*/i, '')");
     expect(sharedStyles).toContain(".territory-card.arena .territory-title");
   });
 
   it("maximizes art height before reducing text", () => {
     expect(sharedStyles).toContain("--art-height: 0.78in");
-    expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
-    expect(renderer).toContain("art.style.minHeight = \`${MINIMUM_ART_HEIGHT}px\`");
-    expect(renderer).toContain("card.dataset.artHeight");
-    expect(renderer).toContain("card.dataset.artSpansBody");
-    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > 0.78)");
-    expect(renderer).toContain("card.classList.add('compact')");
-    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > MINIMUM_EFFECT_SCALE)");
-    expect(renderer).toContain("card.classList.toggle('fit-warning', !fits)");
+    expect(preparation).toContain("TERRITORY_MINIMUM_ART_HEIGHT");
+    expect(preparation).toContain("art.style.minHeight = \`${TERRITORY_MINIMUM_ART_HEIGHT}px\`");
+    expect(preparation).toContain("card.dataset.artHeight");
+    expect(preparation).toContain("card.dataset.artSpansBody");
+    expect(preparation).toContain("while (territoryBodyOverflows(body, art, effect) && effectScale > 0.78)");
+    expect(preparation).toContain("card.classList.add('compact')");
+    expect(preparation).toContain("while (territoryBodyOverflows(body, art, effect) && effectScale > TERRITORY_MINIMUM_EFFECT_SCALE)");
+    expect(preparation).toContain("card.classList.toggle('fit-warning', !fits)");
     expect(generator).toContain("Territory text does not fit the approved landscape frame");
   });
 

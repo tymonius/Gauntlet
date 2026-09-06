@@ -2,23 +2,23 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
-const inspectionHistory = readFileSync('card-design/card-inspection-history.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
 const deckbuilderMobilePreview = readFileSync('deckbuilder/mobile-card-preview.js', 'utf8');
-const sharedInspection = readFileSync('card-reference/card-inspection.js', 'utf8');
-const ttsSupplementalHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const sharedInspection = readFileSync('card-design/card-inspector.js', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 
 describe('Card Design inspection navigation', () => {
-  it('uses a history entry so browser Back closes an open card inspection', () => {
-    expect(catalogHtml).toContain('card-inspection-history.js');
-    expect(inspectionHistory).toContain("const INSPECTION_HISTORY_KEY = 'gauntletCardDesignInspection'");
-    expect(inspectionHistory).toContain('history.pushState(');
-    expect(inspectionHistory).toContain("window.addEventListener('popstate'");
-    expect(inspectionHistory).toContain('history.back()');
-    expect(inspectionHistory).toContain("dialog.card-inspection-dialog[open]");
-    expect(inspectionHistory).toContain(".card-inspection-close");
+  it('uses the shared inspector history so browser Back closes an open card inspection', () => {
+    expect(catalogHtml).toContain('card-inspector.js?v=20260905-2');
+    expect(sharedInspection).toContain("const INSPECTION_HISTORY_KEY = 'gauntletCardInspection'");
+    expect(sharedInspection).toContain('history.pushState(');
+    expect(sharedInspection).toContain("window.addEventListener('popstate'");
+    expect(sharedInspection).toContain('history.back()');
+    expect(sharedInspection).toContain("dialog.className = 'gauntlet-card-inspector'");
+    expect(sharedInspection).toContain('gauntlet-card-inspector-close');
   });
 
   it('keeps every reference face inspectable when async hydration finishes', () => {
@@ -29,11 +29,28 @@ describe('Card Design inspection navigation', () => {
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
     expect(supplemental).not.toContain('loadingCard.replaceWith(rendered)');
   });
+
+  it('keeps unified face previews inspectable without recursive modal inspection', () => {
+    expect(faceRuntime).toContain("element.matches('.gauntlet-card, .territory-card')");
+    expect(faceRuntime).toContain("window.frameElement?.dataset.faceInspectionHost === 'true'");
+    expect(faceRuntime).toContain("type: 'gauntlet-face-inspect'");
+    expect(faceRuntime).toContain("type: 'gauntlet-face-art-inspect'");
+
+    expect(sharedInspection).toContain('PRODUCTION_SURFACES.portrait.widthCssPx');
+    expect(sharedInspection).toContain('PRODUCTION_SURFACES.landscape.widthCssPx');
+    expect(sharedInspection).toContain('data-face-inspection-host="true"');
+    expect(sharedInspection).toContain("data.type === 'gauntlet-territory-inspect' || data.orientation === 'landscape'");
+
+    const artworkHandler = sharedInspection.indexOf("data.type === 'gauntlet-face-art-inspect'");
+    const inspectionFrameGuard = sharedInspection.indexOf('if (!dialog?.open || event.source !== cardFrame?.contentWindow) return;');
+    expect(artworkHandler).toBeGreaterThan(-1);
+    expect(inspectionFrameGuard).toBeGreaterThan(artworkHandler);
+  });
 });
 
 describe('Deckbuilder inspection navigation', () => {
   it('keeps the shared card inspector and makes the mobile preview Back-aware too', () => {
-    expect(deckbuilderMobilePreview).toContain('../card-reference/card-inspection.js');
+    expect(deckbuilderMobilePreview).toContain('../card-design/card-inspector.js');
     expect(sharedInspection).toContain("const INSPECTION_HISTORY_KEY = 'gauntletCardInspection'");
     expect(sharedInspection).toContain('history.pushState(');
     expect(sharedInspection).toContain('history.back()');
@@ -48,7 +65,7 @@ describe('Deckbuilder inspection navigation', () => {
 describe('supplemental visual refinements', () => {
   it('aligns reference-card watermark geometry with the sliding trackers everywhere they render', () => {
     expect(catalogHtml).toContain('supplemental-refinements.css');
-    expect(ttsSupplementalHtml).toContain('/card-design/supplemental-refinements.css');
+    expect(faceSpec).toContain("'/card-design/supplemental-refinements.css'");
     expect(supplementalCss).toContain('right: 0.20in;');
     expect(supplementalCss).toContain('bottom: 0.32in;');
     expect(supplementalCss).toContain('width: 1.72in;');

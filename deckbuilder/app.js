@@ -1,231 +1,10 @@
-const SOURCES = {
-  neutral: {
-    label: "Neutral",
-    path: "../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-  },
-  military: {
-    label: "Military",
-    path: "../releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
-    start: "# 6. Canonical Military card pool",
-    end: "# 7. Card-pool summary"
-  },
-  diplomats: {
-    label: "Diplomats",
-    path: "../releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
-    start: "# 6. Canonical card pool",
-    end: "# 7. Card-pool summary"
-  },
-  inquisition: {
-    label: "Inquisition",
-    path: "../releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
-    start: "# 6. Canonical Inquisition card pool",
-    end: "# 7. Quick reference",
-    headingLevel: 2
-  },
-  financiers: {
-    label: "Financiers",
-    path: "../releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
-    start: "# 6. Canonical Financier card pool",
-    end: "# 7. Quick reference",
-    headingLevel: 2
-  },
-  intelligence: {
-    label: "Intelligence",
-    path: "../releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
-    start: "# 6. Canonical Intelligence card pool",
-    end: "# 7. Card-pool summary"
-  }
-};
-
-const FACTIONS = [
-  {
-    id: "military",
-    name: "Military",
-    status: "ready",
-    identity: "Conquest, battlefield momentum, and Orders.",
-    resource: "Command (maximum 2)",
-    victory: "Run the Gauntlet.",
-    leaders: [
-      {
-        id: "general",
-        name: "General",
-        tagline: "Forward. Again.",
-        role: "Attack · Forward pressure · Tempo",
-        rules: [
-          ["Command", "The first time each turn you win a battle, gain 1 Command, up to 2."],
-          ["Onward — 1 Command", "Move one additional space this turn. This movement may initiate a battle."],
-          ["Rally — 1 Command", "Before dice in a battle you initiated, add +1 to your battle total."],
-          ["Rout — 2 Command", "After winning a battle you initiated, move one position toward the opponent's end. This may initiate another battle."]
-        ]
-      },
-      {
-        id: "commandant",
-        name: "Commandant",
-        tagline: "We hold. They break.",
-        role: "Defense · Counterattack · Control",
-        rules: [
-          ["Command", "The first time each turn you win a battle, gain 1 Command, up to 2."],
-          ["Entrench — 1 Command", "Before dice in a battle you did not initiate, add +1 to your battle total."],
-          ["Repel — 1 Command", "After winning a battle you did not initiate, the defeated opponent retreats one additional space, if able."],
-          ["Fortify — 2 Command", "After winning while occupying enemy Territory, capture it immediately."]
-        ]
-      }
-    ]
-  },
-  {
-    id: "diplomats",
-    name: "Diplomats",
-    status: "ready",
-    identity: "Terms, Influence, concessions, and political legitimacy.",
-    resource: "Influence (0–10)",
-    victory: "Peace Treaty: begin your turn with five different ratified Proposals.",
-    leaders: [
-      {
-        id: "ambassador",
-        name: "Ambassador",
-        tagline: "Words first. War last.",
-        role: "Acceptance · Card flow · Voluntary agreement",
-        rules: [
-          ["Setup", "Set Influence to 1 and place the nine Proposals Proposal-side up."],
-          ["Leverage", "Before dice following refused Terms, spend any available Influence for +1 battle total each."],
-          ["Cordiality", "Once per turn, after the opponent accepts your Terms, draw one card."],
-          ["Peace Treaty", "At the start of your turn, after captures, five different ratified Proposals win the game."]
-        ]
-      },
-      {
-        id: "senator",
-        name: "Senator",
-        tagline: "Procedure endures.",
-        role: "Stakes · Resilience · Political capital",
-        rules: [
-          ["Setup", "Set Influence to 1 and place the nine Proposals Proposal-side up."],
-          ["Leverage", "Before dice following refused Terms, spend any available Influence for +1 battle total each."],
-          ["Political Capital", "Once per turn, when you would lose staked Influence after losing the battle, send cards from hand to your Graveyard to recover 1 staked Influence per card."],
-          ["Peace Treaty", "At the start of your turn, after captures, five different ratified Proposals win the game."]
-        ]
-      }
-    ]
-  },
-  {
-    id: "inquisition",
-    name: "Inquisition",
-    status: "ready",
-    identity: "Conviction, condemnation, Purge, and Purification.",
-    resource: "Conviction (maximum 4)",
-    victory: "Purification: the opponent begins a turn unable to draw from deck or discard.",
-    leaders: [
-      {
-        id: "grand-inquisitor",
-        name: "Grand Inquisitor",
-        tagline: "We judge. We purge.",
-        role: "Judgment · Purge · Resource destruction",
-        rules: [
-          ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
-          ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, Purge without spending an Action and reduce its Conviction cost by 1, minimum 1."],
-          ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
-        ]
-      },
-      {
-        id: "witch-hunter",
-        name: "Witch Hunter",
-        tagline: "You ran. I followed.",
-        role: "Defense · Pursuit · Exposure",
-        rules: [
-          ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
-          ["Relentless Pursuit", "Once per turn after an opponent loses a battle they initiated against you, spend 2 Conviction to end their turn, then move one position toward their end; resolve any resulting battle immediately."],
-          ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
-        ]
-      }
-    ]
-  },
-  {
-    id: "mystics",
-    name: "Mystics",
-    status: "developing",
-    identity: "Rites, sacrifice, transformation, and Ritual victory.",
-    resource: "In development",
-    victory: "Ritual victory — in development.",
-    leaders: [{ id: "alchemist", name: "Alchemist" }, { id: "spirit-walker", name: "Spirit Walker" }]
-  },
-  {
-    id: "financiers",
-    name: "Financiers",
-    status: "ready",
-    identity: "Capital, Treasury, Deeds, leverage, income, and Controlling Interest.",
-    resource: "Capital (dynamic limit)",
-    victory: "Controlling Interest: own the Deeds to every Territory in the Gauntlet.",
-    leaders: [
-      {
-        id: "banker",
-        name: "Banker",
-        tagline: "Credit closes the distance.",
-        role: "Collateral · Purchase timing · Flexible financing",
-        rules: [
-          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
-          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
-          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
-          ["Line of Credit", "The first Deed purchase or buyout each turn may use one hand or Treasury card as collateral, contributing its value up to half the cost before being discarded."],
-          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
-        ]
-      },
-      {
-        id: "executive",
-        name: "Executive",
-        tagline: "Take the ground. Close the deal.",
-        role: "Offense · Occupation · Immediate control",
-        rules: [
-          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
-          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
-          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
-          ["Hostile Takeover", "During an Action Opportunity after movement, after winning as the attacker and becoming the occupier of that enemy Territory, spend 1 Action to buy or buy out its Deed; success immediately gives you control."],
-          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
-        ]
-      }
-    ]
-  },
-  {
-    id: "intelligence",
-    name: "Intelligence",
-    status: "ready",
-    identity: "Intel, Missions, Surveillance, Interference, and Special Operation.",
-    resource: "Intel and Operation Progress (begin at 0)",
-    victory: "Run the Gauntlet or complete a Special Operation.",
-    leaders: [
-      {
-        id: "ranger",
-        name: "Ranger",
-        tagline: "Know the land before the battle begins.",
-        role: "Terrain · Reconnaissance · Hostile ground",
-        rules: [
-          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
-          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
-          ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a revealed Territory effect affecting you, your movement, or a battle involving you until end of turn."],
-          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
-        ]
-      },
-      {
-        id: "spymaster",
-        name: "Spymaster",
-        tagline: "Information never rests. Momentum is the weapon.",
-        role: "Mission tempo · Network command · Coordination",
-        rules: [
-          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
-          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
-          ["Mission Control", "Once per turn after completing a normal Mission, immediately start another eligible Mission from Hand without spending an Action. It cannot complete that turn or be the Special Operation."],
-          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
-        ]
-      }
-    ]
-  }
-];
-
-const STORAGE_KEY = "gauntlet-v0.6.1-decks";
+const SOURCES = {};
+const FACTIONS = [];
 
 const state = {
   cards: [],
-  deckName: "",
+  deckName: "Untitled Gauntlet Deck",
+  deckStorageKey: "gauntlet-current-game-decks",
   factionId: "military",
   leaderId: "general",
   deck: {},
@@ -237,14 +16,242 @@ const state = {
 
 const el = {};
 
+const extensionHooks = {
+  render: [],
+  validate: [],
+  serialize: [],
+  hydrate: [],
+  factionChange: [],
+  deckList: [],
+};
+
+let authorityBootstrap = null;
+let currentGameAccessor = null;
+let sourceLoader = null;
+let selectedRuleset = null;
+let cardPreviewRenderer = null;
+const featureApis = new Map();
+const printTransforms = [];
+
+function requireHook(kind, callback) {
+  if (typeof callback !== "function") throw new TypeError(`Deckbuilder ${kind} hook must be a function.`);
+  extensionHooks[kind].push(callback);
+  return () => {
+    const index = extensionHooks[kind].indexOf(callback);
+    if (index >= 0) extensionHooks[kind].splice(index, 1);
+  };
+}
+
+function registerPrintTransform(name, callback, priority = 50) {
+  const key = String(name || "").trim();
+  if (!key) throw new TypeError("Deckbuilder print transform name is required.");
+  if (typeof callback !== "function") throw new TypeError(`Deckbuilder print transform ${key} must be a function.`);
+  if (printTransforms.some(transform => transform.name === key)) {
+    throw new Error(`Deckbuilder print transform ${key} is already registered.`);
+  }
+
+  const numericPriority = Number(priority);
+  if (!Number.isFinite(numericPriority)) throw new TypeError(`Deckbuilder print transform ${key} priority must be numeric.`);
+
+  const transform = Object.freeze({
+    name: key,
+    callback,
+    priority: numericPriority,
+    sequence: printTransforms.length,
+  });
+  printTransforms.push(transform);
+  printTransforms.sort((left, right) => left.priority - right.priority || left.sequence - right.sequence);
+
+  return () => {
+    const index = printTransforms.indexOf(transform);
+    if (index >= 0) printTransforms.splice(index, 1);
+  };
+}
+
+function preparePrintDocument(html, context = {}) {
+  let output = String(html ?? "");
+  for (const transform of printTransforms) {
+    const next = transform.callback(output, context);
+    if (typeof next !== "string") {
+      throw new TypeError(`Deckbuilder print transform ${transform.name} must return HTML text.`);
+    }
+    output = next;
+  }
+  return output;
+}
+
+function readCurrentGame() {
+  return typeof currentGameAccessor === "function" ? currentGameAccessor() : null;
+}
+
+function deckState() {
+  return Object.freeze({
+    deckName: state.deckName,
+    factionId: state.factionId,
+    leaderId: state.leaderId,
+    deck: Object.freeze({ ...state.deck }),
+    selectedCardId: state.selectedCardId,
+  });
+}
+
+function cardCatalog() {
+  return [...state.cards];
+}
+
+function replaceDeckState(next = {}) {
+  const factionId = next.factionId ?? state.factionId;
+  const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
+  if (!faction) throw new Error("Deckbuilder core state references an unavailable faction.");
+
+  const leaderId = next.leaderId ?? state.leaderId;
+  if (!faction.leaders.some(leader => leader.id === leaderId)) {
+    throw new Error("Deckbuilder core state references an unavailable Leader.");
+  }
+
+  const deck = next.deck ? { ...next.deck } : { ...state.deck };
+  for (const [cardId, quantity] of Object.entries(deck)) {
+    const card = getCard(cardId);
+    const qty = Number(quantity);
+    if (!card || !Number.isFinite(qty) || qty < 0) {
+      throw new Error(`Deckbuilder core state contains an invalid card entry: ${cardId}.`);
+    }
+    if (card.faction !== "neutral" && card.faction !== factionId) {
+      throw new Error(`${card.name} is not legal for ${faction.name}.`);
+    }
+  }
+
+  state.deckName = next.deckName ?? state.deckName;
+  state.factionId = factionId;
+  state.leaderId = leaderId;
+  state.deck = deck;
+  state.selectedCardId = Object.hasOwn(next, "selectedCardId") ? next.selectedCardId : state.selectedCardId;
+  return deckState();
+}
+
+function setDeckStorageKey(value) {
+  const key = String(value || "").trim();
+  if (!key) throw new TypeError("Deckbuilder storage key is required.");
+  state.deckStorageKey = key;
+  return key;
+}
+
+function constructionRules() {
+  const source = readCurrentGame()?.deckConstruction;
+  if (!source) throw new Error("Selected ruleset has no Deck construction authority.");
+
+  const positiveInteger = (value, label) => {
+    const number = Number(value);
+    if (!Number.isInteger(number) || number <= 0) {
+      throw new Error(`Selected ruleset has invalid Deck construction value for ${label}.`);
+    }
+    return number;
+  };
+  const nonNegativeInteger = (value, label) => {
+    const number = Number(value);
+    if (!Number.isInteger(number) || number < 0) {
+      throw new Error(`Selected ruleset has invalid Deck construction value for ${label}.`);
+    }
+    return number;
+  };
+
+  return Object.freeze({
+    minimumCards: positiveInteger(source.minimum_cards ?? source.minimumCards, "minimum cards"),
+    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum Deckbuilding value"),
+    territoriesPerPlayer: positiveInteger(source.territories_per_player ?? source.territoriesPerPlayer, "Territories per player"),
+    maximumArenas: nonNegativeInteger(source.maximum_arenas ?? source.maximumArenas, "maximum Arenas"),
+  });
+}
+
+const deckbuilderApi = Object.freeze({
+  sources: SOURCES,
+  factions: FACTIONS,
+  registerRenderHook: callback => requireHook("render", callback),
+  registerValidationHook: callback => requireHook("validate", callback),
+  registerSerializeHook: callback => requireHook("serialize", callback),
+  registerHydrateHook: callback => requireHook("hydrate", callback),
+  registerFactionChangeHook: callback => requireHook("factionChange", callback),
+  registerDeckListHook: callback => requireHook("deckList", callback),
+  registerPrintTransform,
+  preparePrintDocument,
+  registerFeature(name, api) {
+    const key = String(name || "").trim();
+    if (!key) throw new TypeError("Deckbuilder feature name is required.");
+    if (!api || typeof api !== "object") throw new TypeError(`Deckbuilder feature ${key} must be an object.`);
+    if (featureApis.has(key)) throw new Error(`Deckbuilder feature ${key} is already registered.`);
+    featureApis.set(key, Object.freeze(api));
+    return featureApis.get(key);
+  },
+  feature(name) {
+    return featureApis.get(String(name || "").trim()) || null;
+  },
+  setAuthorityBootstrap(callback) {
+    if (authorityBootstrap && authorityBootstrap !== callback) throw new Error("Deckbuilder authority bootstrap is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder authority bootstrap must be a function.");
+    authorityBootstrap = callback;
+  },
+  setCurrentGameAccessor(callback) {
+    if (currentGameAccessor && currentGameAccessor !== callback) throw new Error("Deckbuilder current-game accessor is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder current-game accessor must be a function.");
+    currentGameAccessor = callback;
+  },
+  bootstrap() {
+    if (typeof authorityBootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+    return authorityBootstrap();
+  },
+  currentGame() {
+    return readCurrentGame();
+  },
+  setSourceLoader(callback) {
+    if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder source loader must be a function.");
+    sourceLoader = callback;
+  },
+  loadSource(entry) {
+    if (typeof sourceLoader !== "function") throw new Error("Current Deckbuilder card loader is unavailable.");
+    return sourceLoader(entry);
+  },
+  setRuleset(ruleset) {
+    selectedRuleset = Object.freeze({ ...ruleset });
+    return selectedRuleset;
+  },
+  setCardPreviewRenderer(callback) {
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder card preview renderer must be a function.");
+    cardPreviewRenderer = callback;
+  },
+  ruleset() {
+    return selectedRuleset;
+  },
+  constructionRules,
+  deckState,
+  cardCatalog,
+  replaceDeckState,
+  setDeckStorageKey,
+  render: () => renderAll(),
+  renderAvailable: () => renderAvailable(),
+  renderFactionOptions: () => renderFactionOptions(),
+  validate: () => validateDeck(),
+  serialize: () => currentDeckData(),
+  hydrate: data => applyDeckData(data),
+  getFaction: () => getFaction(),
+  getLeader: () => getLeader(),
+  getCard: id => getCard(id),
+  addCard: id => addCard(id),
+  deckEntries: () => deckEntries(),
+  slugify: value => slugify(value),
+  escapeHtml: value => escapeHtml(value),
+});
+
+window.GAUNTLET_DECKBUILDER = deckbuilderApi;
+
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   cacheElements();
   bindEvents();
-  renderFactionOptions();
 
   try {
+    await deckbuilderApi.bootstrap();
+    renderFactionOptions();
     const pools = await Promise.all(Object.entries(SOURCES).map(loadSource));
     state.cards = pools.flat().sort((a, b) => a.name.localeCompare(b.name));
     el.dataStatus.textContent = `${state.cards.length} active cards loaded`;
@@ -253,14 +260,14 @@ async function init() {
   } catch (error) {
     console.error(error);
     el.dataStatus.textContent = "Source load failed";
-    document.body.insertAdjacentHTML("beforeend", `<p class="warning-panel panel">Unable to load the active v0.6 Markdown sources. Serve the repository through a web server rather than opening this file directly.</p>`);
+    document.body.insertAdjacentHTML("beforeend", `<p class="warning-panel panel">Unable to load the selected Gauntlet ruleset. Reload the page or switch rulesets.</p>`);
   }
 }
 
 function cacheElements() {
   for (const id of [
     "app", "dataStatus", "deckName", "factionSelect", "leaderSelect", "leaderPreview",
-    "cardCount", "pointTotal", "factionCardCount", "validityCard", "validityText",
+    "cardCount", "minimumCardCount", "pointTotal", "maximumDeckbuildingValue", "factionCardCount", "validityCard", "validityText",
     "validationList", "savedDeckSelect", "saveDeckButton", "loadDeckButton", "deleteDeckButton",
     "copyDeckButton", "exportJsonButton", "importJson", "importJsonButton", "cardSearch",
     "allegianceFilter", "costFilter", "availableCount", "availableCards", "cardPreview",
@@ -288,92 +295,8 @@ function bindEvents() {
   el.importJsonButton.addEventListener("click", importDeckJson);
 }
 
-async function loadSource([faction, source]) {
-  const response = await fetch(source.path, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Failed to load ${source.path}: ${response.status}`);
-  const markdown = await response.text();
-  return parseCardPool(markdown, faction, source);
-}
-
-function parseCardPool(markdown, faction, source) {
-  let section = markdown.replace(/\r/g, "");
-  if (source.start) {
-    const start = section.indexOf(source.start);
-    if (start >= 0) section = section.slice(start + source.start.length);
-  }
-  if (source.end) {
-    const end = section.indexOf(source.end);
-    if (end >= 0) section = section.slice(0, end);
-  }
-
-  const headingLevel = source.headingLevel || 2;
-  const headings = [...section.matchAll(new RegExp(`^#{${headingLevel}}\\s+(.+)$`, "gm"))];
-  const cards = [];
-
-  headings.forEach((match, index) => {
-    const name = match[1].trim();
-    const start = match.index + match[0].length;
-    const end = index + 1 < headings.length ? headings[index + 1].index : section.length;
-    const block = section.slice(start, end);
-    const costMatch = block.match(/\*\*Cost:\*\*\s*(\d+)/i);
-    if (!costMatch) return;
-
-    const complexity = block.match(/\*\*Complexity:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "Unspecified";
-    const trait = block.match(/\*\*Trait:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "";
-    const form = block.match(/\*\*Card form:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "";
-    const unique = /\*\*Unique:\*\*/i.test(block);
-    const sections = parseQuotedSections(block);
-
-    cards.push({
-      id: `${faction}-${slugify(name)}`,
-      name,
-      faction,
-      factionLabel: source.label,
-      cost: Number(costMatch[1]),
-      complexity,
-      trait,
-      form,
-      unique,
-      sections,
-      source: source.path
-    });
-  });
-
-  return cards;
-}
-
-function parseQuotedSections(block) {
-  const result = {};
-  let current = "Text";
-
-  for (const rawLine of block.split("\n")) {
-    if (!rawLine.trim().startsWith(">")) continue;
-    let line = rawLine.trim().replace(/^>\s?/, "").trim();
-    if (!line) continue;
-
-    const label = line.match(/^\*\*([^*]+):\*\*\s*(.*)$/);
-    if (label) {
-      current = label[1].trim();
-      line = label[2].trim();
-      if (!result[current]) result[current] = [];
-      if (line) result[current].push(cleanInlineMarkdown(line));
-      continue;
-    }
-
-    if (!result[current]) result[current] = [];
-    result[current].push(cleanInlineMarkdown(line));
-  }
-
-  return Object.fromEntries(Object.entries(result).map(([key, lines]) => [key, lines.join("\n")]));
-}
-
-function cleanInlineMarkdown(text) {
-  return text
-    .replace(/^[-*]\s+/, "• ")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/`(.*?)`/g, "$1")
-    .trim();
+async function loadSource(entry) {
+  return deckbuilderApi.loadSource(entry);
 }
 
 function renderAll() {
@@ -385,6 +308,18 @@ function renderAll() {
   renderDeck();
   renderSavedDecks();
   validateAndRender();
+  extensionHooks.render.forEach(hook => hook());
+}
+
+function findCardAction(container, cardId, action) {
+  return [...container.querySelectorAll("[data-card-id]")]
+    .find(row => row.dataset.cardId === cardId)
+    ?.querySelector(`[data-action="${action}"]`) || null;
+}
+
+function focusCardAction(container, cardId, action, fallback = null) {
+  const target = findCardAction(container, cardId, action) || (typeof fallback === "function" ? fallback() : fallback);
+  target?.focus({ preventScroll: true });
 }
 
 function renderFactionOptions() {
@@ -397,6 +332,10 @@ function renderFactionOptions() {
 
 function renderLeaderOptions() {
   const faction = getFaction();
+  if (!faction) {
+    el.leaderSelect.innerHTML = "";
+    return;
+  }
   el.leaderSelect.innerHTML = faction.leaders.map(leader => `<option value="${leader.id}">${escapeHtml(leader.name)}</option>`).join("");
   if (!faction.leaders.some(leader => leader.id === state.leaderId)) state.leaderId = faction.leaders[0]?.id || "";
   el.leaderSelect.value = state.leaderId;
@@ -404,10 +343,10 @@ function renderLeaderOptions() {
 
 function renderLeader() {
   const faction = getFaction();
-  const leader = faction.leaders.find(item => item.id === state.leaderId);
-  if (!leader || !leader.rules) {
+  const leader = faction?.leaders.find(item => item.id === state.leaderId);
+  if (!faction || !leader || !leader.rules) {
     el.leaderPreview.className = "leader-preview empty-state";
-    el.leaderPreview.textContent = "Leader package is still in development.";
+    el.leaderPreview.textContent = faction ? "Leader package is still in development." : "Loading faction and Leader authority…";
     return;
   }
 
@@ -436,9 +375,11 @@ function changeFaction() {
   }
 
   removed.forEach(cardId => delete state.deck[cardId]);
+  const previousFactionId = state.factionId;
   state.factionId = nextFaction;
-  state.leaderId = getFaction().leaders[0]?.id || "";
+  state.leaderId = getFaction()?.leaders[0]?.id || "";
   state.selectedCardId = null;
+  extensionHooks.factionChange.forEach(hook => hook({ previousFactionId, factionId: state.factionId }));
   renderAll();
 }
 
@@ -473,21 +414,30 @@ function renderAvailable() {
   cards.forEach(card => {
     const row = document.createElement("article");
     row.className = `compact-card-row${card.id === state.selectedCardId ? " selected" : ""}`;
+    row.dataset.cardId = card.id;
     const qty = state.deck[card.id] || 0;
     row.innerHTML = `
-      <div>
-        <div class="compact-card-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${card.cost}</span></div>
-        <div class="compact-card-meta"><span class="mini-pill">${escapeHtml(card.factionLabel)}</span><span class="mini-pill">${escapeHtml(card.complexity)}</span>${qty ? `<span class="mini-pill">${qty} in deck</span>` : ""}</div>
-      </div>
-      <button type="button">Add</button>
+      <button
+        type="button"
+        class="compact-row-preview-button"
+        data-action="preview"
+        aria-label="Preview ${escapeHtml(card.name)}"
+        ${card.id === state.selectedCardId ? 'aria-current="true"' : ""}
+      >
+        <span class="compact-card-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${card.cost}</span></span>
+        <span class="compact-card-meta"><span class="mini-pill">${escapeHtml(card.factionLabel)}</span><span class="mini-pill">${escapeHtml(card.complexity)}</span>${qty ? `<span class="mini-pill">${qty} in deck</span>` : ""}</span>
+      </button>
+      <button type="button" data-action="add" aria-label="Add ${escapeHtml(card.name)} to deck">Add</button>
     `;
-    row.addEventListener("click", event => {
-      if (event.target.tagName !== "BUTTON") {
-        state.selectedCardId = card.id;
-        renderAvailable();
-        return;
-      }
+    row.querySelector('[data-action="preview"]').addEventListener("click", () => {
+      state.selectedCardId = card.id;
+      renderAvailable();
+      el.availableCards.querySelector(".compact-card-row.selected .compact-row-preview-button")
+        ?.focus({ preventScroll: true });
+    });
+    row.querySelector('[data-action="add"]').addEventListener("click", () => {
       addCard(card.id);
+      focusCardAction(el.availableCards, card.id, "add");
     });
     el.availableCards.append(row);
   });
@@ -496,6 +446,11 @@ function renderAvailable() {
 }
 
 function renderCardPreview(card) {
+  if (cardPreviewRenderer) return cardPreviewRenderer(card);
+  return renderDefaultCardPreview(card);
+}
+
+function renderDefaultCardPreview(card) {
   if (!card) {
     el.cardPreview.className = "card-preview empty-state";
     el.cardPreview.textContent = "Select a card to view its active working text.";
@@ -516,7 +471,10 @@ function renderCardPreview(card) {
     ${Object.entries(card.sections).map(([label, text]) => `<section class="card-text-section"><div class="card-text-label">${escapeHtml(label)}</div><p>${escapeHtml(text)}</p></section>`).join("")}
     <div class="button-row"><button id="previewAddButton" type="button">Add to deck</button></div>
   `;
-  document.getElementById("previewAddButton").addEventListener("click", () => addCard(card.id));
+  document.getElementById("previewAddButton").addEventListener("click", () => {
+    addCard(card.id);
+    document.getElementById("previewAddButton")?.focus({ preventScroll: true });
+  });
 }
 
 function addCard(cardId) {
@@ -560,20 +518,30 @@ function renderDeck() {
   entries.forEach(({ card, qty }) => {
     const row = document.createElement("article");
     row.className = "deck-row";
+    row.dataset.cardId = card.id;
     row.innerHTML = `
       <div>
         <div class="deck-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${escapeHtml(card.factionLabel)}</span></div>
         <div class="deck-stats"><span class="mini-pill">${qty}×</span><span class="mini-pill">${card.cost} each</span><span class="mini-pill">${qty * card.cost} value</span>${card.unique ? `<span class="mini-pill">Unique</span>` : ""}</div>
       </div>
       <div class="deck-actions">
-        <button type="button" class="secondary" data-action="minus">−</button>
-        <button type="button" data-action="plus">+</button>
-        <button type="button" class="secondary danger" data-action="remove">×</button>
+        <button type="button" class="secondary" data-action="minus" aria-label="Remove one ${escapeHtml(card.name)} from deck">−</button>
+        <button type="button" data-action="plus" aria-label="Add another ${escapeHtml(card.name)} to deck">+</button>
+        <button type="button" class="secondary danger" data-action="remove" aria-label="Remove all ${escapeHtml(card.name)} from deck">×</button>
       </div>
     `;
-    row.querySelector('[data-action="minus"]').addEventListener("click", () => removeCard(card.id));
-    row.querySelector('[data-action="plus"]').addEventListener("click", () => addCard(card.id));
-    row.querySelector('[data-action="remove"]').addEventListener("click", () => removeAll(card.id));
+    row.querySelector('[data-action="minus"]').addEventListener("click", () => {
+      removeCard(card.id);
+      focusCardAction(el.deckCards, card.id, "minus", () => findCardAction(el.availableCards, card.id, "add"));
+    });
+    row.querySelector('[data-action="plus"]').addEventListener("click", () => {
+      addCard(card.id);
+      focusCardAction(el.deckCards, card.id, "plus", () => findCardAction(el.availableCards, card.id, "add"));
+    });
+    row.querySelector('[data-action="remove"]').addEventListener("click", () => {
+      removeAll(card.id);
+      focusCardAction(el.availableCards, card.id, "add", el.clearDeckButton);
+    });
     el.deckCards.append(row);
   });
 }
@@ -584,27 +552,50 @@ function validateDeck() {
   const pointTotal = entries.reduce((sum, entry) => sum + entry.qty * entry.card.cost, 0);
   const factionCardCount = entries.filter(entry => entry.card.faction === state.factionId).reduce((sum, entry) => sum + entry.qty, 0);
   const errors = [];
-  const warnings = ["Territory selection is not yet included in this development build."];
+  const warnings = [];
+  const rules = constructionRules();
 
   if (!state.factionId) errors.push("Choose a faction.");
   if (!state.leaderId) errors.push("Choose a leader.");
-  if (cardCount < 30) errors.push(`Add at least ${30 - cardCount} more playable card${30 - cardCount === 1 ? "" : "s"}.`);
-  if (pointTotal > 60) errors.push(`Remove ${pointTotal - 60} value.`);
+  if (cardCount < rules.minimumCards) {
+    const missing = rules.minimumCards - cardCount;
+    errors.push(`Add at least ${missing} more playable card${missing === 1 ? "" : "s"}.`);
+  }
+  if (pointTotal > rules.maximumDeckbuildingValue) {
+    errors.push(`Remove ${pointTotal - rules.maximumDeckbuildingValue} value.`);
+  }
 
   entries.forEach(({ card, qty }) => {
     if (card.unique && qty > 1) errors.push(`${card.name} is Unique: maximum one copy.`);
     if (card.faction !== "neutral" && card.faction !== state.factionId) errors.push(`${card.name} is not legal for ${getFaction().name}.`);
   });
 
-  return { cardCount, pointTotal, factionCardCount, errors, warnings, valid: errors.length === 0 };
+  let result = { cardCount, pointTotal, factionCardCount, constructionRules: rules, errors, warnings, valid: errors.length === 0 };
+  for (const hook of extensionHooks.validate) {
+    const next = hook(result);
+    if (next) result = next;
+  }
+  return {
+    ...result,
+    errors: [...(result.errors || [])],
+    warnings: [...(result.warnings || [])],
+    valid: (result.errors || []).length === 0,
+  };
+}
+
+function deckStatusLabel(result) {
+  if (result.cardCount < result.constructionRules.minimumCards) return "Incomplete";
+  return result.valid ? "Valid" : "Invalid";
 }
 
 function validateAndRender() {
   const result = validateDeck();
   el.cardCount.textContent = result.cardCount;
+  el.minimumCardCount.textContent = result.constructionRules.minimumCards;
   el.pointTotal.textContent = result.pointTotal;
+  el.maximumDeckbuildingValue.textContent = result.constructionRules.maximumDeckbuildingValue;
   el.factionCardCount.textContent = result.factionCardCount;
-  el.validityText.textContent = result.valid ? "Card-valid" : "Incomplete";
+  el.validityText.textContent = deckStatusLabel(result);
   el.validityCard.classList.toggle("valid", result.valid);
   el.validityCard.classList.toggle("invalid", !result.valid);
 
@@ -615,15 +606,22 @@ function validateAndRender() {
 }
 
 function currentDeckData() {
-  return {
-    schema: "gauntlet-v0.6.1-deck",
-    schemaVersion: 1,
-    gameVersion: "v0.6.1",
-    name: state.deckName.trim() || "Untitled v0.6.1 Deck",
+  const currentGame = readCurrentGame();
+  let data = {
+    schema: "gauntlet-deck",
+    schemaVersion: 3,
+    gameVersion: currentGame?.version || "current-game",
+    gameAuthority: currentGame?.authorityUrl || "/game-data/current-game.json",
+    name: state.deckName.trim() || "Untitled Gauntlet Deck",
     factionId: state.factionId,
     leaderId: state.leaderId,
     cards: deckEntries().map(({ card, qty }) => ({ id: card.id, name: card.name, faction: card.faction, qty }))
   };
+  for (const hook of extensionHooks.serialize) {
+    const next = hook(data);
+    if (next) data = next;
+  }
+  return data;
 }
 
 function saveDeck() {
@@ -631,7 +629,7 @@ function saveDeck() {
   const saved = readSavedDecks();
   const key = data.name.toLowerCase();
   saved[key] = data;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  localStorage.setItem(deckStorageKey(), JSON.stringify(saved));
   renderSavedDecks();
   el.savedDeckSelect.value = key;
 }
@@ -647,7 +645,7 @@ function deleteDeck() {
   if (!key) return;
   const saved = readSavedDecks();
   delete saved[key];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  localStorage.setItem(deckStorageKey(), JSON.stringify(saved));
   renderSavedDecks();
 }
 
@@ -656,18 +654,28 @@ function renderSavedDecks() {
   const entries = Object.entries(saved).sort((a, b) => a[1].name.localeCompare(b[1].name));
   el.savedDeckSelect.innerHTML = entries.length
     ? entries.map(([key, deck]) => `<option value="${escapeHtml(key)}">${escapeHtml(deck.name)}</option>`).join("")
-    : '<option value="">No saved v0.6 decks</option>';
+    : '<option value="">No saved decks</option>';
   el.loadDeckButton.disabled = !entries.length;
   el.deleteDeckButton.disabled = !entries.length;
 }
 
+function deckStorageKey() {
+  return state.deckStorageKey || "gauntlet-current-game-decks";
+}
+
 function readSavedDecks() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  try { return JSON.parse(localStorage.getItem(deckStorageKey()) || "{}"); }
   catch { return {}; }
 }
 
 function applyDeckData(data) {
-  if (data.schema !== "gauntlet-v0.6.1-deck") throw new Error("This is not a v0.6 development deck export.");
+  if (data.schema !== "gauntlet-deck" || data.schemaVersion !== 3) {
+    throw new Error("This is not a current Gauntlet Deck export.");
+  }
+  const currentVersion = readCurrentGame()?.version || "current-game";
+  if (data.gameVersion && data.gameVersion !== currentVersion) {
+    throw new Error(`This Deck was exported for ${data.gameVersion}; current authority is ${currentVersion}.`);
+  }
   const faction = FACTIONS.find(item => item.id === data.factionId && item.status === "ready");
   if (!faction) throw new Error("The exported faction is not currently available.");
 
@@ -682,6 +690,7 @@ function applyDeckData(data) {
     state.deck[card.id] = Number(item.qty) || 0;
   }
 
+  extensionHooks.hydrate.forEach(hook => hook(data));
   renderAll();
 }
 
@@ -693,12 +702,15 @@ async function copyDeckList() {
   const lines = [
     data.name,
     `${faction.name} — ${leader?.name || "No leader"}`,
-    `${validation.cardCount} cards · ${validation.pointTotal}/60 value`,
+    `${validation.cardCount} cards · ${validation.pointTotal}/${validation.constructionRules.maximumDeckbuildingValue} value`,
     "",
-    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-    "",
-    "Territories: pending v0.6 integration"
+    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`)
   ];
+  for (const hook of extensionHooks.deckList) {
+    const extra = hook({ data, validation, faction, leader });
+    if (Array.isArray(extra)) lines.push(...extra.filter(line => line != null).map(String));
+    else if (extra != null) lines.push(String(extra));
+  }
   await navigator.clipboard.writeText(lines.join("\n"));
 }
 
@@ -724,6 +736,10 @@ function importDeckJson() {
 }
 
 function getFaction() { return FACTIONS.find(faction => faction.id === state.factionId); }
+function getLeader() {
+  const faction = getFaction();
+  return faction?.leaders.find(leader => leader.id === state.leaderId) || null;
+}
 function getCard(id) { return state.cards.find(card => card.id === id); }
 function slugify(value) { return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]); }

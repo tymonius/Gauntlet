@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -122,8 +127,11 @@
       .term-list { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -136,10 +144,10 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="onboarding-hero" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Game-night preparation · v0.6.1</p>
+        <p class="eyebrow">Game-night preparation · v0.7.1</p>
         <h1 id="page-title">Choose your side <span>before the battle.</span></h1>
         <p class="hero-lede">
           Explore Gauntlet's six factions, choose the Leader that interests you, and read the essentials for your first game. Your Deck and components will be printed, cut, and ready for you at game night.
@@ -157,7 +165,7 @@
       </ol>
     </section>
 
-    <section id="errorPanel" class="section notice-panel error-panel" hidden>
+    <section id="errorPanel" class="section notice-panel error-panel" hidden role="alert" tabindex="-1" aria-labelledby="errorTitle" aria-describedby="errorMessage">
       <p class="eyebrow">Invitation unavailable</p>
       <h2 id="errorTitle">This onboarding link cannot be opened.</h2>
       <p id="errorMessage"></p>
@@ -181,15 +189,15 @@
         <div><strong id="choiceCount">0</strong><span>Choices submitted</span></div>
         <div><strong id="pendingCount">0</strong><span>Joined, not submitted</span></div>
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Onboarding roster table">
         <table>
           <thead>
             <tr>
-              <th>Player</th>
-              <th>Faction</th>
-              <th>Leader</th>
-              <th>Why it interested them</th>
-              <th>Latest submission</th>
+              <th scope="col">Player</th>
+              <th scope="col">Faction</th>
+              <th scope="col">Leader</th>
+              <th scope="col">Why it interested them</th>
+              <th scope="col">Latest submission</th>
             </tr>
           </thead>
           <tbody id="rosterBody">
@@ -228,7 +236,7 @@
                 <strong>Military</strong>
                 <small>Command, movement, pressure, and decisive battle.</small>
               </label>
-              <a href="../../factions/military/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/military/" target="_blank" rel="noopener" aria-label="Explore the full guide — Military faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
             <article class="faction-choice diplomats">
               <label>
@@ -237,7 +245,7 @@
                 <strong>Diplomats</strong>
                 <small>Influence, proposals, concessions, and legitimacy.</small>
               </label>
-              <a href="../../factions/diplomats/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/diplomats/" target="_blank" rel="noopener" aria-label="Explore the full guide — Diplomats faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
             <article class="faction-choice financiers">
               <label>
@@ -246,7 +254,7 @@
                 <strong>Financiers</strong>
                 <small>Capital, assets, leverage, and ownership.</small>
               </label>
-              <a href="../../factions/financiers/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/financiers/" target="_blank" rel="noopener" aria-label="Explore the full guide — Financiers faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
             <article class="faction-choice intelligence">
               <label>
@@ -255,7 +263,7 @@
                 <strong>Intelligence</strong>
                 <small>Information, surveillance, disruption, and secrecy.</small>
               </label>
-              <a href="../../factions/intelligence/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/intelligence/" target="_blank" rel="noopener" aria-label="Explore the full guide — Intelligence faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
             <article class="faction-choice mystics">
               <label>
@@ -264,7 +272,7 @@
                 <strong>Mystics</strong>
                 <small>Rites, invocation, transformation, and the Arcane.</small>
               </label>
-              <a href="../../factions/mystics/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/mystics/" target="_blank" rel="noopener" aria-label="Explore the full guide — Mystics faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
             <article class="faction-choice inquisition">
               <label>
@@ -273,7 +281,7 @@
                 <strong>Inquisition</strong>
                 <small>Conviction, condemnation, denial, and suppression.</small>
               </label>
-              <a href="../../factions/inquisition/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+              <a href="../../factions/inquisition/" target="_blank" rel="noopener" aria-label="Explore the full guide — Inquisition faction (opens in a new tab)">Explore the full guide ↗</a>
             </article>
           </div>
         </fieldset>
@@ -321,12 +329,12 @@
               <p>Keep every group of cards visibly separate. Your <strong>Hand</strong> is the permanent private set of cards you hold between turns. Your <strong>Draw Pile</strong> supplies cards; the <strong>Discard Pile</strong> is recyclable; the <strong>Graveyard</strong> normally is not. Assets remain face up in your <strong>Asset Bank</strong>.</p>
               <p>A battle creates three temporary areas: a Gambit set from Hand, a three-card Reserve drawn from the Draw Pile, and a Tactic chosen from that Reserve.</p>
               <ul class="term-list">
-                <li><strong>Action:</strong> normally play from Hand by spending 1 Action during an Action Opportunity.</li>
+                <li><strong>Action:</strong> normally play from Hand by taking 1 Action during Opening or Denouement.</li>
                 <li><strong>Gambit:</strong> set from Hand during a battle.</li>
                 <li><strong>Tactic:</strong> choose from Reserve during a battle.</li>
                 <li><strong>Battle:</strong> may be used as either a Gambit or a Tactic.</li>
               </ul>
-              <p>An <strong>Action</strong> is a spendable allowance; you normally have 1 each turn. An <strong>Action Opportunity</strong> is a timing window when you may spend up to 1 available Action. A normal turn has one before movement and one after movement.</p>
+              <p>You normally take 1 <strong>Action</strong> each turn. <strong>Opening</strong> and <strong>Denouement</strong> are the two normal Action phases, before and after Movement. You normally take no more than 1 Action in either phase and no more than 1 Action total during the turn.</p>
             </article>
 
             <article class="intro-card setup-card">
@@ -353,9 +361,9 @@
               <ol>
                 <li><strong>Capture:</strong> capture an opposing Territory you still occupy from the previous turn.</li>
                 <li><strong>Draw:</strong> draw one card.</li>
-                <li><strong>Action Opportunity before movement:</strong> spend up to 1 available Action now, or save it.</li>
+                <li><strong>Opening:</strong> take your Action now, or save it for Denouement.</li>
                 <li><strong>Movement:</strong> advance, hold, or withdraw; resolve any battle immediately.</li>
-                <li><strong>Action Opportunity after movement:</strong> spend up to 1 available Action.</li>
+                <li><strong>Denouement:</strong> take your Action now if you did not take it during Opening.</li>
                 <li><strong>Cleanup:</strong> resolve end-of-turn effects and discard down to three cards in Hand.</li>
               </ol>
               <p>A battle ends the movement that started it. You move again afterward only when a rule or card specifically permits it.</p>
@@ -364,7 +372,7 @@
             <article class="intro-card">
               <span>05</span>
               <h3>Actions and Assets</h3>
-              <p>During an Action Opportunity, spend 1 Action to play one card for its Action effect or use a Faction Action. Most one-time Action effects put their cards in the Discard Pile. Some cards become <strong>Assets</strong>, which stay in play and provide later effects.</p>
+              <p>During Opening or Denouement, take 1 Action to play one card for its Action effect or use a Faction Feature marked 1 Action. Most one-time Action effects put their cards in the Discard Pile. Some cards become <strong>Assets</strong>, which stay in play and provide later effects.</p>
               <p>Your Asset limit equals the number of Territories you control. When banking a new Asset at the limit, you may discard one existing Asset to make room.</p>
             </article>
 
@@ -380,7 +388,7 @@
               <h3>Battles and the Aftermath</h3>
               <p>A battle begins when one player enters the other's position. The moving player is the <strong>attacker</strong> and the other player is the <strong>defender</strong>.</p>
               <ol>
-                <li>Resolve effects that happen as the battle opens.</li>
+                <li>Begin Onset. Resolve Terms first when a Diplomat is involved, then resolve the remaining Onset effects.</li>
                 <li>Each player may set one eligible card from Hand as a face-down Gambit.</li>
                 <li>Set Hands physically aside and draw three cards to form each player's private Reserve.</li>
                 <li>Reveal and resolve Gambits.</li>
@@ -389,7 +397,7 @@
                 <li>Roll dice and determine the higher battle total.</li>
                 <li>Resolve the Aftermath.</li>
               </ol>
-              <p>If totals are tied while the defender controls the contested Territory, <strong>Defender's Advantage</strong> means the defender wins the tie.</p>
+              <p>If totals are tied while the defender controls the contested Territory, <strong>Defensive Edge</strong> means the defender wins the tie.</p>
               <p>During the Aftermath, the loser retreats and the winner takes or keeps the contested position. Gambits normally go to the Graveyard. Tactics and cards remaining in Reserve normally go to the Discard Pile.</p>
             </article>
 
@@ -404,7 +412,7 @@
               <span>09</span>
               <h3>Running the Gauntlet</h3>
               <p>To win normally, push the opponent beyond their final Territory, capture that Territory, then advance beyond the column. This begins a <strong>Last Stand battle</strong>.</p>
-              <p>The defender is harder to defeat there: Defender's Advantage means they win tied battle totals, and they separately add +1 to their battle total. Win the Last Stand to run the Gauntlet and win the game.</p>
+              <p>The defender is harder to defeat there: Defensive Edge means they win tied battle totals, and they separately add +1 to their battle total. Win the Last Stand to run the Gauntlet and win the game.</p>
             </article>
           </div>
         </div>
@@ -445,17 +453,27 @@
     </form>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished pre-release playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="../../#factions">Faction guides</a>
-      <a href="../../rulebook/">Browser Rulebook</a>
-      <a href="../">Playtest resources</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="app.js?v=20260731-4" defer></script>

@@ -95,11 +95,45 @@ footer {
   background: rgba(255, 250, 240, 0.92);
   box-shadow: var(--shadow);
 }
+.arbiter-heading {
+  width: 100%;
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
 .arbiter-panel h1 {
-  margin: 0 0 18px;
+  margin: 0;
   font: 500 clamp(3rem, 7vw, 6rem)/.92 var(--serif);
   letter-spacing: -.045em;
 }
+.arbiter-persona {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.08fr) minmax(240px, .92fr);
+  gap: clamp(24px, 4vw, 46px);
+  align-items: center;
+  margin: 0 0 clamp(22px, 3vw, 34px);
+}
+.arbiter-portrait {
+  margin: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+.arbiter-portrait img {
+  display: block;
+  width: min(100%, 440px);
+  height: auto;
+  filter: drop-shadow(0 14px 20px rgba(41, 30, 16, .18));
+}
+.arbiter-voice {
+  margin: 0;
+  color: var(--crimson);
+  font-family: var(--font-flavor);
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.08;
+}
+.arbiter-voice p { margin: 0; }
 .eyebrow {
   margin: 0 0 14px;
   color: var(--crimson);
@@ -109,7 +143,7 @@ footer {
   letter-spacing: .16em;
   text-transform: uppercase;
 }
-.lede { max-width: 760px; color: #413b34; font: 1.16rem/1.65 var(--reading); }
+.lede { max-width: none; margin: 0; color: #413b34; font: 1.16rem/1.65 var(--reading); }
 .source-boundary {
   margin: 1.4rem 0;
   padding: 1rem 1.1rem;
@@ -149,6 +183,9 @@ footer {
   border-left: 4px solid var(--crimson);
   background: #fbf4ea;
 }
+.arbiter-sources-heading {
+  font-size: 1.17em;
+}
 .arbiter-ruling a,
 .authority-card a { color: var(--crimson-dark); text-underline-offset: 3px; }
 .arbiter-ruling li p { margin: .25rem 0 1rem; }
@@ -170,7 +207,7 @@ footer {
 footer p { margin: 0; }
 footer strong { color: var(--ink); }
 
-:focus-visible { outline: 3px solid rgba(143,31,37,.38); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--bronze); outline-offset: 3px; }
 
 @media (max-width: 900px) {
   .arbiter-header { align-items: flex-start; flex-direction: column; padding-block: 16px; }
@@ -179,11 +216,28 @@ footer strong { color: var(--ink); }
   .authority-card { order: -1; }
 }
 
+@media (max-width: 720px) {
+  .arbiter-persona {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .arbiter-portrait {
+    width: min(100%, 560px);
+    margin-inline: auto;
+    justify-content: center;
+  }
+  .arbiter-portrait img { width: min(100%, 520px); }
+  .arbiter-voice {
+    max-width: 32rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+}
+
 @media (max-width: 620px) {
   .arbiter-header,
   .arbiter-shell,
   footer { width: min(100% - 28px, 1180px); }
-  .arbiter-header nav { display: none; }
   .arbiter-shell { padding-block: 42px; }
   .arbiter-panel,
   .authority-card { padding: 24px; }

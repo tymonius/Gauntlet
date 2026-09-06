@@ -8,8 +8,12 @@
   const PUBLISH_PATH = '/api/art-direction/publish';
   const WORKING_BRANCH = 'artwork/compositor-authoring';
   const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/game-data/current-game.json?ref=${encodeURIComponent(WORKING_BRANCH)}`;
+  const WORKING_PR_API = 'https://api.github.com/repos/tymonius/Gauntlet/pulls?state=open&head=tymonius%3Aartwork%2Fcompositor-authoring&base=main&per_page=1';
+  const CANONICAL_FILE_URL = '/game-data/current-game.json';
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
+
+  window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending';
 
   const publishStyle = document.createElement('style');
   publishStyle.textContent = `
@@ -112,6 +116,13 @@
     window.dispatchEvent(new CustomEvent('gauntlet-artwork-authoring-status', { detail }));
   }
 
+  function setDraftHydration(status) {
+    window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = status;
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-draft-hydration', {
+      detail: { status },
+    }));
+  }
+
   function readDrafts() {
     try {
       const parsed = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '{}');
@@ -122,11 +133,28 @@
   }
 
   function installWorkingDirections(directions) {
-    const next = directions && typeof directions === 'object' ? directions : {};
+    const next = directions && typeof directions === 'object' && !Array.isArray(directions) ? directions : {};
     const before = readDrafts();
     if (JSON.stringify(before) === JSON.stringify(next)) return false;
-    localStorage.setItem(DRAFTS_KEY, JSON.stringify(next));
+    if (Object.keys(next).length) localStorage.setItem(DRAFTS_KEY, JSON.stringify(next));
+    else localStorage.removeItem(DRAFTS_KEY);
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
     return true;
+  }
+
+  function directionEqual(left, right) {
+    return JSON.stringify(left ?? null) === JSON.stringify(right ?? null);
+  }
+
+  function directionDelta(canonical, working) {
+    const base = canonical && typeof canonical === 'object' ? canonical : {};
+    const next = working && typeof working === 'object' ? working : {};
+    const delta = {};
+    for (const id of new Set([...Object.keys(base), ...Object.keys(next)])) {
+      if (directionEqual(base[id], next[id])) continue;
+      delta[id] = Object.prototype.hasOwnProperty.call(next, id) ? next[id] : null;
+    }
+    return delta;
   }
 
   function parseDirectionSource(source) {
@@ -144,8 +172,7 @@
     if (hydrationPromise) return hydrationPromise;
 
     hydrationPromise = (async () => {
-      const response = await nativeFetch(WORKING_FILE_API, {
-        method: 'GET',
+      const prResponse = await nativeFetch(WORKING_PR_API, {
         headers: {
           accept: 'application/vnd.github+json',
           'x-github-api-version': '2022-11-28',
@@ -154,20 +181,69 @@
         mode: 'cors',
         credentials: 'omit',
       });
+      if (!prResponse.ok) throw new Error(`Artwork batch status failed (${prResponse.status}).`);
+      const openPrs = await prResponse.json().catch(() => []);
+      const openPr = Array.isArray(openPrs) ? openPrs[0] : null;
 
-      if (response.status === 404) return false;
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok || !payload.content) {
-        throw new Error(payload.message || `Artwork batch sync failed (${response.status}).`);
+      // Browser-local composition state is valid only as a mirror of an open
+      // artwork batch. The migration audit is complete, so an idle authoring
+      // branch must also clear any legacy browser-only drafts.
+      if (!openPr?.number) {
+        currentBatchPr = null;
+        return installWorkingDirections({});
       }
 
-      const directions = parseDirectionSource(decodeGitHubContent(payload.content));
-      const changed = installWorkingDirections(directions);
+      currentBatchPr = {
+        number: openPr.number,
+        url: openPr.html_url,
+      };
+
+      const [workingResponse, canonicalResponse] = await Promise.all([
+        nativeFetch(WORKING_FILE_API, {
+          method: 'GET',
+          headers: {
+            accept: 'application/vnd.github+json',
+            'x-github-api-version': '2022-11-28',
+          },
+          cache: 'no-store',
+          mode: 'cors',
+          credentials: 'omit',
+        }),
+        nativeFetch(CANONICAL_FILE_URL, {
+          method: 'GET',
+          cache: 'no-store',
+          credentials: 'same-origin',
+        }),
+      ]);
+
+      const workingPayload = await workingResponse.json().catch(() => ({}));
+      if (!workingResponse.ok || !workingPayload.content) {
+        throw new Error(workingPayload.message || `Artwork batch sync failed (${workingResponse.status}).`);
+      }
+      if (!canonicalResponse.ok) {
+        throw new Error(`Canonical artwork authority sync failed (${canonicalResponse.status}).`);
+      }
+
+      const canonicalAuthority = await canonicalResponse.json();
+      const canonicalDirections = canonicalAuthority?.artDirection && typeof canonicalAuthority.artDirection === 'object'
+        ? canonicalAuthority.artDirection
+        : {};
+      const workingDirections = parseDirectionSource(decodeGitHubContent(workingPayload.content));
+      const changed = installWorkingDirections(directionDelta(canonicalDirections, workingDirections));
       if (changed && reloadIfChanged) window.location.reload();
       return changed;
-    })().finally(() => {
-      hydrationPromise = null;
-    });
+    })()
+      .then(result => {
+        setDraftHydration('ready');
+        return result;
+      })
+      .catch(error => {
+        setDraftHydration('error');
+        throw error;
+      })
+      .finally(() => {
+        hydrationPromise = null;
+      });
 
     return hydrationPromise;
   }
@@ -178,9 +254,10 @@
     if (payload.direction && typeof payload.direction === 'object' && Object.keys(payload.direction).length) {
       drafts[payload.id] = payload.direction;
     } else {
-      delete drafts[payload.id];
+      drafts[payload.id] = null;
     }
     localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
   }
 
   async function batchSave(input, init) {
@@ -246,6 +323,7 @@
 
     currentBatchPr = null;
     localStorage.removeItem(DRAFTS_KEY);
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
     announce({ kind: 'published', ...payload });
     return payload;
   }
@@ -358,9 +436,9 @@
 
   consumeAuthFragment();
 
-  // Show the current in-progress batch on every catalog load. It becomes
-  // canonical for Card Reference, Deckbuilder, print, and other shared
-  // renderers only when the batch PR is published into main.
+  // Only an open artwork batch may populate browser draft state. With the
+  // migration audit complete, no-PR browser state is erased rather than
+  // permitted to survive as a second visual authority.
   hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
     announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
   });

@@ -15,6 +15,7 @@
   let compareMode = 'manual';
   let pointerState = null;
   let scanQueued = false;
+  const divergences = new Map();
 
   const ui = {};
 
@@ -29,16 +30,88 @@
 
   function writeDraft(id, direction) {
     const drafts = readDrafts();
-    if (Object.keys(direction).length) drafts[id] = direction;
-    else delete drafts[id];
+    drafts[id] = Object.keys(direction).length ? direction : null;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+  }
+
+  function clearDraft(id) {
+    const drafts = readDrafts();
+    if (!Object.prototype.hasOwnProperty.call(drafts, id)) return;
+    delete drafts[id];
+    if (Object.keys(drafts).length) localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    else localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+  }
+
+  function draftHydrationPending() {
+    return window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION === 'pending';
+  }
+
+  function canonicalDirectionState(target) {
+    const resolved = target.resolve?.();
+    const targetWindow = resolved?.window || target.window || null;
+
+    if (target.sourceElement instanceof HTMLIFrameElement) {
+      const map = targetWindow?.GAUNTLET_ART_DIRECTION;
+      if (!map || typeof map !== 'object') return { ready: false, direction: {} };
+      const source = map[target.id];
+      return {
+        ready: true,
+        direction: source && typeof source === 'object' ? { ...source } : {},
+      };
+    }
+
+    const map = window.GAUNTLET_ART_DIRECTION;
+    if (!map || typeof map !== 'object') return { ready: false, direction: {} };
+    const source = map[target.id];
+    return {
+      ready: true,
+      direction: source && typeof source === 'object' ? { ...source } : {},
+    };
+  }
+
+  function canonicalDirection(target) {
+    return canonicalDirectionState(target).direction;
   }
 
   function stableDirection(target) {
-    const draft = readDrafts()[target.id];
-    if (draft && typeof draft === 'object') return { ...draft };
-    const source = target.window?.GAUNTLET_ART_DIRECTION?.[target.id] || window.GAUNTLET_ART_DIRECTION?.[target.id];
-    return source && typeof source === 'object' ? { ...source } : {};
+    if (!draftHydrationPending()) {
+      const drafts = readDrafts();
+      if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+        const draft = drafts[target.id];
+        return draft && typeof draft === 'object' ? { ...draft } : {};
+      }
+    }
+    return canonicalDirection(target);
+  }
+
+  function directionSignature(target, direction) {
+    const resolved = target.resolve?.();
+    const crop = resolved?.window?.GauntletArtworkCrop || window.GauntletArtworkCrop;
+    if (crop?.normalizeDirection) {
+      const normalized = crop.normalizeDirection(direction || {});
+      return JSON.stringify({
+        fit: normalized.fit,
+        focusX: normalized.focusX,
+        focusY: normalized.focusY,
+        smart: normalized.smart,
+        zoom: normalized.zoom,
+      });
+    }
+    return JSON.stringify(direction || {});
+  }
+
+  function draftDiffersFromCanonical(target) {
+    if (draftHydrationPending()) return false;
+    const canonical = canonicalDirectionState(target);
+    if (!canonical.ready) return false;
+
+    const drafts = readDrafts();
+    if (!Object.prototype.hasOwnProperty.call(drafts, target.id)) return false;
+    const draft = drafts[target.id];
+    return directionSignature(target, draft && typeof draft === 'object' ? draft : {})
+      !== directionSignature(target, canonical.direction);
   }
 
   function focusFrom(direction, axis) {
@@ -65,22 +138,33 @@
   function iframeTarget(frame) {
     let url;
     try { url = new URL(frame.src, location.href); } catch { return null; }
-    const cardId = url.searchParams.get('card');
-    const territoryId = url.searchParams.get('territory');
-    const id = cardId || territoryId;
-    if (!id) return null;
+    if (!url.pathname.endsWith('/card-design/face-render.html')) return null;
+
+    const doc = frame.contentDocument;
+    const targetWindow = frame.contentWindow;
+    const id = String(doc?.body?.dataset.artDirectionId || '').trim();
+    const faceId = String(doc?.body?.dataset.faceId || url.searchParams.get('id') || '').trim();
+    if (!id || !targetWindow) return null;
+
+    const resolve = () => {
+      const currentDocument = frame.contentDocument;
+      const currentWindow = frame.contentWindow;
+      const image = currentDocument?.querySelector('.card-art img, .territory-art img');
+      const artFrame = image?.closest('.card-art, .territory-art');
+      return currentWindow && image && artFrame
+        ? { window: currentWindow, document: currentDocument, image, frame: artFrame }
+        : null;
+    };
+    const resolved = resolve();
+    const territory = Boolean(resolved?.frame?.classList.contains('territory-art'));
+
     return {
       id,
-      label: frame.title?.replace(/\s+v0\.6\.[0-9].*$/i, '').trim() || id,
-      kind: territoryId ? 'territory' : 'card',
+      faceId,
+      label: frame.title?.replace(/\s+canonical Card Design render$/i, '').trim() || faceId || id,
+      kind: territory ? 'territory' : 'card',
       sourceElement: frame,
-      resolve() {
-        const doc = frame.contentDocument;
-        const targetWindow = frame.contentWindow;
-        const image = doc?.querySelector('.card-art img, .territory-art img');
-        const artFrame = image?.closest('.card-art, .territory-art');
-        return targetWindow && image && artFrame ? { window: targetWindow, document: doc, image, frame: artFrame } : null;
-      },
+      resolve,
     };
   }
 
@@ -106,6 +190,67 @@
       return target.sourceElement.closest('.specimen-column, .territory-review-item, .review-card-pair') || target.sourceElement.parentElement;
     }
     return target.sourceElement.closest('.leader-specimen, .specimen-column, .territory-review-item, .proposal-specimen, .rite-specimen, .supplemental-specimen') || target.sourceElement.parentElement;
+  }
+
+  function divergenceBadgeFor(host, id) {
+    return [...host.querySelectorAll(':scope > .art-compositor-divergence-badge')]
+      .find(badge => badge.dataset.artDirectionId === id) || null;
+  }
+
+  function renderDivergenceSummary() {
+    const existing = document.querySelector('.art-compositor-divergence-summary');
+    const items = [...divergences.values()].sort((a, b) => a.label.localeCompare(b.label));
+    window.GAUNTLET_ART_DIRECTION_DIVERGENCES = Object.freeze(items.map(item => Object.freeze({ ...item })));
+
+    if (!items.length) {
+      existing?.remove();
+      return;
+    }
+
+    const signature = JSON.stringify(items);
+    if (existing?.dataset.divergenceSignature === signature) return;
+
+    const summary = existing || document.createElement('aside');
+    summary.className = 'art-compositor-divergence-summary screen-only';
+    summary.dataset.divergenceSignature = signature;
+    summary.setAttribute('role', 'status');
+    summary.setAttribute('aria-live', 'polite');
+    summary.innerHTML = '';
+
+    const strong = document.createElement('strong');
+    strong.textContent = `${items.length} saved artwork composition${items.length === 1 ? ' has' : 's have'} not been published to current-game.json.`;
+    const detail = document.createElement('span');
+    detail.textContent = items.map(item => item.label).join(', ');
+    summary.append(strong, detail);
+
+    if (!existing) {
+      const main = document.querySelector('.developer-catalog-main');
+      if (main) main.prepend(summary);
+      else document.body.prepend(summary);
+    }
+  }
+
+  function updateDivergenceMarker(target) {
+    const host = hostFor(target);
+    if (!host) return;
+    const divergent = draftDiffersFromCanonical(target);
+    target.sourceElement.classList.toggle('art-compositor-divergent-source', divergent);
+    target.sourceElement.toggleAttribute('data-art-direction-divergent', divergent);
+
+    let badge = divergenceBadgeFor(host, target.id);
+    if (divergent) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'art-compositor-divergence-badge screen-only';
+        badge.dataset.artDirectionId = target.id;
+        host.append(badge);
+      }
+      if (badge.textContent !== 'SAVED — NOT PUBLISHED') badge.textContent = 'SAVED — NOT PUBLISHED';
+      divergences.set(target.id, { id: target.id, label: target.label });
+    } else {
+      badge?.remove();
+      divergences.delete(target.id);
+    }
   }
 
   function installLauncher(target) {
@@ -135,25 +280,30 @@
   }
 
   function applySavedDirection(target) {
+    if (draftHydrationPending()) return;
     const direction = stableDirection({ ...target, window: target.resolve()?.window });
     if (!Object.keys(direction).length) return;
     applyDirection(target, direction);
   }
 
   function scan() {
+    divergences.clear();
     document.querySelectorAll('iframe').forEach((frame) => {
+      if (frame.dataset.artCompositorLoadHook !== 'true') {
+        frame.dataset.artCompositorLoadHook = 'true';
+        frame.addEventListener('load', () => queueScan());
+      }
+
       const target = iframeTarget(frame);
       if (!target) return;
       installLauncher(target);
-      const draft = readDrafts()[target.id];
-      if (draft) applyDirection(target, draft);
-      if (frame.dataset.artCompositorLoadHook !== 'true') {
-        frame.dataset.artCompositorLoadHook = 'true';
-        frame.addEventListener('load', () => {
-          installLauncher(target);
-          const saved = readDrafts()[target.id];
-          if (saved) requestAnimationFrame(() => applyDirection(target, saved));
-        });
+      updateDivergenceMarker(target);
+      if (!draftHydrationPending()) {
+        const drafts = readDrafts();
+        if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+          const draft = drafts[target.id];
+          applyDirection(target, draft && typeof draft === 'object' ? draft : {});
+        }
       }
     });
 
@@ -161,8 +311,10 @@
       const target = directTarget(card);
       if (!target) return;
       installLauncher(target);
+      updateDivergenceMarker(target);
       applySavedDirection(target);
     });
+    renderDivergenceSummary();
   }
 
   function queueScan() {
@@ -368,6 +520,30 @@
     return direction;
   }
 
+  function explicitDirectionFromResolved(result) {
+    if (!result || !Number.isFinite(Number(result.focusX)) || !Number.isFinite(Number(result.focusY))) {
+      throw new Error('Artwork compositor could not resolve an explicit crop position.');
+    }
+    return {
+      fit: ui.fit.value === 'contain' ? 'contain' : 'cover',
+      focusX: round(Number(result.focusX) / 100, 4),
+      focusY: round(Number(result.focusY) / 100, 4),
+      smart: false,
+      zoom: round(clamp(Number.parseFloat(ui.zoomNumber.value) || 1, MIN_ZOOM, MAX_ZOOM), 4),
+    };
+  }
+
+  function resolveExplicitDirection() {
+    if (!state || !previewImage.complete || !previewImage.naturalWidth || !window.GauntletArtworkCrop) {
+      throw new Error('Artwork compositor preview is not ready to materialize.');
+    }
+    const result = window.GauntletArtworkCrop.apply(previewImage, directionFromControls(), {
+      id: `${SMART_ID_PREFIX}${state.id}`,
+      label: state.label,
+    });
+    return explicitDirectionFromResolved(result);
+  }
+
   function renderPreview() {
     if (!state || !previewImage.complete || !previewImage.naturalWidth) return;
     if (!window.GauntletArtworkCrop) {
@@ -384,7 +560,9 @@
     ui.yResolved.textContent = `${compareMode === 'smart' || ui.yAuto.checked ? 'Smart' : 'Manual'} → ${Number(result.focusY).toFixed(1)}%`;
     preview.dataset.resolvedX = String(result.focusX);
     preview.dataset.resolvedY = String(result.focusY);
-    ui.output.textContent = overrideLine(state.id, directionFromControls());
+    if (compareMode !== 'smart') {
+      ui.output.textContent = overrideLine(state.id, explicitDirectionFromResolved(result));
+    }
     const crosshair = preview.querySelector('.art-compositor-crosshair');
     crosshair.style.left = `${result.focusX}%`;
     crosshair.style.top = `${result.focusY}%`;
@@ -399,6 +577,7 @@
     }
     if (direction.zoom !== undefined) parts.push(`zoom: ${direction.zoom}`);
     if (direction.fit !== undefined) parts.push(`fit: "${direction.fit}"`);
+    if (direction.smart === false) parts.push('smart: false');
     return `'${id.replaceAll("'", "\\'")}': { ${parts.join(', ')} },`;
   }
 
@@ -429,7 +608,9 @@
     ui.fit.value = fitFrom(sourceDirection);
     ui.title.textContent = target.label;
     ui.source.textContent = `${target.id} · ${Math.round(rect.width)}×${Math.round(rect.height)} art window`;
-    ui.status.textContent = '';
+    ui.status.textContent = draftDiffersFromCanonical(target)
+      ? 'This artwork position is unpublished and differs from current-game.json.'
+      : '';
     preview.classList.toggle('territory-art', target.kind === 'territory');
     preview.classList.toggle('card-art', target.kind !== 'territory');
     preview.style.aspectRatio = `${rect.width} / ${rect.height}`;
@@ -470,29 +651,48 @@
   async function copyOverride() {
     if (!state) return;
     try {
-      await navigator.clipboard.writeText(overrideLine(state.id, directionFromControls()));
-      ui.status.textContent = 'Override copied.';
-    } catch {
-      ui.status.textContent = 'Clipboard access was unavailable; select the override text manually.';
+      const direction = resolveExplicitDirection();
+      await navigator.clipboard.writeText(overrideLine(state.id, direction));
+      renderPreview();
+      ui.status.textContent = 'Explicit production override copied.';
+    } catch (error) {
+      renderPreview();
+      ui.status.textContent = error instanceof Error
+        ? `Copy failed: ${error.message}`
+        : 'Clipboard access was unavailable; select the override text manually.';
     }
   }
 
   async function savePosition() {
     if (!state) return;
-    const direction = directionFromControls();
-    let sourceSaved = false;
+    let direction;
+    try {
+      direction = resolveExplicitDirection();
+      renderPreview();
+    } catch (error) {
+      ui.status.textContent = `Save failed before persistence: ${error instanceof Error ? error.message : String(error)}`;
+      return;
+    }
+    let payload = {};
     try {
       const response = await fetch(SAVE_ENDPOINT, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: state.id, direction }),
       });
-      if (response.ok) sourceSaved = (await response.json().catch(() => ({})))?.saved === true;
-    } catch {
-      sourceSaved = false;
+      payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload?.saved !== true) {
+        throw new Error(payload?.error || `Artwork position save failed (${response.status}).`);
+      }
+    } catch (error) {
+      ui.status.textContent = `Save failed. Nothing was persisted outside this open editor: ${error instanceof Error ? error.message : String(error)}`;
+      return;
     }
 
-    writeDraft(state.id, direction);
+    const unpublished = Boolean(payload?.pr?.number);
+    if (unpublished) writeDraft(state.id, direction);
+    else clearDraft(state.id);
+
     state.sourceDirection = { ...direction };
     if (state.window?.GauntletArtworkCrop) {
       state.window.GauntletArtworkCrop.apply(state.image, direction, {
@@ -500,9 +700,13 @@
         label: state.label,
       });
     }
-    ui.status.textContent = sourceSaved
-      ? 'Saved to game-data/current-game.json and applied to this review surface.'
-      : 'Saved as a browser draft and applied here. Run `node scripts/card-design-server.mjs` to write the current-game authority directly.';
+    queueScan();
+
+    ui.status.textContent = unpublished
+      ? `Saved to unpublished artwork batch PR #${payload.pr.number}; the red card marker remains until that batch is published.`
+      : 'Saved to game-data/current-game.json. Reloading the canonical catalog to verify the persisted position…';
+
+    if (!unpublished) window.setTimeout(() => window.location.reload(), 500);
   }
 
   function cropMetrics() {
@@ -601,6 +805,10 @@
   function initialize() {
     ensureDialog();
     scan();
+    window.addEventListener('gauntlet-art-direction-ready', queueScan);
+    window.addEventListener('gauntlet-art-direction-drafts-changed', queueScan);
+    window.addEventListener('gauntlet-art-direction-draft-hydration', queueScan);
+    window.addEventListener('gauntlet-artwork-authoring-status', queueScan);
     new MutationObserver(queueScan).observe(document.body, { childList: true, subtree: true });
     window.addEventListener('load', scan);
   }

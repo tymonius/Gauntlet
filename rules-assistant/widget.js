@@ -1,13 +1,13 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
-import { defaultV063SourceUrls, loadV063RulesCorpus } from "./v063-public-corpus.js";
+import { defaultV071SourceUrls, loadV071RulesCorpus } from "./v071-public-corpus.js";
 import { presentRulesAnswer } from "./answer-presentation.js";
 
 const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
-  assistantName: "Rules Arbiter",
-  version: "v0.6.3",
+  assistantName: "Chief Justice",
+  version: "v0.7.1",
   maxQuestionLength: 600,
   localResultLimit: 5,
   ...window.GAUNTLET_RULES_ASSISTANT_CONFIG
@@ -24,8 +24,8 @@ let corpusPromise;
 
 function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultV063SourceUrls(window.location.origin);
-    corpusPromise = loadV063RulesCorpus({ ...urls }).catch((error) => {
+    const urls = defaultV071SourceUrls(window.location.origin);
+    corpusPromise = loadV071RulesCorpus({ ...urls }).catch((error) => {
       corpusPromise = null;
       throw error;
     });
@@ -39,6 +39,7 @@ class GauntletRulesAssistant {
     this.busy = false;
     this.isOpen = false;
     this.elements = {};
+    this.returnFocusTo = null;
     this.sessionId = getOrCreateSessionId();
     this.playtestContext = getPlaytestContext();
   }
@@ -55,23 +56,33 @@ class GauntletRulesAssistant {
     root.className = "ga-rules-assistant";
     root.dataset.gauntletRulesAssistant = "";
     root.innerHTML = `
-      <button class="ga-rules-launcher" type="button" aria-label="Open Gauntlet rules assistant" aria-expanded="false">
+      <button class="ga-rules-launcher" type="button" aria-label="Open the Chief Justice rules assistant" aria-expanded="false" aria-controls="ga-rules-panel" aria-haspopup="dialog">
         <span class="ga-rules-launcher-mark" aria-hidden="true">?</span>
-        <span class="ga-rules-launcher-label">Ask the rules</span>
+        <span class="ga-rules-launcher-label">Ask the Chief Justice</span>
       </button>
-      <section class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
+      <section id="ga-rules-panel" class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
         <header class="ga-rules-header">
-          <div>
-            <p class="ga-rules-eyebrow">Gauntlet ${escapeHtml(CONFIG.version)}</p>
-            <h2 id="ga-rules-title">${escapeHtml(CONFIG.assistantName)}</h2>
+          <div class="ga-rules-header-identity">
+            <img
+              class="ga-rules-chief-justice"
+              src="/images/rules-arbiter/chief-justice-rules-arbiter-popup.webp"
+              alt="The Chief Justice holding a gavel"
+              width="216"
+              height="270"
+              decoding="async"
+            />
+            <div class="ga-rules-header-copy">
+              <p class="ga-rules-eyebrow">GAUNTLET RULES ARBITER</p>
+              <h2 id="ga-rules-title">${escapeHtml(CONFIG.assistantName)}</h2>
+            </div>
           </div>
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
         <details class="ga-rules-notice">
-          <summary>About the Rules Arbiter</summary>
-          <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Arbiter issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
+          <summary>About the Chief Justice</summary>
+          <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Chief Justice issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
         </details>
-        <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
+        <div class="ga-rules-messages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
         <form class="ga-rules-form">
           <label class="ga-rules-input-label" for="ga-rules-question">Rule question</label>
@@ -80,7 +91,7 @@ class GauntletRulesAssistant {
             <button class="ga-rules-send" type="submit">Ask</button>
           </div>
           <div class="ga-rules-form-meta">
-            <span class="ga-rules-status">Ready</span>
+            <span class="ga-rules-status" role="status" tabindex="-1">Ready</span>
             <button class="ga-rules-clear" type="button">Clear</button>
           </div>
         </form>
@@ -129,7 +140,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
+      answer: "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.",
       rulingStatus: "welcome",
       sources: []
     });
@@ -152,25 +163,35 @@ class GauntletRulesAssistant {
   }
 
   open() {
+    if (!this.isOpen) {
+      const activeElement = document.activeElement;
+      this.returnFocusTo = activeElement instanceof HTMLElement && activeElement !== document.body
+        ? activeElement
+        : this.elements.launcher;
+    }
     this.isOpen = true;
     this.elements.panel.hidden = false;
     this.elements.launcher.setAttribute("aria-expanded", "true");
     requestAnimationFrame(() => this.elements.root.classList.add("is-open"));
-    window.setTimeout(() => this.elements.input.focus(), 120);
+    window.setTimeout(() => {
+      if (this.isOpen) this.elements.input.focus();
+    }, 120);
   }
 
-  close() {
+  close(focusTarget = null) {
     this.isOpen = false;
     this.elements.root.classList.remove("is-open");
     this.elements.launcher.setAttribute("aria-expanded", "false");
     window.setTimeout(() => {
       if (!this.isOpen) this.elements.panel.hidden = true;
     }, 180);
-    this.elements.launcher.focus();
+    const target = focusTarget || (this.returnFocusTo?.isConnected ? this.returnFocusTo : this.elements.launcher);
+    this.returnFocusTo = null;
+    target.focus();
   }
 
   toggle() {
-    this.isOpen ? this.close() : this.open();
+    this.isOpen ? this.close(this.elements.launcher) : this.open();
   }
 
   clear() {
@@ -192,14 +213,18 @@ class GauntletRulesAssistant {
     }
 
     this.open();
+    const activeElement = document.activeElement;
+    const moveFocusForBusyState = this.elements.form.contains(activeElement)
+      || this.elements.suggestions.contains(activeElement);
     this.busy = true;
-    this.elements.send.disabled = true;
-    this.elements.input.disabled = true;
-    this.elements.suggestions.hidden = true;
     this.elements.input.value = "";
     this.appendMessage({ role: "user", answer: question, sources: [] });
     const loading = this.appendLoadingMessage();
     this.setStatus("Checking canonical sources…");
+    if (moveFocusForBusyState) this.elements.status.focus({ preventScroll: true });
+    this.elements.send.disabled = true;
+    this.elements.input.disabled = true;
+    this.elements.suggestions.hidden = true;
 
     try {
       const answer = await this.requestAnswer(question);
@@ -226,7 +251,7 @@ class GauntletRulesAssistant {
       this.busy = false;
       this.elements.send.disabled = false;
       this.elements.input.disabled = false;
-      this.elements.input.focus();
+      if (this.isOpen) this.elements.input.focus();
       this.scrollToLatest();
     }
   }
@@ -369,7 +394,7 @@ class GauntletRulesAssistant {
     section.className = "ga-rules-feedback";
     section.innerHTML = `
       <p>Did this answer your question?</p>
-      <div class="ga-rules-feedback-buttons">
+      <div class="ga-rules-feedback-buttons" role="group" aria-label="Did this answer your question?">
         <button type="button" data-rating="yes">Yes</button>
         <button type="button" data-rating="unclear">Unclear</button>
         <button type="button" data-rating="incorrect">Incorrect</button>
@@ -383,10 +408,11 @@ class GauntletRulesAssistant {
           <button type="button" data-cancel>Cancel</button>
         </div>
       </form>
-      <p class="ga-rules-feedback-status" aria-live="polite"></p>
+      <p class="ga-rules-feedback-status" role="status" tabindex="-1"></p>
     `;
 
     let selectedRating = null;
+    let selectedButton = null;
     const buttons = [...section.querySelectorAll("[data-rating]")];
     const form = section.querySelector("form");
     const textarea = section.querySelector("textarea");
@@ -397,11 +423,15 @@ class GauntletRulesAssistant {
       form.hidden = true;
       status.textContent = text;
       section.classList.add("is-complete");
+      if (this.isOpen) status.focus();
+      selectedRating = null;
+      selectedButton = null;
     };
 
     for (const button of buttons) {
       button.addEventListener("click", async () => {
         selectedRating = button.dataset.rating;
+        selectedButton = button;
         if (selectedRating === "yes") {
           status.textContent = "Sending…";
           try {
@@ -430,9 +460,12 @@ class GauntletRulesAssistant {
     });
 
     form.querySelector("[data-cancel]").addEventListener("click", () => {
+      const focusTarget = selectedButton;
       form.hidden = true;
       selectedRating = null;
+      selectedButton = null;
       textarea.value = "";
+      focusTarget?.focus();
     });
 
     return section;

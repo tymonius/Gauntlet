@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const refinementCss = readFileSync("card-design/card-design-refinement.css", "utf8");
-const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
+const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
 
 describe("card frame refinements", () => {
   it("widens only Placement section label columns", () => {

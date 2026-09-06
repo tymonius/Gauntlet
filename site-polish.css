@@ -1,0 +1,148 @@
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 10000;
+  padding: 10px 14px;
+  border: 2px solid currentColor;
+  background: #fffaf0;
+  color: #5f1418;
+  font: 700 .9rem/1.2 Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  transform: translateY(-180%);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.site-edition-badge {
+  margin-left: 2px;
+  padding: 3px 7px 2px;
+  border: 1px solid rgba(101, 95, 86, .34);
+  border-radius: 999px;
+  color: var(--muted, #655f56);
+  font: 700 .65rem/1.2 var(--font-interface, Arial, Helvetica, sans-serif);
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+
+#main-content {
+  scroll-margin-top: 18px;
+}
+
+/* Keep Start's unselected starter preview readable on its warm inset surface. */
+.starter-preview.empty-state {
+  color: var(--muted, #655f56);
+}
+
+/* Let Declaration Pro read as an intentional flavor accent rather than body copy. */
+.faction-page .leader-motto {
+  font-size: clamp(2.15rem, 3vw, 3rem);
+  line-height: 1.05;
+}
+
+/* Light form fields need a visible component boundary even before keyboard focus. */
+.contact-form :is(input:not([type="hidden"]), select, textarea),
+.filter-panel :is(input, select),
+.rulebook-search input,
+.arbiter-form textarea,
+.app-shell :is(input, select, textarea),
+.tracked-main :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+.session-main :is(input, select, textarea) {
+  border-color: #8a7b68;
+}
+
+.analytics-consent {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  width: min(460px, calc(100% - 36px));
+  padding: 18px;
+  border: 1px solid rgba(49, 42, 32, .28);
+  background: #fffaf0;
+  color: #181614;
+  box-shadow: 0 20px 60px rgba(24, 22, 20, .22);
+  font-family: var(--font-interface, Arial, Helvetica, sans-serif);
+}
+.analytics-consent p {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.55;
+}
+.analytics-consent a {
+  color: #5f1418;
+  font-weight: 700;
+}
+.analytics-consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.analytics-consent button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #5f1418;
+  border-radius: 2px;
+  background: transparent;
+  color: #5f1418;
+  font: 750 .82rem/1 var(--font-interface, Arial, Helvetica, sans-serif);
+  cursor: pointer;
+}
+.analytics-consent button[data-consent="accept"] {
+  background: #5f1418;
+  color: #fff7e8;
+}
+.analytics-consent button:focus-visible {
+  outline: 3px solid var(--bronze);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+  .site-header,
+  .global-header,
+  .rulebook-header,
+  .arbiter-header {
+    flex-wrap: wrap;
+    padding: 12px 0 14px;
+  }
+  :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) {
+    order: 3;
+    width: 100%;
+    display: flex !important;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 0 3px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a {
+    min-height: 32px;
+    display: inline-flex !important;
+    align-items: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-edition-badge {
+    font-size: .6rem;
+  }
+  .analytics-consent {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .skip-link {
+    transition: none;
+  }
+}

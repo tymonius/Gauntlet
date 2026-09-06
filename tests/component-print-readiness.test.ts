@@ -1,21 +1,26 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const componentRenderer = readFileSync("card-design/component-print-render.js", "utf8");
+const faceRuntime = readFileSync("card-design/face-render.mjs", "utf8");
 
 describe("production component print readiness", () => {
-  it("replays the shared card preparation lifecycle after an asynchronously inserted component exists", () => {
-    expect(componentRenderer).toContain("needsSharedCardPreparation(card)");
-    expect(componentRenderer).toContain("card.dataset.parchmentLoaded === undefined");
-    expect(componentRenderer).toContain("card.dataset.titleFit === undefined");
-    expect(componentRenderer).toContain("card && !sharedPreparationRequested && needsSharedCardPreparation(card)");
-    expect(componentRenderer).toContain('window.dispatchEvent(new Event("load"))');
+  it("prepares every asynchronously constructed FaceSpec exactly once before declaring it ready", () => {
+    const renderIndex = faceRuntime.indexOf("const result = await template.render(spec);");
+    const mountIndex = faceRuntime.indexOf("target.replaceChildren(result.element);");
+    const prepareIndex = faceRuntime.indexOf("await prepareFace(spec, result);");
+    const readyIndex = faceRuntime.indexOf("document.body.dataset.renderReady = 'true';");
 
-    const selectIndex = componentRenderer.indexOf("card = selectedCard();");
-    const replayIndex = componentRenderer.indexOf('window.dispatchEvent(new Event("load"))');
-    const readyIndex = componentRenderer.indexOf("if (card && fitReady(card) && imagesReady(card)) break;");
-    expect(selectIndex).toBeGreaterThan(-1);
-    expect(replayIndex).toBeGreaterThan(selectIndex);
-    expect(readyIndex).toBeGreaterThan(replayIndex);
+    expect(renderIndex).toBeGreaterThan(-1);
+    expect(mountIndex).toBeGreaterThan(renderIndex);
+    expect(prepareIndex).toBeGreaterThan(mountIndex);
+    expect(readyIndex).toBeGreaterThan(prepareIndex);
+    expect(faceRuntime).toContain("await waitForImages(element)");
+    expect(faceRuntime).toContain("if (element.classList.contains('fit-warning'))");
+  });
+
+  it("does not replay page lifecycle events or rediscover a selected component", () => {
+    expect(faceRuntime).not.toContain("dispatchEvent(new Event");
+    expect(faceRuntime).not.toContain("selectedCard()");
+    expect(faceRuntime).not.toContain("MutationObserver");
   });
 });

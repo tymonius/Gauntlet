@@ -7,12 +7,34 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 
 describe("Rules Arbiter welcome and compact UI regressions", () => {
   test("welcome copy is never collapsed into Details and exceptions", () => {
-    const welcome = "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.";
+    const welcome = "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.";
 
     expect(presentRulesAnswer({ answer: welcome, rulingStatus: "welcome" })).toEqual({
       answer: welcome,
       details: ""
     });
+  });
+
+  test("widget welcome copy uses the Chief Justice voice instead of generic assistant framing", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+    const welcome = widget.match(/renderWelcome\(\)[\s\S]*?answer: "([^"]+)"/)?.[1] || "";
+
+    expect(welcome).toContain("Set out the question as it arose at the table.");
+    expect(welcome).toContain("identify the controlling rule or distinction");
+    expect(welcome).toContain("settle the matter as plainly as I can");
+    expect(welcome).not.toMatch(/v0\.\d+\.\d+/);
+    expect(widget).not.toContain("Ask me about the v0.7.1 rulebook");
+  });
+
+  test("player-facing identity distinguishes the Rules Arbiter feature from the Chief Justice", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+
+    expect(widget).toContain('assistantName: "Chief Justice"');
+    expect(widget).toContain('<p class="ga-rules-eyebrow">GAUNTLET RULES ARBITER</p>');
+    expect(widget).toContain('<span class="ga-rules-launcher-label">Ask the Chief Justice</span>');
+    expect(widget).toContain('<summary>About the Chief Justice</summary>');
+    expect(widget).not.toContain('assistantName: "Rules Arbiter"');
+    expect(widget).not.toContain('Gauntlet ${escapeHtml(CONFIG.version)}</p>');
   });
 
   test("generic sentence splitting preserves dotted version numbers", () => {
@@ -25,6 +47,16 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(presented.details).toBe("A third sentence belongs in the collapsed details.");
   });
 
+  test("plain-text presentation removes unsupported inline Markdown markers", () => {
+    const presented = presentRulesAnswer({
+      answer: "The Deed's cost is **min(your Deeds + 1, 6)**, then add **-1** if you control it, **0** if you occupy it, or **+1** if neither; then add the `buyout premium` if an opponent owns it.",
+      rulingStatus: "explicit"
+    });
+
+    expect(presented.answer).toBe("The Deed's cost is min(your Deeds + 1, 6), then add -1 if you control it, 0 if you occupy it, or +1 if neither; then add the buyout premium if an opponent owns it.");
+    expect(presented.details).toBe("");
+  });
+
   test("suggested questions wrap into the panel instead of creating a horizontal scroller", () => {
     const css = readFileSync(`${HERE}/answer-presentation.css`, "utf8");
 
@@ -32,6 +64,24 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(css).toMatch(/grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/);
     expect(css).toMatch(/overflow:\s*visible;/);
     expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*max-width:\s*none;/);
+  });
+
+  test("widget uses a solid high-contrast keyboard focus indicator", () => {
+    const css = readFileSync(`${HERE}/widget.css`, "utf8");
+    expect(css).toMatch(/\.ga-rules-launcher:focus-visible,[\s\S]*outline:\s*3px\s+solid\s+var\(--ga-bronze\);/);
+    expect(css).not.toContain("outline: 3px solid rgba(143, 31, 37, 0.28);");
+  });
+
+  test("widget identifies the Rules Arbiter with the Chief Justice artwork", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+    const css = readFileSync(`${HERE}/widget.css`, "utf8");
+    const portrait = readFileSync(`${HERE}/../images/rules-arbiter/chief-justice-rules-arbiter-popup.webp`);
+
+    expect(widget).toContain('class="ga-rules-chief-justice"');
+    expect(widget).toContain('/images/rules-arbiter/chief-justice-rules-arbiter-popup.webp');
+    expect(css).toMatch(/\.ga-rules-header-identity\s*\{[\s\S]*grid-template-columns:\s*132px\s+minmax\(0,\s*1fr\);/);
+    expect(css).toMatch(/\.ga-rules-chief-justice\s*\{[\s\S]*width:\s*132px;/);
+    expect(portrait.byteLength).toBeGreaterThan(1000);
   });
 
   test("widget uses the current square editorial design language", () => {

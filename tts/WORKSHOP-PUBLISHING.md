@@ -1,79 +1,89 @@
-# Gauntlet v0.7.0 — Tabletop Simulator Workshop publication
+# Gauntlet v0.7.1 — Tabletop Simulator Workshop publication
 
-This file records the published v0.7.0 Tabletop Simulator Workshop item, its player-facing copy, publication gate, and post-publication verification.
+This file records the current v0.7.1 Tabletop Simulator Workshop item, its completed publication gate, and the retained v0.7.0 history.
 
 ## Workshop item
 
 - **Steam Workshop ID:** `3790840635`
 - **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 - **Current visibility:** public
-- **Created:** 2026-08-27
-- **Published:** 2026-08-27
-- **Final hosted save:** https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json
-- **Primary listing image:** production CSS-composited universal black Gauntlet card back
-- **Secondary listing image:** approved Tabletop Simulator gameplay screenshot
+- **Current version:** v0.7.1
+- **Current title:** **Gauntlet — v0.7.1**
+- **v0.7.1 update live:** 2026-08-31
 
-The public subscribed Workshop copy was loaded and smoke-tested successfully after publication; hosted assets resolved and no publication-specific breakage was found.
+The existing Workshop item was updated in place from v0.7.0 to v0.7.1. No replacement listing was created; the permanent Workshop ID remains unchanged.
 
-## Workshop title
+## v0.7.1 Workshop package
 
-**Gauntlet — v0.7.0**
+The live v0.7.1 mod preserves the established two-player table and manual-rules play model while adding the focused v0.7.1 release changes:
 
-## Workshop description
+- the six-Rite Mystics package;
+- the current Mystics Rite / Completed-face presentation;
+- the stable Deckbuilder → TTS Deck Code importer;
+- all twelve starter kits and their required faction components;
+- the current v0.7.1 Rulebook/setup presentation; and
+- the current v0.7.1 hosted TTS asset set.
 
-Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
-
-This Tabletop Simulator implementation provides the physical play surface for Gauntlet v0.7.0: playable Decks, Leader Cards, Territories, the shared Universal Reference, faction-specific supplemental components, Player Tokens, battle dice, hand zones, and the six-position Gauntlet.
-
-Choose a faction and Leader through one of the included starter Bags, unpack one starter per player, arrange the six selected Territories into the Gauntlet, and complete normal opening setup from the current Gauntlet Rulebook.
-
-Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical game accurately rather than automate battle resolution or faction rules. The Financiers' Capital Ledger is interactive for transaction entry and running-balance bookkeeping, while the separate Capital Limit tracker remains a physical sliding tracker.
-
-## Controls and setup notes
-
-1. Seat the two players as **White** and **Green**.
-2. Each player chooses one starter Bag. Pull its contents in setup order: Leader, trackers, reference cards, other faction supplementals, playable Deck, three-Territory stack, Player Token, and battle die.
-3. Unpack both starter Bags.
-4. Arrange the six chosen Territories on the six center snap points in the order determined by normal Gauntlet setup.
-5. Place each Player Token at the appropriate starting end after setup.
-6. Complete Draw Pile, Hand, Reserve, Leader/faction area, and other opening setup directly from the current Rulebook.
-7. Use the built-in battle die for each player. Battle resolution, card movement, Territory capture/rotation, faction systems, and victory checks remain manual.
-
-## What is included
-
-- two-player Tabletop Simulator table;
-- White and Green hand/reserve zones;
-- six Gauntlet Territory snap positions;
-- one faction-colored Player Token per player;
-- one faction-colored battle d6 per player;
-- generated starter Bags for the current Leader/starter catalog;
-- playable card Decks with the universal black standard back;
-- Leader Cards with faction-color component backs;
-- landscape Territories with the universal black standard back;
-- one shared two-sided Universal Reference Card in every starter Bag;
-- production-ready faction supplemental components assembled at their declared starter quantities.
-
-The exact generated inventory is governed by the v0.7.0 TTS manifests and release-readiness report rather than this prose list.
+Rules remain player-operated. TTS reproduces the physical game surface and component handling rather than automating battle resolution or faction rules.
 
 ## Publication gate — completed
 
-The v0.7.0 Workshop item was published only after all of the following were true:
+The stable v0.7.1 Workshop update was authorized only after the versioned release gate was complete:
 
-- `npm run tts:release:strict` passes for the v0.7.0 package;
-- `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and focused handling QA;
-- `approvedForWorkshop` is explicitly `true` in that QA record;
-- `npm run tts:save:promote` produces the final `Gauntlet_v0.7.0_TTS_Mod.json` save;
-- all v0.7.0 custom-object network assets have been uploaded to their public host;
-- the final save is loaded successfully from a clean TTS client without relying on locally cached custom assets.
+- `npm run tts:release:strict` passed for the stable v0.7.1 package;
+- `tts/release-qa/v0.7.1.json` records all 18 required table/setup, faction-component, and focused handling checks as passed;
+- `approvedForWorkshop` is explicitly `true`;
+- the stable v0.7.1 save passed final hands-on TTS QA;
+- the Deckbuilder → TTS Deck Code import path passed stable handling validation; and
+- the Workshop update was explicitly approved.
 
-## Listing images
+The earlier `tts/release-qa/v0.7.1-candidate.json` record remains preserved as pre-release evidence and is not the publication authority.
 
-The Workshop listing uses the production CSS-composited **universal black Gauntlet card back** as its primary image. The approved Tabletop Simulator gameplay screenshot remains as a secondary gallery image. The production card-back image comes from the same browser-rendered CSS composition used by the TTS card-asset exporter; it is not an image-generation mockup.
+## Post-publication status
 
-## Post-publication verification
+The public Workshop item is now live as **v0.7.1** at the permanent URL above.
 
-1. Public Workshop item published at the permanent URL above. — **Complete**
-2. Subscribed public Workshop copy loaded from Tabletop Simulator. — **Complete**
-3. Hosted faces, backs, environment art, Leaders, Territories, and faction components resolved in the subscribed copy. — **Complete**
-4. Public-copy smoke test found no publication-specific breakage. — **Complete**
-5. Workshop URL linked from the public site/release documentation. — **Tracked in the final site/documentation closeout.**
+### 2026-09-01 official table-layout maintenance
+
+The v0.7.1 TTS save was refreshed after post-release table-layout review. The updated save is the current official Gauntlet v0.7.1 TTS project save and keeps the same game/release version.
+
+The accepted maintenance layout now also includes one shared **Gauntlet v0.7.1 Rulebook** as a native TTS Custom PDF object at the approved 2.55× tabletop scale. The TTS package de-imposes the stable print booklet into sequential half-letter reader pages and publishes that reader-order PDF as a content-versioned TTS network asset. The object sits in the neutral east-center space between the two Faction / Leader & References workspaces.
+
+The accepted maintenance layout:
+
+- keeps the Gauntlet as the central board;
+- places both Asset Banks on the west side with a dedicated shared Battle Zone between them;
+- gives each player compact overlapping Battle staging for multiple Gambits and especially multiple Tactics;
+- combines each Faction Zone with its Leader/reference workspace on the east side;
+- keeps Draw and Discard compact near the Gauntlet;
+- keeps Graveyards deliberately isolated at the outer east edge;
+- uses wide private/Hand parking strips along the player edges; and
+- moves the two Deed snap columns inward to **x = ±3.95** so Deeds sit closer to the Territory column.
+
+The final accepted Review Scaffold passed machine readiness with no blockers and was promoted to final mod identity as **Gauntlet v0.7.1**. This is a post-release maintenance revision of v0.7.1, not a new rules release.
+
+Synchronizing the permanent Steam Workshop item to this maintenance save remains a publication action outside the GitHub source repository; until that upload is performed, subscribed Workshop copies may still contain the prior v0.7.1 table geometry.
+
+Any additional subscribed-copy smoke testing, hosted-asset verification, or publication-specific defects discovered after the live update are post-release maintenance evidence. They do not reopen the completed v0.7.1 promotion gate unless they reveal a concrete release defect.
+
+## v0.7.0 history
+
+v0.7.0 was the first public Gauntlet Workshop release on this permanent item. It was published on 2026-08-27 after its own strict readiness and 18-check manual QA gate, and its subscribed public copy passed post-publication smoke testing.
+
+Its completed QA record remains preserved at:
+
+- `tts/release-qa/v0.7.0.json`
+
+That record is historical evidence for the previous release and for unchanged surfaces inherited during v0.7.1 delta QA.
+
+## Future updates
+
+Future Workshop versions should continue updating this same permanent Workshop item unless release planning explicitly requires a replacement.
+
+For each future update:
+
+1. build from the matching stable current authority;
+2. complete the versioned machine-readiness and manual-QA gate;
+3. record explicit Workshop approval;
+4. update the existing Workshop item in place; and
+5. record post-publication verification separately from pre-publication QA.

@@ -48,6 +48,8 @@ function activeBattle(): V070GameState {
   state.board.forEach(space => { space.occupant = null; });
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
+  // Reveal-effect tests use a neutral contested Territory.
+  state.board[3].blank = true;
 
   state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
@@ -102,6 +104,10 @@ function unsupportedGambit(state: V070GameState, owner: 'A' | 'B'): string {
 describe('v0.7.0 audited reveal-effect registry', () => {
   test('locks every supported handler to the released canonical effect text', () => {
     expect(V070_SUPPORTED_REVEAL_EFFECT_IDS).toEqual(expect.arrayContaining([
+      'mystics-accursed-wager',
+      'mystics-circle-of-bones',
+      'neutral-battlefield-plunder',
+      'neutral-manifest-destiny',
       'neutral-new-recruits',
       'neutral-rallying-cry',
       'diplomats-gunboat-diplomacy',
@@ -110,7 +116,15 @@ describe('v0.7.0 audited reveal-effect registry', () => {
       'neutral-entrenchment',
       'neutral-advance-guard',
       'neutral-contingency-plan',
+      'neutral-consolidation',
+      'neutral-foothold',
+      'neutral-resistance',
       'neutral-insurrection',
+      'neutral-illegal-occupation',
+      'neutral-sequestration',
+      'neutral-conscription',
+      'neutral-tactical-planning',
+      'intelligence-disinformation',
       'neutral-rousing-speech',
       'neutral-resourcefulness',
       'neutral-fealty',

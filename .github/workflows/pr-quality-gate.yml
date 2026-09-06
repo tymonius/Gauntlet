@@ -112,6 +112,7 @@ jobs:
                 ['Onboarding handoff', String(onboarding)],
                 ['Rulebook booklet', String(booklet)],
                 ['CI inventory', String(ciInventory)],
+                ['Rules refinement source-first', 'always'],
               ])
               .write();
 
@@ -158,10 +159,44 @@ jobs:
           path: artifacts/ci/workflow-audit.json
           if-no-files-found: error
 
+  source_first:
+    name: Rules refinement source-first contract
+    needs: scope
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source-first validator and refinement manifests
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/validate-rules-refinement-source-first.mjs
+            /artifacts/rules-refinement/
+
+      - name: Record changed PR files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let names = [];
+            if (context.eventName === 'pull_request') {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+              names = files.map((file) => file.filename);
+            }
+            fs.writeFileSync('.rules-refinement-changed-files.json', JSON.stringify(names, null, 2));
+
+      - name: Require source authority for source-gap refinements
+        run: node scripts/validate-rules-refinement-source-first.mjs --changed-files .rules-refinement-changed-files.json
+
   gate:
     name: Gate
     if: always()
-    needs: [scope, current_publication, onboarding, booklet, ci_inventory]
+    needs: [scope, current_publication, onboarding, booklet, ci_inventory, source_first]
     runs-on: ubuntu-latest
     steps:
       - name: Require every routed contract to pass or be irrelevant
@@ -171,6 +206,7 @@ jobs:
           ONBOARDING: ${{ needs.onboarding.result }}
           BOOKLET: ${{ needs.booklet.result }}
           CI_INVENTORY: ${{ needs.ci_inventory.result }}
+          SOURCE_FIRST: ${{ needs.source_first.result }}
         run: |
           set -euo pipefail
           for entry in \
@@ -178,7 +214,8 @@ jobs:
             "publication:$PUBLICATION" \
             "onboarding:$ONBOARDING" \
             "booklet:$BOOKLET" \
-            "ci-inventory:$CI_INVENTORY"; do
+            "ci-inventory:$CI_INVENTORY" \
+            "source-first:$SOURCE_FIRST"; do
             name="${entry%%:*}"
             result="${entry#*:}"
             case "$result" in

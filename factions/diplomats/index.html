@@ -1,53 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="description" content="Learn how the Diplomats faction plays in Gauntlet: signature mechanics, victory conditions, Leaders, and institutional identity.">
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Learn how the Diplomats faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity.">
+  <link rel="canonical" href="https://gauntlet.run/factions/diplomats/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/factions/diplomats/" />
+  <meta property="og:title" content="Diplomats — Gauntlet Faction Guide" />
+  <meta property="og:description" content="Learn how the Diplomats faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Diplomats — Gauntlet Faction Guide" />
+  <meta name="twitter:description" content="Learn how the Diplomats faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <title>Diplomats — Gauntlet Faction Guide</title>
   <link rel="stylesheet" href="../../site.css">
   <link rel="stylesheet" href="../factions.css">
-  <link rel="stylesheet" href="../../rules-assistant/widget.css">
+  <link rel="stylesheet" href="../../rules-assistant/widget.css?v=20260903-1">
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body class="faction-page faction-diplomats">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
+      <a href="/playtest/">Playtest</a>
       <a href="/rulebook/">Rules</a>
-      <a href="/factions/" aria-current="page">Factions</a>
+      <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
       <a href="/card-reference/">Card Reference</a>
       <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="faction-hero" aria-labelledby="faction-title">
       <div class="faction-hero-copy">
         <p class="eyebrow faction-eyebrow"><span class="faction-eyebrow-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/diplomats.svg')"></span>Diplomats · faction guide</p>
         <h1 id="faction-title">Every battle begins <span>with a choice.</span></h1>
-        <p class="faction-lede">Diplomats use Influence and Terms to turn an impending battle into a negotiation. The opponent may accept a settlement—or refuse and fight after the Diplomat has shaped the consequences.</p>
+        <p class="faction-lede">Diplomats turn impending battles into negotiations. Proposals give the opponent a choice: accept a deal and avoid the fight, or refuse and face the consequences.</p>
         <div class="hero-actions">
           <a class="button primary" href="../../deckbuilder/?faction=diplomats">Build a Diplomat Deck</a>
         </div>
         <dl class="faction-facts">
           <div><dt>Victory</dt><dd>Run the Gauntlet or complete the Peace Treaty</dd></div>
-          <div><dt>System</dt><dd>Influence · 0–10</dd></div>
+          <div><dt>System</dt><dd>Influence · Proposals</dd></div>
           <div><dt>Leaders</dt><dd>Ambassador · Senator</dd></div>
         </dl>
       </div>
@@ -66,29 +89,29 @@
     <section class="section faction-play" aria-labelledby="play-title">
       <div class="section-heading split-heading">
         <div><p class="eyebrow">At the table</p><h2 id="play-title">How the Diplomats play.</h2></div>
-        <p>Diplomats do not avoid Gauntlet’s battles; they make every battle politically expensive. A Proposal can resolve peacefully when accepted or create leverage, penalties, and ratification opportunities when refused.</p>
+        <p>Diplomats do not avoid Gauntlet's battles; they make every battle politically expensive. A Proposal can resolve the conflict peacefully or make refusal create leverage for the Diplomat.</p>
       </div>
       <div class="play-grid">
-        <article><h3>Offer meaningful choices</h3><p>Before cards are committed, choose an eligible Proposal, stake its Influence, and let the opponent accept or refuse.</p></article>
-        <article><h3>Manage risk</h3><p>Accepted Terms return the stake and may reward you. Refused Terms can be imposed by winning—but losing may cost the staked Influence.</p></article>
-        <article><h3>Build legitimacy</h3><p>Each newly ratified Proposal becomes a Treaty Article. Five different Articles create the Peace Treaty victory.</p></article>
+        <article><h3>Offer meaningful choices</h3><p>When a battle is about to happen, a Proposal can turn it into a choice: accept a deal, or refuse and fight.</p></article>
+        <article><h3>Make refusal matter</h3><p>Influence gives your negotiations weight. A well-timed Proposal can reward acceptance or make saying no increasingly uncomfortable.</p></article>
+        <article><h3>Build legitimacy</h3><p>Successful Proposals can become ratified Treaty Articles, giving you visible progress toward a Peace Treaty while the territorial game continues.</p></article>
       </div>
       <aside class="player-fit">
         <div><p class="eyebrow">A good fit for you if</p><h3>Choose Diplomats when...</h3></div>
         <ul>
           <li>You enjoy presenting opponents with difficult choices.</li>
-          <li>You like balancing long-term progress against short-term tactical spending.</li>
-          <li>You want an alternate victory that still depends on confrontation and board position.</li>
+          <li>You like balancing long-term political progress against short-term tactical pressure.</li>
+          <li>You want a faction victory that still grows out of confrontation and board position.</li>
         </ul>
       </aside>
     </section>
 
     <section class="section mechanics-section" aria-labelledby="mechanics-title">
-      <div class="section-heading"><p class="eyebrow">Signature system</p><h2 id="mechanics-title">The mechanics that define the faction.</h2></div>
+      <div class="section-heading"><p class="eyebrow">Signature system</p><h2 id="mechanics-title">What makes the faction different.</h2></div>
       <div class="mechanics-grid">
-        <article><span>01</span><h3>Influence</h3><p>Begin with 1 Influence and build toward a maximum of 10. Influence is both political capital and a tactical battle resource.</p></article>
-        <article><span>02</span><h3>Terms and Proposals</h3><p>Nine reusable Proposals define requirements, stakes, accepted effects, and refused effects. Acceptance prevents the battle; refusal continues into it.</p></article>
-        <article><span>03</span><h3>Leverage and ratification</h3><p>After refused Terms, spend available Influence for battle bonuses. Winning can impose and ratify the Proposal even after the opponent refused it.</p></article>
+        <article><span>01</span><h3>Influence</h3><p>Influence is the political capital behind your Proposals and other faction effects. Spend it carefully: it supports both negotiation and tactical leverage.</p></article>
+        <article><span>02</span><h3>Proposals</h3><p>Each Proposal frames a different bargain. Some are tempting to accept; others are valuable because refusal creates pressure or opens the door to imposition.</p></article>
+        <article><span>03</span><h3>Ratification</h3><p>Accepted or successfully imposed Proposals can become Treaty Articles. Six different ratified Proposals complete the Peace Treaty.</p></article>
       </div>
     </section>
 
@@ -96,14 +119,14 @@
       <div class="section-heading"><p class="eyebrow">Victory</p><h2 id="victory-title">How the Diplomats win.</h2></div>
       <div class="victory-grid">
         <article><h3>Run the Gauntlet</h3><p>Diplomats can win through the normal territorial route, using settlements and political pressure to improve their position.</p></article>
-        <article><h3>Peace Treaty</h3><p>At the start of your turn, after Capture, five different ratified Proposals win the game. The alternate path is public, gradual, and increasingly difficult for the opponent to ignore.</p></article>
+        <article><h3>Peace Treaty</h3><p>Build a Peace Treaty from six different ratified Proposals. Complete the Treaty to win.</p></article>
       </div>
     </section>
 
     <section class="section leaders-section" aria-labelledby="leaders-title">
       <div class="section-heading split-heading">
         <div><p class="eyebrow">Faction Leaders</p><h2 id="leaders-title">Two ways to lead.</h2></div>
-        <p>Each Leader uses the same faction card pool and core system, but pushes it toward a different tactical identity.</p>
+        <p>Each Leader uses the same Proposals and Influence, but approaches political risk very differently.</p>
       </div>
       <div class="leader-profiles">
         <article class="leader-profile" id="ambassador">
@@ -112,8 +135,8 @@
             <p class="leader-kicker">Agreement, card flow, and settlement</p>
             <h3>Ambassador</h3>
             <p class="leader-motto">“Words first. War last.”</p>
-            <p>The Ambassador converts accepted Terms into additional cards, sustaining further negotiations and defenses.</p>
-            <div class="ability-summary"><strong>Leader ability</strong><p>Cordiality: once per turn, after the opponent accepts your Terms, draw one card.</p></div>
+            <p>The Ambassador rewards accepted Proposals with extra cards, letting successful diplomacy advance the Peace Treaty without starving the rest of your game.</p>
+            <div class="ability-summary"><strong>Why it matters</strong><p>The more often the opponent accepts your offers, the more card flow you gain. The Ambassador favors Proposals that are genuinely tempting rather than empty threats.</p></div>
           </div>
         </article>
         <article class="leader-profile" id="senator">
@@ -122,8 +145,8 @@
             <p class="leader-kicker">Risk management, resilience, and imposition</p>
             <h3>Senator</h3>
             <p class="leader-motto">“Procedure endures.”</p>
-            <p>The Senator can preserve staked Influence after losing a battle by permanently sacrificing cards from hand.</p>
-            <div class="ability-summary"><strong>Leader ability</strong><p>Political Capital: once per turn, sacrifice cards from hand to recover an equal amount of Influence that would otherwise be lost after refused Terms.</p></div>
+            <p>The Senator can trade cards to protect Influence when a rejected Proposal ends badly, making bold negotiations less dangerous.</p>
+            <div class="ability-summary"><strong>Why it matters</strong><p>The Senator has more room to take political risks, but that protection costs cards. He rewards calculated pressure rather than reckless stakes.</p></div>
           </div>
         </article>
       </div>
@@ -133,9 +156,9 @@
       <div class="identity-panel">
         <div><p class="eyebrow">Archetype and setting</p><h2 id="identity-title">An institution—and a method of power.</h2></div>
         <div>
-          <p>Diplomats represent courts, envoys, councils, and legislatures: institutions that treat agreement, legitimacy, and procedure as forms of power. The Ambassador works through personal trust; the Senator makes influence survive through institutions and sacrifice.</p>
-          <p><strong>Visual and archetypal influences:</strong> Treaties, sealed letters, debate chambers, legal papers, wax seals, polished wood, court diplomacy, legislative procedure, and institutional legitimacy.</p>
-          <p class="setting-note">Gauntlet’s setting is still being developed. The six factions are institutions within a broadly shared civilization, not fixed nations or isolated cultures.</p>
+          <p>Diplomats represent courts, envoys, assemblies, councils, and the political networks through which recognition, agreement, law, and legitimacy become forms of power. The Ambassador works through negotiation, correspondence, personal trust, and relationships across jurisdictions; the Senator works through legislation, procedure, rhetoric, coalition, and institutional authority.</p>
+          <p><strong>Leader inspirations:</strong> <strong>Ambassador —</strong> Benjamin Franklin, Thomas Jefferson, and Talleyrand: the cultivated envoy, negotiator, and political correspondent. <strong>Senator —</strong> John Adams, Edmund Burke, and the classical tradition of Cicero: the legislator and orator who exercises power through law, argument, and procedure.</p>
+          <p class="setting-note">Gauntlet takes place in an eighteenth-century powder-and-parchment world of competing provinces, chartered territories, autonomous cities, commercial possessions, and independent native nations. The six factions are institutional spheres that cross political and cultural borders: methods of exercising power rather than six countries or peoples.</p>
         </div>
       </div>
     </section>
@@ -144,25 +167,34 @@
       <div><p class="eyebrow">Take the next step</p><h2>Put Diplomats on the table.</h2></div>
       <div class="next-links">
         <a class="button primary" href="../../deckbuilder/?faction=diplomats">Build a Deck</a>
-        <a class="text-link" href="../../rulebook/">Read the complete rules →</a>
+        <a class="text-link" href="../../rulebook/#14-diplomats">Read the Diplomats rulebook chapter →</a>
         <a class="text-link" href="../">Compare all six factions →</a>
       </div>
     </section>
   </main>
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished pre-release playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="../../rulebook/">Browser Rulebook</a>
-      <a href="../../deckbuilder/?faction=diplomats">Deckbuilder</a>
-      <a href="../">All Factions</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
   <noscript><p class="noscript">JavaScript is required only for the Rules Arbiter; all faction-guide content remains available without it.</p></noscript>
-  <script type="module" src="../../rules-assistant/widget.js"></script>
+  <script type="module" src="../../rules-assistant/widget.js?v=20260903-1"></script>
 </body>
 </html>

@@ -1,22 +1,33 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const deckEntries = () => deckbuilder.deckEntries();
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const currentGame = () => deckbuilder.currentGame();
+  const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
+
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
   let loadError = null;
   let currentGameReady = false;
 
-  window.GAUNTLET_STARTER_DECKS = {
+  deckbuilder.registerFeature("starterDecks", {
     getSelectedDeck: selectedStarterDeck,
     getMatchingCurrentDeck: matchingCurrentStarterDeck,
     loadSelectedDeck: loadRecommendedDeck,
     isReady: starterDeckReady
-  };
+  });
+  deckbuilder.registerRenderHook(renderStarterIntegration);
+  deckbuilder.registerPrintTransform("starter-strategy", addMatchingStarterStrategy, 65);
 
-  const baseRenderAll = renderAll;
-  renderAll = function renderAllWithStarterDeck() {
-    baseRenderAll();
+  function renderStarterIntegration() {
     renderStarterDeckPreview();
     syncStarterDeckButton();
-  };
+  }
 
   document.addEventListener("DOMContentLoaded", installStarterDecks);
 
@@ -30,7 +41,6 @@
       renderStarterDeckPreview();
       syncStarterDeckButton();
     });
-    installStarterPrintTips();
 
     try {
       const tipResponse = await fetch(STARTER_TIP_SOURCE, { cache: "no-store" });
@@ -39,9 +49,8 @@
 
       await waitForCurrentGamePool();
       currentGameReady = true;
-      document.body.dataset.currentGameCards = "ready";
 
-      const data = state.currentGameData?.starterDeckData;
+      const data = currentGame()?.starterDeckData;
       if (!data || !Array.isArray(data.decks)) {
         throw new Error("Current-game authority did not provide starter Deck data.");
       }
@@ -55,13 +64,13 @@
       loadError = error;
     }
 
-    renderAll();
+    deckbuilder.render();
   }
 
   async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (state.currentGameVersion && state.currentGameData?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && state.territoryPool?.length) return;
+      if (currentGame()?.starterDecks?.length && cardCatalog().length && territoriesApi()?.isReady?.()) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
     throw new Error("Timed out waiting for the shared current-game card, Territory, and starter Deck pool.");
@@ -85,38 +94,50 @@
     actions.append(resetButton);
   }
 
+  function starterRiteIds(preset = null) {
+    if ((preset?.factionId || deckState().factionId) !== "mystics") return [];
+    if (Array.isArray(preset?.selectedRites)) return [...preset.selectedRites];
+    const riteApi = ritesApi();
+    return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
+  }
+
   function resetCurrentDeck() {
-    const hasCards = Object.keys(state.deck).length > 0;
-    const hasTerritories = Boolean(state.territories?.length);
-    const hasName = Boolean(state.deckName.trim());
+    const current = deckState();
+    const hasCards = Object.keys(current.deck).length > 0;
+    const hasTerritories = Boolean(territoriesApi()?.selectedIds?.().length);
+    const hasRites = Boolean(ritesApi()?.selectedIds?.().length);
+    const hasName = Boolean(current.deckName.trim());
 
     if (
-      (hasCards || hasTerritories || hasName) &&
+      (hasCards || hasTerritories || hasRites || hasName) &&
       !confirm(
-        "Reset this deck? This removes all playable cards, Territories, and the deck name. " +
+        "Reset this deck? This removes all playable cards, Territories, Rites, and the deck name. " +
         "Your selected faction and Leader will remain."
       )
     ) return;
 
-    state.deck = {};
-    state.territories = [];
-    state.deckName = "";
-    state.selectedCardId = null;
-    state.selectedTerritoryId = null;
-    if ("pendingTerritories" in state) state.pendingTerritories = null;
-    renderAll();
+    deckbuilder.replaceDeckState({
+      ...current,
+      deckName: "",
+      deck: {},
+      selectedCardId: null,
+    });
+    territoriesApi()?.setSelectedIds?.([]);
+    ritesApi()?.setSelectedIds?.(starterRiteIds());
+    deckbuilder.render();
   }
 
   function selectedStarterDeck() {
+    const current = deckState();
     return starterDecks.find(deck =>
-      deck.factionId === state.factionId &&
-      deck.leaderId === state.leaderId
+      deck.factionId === current.factionId &&
+      deck.leaderId === current.leaderId
     ) || null;
   }
 
   function matchingCurrentStarterDeck() {
     const preset = selectedStarterDeck();
-    if (!preset || !state.cards.length || !state.territoryPool?.length) return null;
+    if (!preset || !cardCatalog().length || !territoriesApi()?.isReady?.()) return null;
 
     const currentCards = new Map();
     for (const { card, qty } of deckEntries()) {
@@ -133,13 +154,18 @@
       if (currentCards.get(name) !== quantity) return null;
     }
 
-    const currentTerritories = (state.territories || [])
-      .map(id => state.territoryPool.find(territory => territory.id === id)?.name)
-      .filter(Boolean);
+    const currentTerritories = (territoriesApi()?.selected?.() || []).map(territory => territory.name);
     const expectedTerritories = preset.territories || [];
 
     if (currentTerritories.length !== expectedTerritories.length) return null;
     if (currentTerritories.some((name, index) => name !== expectedTerritories[index])) return null;
+
+    if (preset.factionId === "mystics" && Array.isArray(preset.selectedRites)) {
+      const currentRites = [...(ritesApi()?.selectedIds?.() || [])].sort();
+      const expectedRites = [...preset.selectedRites].sort();
+      if (currentRites.length !== expectedRites.length) return null;
+      if (currentRites.some((id, index) => id !== expectedRites[index])) return null;
+    }
 
     return preset;
   }
@@ -148,9 +174,9 @@
     return Boolean(
       selectedStarterDeck() &&
       currentGameReady &&
-      state.currentGameVersion &&
-      state.cards.length &&
-      state.territoryPool?.length
+      currentGame()?.version &&
+      cardCatalog().length &&
+      territoriesApi()?.isReady?.()
     );
   }
 
@@ -159,8 +185,8 @@
     if (!button) return;
 
     const preset = selectedStarterDeck();
-    const faction = getFaction();
-    const leader = faction?.leaders.find(item => item.id === state.leaderId);
+    const faction = deckbuilder.getFaction();
+    const leader = deckbuilder.getLeader();
 
     button.disabled = !starterDeckReady();
     button.textContent = preset && leader
@@ -169,7 +195,7 @@
     button.title = loadError
       ? "Recommended Decks could not be loaded"
       : starterDeckReady()
-        ? `Replace the current Deck with the recommended ${state.currentGameDisplayVersion || "current"} preset for this Leader`
+        ? `Replace the current Deck with the recommended ${currentGameLabel()} preset for this Leader`
         : "Waiting for current-game card, Territory, and starter Deck data";
   }
 
@@ -192,16 +218,17 @@
       return;
     }
 
+    const rules = deckbuilder.constructionRules();
     preview.className = "starter-deck-preview";
     preview.innerHTML = `
       <div class="starter-deck-heading">
         <div>
-          <p class="eyebrow">Recommended ${escapeHtml(state.currentGameDisplayVersion || "current")} playtest Deck</p>
+          <p class="eyebrow">Recommended ${escapeHtml(currentGameLabel())} playtest Deck</p>
           <h3>${escapeHtml(preset.name)}</h3>
         </div>
         <div class="starter-deck-metrics">
-          <span class="mini-pill">${Number(preset.cardCount) || 30} cards</span>
-          <span class="mini-pill">${Number(preset.deckbuildingValue) || 60}/60 value</span>
+          <span class="mini-pill">${Number(preset.cardCount) || rules.minimumCards} cards</span>
+          <span class="mini-pill">${Number(preset.deckbuildingValue) || rules.maximumDeckbuildingValue}/${rules.maximumDeckbuildingValue} value</span>
         </div>
       </div>
       <p>${escapeHtml(preset.summary)}</p>
@@ -209,36 +236,33 @@
         <strong>Territories, from your end outward:</strong>
         ${preset.territories.map(name => `<span class="mini-pill">${escapeHtml(name)}</span>`).join("")}
       </div>
+      ${renderRecommendedRiteOrder(preset)}
       <p class="starter-tip"><strong>First-game tip:</strong> ${escapeHtml(preset.firstGameTip)}</p>
     `;
   }
 
-  function installStarterPrintTips() {
-    const button = document.getElementById("printDeckButton");
-    if (!button || button.dataset.starterPrintTipsInstalled === "true") return;
-
-    button.dataset.starterPrintTipsInstalled = "true";
-    button.addEventListener("click", prepareStarterPrintTips, true);
+  function riteName(riteId) {
+    const rites = currentGame()?.mystics?.rites || [];
+    return rites.find(rite => rite.id === riteId)?.name || riteId;
   }
 
-  function prepareStarterPrintTips() {
+  function recommendedRiteNames(preset) {
+    return (preset.recommendedRiteOrder || []).map(riteName);
+  }
+
+  function renderRecommendedRiteOrder(preset) {
+    const names = recommendedRiteNames(preset);
+    if (!names.length) return "";
+    return `
+      <div class="starter-territories starter-rites">
+        <strong>Recommended Rite order:</strong>
+        ${names.map(name => `<span class="mini-pill">${escapeHtml(name)}</span>`).join('<span aria-hidden="true">→</span>')}
+      </div>`;
+  }
+
+  function addMatchingStarterStrategy(html) {
     const preset = matchingCurrentStarterDeck();
-    if (!preset) return;
-
-    const inheritedOpen = window.open;
-    const starterAwareOpen = function starterAwareOpen(...args) {
-      const printWindow = inheritedOpen.apply(window, args);
-      if (!printWindow) return printWindow;
-
-      const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-      printWindow.document.write = html => inheritedWrite(addStarterStrategyToPrintDocument(html, preset));
-      return printWindow;
-    };
-
-    window.open = starterAwareOpen;
-    window.setTimeout(() => {
-      if (window.open === starterAwareOpen) window.open = inheritedOpen;
-    }, 0);
+    return preset ? addStarterStrategyToPrintDocument(html, preset) : html;
   }
 
   function addStarterStrategyToPrintDocument(html, preset) {
@@ -251,6 +275,9 @@
     summary.classList.add("has-starter-strategy");
 
     const territoryOrder = (preset.territories || [])
+      .map((name, index) => `<span><strong>${index + 1}.</strong> ${escapeStarterHtml(name)}</span>`)
+      .join('<span class="starter-territory-arrow" aria-hidden="true">→</span>');
+    const riteOrder = recommendedRiteNames(preset)
       .map((name, index) => `<span><strong>${index + 1}.</strong> ${escapeStarterHtml(name)}</span>`)
       .join('<span class="starter-territory-arrow" aria-hidden="true">→</span>');
 
@@ -268,7 +295,11 @@
       <div class="starter-print-territories">
         <h2>Recommended Territory order</h2>
         <p><strong>From your end outward:</strong> ${territoryOrder}</p>
-      </div>`;
+      </div>
+      ${riteOrder ? `<div class="starter-print-territories starter-print-rites">
+        <h2>Recommended Rite order</h2>
+        <p>${riteOrder}</p>
+      </div>` : ""}`;
     summaryGrid.before(strategy);
 
     style.textContent += `
@@ -297,11 +328,13 @@
 
   function loadRecommendedDeck() {
     const preset = selectedStarterDeck();
-    const faction = getFaction();
-    const leader = faction?.leaders.find(item => item.id === state.leaderId);
+    const faction = deckbuilder.getFaction();
+    const leader = deckbuilder.getLeader();
     if (!preset || !faction || !leader || !starterDeckReady()) return;
 
-    const hasCurrentDeck = Object.keys(state.deck).length > 0 || state.territories.length > 0;
+    const hasCurrentDeck = Object.keys(deckState().deck).length > 0
+      || Boolean(territoriesApi()?.selectedIds?.().length)
+      || Boolean(ritesApi()?.selectedIds?.().length);
     if (
       hasCurrentDeck &&
       !confirm(`Replace the current Deck with ${leader.name}'s recommended starter Deck, ${preset.name}?`)
@@ -311,7 +344,7 @@
     const missingCards = [];
 
     for (const item of preset.cards) {
-      const card = state.cards.find(candidate =>
+      const card = cardCatalog().find(candidate =>
         candidate.name === item.name &&
         (candidate.faction === "neutral" || candidate.faction === preset.factionId)
       );
@@ -326,8 +359,9 @@
 
     const territoryIds = [];
     const missingTerritories = [];
+    const territoryPool = currentGame()?.territories || [];
     for (const name of preset.territories) {
-      const territory = state.territoryPool.find(candidate => candidate.name === name);
+      const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) missingTerritories.push(name);
       else territoryIds.push(territory.id);
     }
@@ -342,15 +376,18 @@
       return;
     }
 
-    state.deckName = `${leader.name} — ${preset.name}`;
-    state.deck = deck;
-    state.territories = territoryIds;
-    state.selectedCardId = null;
-    state.selectedTerritoryId = territoryIds[0] || null;
+    deckbuilder.replaceDeckState({
+      ...deckState(),
+      deckName: `${leader.name} — ${preset.name}`,
+      deck,
+      selectedCardId: null,
+    });
+    territoriesApi()?.setSelectedIds?.(territoryIds);
+    ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
 
-    renderAll();
+    deckbuilder.render();
 
-    const validation = validateDeck();
+    const validation = deckbuilder.validate();
     if (!validation.valid) {
       console.error("Recommended starter Deck failed runtime validation", preset, validation);
       alert("The recommended Deck loaded but failed validation. Please report this Deckbuilder error.");

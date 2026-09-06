@@ -1,62 +1,98 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="theme-color" content="#8f1f25" />
   <meta
     name="description"
-    content="Build, validate, save, and print a canonical Gauntlet v0.7.0 deck."
+    content="Build, validate, save, and print a canonical Gauntlet v0.7.1 deck."
   />
-  <title>Gauntlet v0.7.0 Deckbuilder</title>
+  <link rel="canonical" href="https://gauntlet.run/deckbuilder/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/deckbuilder/" />
+  <meta property="og:title" content="Gauntlet v0.7.1 Deckbuilder" />
+  <meta property="og:description" content="Build, validate, save, and print a canonical Gauntlet v0.7.1 deck." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1 Deckbuilder" />
+  <meta name="twitter:description" content="Build, validate, save, and print a canonical Gauntlet v0.7.1 deck." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <title>Gauntlet v0.7.1 Deckbuilder</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ruleset-toggle.css?v=20260828-1" />
   <link rel="stylesheet" href="territories.css" />
+  <link rel="stylesheet" href="mystics-rites.css?v=20260828-1" />
   <link rel="stylesheet" href="print-options.css?v=20260819-1" />
   <link rel="stylesheet" href="starter-decks.css" />
-  <link rel="stylesheet" href="starter-handoff.css?v=20260815-4" />
+  <link rel="stylesheet" href="starter-handoff.css?v=20260905-1" />
   <link rel="stylesheet" href="print-request.css?v=20260731-1" />
   <link rel="stylesheet" href="mobile-card-preview.css?v=20260729-1" />
-  <link rel="stylesheet" href="shell.css?v=20260815-1" />
+  <link rel="stylesheet" href="shell.css?v=20260905-1" />
   <link rel="stylesheet" href="../arcane-trait-markers.css" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
-<body>
+<body data-ruleset-mode="released">
+  <a class="skip-link" href="#app">Skip to main content</a>
   <header class="global-header">
     <a class="brand" href="../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="../start/">Start</a>
-      <a href="../#game">Game</a>
-      <a href="../rulebook/">Rules</a>
-      <a href="../factions/">Factions</a>
-      <a href="./" aria-current="page">Deckbuilder</a>
-      <a href="../card-reference/">Card Reference</a>
-      <a href="../rules-arbiter/">Rules Arbiter</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
   <section class="tool-hero" aria-labelledby="tool-title">
     <div>
-      <p class="eyebrow">Playtest tool · canonical v0.7.0</p>
+      <p class="eyebrow">Playtest tool · canonical v0.7.1</p>
       <h1 id="tool-title">Build your deck.</h1>
       <p class="lede">
         Choose a faction and leader, begin with a ready-to-play starter deck,
         then customize only what you need.
       </p>
+      <div class="ruleset-switch" role="group" aria-label="Deckbuilder ruleset" data-ruleset-switch hidden>
+        <button type="button" data-ruleset="released" aria-pressed="true">
+          <span>Released</span>
+          <strong>v0.7.1</strong>
+        </button>
+        <button type="button" data-ruleset="candidate" aria-pressed="false">
+          <span>Release candidate</span>
+          <strong data-candidate-version>Current candidate</strong>
+        </button>
+      </div>
+      <p class="ruleset-note" data-candidate-rules-note hidden></p>
     </div>
     <p class="source-status" aria-live="polite">
       <span class="status-dot" aria-hidden="true"></span>
@@ -64,7 +100,7 @@
     </p>
   </section>
 
-  <main id="app" class="app-shell" hidden>
+  <main id="app" class="app-shell" tabindex="-1" hidden>
     <section class="panel setup-panel">
       <div class="section-kicker"><span>01</span> Choose your side</div>
       <div class="panel-heading setup-heading">
@@ -106,11 +142,11 @@
     <section class="dashboard" aria-label="Deck summary">
       <article class="metric-card">
         <span>Main deck</span>
-        <strong><span id="cardCount">0</span> / 30+</strong>
+        <strong><span id="cardCount">0</span> / <span id="minimumCardCount">—</span>+</strong>
       </article>
       <article class="metric-card">
         <span>Value</span>
-        <strong><span id="pointTotal">0</span> / 60</strong>
+        <strong><span id="pointTotal">0</span> / <span id="maximumDeckbuildingValue">—</span></strong>
       </article>
       <article class="metric-card">
         <span>Faction cards</span>
@@ -118,7 +154,11 @@
       </article>
       <article class="metric-card">
         <span>Territories</span>
-        <strong><span id="territoryMetricCount">0</span> / 3</strong>
+        <strong><span id="territoryMetricCount">0</span> / <span id="territoryRequiredCount">—</span></strong>
+      </article>
+      <article id="riteMetricCard" class="metric-card" hidden>
+        <span>Rites</span>
+        <strong><span id="riteMetricCount">0</span> / <span id="riteRequiredCount">—</span></strong>
       </article>
       <article id="validityCard" class="metric-card validation-card">
         <span>Deck status</span>
@@ -143,7 +183,7 @@
               <h2>Available cards</h2>
               <p class="muted">Neutral cards plus cards from the selected faction.</p>
             </div>
-            <span id="availableCount" class="pill">0</span>
+            <span id="availableCount" class="pill" role="status" aria-live="polite" aria-atomic="true" aria-label="Available cards">0</span>
           </div>
           <div class="filters">
             <label>
@@ -187,7 +227,7 @@
               </p>
             </div>
             <div class="panel-tools">
-              <span id="territoryAvailableCount" class="pill">0</span>
+              <span id="territoryAvailableCount" class="pill" role="status" aria-live="polite" aria-atomic="true" aria-label="Available Territories">0</span>
               <button id="clearTerritoriesButton" type="button" class="text-button danger">
                 Clear
               </button>
@@ -216,6 +256,23 @@
             </aside>
           </div>
         </section>
+
+        <section id="mysticsRitesPanel" class="panel mystics-rites-panel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>Rites</h2>
+              <p class="muted">Choose exactly <span id="riteInstructionCount">—</span> different Rites. You are under no obligation to reveal a selected Rite until you begin it.</p>
+            </div>
+            <div class="panel-tools">
+              <span id="riteSelectedCount" class="pill">0 / —</span>
+              <button id="clearRitesButton" type="button" class="text-button danger">Clear</button>
+            </div>
+          </div>
+          <div class="rite-browser">
+            <div id="riteList" class="compact-rite-list empty-state">Loading Rites…</div>
+            <aside id="ritePreview" class="rite-preview empty-state">Select a Rite to view its current card and rules.</aside>
+          </div>
+        </section>
       </div>
 
       <div class="builder-column current-deck-column">
@@ -238,6 +295,10 @@
           <div id="deckTerritories" class="deck-list empty-state">
             No territories selected yet.
           </div>
+          <div id="deckRitesSection" hidden>
+            <div class="deck-section-divider">Rites</div>
+            <div id="deckRites" class="deck-list empty-state">No Rites selected yet.</div>
+          </div>
         </section>
       </div>
     </section>
@@ -248,7 +309,7 @@
         <section>
           <h3>Validation</h3>
           <p class="muted">Resolve any remaining requirements before printing.</p>
-          <ul id="validationList" class="validation-list"></ul>
+          <ul id="validationList" class="validation-list" aria-live="polite"></ul>
         </section>
 
         <section>
@@ -276,6 +337,24 @@
         </section>
       </div>
 
+      <section id="ttsTransferGuide" class="tts-transfer-guide" aria-labelledby="tts-transfer-title" hidden>
+        <div>
+          <h3 id="tts-transfer-title">Tabletop Simulator</h3>
+          <p id="ttsDeckExportHelp" class="muted">
+            Build and validate your Deck here, copy its TTS Deck Code, then paste that code into Deck Import in the matching Tabletop Simulator build.
+          </p>
+          <ol class="tts-transfer-steps">
+            <li>Build a valid Deck and choose its Territories.</li>
+            <li>Copy the TTS Deck Code.</li>
+            <li>In TTS, sit in White or Green, open Deck Import, paste the code, and import the custom starter kit.</li>
+          </ol>
+          <p class="muted">The imported Bag keeps the matching Leader and faction components while replacing the playable Deck and Territory stack. Mystics imports also use the Rites selected in this Deck.</p>
+        </div>
+        <div class="button-row">
+          <button id="copyTtsDeckCodeButton" type="button" class="secondary" hidden>Copy TTS Deck Code</button>
+        </div>
+      </section>
+
       <details class="advanced-tools">
         <summary>Advanced transfer and bulk printing</summary>
         <div class="advanced-tools-grid">
@@ -287,7 +366,7 @@
             <textarea
               id="importJson"
               rows="4"
-              placeholder="Paste an exported v0.7.0 deck JSON here"
+              placeholder="Paste an exported v0.7.1 deck JSON here"
             ></textarea>
             <button id="importJsonButton" type="button" class="secondary full-width">
               Import JSON
@@ -304,7 +383,7 @@
               class="secondary"
               disabled
             >
-              Print all 12 starter decks
+              Print all starter decks
             </button>
           </section>
         </div>
@@ -312,46 +391,46 @@
     </section>
   </main>
 
-  <footer>
-    <a class="brand footer-brand" href="../" aria-label="Gauntlet home">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
-    <div class="footer-links">
-      <a href="../rulebook/">Rules</a>
-      <a href="../card-reference/">Card Reference</a>
-      <a href="../rules-arbiter/">Rules Arbiter</a>
-      <a href="../v0.7.0/">v0.7.0 release</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <p>Unpublished playtest project · Copyright © 2026 Tymon Scott.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
-  <script src="app.js?v=20260729-1" defer></script>
-  <script src="v061-runtime.js?v=20260729-1" defer></script>
-  <script src="mobile-card-preview.js?v=20260819-1" defer></script>
-  <script src="completed-factions.js?v=20260729-1" defer></script>
-  <script src="territories.js?v=20260729-1" defer></script>
-  <script type="module" src="tts-export.mjs?v=20260828-1"></script>
-  <script src="supplemental-data.js?v=20260722-1" defer></script>
-  <script src="completed-supplementals.js?v=20260723-1" defer></script>
-  <script src="v061-supplementals.js?v=20260730-1" defer></script>
-  <script src="leader-portrait-sources.js?v=20260723-1" defer></script>
-  <script src="faction-components.js?v=20260802-1" defer></script>
-  <script src="print.js?v=20260718-3" defer></script>
-  <script src="print-intelligence-portraits.js?v=20260723-2" defer></script>
-  <script src="print-reference-placement.js?v=20260722-1" defer></script>
-  <script src="print-duplex-sheet-pairing.js?v=20260729-1" defer></script>
-  <script src="card-back-preview.js?v=20260819-1" defer></script>
-  <script src="print-duplex.js?v=20260720-2" defer></script>
-  <script src="print-intelligence-trackers.js?v=20260722-1" defer></script>
-  <script src="print-capital-ledger.js?v=20260722-1" defer></script>
-  <script src="print-card-back-orientation.js?v=20260722-1" defer></script>
-  <script src="starter-decks.js?v=20260731-2" defer></script>
-  <script src="starter-handoff.js?v=20260815-2" defer></script>
-  <script src="print-request.js?v=20260731-2" defer></script>
-  <script src="print-all-starters.js?v=20260723-2" defer></script>
-  <script src="print-window-portrait-fixes.js?v=20260723-1" defer></script>
+  <script src="app.js?v=20260902-4" defer></script>
+  <script src="current-runtime.js?v=20260902-2" defer></script>
+  <script src="mobile-card-preview.js?v=20260902-2" defer></script>
+  <script src="territories.js?v=20260903-1" defer></script>
+  <script src="mystics-rites.js?v=20260902-1" defer></script>
+  <script type="module" src="tts-export.mjs?v=20260831-1"></script>
+  <script src="faction-components.js?v=20260902-2" defer></script>
+  <script src="production-print.js?v=20260902-2" defer></script>
+  <script src="print.js?v=20260902-2" defer></script>
+  <script src="card-back-preview.js?v=20260831-2" defer></script>
+  <script src="print-capital-ledger.js?v=20260831-1" defer></script>
+  <script src="starter-decks.js?v=20260902-2" defer></script>
+  <script src="starter-handoff.js?v=20260902-2" defer></script>
+  <script src="print-request.js?v=20260902-2" defer></script>
+  <script src="print-all-starters.js?v=20260902-2" defer></script>
+  <script src="print-summary.js?v=20260831-2" defer></script>
+  <script src="custom-print-loader.js?v=20260902-1" defer></script>
   <script src="../arcane-trait-markers.js" defer></script>
 </body>
 </html>

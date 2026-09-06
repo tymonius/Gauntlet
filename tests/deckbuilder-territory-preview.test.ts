@@ -13,8 +13,11 @@ describe('Deckbuilder Territory preview', () => {
   });
 
   it('scales the native landscape production surface without changing its aspect ratio', () => {
-    expect(territorySource).toContain('const TERRITORY_WIDTH = 336;');
-    expect(territorySource).toContain('const TERRITORY_HEIGHT = 240;');
+    expect(territorySource).toContain("import('../card-design/production-surface.mjs')");
+    expect(territorySource).toContain('PRODUCTION_SURFACES.landscape.widthCssPx');
+    expect(territorySource).toContain('PRODUCTION_SURFACES.landscape.heightCssPx');
+    expect(territorySource).not.toContain('const TERRITORY_WIDTH = 336;');
+    expect(territorySource).not.toContain('const TERRITORY_HEIGHT = 240;');
     expect(territorySource).toContain('targetWidth / TERRITORY_WIDTH');
     expect(previewCss).toContain('.deckbuilder-territory-render-frame');
     expect(previewCss).toContain('width: 336px;');

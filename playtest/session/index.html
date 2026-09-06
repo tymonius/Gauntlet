@@ -8,31 +8,38 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Join and manage a uniquely coded Gauntlet v0.6.1 formal playtest session." />
+  <meta name="description" content="Join and manage a uniquely coded Gauntlet v0.7.1 formal playtest session." />
   <title>Gauntlet Playtest Session</title>
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="../../rulebook/">Rules</a>
-      <a href="../../card-reference/">Card reference</a>
-      <a href="../">Playtest sheet</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
-  <main class="session-main">
+  <main id="main-content" tabindex="-1" class="session-main">
     <section class="session-hero">
       <div>
-        <p class="eyebrow">Formal v0.6.1 playtest</p>
+        <p class="eyebrow">Formal playtest · v0.7.1</p>
         <h1>Playtest <span>Session.</span></h1>
-        <p>Join the digital record attached to this sheet. Rules Arbiter questions asked here are linked automatically.</p>
+        <p>Join the digital record attached to this session. Rules Arbiter questions asked here are linked automatically.</p>
       </div>
       <div class="session-badge" aria-live="polite">
         <span>Sheet serial</span>
@@ -49,7 +56,7 @@
       </div>
     </section>
 
-    <section id="errorPanel" class="panel state-panel error-panel" hidden>
+    <section id="errorPanel" class="panel state-panel error-panel" hidden role="alert" tabindex="-1" aria-labelledby="errorTitle" aria-describedby="errorMessage">
       <div>
         <p class="eyebrow">Session unavailable</p>
         <h2 id="errorTitle">The code could not be opened.</h2>
@@ -66,10 +73,10 @@
               <p class="eyebrow">Live record</p>
               <h2 id="summarySerial">Session</h2>
             </div>
-            <span id="statusPill" class="status-pill">Open</span>
+            <span id="statusPill" class="status-pill" role="status" tabindex="-1">Open</span>
           </div>
           <dl>
-            <div><dt>Rules version</dt><dd id="rulesVersion">v0.6.1</dd></div>
+            <div><dt>Rules version</dt><dd id="rulesVersion">v0.7.1</dd></div>
             <div><dt>Participants</dt><dd id="participantCount">0</dd></div>
             <div><dt>Arbiter questions</dt><dd id="arbiterCount">0</dd></div>
             <div><dt>Created</dt><dd id="createdAt">—</dd></div>
@@ -79,7 +86,7 @@
         <section id="joinPanel" class="panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Join this sheet</p>
+              <p class="eyebrow">Join this session</p>
               <h2>Who is participating?</h2>
             </div>
           </div>
@@ -101,9 +108,9 @@
           </form>
         </section>
 
-        <section id="joinedPanel" class="panel joined-panel" hidden>
+        <section id="joinedPanel" class="panel joined-panel" hidden tabindex="-1" aria-labelledby="joinedTitle">
           <p class="eyebrow">Connected</p>
-          <h2>You are linked to this playtest sheet.</h2>
+          <h2 id="joinedTitle">You are linked to this playtest sheet.</h2>
           <p id="joinedCopy">Questions and feedback submitted through the Rules Arbiter will include this session.</p>
           <button id="openArbiter" type="button">Ask the Rules Arbiter</button>
         </section>
@@ -159,12 +166,27 @@
     </section>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished pre-release playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="privacy.js?v=20260729-1"></script>

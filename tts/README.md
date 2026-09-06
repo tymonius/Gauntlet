@@ -2,7 +2,7 @@
 
 This directory contains Gauntlet's supported Tabletop Simulator export, packaging, QA, and publication path.
 
-For the v0.7.0 closeout, the active TTS product identity is **v0.7.0** while the approved current-game source bundle retains its own provenance. The TTS pipeline deliberately separates those concepts rather than relabeling source data.
+Current-development TTS identity is derived directly from `game-data/current-game.json`. Published-release identity remains separate and is resolved from release lifecycle metadata.
 
 ## Source and release identity
 
@@ -10,15 +10,11 @@ Active-development game authority comes from:
 
 - `game-data/current-game.json` and the source files it names;
 - `config/tts-component-contract.json` for physical faction/shared components and TTS representation metadata; and
-- `config/tts-release-target.json` for the active TTS package version.
+- `config/tts-release-target.json` for versioned publication/QA targeting only; it does not determine current-development TTS identity.
 
-`config/release-lifecycle.json` and `config/github-release-contract.json` still describe the immutable currently published web/release state. They are used where published-release fallback or publication validation is required, but they do not determine the v0.7.0 development package identity.
+`config/release-lifecycle.json` and `config/github-release-contract.json` describe the immutable currently published web/release state. They are used where published-release fallback or publication validation is required, but they do not determine current-development TTS identity.
 
-Generated metadata records both the TTS package version and source/canonical-data version. For the current closeout that means:
-
-- TTS package/display version: `v0.7.0`;
-- current-game source version: `v0.6.4-candidate`; and
-- currently published release: independently resolved from release metadata.
+Generated current-development metadata takes its version and display identity from `current-game`, while the currently published release is resolved independently from release metadata.
 
 The runtime does not hard-code starter, card, Leader, or Territory counts.
 
@@ -32,7 +28,7 @@ All TTS card faces are captured from the production **Card Design** surfaces. TT
 
 This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
 
-The deliberate exception is the printed version footer during a pre-cutover TTS build. Card Design may still identify the source catalog as `v0.6.4 candidate`, while `config/tts-release-target.json` stamps exported TTS faces as `v0.7.0`. No other visual or rules content is overridden during TTS capture.
+The printed version footer for current TTS captures comes from the current-game authority's `displayVersion`. No separate current-development TTS version override is maintained.
 
 Landscape presentation is also centralized: Territories and landscape supplementals use the same +90° quarter-turn when their approved 3.5 × 2.5 face is packed into TTS's standard portrait Custom Card cell. Native `SidewaysCard` then supplies the landscape physical orientation in play.
 
@@ -54,7 +50,7 @@ npm run tts:finalized-supplementals
 npm run tts:release:stage
 npm run tts:save
 npm run tts:save:assemble
-node tts/validate-v070-authoritative-save.mjs
+node tts/validate-current-authoritative-save.mjs
 npm run tts:release:status
 npm run tts:release:strict
 npm run tts:package
@@ -65,21 +61,21 @@ npm run tts:save:promote
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
-## Current v0.7.0 package
+## Current v0.7.1 package
 
-The current generated package contains:
+The current package is generated from the stable v0.7.1 current-game authority and contains:
 
 - 142 playable cards;
 - 25 landscape Territories, including 4 Arenas;
 - 12 Leader Cards;
 - 12 starter Bags;
-- 27 ready faction supplemental component definitions;
-- 68 supplemental object copies assembled across the starter Bags; and
-- 75 staged network assets.
+- the complete current faction supplemental component set;
+- the required supplemental objects assembled across the twelve starter Bags; and
+- the staged network assets required by the stable v0.7.1 package.
 
 Those counts are observations from the current generated manifests, not constants embedded in the runtime.
 
-The 27 ready faction component definitions are:
+The current faction component families are:
 
 | Faction | Generated components |
 | --- | --- |
@@ -87,14 +83,14 @@ The 27 ready faction component definitions are:
 | Diplomats | Influence Tracker; Diplomat Reference Card; 9 Proposal / Treaty Article cards |
 | Financiers | Financier Reference Card; Capital Limit Tracker; Capital Ledger; Deed Card (8 copies per starter) |
 | Intelligence | Mission Reference Card; Operations Reference Card; Intel Tracker; Operation Progress Tracker |
-| Mystics | Mystics Reference Card; Rite of Echoes; Rite of Blood; Rite of Crossing |
+| Mystics | Mystics Reference Card; six Rite cards; Ritual of Ascension |
 | Inquisition | Inquisition Doctrine Reference Card; Purge Reference Card; Conviction Tracker |
 
 The Universal Reference Card is a shared component and is tracked separately from this faction-component inventory.
 
 ## Back policy
 
-The v0.7.0 TTS package distinguishes ordinary hidden-information Deck/Territory backs from public faction-component backs:
+The v0.7.1 TTS package distinguishes ordinary hidden-information Deck/Territory backs from public faction-component backs:
 
 - playable Decks use the universal black back;
 - Territories use the same universal black back;
@@ -134,7 +130,7 @@ There is no separate Territory-specific back asset.
 
 Leader export does not maintain a second copy of Leader rules or layout. The current-game authority supplies the roster and `/card-design/` supplies the production face, portrait, faction treatment, rules, and geometry.
 
-For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the active TTS package display version on the captured footer so a v0.7.0 TTS Leader does not inherit the older source-bundle label. Source provenance remains separately recorded in `leader-manifest.json`.
+For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer, so the current package is visibly stamped `v0.7.1`. Source provenance remains separately recorded in `leader-manifest.json`.
 
 Leader Cards use faction-color component backs and deterministic one-card CustomDeck IDs.
 
@@ -157,7 +153,7 @@ It does not hard-code starter, card, Leader, or Territory counts; those are deri
 
 `scripts/generate-tts-supplemental-assets.mjs` renders components already marked production-ready in the physical component contract. `scripts/generate-tts-finalized-supplementals.mjs` is the explicit production bridge for final Proposal/Treaty, Capital Ledger, and Deed definitions whose raw contract status remains export-pending for provenance.
 
-After both passes, the current v0.7.0 generated supplemental manifest has 27 ready and 0 pending faction component definitions.
+The current stable v0.7.1 supplemental manifest contains the complete production-ready faction component set, including the six Mystics Rite cards and Ritual of Ascension.
 
 Supported representations include:
 
@@ -208,19 +204,28 @@ The existing Capital Limit sliding tracker remains independent and continues to 
 
 Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplemental:<component-id>` marker, so a rebuild removes prior generated supplementals before inserting the current set while leaving the base Deck, Leader, and Territories intact.
 
-The current package assembles 68 expected supplemental copies across the 12 starter Bags. Landscape supplemental cards are created at standard `CardCustom` scale and final landscape orientation. Sliding trackers are created at their final `Custom_Tile` geometry and snap registration from the shared geometry contract.
+The current package assembles the authoritative supplemental quantities across the 12 starter Bags. Landscape supplemental cards are created at standard `CardCustom` scale and final landscape orientation. Sliding trackers are created at their final `Custom_Tile` geometry and snap registration from the shared geometry contract.
 
 ## Review Scaffold contract
 
 `scripts/generate-tts-save.mjs` creates a two-player Review Scaffold with:
 
-- White and Green hand/reserve zones;
+- White and Green hand/reserve zones plus wide private tabletop Hand parking strips;
 - six center-line Gauntlet snap points;
+- both Asset Banks grouped on the west side;
+- a dedicated shared Battle Zone between the Asset Banks, with compact overlapping snap rows for multiple Gambits and Tactics;
+- combined Faction / Leader & References workspaces on the east side;
+- compact Draw and Discard areas near the Gauntlet;
+- deliberately isolated Graveyards at the outer east edge;
+- Deed snap columns at **x = ±3.95**, close to the Territory column;
 - one battle d6 per player;
-- one Player Token per player; and
+- one Player Token per player;
+- one shared in-table **Custom PDF Rulebook** using a reader-order half-letter PDF derived from the imposed stable Rulebook and published as a content-versioned TTS network asset; and
 - one selectable starter Bag for every current starter.
 
-The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-v070-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
+The shared Rulebook is parked in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. Its tabletop object uses the approved 2.55× scale so it reads as a physical half-letter rulebook rather than another card-sized component. `scripts/generate-tts-rulebook-reader.mjs` de-imposes the print booklet into sequential half-letter reader pages, and TTS loads that content-versioned hosted PDF. It opens at the beginning and remains a normal shared TTS object rather than duplicating the rules into scripted UI.
+
+The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-current-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
 Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, supplemental packaging, tracker geometry, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
 
@@ -228,27 +233,27 @@ Behavioral tests construct the returned save JSON and verify the core table stru
 
 `npm run tts:release:status` writes `tts-release-readiness.json` without failing solely because a known release blocker remains. `npm run tts:release:strict` converts those blockers into a final closeout failure.
 
-The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. For the current v0.7.0 package it reports 27/27 ready component definitions and 68/68 expected assembled supplemental copies.
+The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. The current stable v0.7.1 package is the authority used by the live v0.7.1 Workshop build.
 
-The generator still emits a Review Scaffold by default so future builds remain fail-closed. For v0.7.0, manual QA and explicit approval completed and the approved hosted save was promoted to final mod identity.
+The generator still emits a Review Scaffold by default. Stable v0.7.1 has a completed manual-QA record with explicit Workshop approval; the completed v0.7.0 approval remains preserved as historical evidence.
 
 ## Manual QA and final promotion
 
-The versioned manual QA record is:
+The stable publication QA record is:
 
-- `tts/release-qa/v0.7.0.json`
+- `tts/release-qa/v0.7.1.json`
 
-It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation; a remote two-player game is not required for v0.7.0. See `tts/SAVE-PUBLISHER.md` for the complete gate.
-
-For v0.7.0, all 18 required manual checks passed, the QA record is `passed`, and `approvedForWorkshop` is explicitly `true`. `npm run tts:save:promote` remains the guarded mechanism for producing final Workshop identity and continues to refuse promotion unless machine readiness and approval are complete.
+It records all 18 required table/setup, faction-component, and focused handling checks as passed and sets `approvedForWorkshop` to true. The earlier `tts/release-qa/v0.7.1-candidate.json` record remains preserved as pre-release evidence, and the passed v0.7.0 record remains preserved at `tts/release-qa/v0.7.0.json` as historical evidence for the previous Workshop release.
 
 ## GitHub Release asset hosting
 
-`scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.0_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
+`scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.1_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Development/QA builds use staged immutable HTTPS assets; the published v0.7.0 Workshop save uses the approved `gauntlet.run/tts/v0.7.0/` Pages-hosted asset set.
+The current package stages the required network assets under the v0.7.1 target, including the custom campaign-table image and command-tent panorama. Stable v0.7.1 assets are hosted from the v0.7.1 GitHub Release with content-versioned URLs for cache safety.
 
-Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
+Publication remains explicit. Because those deterministic filenames are intentionally replaced in place, every generated TTS object URL carries a `?v=<sha256-prefix>` content revision. When a rendered sheet changes without changing its release filename, Tabletop Simulator therefore requests a new URL instead of silently reusing its local cache of the older image.
+
+The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published content-versioned URL with live HTTP requests.
 
 The workflow intentionally does not create a GitHub Release itself.
 
@@ -258,13 +263,13 @@ Workshop copy, setup notes, publication-gate history, listing images, and post-p
 
 - `tts/WORKSHOP-PUBLISHING.md`
 
-The v0.7.0 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635. Its primary listing image is the production CSS-composited universal black card back, with the gameplay screenshot retained as a secondary image. The subscribed public copy has passed its post-publication smoke test.
+The v0.7.1 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635. The existing Workshop item was updated in place; its permanent id is unchanged. The stable v0.7.1 QA gate is complete and explicitly Workshop-approved.
 
 ## Generated output
 
 Derived output is ignored by Git and written under:
 
-- `tts/generated/v0.7.0/` for the active versioned package;
+- `tts/generated/v0.7.1/` for the current stable package;
 - `tts/generated/current/` for current aliases; and
 - `tts/generated/release-assets/` for deterministic hosted assets.
 

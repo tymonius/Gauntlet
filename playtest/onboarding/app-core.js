@@ -473,9 +473,10 @@
     document.body.classList.remove("session-ready");
     el.onboardingForm.hidden = true;
     el.organizerPanel.hidden = true;
-    el.errorPanel.hidden = false;
     el.errorTitle.textContent = title;
     el.errorMessage.textContent = message;
+    el.errorPanel.hidden = false;
+    el.errorPanel.focus({ preventScroll: true });
     setSessionStatus("Invitation unavailable", "");
   }
 

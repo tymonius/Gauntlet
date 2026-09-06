@@ -1,16 +1,13 @@
 import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
-import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
-const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';
-const CHAPTER_11_URL = './player-facing/chapter-11.md';
+const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
 const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
-const PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';
+const PUBLISHED_VERSION = 'v0.7.1';
+const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md';
+const FALLBACK_PDF_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
-const PUBLISHED_VERSION = 'v0.7.0';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -22,6 +19,7 @@ const sidebar = document.querySelector('[data-rulebook-sidebar]');
 const eyebrow = document.querySelector('[data-rulebook-eyebrow]');
 const candidateNote = document.querySelector('[data-candidate-rules-note]');
 const rulesetSwitch = document.querySelector('[data-ruleset-switch]');
+const candidateVersionLabel = document.querySelector('[data-candidate-version]');
 const footerVersion = document.querySelector('[data-rulebook-footer-version]');
 const printHeading = document.querySelector('[data-rulebook-print-heading]');
 const printNote = document.querySelector('[data-rulebook-print-note]');
@@ -30,17 +28,20 @@ const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
 
 let sourcePromise = null;
+let releaseManifestPromise = null;
 let currentSourcePromise = null;
+let publishedSourceUrl = FALLBACK_PUBLISHED_SOURCE_URL;
+let pdfUrl = FALLBACK_PDF_URL;
 let activeMode = RELEASED_MODE;
 let sectionObserver = null;
 
 const FACTIONS = new Map([
-  ['Military', '#8f1f25'],
-  ['Diplomats', '#244b8f'],
-  ['Financiers', '#276744'],
-  ['Intelligence', '#34373b'],
-  ['Mystics', '#603d78'],
-  ['Inquisition', '#9a6e21'],
+  ['Military', { color: '#8f1f25', symbol: "url('/images/faction-symbols/military.svg')" }],
+  ['Diplomats', { color: '#244b8f', symbol: "url('/images/faction-symbols/diplomats.svg')" }],
+  ['Financiers', { color: '#276744', symbol: "url('/images/faction-symbols/financiers.svg')" }],
+  ['Intelligence', { color: '#34373b', symbol: "url('/images/faction-symbols/intelligence.svg')" }],
+  ['Mystics', { color: '#603d78', symbol: "url('/images/faction-symbols/mystics.svg')" }],
+  ['Inquisition', { color: '#a67a27', symbol: "url('/images/faction-symbols/inquisition.svg')" }],
 ]);
 
 const LEADERS = new Set([
@@ -80,9 +81,12 @@ function buildToc(headings) {
     link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
     if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
     if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
-    if (FACTIONS.has(chapterLabel)) {
+    const faction = FACTIONS.get(chapterLabel);
+    if (faction) {
       link.classList.add('toc-faction');
-      link.style.setProperty('--toc-accent', FACTIONS.get(chapterLabel));
+      link.dataset.faction = chapterLabel;
+      link.style.setProperty('--toc-accent', faction.color);
+      link.style.setProperty('--faction-symbol', faction.symbol);
     }
     fragment.append(link);
   });
@@ -115,8 +119,10 @@ function decoratePublication() {
         heading.classList.add('chapter-heading');
         heading.dataset.chapterTitle = chapterTitle;
         if (activeFaction) {
+          const faction = FACTIONS.get(activeFaction);
           heading.classList.add('faction-heading');
           heading.dataset.faction = activeFaction;
+          heading.style.setProperty('--faction-symbol', faction.symbol);
         }
 
         const number = document.createElement('span');
@@ -261,8 +267,8 @@ function highlightSearch(query) {
 }
 
 function modeFromUrl() {
-  // Archived candidate URLs now resolve to the published release.
-  return RELEASED_MODE;
+  const url = new URL(window.location.href);
+  return url.searchParams.get('rules') === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
 }
 
 function writeModeToUrl(mode, replace = false) {
@@ -275,7 +281,9 @@ function writeModeToUrl(mode, replace = false) {
 
 function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   const candidate = mode === CANDIDATE_MODE && distinctCandidate;
+  const candidateLabel = currentGame?.displayVersion || currentGame?.version || 'current development';
   if (rulesetSwitch) rulesetSwitch.hidden = !distinctCandidate;
+  if (candidateVersionLabel) candidateVersionLabel.textContent = candidateLabel;
   document.body.dataset.rulesetMode = mode;
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
@@ -285,24 +293,45 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   if (candidateNote) {
     candidateNote.hidden = !candidate;
     candidateNote.textContent = candidate
-      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.7.0 and is hidden in this view.'
+      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.7.1 and is hidden in this view.'
       : '';
   }
 
   if (candidate) {
-    const label = currentGame?.displayVersion || currentGame?.version || 'current development';
-    if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current release-candidate rules view.';
+    if (eyebrow) eyebrow.textContent = `Release candidate rules · ${candidateLabel}`;
+    if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · Current release-candidate rules view.`;
     if (printHeading) printHeading.textContent = 'Release candidate rules';
-    if (printNote) printNote.textContent = 'The complete v0.7.0 Rulebook authority is loaded directly. Switch to Released v0.7.0 for the currently published printable booklet.';
-    document.title = 'Gauntlet v0.7.0 Release Candidate Browser Rulebook';
+    if (printNote) printNote.textContent = `The ${candidateLabel} Rulebook is the current development authority. Switch to Released ${PUBLISHED_VERSION} for the published printable booklet.`;
+    document.title = `Gauntlet ${candidateLabel} Browser Rulebook`;
   } else {
     if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.';
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.1</strong> · Current canonical playtest edition.';
     if (printHeading) printHeading.textContent = 'Print the released rulebook';
     if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
-    document.title = 'Gauntlet v0.7.0 Browser Rulebook';
+    document.title = 'Gauntlet v0.7.1 Browser Rulebook';
   }
+}
+
+function scrollToLocationHash() {
+  const rawHash = window.location.hash.replace(/^#/, '');
+  if (!rawHash) return false;
+
+  let targetId = rawHash;
+  try {
+    targetId = decodeURIComponent(rawHash);
+  } catch {
+    // Leave malformed fragments untouched; getElementById will simply fail.
+  }
+
+  const target = document.getElementById(targetId);
+  if (!target) return false;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
+  });
+  return true;
 }
 
 function initializeControls() {
@@ -344,6 +373,10 @@ function initializeControls() {
   window.addEventListener('popstate', () => {
     renderRulebook(modeFromUrl());
   });
+
+  window.addEventListener('hashchange', () => {
+    scrollToLocationHash();
+  });
 }
 
 async function sha256(bytes) {
@@ -351,47 +384,67 @@ async function sha256(bytes) {
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
 
-function replacePlayerFacingChapter11(source, chapter11) {
-  const startMarker = '# 11. Detailed Card and Timing Rules';
-  const endMarker = '# 12. Overlays and Other Shared Card Rules';
-  const start = source.indexOf(startMarker);
-  const end = source.indexOf(endMarker);
-  const replacement = chapter11.trim();
+function releasePackagePath(manifest, path) {
+  const normalizedPath = String(path || '').replace(/^\/+/, '');
+  if (normalizedPath.startsWith('releases/')) return normalizedPath;
 
-  if (start < 0 || end < 0 || end <= start) {
-    throw new Error('Rulebook Chapter 11 boundaries could not be located.');
-  }
-  if (!replacement.startsWith(startMarker) || replacement.includes(`\n${endMarker}`)) {
-    throw new Error('Player-facing Chapter 11 override has invalid boundaries.');
-  }
-
-  return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
+  const packagePath = String(manifest?.current_package_path || `releases/${PUBLISHED_VERSION}/`)
+    .replace(/^\/+|\/+$/g, '');
+  return `${packagePath}/${normalizedPath}`;
 }
 
-function publicRulebookSource(source, chapter11) {
-  const normalized = normalizeV063LastStandText(source)
-    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
-    .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
-  return replacePlayerFacingChapter11(normalized, chapter11);
+function releaseAssetUrl(path) {
+  return `../${String(path || '').replace(/^\/+/, '')}`;
+}
+
+async function loadReleaseManifest() {
+  if (!releaseManifestPromise) {
+    releaseManifestPromise = fetch(RELEASE_MANIFEST_URL, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Release manifest returned ${response.status}`);
+        const manifest = await response.json();
+        if (manifest?.release_version !== PUBLISHED_VERSION) {
+          throw new Error(`Release manifest version mismatch: ${manifest?.release_version || 'missing'}`);
+        }
+
+        const rulebook = manifest?.binding_sources?.rulebook;
+        if (!rulebook?.path || !/^[a-f0-9]{64}$/i.test(rulebook?.sha256 || '')) {
+          throw new Error('Release manifest is missing a valid Rulebook binding.');
+        }
+
+        const booklet = manifest?.pdf_outputs?.find((entry) => entry?.key === 'rulebook-booklet');
+        if (!booklet?.path || !/^[a-f0-9]{64}$/i.test(booklet?.sha256 || '')) {
+          throw new Error('Release manifest is missing a valid Rulebook booklet binding.');
+        }
+
+        publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, rulebook.path));
+        pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
+        publishedBookletLinks.forEach((link) => { link.href = pdfUrl; });
+
+        return { manifest, rulebook, sourceUrl: publishedSourceUrl };
+      })
+      .catch((error) => {
+        releaseManifestPromise = null;
+        throw error;
+      });
+  }
+  return releaseManifestPromise;
 }
 
 async function loadVerifiedReleasedSource() {
   if (!sourcePromise) {
     sourcePromise = (async () => {
-      const [response, chapter11Response] = await Promise.all([
-        fetch(SOURCE_URL, { cache: 'no-store' }),
-        fetch(CHAPTER_11_URL, { cache: 'no-store' }),
-      ]);
+      const { rulebook, sourceUrl } = await loadReleaseManifest();
+      const response = await fetch(sourceUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
-      if (!chapter11Response.ok) throw new Error(`Player-facing Chapter 11 returned ${chapter11Response.status}`);
 
       const bytes = await response.arrayBuffer();
       const actualHash = await sha256(bytes);
-      if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
+      if (actualHash !== rulebook.sha256) {
+        throw new Error(`Rulebook source hash mismatch: expected ${rulebook.sha256}, received ${actualHash}`);
+      }
 
-      const chapter11 = await chapter11Response.text();
-      const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
-      return markdown;
+      return new TextDecoder().decode(bytes);
     })().catch((error) => {
       sourcePromise = null;
       throw error;
@@ -400,13 +453,21 @@ async function loadVerifiedReleasedSource() {
   return sourcePromise;
 }
 
-async function loadCurrentRulebookSource() {
+function candidateRulebookVersionMarker(currentGame) {
+  const match = String(currentGame?.version || '').match(/^v(\d+\.\d+\.\d+)-candidate$/i);
+  return match ? `**Version ${match[1]} Candidate**` : null;
+}
+
+async function loadCurrentRulebookSource(currentGame) {
   if (!currentSourcePromise) {
     currentSourcePromise = fetch(CURRENT_SOURCE_URL, { cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error(`Current Rulebook source returned ${response.status}`);
         const markdown = await response.text();
-        if (!markdown.includes('**Version 0.7.0**')) throw new Error('Current Rulebook source has the wrong version marker.');
+        const expectedMarker = candidateRulebookVersionMarker(currentGame);
+        if (!expectedMarker || !markdown.includes(expectedMarker)) {
+          throw new Error(`Current Rulebook source does not match current-game authority (${expectedMarker || 'no candidate version'}).`);
+        }
         if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
         if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
         if (/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu.test(markdown)) {
@@ -444,7 +505,7 @@ async function renderRulebook(mode) {
 
   try {
     let markdown = null;
-    if (activeMode === CANDIDATE_MODE) markdown = await loadCurrentRulebookSource();
+    if (activeMode === CANDIDATE_MODE) markdown = await loadCurrentRulebookSource(currentGame);
     else markdown = await loadVerifiedReleasedSource();
 
     const rendered = renderMarkdown(markdown);
@@ -456,21 +517,22 @@ async function renderRulebook(mode) {
     observeSections();
     setRulesetUi(activeMode, currentGame, distinctCandidate);
     document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', { detail: { mode: activeMode } }));
+    scrollToLocationHash();
 
     const sectionCount = Math.max(
       0,
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
     status.textContent = activeMode === CANDIDATE_MODE
-      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.0'} · ${sectionCount} sections · rules loaded`
-      : `Canonical v0.7.0 · ${sectionCount} sections · rules loaded`;
+      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.1'} · ${sectionCount} sections · rules loaded`
+      : `Canonical v0.7.1 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
     content.innerHTML = `
       <section class="load-error" role="alert">
         <h1>The browser rulebook could not be loaded.</h1>
-        <p>Use the <a href="${PDF_URL}">reader PDF</a> or <a href="${PUBLISHED_SOURCE_URL}">canonical Markdown source</a>.</p>
+        <p>Use the <a href="${pdfUrl}">reader PDF</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';

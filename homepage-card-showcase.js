@@ -4,6 +4,8 @@ const CARD_RENDER_WIDTH = 240;
 const CARD_RENDER_HEIGHT = 336;
 const CARD_ASPECT_RATIO = 5 / 7;
 const STAGE_BOTTOM_PADDING = 110;
+const SHOWCASE_MANIFEST = '/assets/homepage-card-showcase.json';
+const SHOWCASE_SCHEMA_VERSION = 1;
 
 const showcase = document.querySelector('[data-card-showcase]');
 
@@ -22,20 +24,38 @@ async function initializeShowcase(root) {
   const stage = root.querySelector('[data-card-showcase-stage]');
   if (!stage) return;
 
-  const [configResponse, currentGameModule] = await Promise.all([
-    fetch('/media/compositions.json', { cache: 'no-cache' }),
+  const [manifestResponse, currentGameModule] = await Promise.all([
+    fetch(SHOWCASE_MANIFEST, { cache: 'no-cache' }),
     import('/game-data/current-game.mjs'),
   ]);
-  if (!configResponse.ok) throw new Error(`Composition config returned ${configResponse.status}.`);
+  if (!manifestResponse.ok) throw new Error(`Homepage showcase manifest returned ${manifestResponse.status}.`);
 
-  const config = await configResponse.json();
-  const composition = config.compositions?.find((item) => item.id === root.dataset.cardShowcase);
-  if (!composition) throw new Error(`Unknown composition: ${root.dataset.cardShowcase}`);
+  const composition = await manifestResponse.json();
+  if (composition?.schemaVersion !== SHOWCASE_SCHEMA_VERSION) {
+    throw new Error(`Unsupported homepage showcase schema ${composition?.schemaVersion ?? '(missing)'}.`);
+  }
+  if (composition.id !== root.dataset.cardShowcase) {
+    throw new Error(`Homepage showcase manifest ${composition.id || '(missing)'} does not match ${root.dataset.cardShowcase}.`);
+  }
+  if (!composition.canvas || !Number.isFinite(Number(composition.canvas.width)) || !Number.isFinite(Number(composition.canvas.height))) {
+    throw new Error('Homepage showcase manifest has invalid canvas geometry.');
+  }
+  if (!Array.isArray(composition.cards) || composition.cards.length !== 7) {
+    throw new Error(`Homepage showcase manifest must contain 7 cards; found ${composition.cards?.length ?? 0}.`);
+  }
+
+  const ids = composition.cards.map((placement) => String(placement?.id || '').trim());
+  if (ids.some((id) => !id) || new Set(ids).size !== ids.length) {
+    throw new Error('Homepage showcase manifest contains missing or duplicate card ids.');
+  }
 
   const currentGame = await currentGameModule.loadCurrentGame();
   const cardNames = new Map(currentGame.cards.map((card) => [card.id, card.name]));
+  const missingCards = ids.filter((id) => !cardNames.has(id));
+  if (missingCards.length) throw new Error(`Homepage showcase contains unknown current card ids: ${missingCards.join(', ')}.`);
+
   const visibleHeight = Math.min(
-    composition.canvas.height,
+    Number(composition.canvas.height),
     Math.ceil(Math.max(...composition.cards.map((placement) => placementBottom(placement))) + STAGE_BOTTOM_PADDING),
   );
 
@@ -43,10 +63,10 @@ async function initializeShowcase(root) {
 
   const cardElements = composition.cards
     .slice()
-    .sort((a, b) => a.z - b.z)
+    .sort((a, b) => Number(a.z) - Number(b.z))
     .map((placement) => {
       const link = document.createElement('a');
-      const name = cardNames.get(placement.id) || placement.id;
+      const name = cardNames.get(placement.id);
       link.className = 'card-showcase-card';
       link.href = `/card-reference/#${encodeURIComponent(placement.id)}`;
       link.setAttribute('aria-label', `View ${name} in the Card Reference`);
@@ -55,7 +75,7 @@ async function initializeShowcase(root) {
 
       const frame = document.createElement('iframe');
       frame.className = 'card-showcase-frame';
-      frame.src = `/card-design/card-showcase-embed.html?card=${encodeURIComponent(placement.id)}&fit=production&releaseTarget=tts`;
+      frame.src = `/card-design/face-render.html?id=${encodeURIComponent(`card:${placement.id}`)}`;
       frame.title = `${name} card render`;
       frame.tabIndex = -1;
       frame.loading = 'lazy';
@@ -68,13 +88,13 @@ async function initializeShowcase(root) {
     });
 
   const scaleFrames = () => {
-    const scale = stage.clientWidth / composition.canvas.width;
+    const scale = stage.clientWidth / Number(composition.canvas.width);
     stage.style.height = `${visibleHeight * scale}px`;
 
     for (const { placement, link, frame } of cardElements) {
-      const cardWidth = placement.width * scale;
-      link.style.left = `${placement.x * scale}px`;
-      link.style.top = `${placement.y * scale}px`;
+      const cardWidth = Number(placement.width) * scale;
+      link.style.left = `${Number(placement.x) * scale}px`;
+      link.style.top = `${Number(placement.y) * scale}px`;
       link.style.width = `${cardWidth}px`;
 
       const cardScale = cardWidth / CARD_RENDER_WIDTH;
@@ -94,11 +114,11 @@ async function initializeShowcase(root) {
 }
 
 function placementBottom(placement) {
-  const width = placement.width;
+  const width = Number(placement.width);
   const height = width / CARD_ASPECT_RATIO;
-  const originX = placement.x + width / 2;
-  const originY = placement.y + height;
-  const radians = placement.rotation * Math.PI / 180;
+  const originX = Number(placement.x) + width / 2;
+  const originY = Number(placement.y) + height;
+  const radians = Number(placement.rotation) * Math.PI / 180;
   const cosine = Math.cos(radians);
   const sine = Math.sin(radians);
   const corners = [

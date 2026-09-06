@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "project": "Gauntlet",
+  "effectiveFromRelease": "v0.7.1",
+  "imprint": {
+    "displayName": "TDS Games",
+    "status": "established",
+    "role": "publishing imprint",
+    "logo": "images/branding/tds-games-mark.svg"
+  },
+  "parent": {
+    "displayName": "Misty Hollow Enterprises",
+    "intendedLegalName": "Misty Hollow Enterprises LLC",
+    "legalEntityStatus": "formation-pending"
+  },
+  "copyright": {
+    "holder": "Tymon Scott",
+    "year": 2026,
+    "notice": "Copyright © 2026 Tymon Scott. All rights reserved."
+  },
+  "playerFacing": {
+    "publisherLine": "Published by TDS Games",
+    "parentLine": "An imprint of Misty Hollow Enterprises",
+    "imprintStatement": "Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review."
+  },
+  "legal": {
+    "ownershipAssertion": "TDS Games is a publishing imprint of Misty Hollow Enterprises. Gauntlet copyright and other underlying intellectual-property ownership remain with Tymon Scott unless separately transferred by written agreement.",
+    "entityStatus": "Misty Hollow Enterprises LLC is the intended legal entity, but this authority record does not represent it as formed until Virginia formation is complete. Player-facing copy therefore omits the LLC suffix while formation is pending."
+  }
+}

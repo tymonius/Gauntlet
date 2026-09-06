@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. The outward Reserve is the player\'s actual TTS Hand zone. The tabletop Hand parking area is a separate player-private Hidden Zone so a card can be parked physically on the table without returning to the Reserve hand. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. Territory and Deed snaps constrain position only so their Y rotation can show control or ownership. Manifest Destiny is explicitly Territory-slot eligible. Territory cards carry an attached overlay-only snap so physical Overlays inherit the Territory\'s current orientation.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. The table is organized by function rather than rotational symmetry: both Asset Banks share the west side with a dedicated Battle Zone between them; both combined Faction / Leader & References workspaces share the east side; Draw and Discard stay compact near the Gauntlet; Graveyards remain deliberately isolated at the outer east edge; and each player has a wide private tabletop Hand parking strip backed by a player-private Hidden Zone. Battle staging provides compact overlapping snap rows for multiple Gambits and especially multiple Tactics. Territory and Deed snaps constrain position only so their Y rotation can show control or ownership. Manifest Destiny is explicitly Territory-slot eligible. Territory cards carry an attached overlay-only snap so physical Overlays inherit the Territory\'s current orientation.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const LEGACY_HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
@@ -43,7 +43,7 @@ const TERRITORY_OVERLAY_CARD_NAMES = new Set([
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
 const ALL_TERRITORY_Z = Object.freeze([EXPANSION_TERRITORY_Z[0], ...PRIMARY_TERRITORY_Z, EXPANSION_TERRITORY_Z[1]]);
-const DEED_X = Object.freeze([-4.35, 4.35]);
+const DEED_X = Object.freeze([-3.95, 3.95]);
 
 const TABLE_MARK_Y = 1.01;
 const TERRITORY_SLOT_WIDTH = 3.8;
@@ -52,13 +52,14 @@ const LABEL_GAP = 0.34;
 
 const PORTRAIT_CARD_WIDTH = 2.5;
 const PORTRAIT_CARD_DEPTH = 3.5;
-// Current absolute maximum: one full Leader/card footprint plus the maximum
-// renderer-authoritative travel of the Intelligence Intel and Operation Progress
-// trackers (0.77232143 and 0.77004278 card lengths respectively).
-const LEADER_WORKSPACE_DEPTH = 8.9;
-const LEADER_WORKSPACE_WIDTH = 10.6;
-const LEADER_WORKSPACE_INWARD_EDGE_Z = -11.45;
-const LEADER_WORKSPACE_CENTER_Z = LEADER_WORKSPACE_INWARD_EDGE_Z - LEADER_WORKSPACE_DEPTH / 2;
+
+const BATTLE_ZONE = Object.freeze({
+  id: 'battle-zone',
+  x: -12.4,
+  z: 0,
+  width: 12.6,
+  depth: 8.6,
+});
 
 const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
 const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
@@ -66,88 +67,74 @@ const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
 
 
-// Player workspaces are mirrored across the center line. These definitions own
-// both the visible guides and their functional snap positions.
+// Player workspaces mirror only north/south. East/west placement is functional:
+// Assets and battle staging live to the west; faction/leader material to the east.
 const PLAYER_ZONES = Object.freeze([
   {
-    id: 'leader-references',
-    label: 'Leader & References',
-    x: -12.25,
-    z: LEADER_WORKSPACE_CENTER_Z,
-    width: LEADER_WORKSPACE_WIDTH,
-    // Tight to the current theoretical maximum nested Intelligence assembly.
-    // Keep the former inward/top edge fixed and remove only unused player-side
-    // depth, which also keeps the outline label on the map artwork.
-    depth: LEADER_WORKSPACE_DEPTH,
-    fontSize: 29,
-    textScale: 0.26,
-    snapLayout: 'leader',
-  },
-  {
     id: 'draw',
-    label: 'Draw Pile',
-    x: -1.55,
-    z: -13.55,
-    width: 2.85,
-    depth: 4.15,
-    fontSize: 28,
-    textScale: 0.25,
+    label: 'Draw',
+    x: -1.6,
+    z: -14.25,
+    width: 2.75,
+    depth: 3.9,
+    fontSize: 27,
+    textScale: 0.24,
     snapLayout: 'pile',
   },
   {
     id: 'discard',
-    label: 'Discard Pile',
-    x: 1.55,
-    z: -13.55,
-    width: 2.85,
-    depth: 4.15,
+    label: 'Discard',
+    x: 1.6,
+    z: -14.25,
+    width: 2.75,
+    depth: 3.9,
     fontSize: 27,
     textScale: 0.24,
     snapLayout: 'pile',
   },
   {
     id: 'hand',
-    label: 'Hand',
+    label: 'Private / Hand',
     x: 0,
-    z: -18.25,
-    width: 2.85,
-    depth: 4.0,
-    fontSize: 30,
-    textScale: 0.27,
-    snapLayout: 'hand',
+    z: -18.65,
+    width: 14.0,
+    depth: 2.9,
+    fontSize: 27,
+    textScale: 0.24,
+    snapLayout: 'private',
   },
   {
     id: 'graveyard',
     label: 'Graveyard',
-    x: 17.15,
-    z: -17.75,
-    width: 2.85,
-    depth: 4.15,
-    fontSize: 27,
-    textScale: 0.24,
+    x: 18.7,
+    z: -15.1,
+    width: 2.6,
+    depth: 3.9,
+    fontSize: 26,
+    textScale: 0.23,
     snapLayout: 'pile',
   },
   {
     id: 'asset-bank',
     label: 'Asset Bank',
-    x: -12.3,
-    z: -5.15,
-    width: 10.9,
-    depth: 7.15,
-    fontSize: 29,
-    textScale: 0.26,
+    x: -12.4,
+    z: -8.3,
+    width: 12.6,
+    depth: 4.6,
+    fontSize: 28,
+    textScale: 0.25,
     snapLayout: 'assets',
   },
   {
     id: 'faction-zone',
-    label: 'Faction Zone',
-    x: 12.0,
-    z: -5.55,
-    width: 10.8,
-    depth: 10.35,
-    fontSize: 29,
-    textScale: 0.26,
-    snapLayout: 'faction',
+    label: 'Faction / Leader & References',
+    x: 11.4,
+    z: -10.0,
+    width: 10.5,
+    depth: 10.6,
+    fontSize: 26,
+    textScale: 0.23,
+    snapLayout: 'faction-leader',
   },
 ]);
 
@@ -155,13 +142,13 @@ const PLAYER_ZONES = Object.freeze([
 // tabletop parking rectangle. Parking itself is a Hidden Zone so cards remain
 // physical tabletop objects while concealed from the opponent.
 const HAND_RESERVE_EXTENSION = 4.0;
-const HAND_RESERVE_GAP = 1.0;
-const HAND_ZONE_WIDTH = 12.0;
+const HAND_RESERVE_GAP = 0.6;
+const HAND_ZONE_WIDTH = 14.0;
 const HAND_ZONE_HEIGHT = 6.0;
-const PARKING_ZONE_WIDTH = 7.0;
+const PARKING_ZONE_WIDTH = 14.0;
 const PARKING_ZONE_HEIGHT = 6.0;
-const PARKING_ZONE_DEPTH = 6.5;
-const PARKING_ZONE_CENTER_OFFSET = 0.75;
+const PARKING_ZONE_DEPTH = 4.2;
+const PARKING_ZONE_CENTER_OFFSET = 0.4;
 const TTS_ZONE_COLORS = Object.freeze({
   White: { r: 1.0, g: 1.0, b: 1.0, a: 0.22 },
   Green: { r: 0.192, g: 0.701, b: 0.168, a: 0.22 },
@@ -355,9 +342,9 @@ function outlinedRectangle(x, z, width, depth) {
 }
 
 function playerZone(side, zone) {
-  const mirror = side === 'Green' ? -1 : 1;
-  const x = zone.x * mirror;
-  const z = zone.z * mirror;
+  const zMirror = side === 'Green' ? -1 : 1;
+  const x = zone.x;
+  const z = zone.z * zMirror;
   return {
     ...zone,
     id: `${side.toLowerCase()}-${zone.id}`,
@@ -425,8 +412,8 @@ export function parkingHiddenZoneTransform(side) {
 }
 
 function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
-  const mirror = side === 'Green' ? -1 : 1;
-  return vector((zone.x + offsetX) * mirror, 0, (zone.z + offsetZ) * mirror);
+  const zMirror = side === 'Green' ? -1 : 1;
+  return vector(zone.x + offsetX, 0, (zone.z + offsetZ) * zMirror);
 }
 
 function snap(position, rotationY = null, tags = null) {
@@ -437,35 +424,47 @@ function snap(position, rotationY = null, tags = null) {
 }
 
 function leaderOffsets() {
-  // Put each portrait card flush against the player-side/bottom edge. The
-  // remaining depth is exactly the maximum nested tracker travel.
-  const bottomCardCenterOffset = -(LEADER_WORKSPACE_DEPTH / 2 - PORTRAIT_CARD_DEPTH / 2);
   return [
-    [-4.05, bottomCardCenterOffset],
-    [-1.35, bottomCardCenterOffset],
-    [1.35, bottomCardCenterOffset],
-    [4.05, bottomCardCenterOffset],
+    [-3.75, -3.4],
+    [-1.25, -3.4],
+    [1.25, -3.4],
+    [3.75, -3.4],
   ];
 }
 
 function assetOffsets() {
-  return [
-    [-3.975, -1.82],
-    [-1.325, -1.82],
-    [1.325, -1.82],
-    [3.975, -1.82],
-    [-2.65, 1.82],
-    [0, 1.82],
-    [2.65, 1.82],
-  ];
+  return [-4.5, -3, -1.5, 0, 1.5, 3, 4.5].map(x => [x, 0]);
 }
 
 function factionOffsets() {
   const offsets = [];
-  for (const z of [-3.55, 0, 3.55]) {
-    for (const x of [-3.9, -1.3, 1.3, 3.9]) offsets.push([x, z]);
+  for (const z of [0.35, 3.5]) {
+    for (const x of [-3.75, -2.25, -0.75, 0.75, 2.25, 3.75]) offsets.push([x, z]);
   }
   return offsets;
+}
+
+function privateOffsets() {
+  return [-5.5, -3.3, -1.1, 1.1, 3.3, 5.5].map(x => [x, 0]);
+}
+
+function battleOffsets(kind) {
+  if (kind === 'gambit') return [-4.75, -3.55, -2.35, -1.15];
+  if (kind === 'tactic') return [0, 1, 2, 3, 4, 5];
+  throw new Error(`Unknown Battle Zone offset kind: ${kind}`);
+}
+
+function battleRowZ(side) {
+  return side === 'Green' ? 2.15 : -2.15;
+}
+
+function battleLabelDefinitions() {
+  return [
+    { id: 'green-battle-gambits', label: 'Gambits', x: BATTLE_ZONE.x - 3.55, z: 3.95, rotationY: 180, fontSize: 23, scale: 0.21 },
+    { id: 'green-battle-tactics', label: 'Tactics', x: BATTLE_ZONE.x + 2.45, z: 3.95, rotationY: 180, fontSize: 23, scale: 0.21 },
+    { id: 'white-battle-gambits', label: 'Gambits', x: BATTLE_ZONE.x - 3.55, z: -3.95, rotationY: 0, fontSize: 23, scale: 0.21 },
+    { id: 'white-battle-tactics', label: 'Tactics', x: BATTLE_ZONE.x + 2.45, z: -3.95, rotationY: 0, fontSize: 23, scale: 0.21 },
+  ];
 }
 
 export function buildTableVectorLines() {
@@ -476,6 +475,7 @@ export function buildTableVectorLines() {
       lines.push(...outlinedRectangle(placed.x, placed.z, placed.width, placed.depth));
     }
   }
+  lines.push(...outlinedRectangle(BATTLE_ZONE.x, BATTLE_ZONE.z, BATTLE_ZONE.width, BATTLE_ZONE.depth));
   // Manifest Destiny positions remain functional but invisible until needed.
   for (const z of PRIMARY_TERRITORY_Z) lines.push(...outlinedRectangle(0, z, TERRITORY_SLOT_WIDTH, TERRITORY_SLOT_DEPTH));
   return lines;
@@ -492,16 +492,23 @@ export function buildTableSnapPoints() {
   for (const side of ['White', 'Green']) {
     const faceRotation = tabletopCardRotation(side);
     for (const zone of PLAYER_ZONES) {
-      if (zone.snapLayout === 'leader') {
+      if (zone.snapLayout === 'faction-leader') {
         for (const [x, z] of leaderOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
-      } else if (zone.snapLayout === 'assets') {
-        for (const [x, z] of assetOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
-      } else if (zone.snapLayout === 'faction') {
         for (const [x, z] of factionOffsets()) {
           points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation, [FACTION_ZONE_TAG]));
         }
-      } else if (zone.snapLayout === 'pile' || zone.snapLayout === 'hand') {
+      } else if (zone.snapLayout === 'assets') {
+        for (const [x, z] of assetOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
+      } else if (zone.snapLayout === 'private') {
+        for (const [x, z] of privateOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
+      } else if (zone.snapLayout === 'pile') {
         points.push(snap(pointInPlayerZone(side, zone), faceRotation));
+      }
+    }
+
+    for (const kind of ['gambit', 'tactic']) {
+      for (const x of battleOffsets(kind)) {
+        points.push(snap(vector(BATTLE_ZONE.x + x, 0, battleRowZ(side)), faceRotation));
       }
     }
   }
@@ -559,6 +566,9 @@ export function buildTableTextObjects(existingObjects = []) {
         definitions.push({ ...placed, x: placed.labelX, z: placed.labelZ, scale: placed.textScale, shadow });
       }
     }
+  }
+  for (const battle of battleLabelDefinitions()) {
+    for (const shadow of [true, false]) definitions.push({ ...battle, shadow });
   }
   return definitions.map((definition, index) => {
     const guid = generatedTextGuid(index + 1);
@@ -699,10 +709,14 @@ async function main() {
     const lines = buildTableVectorLines();
     const snaps = buildTableSnapPoints();
     const text = buildTableTextObjects([]);
-    if (lines.length !== 40) throw new Error(`Expected 40 visible table-marking vector lines; found ${lines.length}.`);
-    if (snaps.length !== 78) throw new Error(`Expected 78 functional table snaps; found ${snaps.length}.`);
-    if (text.length !== 28) throw new Error(`Expected 28 visible table labels/shadows; found ${text.length}.`);
-    if (!text.some(object => object.Text?.Text === 'Hand')) throw new Error('Visible Hand parking guide label is missing.');
+    if (lines.length !== 38) throw new Error(`Expected 38 visible table-marking vector lines; found ${lines.length}.`);
+    if (snaps.length !== 108) throw new Error(`Expected 108 functional table snaps; found ${snaps.length}.`);
+    if (text.length !== 32) throw new Error(`Expected 32 visible table labels/shadows; found ${text.length}.`);
+    if (!text.some(object => object.Text?.Text === 'Private / Hand')) throw new Error('Visible private Hand parking guide label is missing.');
+    if (text.filter(object => object.Text?.Text === 'Gambits').length !== 4
+      || text.filter(object => object.Text?.Text === 'Tactics').length !== 4) {
+      throw new Error('Battle Zone Gambit/Tactic labels are incomplete.');
+    }
     if (snaps.some(point => Number(point.Position?.y) !== 0)) throw new Error('Global table snap points must remain on the y=0 plane.');
     const territory = snaps.filter(point => point.Tags?.includes(TERRITORY_TAG));
     const deeds = snaps.filter(point => point.Tags?.includes(DEED_TAG));

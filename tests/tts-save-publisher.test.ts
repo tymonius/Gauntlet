@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { starterBagTransform } from '../scripts/generate-tts-save.mjs';
+import { makeSharedRulebook, starterBagTransform } from '../scripts/generate-tts-save.mjs';
 
 const publisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
+const validator = readFileSync('tts/validate-current-authoritative-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -65,6 +66,31 @@ describe('TTS save publisher', () => {
     }
   });
 
+  it('adds one shared reader-order Custom PDF Rulebook in the neutral east-center table space', () => {
+    const releaseAssets = {
+      bySourceFile: {
+        'rulebook-reader.pdf': 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_TTS_Rulebook.pdf?v=123456789abc',
+      },
+    };
+
+    const rulebook = makeSharedRulebook('v0.7.1', releaseAssets, 'abc123');
+    expect(rulebook).toMatchObject({
+      Name: 'Custom_PDF',
+      Nickname: 'Gauntlet v0.7.1 Rulebook',
+      GMNotes: 'gauntlet:shared-rulebook',
+      Transform: { posX: 11.4, posZ: 0, rotY: 90, scaleX: 2.55, scaleY: 1, scaleZ: 2.55 },
+      CustomPDF: {
+        PDFUrl: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_TTS_Rulebook.pdf?v=123456789abc',
+        PDFPage: 0,
+        PDFPageOffset: 0,
+      },
+    });
+    expect(publisher).toContain("const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf'");
+    expect(publisher).toContain('ObjectStates: [rulebook, ...starterKits]');
+    expect(validator).toContain("isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')");
+    expect(validator).toContain("approved physical-table scale of 2.55×");
+  });
+
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
     expect(publisher).toContain("Table: 'Table_Custom'");
     expect(publisher).toContain('TableURL: tableUrl');
@@ -80,21 +106,32 @@ describe('TTS save publisher', () => {
     expect(packageJson.scripts['tts:save']).toContain('tts:save:layout');
   });
 
+  it('requires content-versioned GitHub Release URLs in the authoritative environment', () => {
+    expect(validator).toContain('isContentVersionedReleaseAsset');
+    expect(validator).toContain("url.searchParams.get('v')");
+    expect(validator).toContain("/^[a-f0-9]{12}$/iu");
+    expect(validator).toContain("'_TTS_Environment_Table.png'");
+    expect(validator).toContain("'_TTS_Environment_Panorama.png'");
+  });
+
   it('runs staged assets -> save/layout -> supplemental assembly -> validation in that order', () => {
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-save.mjs --check');
     expect(packageJson.scripts['tts:package']).toContain('tts:save:assemble');
-    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).toContain('validate-current-authoritative-save.mjs');
     expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
 
     const stage = workflow.indexOf('Stage hosted TTS release assets');
     const save = workflow.indexOf('Generate authoritative TTS review scaffold');
     const assemble = workflow.indexOf('Assemble supplemental starter-kit contents');
-    const validate = workflow.indexOf('Validate authoritative v0.7.0 save contract');
+    const validate = workflow.indexOf('Validate authoritative current TTS save contract');
     expect(stage).toBeGreaterThan(-1);
     expect(stage).toBeLessThan(save);
     expect(save).toBeLessThan(assemble);
     expect(assemble).toBeLessThan(validate);
     expect(workflow).toContain('run: npm run tts:save');
+    expect(workflow).toContain('tts/validate-current-authoritative-save.mjs');
+    expect(workflow).not.toContain('tts/validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).not.toContain('validate-v070-authoritative-save.mjs');
   });
 
   it('passes its current-release source check', () => {

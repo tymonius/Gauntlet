@@ -32,6 +32,17 @@
   let artworkInspectionOpen = false;
   let artworkInspectionTrigger;
 
+  const PRODUCTION_FONT_REQUESTS = Object.freeze([
+    ['400 12px "p22-1722-pro"', 'Gauntlet'],
+    ['400 12px "adobe-caslon-pro"', 'Gauntlet rules text'],
+    ['700 12px "adobe-caslon-pro"', 'Gauntlet rules text'],
+    ['italic 400 12px "adobe-caslon-pro"', 'Gauntlet reminder text'],
+    ['400 12px "Inter"', 'Gauntlet interface label'],
+    ['600 12px "Inter"', 'Gauntlet interface label'],
+    ['700 12px "Inter"', 'Gauntlet interface label'],
+    ['800 12px "Inter"', 'Gauntlet interface label'],
+  ]);
+
   function forceLayout(element) {
     void element.offsetHeight;
   }
@@ -262,6 +273,7 @@
   ]);
 
   function integrateLongCardReview() {
+    if (document.body?.classList.contains('developer-catalog-page')) return;
     const territorySection = document.querySelector('.territory-specimen-section');
     if (!territorySection || document.querySelector('.long-card-review-section')) return;
 
@@ -473,7 +485,8 @@
     clearInspectionStage();
     inspectionSource = card;
 
-    const rect = card.getBoundingClientRect();
+    const nativeWidth = card.offsetWidth;
+    const nativeHeight = card.offsetHeight;
     const clone = card.cloneNode(true);
     clone.classList.remove('card-inspectable');
     clone.classList.add('card-inspection-clone');
@@ -486,8 +499,8 @@
 
     inspectionStage.append(clone);
     inspectionSubject = clone;
-    inspectionWidth = rect.width;
-    inspectionHeight = rect.height;
+    inspectionWidth = nativeWidth;
+    inspectionHeight = nativeHeight;
     makeArtworkInspectable(clone, openArtworkInspection);
     showInspection(inspectionLabel(card));
   }
@@ -582,16 +595,41 @@
     }
   }
 
+  async function loadProductionFonts() {
+    if (!document.fonts?.load) {
+      document.body.dataset.productionFontsReady = 'false';
+      document.body.dataset.productionFontError = 'CSS Font Loading API unavailable.';
+      return false;
+    }
+
+    try {
+      const loaded = await Promise.all(
+        PRODUCTION_FONT_REQUESTS.map(([font, sample]) => document.fonts.load(font, sample))
+      );
+      await document.fonts.ready;
+      const missing = PRODUCTION_FONT_REQUESTS
+        .filter((_, index) => !loaded[index].length)
+        .map(([font]) => font);
+      if (missing.length) {
+        document.body.dataset.productionFontsReady = 'false';
+        document.body.dataset.productionFontError = `Missing production fonts: ${missing.join('; ')}`;
+        console.warn(document.body.dataset.productionFontError);
+        return false;
+      }
+      document.body.dataset.productionFontsReady = 'true';
+      delete document.body.dataset.productionFontError;
+      return true;
+    } catch (error) {
+      document.body.dataset.productionFontsReady = 'false';
+      document.body.dataset.productionFontError = error instanceof Error ? error.message : String(error);
+      console.warn('Production card fonts failed to load before fitting.', error);
+      return false;
+    }
+  }
+
   async function prepareCards() {
     integrateLongCardReview();
-
-    if (document.fonts?.ready) {
-      try {
-        await document.fonts.ready;
-      } catch (error) {
-        console.warn('Card fonts did not report ready before fitting.', error);
-      }
-    }
+    await loadProductionFonts();
 
     await Promise.all(Array.from(document.images).map(image => {
       if (image.complete) return Promise.resolve();

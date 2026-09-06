@@ -1,0 +1,53 @@
+/* Current v0.7.1 publication layer.
+   Historical Rulebook production inputs stay unchanged; this stylesheet is
+   injected only by the v0.7.1 materializer. */
+
+.production-document .page[data-faction="Military"]{--faction-symbol:url("../images/faction-symbols/military.svg")}
+.production-document .page[data-faction="Diplomats"]{--faction-symbol:url("../images/faction-symbols/diplomats.svg")}
+.production-document .page[data-faction="Financiers"]{--faction-symbol:url("../images/faction-symbols/financiers.svg")}
+.production-document .page[data-faction="Intelligence"]{--faction-symbol:url("../images/faction-symbols/intelligence.svg")}
+.production-document .page[data-faction="Mystics"]{--faction-symbol:url("../images/faction-symbols/mystics.svg")}
+.production-document .page[data-faction="Inquisition"]{--faction-symbol:url("../images/faction-symbols/inquisition.svg")}
+
+.production-document .page[data-faction]{
+  isolation:isolate;
+}
+
+.production-document .page[data-faction]::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:var(--page-accent);
+  opacity:.09;
+  -webkit-mask-image:var(--faction-symbol);
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-size:3.9in 3.9in;
+  mask-image:var(--faction-symbol);
+  mask-repeat:no-repeat;
+  mask-size:3.9in 3.9in;
+  pointer-events:none;
+}
+
+.production-document .page[data-faction].right::before{
+  -webkit-mask-position:right -.62in bottom -.72in;
+  mask-position:right -.62in bottom -.72in;
+}
+
+.production-document .page[data-faction].left::before{
+  -webkit-mask-position:left -.62in bottom -.72in;
+  mask-position:left -.62in bottom -.72in;
+}
+
+/* The source hero sketches carry a one-pixel raster edge at the top and bottom.
+   Clip only that outer edge so the artwork continues to blend into the paper
+   without changing scale, placement, or the historical source files. */
+.intentional-blank.hero-plate-page .hero-plate img{
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:100%;
+  display:block;
+  -webkit-clip-path:inset(2px 0);
+  clip-path:inset(2px 0);
+}

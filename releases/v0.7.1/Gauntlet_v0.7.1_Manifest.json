@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "release_version": "v0.7.1",
+  "name": "Mystics Rites & Deck Import",
+  "status": "current",
+  "authority_set_id": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "publication_date": "2026-08-30",
+  "current_package_path": "releases/v0.7.1/",
+  "source_provenance": {
+    "source_version": "v0.7.1",
+    "base_version": "v0.7.0",
+    "current_game_authority": "game-data/current-game.json"
+  },
+  "binding_sources": {
+    "rulebook": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md",
+      "sha256": "484ef65a1afaf6f679e70cb93d81821d0f2122b92b57d4a25b73bfe030841415"
+    },
+    "canonical_data": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
+      "sha256": "b167dafdb36b514f23ccebeb643d944b6b22fe796e5ca0046db50c828160fe68"
+    },
+    "approved_starters": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json",
+      "sha256": "63a7021cbe3154006fcd9999b951edf9eba9616b7ac8641cedebd8eed65f2252"
+    },
+    "source_provenance": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
+      "sha256": "fcef5721d96773d50434b4fcbbf2f8c2ea3fa9e5a89da59db965a54def3583d2"
+    },
+    "card_anatomy_figure": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png",
+      "sha256": "feed6339626d24cfd3a4b9cbb00c7457cf83081b621ef57ad10d4d2bb79841fb"
+    },
+    "arcane_trait_figure": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Arcane_Trait_Mark.png",
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970"
+    }
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "print_pdfs": 1,
+    "json_exports": 3,
+    "static_figures": 2
+  },
+  "public_defaults": {
+    "website": "v0.7.1",
+    "browser_tools": "v0.7.1",
+    "rules_arbiter": "v0.7.1",
+    "digital_rules": "v0.7.1",
+    "rulebook": "v0.7.1"
+  },
+  "public_routes": {
+    "start": "/start/",
+    "rulebook": "/rulebook/",
+    "card_reference": "/card-reference/",
+    "factions": "/factions/",
+    "deckbuilder": "/deckbuilder/",
+    "rules_arbiter": "/rules-arbiter/"
+  },
+  "json_exports": [
+    "Gauntlet_v0.7.1_Canonical_Data.json",
+    "Gauntlet_v0.7.1_Starter_Decks.json",
+    "Gauntlet_v0.7.1_Source_Provenance.json"
+  ],
+  "pdf_outputs": [
+    {
+      "key": "rulebook-booklet",
+      "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
+      "pages": 50,
+      "sha256": "a2fa14c1bacfe6b954d83d7db4e52ec21ed6a9a9b86d8132db0a446d2abdb110",
+      "bytes": 31284365
+    }
+  ],
+  "payload_files": [
+    {
+      "path": "Gauntlet_v0.7.1_Rulebook.md",
+      "sha256": "484ef65a1afaf6f679e70cb93d81821d0f2122b92b57d4a25b73bfe030841415",
+      "bytes": 124122
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
+      "sha256": "a2fa14c1bacfe6b954d83d7db4e52ec21ed6a9a9b86d8132db0a446d2abdb110",
+      "bytes": 31284365
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Card_Anatomy.png",
+      "sha256": "feed6339626d24cfd3a4b9cbb00c7457cf83081b621ef57ad10d4d2bb79841fb",
+      "bytes": 1494528
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Arcane_Trait_Mark.png",
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970",
+      "bytes": 217031
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Canonical_Data.json",
+      "sha256": "b167dafdb36b514f23ccebeb643d944b6b22fe796e5ca0046db50c828160fe68",
+      "bytes": 263302
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Starter_Decks.json",
+      "sha256": "63a7021cbe3154006fcd9999b951edf9eba9616b7ac8641cedebd8eed65f2252",
+      "bytes": 31437
+    },
+    {
+      "path": "Gauntlet_v0.7.1_Source_Provenance.json",
+      "sha256": "fcef5721d96773d50434b4fcbbf2f8c2ea3fa9e5a89da59db965a54def3583d2",
+      "bytes": 1540
+    }
+  ],
+  "rulebook_booklet_provenance": {
+    "source_version": "v0.7.1",
+    "logical_pages": 100,
+    "imposed_sides": 50,
+    "physical_sheets": 25,
+    "padding_pages": 4,
+    "duplex_flip": "short-edge",
+    "approved_v063_production_adapter_reused": true,
+    "card_anatomy_figure": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png",
+      "sha256": "feed6339626d24cfd3a4b9cbb00c7457cf83081b621ef57ad10d4d2bb79841fb",
+      "source_card": "military-unbroken-ranks",
+      "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks"
+    },
+    "arcane_trait_figure": {
+      "path": "releases/v0.7.1/Gauntlet_v0.7.1_Arcane_Trait_Mark.png",
+      "sha256": "8aa19f83be47c572924d3d0a5f94b8f08eca6896f303b7999422bdb4454dd970",
+      "source_card": "mystics-witchcraft",
+      "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=mystics-witchcraft"
+    }
+  }
+}

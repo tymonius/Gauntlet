@@ -19,9 +19,11 @@ describe('TTS Leader assets', () => {
   });
 
   it('captures the shared Card Design Leader surface instead of duplicating Leader rules or crop logic', () => {
-    expect(exporter).toContain('/card-design/component-print-render.html');
-    expect(exporter).toContain("url.searchParams.set('kind', 'leader')");
-    expect(exporter).toContain("url.searchParams.set('version', displayVersion)");
+    expect(exporter).toContain('/card-design/face-render.html');
+    expect(exporter).toContain("url.searchParams.set('id', `leader:${leader.faction}-${leader.id}`)");
+    expect(exporter).not.toContain('/card-design/component-render.html');
+    expect(exporter).not.toContain("url.searchParams.set('kind'");
+    expect(exporter).not.toContain("url.searchParams.set('version'");
     expect(exporter).toContain("return '#renderTarget > .leader-card'");
     expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
     expect(exporter).toContain('fitWarning');
@@ -32,9 +34,12 @@ describe('TTS Leader assets', () => {
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
   });
 
-  it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {
-    expect(exporter).toContain('const CARD_WIDTH = 400');
-    expect(exporter).toContain('const CARD_HEIGHT = 560');
+  it('captures exact production-surface Leader rasters without fractional-position inflation', () => {
+    expect(exporter).toContain("surfaceRasterPixels('portrait')");
+    expect(exporter).toContain("surfaceCssPixels('portrait')");
+    expect(exporter).toContain("surfaceDeviceScale('portrait')");
+    expect(exporter).not.toContain('const CARD_WIDTH = 400');
+    expect(exporter).not.toContain('const CARD_HEIGHT = 560');
     expect(exporter).toContain("scale: 'device'");
     expect(exporter).toContain('width: CSS_CARD_WIDTH');
     expect(exporter).toContain('height: CSS_CARD_HEIGHT');

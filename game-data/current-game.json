@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
   "authority": "current-game",
-  "version": "v0.7.0",
-  "displayVersion": "v0.7.0",
-  "status": "release-ready",
+  "version": "v0.7.1",
+  "displayVersion": "v0.7.1",
+  "status": "current-release",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",
     "transitionalSourceVersion": "v0.6.4-candidate",
-    "note": "The historical inputs below document how v0.7.0 was derived. They are not runtime inputs, override layers, or current authorities.",
+    "note": "The historical and approved-design inputs below document how the current authority was derived. They are provenance only, not runtime inputs, override layers, or current authorities.",
     "historicalInputs": {
       "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
       "cardChanges": "/docs/v0.6.4-card-additions.json",
@@ -18,6 +18,18 @@
       "rules": "/docs/v0.6.4-rules.json",
       "componentContract": "/config/tts-component-contract.json",
       "starterDecks": "/deckbuilder/starter-decks.json"
+    },
+    "currentDevelopmentInputs": {
+      "mysticsRites": "/docs/v0.7.1-mystics-rites.json"
+    }
+  },
+  "visualPolicy": {
+    "artDirectionDefault": {
+      "fit": "cover",
+      "focusX": null,
+      "focusY": null,
+      "smart": true,
+      "zoom": 1
     }
   },
   "gameplay": {
@@ -452,7 +464,7 @@
             ]
           }
         ],
-        "victory": "Run the Gauntlet or complete the Ritual of Ascendance.",
+        "victory": "Run the Gauntlet or complete the Ritual of Ascension.",
         "card_count": 15,
         "progression": "Rites"
       },
@@ -879,7 +891,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Placement",
+            "label": "Action",
             "text": "The first enemy-controlled Territory ahead of you without an Overlay."
           },
           {
@@ -892,8 +904,8 @@
           }
         ],
         "gambit_tactic": "When attacking on an enemy-controlled Territory, place this Overlay face up there.",
-        "overlay": "This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins. Lose — put it in your Graveyard. If you capture this Territory without a battle, turn this Overlay into Ruins.",
-        "placement": "The first enemy-controlled Territory ahead of you without an Overlay."
+        "action": "The first enemy-controlled Territory ahead of you without an Overlay.",
+        "overlay": "This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins. Lose — put it in your Graveyard. If you capture this Territory without a battle, turn this Overlay into Ruins."
       },
       {
         "id": "military-brothers-in-arms",
@@ -1355,7 +1367,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Terms",
+            "label": "Reaction",
             "text": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn."
           },
           {
@@ -1363,7 +1375,7 @@
             "text": "To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay."
           }
         ],
-        "terms": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.",
+        "reaction": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.",
         "overlay": "To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay."
       },
       {
@@ -1403,20 +1415,10 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once."
-          },
-          {
-            "label": "Accepted",
-            "text": "The opponent chooses which Proposal is accepted."
-          },
-          {
-            "label": "Refused",
-            "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
+            "text": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.\n\nAccepted — The opponent chooses which Proposal is accepted.\n\nRefused — Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
           }
         ],
-        "terms": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.",
-        "accepted": "The opponent chooses which Proposal is accepted.",
-        "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
+        "terms": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.\n\nAccepted — The opponent chooses which Proposal is accepted.\n\nRefused — Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
       },
       {
         "id": "intelligence-disinformation",
@@ -1704,7 +1706,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Placement",
+            "label": "Action",
             "text": "Any Territory."
           },
           {
@@ -1722,8 +1724,8 @@
         ],
         "mission": "Win a battle against an opponent who had both a Gambit and a Tactic in that battle.",
         "gambit_tactic": "After Tactics are revealed, if your opponent has both a Gambit and a Tactic, they return either one Gambit or all Tactics to their sources.",
-        "overlay": "In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle.",
-        "placement": "Any Territory."
+        "action": "Any Territory.",
+        "overlay": "In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle."
       },
       {
         "id": "neutral-foothold",
@@ -1847,20 +1849,10 @@
         "effects": [
           {
             "label": "Asset",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "Put that card in your Graveyard, then +1 Influence."
-          },
-          {
-            "label": "Refused",
-            "text": "Return it to your Hand before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.\n\nAccepted — Put that card in your Graveyard, then +1 Influence.\n\nRefused — Return it to your Hand before Gambits are set."
           }
         ],
-        "accepted": "Put that card in your Graveyard, then +1 Influence.",
-        "refused": "Return it to your Hand before Gambits are set.",
-        "asset": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside."
+        "asset": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.\n\nAccepted — Put that card in your Graveyard, then +1 Influence.\n\nRefused — Return it to your Hand before Gambits are set."
       },
       {
         "id": "mystics-grave-ward",
@@ -1918,24 +1910,14 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand."
-          },
-          {
-            "label": "Accepted",
-            "text": "Put this card in your Discard Pile."
-          },
-          {
-            "label": "Refused",
-            "text": "Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.\n\nAccepted — Put this card in your Discard Pile.\n\nRefused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit."
           },
           {
             "label": "Gambit/Tactic",
             "text": "+2 Battle Total."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.",
-        "accepted": "Put this card in your Discard Pile.",
-        "refused": "Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.",
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.\n\nAccepted — Put this card in your Discard Pile.\n\nRefused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.",
         "gambit_tactic": "+2 Battle Total."
       },
       {
@@ -2252,11 +2234,11 @@
         "unique_rule": "Maximum one copy per Deck",
         "effects": [
           {
-            "label": "Aftermath",
+            "label": "Reaction",
             "text": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
           }
         ],
-        "aftermath": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
+        "reaction": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
       },
       {
         "id": "financiers-monetary-crisis",
@@ -2383,20 +2365,10 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card."
-          },
-          {
-            "label": "Refused",
-            "text": "Put this card in your Discard Pile, then +1 Card before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.\n\nRefused — Put this card in your Discard Pile, then +1 Card before Gambits are set."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-        "accepted": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.",
-        "refused": "Put this card in your Discard Pile, then +1 Card before Gambits are set."
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.\n\nRefused — Put this card in your Discard Pile, then +1 Card before Gambits are set."
       },
       {
         "id": "intelligence-operational-reassessment",
@@ -2931,11 +2903,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "In the Aftermath following an opponent's refusal of your Terms, you may place this Overlay on a Territory that opponent controls.\nThe first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence.\nPut this card in its owner's Discard Pile if that opponent loses control of this Territory."
+            "label": "Sanctions",
+            "text": "Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls."
+          },
+          {
+            "label": "Overlay",
+            "text": "The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence. Put this card in its owner's Discard Pile if that opponent loses control of this Territory."
           }
         ],
-        "text": "In the Aftermath following an opponent's refusal of your Terms, you may place this Overlay on a Territory that opponent controls.\nThe first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence.\nPut this card in its owner's Discard Pile if that opponent loses control of this Territory."
+        "sanctions": "Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls.",
+        "overlay": "The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence. Put this card in its owner's Discard Pile if that opponent loses control of this Territory."
       },
       {
         "id": "diplomats-sanctions-censure",
@@ -2948,11 +2925,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
+            "label": "Sanctions",
+            "text": "Bank this card."
+          },
+          {
+            "label": "Asset",
+            "text": "The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
           }
         ],
-        "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
+        "sanctions": "Bank this card.",
+        "asset": "The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
       },
       {
         "id": "diplomats-sanctions-embargo",
@@ -2965,11 +2947,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0."
+            "label": "Sanctions",
+            "text": "Bank this card."
+          },
+          {
+            "label": "Asset",
+            "text": "That opponent's Asset limit is reduced by 1, to a minimum of 0."
           }
         ],
-        "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0."
+        "sanctions": "Bank this card.",
+        "asset": "That opponent's Asset limit is reduced by 1, to a minimum of 0."
       },
       {
         "id": "neutral-scorched-earth",
@@ -3358,24 +3345,14 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card."
-          },
-          {
-            "label": "Refused",
-            "text": "Return this card to your Hand before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.\n\nRefused — Return this card to your Hand before Gambits are set."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Opponent: +1 Card. +2 Battle Total."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-        "accepted": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.",
-        "refused": "Return this card to your Hand before Gambits are set.",
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.\n\nRefused — Return this card to your Hand before Gambits are set.",
         "gambit_tactic": "Opponent: +1 Card. +2 Battle Total."
       },
       {
@@ -4394,12 +4371,22 @@
           "Asset",
           "Gambit",
           "Tactic",
-          "Gambit/Tactic"
+          "Gambit/Tactic",
+          "Mission",
+          "Overlay",
+          "Terms",
+          "Sanctions",
+          "Reaction"
         ],
         "retired": [
           "Activate",
           "Battle",
-          "Use"
+          "Use",
+          "Placement",
+          "Accepted",
+          "Refused",
+          "Aftermath",
+          "Text"
         ],
         "gambit_tactic_default_timing": "A Gambit/Tactic, Gambit, or Tactic effect with no later printed timing applies at that role's normal reveal stage.",
         "ordinary_role_headings": [
@@ -4411,13 +4398,10 @@
         ],
         "special_or_procedural_headings": [
           "Mission",
-          "Placement",
           "Overlay",
           "Terms",
-          "Accepted",
-          "Refused",
-          "Aftermath",
-          "Text"
+          "Sanctions",
+          "Reaction"
         ],
         "all_present_headings": [
           "Action",
@@ -4425,15 +4409,17 @@
           "Asset",
           "Mission",
           "Tactic",
-          "Placement",
           "Overlay",
           "Gambit",
           "Terms",
-          "Accepted",
-          "Refused",
-          "Aftermath",
-          "Text"
-        ]
+          "Sanctions",
+          "Reaction"
+        ],
+        "faction_specific_headings": {
+          "Mission": "Intelligence",
+          "Terms": "Diplomats",
+          "Sanctions": "Diplomats"
+        }
       },
       "inherent_bank_action": {
         "applies_to_cards_with_asset_effect": true,
@@ -4765,6 +4751,15 @@
           "layer": 1,
           "snapTag": "military-command",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 4,
+            "labelSizePt": 11.2,
+            "title": "Command Tracker",
+            "capLabel": "Standard Command cap · 2",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Command value."
+          }
         }
       },
       {
@@ -4798,6 +4793,15 @@
           "layer": 1,
           "snapTag": "diplomats-influence",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 10,
+            "labelSizePt": 7.9,
+            "title": "Influence Tracker",
+            "capLabel": "Standard Influence cap · 10",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Influence value."
+          }
         }
       },
       {
@@ -4855,7 +4859,11 @@
                 "heading": "Peace Treaty",
                 "depth": 3
               }
-            ]
+            ],
+            "presentation": {
+              "titleFontSizePt": 10.9,
+              "titleLetterSpacingEm": 0.018
+            }
           }
         },
         "tts": {
@@ -5099,6 +5107,15 @@
           "layer": 1,
           "snapTag": "financiers-capital-limit",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 15,
+            "labelSizePt": 6.8,
+            "title": "Capital Limit Tracker",
+            "capLabel": "Maximum Capital Limit · Uncapped",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Capital Limit value."
+          }
         }
       },
       {
@@ -5110,11 +5127,12 @@
         "cardLike": true,
         "designStatus": "final",
         "productionStatus": "export-pending",
-        "backPolicy": "standardBack",
+        "backPolicy": "twoSided",
         "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
         "tts": {
           "representation": "ledger"
-        }
+        },
+        "reverse": "Identical Capital Ledger face"
       },
       {
         "id": "financiers-deed",
@@ -5283,6 +5301,15 @@
           "layer": 2,
           "snapTag": "intelligence-intel",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 12,
+            "labelSizePt": 7.2,
+            "title": "Intel Tracker",
+            "capLabel": "Standard Intel cap · none",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Intel value."
+          }
         }
       },
       {
@@ -5317,6 +5344,16 @@
           "layer": 1,
           "snapTag": "intelligence-operation-progress",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 8,
+            "labelSizePt": 6.8,
+            "title": "Operation Progress",
+            "titleLetterSpacingEm": 0,
+            "capLabel": "",
+            "instruction": "Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward to align the bottom edge of the Intel Tracker with the line above your current Operation Progress value."
+          }
         }
       },
       {
@@ -5390,17 +5427,45 @@
         }
       },
       {
+        "id": "mystics-ritual-of-ascension",
+        "name": "Ritual of Ascension",
+        "faction": "mystics",
+        "family": "ritual-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "specialBack",
+        "specialBackFile": "images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "ritual",
+          "componentId": "ascension"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
         "id": "mystics-rite-echoes",
         "name": "Rite of Echoes",
         "faction": "mystics",
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "echoes"
+        },
         "tts": {
           "representation": "card"
         }
@@ -5412,11 +5477,18 @@
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "blood"
+        },
         "tts": {
           "representation": "card"
         }
@@ -5428,11 +5500,87 @@
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "crossing"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-shattering",
+        "name": "Rite of Shattering",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "shattering"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-consecration",
+        "name": "Rite of Consecration",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "consecration"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-equivalence",
+        "name": "Rite of Equivalence",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "equivalence"
+        },
         "tts": {
           "representation": "card"
         }
@@ -5576,6 +5724,15 @@
           "layer": 1,
           "snapTag": "inquisition-conviction",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 4,
+            "labelSizePt": 10.4,
+            "title": "Conviction Tracker",
+            "capLabel": "Standard Conviction cap · 4",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Conviction value."
+          }
         }
       }
     ],
@@ -5586,9 +5743,9 @@
     }
   },
   "starterDecks": {
-    "version": "v0.7.0",
-    "status": "Locked v0.7.0 public playtest starter set",
-    "purpose": "Recommended v0.7.0 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics Rite of Echoes pairs are preserved when they provide functional completion infrastructure.",
+    "version": "v0.7.1",
+    "status": "Active v0.7.1 starter set",
+    "purpose": "Recommended v0.7.1 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
       "maximumDeckbuildingValue": 60,
@@ -5600,12 +5757,13 @@
       "primary": "competitive-strength",
       "secondary": "leader-expression",
       "tiebreaker": "title-diversity-and-starter-pool-coverage",
-      "mysticsRiteOfEchoesPairException": true,
+      "mysticsRiteOfEchoesPairException": false,
       "cardPoolCoverageQuota": false,
-      "status": "locked-for-v0.7.0-public-playtest",
+      "status": "active-for-v0.7.1",
       "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
       "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
-      "cardAdditions": "docs/v0.6.4-card-additions.json"
+      "cardAdditions": "docs/v0.6.4-card-additions.json",
+      "mysticsRitePackageSupport": true
     },
     "decks": [
       {
@@ -6473,10 +6631,6 @@
         ],
         "cards": [
           {
-            "name": "Accursed Wager",
-            "quantity": 1
-          },
-          {
             "name": "Arcane Knowledge",
             "quantity": 1
           },
@@ -6549,12 +6703,26 @@
             "quantity": 1
           },
           {
+            "name": "Threefold Vision",
+            "quantity": 1
+          },
+          {
             "name": "Witchcraft",
             "quantity": 1
           }
         ],
         "cardCount": 30,
-        "deckbuildingValue": 60
+        "deckbuildingValue": 60,
+        "selectedRites": [
+          "echoes",
+          "blood",
+          "equivalence"
+        ],
+        "recommendedRiteOrder": [
+          "equivalence",
+          "echoes",
+          "blood"
+        ]
       },
       {
         "id": "mystics-spirit-walker-unbroken-circle",
@@ -6609,16 +6777,12 @@
             "quantity": 1
           },
           {
-            "name": "Necromancy",
-            "quantity": 1
-          },
-          {
             "name": "New Recruits",
             "quantity": 1
           },
           {
             "name": "Paths of Shadow",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Rallying Cry",
@@ -6653,16 +6817,22 @@
             "quantity": 2
           },
           {
-            "name": "Threefold Vision",
-            "quantity": 1
-          },
-          {
             "name": "Witchcraft",
-            "quantity": 1
+            "quantity": 2
           }
         ],
         "cardCount": 30,
-        "deckbuildingValue": 60
+        "deckbuildingValue": 60,
+        "selectedRites": [
+          "crossing",
+          "shattering",
+          "consecration"
+        ],
+        "recommendedRiteOrder": [
+          "consecration",
+          "shattering",
+          "crossing"
+        ]
       },
       {
         "id": "inquisition-grand-inquisitor-final-judgment",
@@ -6874,16 +7044,16 @@
       }
     ],
     "approval": {
-      "status": "locked-for-v0.7.0-public-playtest",
+      "status": "approved-for-v0.7.1",
       "predecessor_pr": 573,
       "peace_treaty_pr": 736,
       "card_additions_pr": 765
     },
-    "publication_unlocked": true
+    "publication_unlocked": false
   },
   "factionFeatureTaxonomy": {
-    "factionFeature": "A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction. The term does not imply Action use.",
-    "leaderAbility": "A mechanic supplied by the chosen Leader rather than shared by the faction.",
+    "factionFeature": "A named faction-specific mechanic shared by the faction. A Faction Feature may have multiple uses, modes, or procedures; those are described under the feature rather than treated as separate Features.",
+    "leaderAbility": "A mechanic or option supplied specifically by the chosen Leader rather than shared by the faction. A Leader Ability may provide a specific option used through a shared Faction Feature, such as an individual Military Order.",
     "actionProfiles": {
       "1 Action": "Using the Feature or Ability spends one Action at its stated legal phase or timing.",
       "No Action": "Use at the stated timing without spending an Action. This does not grant another Action.",
@@ -6891,7 +7061,14 @@
     }
   },
   "factionFeatures": {
-    "military": [],
+    "military": [
+      {
+        "name": "Orders",
+        "profile": "No Action",
+        "timing": "At each Order's stated timing",
+        "cost": "Listed Command"
+      }
+    ],
     "diplomats": [
       {
         "name": "Terms",
@@ -6901,7 +7078,8 @@
       {
         "name": "Leverage",
         "profile": "No Action",
-        "timing": "Before dice after refused Terms"
+        "timing": "Before dice after refused Terms",
+        "cost": "Triangular Influence cost"
       }
     ],
     "financiers": [
@@ -6911,19 +7089,22 @@
         "timing": "Denouement"
       },
       {
-        "name": "Buy / Buy Out Deed",
+        "name": "Deeds",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Current Deed cost"
       },
       {
         "name": "Play the Market",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Discard 1 card from Hand"
       },
       {
         "name": "Subsidize",
         "profile": "No Action",
-        "timing": "Before dice"
+        "timing": "Before dice",
+        "cost": "Triangular Capital cost"
       },
       {
         "name": "Financial Capacity",
@@ -6938,62 +7119,37 @@
     ],
     "intelligence": [
       {
-        "name": "Start Mission",
+        "name": "Missions",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Abort cost: Intel equal to Mission value"
       },
       {
-        "name": "Complete Mission",
+        "name": "Special Operations",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel"
       },
       {
-        "name": "Abort Mission",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Start Special Operation",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Complete Special Operation",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Gambit Surveillance",
+        "name": "Surveillance",
         "profile": "No Action",
-        "timing": "During battle",
-        "cost": "1 Intel",
-        "limit": "Once per battle"
-      },
-      {
-        "name": "Tactic Surveillance",
-        "profile": "No Action",
-        "timing": "During battle",
-        "cost": "1 Intel per card",
-        "limit": "Once per battle"
+        "timing": "After opposing Gambit or Tactic choice",
+        "cost": "1 Intel per revealed card",
+        "limit": "Once per battle at each stage"
       },
       {
         "name": "Interference",
         "profile": "No Action",
-        "timing": "Immediately after reveal",
-        "cost": "+2 Intel per removed card"
-      },
-      {
-        "name": "Direct Interference",
-        "profile": "No Action",
-        "timing": "Face-up opposing card",
-        "cost": "2 Intel"
+        "timing": "Immediately after reveal or face-up opposing choice",
+        "cost": "2 Intel per removed card"
       }
     ],
     "mystics": [
       {
-        "name": "Begin a Rite",
+        "name": "Rites",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Printed Begin cost"
       },
       {
         "name": "Invocation",
@@ -7005,12 +7161,14 @@
         "name": "Transmutation",
         "profile": "No Action",
         "timing": "Before dice",
+        "cost": "Put 1 card from Hand in Graveyard",
         "limit": "Once per turn"
       },
       {
-        "name": "Begin Ritual",
+        "name": "Ritual of Ascension",
         "profile": "1 Action",
-        "timing": "Denouement after 3 Rites"
+        "timing": "Denouement after 3 Rites",
+        "cost": "Bind 3 Arcane cards"
       },
       {
         "name": "Convergence",
@@ -7023,6 +7181,7 @@
         "name": "Purge",
         "profile": "1 Action",
         "timing": "Opening or Denouement",
+        "cost": "Listed Conviction",
         "limit": "Once per turn"
       },
       {
@@ -7062,28 +7221,32 @@
           "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
         },
         {
-          "classification": "Leader Ability",
+          "classification": "Faction Feature",
           "name": "Orders",
           "items": [
             {
               "name": "Onward",
               "cost": "1 Command",
               "descriptor": "No Action · During Movement",
-              "text": "During your Movement, move one additional Position. This may start a Battle."
+              "text": "During your Movement, move one additional Position. This may start a Battle.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Rally",
               "cost": "1 Command",
               "descriptor": "No Action · Before dice · Attacking",
-              "text": "Add +1 to your battle total in a battle you initiated."
+              "text": "Add +1 to your battle total in a battle you initiated.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Rout",
               "cost": "2 Command",
               "descriptor": "No Action · End of Aftermath · Win as attacker",
-              "text": "Advance one Position. This movement may initiate a battle."
+              "text": "Advance one Position. This movement may initiate a battle.",
+              "classification": "Leader Ability"
             }
-          ]
+          ],
+          "text": "Orders are the Military Faction Feature. This Leader supplies the following Leader Abilities as Orders."
         },
         {
           "classification": "Resource",
@@ -7107,28 +7270,32 @@
           "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
         },
         {
-          "classification": "Leader Ability",
+          "classification": "Faction Feature",
           "name": "Orders",
           "items": [
             {
               "name": "Entrench",
               "cost": "1 Command",
               "descriptor": "No Action · Before dice · Defending",
-              "text": "Add +1 to your battle total in a battle you did not initiate."
+              "text": "Add +1 to your battle total in a battle you did not initiate.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Repel",
               "cost": "1 Command",
               "descriptor": "No Action · Aftermath · Win as defender",
-              "text": "After the opponent's normal retreat, they retreat one additional Position, if able."
+              "text": "After the opponent's normal retreat, they retreat one additional Position, if able.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Fortify",
               "cost": "2 Command",
               "descriptor": "No Action · Aftermath · Win while occupying enemy Territory",
-              "text": "Advance your Front Line by one Territory, if able."
+              "text": "Advance your Front Line by one Territory, if able.",
+              "classification": "Leader Ability"
             }
-          ]
+          ],
+          "text": "Orders are the Military Faction Feature. This Leader supplies the following Leader Abilities as Orders."
         },
         {
           "classification": "Resource",
@@ -7425,25 +7592,53 @@
         "id": "echoes",
         "name": "Rite of Echoes",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
-        "begin": "Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.",
-        "complete": "On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.",
-        "interrupted": "If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite."
+        "begin": "Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.",
+        "complete": "On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.",
+        "interrupted": "If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite."
       },
       {
         "id": "blood",
         "name": "Rite of Blood",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
         "begin": "Put one card from your Hand in your Graveyard.",
-        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.",
-        "interrupted": "If you lose a battle before completion, reset the Rite."
+        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.",
+        "reminder": {
+          "style": "italic",
+          "text": "Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion."
+        },
+        "interrupted": "If you lose a battle before completion, reset this Rite."
       },
       {
         "id": "crossing",
         "name": "Rite of Crossing",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
-        "begin": "You may use the Begin a Rite Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.",
-        "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.",
-        "interrupted": ""
+        "begin": "You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.",
+        "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.",
+        "interrupted": "If before then you cease to occupy that Territory, reset this Rite."
+      },
+      {
+        "id": "shattering",
+        "name": "Rite of Shattering",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
+        "begin": "Put one banked Asset in your Graveyard.",
+        "complete": "In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.",
+        "interrupted": "If you lose that battle, Retreat +1 and reset this Rite."
+      },
+      {
+        "id": "consecration",
+        "name": "Rite of Consecration",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
+        "begin": "Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.",
+        "complete": "On a later turn, complete this Rite after you win a battle on the consecrated Territory.",
+        "interrupted": "If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite."
+      },
+      {
+        "id": "equivalence",
+        "name": "Rite of Equivalence",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
+        "begin": "Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.",
+        "complete": "Complete when you play the exchanged card for one of its printed effects.",
+        "interrupted": "If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite."
       }
     ],
     "ritual": {
@@ -7451,7 +7646,7 @@
       "name": "Ritual of Ascension",
       "artwork": "/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png",
       "cardBack": "/images/artwork/cardbacks/mystics/ritual-of-ascension.png",
-      "begin": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
+      "begin": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
       "convergence": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.",
       "complete": "Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.",
       "interrupted": "If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual."
@@ -7460,12 +7655,12 @@
       {
         "count": "1 Rite",
         "name": "Invocation",
-        "text": "Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
+        "text": "Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
       },
       {
         "count": "2 Rites",
         "name": "Transmutation",
-        "text": "Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
+        "text": "Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
       },
       {
         "count": "3 Rites",
@@ -7479,111 +7674,1491 @@
           "Ritual of",
           "Ascension"
         ],
-        "text": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game."
+        "text": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game."
       }
     ],
-    "completedArtwork": "/images/artwork/supplemental/mystics/rite-completed.webp"
+    "completedArtwork": "/images/artwork/supplemental/mystics/rite-completed.webp",
+    "selectionPolicy": {
+      "poolSize": 6,
+      "selectedCount": 3,
+      "timing": "game-package construction",
+      "visibility": "disclosure optional until begun",
+      "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
+    },
+    "generalRules": {
+      "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets."
+    }
   },
   "artDirection": {
     "diplomats-ambassador": {
-      "focusY": 0.071
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.071,
+      "smart": false,
+      "zoom": 1
     },
     "diplomats-diplomatic-latitude": {
-      "focusY": 0.2
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2,
+      "smart": false,
+      "zoom": 1
     },
     "diplomats-senator": {
-      "focusY": 0.037
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.037,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-banker": {
-      "focusY": 0
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-executive": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-war-bonds": {
-      "focus": [
-        0.368,
-        0.572
-      ],
+      "fit": "cover",
+      "focusX": 0.368,
+      "focusY": 0.572,
+      "smart": false,
       "zoom": 1.06
     },
     "inquisition-grand-inquisitor": {
-      "focusY": 0.075
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.075,
+      "smart": false,
+      "zoom": 1
     },
     "intelligence-sleeper-network": {
-      "focusY": 0.763
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.763,
+      "smart": false,
+      "zoom": 1
     },
     "intelligence-spymaster": {
-      "focusY": 0.126
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.126,
+      "smart": false,
+      "zoom": 1
     },
     "military-commandant": {
-      "focusY": 0.099
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.099,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-alchemist": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-necromancy": {
-      "focusY": 0.398
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.398,
+      "smart": false,
+      "zoom": 1
     },
     "rite-blood": {
-      "focusY": 0.32
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.995,
+      "smart": false,
+      "zoom": 1
     },
     "rite-crossing-completed": {
-      "focusY": 0.413
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.413,
+      "smart": false,
+      "zoom": 1
     },
     "rite-echoes": {
-      "focusY": 0.366
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.105,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-grand-melee": {
-      "focusY": 0.747
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.747,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-single-combat": {
-      "focusY": 0.26
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.26,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-spoils-of-war": {
-      "focusY": 0.442
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.442,
+      "smart": false,
+      "zoom": 1
     },
     "territory-disrupted-supply-lines": {
-      "focusY": 0.271
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.271,
+      "smart": false,
+      "zoom": 1
     },
     "territory-exposed-flank": {
-      "focusY": 0.524
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.524,
+      "smart": false,
+      "zoom": 1
     },
     "territory-field-hospital": {
-      "focusY": 0.406
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.406,
+      "smart": false,
+      "zoom": 1
     },
     "territory-high-ground": {
-      "focusY": 0.068
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.068,
+      "smart": false,
+      "zoom": 1
     },
     "territory-king-s-road": {
-      "focusY": 0.534
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.534,
+      "smart": false,
+      "zoom": 1
     },
     "territory-monastery": {
-      "focusY": 0.603
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.603,
+      "smart": false,
+      "zoom": 1
     },
     "territory-poisonous-gas": {
-      "focusY": 0.575
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.575,
+      "smart": false,
+      "zoom": 1
     },
     "territory-quicksand": {
-      "focusY": 0.702
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.702,
+      "smart": false,
+      "zoom": 1
     },
     "territory-refuge": {
-      "focusY": 0.463
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.463,
+      "smart": false,
+      "zoom": 1
     },
     "territory-ruined-storehouse": {
-      "focusY": 0.454
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.454,
+      "smart": false,
+      "zoom": 1
     },
     "territory-smuggler-s-pass": {
-      "focusY": 0.648
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.648,
+      "smart": false,
+      "zoom": 1
     },
     "territory-supply-depot": {
-      "focusY": 0.523
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.523,
+      "smart": false,
+      "zoom": 1
     },
     "territory-toll-bridge": {
-      "focusY": 0.463
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.463,
+      "smart": false,
+      "zoom": 1
     },
     "territory-watchtower": {
-      "focusY": 0.229
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.229,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-equivalence": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-clemency": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-demilitarized-zone": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-detente": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-diplomatic-divination": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-good-faith": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-gunboat-diplomacy": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-neutral-observers": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-nonbinding-resolution": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.375,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-plenipotentiary": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.1667,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-safe-conduct": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-blockade": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-censure": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-embargo": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-trade-concessions": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3158,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-actuarial-alchemy": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-capital-gains": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-compound-interest": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-corner-the-market": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-divestment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-foreclosure": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-leveraged-buyout": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-liquidation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-margin-loan": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5301,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-monetary-crisis": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-property-dues": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-speculation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-tariffs": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-underwriting": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-accusation": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-act-of-faith": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-anathema": {
+      "fit": "cover",
+      "focusX": 0.4545,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-burning-at-the-stake": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-confession": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3333,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-divine-mercy": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-excommunication": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-guilt-by-association": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-hellfire": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-heresy": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-malleus-maleficarum": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-martyrdom": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-penance": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-retribution": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-tyranny": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-witch-hunter": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-assassins": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-deep-cover": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-disinformation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-exfiltration": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-extraordinary-rendition": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-fog-of-war": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6053,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-intercepted-orders": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-operational-reassessment": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-ranger": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-reconnaissance": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.25,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-regime-change": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-spectral-surveillance": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-spies": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2727,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-subversion": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.1667,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-treason": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3333,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-battlefield-promotion": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-brothers-in-arms": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-countercharge": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-encampment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-field-command": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7857,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-general": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-give-chase": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.8636,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-high-command": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-hold-the-line": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-invasion": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-rearguard": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-reserve-force": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5556,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-shock-and-awe": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-unbroken-ranks": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-war-crimes": {
+      "fit": "cover",
+      "focusX": 0.7,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-war-witch": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-accursed-wager": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-black-covenant": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-circle-of-bones": {
+      "fit": "cover",
+      "focusX": 0.6,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-dark-omens": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-fate-s-toll": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-grave-ward": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-nature-s-altar": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-paths-of-shadow": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-rend-the-veil": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-sacrifice-recovery": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-soul-for-soul": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-spirit-hollow": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-spirit-walker": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-threefold-vision": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-witchcraft": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-advance-guard": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-arcane-knowledge": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-armistice": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-assimilation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-attrition": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-battlefield-plunder": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-bombardment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-capital-punishment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-conscription": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-consolidation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-contingency-plan": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-contraband": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-counterintelligence": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-counterworks": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-court-martial": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-decoys": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-disruption": {
+      "fit": "cover",
+      "focusX": 0.3333,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-entrenchment": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-fealty": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-foothold": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-forced-march": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-fortifications": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-illegal-occupation": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-insurrection": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-landslide": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-liberation": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-manifest-destiny": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-new-recruits": {
+      "fit": "cover",
+      "focusX": 0.6875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-palisade-wall": {
+      "fit": "cover",
+      "focusX": 0.6667,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-pathfinders": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-phantom-passage": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-protracted-siege": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.4286,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-rallying-cry": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-redemption": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-reinforcements": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-requisition": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-reserves": {
+      "fit": "cover",
+      "focusX": 0.25,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-resistance": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-resourcefulness": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-revolution": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-rousing-speech": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sabotage": {
+      "fit": "cover",
+      "focusX": 0.3333,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-salvage": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-scorched-earth": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-scouting-report": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sedition": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sequestration": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-stand-ground": {
+      "fit": "cover",
+      "focusX": 0.7813,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-strategic-withdrawal": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-supplies": {
+      "fit": "cover",
+      "focusX": 0.25,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-tactical-planning": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-valor": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-capitulation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7692,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-capitulation-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-de-escalation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-de-escalation-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-diplomatic-recognition": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6154,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-diplomatic-recognition-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-mutual-disarmament": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-mutual-disarmament-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-open-channels": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-open-channels-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-orderly-withdrawal": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6154,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-orderly-withdrawal-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-prisoner-exchange": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7692,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-prisoner-exchange-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-rebuilding-pact": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5385,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-rebuilding-pact-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-ultimatum": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3846,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-ultimatum-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-blood-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-consecration": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-consecration-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-crossing": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-echoes-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-equivalence-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-shattering": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-shattering-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "ritual-ascension": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.375,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-arena-no-quarter": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-command-tent": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2787,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-difficult-terrain": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.4182,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-fortified-pass": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-garrison": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-insurgency": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.0714,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-old-battlefield": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.625,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-training-grounds": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3455,
+      "smart": false,
+      "zoom": 1
     }
   }
 }

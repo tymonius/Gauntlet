@@ -12,23 +12,27 @@ function fixtureDb() {
       status: "closed",
       created_at: "2026-08-02T10:00:00.000Z",
       closed_at: "2026-08-02T11:15:00.000Z",
-      metadata_json: JSON.stringify({ mode: "tracked", creationSource: "tracked-page" })
+      metadata_json: JSON.stringify({ mode: "tracked", playMode: "tts", creationSource: "tracked-page" })
     }],
     players: [
       {
         session_id: "game-1", participant_id: "player-1", display_name: "Alice", seat_index: 1,
-        faction: "diplomats", leader: "Ambassador", joined_at: "2026-08-02T10:00:00.000Z",
+        faction: "diplomats", leader: "Ambassador", selection_reason: "Negotiation before play", joined_at: "2026-08-02T10:00:00.000Z",
         faction_interest: "Negotiation", expectation_match: 5, leader_distinction: 5, fun: 4,
         pacing: 4, meaningful_decisions: 5, battle_tension: 4, rules_clarity: 3,
-        faction_clarity: 5, table_organization: 4, play_again: 1, comments: "Strong identity.",
+        faction_clarity: 5, table_organization: 4, play_again: 1,
+        felt_decided_when: "late", agency_after_decided: "some",
+        decisive_cause: "A late agreement changed the board.", comments: "Strong identity.",
         response_submitted_at: "2026-08-02T11:12:00.000Z", response_updated_at: "2026-08-02T11:12:00.000Z"
       },
       {
         session_id: "game-1", participant_id: "player-2", display_name: "Ben", seat_index: 2,
-        faction: "military", leader: "General", joined_at: "2026-08-02T10:02:00.000Z",
+        faction: "military", leader: "General", selection_reason: "Direct pressure before play", joined_at: "2026-08-02T10:02:00.000Z",
         faction_interest: "Direct pressure", expectation_match: 4, leader_distinction: 4, fun: 5,
         pacing: 3, meaningful_decisions: 4, battle_tension: 5, rules_clarity: 4,
-        faction_clarity: 4, table_organization: 3, play_again: 1, comments: "Would replay.",
+        faction_clarity: 4, table_organization: 3, play_again: 1,
+        felt_decided_when: "at_end", agency_after_decided: "yes",
+        decisive_cause: "The final battle remained live.", comments: "Would replay.",
         response_submitted_at: "2026-08-02T11:14:00.000Z", response_updated_at: "2026-08-02T11:14:00.000Z"
       }
     ],
@@ -47,9 +51,10 @@ function fixtureDb() {
       source_json: JSON.stringify([{ title: "Battle resolution" }]), linked_at: "2026-08-02T10:40:00.000Z",
       participant_id: "player-2", display_name: "Ben", seat_index: 2
     }],
-    events: [{
-      session_id: "game-1", event_type: "game_started", event_json: "{}", created_at: "2026-08-02T10:05:00.000Z"
-    }]
+    events: [
+      { session_id: "game-1", event_type: "game_started", event_json: "{}", created_at: "2026-08-02T10:05:00.000Z" },
+      { session_id: "game-1", event_type: "diagnostic_flag", event_json: JSON.stringify({ flag: "feels_decided", participantId: "player-1" }), created_at: "2026-08-02T10:55:00.000Z" }
+    ]
   };
 
   return {
@@ -72,10 +77,14 @@ describe("tracked playtest analysis", () => {
     const games = await readTrackedAnalysis(fixtureDb());
     expect(games).toHaveLength(1);
     expect(games[0].players).toHaveLength(2);
+    expect(games[0].metadata.playMode).toBe("tts");
+    expect(games[0].players[0].selectionReason).toBe("Negotiation before play");
     expect(games[0].players[0].response.fun).toBe(4);
+    expect(games[0].players[0].response.feltDecidedWhen).toBe("late");
     expect(games[0].result.winnerParticipantId).toBe("player-1");
     expect(games[0].arbiterQuestions[0].question).toContain("Territory");
     expect(games[0].events[0].eventType).toBe("game_started");
+    expect(games[0].events[1].data.flag).toBe("feels_decided");
   });
 
   it("computes aggregate ratings, replay interest, and faction results", async () => {
@@ -88,6 +97,10 @@ describe("tracked playtest analysis", () => {
     expect(summary.factions.diplomats.wins).toBe(1);
     expect(summary.factions.military.wins).toBe(0);
     expect(summary.arbiterQuestionCount).toBe(1);
+    expect(summary.playModes).toEqual({ tts: 1 });
+    expect(summary.diagnosticFlags).toEqual({ feels_decided: 1 });
+    expect(summary.decisionPoints).toEqual({ late: 1, at_end: 1 });
+    expect(summary.agencyAfterDecided).toEqual({ some: 1, yes: 1 });
   });
 
   it("rejects aggregate access without the facilitator key", async () => {

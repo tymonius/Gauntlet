@@ -1,0 +1,82 @@
+{
+  "schema": "gauntlet.rules-refinement-manifest.v1",
+  "generatedAt": "2026-09-06T01:54:00.000Z",
+  "rootCause": "classification",
+  "label": "Classification",
+  "recommendedAction": "Classify obvious non-rules requests before retrieval or model use while preserving current gameplay and deck-construction rules questions.",
+  "cluster": {
+    "count": 6,
+    "highCount": 6,
+    "mediumCount": 0,
+    "maxScore": 100,
+    "averageScore": 100,
+    "interactionIds": [
+      "f69aeda4-5334-415d-b396-122fb3ceaaea",
+      "58803435-2351-465e-9dbc-4cccce9ec8b0",
+      "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
+      "6372e467-23a7-420e-8717-4685d50226e5",
+      "487240d8-48e2-4936-b840-06307d498211",
+      "4506c963-531c-46c5-880f-7b7027824878"
+    ]
+  },
+  "remediation": {
+    "sourceAuthorityRequired": false,
+    "reasonSignalCodes": [
+      "audit_classification",
+      "audit_prompt"
+    ],
+    "authorityFileCandidates": [
+      "rulebook/player-facing/current-rulebook.md",
+      "game-data/current-game.json"
+    ],
+    "rule": "Current game authority is not missing; the failure is recognizing requests that do not ask a gameplay-rules question."
+  },
+  "regression": {
+    "candidateCount": 6,
+    "readyCount": 6,
+    "alreadyCoveredCount": 0,
+    "manualCount": 0,
+    "missingInteractionIds": []
+  },
+  "resolutionRequest": {
+    "ledgerPath": "artifacts/rules-refinement/resolution-ledger.json",
+    "rootCause": "classification",
+    "interactionIds": [
+      "f69aeda4-5334-415d-b396-122fb3ceaaea",
+      "58803435-2351-465e-9dbc-4cccce9ec8b0",
+      "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
+      "6372e467-23a7-420e-8717-4685d50226e5",
+      "487240d8-48e2-4936-b840-06307d498211",
+      "4506c963-531c-46c5-880f-7b7027824878"
+    ],
+    "requiredStatus": "resolved",
+    "requiredFields": [
+      "id",
+      "status",
+      "rootCause",
+      "interactionIds",
+      "resolutionSurface",
+      "summary",
+      "resolvedAt",
+      "binding"
+    ],
+    "bindingRule": "Bind the merged refinement to at least one authoritySetId, behaviorRevision, or fix commit before merge.",
+    "retirementRule": "Only status=resolved entries retire reviewed interactions from the active backlog."
+  },
+  "implementationHints": {
+    "likelyFiles": [
+      "rules-assistant/rules-status.js",
+      "rules-assistant/v071-scope-precheck.js",
+      "rules-assistant/admin-refinement-worker.js"
+    ],
+    "deterministicChecks": [
+      "npx vitest run rules-assistant/rules-status.test.mjs rules-assistant/v071-scope-precheck.test.mjs",
+      "npx vitest run scripts/validate-rules-refinement-source-first.test.mjs"
+    ]
+  },
+  "privacy": {
+    "containsPlayerQuestionText": false,
+    "containsSessionIdentifiers": false,
+    "note": "Public refinement manifest intentionally omits raw player questions, answers, session identifiers, and diagnostics."
+  }
+}

@@ -89,6 +89,13 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(titleWrapStyles).toContain('-webkit-line-clamp: 2');
   });
 
+  it('can load only requested reference records for isolated production renders', () => {
+    expect(referenceRenderer).toContain('export async function loadReferenceRecords(componentIds = null)');
+    expect(referenceRenderer).toContain('const requestedIds = componentIds == null');
+    expect(referenceRenderer).toContain('(!requestedIds || requestedIds.has(component.id))');
+    expect(referenceRenderer).toContain('Current-game authority cannot resolve requested reference card(s)');
+  });
+
   it('loads the neutral Universal styling on both review and standalone TTS render surfaces', () => {
     expect(ruleColumns).toContain('@import url("universal-reference.css")');
     expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"]');
@@ -129,9 +136,9 @@ describe('final Universal Reference and reference-title fitting', () => {
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {
     expect(supplementalGenerator).toContain('const sharedSupplementals = (contract.sharedComponents || [])');
     expect(supplementalGenerator).toContain("faction: component.faction || 'neutral'");
-    expect(deckbuilderComponents).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
-    expect(deckbuilderComponents).toContain('component.productionStatus === "ready"');
-    expect(deckbuilderComponents).toContain('const printSharedReferences = sharedReferences.map(sharedReferencePrintCandidate)');
-    expect(deckbuilderComponents).toContain('components: Object.freeze([...factionComponents, ...printSharedReferences])');
+    expect(deckbuilderComponents).toContain('const sharedCardComponents = (currentGame.sharedComponents || []).filter(component => (');
+    expect(deckbuilderComponents).toContain('component.cardLike && component.deckInclusion === "every-deck"');
+    expect(deckbuilderComponents).toContain('const components = [...sharedCardComponents, ...factionComponents]');
+    expect(deckbuilderComponents).toContain('.map(component => projectPrintComponent(component, currentGame))');
   });
 });

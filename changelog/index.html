@@ -1,18 +1,35 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Player-facing Gauntlet playtest release changelog." />
   <link rel="canonical" href="https://gauntlet.run/changelog/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/changelog/" />
+  <meta property="og:title" content="Changelog — Gauntlet" />
+  <meta property="og:description" content="Player-facing Gauntlet playtest release changelog." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Changelog — Gauntlet" />
+  <meta name="twitter:description" content="Player-facing Gauntlet playtest release changelog." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
@@ -23,16 +40,20 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="/site.css" />
   <link rel="stylesheet" href="/release-surface.css" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body class="release-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
+      <a href="/playtest/">Playtest</a>
       <a href="/rulebook/">Rules</a>
       <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
@@ -41,7 +62,7 @@
     </nav>
   </header>
 
-  <main class="release-main">
+  <main id="main-content" tabindex="-1" class="release-main">
     <section class="release-hero" aria-labelledby="changelog-title">
       <div>
         <p class="eyebrow">Playtest release history</p>
@@ -49,16 +70,88 @@
         <p class="release-lede">Player-facing changes between Gauntlet playtest editions, focused on rules, cards, components, and table play rather than repository implementation details.</p>
       </div>
       <dl class="release-status" aria-label="Current release">
-        <div><dt>Current release</dt><dd>v0.7.0</dd></div>
-        <div><dt>Published</dt><dd>August 27, 2026</dd></div>
-        <div><dt>Authority</dt><dd>v0.7.0</dd></div>
+        <div><dt>Current release</dt><dd>v0.7.1</dd></div>
+        <div><dt>Published</dt><dd>August 30, 2026</dd></div>
+        <div><dt>Authority</dt><dd>v0.7.1</dd></div>
       </dl>
     </section>
 
+    <article class="changelog-entry" id="v0-7-1">
+      <p class="changelog-meta">Current release · August 30, 2026</p>
+      <h2>v0.7.1 — Mystics Rites &amp; Deck Import</h2>
+      <p class="changelog-summary">v0.7.1 is a focused playtest update built on the v0.7.0 core. Its central change is a complete Mystics Rite-package redesign: choose three Rites from a six-Rite pool, keep those choices hidden until each is begun if desired, and carry the selected trio through starter guidance, Deckbuilder validation, printing, and TTS Deck Codes.</p>
+      <div class="release-actions">
+        <a class="button primary" href="/v0.7.1/">Open v0.7.1 release</a>
+        <a class="button secondary" href="/rulebook/">Read current rules</a>
+      </div>
+
+      <h3>At a glance</h3>
+      <ol>
+        <li><strong>Mystics choose exactly three different Rites from a six-Rite pool</strong> during game-package construction.</li>
+        <li><strong>Selected Rites do not have to be revealed at setup.</strong> You are under no obligation to reveal one until you begin it; when a Rite is begun, reveal it.</li>
+        <li><strong>Rite of Echoes and Rite of Crossing are revised.</strong> Rite of Blood is mechanically unchanged, with its explanatory reminder separated for italic presentation.</li>
+        <li><strong>Rite of Shattering, Rite of Consecration, and Rite of Equivalence</strong> join the Rite pool.</li>
+        <li><strong>An active Rite now has a general fail-state rule:</strong> if a required card, component, position, or other required game state changes so that completion is no longer possible, the Rite immediately interrupts and resets.</li>
+        <li><strong>Completing all three selected Rites still unlocks the Ritual route.</strong> The Ritual is canonically <em>Ritual of Ascension</em>.</li>
+        <li><strong>The Alchemist and Spirit Walker starters are retuned</strong> around authoritative selected Rite packages and recommended Rite orders while remaining 30 cards / 60 Deckbuilding Value.</li>
+        <li><strong>Deckbuilder Rite selection is now part of a Mystics game package.</strong> Selection is validated, saved, printed, exported, and used for starter matching.</li>
+        <li><strong>Deckbuilder → TTS Deck Codes are active for stable v0.7.1.</strong> Mystics codes include the selected three Rite ids.</li>
+        <li><strong>The v0.7.1 authority audit is locked</strong> and the Rulebook/release package now carries TDS Games publication branding.</li>
+      </ol>
+
+      <h3>Mystics: choose three Rites from six</h3>
+      <p>A Mystics game package contains exactly <strong>three different selected Rites</strong> chosen from Rite of Echoes, Rite of Blood, Rite of Crossing, Rite of Shattering, Rite of Consecration, and Rite of Equivalence.</p>
+      <p>The selected trio is part of game-package construction, but <strong>disclosure is optional until a Rite is begun</strong>. When you begin a Rite, reveal it. Only those three selected Rites may be begun during that game. Completing all three satisfies the three-Rite requirement for beginning the <strong>Ritual of Ascension</strong>.</p>
+
+      <h3>General Rite interruption rule</h3>
+      <p>If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is <strong>immediately interrupted and resets</strong>. This applies in addition to the Rite's own printed interruption condition.</p>
+
+      <h3>The six Rites</h3>
+      <ul>
+        <li><strong>Rite of Echoes — revised:</strong> bind one card from Graveyard and one matching-title card from Hand, seed another copy of that title on top of the Draw Pile, then on a later turn win a battle in which that title's Gambit or Tactic effect was applied. A battle loss before completion sends both bound cards to the Graveyard and resets the Rite.</li>
+        <li><strong>Rite of Blood — mechanically unchanged:</strong> put one card from Hand in the Graveyard, then on a later turn win a battle without setting a Gambit or choosing a Tactic. Its explanatory reminder about Transmutation and other non-Gambit/Tactic sources is now separated as reminder text.</li>
+        <li><strong>Rite of Crossing — revised:</strong> the previous Arcane-card cost is removed. Begin during Denouement after a qualifying battle win that makes you the occupier of an opponent-controlled Territory; complete after Capture at the start of your next turn if you still occupy or now control it.</li>
+        <li><strong>Rite of Shattering — new:</strong> sacrifice a banked Asset; in the first later battle that reaches dice, gain instances of advantage equal to that Asset's value and complete the Rite if you win. Lose that battle and Retreat +1 before the Rite resets.</li>
+        <li><strong>Rite of Consecration — new:</strong> place an Overlay from Hand on a Territory without using an Action, then on a later turn win a battle there. Losing a battle there or losing the Overlay before completion resets the Rite.</li>
+        <li><strong>Rite of Equivalence — new:</strong> exchange equal-value cards between Hand and Graveyard, keep the returned card revealed, and complete the Rite by playing that exchanged card for one of its printed effects. If it leaves Hand another way, or you lose a battle first, the Rite resets.</li>
+      </ul>
+
+      <h3>Mystics starter Decks</h3>
+      <p>Both Mystics starters remain <strong>30 cards / 60 Deckbuilding Value</strong>, but each now has an authoritative Rite package and recommended Rite order.</p>
+      <ul>
+        <li><strong>Alchemist — First Principles:</strong> Echoes, Blood, Equivalence; recommended order <strong>Equivalence → Echoes → Blood</strong>. Accursed Wager ×1 → ×0; Threefold Vision ×0 → ×1.</li>
+        <li><strong>Spirit Walker — Unbroken Circle:</strong> Crossing, Shattering, Consecration; recommended order <strong>Consecration → Shattering → Crossing</strong>. Necromancy ×1 → ×0; Threefold Vision ×1 → ×0; Paths of Shadow ×1 → ×2; Witchcraft ×1 → ×2.</li>
+      </ul>
+      <p>The Deckbuilder starter preview and printed starter strategy now show recommended Rite order alongside recommended Territory order.</p>
+
+      <h3>Deckbuilder Rite-package support</h3>
+      <p>For Mystics, Rite selection is now part of the Deck itself rather than starter-only metadata. The Deckbuilder shows the six current Rites through the production Rite renderer, requires exactly three different selections for a valid Mystics package, displays the selected Rite cards with the current Deck, loads official starter selections automatically, and includes the Rite package when checking whether a Deck still matches a starter.</p>
+      <p>Selected Rites persist in saved Decks and JSON import/export. Printed Mystics packages include only the selected three Rites rather than the full six-Rite inventory, and print summaries name the selected trio.</p>
+
+      <h3>Deckbuilder → Tabletop Simulator Deck Codes</h3>
+      <p>Stable v0.7.1 activates compact <strong>TTS Deck Codes</strong> in the Deckbuilder. A code carries the game version, Deck name, faction, Leader, playable-card ids and quantities, and selected Territories. <strong>Mystics codes also carry the three selected Rite ids.</strong></p>
+      <p>The matching v0.7.1 TTS importer can rebuild a custom starter kit from that code, including the selected three Rites plus Ritual of Ascension. It uses embedded starter-kit templates rather than depending on the visible official starter Bags remaining untouched. The Deckbuilder also includes a visible TTS transfer walkthrough.</p>
+
+      <h3>Tabletop Simulator publication</h3>
+      <p>The stable web/rules release and the Steam Workshop update used separate publication gates. The v0.7.1 TTS QA gate is now complete and explicitly Workshop-approved.</p>
+      <p>The existing public Workshop item has been updated in place to <strong>v0.7.1</strong> at permanent id <code>3790840635</code>. The v0.7.0 QA record remains historical evidence for unchanged surfaces, while stable v0.7.1 verification covers the changed Mystics, Rulebook/setup, importer, and handling surfaces.</p>
+
+      <h3>Authority and presentation audit</h3>
+      <p>v0.7.1 freezes the audited current authority at <strong>142 playable cards total</strong>: 52 Neutral cards and 15 cards in each faction. Mystics have 15 Arcane faction cards; the Ritual is canonically <strong>Ritual of Ascension</strong>; <strong>Plenipotentiary</strong> and <strong>Martyrdom</strong> are Unique; and Peace Treaty requires <strong>six different ratified Proposals / Treaty Articles</strong>.</p>
+      <p>The current printed card headings are <strong>Action, Asset, Gambit, Tactic, Gambit/Tactic, Mission, Overlay, Terms, Sanctions,</strong> and <strong>Reaction</strong>. Flattening those headings into current authority is a presentation/source-of-truth cleanup rather than an intended gameplay change.</p>
+
+      <h3>Publishing identity</h3>
+      <p>v0.7.1 is the first Gauntlet Rulebook and release package carrying the current publication identity: <strong>Published by TDS Games</strong>, <strong>An imprint of Misty Hollow Enterprises</strong>, with <strong>Copyright © 2026 Tymon Scott. All rights reserved.</strong></p>
+      <p>The player-facing parent line deliberately omits the intended LLC suffix while formation remains pending.</p>
+
+      <h3>What remains familiar</h3>
+      <p>Outside the changes above, v0.7.1 retains the v0.7.0 core: the shared turn structure, Onset / Gambit / Reserves / Tactics battle sequence, 142-card playable pool, 25 Territories and Arenas, six factions, twelve Leaders, Front Line and Run-the-Gauntlet rules, and the established non-Mystics starter packages.</p>
+    </article>
+
     <article class="changelog-entry" id="v0-7-0">
-      <p class="changelog-meta">Current release · August 27, 2026</p>
+      <p class="changelog-meta">Previous release · August 27, 2026</p>
       <h2>v0.7.0 — Illustrated Cards &amp; Tabletop Simulator</h2>
-      <p class="changelog-summary">v0.7.0 is the current public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
+      <p class="changelog-summary">v0.7.0 was the previous public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
       <div class="release-actions">
         <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>
         <a class="button secondary" href="/rulebook/">Read current rules</a>
@@ -192,7 +285,7 @@
       <p><strong>Advanced → Custom printing</strong> can build physical print sheets independently of legal Deck construction. It supports search and filters, arbitrary quantities, Add all for the currently visible filtered cards, mixed portrait / landscape 9-up Letter sheets, playable cards and current physical components, intrinsic reverse faces, and canonical standard backs. The print path fails closed rather than substituting stale placeholder faces when a production render is not ready.</p>
 
       <h3>Browser Rulebook</h3>
-      <p>The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority from the published release package. v0.7.0 is the normal public ruleset, and the Rules Arbiter is bound to the same current release authority.</p>
+      <p>For v0.7.0, the Browser Rulebook loaded the maintained complete v0.7.0 Rulebook authority from its immutable release package, and the Rules Arbiter was bound to that same release authority.</p>
 
       <h3>Card Anatomy guide</h3>
       <p>The v0.7.0 Rulebook adds a <strong>Card Anatomy</strong> guide before the printed-card-effects rules. The browser guide uses the actual production-rendered <strong>Unbroken Ranks</strong> card rather than a mockup, identifying card name, value, faction treatment, artwork, effect heading, effect text, and standardized footer metadata; the Arcane trait mark is explained separately.</p>
@@ -214,7 +307,7 @@
       <p>v0.7.0 is a substantial product milestone rather than a ground-up replacement for v0.6.3. The six factions, twelve Leaders, turn structure, Front Line, two normal Run-the-Gauntlet victory routes, faction identities, starter-Deck model, and Gambit / Reserves / Tactics battle core remain the foundation of play except where the changes above or a current card/component expressly say otherwise.</p>
 
       <h3>Publication boundary</h3>
-      <p><strong>v0.7.0 is the current published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
+      <p><strong>v0.7.0 is the previous published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
       <p>The Tabletop Simulator Workshop mod is public, its subscribed-copy smoke test passed, and the repository/web release now publishes the same v0.7.0 product authority.</p>
     </article>
 
@@ -273,18 +366,27 @@
     </article>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="/v0.7.0/">Current release</a>
-      <a href="/rulebook/">Rulebook</a>
-      <a href="/card-reference/">Card Reference</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 </body>
 </html>

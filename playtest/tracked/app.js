@@ -8,6 +8,8 @@
   const params = new URLSearchParams(window.location.search);
   const code = String(params.get("code") || "").trim();
   const suppliedHostKey = String(params.get("host") || "").trim();
+  const requestedPlayMode = ["physical", "tts"].includes(params.get("mode")) ? params.get("mode") : "";
+  const creationSource = params.get("source") === "start" ? "start" : "tracked-page";
   const storagePrefix = TOKEN_PATTERN.test(code) ? `gauntlet_tracked_${code.slice(0, 16)}` : "gauntlet_tracked_new";
   const nativeFetch = window.fetch.bind(window);
 
@@ -18,6 +20,14 @@
     intelligence: { name: "Intelligence", color: "#282827", leaders: { ranger: "Ranger", spymaster: "Spymaster" } },
     mystics: { name: "Mystics", color: "#5d347e", leaders: { alchemist: "Alchemist", "spirit-walker": "Spirit Walker" } },
     inquisition: { name: "Inquisition", color: "#a67a27", leaders: { "grand-inquisitor": "Grand Inquisitor", "witch-hunter": "Witch Hunter" } }
+  });
+  const RITE_NAMES = Object.freeze({
+    echoes: "Rite of Echoes",
+    blood: "Rite of Blood",
+    crossing: "Rite of Crossing",
+    shattering: "Rite of Shattering",
+    consecration: "Rite of Consecration",
+    equivalence: "Rite of Equivalence"
   });
   const RATINGS = Object.freeze([
     ["expectationMatch", "Expectation matched play", "Did the faction page accurately represent the experience?"],
@@ -46,22 +56,26 @@
   function init() {
     for (const id of [
       "loadingPanel", "errorPanel", "errorTitle", "errorMessage", "createPanel", "createForm",
-      "createName", "createFaction", "createLeader", "savedChoiceNote", "createStatus", "sessionApp",
+      "createName", "createPlayMode", "createFaction", "createLeader", "createSelectionReason", "savedChoiceNote", "createStatus", "sessionApp",
       "sessionSerial", "lifecycleCopy", "statusLabel", "playerCount", "arbiterCount", "responseCount",
-      "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards", "joinPanel",
-      "joinForm", "joinName", "joinFaction", "joinLeader", "joinStatus", "joinedPanel", "joinedHeading",
-      "joinedCopy", "openArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
-      "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
+      "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards",
+      "transportPanel", "transportEyebrow", "transportTitle", "transportCopy", "transportMatchup",
+      "ttsWorkshopLink", "physicalSetupLink", "transportReferences", "joinPanel",
+      "joinForm", "joinName", "joinFaction", "joinLeader", "joinSelectionReason", "joinStatus", "joinedPanel", "joinedHeading",
+      "joinedCopy", "openArbiter", "companionArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
+      "diagnosticPanel", "diagnosticStatus", "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
       "firstPlayer", "winnerLabel", "winner", "victoryRouteLabel", "victoryRoute", "durationMinutes",
       "rounds", "battles", "stopReasonLabel", "stopReason", "packageUnmodified", "variantUsed",
       "productionIssue", "strongestMoment", "confusingPoint", "importantObservation", "resultStatus",
-      "responseSection", "responseForm", "factionInterest", "ratingGrid", "playAgain", "responseComments",
+      "responseSection", "responseForm", "legacySelectionReasonField", "legacySelectionReason", "ratingGrid", "feltDecidedWhen",
+      "agencyAfterDecided", "decisiveCause", "playAgain", "responseComments",
       "responseStatus", "completionPanel", "reviewPanel", "refreshReview", "downloadReviewJson",
       "downloadReviewCsv", "reviewContent", "reviewStatus"
     ]) el[id] = document.getElementById(id);
 
     populateFactionSelect(el.createFaction, el.createLeader);
     populateFactionSelect(el.joinFaction, el.joinLeader);
+    if (el.createPlayMode && requestedPlayMode) el.createPlayMode.value = requestedPlayMode;
     renderRatingGrid();
     restoreStartChoice();
 
@@ -72,9 +86,13 @@
     el.copyJoinLink?.addEventListener("click", copyJoinLink);
     el.shareJoinLink?.addEventListener("click", shareJoinLink);
     el.openArbiter?.addEventListener("click", openArbiter);
+    el.companionArbiter?.addEventListener("click", openArbiter);
     el.recordStart?.addEventListener("click", () => recordEvent("game_started", {}));
     el.showCompletedResult?.addEventListener("click", () => showResultForm("completed"));
     el.showStoppedResult?.addEventListener("click", () => showResultForm("stopped"));
+    document.querySelectorAll("[data-diagnostic-flag]").forEach(button => {
+      button.addEventListener("click", () => recordDiagnostic(button.dataset.diagnosticFlag || ""));
+    });
     el.noteForm?.addEventListener("submit", saveNote);
     el.completionStatus?.addEventListener("change", updateOutcomeFields);
     el.resultForm?.addEventListener("submit", submitResult);
@@ -108,7 +126,9 @@
           displayName: el.createName.value.trim(),
           faction: el.createFaction.value,
           leader: el.createLeader.value,
-          creationSource: "tracked-page",
+          playMode: el.createPlayMode?.value || "",
+          selectionReason: el.createSelectionReason.value.trim(),
+          creationSource,
           selectionSource: readStartChoice() ? "standalone-onboarding" : "tracked-page"
         }
       });
@@ -164,6 +184,7 @@
     el.lifecycleCopy.textContent = lifecycleCopy(session);
 
     renderPlayers();
+    renderTransport();
     fillPlayerOptions();
 
     const joinedPlayer = currentPlayer();
@@ -177,12 +198,18 @@
     el.joinedPanel.hidden = !joinedPlayer;
     if (joinedPlayer) {
       el.joinedHeading.textContent = `Seat ${joinedPlayer.seatIndex}: ${joinedPlayer.displayName}`;
-      el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}. Rules Arbiter questions from this device will be attributed to you.`;
+      const riteCopy = formatSelectedRites(joinedPlayer.selectedRites);
+      el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}.${riteCopy ? ` Selected Rites: ${riteCopy}.` : ""} Rules Arbiter questions from this device will be attributed to you.`;
     }
 
     el.playPanel.hidden = !open || !joinedPlayer || !full;
     el.resultSection.hidden = !open || !joinedPlayer || !full || session.resultSubmitted;
     el.responseSection.hidden = !open || !joinedPlayer || !session.resultSubmitted || ownResponse;
+    if (el.legacySelectionReasonField && joinedPlayer) {
+      const legacyMissingReason = !joinedPlayer.selectionReasonCaptured;
+      el.legacySelectionReasonField.hidden = !legacyMissingReason;
+      if (el.legacySelectionReason) el.legacySelectionReason.required = legacyMissingReason;
+    }
     el.completionPanel.hidden = !session.complete;
     el.reviewPanel.hidden = !state.hostKey;
 
@@ -210,9 +237,41 @@
           <span class="seat">Seat ${seatIndex}</span>
           <h3>${escapeHtml(player.displayName)}</h3>
           <p><strong>${escapeHtml(player.leader)}</strong> · ${escapeHtml(faction?.name || titleCase(player.faction))}</p>
+          ${player.selectedRites?.length ? `<p><strong>Selected Rites:</strong> ${escapeHtml(formatSelectedRites(player.selectedRites))}</p>` : ""}
           <p class="response-state">${player.responseSubmitted ? "Response submitted" : "Response pending"}</p>`;
       }
       el.playerCards.append(card);
+    }
+  }
+
+  function renderTransport() {
+    if (!el.transportPanel || !state.session) return;
+    const mode = state.session.playMode === "physical" ? "physical" : "tts";
+    const matchup = state.session.players
+      .map(player => `${player.leader} of the ${FACTIONS[player.faction]?.name || titleCase(player.faction)}`)
+      .join(" vs. ");
+    el.transportMatchup.textContent = matchup
+      ? `Selected matchup: ${matchup}.`
+      : "The selected starter kits will appear here as both players join.";
+    if (el.transportReferences) {
+      el.transportReferences.innerHTML = state.session.players.map(player => {
+        const factionName = FACTIONS[player.faction]?.name || titleCase(player.faction);
+        return `<a href="../../factions/${escapeAttribute(player.faction)}/" target="_blank" rel="noopener">${escapeHtml(player.leader)} · ${escapeHtml(factionName)} guide ↗</a>`;
+      }).join("");
+    }
+
+    if (mode === "tts") {
+      el.transportEyebrow.textContent = "Remote play · Tabletop Simulator";
+      el.transportTitle.textContent = "Open the v0.7.1 Workshop mod.";
+      el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
+      el.ttsWorkshopLink.hidden = false;
+      el.physicalSetupLink.hidden = true;
+    } else {
+      el.transportEyebrow.textContent = "In-person play · Physical tabletop";
+      el.transportTitle.textContent = "Prepare the two selected starter Decks.";
+      el.transportCopy.textContent = "Use Start Playing and the Deckbuilder to print the starter Deck, Leader, Territories, references, and faction components for each selected player. Keep this tracked page open during play.";
+      el.ttsWorkshopLink.hidden = true;
+      el.physicalSetupLink.hidden = false;
     }
   }
 
@@ -226,7 +285,8 @@
         body: {
           displayName: el.joinName.value.trim(),
           faction: el.joinFaction.value,
-          leader: el.joinLeader.value
+          leader: el.joinLeader.value,
+          selectionReason: el.joinSelectionReason.value.trim()
         }
       });
       state.participant = {
@@ -264,6 +324,33 @@
     } catch (error) {
       console.error(error);
       setStatus(el.eventStatus, error.message || "The event could not be recorded.", "error");
+    }
+  }
+
+  async function recordDiagnostic(flag) {
+    if (!state.participant || !flag) return;
+    const labels = {
+      dont_know_what_happens_next: "Marked: don't know what happens next.",
+      rule_unclear: "Marked: rule unclear.",
+      no_meaningful_option: "Marked: no meaningful option.",
+      feels_decided: "Marked: game feels decided.",
+      repeated_or_futile_battle: "Marked: repeated or futile battle.",
+      component_or_tts_problem: "Marked: component / TTS problem."
+    };
+    setStatus(el.diagnosticStatus, "Recording observation…");
+    try {
+      const payload = await api(`/api/tracked-games/${encodeURIComponent(code)}/event`, {
+        method: "POST",
+        body: participantBody({
+          eventType: "diagnostic_flag",
+          data: { flag }
+        })
+      });
+      state.session = payload.session;
+      setStatus(el.diagnosticStatus, labels[flag] || "Observation recorded.", "success");
+    } catch (error) {
+      console.error(error);
+      setStatus(el.diagnosticStatus, error.message || "The observation could not be recorded.", "error");
     }
   }
 
@@ -336,7 +423,10 @@
     setStatus(el.responseStatus, "Submitting your response…");
     try {
       const response = {
-        factionInterest: el.factionInterest.value.trim(),
+        factionInterest: el.legacySelectionReason?.value.trim() || "",
+        feltDecidedWhen: el.feltDecidedWhen.value,
+        agencyAfterDecided: el.agencyAfterDecided.value,
+        decisiveCause: el.decisiveCause.value.trim(),
         playAgain: el.playAgain.value === "yes",
         comments: el.responseComments.value.trim()
       };
@@ -393,8 +483,11 @@
     responseCard.innerHTML = `<h3>Player responses</h3>${review.responses.length ? review.responses.map((response) => `
       <section>
         <h4>Seat ${response.seatIndex}: ${escapeHtml(response.displayName)} — ${escapeHtml(response.leader)}</h4>
-        <p><strong>Initial interest:</strong> ${escapeHtml(response.factionInterest)}</p>
+        <p><strong>Pregame attraction:</strong> ${escapeHtml(response.factionInterest)}</p>
         <p><strong>Ratings:</strong> fun ${response.fun}/5 · pacing ${response.pacing}/5 · decisions ${response.meaningfulDecisions}/5 · rules ${response.rulesClarity}/5</p>
+        <p><strong>First felt decided:</strong> ${escapeHtml(titleCase(response.feltDecidedWhen || "never"))}</p>
+        <p><strong>Meaningful decisions afterward:</strong> ${escapeHtml(titleCase(response.agencyAfterDecided || "not_applicable"))}</p>
+        ${response.decisiveCause ? `<p><strong>What most determined the result:</strong> ${escapeHtml(response.decisiveCause)}</p>` : ""}
         <p><strong>Play again:</strong> ${response.playAgain ? "Yes" : "No"}</p>
         ${response.comments ? `<p><strong>Comments:</strong> ${escapeHtml(response.comments)}</p>` : ""}
       </section>`).join("") : "<p>No private responses have been submitted.</p>"}`;
@@ -416,19 +509,27 @@
     const result = state.review.result || {};
     const rows = state.review.responses.length ? state.review.responses : [{}];
     const headers = [
-      "sheet_serial", "status", "completion_status", "duration_minutes", "victory_route",
-      "seat", "player", "faction", "leader", "fun", "pacing", "meaningful_decisions",
+      "sheet_serial", "status", "play_mode", "completion_status", "duration_minutes", "victory_route",
+      "seat", "player", "faction", "leader", "selected_rites", "pregame_attraction", "fun", "pacing", "meaningful_decisions",
       "battle_tension", "rules_clarity", "faction_clarity", "table_organization",
-      "expectation_match", "leader_distinction", "play_again", "comments"
+      "expectation_match", "leader_distinction", "felt_decided_when", "agency_after_decided",
+      "decisive_cause", "play_again", "comments"
     ];
     const body = rows.map((response) => [
-      state.session.sheetSerial, state.session.status, result.completionStatus || "", result.durationMinutes || "", result.victoryRoute || "",
-      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", response.fun || "", response.pacing || "",
-      response.meaningfulDecisions || "", response.battleTension || "", response.rulesClarity || "", response.factionClarity || "",
-      response.tableOrganization || "", response.expectationMatch || "", response.leaderDistinction || "", response.playAgain == null ? "" : response.playAgain ? "yes" : "no", response.comments || ""
+      state.session.sheetSerial, state.session.status, state.session.playMode || "", result.completionStatus || "", result.durationMinutes || "", result.victoryRoute || "",
+      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", formatSelectedRites(response.selectedRites), response.factionInterest || "",
+      response.fun || "", response.pacing || "", response.meaningfulDecisions || "", response.battleTension || "", response.rulesClarity || "", response.factionClarity || "",
+      response.tableOrganization || "", response.expectationMatch || "", response.leaderDistinction || "", response.feltDecidedWhen || "",
+      response.agencyAfterDecided || "", response.decisiveCause || "", response.playAgain == null ? "" : response.playAgain ? "yes" : "no", response.comments || ""
     ]);
     const csv = [headers, ...body].map((row) => row.map(csvCell).join(",")).join("\n");
     downloadBlob(`${state.session.sheetSerial}-tracked-playtest.csv`, `${csv}\n`, "text/csv");
+  }
+
+  function formatSelectedRites(value) {
+    return Array.isArray(value)
+      ? value.map((id) => RITE_NAMES[id] || titleCase(id)).join(", ")
+      : "";
   }
 
   function populateFactionSelect(factionSelect, leaderSelect) {
@@ -634,9 +735,10 @@
   function showError(title, message) {
     el.sessionApp.hidden = true;
     el.createPanel.hidden = true;
-    el.errorPanel.hidden = false;
     el.errorTitle.textContent = title;
     el.errorMessage.textContent = message;
+    el.errorPanel.hidden = false;
+    el.errorPanel.focus({ preventScroll: true });
   }
 
   function setStatus(element, message, kind = "") {

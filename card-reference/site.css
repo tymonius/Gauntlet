@@ -378,7 +378,7 @@ footer p { margin: 7px 0 0; }
 .copyright { grid-column: 1 / -1; }
 .noscript { margin: 0; padding: 12px 20px; color: #fff; background: #8f1f25; font-family: var(--sans); text-align: center; }
 
-:focus-visible { outline: 3px solid rgba(143, 31, 37, .38); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--bronze); outline-offset: 3px; }
 
 @media (max-width: 900px) {
   nav { display: none; }

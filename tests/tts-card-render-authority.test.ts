@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const cardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 const territoryGenerator = readFileSync('scripts/generate-tts-territory-assets.mjs', 'utf8');
 const leaderGenerator = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
@@ -9,89 +9,113 @@ const supplementalGenerator = readFileSync('scripts/generate-tts-supplemental-as
 const finalizedGenerator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
 const trackerCapture = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
-const componentShell = readFileSync('card-design/component-print-render.html', 'utf8');
-const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
-const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
-const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
-const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
-const territoryTtsRenderer = readFileSync('tts/territory-renderer/territory-renderer.js', 'utf8');
-const artDirectionOverrides = readFileSync('tts/artwork-direction-overrides.js', 'utf8');
+const faceShell = readFileSync('card-design/face-render.html', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const facePreparation = readFileSync('card-design/face-preparation.mjs', 'utf8');
+const playableTtsShell = readFileSync('tts/renderer/index.html', 'utf8');
+const territoryTtsShell = readFileSync('tts/territory-renderer/index.html', 'utf8');
+const backTtsShell = readFileSync('tts/back-renderer/index.html', 'utf8');
+const supplementalTtsShell = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const finalizedTtsShell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
 const dividerRules = readFileSync('card-design/reference-divider-rules.css', 'utf8');
 const universalReference = readFileSync('card-design/universal-reference.css', 'utf8');
 
+const generators = [
+  cardGenerator,
+  territoryGenerator,
+  leaderGenerator,
+  supplementalGenerator,
+  finalizedGenerator,
+  trackerCapture,
+];
+
 describe('TTS card render authority', () => {
-  it('uses Card Design as the only card-face render authority', () => {
-    expect(cardGenerator).toContain('/card-design/card-review-render.html');
-    expect(cardGenerator).not.toContain('/tts/renderer/?card=');
+  it('uses the canonical face renderer for every TTS physical-face capture', () => {
+    for (const generator of generators) {
+      expect(generator).toContain('/card-design/face-render.html');
+      expect(generator).not.toContain('/card-design/component-render.html');
+      expect(generator).not.toContain('/card-design/card-review-render.html');
+      expect(generator).not.toContain('/card-design/territory-review-render.html');
+      expect(generator).not.toContain('/card-design/card-back-render.html');
+    }
 
-    expect(territoryGenerator).toContain('/card-design/territory-review-render.html');
-    expect(territoryGenerator).not.toContain('/tts/territory-renderer/?territory=');
-
-    expect(leaderGenerator).toContain('/card-design/component-print-render.html');
-    expect(leaderGenerator).not.toContain("page.goto(`${baseUrl}/card-design/`");
-    expect(leaderGenerator).not.toContain('GauntletArtworkCrop.apply');
-
-    expect(supplementalGenerator).toContain('/card-design/component-print-render.html');
-    expect(supplementalGenerator).not.toContain('/tts/supplemental-renderer/');
-
-    expect(finalizedGenerator).toContain('/card-design/component-print-render.html');
-    expect(finalizedGenerator).not.toContain('/tts/finalized-supplemental-renderer/');
-
-    expect(trackerCapture).toContain('/card-design/component-print-render.html');
-    expect(trackerCapture).not.toContain("page.goto(`${baseUrl}/card-design/`");
+    expect(cardGenerator).toContain('back:${faction}');
+    expect(cardGenerator).toContain('card:${card.id}');
+    expect(territoryGenerator).toContain('territory:${territory.id}');
+    expect(leaderGenerator).toContain('leader:${leader.faction}-${leader.id}');
+    expect(supplementalGenerator).toContain('component:${record.id}:${side}');
+    expect(finalizedGenerator).toContain('component:${item.component.id}:${side}');
+    expect(trackerCapture).toContain('component:${componentId}:front');
   });
 
-  it('loads the complete Card Design styling stack for component capture', () => {
-    for (const stylesheet of [
-      '/card-design/card-design.css',
-      '/card-design/card-design-refinement.css',
-      '/card-design/faction-specimens.css',
-      '/card-design/leader-card.css',
-      '/card-design/proposal-card.css',
-      '/card-design/rite-card.css',
-      '/card-design/reference-card.css',
-      '/card-design/supplemental-card.css',
-      '/card-design/supplemental-refinements.css',
-      '/card-design/capital-ledger.css',
-      '/card-design/deed-card.css',
-    ]) {
-      expect(componentShell).toContain(stylesheet);
+  it('keeps template and stylesheet selection inside FaceSpec rather than TTS generators', () => {
+    expect(faceShell).toContain('/card-design/face-render.mjs');
+    expect(faceRuntime).toContain('resolveFaceSpec(game, faceIdFromLocation())');
+    expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
+    expect(faceRuntime).toContain('spec.dependencies.styles.map(loadStylesheet)');
+    expect(faceSpec).toContain('FACE_TEMPLATE_CONTRACTS');
+
+    for (const generator of generators) {
+      expect(generator).not.toContain('/card-design/leader-card.css');
+      expect(generator).not.toContain('/card-design/proposal-card.css');
+      expect(generator).not.toContain('/card-design/rite-card.css');
+      expect(generator).not.toContain('/card-design/reference-card.css');
     }
   });
 
-  it('stamps the pending TTS release version without changing the Card Design catalog default', () => {
-    expect(target.releaseTag).toBe('v0.7.0');
-    expect(target.displayVersion).toBe('v0.7.0');
-    expect(target.sourceVersion).toBe('v0.7.0');
+  it('derives current TTS identity from canonical FaceSpec provenance without render-time version overrides', () => {
+    expect(currentGame.version).toBe('v0.7.1');
+    expect(currentGame.displayVersion).toBe('v0.7.1');
+    expect(faceSpec).toContain('provenance: authorityProvenance(game)');
 
-    expect(cardGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
-    expect(territoryGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
-    expect(supplementalGenerator).toContain('release.displayVersion || release.version');
-    expect(finalizedGenerator).toContain('release.displayVersion || release.version');
-    expect(leaderGenerator).toContain("url.searchParams.set('version', displayVersion)");
-    expect(trackerCapture).toContain("url.searchParams.set('version', displayVersion)");
-
-    expect(playableRenderer).toContain("const versionOverride = String(params.get('version') || '').trim()");
-    expect(playableRenderer).toContain('const displayVersion = versionOverride || await resolveDisplayVersion(currentGame)');
-    expect(playableRenderer).toContain('gameVersion: displayVersion');
-    expect(territoryRenderer).toContain("const versionOverride = String(params.get('version') || '').trim()");
-    expect(territoryRenderer).toContain('gameVersion: versionOverride || currentGame.displayVersion');
-    expect(componentRenderer).toContain('const versionOverride = String(params.get("version") || "").trim()');
-    expect(componentRenderer).toContain('if (versionOverride)');
-    expect(componentRenderer).toContain('versionNode.textContent = versionOverride');
+    for (const generator of generators) {
+      expect(generator).not.toContain("searchParams.set('version'");
+      expect(generator).not.toContain('&version=');
+    }
   });
 
-  it('applies only committed artwork direction on every production capture surface', () => {
-    expect(artDirectionOverrides).toContain('"financiers-banker": {"focusY":0}');
+  it('applies only canonical current-game artwork direction through the shared face runtime', () => {
+    expect(Object.keys(currentGame.artDirection)).toHaveLength(210);
+    expect(Object.values(currentGame.artDirection).every((direction: any) => direction.smart === false)).toBe(true);
+    expect(faceRuntime).toContain('artwork.composition.direction');
+    expect(faceRuntime).toContain('window.GauntletArtworkCrop.apply');
+    expect(faceRuntime).toContain('result.element.dataset.artDirectionApplied = artwork.composition.id');
 
-    expect(componentRenderer).toContain('function canonicalArtworkId(card)');
-    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION?.[artworkId]');
-    expect(componentRenderer).toContain('await applyCanonicalArtworkDirection(card)');
-    expect(componentRenderer).toContain('card.dataset.artDirectionApplied = artworkId');
-    expect(componentRenderer).toContain('card.dataset.artDirectionApplied = "css-default"');
+    for (const shell of [
+      playableTtsShell,
+      territoryTtsShell,
+      backTtsShell,
+      supplementalTtsShell,
+      finalizedTtsShell,
+    ]) {
+      expect(shell).toContain('/card-design/face-render.html');
+      expect(shell).not.toContain('/card-design/component-render.html');
+      expect(shell).not.toContain('/card-design/card-review-render.html');
+      expect(shell).not.toContain('/card-design/territory-review-render.html');
+      expect(shell).not.toContain('/card-design/card-back-render.html');
+    }
 
-    expect(playableTtsRenderer).toContain('if (card.artDirection && Object.keys(card.artDirection).length)');
-    expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
+    expect(existsSync(['tts', 'artwork-direction-overrides.js'].join('/'))).toBe(false);
+    for (const compatibilityDir of [
+      'renderer',
+      'territory-renderer',
+      'back-renderer',
+      'supplemental-renderer',
+      'finalized-supplemental-renderer',
+    ]) {
+      expect(readdirSync(['tts', compatibilityDir].join('/')).sort()).toEqual(['index.html']);
+    }
+  });
+
+  it('loads canonical production fonts before face preparation and fitting', () => {
+    expect(facePreparation).toContain('PRODUCTION_FONT_REQUESTS');
+    expect(facePreparation).toContain('"adobe-caslon-pro"');
+    expect(facePreparation).toContain('"p22-1722-pro"');
+    expect(facePreparation).toContain('"Inter"');
+    expect(faceRuntime).toContain('await loadProductionFonts();');
+    expect(faceRuntime.indexOf('await loadProductionFonts();'))
+      .toBeLessThan(faceRuntime.indexOf('await template.render(spec);'));
   });
 
   it('inherits current reference styling including divider removal and Universal G watermark', () => {

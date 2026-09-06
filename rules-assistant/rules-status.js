@@ -59,11 +59,14 @@ export function buildScopeRecoveryRuling(question) {
 const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(morally|moral(?:ity)?|ethical(?:ly)?|ethics|justified|right or wrong|good or evil)\b/i,
   /\b(lore|backstory|fictional history|historical inspiration|real[- ]world (?:analogue|ideology|inspiration)|ideology inspired)\b/i,
-  /\b(art|illustration|aesthetic|what does .* look like|appearance)\b/i,
+  /\b(costume|visual design|art|illustration|aesthetic|appearance|what does .* look like)\b/i,
   /\b(design intent|why was .* designed|balance suggestion|buffed|nerfed)\b/i,
-  /\b(best|strongest|optimal|most powerful)\b[\s\S]*\b(strategy|deck|build|faction|leader)\b/i,
+  /\b(best|strongest|strong|optimal|most powerful)\b[\s\S]*\b(strategy|deck|build|faction|leader)\b/i,
+  /\b(?:build|make|give|recommend) me\b[\s\S]{0,100}\bdeck\b/i,
   /\b(strategy|deck|build) recommendation\b/i,
-  /\bwho should i play\b/i
+  /\bwho should i play\b/i,
+  /\b(?:what(?:'s| is)? changed|what changed|changes? since)\b[\s\S]*\b(?:version|v?\d+\.\d+)\b/i,
+  /\b(?:compare|difference between)\b[\s\S]*\bv?\d+\.\d+\b/i
 ];
 
 export function isClearlyOutOfScopeQuestion(question) {

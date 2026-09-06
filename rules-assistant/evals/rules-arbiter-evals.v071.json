@@ -1,0 +1,1057 @@
+{
+  "schema": "gauntlet.rules-arbiter-evals.v2",
+  "rulesVersion": "v0.7.1",
+  "purpose": "Table-rules QA benchmark spanning basic rules, faction systems, named cards, retrieval, and conversational follow-ups. Live failures are preserved as regression cases rather than promoted to rules authority.",
+  "dimensions": [
+    "core rules",
+    "timing and zones",
+    "movement and battle",
+    "victory",
+    "deck construction",
+    "six faction systems",
+    "leaders",
+    "named cards",
+    "retrieval grounding",
+    "conversation continuity",
+    "Chief Justice voice"
+  ],
+  "cases": [
+    {
+      "id": "core-setup-starting-hand",
+      "category": "core",
+      "question": "How many cards do I start with?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Setup"
+      ]
+    },
+    {
+      "id": "core-setup-starting-territory",
+      "category": "core",
+      "question": "How is my Starting Territory determined?",
+      "expectedClassification": "inferred",
+      "expectedSourcePatterns": [
+        "Place each Player Token on the Territory at that player's end"
+      ]
+    },
+    {
+      "id": "core-setup-territory-arrangement",
+      "category": "core",
+      "question": "How are Territories arranged during setup?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Opening selection and Territory arrangement"
+      ]
+    },
+    {
+      "id": "core-zone-hand",
+      "category": "core",
+      "question": "What is the Hand used for?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Hand"
+      ]
+    },
+    {
+      "id": "core-zone-discard",
+      "category": "core",
+      "question": "When do cards go to the Discard Pile?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Discard Pile",
+        "Playing a card for its Action effect"
+      ],
+      "expectedAnswerPatterns": [
+        "Action effect"
+      ]
+    },
+    {
+      "id": "core-zone-graveyard",
+      "category": "core",
+      "question": "What is the Graveyard?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Graveyard"
+      ]
+    },
+    {
+      "id": "core-zone-reserve",
+      "category": "core",
+      "question": "How does the Reserve work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Reserve"
+      ]
+    },
+    {
+      "id": "core-zone-gambit-area",
+      "category": "core",
+      "question": "Where does my Gambit go during a battle?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Gambit area"
+      ]
+    },
+    {
+      "id": "core-zone-tactic-area",
+      "category": "core",
+      "question": "Where does my Tactic go during a battle?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Tactic area"
+      ]
+    },
+    {
+      "id": "core-actions-normal-limit",
+      "category": "core",
+      "question": "How many normal Actions can I take on my turn?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Normal Action limit"
+      ]
+    },
+    {
+      "id": "core-actions-additional",
+      "category": "core",
+      "question": "How do additional Actions work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Additional Actions"
+      ]
+    },
+    {
+      "id": "core-turn-order",
+      "category": "core",
+      "question": "What happens on my turn, in order?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Your Turn"
+      ]
+    },
+    {
+      "id": "core-movement",
+      "category": "core",
+      "question": "How does normal movement work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Movement"
+      ]
+    },
+    {
+      "id": "core-battle-sequence",
+      "category": "core",
+      "question": "What are the steps of a battle?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Battle sequence"
+      ]
+    },
+    {
+      "id": "core-defensive-edge",
+      "category": "core",
+      "question": "How does Defensive Edge work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Defensive Edge"
+      ]
+    },
+    {
+      "id": "core-tiebreak",
+      "category": "core",
+      "question": "What happens if the battle totals tie?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Tiebreak Roll"
+      ]
+    },
+    {
+      "id": "core-aftermath",
+      "category": "core",
+      "question": "What happens after a battle is decided?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "The Aftermath"
+      ]
+    },
+    {
+      "id": "core-withdrawal",
+      "category": "core",
+      "question": "What happens when I withdraw from a battle?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Withdrawal"
+      ]
+    },
+    {
+      "id": "core-front-line",
+      "category": "core",
+      "question": "What exactly is my Front Line?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Front Line"
+      ]
+    },
+    {
+      "id": "core-capture",
+      "category": "core",
+      "question": "When is an occupied Territory captured?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Normal Capture",
+        "Capture"
+      ]
+    },
+    {
+      "id": "core-final-territory",
+      "category": "core",
+      "question": "How does final-Territory capture victory work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Final-Territory Capture Victory"
+      ]
+    },
+    {
+      "id": "core-last-stand",
+      "category": "core",
+      "question": "When is a player forced to make a Last Stand?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Last Stand"
+      ]
+    },
+    {
+      "id": "core-run-gauntlet",
+      "category": "core",
+      "question": "How do I win by running the Gauntlet?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Running the Gauntlet"
+      ]
+    },
+    {
+      "id": "core-win-overview",
+      "category": "core",
+      "question": "What are the ways to win the game?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "How to Win"
+      ]
+    },
+    {
+      "id": "core-deck-faction-leader",
+      "category": "core",
+      "question": "How do I choose a faction and Leader when building a Deck?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Choose a faction and Leader"
+      ]
+    },
+    {
+      "id": "core-deck-size",
+      "category": "core",
+      "question": "What are the Deck construction requirements?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Build the Deck"
+      ]
+    },
+    {
+      "id": "core-territory-selection",
+      "category": "core",
+      "question": "How do I choose Territories for a game?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Choose Territories"
+      ]
+    },
+    {
+      "id": "core-golden-rules",
+      "category": "core",
+      "question": "What are the Golden Rules?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Golden Rules"
+      ]
+    },
+    {
+      "id": "military-overview",
+      "category": "military",
+      "question": "How does the Military faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Military"
+      ]
+    },
+    {
+      "id": "military-command-orders",
+      "category": "military",
+      "question": "How do Command and Orders work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Command and Orders"
+      ]
+    },
+    {
+      "id": "military-general",
+      "category": "military",
+      "question": "What does the General do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "General"
+      ]
+    },
+    {
+      "id": "military-commandant",
+      "category": "military",
+      "question": "What does the Commandant do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Commandant"
+      ]
+    },
+    {
+      "id": "military-initiate-battle",
+      "category": "military",
+      "question": "How can Military initiate battles?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Initiating battles"
+      ]
+    },
+    {
+      "id": "military-additional-tactics",
+      "category": "military",
+      "question": "How do Military additional Tactics work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Additional Tactics"
+      ]
+    },
+    {
+      "id": "military-victory-benefits",
+      "category": "military",
+      "question": "What happens if Military has conflicting victory benefits?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Conflicting victory benefits"
+      ]
+    },
+    {
+      "id": "military-field-command",
+      "category": "military",
+      "question": "What does Field Command do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Field Command"
+      ]
+    },
+    {
+      "id": "diplomats-overview",
+      "category": "diplomats",
+      "question": "How does the Diplomats faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Diplomats"
+      ]
+    },
+    {
+      "id": "diplomats-terms",
+      "category": "diplomats",
+      "question": "How do I offer Terms?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Offering Terms",
+        "Terms"
+      ]
+    },
+    {
+      "id": "diplomats-accepted",
+      "category": "diplomats",
+      "question": "What happens when Terms are accepted?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Accepted Terms"
+      ]
+    },
+    {
+      "id": "diplomats-refused",
+      "category": "diplomats",
+      "question": "What happens when Terms are refused?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Refused Terms"
+      ]
+    },
+    {
+      "id": "diplomats-leverage",
+      "category": "diplomats",
+      "question": "How does Leverage work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Leverage"
+      ],
+      "forbiddenAnswerPatterns": [
+        "dice result"
+      ],
+      "expectedAnswerPatterns": [
+        "battle total"
+      ]
+    },
+    {
+      "id": "diplomats-leverage-target",
+      "category": "diplomats",
+      "question": "What does the Leverage bonus add to?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Leverage"
+      ],
+      "forbiddenAnswerPatterns": [
+        "dice result"
+      ],
+      "origin": "live-answer-qa-2026-09-03",
+      "expectedAnswerPatterns": [
+        "battle total"
+      ]
+    },
+    {
+      "id": "diplomats-peace-treaty",
+      "category": "diplomats",
+      "question": "When do I win through the Peace Treaty?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Treaty Articles and Peace Treaty"
+      ]
+    },
+    {
+      "id": "diplomats-ambassador",
+      "category": "diplomats",
+      "question": "What does the Ambassador do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Ambassador"
+      ]
+    },
+    {
+      "id": "diplomats-senator",
+      "category": "diplomats",
+      "question": "What does the Senator do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Senator"
+      ]
+    },
+    {
+      "id": "financiers-overview",
+      "category": "financiers",
+      "question": "How does the Financiers faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Financiers"
+      ]
+    },
+    {
+      "id": "financiers-capital",
+      "category": "financiers",
+      "question": "How does Capital work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Capital and Capital Ledger"
+      ]
+    },
+    {
+      "id": "financiers-capacity",
+      "category": "financiers",
+      "question": "How does Financial Capacity work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Financial Capacity"
+      ],
+      "expectedAnswerPatterns": [
+        "normally legal only during Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "use one in Opening",
+        "use a Financier Faction Feature in Opening"
+      ]
+    },
+    {
+      "id": "financiers-capacity-opening",
+      "category": "financiers",
+      "question": "If Financial Capacity gives me two Actions, can I buy a Deed during Opening?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Financial Capacity",
+        "Faction Features"
+      ],
+      "expectedAnswerPatterns": [
+        "Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "Yes"
+      ],
+      "origin": "live-answer-qa-2026-09-03"
+    },
+    {
+      "id": "financiers-treasury",
+      "category": "financiers",
+      "question": "How does the Treasury work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Treasury"
+      ]
+    },
+    {
+      "id": "financiers-deeds",
+      "category": "financiers",
+      "question": "How do Deeds work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Deeds"
+      ]
+    },
+    {
+      "id": "financiers-buy-deed",
+      "category": "financiers",
+      "question": "How do I buy or buy out a Deed?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Buying and buying out Deeds"
+      ]
+    },
+    {
+      "id": "financiers-income",
+      "category": "financiers",
+      "question": "When do I gain Income from Deeds?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Income"
+      ]
+    },
+    {
+      "id": "financiers-controlling-interest",
+      "category": "financiers",
+      "question": "How does Controlling Interest win the game?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Controlling Interest"
+      ]
+    },
+    {
+      "id": "financiers-play-market",
+      "category": "financiers",
+      "question": "How does Play the Market work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Play the Market"
+      ]
+    },
+    {
+      "id": "financiers-subsidize",
+      "category": "financiers",
+      "question": "How does Subsidize work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Subsidize"
+      ]
+    },
+    {
+      "id": "financiers-banker",
+      "category": "financiers",
+      "question": "What does the Banker do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Banker"
+      ]
+    },
+    {
+      "id": "financiers-executive",
+      "category": "financiers",
+      "question": "What does the Executive do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Executive"
+      ]
+    },
+    {
+      "id": "intel-overview",
+      "category": "intelligence",
+      "question": "How does the Intelligence faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Intelligence"
+      ]
+    },
+    {
+      "id": "intel-mission-start",
+      "category": "intelligence",
+      "question": "How do I start a Mission?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Starting a Mission"
+      ]
+    },
+    {
+      "id": "intel-mission-complete",
+      "category": "intelligence",
+      "question": "How do I complete a Mission?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Completing a Mission"
+      ]
+    },
+    {
+      "id": "intel-special-operation",
+      "category": "intelligence",
+      "question": "How do I start a Special Operation?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Starting a Special Operation"
+      ]
+    },
+    {
+      "id": "intel-surveillance-gambit",
+      "category": "intelligence",
+      "question": "How does Gambit Surveillance work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Gambit Surveillance"
+      ]
+    },
+    {
+      "id": "intel-surveillance-tactic",
+      "category": "intelligence",
+      "question": "How does Tactic Surveillance work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Tactic Surveillance"
+      ]
+    },
+    {
+      "id": "intel-interference",
+      "category": "intelligence",
+      "question": "How does Interference after Surveillance work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Interference after Surveillance"
+      ]
+    },
+    {
+      "id": "intel-spymaster",
+      "category": "intelligence",
+      "question": "What does the Spymaster do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Spymaster"
+      ]
+    },
+    {
+      "id": "mystics-overview",
+      "category": "mystics",
+      "question": "How does the Mystics faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Mystics"
+      ]
+    },
+    {
+      "id": "mystics-begin-rite",
+      "category": "mystics",
+      "question": "How do I begin a Rite?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Beginning a Rite"
+      ]
+    },
+    {
+      "id": "mystics-progression",
+      "category": "mystics",
+      "question": "How does Rite progression work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Progression"
+      ]
+    },
+    {
+      "id": "mystics-invocation",
+      "category": "mystics",
+      "question": "How does Invocation work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Invocation"
+      ]
+    },
+    {
+      "id": "mystics-transmutation",
+      "category": "mystics",
+      "question": "How does Transmutation work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Transmutation"
+      ]
+    },
+    {
+      "id": "mystics-ritual",
+      "category": "mystics",
+      "question": "How do I begin the Ritual of Ascendance?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Beginning the Ritual"
+      ]
+    },
+    {
+      "id": "mystics-convergence",
+      "category": "mystics",
+      "question": "How does Convergence work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Convergence"
+      ]
+    },
+    {
+      "id": "mystics-spirit-walker",
+      "category": "mystics",
+      "question": "What does the Spirit Walker do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Spirit Walker"
+      ]
+    },
+    {
+      "id": "inq-overview",
+      "category": "inquisition",
+      "question": "How does the Inquisition faction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Inquisition"
+      ]
+    },
+    {
+      "id": "inq-conviction",
+      "category": "inquisition",
+      "question": "How does Conviction work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Conviction"
+      ]
+    },
+    {
+      "id": "inq-condemnation",
+      "category": "inquisition",
+      "question": "How does Condemnation work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Condemnation"
+      ]
+    },
+    {
+      "id": "inq-blasphemy",
+      "category": "inquisition",
+      "question": "What counts as Blasphemy?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Blasphemy"
+      ]
+    },
+    {
+      "id": "inq-purge",
+      "category": "inquisition",
+      "question": "How does Purge work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Purge"
+      ]
+    },
+    {
+      "id": "inq-purification",
+      "category": "inquisition",
+      "question": "How does Purification work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Purification"
+      ]
+    },
+    {
+      "id": "inq-grand-inquisitor",
+      "category": "inquisition",
+      "question": "What does the Grand Inquisitor do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Grand Inquisitor"
+      ]
+    },
+    {
+      "id": "inq-witch-hunter",
+      "category": "inquisition",
+      "question": "What does the Witch Hunter do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Witch Hunter"
+      ]
+    },
+    {
+      "id": "card-extraordinary-rendition",
+      "category": "cards",
+      "question": "What does Extraordinary Rendition do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Extraordinary Rendition"
+      ],
+      "forbiddenAnswerPatterns": [
+        "remains in the opponent's Hand"
+      ]
+    },
+    {
+      "id": "card-resourcefulness",
+      "category": "cards",
+      "question": "What does Resourcefulness do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Resourcefulness"
+      ]
+    },
+    {
+      "id": "card-margin-loan",
+      "category": "cards",
+      "question": "How does Margin Loan work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Margin Loan"
+      ]
+    },
+    {
+      "id": "card-leveraged-buyout",
+      "category": "cards",
+      "question": "How does Leveraged Buyout work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Leveraged Buyout"
+      ]
+    },
+    {
+      "id": "card-sleeper-network",
+      "category": "cards",
+      "question": "How does Sleeper Network work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Sleeper Network"
+      ]
+    },
+    {
+      "id": "card-shock-and-awe",
+      "category": "cards",
+      "question": "What does Shock and Awe do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Shock and Awe"
+      ]
+    },
+    {
+      "id": "card-counterintelligence",
+      "category": "cards",
+      "question": "What does Counterintelligence do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Counterintelligence"
+      ]
+    },
+    {
+      "id": "card-necromancy",
+      "category": "cards",
+      "question": "How does Necromancy work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Necromancy"
+      ]
+    },
+    {
+      "id": "card-witchcraft",
+      "category": "cards",
+      "question": "How does Witchcraft work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Witchcraft"
+      ]
+    },
+    {
+      "id": "card-hellfire",
+      "category": "cards",
+      "question": "What does Hellfire do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Hellfire"
+      ]
+    },
+    {
+      "id": "card-diplomatic-latitude",
+      "category": "cards",
+      "question": "How does Diplomatic Latitude work?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Diplomatic Latitude"
+      ]
+    },
+    {
+      "id": "card-sanctions-blockade",
+      "category": "cards",
+      "question": "What does Sanctions: Blockade do?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Sanctions: Blockade"
+      ]
+    },
+    {
+      "id": "live-deed-contiguity",
+      "category": "live-regression",
+      "question": "Do purchased deeds have to be contiguous like your Front Line?",
+      "expectedClassification": "inferred",
+      "expectedSourcePatterns": [
+        "Deeds",
+        "Buying and buying out Deeds",
+        "Front Line"
+      ],
+      "origin": "live-review-2026-09-03",
+      "interactionId": "eb878722-a732-492f-814e-df3c5ccded9a"
+    },
+    {
+      "id": "live-deed-remote-purchase",
+      "category": "live-regression",
+      "question": "Can I purchase the deed to a territory I don't own and am not on?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Deeds",
+        "Buying and buying out Deeds"
+      ],
+      "origin": "live-review-2026-09-03",
+      "interactionId": "54962556-f04e-428b-89c5-2c193d47cf0f"
+    },
+    {
+      "id": "live-deed-cost",
+      "category": "live-regression",
+      "question": "how much do deeds cost?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Buying and buying out Deeds"
+      ],
+      "origin": "live-review-2026-09-03",
+      "interactionId": "eaa82da6-30e8-4292-9ed1-d87726b2e855"
+    },
+    {
+      "id": "live-deed-cost-clarify",
+      "category": "conversation",
+      "question": "can you explain that more clearly",
+      "history": [
+        {
+          "role": "user",
+          "content": "how much do deeds cost?"
+        },
+        {
+          "role": "assistant",
+          "content": "A Deed costs: min(the number of Deeds you own + 1, 6) + position modifier + buyout premium, with a minimum of 1 Capital."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Buying and buying out Deeds"
+      ],
+      "expectedTopic": "Deed cost",
+      "origin": "live-review-2026-09-03",
+      "interactionId": "999db05a-01a7-4d4d-85fc-babf8f75d5a5"
+    },
+    {
+      "id": "live-deed-cost-disambiguate",
+      "category": "conversation",
+      "question": "i mean the deed cost",
+      "history": [
+        {
+          "role": "user",
+          "content": "can you explain that more clearly"
+        },
+        {
+          "role": "assistant",
+          "content": "Deeds and Front Line measure different things."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Buying and buying out Deeds"
+      ],
+      "expectedTopic": "Deed cost",
+      "origin": "live-review-2026-09-03",
+      "interactionId": "ed7ece6c-b596-46b7-9438-7b9f7ff6f018"
+    },
+    {
+      "id": "live-deed-cost-plain-language",
+      "category": "conversation",
+      "question": "but what does that mean",
+      "history": [
+        {
+          "role": "user",
+          "content": "i mean the deed cost"
+        },
+        {
+          "role": "assistant",
+          "content": "The Deed’s cost is recalculated for the buyer each time: min(your Deeds + 1, 6), then add the position modifier and buyout premium."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Buying and buying out Deeds"
+      ],
+      "expectedTopic": "Deed cost",
+      "origin": "live-review-2026-09-03",
+      "interactionId": "b922bfa5-6fce-4567-84b0-8c35fbb4b40e"
+    },
+    {
+      "id": "conversation-followup-pronoun",
+      "category": "conversation",
+      "question": "when does it go there?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Where does a Gambit go after a battle?"
+        },
+        {
+          "role": "assistant",
+          "content": "A Gambit follows the normal clearing rules after the battle."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Clearing battle cards"
+      ],
+      "expectedTopic": "Gambit destination"
+    },
+    {
+      "id": "conversation-topic-switch",
+      "category": "conversation",
+      "question": "Okay. How does Purge work?",
+      "history": [
+        {
+          "role": "user",
+          "content": "How much does a Deed cost?"
+        },
+        {
+          "role": "assistant",
+          "content": "The cost depends on your Deed count, position modifier, and any buyout premium."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Purge"
+      ],
+      "expectedTopic": "Purge"
+    }
+  ],
+  "smokeCaseIds": [
+    "core-setup-starting-territory",
+    "military-additional-tactics",
+    "diplomats-leverage-target",
+    "financiers-capacity-opening",
+    "intel-interference",
+    "mystics-transmutation",
+    "inq-blasphemy",
+    "card-necromancy",
+    "live-deed-contiguity",
+    "conversation-followup-pronoun"
+  ]
+}

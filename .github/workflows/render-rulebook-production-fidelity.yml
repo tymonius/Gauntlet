@@ -15,15 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - name: Checkout approved design and canonical Rulebook
+      - name: Checkout preserved v0.6.1 publication system and canonical Rulebook
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             .github/workflows/render-rulebook-production-fidelity.yml
-            rulebook-design
-            rulebook-production
+            legacy/v0.6.1-rulebook-publication
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             images/sketches
             package.json
@@ -42,17 +41,17 @@ jobs:
 
       - name: Build approved proof, fidelity checkpoint, and complete Rulebook
         run: |
-          python rulebook-design/build_proofs.py
-          python rulebook-production/build_fidelity_gate.py
-          python rulebook-production/build_complete_rulebook.py
+          python legacy/v0.6.1-rulebook-publication/rulebook-design/build_proofs.py
+          python legacy/v0.6.1-rulebook-publication/rulebook-production/build_fidelity_gate.py
+          python legacy/v0.6.1-rulebook-publication/rulebook-production/build_complete_rulebook.py
 
       - name: Render and compare against approved design
         run: |
-          python -m http.server 8000 >/tmp/rulebook-production-server.log 2>&1 &
+          python -m http.server 8000 --directory legacy/v0.6.1-rulebook-publication >/tmp/rulebook-production-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
-          node rulebook-production/render_fidelity_gate.mjs
-          node rulebook-production/run_rulebook_renderer.mjs
+          node legacy/v0.6.1-rulebook-publication/rulebook-production/render_fidelity_gate.mjs
+          node legacy/v0.6.1-rulebook-publication/rulebook-production/run_rulebook_renderer.mjs
 
       - name: Validate PDF geometry
         run: |

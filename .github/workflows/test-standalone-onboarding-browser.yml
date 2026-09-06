@@ -25,6 +25,7 @@ jobs:
             /start/
             /deckbuilder/
             /game-data/current-game.json
+            /rulebook/player-facing/current-rulebook.md
 
       - name: Set up Node
         uses: actions/setup-node@v4

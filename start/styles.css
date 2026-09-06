@@ -100,17 +100,38 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
 @media(max-width:620px){.start-hero{padding:3.2rem 0}}
 
 /* Canonical faction symbols inherit each faction's own color. */
-.faction-choice.military{--faction:#9e252c}
-.faction-choice.diplomats{--faction:#315d9e}
-.faction-choice.financiers{--faction:#267051}
-.faction-choice.intelligence{--faction:#2d3134}
-.faction-choice.mystics{--faction:#674487}
-.faction-choice.inquisition{--faction:#b18b34}
+.faction-choice.military{--faction:#9e252c;--faction-symbol:url("/images/faction-symbols/military.svg")}
+.faction-choice.diplomats{--faction:#315d9e;--faction-symbol:url("/images/faction-symbols/diplomats.svg")}
+.faction-choice.financiers{--faction:#267051;--faction-symbol:url("/images/faction-symbols/financiers.svg")}
+.faction-choice.intelligence{--faction:#2d3134;--faction-symbol:url("/images/faction-symbols/intelligence.svg")}
+.faction-choice.mystics{--faction:#674487;--faction-symbol:url("/images/faction-symbols/mystics.svg")}
+.faction-choice.inquisition{--faction:#b18b34;--faction-symbol:url("/images/faction-symbols/inquisition.svg")}
 .choice-mark.faction-symbol-asset{
   color:var(--faction);
   background:currentColor;
   -webkit-mask:var(--faction-symbol) center/68% 68% no-repeat;
   mask:var(--faction-symbol) center/68% 68% no-repeat;
+}
+.faction-choice{
+  isolation:isolate;
+}
+.faction-choice > *{
+  position:relative;
+  z-index:1;
+}
+.faction-choice::after{
+  content:"";
+  position:absolute;
+  right:-24px;
+  bottom:-42px;
+  width:clamp(150px,46%,190px);
+  aspect-ratio:1;
+  z-index:0;
+  background:var(--faction);
+  opacity:.075;
+  -webkit-mask:var(--faction-symbol) center/contain no-repeat;
+  mask:var(--faction-symbol) center/contain no-repeat;
+  pointer-events:none;
 }
 
 /* Leader option cards stay typographic; the approved portrait appears only in the current-choice panel. */
@@ -202,3 +223,72 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   .selected-choice::before{max-width:240px}
   .selected-choice::after{bottom:-2.5rem;width:290px}
 }
+
+.play-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.play-mode-card {
+  padding: 1.5rem;
+  border: 1px solid rgba(49,42,34,.18);
+  background: #f5f0e7;
+}
+.play-mode-card h3 { margin: .25rem 0 .5rem; font-size: 1.5rem; }
+.play-mode-card p { line-height: 1.55; }
+@media (max-width: 760px) {
+  .play-mode-grid { grid-template-columns: 1fr; }
+  .play-mode-card .button { width: 100%; text-align: center; }
+}
+
+/* Follow-up onboarding polish. */
+[hidden]{display:none!important}
+.leader-choice .leader-summary{display:block;margin-top:.42rem;color:#4f5754;font-size:1rem;line-height:1.5}
+#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}
+#learnFaction .intro-grid{align-items:start}
+#factionLessonSteps{display:grid;gap:.7rem;margin:0;padding-left:1.25rem}
+#factionLessonVictory{display:grid;gap:1rem;margin:0}
+.victory-line{display:grid;gap:.2rem}
+.victory-line>strong{font-family:var(--font-interface);font-size:.82rem;letter-spacing:.09em;text-transform:uppercase;color:var(--lesson-faction,var(--start-red))}
+
+#factionLesson[data-faction="military"]{--lesson-faction:#9e262c;--lesson-symbol:url("../images/faction-symbols/military.svg")}
+#factionLesson[data-faction="diplomats"]{--lesson-faction:#264f91;--lesson-symbol:url("../images/faction-symbols/diplomats.svg")}
+#factionLesson[data-faction="financiers"]{--lesson-faction:#227044;--lesson-symbol:url("../images/faction-symbols/financiers.svg")}
+#factionLesson[data-faction="intelligence"]{--lesson-faction:#282827;--lesson-symbol:url("../images/faction-symbols/intelligence.svg")}
+#factionLesson[data-faction="mystics"]{--lesson-faction:#5d347e;--lesson-symbol:url("../images/faction-symbols/mystics.svg")}
+#factionLesson[data-faction="inquisition"]{--lesson-faction:#a67a27;--lesson-symbol:url("../images/faction-symbols/inquisition.svg")}
+#factionLesson .faction-lesson-hero{position:relative;isolation:isolate;overflow:hidden;border-top-color:var(--lesson-faction,var(--start-red))}
+#factionLesson .faction-lesson-hero>*{position:relative;z-index:1}
+#factionLesson .faction-lesson-hero::after{content:"";position:absolute;right:-2rem;bottom:-6rem;width:min(32vw,360px);aspect-ratio:1;z-index:0;pointer-events:none;opacity:.07;background:var(--lesson-faction,var(--start-red));-webkit-mask:var(--lesson-symbol) center/contain no-repeat;mask:var(--lesson-symbol) center/contain no-repeat}
+#factionLesson .intro-grid>.intro-card{border-top:5px solid var(--lesson-faction,var(--start-red))}
+#factionLesson .intro-card>span{color:var(--lesson-faction,var(--start-red))}
+@media(max-width:620px){#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:auto}#factionLesson .faction-lesson-hero::after{right:-4rem;bottom:-3rem;width:260px}}
+
+/* Faction-color cards, stable faction tiles, and Leader sketch treatment. */
+.faction-choice,.faction-choice label,.faction-choice a{box-sizing:border-box;min-width:0}
+.faction-choice .eyebrow,.faction-choice a{color:var(--choice-faction,var(--faction,var(--start-red)))}
+.faction-choice input{accent-color:var(--choice-faction,var(--faction,var(--start-red)))}
+.faction-choice:has(input:checked){outline-color:color-mix(in srgb,var(--choice-faction,var(--faction,var(--start-red))) 78%,transparent);background:color-mix(in srgb,var(--choice-faction,var(--faction,var(--start-red))) 4%,var(--surface))}
+
+#learnFaction .faction-lesson-grid{align-items:stretch}
+#learnFaction .faction-lesson-grid>.intro-card{box-sizing:border-box;min-width:0;height:100%}
+#factionLessonVictory,.victory-line{min-width:0}
+#factionLesson .faction-leader-lesson{position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;min-width:0;min-height:320px;padding-right:clamp(18rem,30vw,24rem);border-top-color:var(--lesson-faction,var(--start-red))}
+#factionLesson .faction-leader-lesson>*{position:relative;z-index:1}
+#factionLesson .faction-leader-lesson>.eyebrow{color:var(--lesson-faction,var(--start-red))}
+#factionLesson .faction-leader-lesson::after{content:"";position:absolute;z-index:0;right:1.25rem;top:1rem;bottom:0;width:clamp(220px,28%,330px);pointer-events:none;opacity:.78;background-image:var(--leader-lesson-art);background-repeat:no-repeat;background-position:center bottom;background-size:contain;mix-blend-mode:multiply}
+main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/general.png")}
+main:has(input[name="leader"][value="commandant"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/commandant.png")}
+main:has(input[name="leader"][value="ambassador"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/ambassador.png")}
+main:has(input[name="leader"][value="senator"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/senator.png")}
+main:has(input[name="leader"][value="banker"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/banker.png")}
+main:has(input[name="leader"][value="executive"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/executive.png")}
+main:has(input[name="leader"][value="ranger"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/ranger.png")}
+main:has(input[name="leader"][value="spymaster"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/spymaster.png")}
+main:has(input[name="leader"][value="alchemist"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/alchemist.png")}
+main:has(input[name="leader"][value="spirit-walker"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/spirit walker.png")}
+main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/grand inquisitor.png")}
+main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/witch hunter.png")}
+@media(max-width:900px){#factionLesson .faction-leader-lesson{padding-right:15rem}#factionLesson .faction-leader-lesson::after{right:.75rem;width:220px}}
+@media(max-width:620px){#learnFaction .faction-lesson-grid{align-items:stretch}#factionLesson .faction-leader-lesson{min-height:0;padding-right:1.35rem}#factionLesson .faction-leader-lesson::after{right:-2rem;top:auto;bottom:-1rem;width:240px;opacity:.11}#factionLesson .faction-leader-lesson>*{text-shadow:0 1px 0 rgba(255,253,248,.9)}}

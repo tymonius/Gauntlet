@@ -1,48 +1,72 @@
 (() => {
-  const REQUIRED_TERRITORIES = 3;
-  const MAX_ARENAS = 1;
-  const TERRITORY_WIDTH = 336;
-  const TERRITORY_HEIGHT = 240;
-  const MAX_TERRITORY_PREVIEW_WIDTH = 360;
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
 
-  state.territoryPool = [];
-  state.territories = [];
-  state.territorySearch = "";
-  state.territoryCategory = "all";
-  state.selectedTerritoryId = null;
-  state.pendingTerritories = null;
+  const constructionRules = () => deckbuilder.constructionRules();
+  const currentGameLabel = () => deckbuilder.currentGame()?.displayVersion || "Current game";
+  const cardCatalog = () => deckbuilder.cardCatalog();
+
+  const territoryState = {
+    pool: [],
+    selectedIds: [],
+    search: "",
+    category: "all",
+    selectedId: null,
+    pending: null,
+  };
+  let TERRITORY_WIDTH = 0;
+  let TERRITORY_HEIGHT = 0;
+  const territorySurfaceReady = import('../card-design/production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+    TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
+    TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+  });
+  const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   const territoryElements = {};
   let territoryPreviewResizeObserver = null;
-  const baseRenderAll = renderAll;
-  const baseValidateDeck = validateDeck;
-  const baseValidateAndRender = validateAndRender;
-  const baseCurrentDeckData = currentDeckData;
-  const baseApplyDeckData = applyDeckData;
+
+  deckbuilder.registerRenderHook(renderTerritoryIntegration);
+  deckbuilder.registerValidationHook(extendValidation);
+  deckbuilder.registerSerializeHook(serializeTerritories);
+  deckbuilder.registerHydrateHook(hydrateTerritories);
+  deckbuilder.registerDeckListHook(territoryDeckListLines);
+  deckbuilder.registerFeature("territories", {
+    selectedIds: () => [...territoryState.selectedIds],
+    selected: () => selectedTerritories(),
+    isReady: () => territoryState.pool.length > 0,
+    setSelectedIds(items) {
+      territoryState.selectedIds = resolveTerritoryIds(items || []);
+      territoryState.pending = null;
+      territoryState.selectedId = territoryState.selectedIds[0] || territoryState.pool[0]?.id || null;
+      return [...territoryState.selectedIds];
+    },
+  });
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
-  function installTerritoryIntegration() {
+  async function installTerritoryIntegration() {
+    await territorySurfaceReady;
     for (const id of [
-      "territoryMetricCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
+      "territoryMetricCount", "territoryRequiredCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
       "territoryList", "territoryPreview", "clearTerritoriesButton", "deckTerritories"
     ]) territoryElements[id] = document.getElementById(id);
 
     territoryElements.territorySearch?.addEventListener("input", () => {
-      state.territorySearch = territoryElements.territorySearch.value.trim().toLowerCase();
+      territoryState.search = territoryElements.territorySearch.value.trim().toLowerCase();
       renderTerritoryPicker();
     });
 
     territoryElements.territoryCategory?.addEventListener("change", () => {
-      state.territoryCategory = territoryElements.territoryCategory.value;
+      territoryState.category = territoryElements.territoryCategory.value;
       renderTerritoryPicker();
     });
 
     territoryElements.clearTerritoriesButton?.addEventListener("click", () => {
-      if (state.territories.length && !confirm("Remove all selected Territories?")) return;
-      state.territories = [];
-      state.selectedTerritoryId = null;
-      renderAll();
+      if (territoryState.selectedIds.length && !confirm("Remove all selected Territories?")) return;
+      territoryState.selectedIds = [];
+      territoryState.selectedId = null;
+      deckbuilder.render();
     });
 
     loadTerritories();
@@ -50,9 +74,8 @@
 
   async function loadTerritories() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
-      state.territoryPool = (currentGame.territories || []).map(territory => ({
+      const currentGame = await deckbuilder.bootstrap();
+      territoryState.pool = (currentGame.territories || []).map(territory => ({
         id: territory.id,
         name: territory.name,
         arena: Boolean(territory.arena),
@@ -62,15 +85,15 @@
         source: currentGame.authorityUrl
       }));
 
-      if (state.pendingTerritories) {
-        state.territories = resolveTerritoryIds(state.pendingTerritories);
-        state.pendingTerritories = null;
+      if (territoryState.pending) {
+        territoryState.selectedIds = resolveTerritoryIds(territoryState.pending);
+        territoryState.pending = null;
       }
 
-      if (!state.selectedTerritoryId && state.territoryPool.length) {
-        state.selectedTerritoryId = state.territoryPool[0].id;
+      if (!territoryState.selectedId && territoryState.pool.length) {
+        territoryState.selectedId = territoryState.pool[0].id;
       }
-      renderAll();
+      deckbuilder.render();
     } catch (error) {
       console.error(error);
       if (territoryElements.territoryList) {
@@ -80,38 +103,60 @@
     }
   }
 
-  function enhancedRenderAll() {
-    baseRenderAll();
+  function renderTerritoryIntegration() {
     renderTerritoryPicker();
     renderDeckTerritories();
     syncSourceStatus();
+    if (territoryElements.territoryMetricCount) {
+      territoryElements.territoryMetricCount.textContent = String(selectedTerritories().length);
+    }
+    if (territoryElements.territoryRequiredCount) {
+      territoryElements.territoryRequiredCount.textContent = String(constructionRules().territoriesPerPlayer);
+    }
   }
 
   function syncSourceStatus() {
-    if (!state.territoryPool.length || !el.dataStatus) return;
-    el.dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
+    const dataStatus = document.getElementById("dataStatus");
+    if (!territoryState.pool.length || !dataStatus) return;
+    dataStatus.textContent = `${currentGameLabel()} · ${cardCatalog().length} active cards + ${territoryState.pool.length} Territories loaded`;
   }
 
   function filteredTerritories() {
-    return state.territoryPool
+    return territoryState.pool
       .filter(territory => {
-        if (state.territoryCategory === "standard" && territory.arena) return false;
-        if (state.territoryCategory === "arena" && !territory.arena) return false;
+        if (territoryState.category === "standard" && territory.arena) return false;
+        if (territoryState.category === "arena" && !territory.arena) return false;
         return true;
       })
       .filter(territory => {
-        if (!state.territorySearch) return true;
+        if (!territoryState.search) return true;
         return `${territory.name} ${territory.watchlist} ${territory.text}`
           .toLowerCase()
-          .includes(state.territorySearch);
+          .includes(territoryState.search);
       });
+  }
+
+  function findTerritoryToggle(id) {
+    return [...(territoryElements.territoryList?.querySelectorAll("[data-territory-id]") || [])]
+      .find(row => row.dataset.territoryId === id)
+      ?.querySelector('[data-action="toggle"]') || null;
+  }
+
+  function restoreTerritoryFocus(id, target) {
+    const pickerToggle = () => findTerritoryToggle(id);
+    const previewToggle = () => document.getElementById("previewTerritoryButton");
+    const fallback = territoryElements.clearTerritoriesButton;
+    const focusTarget = target === "preview"
+      ? previewToggle() || pickerToggle() || fallback
+      : pickerToggle() || previewToggle() || fallback;
+    focusTarget?.focus({ preventScroll: true });
   }
 
   function renderTerritoryPicker() {
     const list = territoryElements.territoryList;
     if (!list) return;
 
-    if (!state.territoryPool.length) {
+    if (!territoryState.pool.length) {
       list.className = "compact-territory-list empty-state";
       list.textContent = "Loading Territories…";
       renderTerritoryPreview(null);
@@ -129,40 +174,53 @@
       return;
     }
 
-    if (!territories.some(territory => territory.id === state.selectedTerritoryId)) {
-      state.selectedTerritoryId = territories[0].id;
+    if (!territories.some(territory => territory.id === territoryState.selectedId)) {
+      territoryState.selectedId = territories[0].id;
     }
 
+    const rules = constructionRules();
+    const selectedArenaCount = selectedTerritories().filter(item => item.arena).length;
     territories.forEach(territory => {
-      const selected = state.territories.includes(territory.id);
-      const arenaSelected = selectedTerritories().some(item => item.arena);
+      const selected = territoryState.selectedIds.includes(territory.id);
       const unavailable = !selected && (
-        state.territories.length >= REQUIRED_TERRITORIES ||
-        (territory.arena && arenaSelected)
+        territoryState.selectedIds.length >= rules.territoriesPerPlayer ||
+        (territory.arena && selectedArenaCount >= rules.maximumArenas)
       );
 
       const row = document.createElement("article");
-      row.className = `compact-territory-row${territory.id === state.selectedTerritoryId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.className = `compact-territory-row${territory.id === territoryState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.dataset.territoryId = territory.id;
       row.innerHTML = `
-        <div>
-          <div class="compact-card-title"><strong>${escapeHtml(territory.name)}</strong></div>
-          <div class="compact-card-meta">
+        <button
+          type="button"
+          class="compact-row-preview-button"
+          data-action="preview"
+          aria-label="Preview ${escapeHtml(territory.name)}"
+          ${territory.id === territoryState.selectedId ? 'aria-current="true"' : ""}
+        >
+          <span class="compact-card-title"><strong>${escapeHtml(territory.name)}</strong></span>
+          <span class="compact-card-meta">
             <span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span>
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
-          </div>
-        </div>
-        <button type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+          </span>
+        </button>
+        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" aria-label="${selected ? "Remove" : "Choose"} ${escapeHtml(territory.name)}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
       `;
 
-      row.addEventListener("click", event => {
-        state.selectedTerritoryId = territory.id;
-        if (event.target.tagName === "BUTTON") toggleTerritory(territory.id);
-        else renderTerritoryPicker();
+      row.querySelector('[data-action="preview"]').addEventListener("click", () => {
+        territoryState.selectedId = territory.id;
+        renderTerritoryPicker();
+        list.querySelector(".compact-territory-row.selected .compact-row-preview-button")
+          ?.focus({ preventScroll: true });
+      });
+      row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+        territoryState.selectedId = territory.id;
+        toggleTerritory(territory.id, "picker");
       });
       list.append(row);
     });
 
-    renderTerritoryPreview(getTerritory(state.selectedTerritoryId));
+    renderTerritoryPreview(getTerritory(territoryState.selectedId));
   }
 
   function renderTerritoryPreview(territory) {
@@ -178,13 +236,14 @@
       return;
     }
 
-    const selected = state.territories.includes(territory.id);
-    const arenaSelected = selectedTerritories().some(item => item.arena);
+    const selected = territoryState.selectedIds.includes(territory.id);
+    const rules = constructionRules();
+    const selectedArenaCount = selectedTerritories().filter(item => item.arena).length;
     const unavailable = !selected && (
-      state.territories.length >= REQUIRED_TERRITORIES ||
-      (territory.arena && arenaSelected)
+      territoryState.selectedIds.length >= rules.territoriesPerPlayer ||
+      (territory.arena && selectedArenaCount >= rules.maximumArenas)
     );
-    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
+    const rendererUrl = `../card-design/face-render.html?id=${encodeURIComponent(`territory:${territory.id}`)}`;
 
     preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `
@@ -200,7 +259,7 @@
       ${territory.watchlist !== "None" ? `<section class="territory-watchlist rendered-territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
       <div class="button-row rendered-territory-preview-actions"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
     `;
-    document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id));
+    document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id, "preview"));
     installTerritoryPreviewScaling();
   }
 
@@ -228,20 +287,22 @@
     frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
-  function toggleTerritory(id) {
+  function toggleTerritory(id, focusTarget = null) {
     const territory = getTerritory(id);
     if (!territory) return;
 
-    if (state.territories.includes(id)) {
-      state.territories = state.territories.filter(item => item !== id);
+    if (territoryState.selectedIds.includes(id)) {
+      territoryState.selectedIds = territoryState.selectedIds.filter(item => item !== id);
     } else {
-      if (state.territories.length >= REQUIRED_TERRITORIES) return;
-      if (territory.arena && selectedTerritories().some(item => item.arena)) return;
-      state.territories = [...state.territories, id];
+      const rules = constructionRules();
+      if (territoryState.selectedIds.length >= rules.territoriesPerPlayer) return;
+      if (territory.arena && selectedTerritories().filter(item => item.arena).length >= rules.maximumArenas) return;
+      territoryState.selectedIds = [...territoryState.selectedIds, id];
     }
 
-    state.selectedTerritoryId = id;
-    renderAll();
+    territoryState.selectedId = id;
+    deckbuilder.render();
+    if (focusTarget) restoreTerritoryFocus(id, focusTarget);
   }
 
   function renderDeckTerritories() {
@@ -266,22 +327,24 @@
         </div>
         <div class="deck-actions"><button type="button" class="secondary danger" aria-label="Remove ${escapeHtml(territory.name)}">×</button></div>
       `;
-      row.querySelector("button").addEventListener("click", () => toggleTerritory(territory.id));
+      row.querySelector("button").addEventListener("click", () => toggleTerritory(territory.id, "picker"));
       container.append(row);
     });
   }
 
-  function enhancedValidateDeck() {
-    const result = baseValidateDeck();
+  function extendValidation(result) {
     const territories = selectedTerritories();
     const arenaCount = territories.filter(territory => territory.arena).length;
     const errors = [...result.errors];
-    const warnings = result.warnings.filter(message => !message.startsWith("Territory selection"));
+    const warnings = [...result.warnings];
 
-    if (territories.length !== REQUIRED_TERRITORIES) {
-      errors.push(`Choose exactly ${REQUIRED_TERRITORIES} different Territories (${territories.length}/${REQUIRED_TERRITORIES} selected).`);
+    const rules = constructionRules();
+    if (territories.length !== rules.territoriesPerPlayer) {
+      errors.push(`Choose exactly ${rules.territoriesPerPlayer} different Territories (${territories.length}/${rules.territoriesPerPlayer} selected).`);
     }
-    if (arenaCount > MAX_ARENAS) errors.push(`Choose no more than ${MAX_ARENAS} Arena.`);
+    if (arenaCount > rules.maximumArenas) {
+      errors.push(`Choose no more than ${rules.maximumArenas} Arena${rules.maximumArenas === 1 ? "" : "s"}.`);
+    }
 
     return {
       ...result,
@@ -293,75 +356,47 @@
     };
   }
 
-  function enhancedValidateAndRender() {
-    baseValidateAndRender();
-    const result = enhancedValidateDeck();
-    if (territoryElements.territoryMetricCount) territoryElements.territoryMetricCount.textContent = result.territoryCount;
-    el.validityText.textContent = result.valid ? "Valid" : "Incomplete";
+  function territoryDeckListLines() {
+    const names = selectedTerritories().map(territory => territory.name);
+    return ["", `Territories: ${names.join(", ") || "None"}`];
   }
 
-  function enhancedCurrentDeckData() {
+  function serializeTerritories(data) {
     return {
-      ...baseCurrentDeckData(),
-      schemaVersion: 2,
+      ...data,
       territories: selectedTerritories().map(territory => ({ id: territory.id, name: territory.name, arena: territory.arena }))
     };
   }
 
-  function enhancedApplyDeckData(data) {
-    state.territories = [];
-    baseApplyDeckData(data);
-
-    if (state.territoryPool.length) state.territories = resolveTerritoryIds(data.territories || []);
-    else state.pendingTerritories = data.territories || [];
-
-    renderAll();
-  }
-
-  async function enhancedCopyDeckList() {
-    const data = enhancedCurrentDeckData();
-    const faction = getFaction();
-    const leader = faction.leaders.find(item => item.id === state.leaderId);
-    const validation = enhancedValidateDeck();
-    const lines = [
-      data.name,
-      `${faction.name} — ${leader?.name || "No leader"}`,
-      `${validation.cardCount} cards · ${validation.pointTotal}/60 value · ${validation.territoryCount}/3 Territories`,
-      "",
-      ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-      "",
-      "Territories:",
-      ...selectedTerritories().map(territory => `- ${territory.name}`)
-    ];
-    await navigator.clipboard.writeText(lines.join("\n"));
+  function hydrateTerritories(data) {
+    territoryState.selectedIds = [];
+    if (territoryState.pool.length) territoryState.selectedIds = resolveTerritoryIds(data.territories || []);
+    else territoryState.pending = data.territories || [];
   }
 
   function resolveTerritoryIds(items) {
+    const entries = items || [];
+    if (!entries.length) return [];
     const ids = [];
-    for (const item of items || []) {
+    const rules = constructionRules();
+    for (const item of entries) {
       const id = typeof item === "string" ? item : item.id;
       const name = typeof item === "string" ? item : item.name;
-      const territory = getTerritory(id) || state.territoryPool.find(candidate => candidate.name === name);
+      const territory = getTerritory(id) || territoryState.pool.find(candidate => candidate.name === name);
       if (!territory || ids.includes(territory.id)) continue;
-      if (territory.arena && ids.map(getTerritory).filter(Boolean).some(candidate => candidate.arena)) continue;
-      if (ids.length >= REQUIRED_TERRITORIES) break;
+      if (territory.arena && ids.map(getTerritory).filter(Boolean).filter(candidate => candidate.arena).length >= rules.maximumArenas) continue;
+      if (ids.length >= rules.territoriesPerPlayer) break;
       ids.push(territory.id);
     }
     return ids;
   }
 
   function selectedTerritories() {
-    return state.territories.map(getTerritory).filter(Boolean);
+    return territoryState.selectedIds.map(getTerritory).filter(Boolean);
   }
 
   function getTerritory(id) {
-    return state.territoryPool.find(territory => territory.id === id);
+    return territoryState.pool.find(territory => territory.id === id);
   }
 
-  renderAll = enhancedRenderAll;
-  validateDeck = enhancedValidateDeck;
-  validateAndRender = enhancedValidateAndRender;
-  currentDeckData = enhancedCurrentDeckData;
-  applyDeckData = enhancedApplyDeckData;
-  copyDeckList = enhancedCopyDeckList;
 })();

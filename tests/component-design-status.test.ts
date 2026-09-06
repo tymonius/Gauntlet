@@ -7,7 +7,7 @@ const validator = readFileSync('scripts/tts-component-contract.mjs', 'utf8');
 const supplementalRenderer = readFileSync('card-design/supplemental-card.js', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const deckbuilderComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
-const deckbuilderPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
+const deckbuilderPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
 
 const components = contract.components as Array<Record<string, any>>;
 const sharedComponents = contract.sharedComponents as Array<Record<string, any>>;

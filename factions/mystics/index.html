@@ -1,53 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="description" content="Learn how the Mystics faction plays in Gauntlet: signature mechanics, victory conditions, Leaders, and institutional identity.">
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Learn how the Mystics faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity.">
+  <link rel="canonical" href="https://gauntlet.run/factions/mystics/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/factions/mystics/" />
+  <meta property="og:title" content="Mystics — Gauntlet Faction Guide" />
+  <meta property="og:description" content="Learn how the Mystics faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mystics — Gauntlet Faction Guide" />
+  <meta name="twitter:description" content="Learn how the Mystics faction feels to play in Gauntlet: playstyle, victory routes, Leaders, and institutional identity." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <title>Mystics — Gauntlet Faction Guide</title>
   <link rel="stylesheet" href="../../site.css">
   <link rel="stylesheet" href="../factions.css">
-  <link rel="stylesheet" href="../../rules-assistant/widget.css">
+  <link rel="stylesheet" href="../../rules-assistant/widget.css?v=20260903-1">
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body class="faction-page faction-mystics">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
-      <a href="/#game">Game</a>
+      <a href="/playtest/">Playtest</a>
       <a href="/rulebook/">Rules</a>
-      <a href="/factions/" aria-current="page">Factions</a>
+      <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
       <a href="/card-reference/">Card Reference</a>
       <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="faction-hero" aria-labelledby="faction-title">
       <div class="faction-hero-copy">
         <p class="eyebrow faction-eyebrow"><span class="faction-eyebrow-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/mystics.svg')"></span>Mystics · faction guide</p>
         <h1 id="faction-title">Sacrifice now. <span>Transform what remains.</span></h1>
-        <p class="faction-lede">Mystics bind, sacrifice, exchange, and recover cards while completing three public Rites that unlock increasingly powerful ways to use the Graveyard and the cards in hand.</p>
+        <p class="faction-lede">Mystics reach into the Graveyard for forbidden power, reclaim cards thought lost, and complete Rites that unlock new abilities—until the Ritual of Ascension becomes possible.</p>
         <div class="hero-actions">
           <a class="button primary" href="../../deckbuilder/?faction=mystics">Build a Mystics Deck</a>
         </div>
         <dl class="faction-facts">
-          <div><dt>Victory</dt><dd>Run the Gauntlet or complete Ritual</dd></div>
-          <div><dt>System</dt><dd>Three Rites · no tracked resource</dd></div>
+          <div><dt>Victory</dt><dd>Run the Gauntlet or complete the Ritual of Ascension</dd></div>
+          <div><dt>System</dt><dd>Rites · Graveyard · Ascension</dd></div>
           <div><dt>Leaders</dt><dd>Alchemist · Spirit Walker</dd></div>
         </dl>
       </div>
@@ -66,44 +89,44 @@
     <section class="section faction-play" aria-labelledby="play-title">
       <div class="section-heading split-heading">
         <div><p class="eyebrow">At the table</p><h2 id="play-title">How the Mystics play.</h2></div>
-        <p>Mystics treat every card zone as part of a larger ritual economy. Cards can be spent, bound, recovered, repeated, or transformed into battle strength while the three Rites create a visible race toward Ritual.</p>
+        <p>Mystics treat cards that other factions would consider spent or lost as ingredients in a longer ritual plan. Their power grows as Rites are completed, creating a visible race between battlefield pressure and occult progress.</p>
       </div>
       <div class="play-grid">
-        <article><h3>Plan multi-turn Rites</h3><p>Each Rite has a beginning cost and a later completion condition. Losses or failed position requirements can interrupt that progress.</p></article>
-        <article><h3>Use sacrifice as fuel</h3><p>Mystics frequently place cards in the Graveyard deliberately, then use other effects to recover or exploit them.</p></article>
-        <article><h3>Grow into new powers</h3><p>The first completed Rite unlocks Invocation. The second unlocks Transmutation. The third unlocks Convergence and permission to begin the Ritual of Ascension.</p></article>
+        <article><h3>Plan multi-turn Rites</h3><p>Each Rite asks you to set up and sustain a different kind of achievement. Your opponent can see what you are attempting and try to interrupt it.</p></article>
+        <article><h3>Use sacrifice as fuel</h3><p>Mystics deliberately send cards to the Graveyard, then recover or exploit cards that would normally be out of circulation.</p></article>
+        <article><h3>Grow into new powers</h3><p>Each completed Rite unlocks another faction ability, so the Mystics become more flexible and dangerous as their ritual work succeeds.</p></article>
       </div>
       <aside class="player-fit">
         <div><p class="eyebrow">A good fit for you if</p><h3>Choose Mystics when...</h3></div>
         <ul>
-          <li>You enjoy sequencing, combos, and using the Graveyard as a resource.</li>
+          <li>You enjoy sequencing, combinations, and using the Graveyard as a resource.</li>
           <li>You like public long-term objectives with different completion puzzles.</li>
-          <li>You are comfortable sacrificing immediate card value to unlock stronger systems later.</li>
+          <li>You are comfortable sacrificing immediate card value to unlock stronger options later.</li>
         </ul>
       </aside>
     </section>
 
     <section class="section mechanics-section" aria-labelledby="mechanics-title">
-      <div class="section-heading"><p class="eyebrow">Signature system</p><h2 id="mechanics-title">The mechanics that define the faction.</h2></div>
+      <div class="section-heading"><p class="eyebrow">Signature system</p><h2 id="mechanics-title">What makes the faction different.</h2></div>
       <div class="mechanics-grid">
-        <article><span>01</span><h3>The three Rites</h3><p>Rite of Echoes rewards title planning, Rite of Blood rewards winning without normal battle cards, and Rite of Crossing rewards taking and holding enemy ground.</p></article>
-        <article><span>02</span><h3>Invocation</h3><p>After the first Rite, once per turn after an Arcane card you played, set, or chose applies its effect, move one card from your Graveyard to your Discard Pile.</p></article>
-        <article><span>03</span><h3>Transmutation</h3><p>After the second Rite, once per turn before battle dice, put one card from Hand in your Graveyard and add its value to your battle total.</p></article>
+        <article><span>01</span><h3>The Graveyard is not off-limits</h3><p>Mystics can reach back into the Graveyard for cards other factions would consider gone, turning sacrifice and loss into future possibilities.</p></article>
+        <article><span>02</span><h3>Complete Rites. Unlock power.</h3><p>Each Rite is a public challenge that changes what the faction can do once completed. The more Rites you finish, the stranger and more powerful your options become.</p></article>
+        <article><span>03</span><h3>Grow toward Ascension</h3><p>Complete all three Rites and the final Ritual of Ascension comes within reach, giving the Mystics a second path to victory.</p></article>
       </div>
     </section>
 
     <section class="section victory-section" aria-labelledby="victory-title">
       <div class="section-heading"><p class="eyebrow">Victory</p><h2 id="victory-title">How the Mystics win.</h2></div>
       <div class="victory-grid">
-        <article><h3>Run the Gauntlet</h3><p>Sacrifice, recovery, and Arcane battle effects can support a direct territorial win.</p></article>
-        <article><h3>Ritual of Ascension</h3><p>Complete all three public Rites, then begin the Ritual by binding one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate and win a battle while all three remain bound to complete the Ritual and win the game. Losing a battle first interrupts the Ritual.</p></article>
+        <article><h3>Run the Gauntlet</h3><p>Forbidden recovery and newly unlocked powers can support a direct territorial win while your Rites force the opponent to respect a second threat.</p></article>
+        <article><h3>Ritual of Ascension</h3><p>Complete all three Rites to unlock the Ritual of Ascension, then carry the ritual through to claim victory.</p></article>
       </div>
     </section>
 
     <section class="section leaders-section" aria-labelledby="leaders-title">
       <div class="section-heading split-heading">
         <div><p class="eyebrow">Faction Leaders</p><h2 id="leaders-title">Two ways to lead.</h2></div>
-        <p>Each Leader uses the same faction card pool and core system, but pushes it toward a different tactical identity.</p>
+        <p>Each Leader uses the same Rites and Arcane card pool, but one turns sacrifice into card flow while the other protects long-term ritual progress.</p>
       </div>
       <div class="leader-profiles">
         <article class="leader-profile" id="alchemist">
@@ -112,8 +135,8 @@
             <p class="leader-kicker">Sacrifice sequencing and card conversion</p>
             <h3>Alchemist</h3>
             <p class="leader-motto">“Nothing is fixed. Everything can be transformed.”</p>
-            <p>The Alchemist replaces the first card deliberately sacrificed from hand through a Rite, Transmutation, or Arcane effect during the turn.</p>
-            <div class="ability-summary"><strong>Leader ability</strong><p>Materia Prima: the first qualifying sacrifice from hand on your turn draws one replacement card; during battle, draw after the battle resolves.</p></div>
+            <p>The Alchemist replaces some deliberate sacrifices with new draws, making the Mystics' costs feel more like conversion than simple loss.</p>
+            <div class="ability-summary"><strong>Why it matters</strong><p>The Alchemist is the combination-focused Mystic. Sacrificing the right card can both pay a cost and keep your Hand moving, encouraging chains of effects rather than simple conservation.</p></div>
           </div>
         </article>
         <article class="leader-profile" id="spirit-walker">
@@ -122,8 +145,8 @@
             <p class="leader-kicker">Ritual endurance and protective sacrifice</p>
             <h3>Spirit Walker</h3>
             <p class="leader-motto">“The spirits remember what the living abandon.”</p>
-            <p>The Spirit Walker can sacrifice an Arcane card of sufficient value to protect a begun Rite or Ritual from the first battle-loss interruption of the turn.</p>
-            <div class="ability-summary"><strong>Leader ability</strong><p>Guardians of the Circle: the first time on your turn that a battle loss would interrupt a begun Rite or Ritual, put an Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites to prevent that interruption.</p></div>
+            <p>The Spirit Walker can protect ritual progress from a battle loss by sacrificing an Arcane card, making long-term Rites harder to disrupt.</p>
+            <div class="ability-summary"><strong>Why it matters</strong><p>The Spirit Walker is the steadier Mystic. Keeping the right Arcane card in reserve lets you take battlefield risks without surrendering all the work invested in a Rite.</p></div>
           </div>
         </article>
       </div>
@@ -133,9 +156,9 @@
       <div class="identity-panel">
         <div><p class="eyebrow">Archetype and setting</p><h2 id="identity-title">An institution—and a method of power.</h2></div>
         <div>
-          <p>Mystics represent experimental scholars, ritual practitioners, and traditions that work with powers only partly understood. They belong to Gauntlet’s early-modern world rather than a separate high-fantasy culture: the Alchemist experiments with matter; the Spirit Walker preserves through invocation.</p>
-          <p><strong>Visual and archetypal influences:</strong> Occult science, laboratories, retorts and formulae, ritual circles, smoke, bone and wood charms, bound objects, partially understood powers, and disciplined sacrifice.</p>
-          <p class="setting-note">Gauntlet’s setting is still being developed. The six factions are institutions within a broadly shared civilization, not fixed nations or isolated cultures.</p>
+          <p>Mystics encompass people and traditions that engage directly with the setting's rare and disputed supernatural phenomena. The Alchemist approaches hidden forces through experiment, instruments, formulae, and an effort to make the extraordinary reproducible; the Spirit Walker belongs to culturally rooted Indigenous ceremonial traditions in which spiritual knowledge is inherited, practiced, and understood through relationships and obligations rather than experimental theory.</p>
+          <p><strong>Leader inspirations:</strong> <strong>Alchemist —</strong> Nicolas Flamel, Paracelsus, and John Dee: the early-modern scholar working at the unstable boundary between natural philosophy and the occult. <strong>Spirit Walker —</strong> The Spirit Walker encompasses a broad range of Indigenous spiritual archetypes, from prophetic figures such as Tenskwatawa and Neolin to the darker traditions surrounding skinwalker legends.</p>
+          <p class="setting-note">Gauntlet takes place in an eighteenth-century powder-and-parchment world of competing provinces, chartered territories, autonomous cities, commercial possessions, and independent native nations. The six factions are institutional spheres that cross political and cultural borders: methods of exercising power rather than six countries or peoples.</p>
         </div>
       </div>
     </section>
@@ -144,25 +167,34 @@
       <div><p class="eyebrow">Take the next step</p><h2>Put Mystics on the table.</h2></div>
       <div class="next-links">
         <a class="button primary" href="../../deckbuilder/?faction=mystics">Build a Deck</a>
-        <a class="text-link" href="../../rulebook/">Read the complete rules →</a>
+        <a class="text-link" href="../../rulebook/#17-mystics">Read the Mystics rulebook chapter →</a>
         <a class="text-link" href="../">Compare all six factions →</a>
       </div>
     </section>
   </main>
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished playtest project.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="../../rulebook/">Browser Rulebook</a>
-      <a href="../../deckbuilder/?faction=mystics">Deckbuilder</a>
-      <a href="../">All Factions</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
   <noscript><p class="noscript">JavaScript is required only for the Rules Arbiter; all faction-guide content remains available without it.</p></noscript>
-  <script type="module" src="../../rules-assistant/widget.js"></script>
+  <script type="module" src="../../rules-assistant/widget.js?v=20260903-1"></script>
 </body>
 </html>

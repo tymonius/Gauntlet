@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -25,8 +30,11 @@
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
   <link rel="stylesheet" href="styles.css?v=20260802-1" />
   <link rel="stylesheet" href="live-state.css?v=20260802-1" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -40,7 +48,7 @@
     </nav>
   </header>
 
-  <main class="tracked-main">
+  <main id="main-content" tabindex="-1" class="tracked-main">
     <section class="tracked-hero" aria-labelledby="tracked-title">
       <div>
         <p class="eyebrow">One game · two players · digital feedback</p>
@@ -57,21 +65,22 @@
       <div><h2>Opening the tracked game</h2><p>Checking the game code and feedback status.</p></div>
     </section>
 
-    <section id="errorPanel" class="tracked-panel state-panel error-panel" hidden>
+    <section id="errorPanel" class="tracked-panel state-panel error-panel" hidden role="alert" tabindex="-1" aria-labelledby="errorTitle" aria-describedby="errorMessage">
       <div><p class="eyebrow">Tracked game unavailable</p><h2 id="errorTitle">The game could not be opened.</h2><p id="errorMessage"></p></div>
       <a class="button secondary" href="./">Start a new tracked playtest</a>
     </section>
 
     <section id="createPanel" class="create-layout" hidden>
       <div class="tracked-panel create-copy">
-        <p class="eyebrow">Start at the table</p>
+        <p class="eyebrow">Self-serve playtest · v0.7.1</p>
         <h2>One player creates the game.</h2>
-        <p>The creator receives a public join link and QR code. Both players join from their own devices so Rules Arbiter questions and individual questionnaire responses are attributed correctly.</p>
+        <p>The creator receives a public join link and QR code. Both players join from their own devices so faction choices, Rules Arbiter questions, live observations, and individual questionnaire responses stay attached to the same game.</p>
         <ol>
           <li>Create the game using your faction and Leader.</li>
           <li>Let the opponent scan the QR code and confirm their own choice.</li>
+          <li>If you're together in person, use the physical tabletop. If you're in different locations, use Tabletop Simulator.</li>
           <li>The creator records the start once, then both players play normally.</li>
-          <li>The creator submits the shared result; both players submit individual responses.</li>
+          <li>The creator submits the shared result; both players submit separate individual responses.</li>
         </ol>
         <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
         <p class="privacy-note"><strong>Already finished the game?</strong> <a href="../retrospective/">Create a retrospective record</a> if both players can still join that record.</p>
@@ -82,11 +91,21 @@
         <p class="eyebrow">Create tracked game</p>
         <h2>Who are you playing?</h2>
         <label>Your name<input id="createName" type="text" maxlength="80" autocomplete="name" required placeholder="Name your opponent will recognize" /></label>
+        <label>Where are you playing?
+          <select id="createPlayMode" required>
+            <option value="">Choose</option>
+            <option value="physical">Together in person — physical tabletop</option>
+            <option value="tts">Remotely — Tabletop Simulator</option>
+          </select>
+        </label>
         <div class="two-field-grid">
           <label>Faction<select id="createFaction" required></select></label>
           <label>Leader<select id="createLeader" required disabled></select></label>
         </div>
         <p id="savedChoiceNote" class="saved-choice-note"></p>
+        <label>What made this faction or Leader appeal to you?
+          <textarea id="createSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing; this is part of the playtest evidence."></textarea>
+        </label>
         <button class="button primary full-width" type="submit">Start a tracked playtest</button>
         <p id="createStatus" class="form-status" aria-live="polite"></p>
       </form>
@@ -129,6 +148,22 @@
         <div id="playerCards" class="player-cards"></div>
       </section>
 
+      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transportTitle">
+        <div>
+          <p id="transportEyebrow" class="eyebrow">Play method</p>
+          <h2 id="transportTitle">Preparing the play handoff…</h2>
+          <p id="transportCopy"></p>
+          <p id="transportMatchup" class="transport-matchup"></p>
+        </div>
+        <div>
+          <div class="transport-actions">
+            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
+            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+          </div>
+          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
+        </div>
+      </section>
+
       <section id="joinPanel" class="tracked-panel form-panel" hidden>
         <p class="eyebrow">Join this game</p>
         <h2>Confirm your side.</h2>
@@ -138,6 +173,9 @@
             <label>Faction<select id="joinFaction" required></select></label>
             <label>Leader<select id="joinLeader" required disabled></select></label>
           </div>
+          <label>What made this faction or Leader appeal to you?
+            <textarea id="joinSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing."></textarea>
+          </label>
           <button class="button primary" type="submit">Join game</button>
           <p id="joinStatus" class="form-status" aria-live="polite"></p>
         </form>
@@ -156,9 +194,66 @@
           <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
           <button id="showStoppedResult" type="button" class="button secondary">Game stopped</button>
         </div>
+        <section class="companion-panel" aria-labelledby="companion-title">
+          <div class="companion-heading">
+            <div><p class="eyebrow">Table companion</p><h3 id="companion-title">Keep the sequence visible.</h3></div>
+            <button id="companionArbiter" type="button" class="button secondary">What happens now? Ask the Rules Arbiter</button>
+          </div>
+          <div class="companion-grid">
+            <details open>
+              <summary>Turn sequence</summary>
+              <ol>
+                <li><strong>Capture</strong> — advance the Front Line when eligible.</li>
+                <li><strong>Draw</strong> — draw one card.</li>
+                <li><strong>Opening</strong> — take your Action now or save it.</li>
+                <li><strong>Movement</strong> — Advance, Hold, or Fall Back; entering the opponent's Position begins Onset.</li>
+                <li><strong>Denouement</strong> — take your Action here if you did not take it during Opening.</li>
+                <li><strong>Cleanup</strong> — end-of-turn effects and Hand limit.</li>
+              </ol>
+            </details>
+            <details>
+              <summary>Battle sequence</summary>
+              <ol>
+                <li>Onset</li>
+                <li>Set Gambits</li>
+                <li>Form Reserves</li>
+                <li>Reveal Gambits</li>
+                <li>Choose Tactics</li>
+                <li>Reveal Tactics</li>
+                <li>Outcome</li>
+                <li>Aftermath</li>
+              </ol>
+            </details>
+            <details>
+              <summary>First-battle reminders</summary>
+              <ul>
+                <li>Terms, when applicable, resolve first during Onset.</li>
+                <li>Gambits are set from Hand; Reserves are private three-card battle draws.</li>
+                <li>Tactics are chosen from Reserve.</li>
+                <li>Defensive Edge wins tied battle totals for the defender; an unresolved tie uses a separate unmodified Tiebreak Roll.</li>
+                <li>Normal Gambits go to the Graveyard, Tactics to Discard, and unused Reserve cards to Discard during cleanup.</li>
+              </ul>
+            </details>
+          </div>
+        </section>
+
+        <section id="diagnosticPanel" class="diagnostic-panel">
+          <p class="eyebrow">Live observation</p>
+          <h3>Mark the moment, not the diagnosis.</h3>
+          <p>Either player can tap one of these when it happens. The timestamp and player are stored with the game.</p>
+          <div class="diagnostic-grid">
+            <button type="button" class="button secondary" data-diagnostic-flag="dont_know_what_happens_next">I don't know what happens next</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="rule_unclear">A rule is unclear</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="no_meaningful_option">I have no meaningful option</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="feels_decided">This feels decided</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="repeated_or_futile_battle">Battle feels repeated or futile</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="component_or_tts_problem">Component / TTS problem</button>
+          </div>
+          <p id="diagnosticStatus" class="form-status" aria-live="polite"></p>
+        </section>
         <details class="note-details">
           <summary>Record a factual session note</summary>
-          <form id="noteForm"><textarea id="noteText" rows="3" maxlength="500" placeholder="What happened? Avoid proposing a fix here."></textarea><button type="submit" class="button secondary">Save note</button></form>
+          <form id="noteForm"><label for="noteText">What happened?</label><textarea id="noteText" rows="3" maxlength="500" placeholder="Avoid proposing a fix here."></textarea><button type="submit" class="button secondary">Save note</button></form>
         </details>
         <p id="eventStatus" class="form-status" aria-live="polite"></p>
       </section>
@@ -187,7 +282,7 @@
             <label><input id="packageUnmodified" type="checkbox" checked /> We used the generated Decks and components without modification.</label>
             <label><input id="variantUsed" type="checkbox" /> We used a noncanonical ruling or variant.</label>
           </div>
-          <label>Did printing, cutting, missing pieces, or component identification interfere with play? <span class="optional">optional</span><textarea id="productionIssue" rows="3" maxlength="1000"></textarea></label>
+          <label>Did printing, cutting, missing pieces, component identification, or TTS setup / technical trouble interfere with play? <span class="optional">optional</span><textarea id="productionIssue" rows="3" maxlength="1000"></textarea></label>
           <label>Strongest moment<textarea id="strongestMoment" rows="3" maxlength="1500" required></textarea></label>
           <label>Most confusing or frustrating point<textarea id="confusingPoint" rows="3" maxlength="1500" required></textarea></label>
           <label>One important observation<textarea id="importantObservation" rows="3" maxlength="1500" required></textarea></label>
@@ -202,8 +297,36 @@
           <p>The public game view shows only that you submitted—not these answers. The creator's separate review key can retrieve the completed record.</p>
         </div>
         <form id="responseForm" class="tracked-panel feedback-form">
-          <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
+          <p class="privacy-note">Your pregame reason for choosing this faction and Leader is already attached to your seat. These questions ask how the actual game compared with that expectation.</p>
+          <label id="legacySelectionReasonField" hidden>Why did this faction or Leader interest you?
+            <textarea id="legacySelectionReason" rows="3" maxlength="1000" placeholder="This older tracked session predates pregame attraction capture."></textarea>
+          </label>
           <div id="ratingGrid" class="rating-grid"></div>
+          <div class="decision-experience">
+            <p class="eyebrow">Decision point</p>
+            <label>When did the result first feel decided to you?
+              <select id="feltDecidedWhen" required>
+                <option value="">Choose</option>
+                <option value="never">It never felt decided before the end</option>
+                <option value="early">Early in the game</option>
+                <option value="middle">Around the middle</option>
+                <option value="late">Late, but before the end</option>
+                <option value="at_end">Only when the game actually ended</option>
+              </select>
+            </label>
+            <label>After that point, did you still have meaningful decisions?
+              <select id="agencyAfterDecided" required>
+                <option value="">Choose</option>
+                <option value="yes">Yes</option>
+                <option value="some">Some</option>
+                <option value="no">No</option>
+                <option value="not_applicable">Not applicable — it never felt decided early</option>
+              </select>
+            </label>
+            <label>What most determined the result? <span class="optional">optional</span>
+              <textarea id="decisiveCause" rows="3" maxlength="1000" placeholder="A decision, battle, card, faction progression, rules mistake, luck, or something else."></textarea>
+            </label>
+          </div>
           <label>Would you play Gauntlet again?<select id="playAgain" required><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></label>
           <label>Additional comments <span class="optional">optional</span><textarea id="responseComments" rows="4" maxlength="2000"></textarea></label>
           <button class="button primary" type="submit">Submit my response</button>
@@ -230,9 +353,27 @@
     </section>
   </main>
 
-  <footer>
-    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
+    </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="app.js?v=20260802-1" defer></script>

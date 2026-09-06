@@ -4,17 +4,22 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const authority = JSON.parse(read('game-data/current-game.json'));
 const runtime = read('game-data/current-game.mjs');
+const sharedValidation = read('game-data/current-game-validation.mjs');
+const rulesetRuntime = read('game-data/ruleset.mjs');
+const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
 const componentLoader = read('scripts/tts-component-contract.mjs');
-const releaseBuilder = read('scripts/build-v070-release-source.mjs');
+const releaseBuilder = read('scripts/build-v071-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const artworkWorker = read('workers/artwork-authoring/src/index.js');
 const artworkSession = read('workers/artwork-authoring/src/index-session.js');
 const artworkClient = read('card-design/artwork-authoring-client.js');
 const artworkServer = read('scripts/card-design-server.mjs');
 const artworkCompositor = read('card-design/artwork-compositor.js');
+const cardRenderer = read('card-design/face-templates/playable.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
+const livePublicationVerifier = read('scripts/verify-v071-live-publication.mjs');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
   'docs/v0.6.4-card-additions.json',
@@ -30,13 +35,13 @@ const TRANSITIONAL_RUNTIME_MARKERS = [
   'resolveFactionRules(',
 ];
 
-describe('complete v0.7.0 current-game authority', () => {
-  it('is a native, complete v0.7.0 authority rather than a resolution manifest', () => {
+describe('complete current-game authority', () => {
+  it('is a native, complete v0.7.1 release authority rather than a resolution manifest', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
-    expect(authority.version).toBe('v0.7.0');
-    expect(authority.displayVersion).toBe('v0.7.0');
-    expect(authority.status).toBe('release-ready');
+    expect(authority.version).toBe('v0.7.1');
+    expect(authority.displayVersion).toBe('v0.7.1');
+    expect(authority.status).toBe('current-release');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');
     expect(authority.runtimePolicy).toContain('historical source and change documents are provenance only');
 
@@ -45,12 +50,13 @@ describe('complete v0.7.0 current-game authority', () => {
     }
   });
 
-  it('keeps the promoted starter Deck identity native to v0.7.0', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.0');
-    expect(authority.starterDecks.status).toBe('Locked v0.7.0 public playtest starter set');
-    expect(authority.starterDecks.purpose).toContain('Recommended v0.7.0 starter Decks');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('locked-for-v0.7.0-public-playtest');
-    expect(authority.starterDecks.approval.status).toBe('locked-for-v0.7.0-public-playtest');
+  it('publishes the v0.7.1 starter Deck authority with the Mystics packages', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.1');
+    expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');
+    expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');
+    expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');
 
     // Historical source paths remain provenance; active release identity must not.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
@@ -75,6 +81,54 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(authority.componentContract).toBeTruthy();
     expect(authority.arcaneSymbol).toBeTruthy();
     expect(authority.mystics).toBeTruthy();
+  });
+
+  it('promotes the approved v0.7.1 Mystics six-Rite model into current authority', () => {
+    expect(authority.provenance.currentDevelopmentInputs.mysticsRites).toBe('/docs/v0.7.1-mystics-rites.json');
+    expect(authority.mystics.selectionPolicy).toMatchObject({
+      poolSize: 6,
+      selectedCount: 3,
+      timing: 'game-package construction',
+      visibility: 'disclosure optional until begun',
+    });
+    expect(authority.mystics.rites.map((rite: any) => rite.id)).toEqual([
+      'echoes', 'blood', 'crossing', 'shattering', 'consecration', 'equivalence',
+    ]);
+    expect(new Set(authority.mystics.rites.map((rite: any) => rite.id)).size).toBe(6);
+    expect(authority.mystics.generalRules.impossibleCompletion).toContain('can no longer be completed');
+    expect(authority.mystics.rites.find((rite: any) => rite.id === 'blood')?.reminder)
+      .toMatchObject({ style: 'italic' });
+    expect(authority.mystics.ritual.begin).toContain('all three selected Rites');
+  });
+
+  it('locks the two Mystics starter Rite packages, recommended orders, and supporting card swaps', () => {
+    const byId = new Map(authority.starterDecks.decks.map((deck: any) => [deck.id, deck]));
+    const alchemist = byId.get('mystics-alchemist-first-principles');
+    const spiritWalker = byId.get('mystics-spirit-walker-unbroken-circle');
+
+    expect(alchemist.selectedRites).toEqual(['echoes', 'blood', 'equivalence']);
+    expect(alchemist.recommendedRiteOrder).toEqual(['equivalence', 'echoes', 'blood']);
+    expect(alchemist.cards.find((entry: any) => entry.name === 'Accursed Wager')).toBeUndefined();
+    expect(alchemist.cards.find((entry: any) => entry.name === 'Threefold Vision')?.quantity).toBe(1);
+    expect(alchemist.cardCount).toBe(30);
+    expect(alchemist.deckbuildingValue).toBe(60);
+
+    expect(spiritWalker.selectedRites).toEqual(['crossing', 'shattering', 'consecration']);
+    expect(spiritWalker.recommendedRiteOrder).toEqual(['consecration', 'shattering', 'crossing']);
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Necromancy')).toBeUndefined();
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Threefold Vision')).toBeUndefined();
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Paths of Shadow')?.quantity).toBe(2);
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Witchcraft')?.quantity).toBe(2);
+    expect(spiritWalker.cardCount).toBe(30);
+    expect(spiritWalker.deckbuildingValue).toBe(60);
+
+    const riteIds = new Set(authority.mystics.rites.map((rite: any) => rite.id));
+    for (const deck of [alchemist, spiritWalker]) {
+      expect(deck.selectedRites).toHaveLength(authority.mystics.selectionPolicy.selectedCount);
+      expect(new Set(deck.selectedRites).size).toBe(deck.selectedRites.length);
+      expect(deck.selectedRites.every((id: string) => riteIds.has(id))).toBe(true);
+      expect([...deck.recommendedRiteOrder].sort()).toEqual([...deck.selectedRites].sort());
+    }
   });
 
   it('keeps card-pool summary metadata synchronized with the actual playable pool', () => {
@@ -125,6 +179,50 @@ describe('complete v0.7.0 current-game authority', () => {
     }));
   });
 
+  it('stores current playable-card headings in final production form without a presentation normalization layer', () => {
+    const headingRules = authority.gameplay.card_rules.effect_headings;
+    expect(headingRules.supported).toEqual([
+      'Action',
+      'Asset',
+      'Gambit',
+      'Tactic',
+      'Gambit/Tactic',
+      'Mission',
+      'Overlay',
+      'Terms',
+      'Sanctions',
+      'Reaction',
+    ]);
+
+    const actualHeadings = [...new Set(
+      authority.gameplay.cards.flatMap((card: any) => card.effects.map((effect: any) => effect.label))
+    )].sort();
+    expect(actualHeadings).toEqual([...headingRules.all_present_headings].sort());
+    for (const retired of ['Placement', 'Accepted', 'Refused', 'Aftermath', 'Text']) {
+      expect(actualHeadings).not.toContain(retired);
+      expect(headingRules.retired).toContain(retired);
+    }
+
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'diplomats-demilitarized-zone')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Reaction', 'Overlay']);
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'inquisition-martyrdom')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Reaction']);
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'diplomats-sanctions-blockade')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Sanctions', 'Overlay']);
+
+    expect(cardRenderer).toContain('const card = spec.content.card;');
+    expect(cardRenderer).not.toMatch(/normaliz.*Card.*Presentation/i);
+  });
+
+  it('does not synthesize legacy iterable Leader sections at current runtime boundaries', () => {
+    expect(runtime).not.toContain('legacyLeaderSectionTuple');
+    expect(runtime).not.toContain('Symbol.iterator');
+    expect(rulesetRuntime).not.toContain('legacyLeaderSectionTuple');
+    expect(rulesetRuntime).not.toContain('Symbol.iterator');
+    expect(leaderCatalog).not.toContain('map(([label,text,cost])');
+    expect(leaderCatalog).toContain('(leader.sections || []).map(section');
+  });
+
   it('contains the finalized current card wording directly', () => {
     const natureAltar = authority.gameplay.cards.find((card: any) => card.id === 'mystics-nature-s-altar');
     expect(natureAltar).toBeDefined();
@@ -148,6 +246,9 @@ describe('complete v0.7.0 current-game authority', () => {
   it('contains resolved current faction rules directly', () => {
     const rules = authority.gameplay.faction_rules;
     expect(rules.diplomats.terms_timing).toBe('During Onset');
+    expect(rules.diplomats.peace_treaty_threshold).toBe(6);
+    expect(rulebook).toContain('Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals');
+    expect(rulebook).toContain('if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified');
     expect(rules.financiers.faction_feature_action_phase).toBe('Denouement');
     expect(rules.financiers.financial_capacity).toContain('Faction Feature marked 1 Action');
     expect(rules.intelligence.faction_features_1_action).toEqual([
@@ -173,7 +274,12 @@ describe('complete v0.7.0 current-game authority', () => {
       profile: 'No Action',
       timing: 'During Onset',
     });
-    expect(authority.factionFeatures.military).toEqual([]);
+    expect(authority.factionFeatures.military).toContainEqual({
+      name: 'Orders',
+      profile: 'No Action',
+      timing: "At each Order's stated timing",
+      cost: 'Listed Command',
+    });
 
     for (const leader of authority.leaders) {
       expect(leader.sections.length).toBeGreaterThan(0);
@@ -215,6 +321,14 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(references.filter((component: any) => component.id !== 'universal-reference')
       .every((component: any) => component.authoritySource === 'game-data/current-game.json')).toBe(true);
 
+    const ritual = contract.components.find((component: any) => component.id === 'mystics-ritual-of-ascension');
+    expect(ritual).toMatchObject({
+      family: 'ritual-card',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+      source: 'game-data/current-game.json',
+    });
+
     const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
     expect(diplomat.referenceFaces.front.sections.map((section: any) => section.heading)).toEqual([
       'Offering Terms',
@@ -239,15 +353,28 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(mystics.progression).toBe('Rites');
   });
 
-  it('loads the complete authority directly in browser and Node runtimes', () => {
+  it('loads the complete authority through one shared structural validator in browser and Node runtimes', () => {
     expect(runtime).toContain("const authority = await loadJson(CURRENT_GAME_AUTHORITY_URL)");
-    expect(runtime).toContain("authority?.schemaVersion !== 2");
+    expect(runtime).toContain("from './current-game-validation.mjs'");
+    expect(runtime).toContain('validateCurrentGameAuthority(authority)');
+    expect(runtime).not.toContain('function validateMysticsStarterRites');
+    expect(runtime).not.toContain('function validateFactionFeatures');
+    expect(runtime).not.toContain('function validateAuthority');
     expect(runtime).not.toContain('Promise.all([');
     expect(runtime).not.toContain('CURRENT_ART_DIRECTION_SOURCE_URL');
     expect(runtime).not.toContain('card_text_overrides');
 
+    expect(sharedValidation).toContain("authority?.schemaVersion !== 2");
+    expect(sharedValidation).toContain('validateVisualPolicy(authority.visualPolicy)');
+    expect(sharedValidation).toContain('validateMysticsStarterRites(authority)');
+    expect(sharedValidation).toContain('validateFactionFeatures(authority)');
+    expect(sharedValidation).toContain('authority.leaders.forEach(validateLeader)');
+
     expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json'");
     expect(nodeAuthority).toContain('export async function loadCurrentGameAuthority()');
+    expect(nodeAuthority).toContain('validateSharedCurrentGameAuthority(authority)');
+    expect(nodeAuthority).toContain('validateAuthorityEmbeddedFacts(authority)');
+    expect(nodeAuthority).not.toContain('Invalid Mystics starter Rite package');
     expect(nodeAuthority).not.toContain('readCurrentJsonSource');
     expect(nodeAuthority).not.toContain('resolveCurrentSourcePath');
   });
@@ -261,7 +388,7 @@ describe('complete v0.7.0 current-game authority', () => {
 
     expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
     expect(releaseBuilder).toContain('gameplay: clone(authority.gameplay)');
-    expect(releaseBuilder).toContain("source_version: authority.version");
+    expect(releaseBuilder).toContain('source_version: RELEASE_VERSION');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
@@ -272,7 +399,7 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(artworkWorker).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
     expect(artworkWorker).toContain("const before = authority.artDirection");
     expect(artworkWorker).toContain("const nextAuthority = { ...authority, artDirection: after }");
-    expect(artworkWorker).not.toContain('tts/artwork-direction-overrides.js');
+    expect(artworkWorker).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
     expect(artworkWorker).not.toContain('GITHUB_OVERRIDE_PATH');
 
     expect(artworkSession).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
@@ -281,23 +408,32 @@ describe('complete v0.7.0 current-game authority', () => {
 
     expect(artworkClient).toContain('contents/game-data/current-game.json?ref=');
     expect(artworkClient).toContain('const directions = authority?.artDirection');
-    expect(artworkClient).not.toContain('contents/tts/artwork-direction-overrides.js');
+    expect(artworkClient).not.toContain(['contents', 'tts', 'artwork-direction-overrides.js'].join('/'));
 
     expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json')");
     expect(artworkServer).toContain('const next = { ...authority, artDirection: map }');
     expect(artworkServer).not.toContain("join(ROOT, 'tts', 'artwork-direction-overrides.js')");
 
     expect(artworkCompositor).toContain('game-data/current-game.json · artDirection');
-    expect(artworkCompositor).not.toContain('tts/artwork-direction-overrides.js');
+    expect(artworkCompositor).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
     expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
-    expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
+    expect(livePublicationWorkflow).not.toContain("['tts', 'artwork-direction-overrides.js'].join('/')");
   });
 
-  it('keeps the maintained Rulebook itself native v0.7.0', () => {
-    expect(rulebook).toContain('**Version 0.7.0**');
+  it('verifies the Actions-driven v0.7.1 live publication without the legacy Pages builds API', () => {
+    expect(livePublicationWorkflow).not.toContain('/pages/builds');
+    expect(livePublicationVerifier).not.toContain('/pages/builds');
+    expect(livePublicationVerifier).toContain('waitForLiveCutover');
+    expect(livePublicationVerifier).toContain('Gauntlet v0\\.7\\.1 Browser Rulebook');
+    expect(livePublicationVerifier).toContain('rulebookVisibleText');
+    expect(livePublicationVerifier).toContain("replace(/<!--[\\s\\S]*?-->/g, '')");
+  });
+
+  it('keeps the maintained Rulebook on the v0.7.1 release identity', () => {
+    expect(rulebook).toContain('**Version 0.7.1**');
+    expect(rulebook).not.toContain('**Version 0.7.1 Candidate**');
     expect(rulebook).toContain('## Card anatomy');
     expect(rulebook).toContain('Terms occur during Onset');
-    expect(rulebook).not.toContain('Release candidate');
     expect(rulebook).not.toContain('GENERATED CLEAN V0.6.3');
     expect(rulebook).not.toMatch(/\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
   });

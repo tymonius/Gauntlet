@@ -1,7 +1,12 @@
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
-const PHYSICAL_CARD_WIDTH = 2.5;
-const PHYSICAL_CARD_HEIGHT = 3.5;
+import {
+  productionSurface,
+  surfaceCssPixels,
+} from '../card-design/production-surface.mjs';
+
+const PORTRAIT_SURFACE = productionSurface('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const PHYSICAL_CARD_WIDTH = PORTRAIT_SURFACE.widthIn;
+const PHYSICAL_CARD_HEIGHT = PORTRAIT_SURFACE.heightIn;
 
 function round(value, places = 6) {
   const factor = 10 ** places;
@@ -48,15 +53,11 @@ export function buildReadyTrackerRecord(component, renderer = 'sliding-tracker')
 }
 
 export async function captureProductionTracker(page, baseUrl, record, outputPath, displayVersion = '') {
-  const componentId = String(record.renderSource?.componentId || '').trim();
-  if (!componentId) throw new Error(`Tracker ${record.id} has no production component id.`);
+  const componentId = String(record.id || '').trim();
+  if (!componentId) throw new Error('Tracker record has no canonical component id.');
 
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
-  url.searchParams.set('kind', 'tracker');
-  url.searchParams.set('id', componentId);
-  url.searchParams.set('side', 'front');
-  url.searchParams.set('orientation', 'portrait');
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${componentId}:front`);
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForFunction(() => (
     document.body.dataset.renderReady === 'true'

@@ -38,7 +38,7 @@
       <div class="section-heading split-heading">
         <div>
           <p class="eyebrow">Table sessions</p>
-          <h2 id="event-games-title">One QR code per game.</h2>
+          <h2 id="event-games-title" tabindex="-1">One QR code per game.</h2>
         </div>
         <p>Place one code at each table. Both players scan the same code, confirm who they are, and every Rules Arbiter question stays with that game and player.</p>
       </div>
@@ -135,6 +135,13 @@
     state.games = state.games.map((game) => ({ ...game, ...(byId.get(game.sessionId) || {}) }));
   }
 
+  function focusGameAfterRefresh(sessionId) {
+    const card = [...el.eventGameList.querySelectorAll("[data-game-session-id]")]
+      .find(item => item.dataset.gameSessionId === String(sessionId));
+    const target = card?.querySelector("a[href], button:not([disabled])") || document.getElementById("event-games-title");
+    target?.focus({ preventScroll: true });
+  }
+
   async function renderGames() {
     const games = state.games;
     const open = games.filter((game) => game.status === "open").length;
@@ -163,6 +170,7 @@
     for (const [index, game] of games.entries()) {
       const card = document.createElement("article");
       card.className = `event-game-card${game.status === "closed" ? " closed" : ""}`;
+      card.dataset.gameSessionId = String(game.sessionId || "");
       const local = Boolean(game.joinUrl);
       let qrDataUrl = "";
       if (local && state.qrReady) {
@@ -248,6 +256,7 @@
       });
       await refreshGames();
       setStatus(`${game.sheetSerial} closed.`, "success");
+      focusGameAfterRefresh(game.sessionId);
     } catch (error) {
       setStatus(error.message || "The game could not be closed.", "error");
     }

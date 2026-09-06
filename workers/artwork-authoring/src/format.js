@@ -1,16 +1,14 @@
-export const ART_DIRECTION_HEADER = `// Optional per-card art direction for cases where automatic focal cropping is not
-// the desired composition. Values may use 0..1 fractions or 0..100 percentages.
+export const ART_DIRECTION_HEADER = `// Canonical artwork composition authority.
+// Smart focal analysis may be used while authoring, but approved production
+// directions should materialize the result as explicit fit/focus/zoom data with
+// smart:false. Legacy partial values remain readable for migration tooling.
 //
 // Supported properties:
-//   focus: [x, y]       shorthand focal point
-//   focusX / focusY     focal point by axis
+//   focus: [x, y]       legacy shorthand focal point
+//   focusX / focusY     canonical focal point by axis
 //   zoom                 1.0..1.8; scales around the chosen focal point
-//   fit                  "cover" (default) or "contain"
-//   smart                false disables automatic focal analysis
-//
-// Example:
-//   'military-example': { focus: [0.68, 0.42], zoom: 1.06 },
-//   'territory-example': { focusY: 36 },
+//   fit                  "cover" or "contain"
+//   smart                false disables runtime focal analysis
 `;
 
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
@@ -28,7 +26,7 @@ function normalizeFocus(value) {
   if (value === undefined || value === null || value === '') return undefined;
   const number = Number.parseFloat(value);
   if (!Number.isFinite(number)) return undefined;
-  return round(clamp(number > 1 ? number / 100 : number, 0, 1));
+  return round(clamp(number > 1 ? number / 100 : number, 0, 1), 4);
 }
 
 export function normalizeArtDirection(value) {
@@ -37,12 +35,27 @@ export function normalizeArtDirection(value) {
   const focus = Array.isArray(source.focus) ? source.focus : [];
   const focusX = normalizeFocus(source.focusX ?? source.focus_x ?? source.x ?? focus[0]);
   const focusY = normalizeFocus(source.focusY ?? source.focus_y ?? source.y ?? focus[1]);
+  const zoom = Number.parseFloat(source.zoom);
+  const completeExplicit = source.smart === false
+    && (source.fit === 'cover' || source.fit === 'contain')
+    && focusX !== undefined
+    && focusY !== undefined
+    && Number.isFinite(zoom);
+
+  if (completeExplicit) {
+    return {
+      fit: source.fit,
+      focusX,
+      focusY,
+      smart: false,
+      zoom: round(clamp(zoom, 1, 1.8), 4),
+    };
+  }
 
   if (focusX !== undefined && focusY !== undefined) direction.focus = [focusX, focusY];
   else if (focusX !== undefined) direction.focusX = focusX;
   else if (focusY !== undefined) direction.focusY = focusY;
 
-  const zoom = Number.parseFloat(source.zoom);
   if (Number.isFinite(zoom)) {
     const normalizedZoom = round(clamp(zoom, 1, 1.8), 2);
     if (Math.abs(normalizedZoom - 1) > 0.0001) direction.zoom = normalizedZoom;

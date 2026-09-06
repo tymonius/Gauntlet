@@ -22,6 +22,8 @@ const LUA_BEGIN = '-- GAUNTLET_DECK_IMPORTER_BEGIN';
 const LUA_END = '-- GAUNTLET_DECK_IMPORTER_END';
 const XML_BEGIN = '<!-- GAUNTLET_DECK_IMPORTER_BEGIN -->';
 const XML_END = '<!-- GAUNTLET_DECK_IMPORTER_END -->';
+const TEMPLATE_NOTE_PREFIX = 'gauntlet:internal:deck-import-template:';
+export const MAX_TTS_IMPORTER_LUA_BYTES = 100_000;
 
 function renderedIndex(manifest) {
   const index = new Map();
@@ -53,10 +55,11 @@ export function buildDeckImporterConfig({
   cardManifest,
   territoryManifest,
   starterManifest,
+  supplementalManifest,
   releaseAssets,
 }) {
   if (!version) throw new Error('Deck importer requires a game version.');
-  assertSameVersion(version, catalog, cardManifest, territoryManifest, starterManifest, releaseAssets);
+  assertSameVersion(version, catalog, cardManifest, territoryManifest, starterManifest, supplementalManifest, releaseAssets);
 
   const renderedCards = renderedIndex(cardManifest);
   const renderedTerritories = renderedIndex(territoryManifest);
@@ -108,6 +111,47 @@ export function buildDeckImporterConfig({
   if (backFiles.size !== 1) throw new Error('Deck importer requires one shared playable/Territory back.');
   const [backFile] = [...backFiles];
 
+  const rites = {};
+  const riteComponents = (supplementalManifest.ready || []).filter(component => component.family === 'rite-card' && component.faction === 'mystics');
+  for (const component of riteComponents) {
+    const id = String(component.id || '').replace(/^mystics-rite-/, '');
+    if (!id || id === component.id || rites[id]) throw new Error(`Deck importer has invalid or duplicate Mystics Rite component ${component.id || 'missing'}.`);
+    rites[id] = {
+      name: component.name,
+      cardId: Number(component.tts?.cardId),
+      deckId: Number(component.tts?.deckId),
+      frontUrl: requireHostedUrl(releaseAssets, component.tts?.faceFile || component.frontFile),
+      backUrl: requireHostedUrl(releaseAssets, component.tts?.backFile || component.reverseFile),
+      numWidth: Number(component.tts?.numWidth || 1),
+      numHeight: Number(component.tts?.numHeight || 1),
+    };
+  }
+
+  const rituals = (supplementalManifest.ready || []).filter(component => component.family === 'ritual-card' && component.faction === 'mystics');
+  if (rituals.length !== 1) throw new Error(`Deck importer requires exactly one Mystics Ritual component; found ${rituals.length}.`);
+  const ritualComponent = rituals[0];
+  const ritual = {
+    name: ritualComponent.name,
+    cardId: Number(ritualComponent.tts?.cardId),
+    deckId: Number(ritualComponent.tts?.deckId),
+    frontUrl: requireHostedUrl(releaseAssets, ritualComponent.tts?.faceFile || ritualComponent.frontFile),
+    backUrl: requireHostedUrl(releaseAssets, ritualComponent.tts?.backFile || ritualComponent.reverseFile),
+    numWidth: Number(ritualComponent.tts?.numWidth || 1),
+    numHeight: Number(ritualComponent.tts?.numHeight || 1),
+  };
+
+  const mysticsStarters = (starterManifest.decks || []).filter(starter => starter.factionId === 'mystics');
+  const selectedRiteCounts = new Set(mysticsStarters.map(starter => Array.isArray(starter.selectedRites) ? starter.selectedRites.length : 0));
+  if (!mysticsStarters.length || selectedRiteCounts.size !== 1 || [...selectedRiteCounts][0] <= 0) {
+    throw new Error('Deck importer requires a consistent selected-Rite count across Mystics starter kits.');
+  }
+  const selectedRiteCount = [...selectedRiteCounts][0];
+  for (const starter of mysticsStarters) {
+    for (const id of starter.selectedRites || []) {
+      if (!rites[id]) throw new Error(`Deck importer is missing rendered Mystics Rite ${id}.`);
+    }
+  }
+
   return {
     schemaVersion: 1,
     codePrefix: TTS_DECK_CODE_PREFIX,
@@ -116,11 +160,157 @@ export function buildDeckImporterConfig({
     maximumDeckbuildingValue: Number(starterManifest.construction?.maximumDeckbuildingValue || 60),
     territoriesPerPlayer: Number(starterManifest.construction?.territoryCount || starterManifest.construction?.territoriesPerPlayer || 3),
     maximumArenas: Number(starterManifest.construction?.maximumArenas || 1),
+    selectedRiteCount,
     backUrl: requireHostedUrl(releaseAssets, backFile),
     cards,
     territories,
+    rites,
+    ritual,
     starters,
   };
+}
+
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function clearTemplateGuids(node) {
+  if (!node || typeof node !== 'object') return;
+  delete node.GUID;
+  for (const child of node.ContainedObjects || []) clearTemplateGuids(child);
+}
+
+function findTemplateChild(bag, prefix) {
+  return (bag?.ContainedObjects || []).find(child => String(child?.GMNotes || '').startsWith(prefix));
+}
+
+function pruneCardStackForTemplate(stack, label) {
+  if (!stack) throw new Error(`Deck importer template is missing ${label}.`);
+  const prototype = (stack.ContainedObjects || [])[0];
+  if (!prototype) throw new Error(`Deck importer ${label} has no prototype card.`);
+  stack.DeckIDs = [];
+  stack.CustomDeck = {};
+  stack.ContainedObjects = [prototype];
+}
+
+function collectGuids(node, used) {
+  if (!node || typeof node !== 'object') return;
+  if (node.GUID) used.add(String(node.GUID).toLowerCase());
+  for (const child of node.ContainedObjects || []) collectGuids(child, used);
+}
+
+function makeInternalGuidFactory(save) {
+  const used = new Set();
+  for (const object of save.ObjectStates || []) collectGuids(object, used);
+  let value = 0xf00000;
+  return () => {
+    while (value > 0) {
+      const candidate = (value--).toString(16).padStart(6, '0');
+      if (!used.has(candidate)) {
+        used.add(candidate);
+        return candidate;
+      }
+    }
+    throw new Error('Deck importer ran out of internal GUIDs.');
+  };
+}
+
+function assignFreshGuids(node, guid) {
+  if (!node || typeof node !== 'object') return;
+  node.GUID = guid();
+  for (const child of node.ContainedObjects || []) assignFreshGuids(child, guid);
+}
+
+function captureStarterBagSpawnState(bag) {
+  const transform = bag?.Transform || {};
+  return {
+    transform: {
+      rotX: Number(transform.rotX ?? 0),
+      rotY: Number(transform.rotY ?? 0),
+      rotZ: Number(transform.rotZ ?? 0),
+      scaleX: Number(transform.scaleX ?? 1),
+      scaleY: Number(transform.scaleY ?? 1),
+      scaleZ: Number(transform.scaleZ ?? 1),
+    },
+    locked: bag?.Locked === true,
+    grid: bag?.Grid !== false,
+    snap: bag?.Snap !== false,
+    autoraise: bag?.Autoraise !== false,
+    sticky: bag?.Sticky !== false,
+    tooltip: bag?.Tooltip !== false,
+    gridProjection: bag?.GridProjection === true,
+    hideWhenFaceDown: bag?.HideWhenFaceDown === true,
+    hands: bag?.Hands === true,
+    ignoreFoW: bag?.IgnoreFoW === true,
+    measureMovement: bag?.MeasureMovement === true,
+    dragSelectable: bag?.DragSelectable !== false,
+  };
+}
+
+export function installStarterTemplateObjects(save, config) {
+  if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
+
+  save.ObjectStates = save.ObjectStates.filter(object => (
+    !String(object?.GMNotes || '').startsWith(TEMPLATE_NOTE_PREFIX)
+  ));
+  const guid = makeInternalGuidFactory(save);
+  const runtimeConfig = deepClone(config);
+  const starters = Object.entries(runtimeConfig.starters || {});
+
+  starters.forEach(([key, starter], index) => {
+    const note = `gauntlet:starter-kit:${starter.starterId}`;
+    const visible = save.ObjectStates.find(object => object?.Name === 'Bag' && object?.GMNotes === note);
+    if (!visible) throw new Error(`Deck importer cannot capture missing starter template ${starter.starterId}.`);
+
+    starter.spawnState = captureStarterBagSpawnState(visible);
+
+    const template = deepClone(visible);
+    const playableDeck = findTemplateChild(template, 'gauntlet:starter-deck:');
+    const territoryStack = findTemplateChild(template, 'gauntlet:starter-territories:');
+    pruneCardStackForTemplate(playableDeck, `${starter.starterId} playable Deck`);
+    pruneCardStackForTemplate(territoryStack, `${starter.starterId} Territory stack`);
+
+    const riteStack = findTemplateChild(template, 'gauntlet:supplemental-stack:rites-rituals');
+    if (riteStack) pruneCardStackForTemplate(riteStack, `${starter.starterId} Rites + Ritual stack`);
+
+    clearTemplateGuids(template);
+    assignFreshGuids(template, guid);
+
+    template.Transform = {
+      posX: -5.5 + index,
+      posY: 5,
+      posZ: 100,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      scaleX: 0.1,
+      scaleY: 0.1,
+      scaleZ: 0.1,
+    };
+    template.Nickname = `Gauntlet Deck Import Template — ${starter.starterId}`;
+    template.Description = 'Internal TTS importer data. Not a gameplay object.';
+    template.GMNotes = `${TEMPLATE_NOTE_PREFIX}${starter.starterId}`;
+    template.Locked = true;
+    template.Grid = false;
+    template.Snap = false;
+    template.Autoraise = false;
+    template.Sticky = false;
+    template.Tooltip = false;
+    template.GridProjection = false;
+    template.HideWhenFaceDown = false;
+    template.Hands = false;
+    template.IgnoreFoW = true;
+    template.MeasureMovement = false;
+    template.DragSelectable = false;
+    template.LuaScript = '';
+    template.LuaScriptState = '';
+    template.XmlUI = '';
+
+    starter.templateGuid = template.GUID;
+    save.ObjectStates.push(template);
+  });
+
+  return runtimeConfig;
 }
 
 function luaLongString(value) {
@@ -133,6 +323,55 @@ function luaLongString(value) {
   throw new Error('Unable to encode Deck importer configuration as a Lua long string.');
 }
 
+export function validateGeneratedLuaStrings(source) {
+  const text = String(source || '');
+  for (let index = 0; index < text.length;) {
+    if (text.startsWith('--', index)) {
+      const newline = text.indexOf('\n', index + 2);
+      index = newline < 0 ? text.length : newline + 1;
+      continue;
+    }
+
+    if (text[index] === '[') {
+      const match = /^\[(=*)\[/.exec(text.slice(index));
+      if (match) {
+        const close = `]${match[1]}]`;
+        const finish = text.indexOf(close, index + match[0].length);
+        if (finish < 0) throw new Error('Generated TTS Lua has an unterminated long string.');
+        index = finish + close.length;
+        continue;
+      }
+    }
+
+    const quote = text[index];
+    if (quote === '"' || quote === "'") {
+      index += 1;
+      let closed = false;
+      while (index < text.length) {
+        const char = text[index];
+        if (char === '\n' || char === '\r') {
+          throw new Error('Generated TTS Lua contains a raw newline inside a quoted string.');
+        }
+        if (char === '\\') {
+          index += 2;
+          continue;
+        }
+        if (char === quote) {
+          index += 1;
+          closed = true;
+          break;
+        }
+        index += 1;
+      }
+      if (!closed) throw new Error('Generated TTS Lua has an unterminated quoted string.');
+      continue;
+    }
+
+    index += 1;
+  }
+  return true;
+}
+
 function deckImporterLua(config) {
   const configJson = JSON.stringify(config);
   return `${LUA_BEGIN}
@@ -140,7 +379,9 @@ local GAUNTLET_DECK_IMPORT = JSON.decode(${luaLongString(configJson)})
 local gauntletDeckImportCodes = {}
 
 local function gauntletColorOf(player)
-  if type(player) == "table" and player.color ~= nil then return tostring(player.color) end
+  if player == nil then return "" end
+  local ok, color = pcall(function() return player.color end)
+  if ok and color ~= nil then return tostring(color) end
   return tostring(player or "")
 end
 
@@ -162,13 +403,29 @@ local function gauntletMessage(color, text, errorMessage)
 end
 
 local function gauntletDeepCopy(value)
-  return JSON.decode(JSON.encode(value))
+  if type(value) ~= "table" then return value end
+  local copy = {}
+  for key, child in pairs(value) do
+    copy[gauntletDeepCopy(key)] = gauntletDeepCopy(child)
+  end
+  return copy
 end
 
 local function gauntletCustomDeckState(meta)
   return {
     FaceURL = meta.faceUrl,
     BackURL = GAUNTLET_DECK_IMPORT.backUrl,
+    NumWidth = tonumber(meta.numWidth),
+    NumHeight = tonumber(meta.numHeight),
+    BackIsHidden = true,
+    UniqueBack = false,
+  }
+end
+
+local function gauntletSupplementalCardState(meta)
+  return {
+    FaceURL = meta.frontUrl,
+    BackURL = meta.backUrl,
     NumWidth = tonumber(meta.numWidth),
     NumHeight = tonumber(meta.numHeight),
     BackIsHidden = true,
@@ -191,12 +448,44 @@ local function gauntletFindChildByNotePrefix(bagData, prefix)
   return nil
 end
 
-local function gauntletFindStarterBag(starterId)
-  local note = "gauntlet:starter-kit:" .. tostring(starterId)
-  for _, object in ipairs(getAllObjects()) do
-    if object.getGMNotes ~= nil and object.getGMNotes() == note then return object end
+local function gauntletRestoreStarterBagState(bagData, starter)
+  local state = starter.spawnState or {}
+  local transform = state.transform or {}
+  bagData.Transform = bagData.Transform or {}
+  bagData.Transform.rotX = tonumber(transform.rotX) or 0
+  bagData.Transform.rotY = tonumber(transform.rotY) or 0
+  bagData.Transform.rotZ = tonumber(transform.rotZ) or 0
+  bagData.Transform.scaleX = tonumber(transform.scaleX) or 1
+  bagData.Transform.scaleY = tonumber(transform.scaleY) or 1
+  bagData.Transform.scaleZ = tonumber(transform.scaleZ) or 1
+  bagData.Locked = state.locked == true
+  bagData.Grid = state.grid ~= false
+  bagData.Snap = state.snap ~= false
+  bagData.Autoraise = state.autoraise ~= false
+  bagData.Sticky = state.sticky ~= false
+  bagData.Tooltip = state.tooltip ~= false
+  bagData.GridProjection = state.gridProjection == true
+  bagData.HideWhenFaceDown = state.hideWhenFaceDown == true
+  bagData.Hands = state.hands == true
+  bagData.IgnoreFoW = state.ignoreFoW == true
+  bagData.MeasureMovement = state.measureMovement == true
+  bagData.DragSelectable = state.dragSelectable ~= false
+end
+
+local function gauntletLoadStarterTemplate(starter)
+  local guid = tostring(starter.templateGuid or "")
+  if guid == "" then return nil, "This TTS build has no template GUID for that starter kit." end
+
+  local templateObject = getObjectFromGUID(guid)
+  if templateObject == nil then
+    return nil, "This TTS build is missing the internal template for that starter kit."
   end
-  return nil
+
+  local okData, templateData = pcall(function() return templateObject.getData() end)
+  if not okData or type(templateData) ~= "table" then
+    return nil, "TTS could not read the internal starter template."
+  end
+  return templateData, nil
 end
 
 local function gauntletValidatePayload(payload)
@@ -252,6 +541,22 @@ local function gauntletValidatePayload(payload)
     return nil, "Choose no more than " .. tostring(GAUNTLET_DECK_IMPORT.maximumArenas) .. " Arena."
   end
 
+  local selectedRites = {}
+  if faction == "mystics" then
+    if type(payload.r) ~= "table" or #payload.r ~= GAUNTLET_DECK_IMPORT.selectedRiteCount then
+      return nil, "Choose exactly " .. tostring(GAUNTLET_DECK_IMPORT.selectedRiteCount) .. " Mystics Rites."
+    end
+    local seenRites = {}
+    for _, idValue in ipairs(payload.r) do
+      local id = tostring(idValue or "")
+      local meta = GAUNTLET_DECK_IMPORT.rites[id]
+      if meta == nil then return nil, "Rite " .. id .. " is not present in this TTS build." end
+      if seenRites[id] then return nil, "Mystics Rites must be different." end
+      seenRites[id] = true
+      table.insert(selectedRites, id)
+    end
+  end
+
   return {
     name = gauntletTrim(payload.n) ~= "" and gauntletTrim(payload.n) or "Imported Gauntlet Deck",
     faction = faction,
@@ -261,6 +566,7 @@ local function gauntletValidatePayload(payload)
     pointTotal = pointTotal,
     cards = payload.c,
     territories = payload.t,
+    rites = selectedRites,
   }, nil
 end
 
@@ -330,6 +636,42 @@ local function gauntletBuildTerritories(stack, validated)
   end
 end
 
+local function gauntletBuildMysticsRiteStack(stack, validated)
+  local cardTemplate = (stack.ContainedObjects or {})[1]
+  if cardTemplate == nil then error("Mystics Rite stack template has no cards.") end
+
+  stack.Nickname = "Rites + Ritual"
+  stack.Description = "Selected Mystics Rites and Ritual of Ascension from the Gauntlet Deckbuilder"
+  stack.GMNotes = "gauntlet:supplemental-stack:rites-rituals"
+  stack.DeckIDs = {}
+  stack.CustomDeck = {}
+  stack.ContainedObjects = {}
+  stack.SidewaysCard = false
+
+  local function addCard(meta, note, description)
+    local state = gauntletSupplementalCardState(meta)
+    local card = gauntletDeepCopy(cardTemplate)
+    card.Nickname = meta.name
+    card.Description = description
+    card.GMNotes = note
+    card.CardID = tonumber(meta.cardId)
+    card.SidewaysCard = false
+    card.CustomDeck = { [tostring(meta.deckId)] = gauntletDeepCopy(state) }
+    card.LuaScript = ""
+    card.LuaScriptState = ""
+    card.XmlUI = ""
+    stack.CustomDeck[tostring(meta.deckId)] = state
+    table.insert(stack.DeckIDs, tonumber(meta.cardId))
+    table.insert(stack.ContainedObjects, card)
+  end
+
+  for _, id in ipairs(validated.rites or {}) do
+    local meta = GAUNTLET_DECK_IMPORT.rites[id]
+    addCard(meta, "gauntlet:supplemental:mystics-rite-" .. id, "Mystics Rite")
+  end
+  addCard(GAUNTLET_DECK_IMPORT.ritual, "gauntlet:supplemental:mystics-ritual-of-ascension", "Mystics Ritual")
+end
+
 local function gauntletSpawnPosition(color)
   if color == "Green" then return {x = -7, y = 2.2, z = 13.5} end
   return {x = 7, y = 2.2, z = -13.5}
@@ -341,11 +683,13 @@ function gauntletOpenDeckImporter(player, value, id)
     gauntletMessage(color, "Sit in the White or Green seat before importing a Deck.", true)
     return
   end
-  UI.setAttribute("gauntlet-deck-import-panel", "active", "true")
+  UI.show("gauntlet-deck-import-panel")
+  UI.hide("gauntlet-deck-import-open")
 end
 
 function gauntletCloseDeckImporter(player, value, id)
-  UI.setAttribute("gauntlet-deck-import-panel", "active", "false")
+  UI.hide("gauntlet-deck-import-panel")
+  UI.show("gauntlet-deck-import-open")
 end
 
 function gauntletDeckImportChanged(player, value, id)
@@ -360,7 +704,7 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  local raw = gauntletTrim(gauntletDeckImportCodes[color] or UI.getValue("gauntlet-deck-import-code") or "")
+  local raw = gauntletTrim(gauntletDeckImportCodes[color] or "")
   if not gauntletStartsWith(raw, GAUNTLET_DECK_IMPORT.codePrefix) then
     gauntletMessage(color, "Paste a Deck Code copied from the Gauntlet Deckbuilder.", true)
     return
@@ -378,33 +722,36 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  local templateBag = gauntletFindStarterBag(validated.starter.starterId)
-  if templateBag == nil then
-    gauntletMessage(color, "The official " .. validated.starter.leaderName .. " starter kit is not on the table. Reload the mod or restore that starter bag, then import again.", true)
+  local template, templateError = gauntletLoadStarterTemplate(validated.starter)
+  if templateError ~= nil then
+    gauntletMessage(color, templateError, true)
     return
   end
-
-  local okTemplate, bagData = pcall(JSON.decode, templateBag.getJSON())
-  if not okTemplate or type(bagData) ~= "table" then
-    gauntletMessage(color, "TTS could not read the starter-kit template.", true)
-    return
-  end
+  local bagData = template
 
   local playableDeck = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-deck:")
   local territoryStack = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-territories:")
+  local mysticsStack = validated.faction == "mystics"
+    and gauntletFindChildByNotePrefix(bagData, "gauntlet:supplemental-stack:rites-rituals")
+    or nil
   if playableDeck == nil or territoryStack == nil then
     gauntletMessage(color, "The starter-kit template is missing its Deck or Territory stack.", true)
+    return
+  end
+  if validated.faction == "mystics" and mysticsStack == nil then
+    gauntletMessage(color, "The Mystics starter-kit template is missing its Rites + Ritual stack.", true)
     return
   end
 
   local okBuild, buildError = pcall(function()
     gauntletBuildPlayableDeck(playableDeck, validated)
     gauntletBuildTerritories(territoryStack, validated)
+    if mysticsStack ~= nil then gauntletBuildMysticsRiteStack(mysticsStack, validated) end
     bagData.Nickname = validated.name .. " — " .. validated.starter.leaderName
-    bagData.Description = "Custom Deckbuilder starter kit\n\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
+    bagData.Description = "Custom Deckbuilder starter kit\\n\\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
     bagData.GMNotes = "gauntlet:custom-starter:" .. validated.faction .. ":" .. validated.leader
+    gauntletRestoreStarterBagState(bagData, validated.starter)
     local position = gauntletSpawnPosition(color)
-    bagData.Transform = bagData.Transform or {}
     bagData.Transform.posX = position.x
     bagData.Transform.posY = position.y
     bagData.Transform.posZ = position.z
@@ -420,8 +767,9 @@ function gauntletImportDeck(player, value, id)
     position = gauntletSpawnPosition(color),
     callback_function = function(spawned)
       gauntletMessage(color, "Imported " .. validated.name .. ". Unpack it like an official starter kit.", false)
-      UI.setAttribute("gauntlet-deck-import-panel", "active", "false")
-      UI.setValue("gauntlet-deck-import-code", "")
+      UI.hide("gauntlet-deck-import-panel")
+      UI.show("gauntlet-deck-import-open")
+      UI.setAttribute("gauntlet-deck-import-code", "text", "")
       gauntletDeckImportCodes[color] = ""
     end,
   })
@@ -431,17 +779,17 @@ ${LUA_END}`;
 
 function deckImporterXml() {
   return `${XML_BEGIN}
-<Button id="gauntlet-deck-import-open" text="IMPORT DECK" onClick="gauntletOpenDeckImporter" width="190" height="48" position="0 -330" fontSize="20" color="#3B3025EE" textColor="#F4E8CC" />
-<Panel id="gauntlet-deck-import-panel" active="false" width="760" height="390" position="0 0 -500" color="#E8D9B8F7" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
+<Button id="gauntlet-deck-import-open" text="DECK IMPORT" onClick="gauntletOpenDeckImporter" width="138" height="34" rectAlignment="LowerRight" offsetXY="-24 24" fontSize="15" color="#3B3025EE" textColor="#F4E8CC" visibility="White|Green" tooltip="Import a Deck Code copied from the Gauntlet Deckbuilder." />
+<Panel id="gauntlet-deck-import-panel" active="false" width="700" height="400" rectAlignment="MiddleCenter" color="#E8D9B8F7" outline="#31291F" outlineSize="3 3" padding="22 22 22 22" visibility="White|Green">
   <VerticalLayout childForceExpandHeight="false" childForceExpandWidth="true" spacing="12">
-    <HorizontalLayout preferredHeight="58" childForceExpandWidth="false">
-      <Text text="GAUNTLET DECK IMPORT" preferredWidth="560" fontSize="32" color="#252018" alignment="MiddleLeft" />
-      <Button text="CLOSE" onClick="gauntletCloseDeckImporter" preferredWidth="140" fontSize="20" color="#4A4134" textColor="#F4E8CC" />
+    <HorizontalLayout preferredHeight="54" childForceExpandWidth="false">
+      <Text text="GAUNTLET DECK IMPORT" preferredWidth="520" fontSize="30" color="#252018" alignment="MiddleLeft" />
+      <Button text="CLOSE" onClick="gauntletCloseDeckImporter" preferredWidth="130" fontSize="18" color="#4A4134" textColor="#F4E8CC" />
     </HorizontalLayout>
-    <Text text="Paste a Deck Code copied from the Gauntlet Deckbuilder. The code must match this TTS game's version." preferredHeight="52" fontSize="20" color="#4A4134" alignment="MiddleLeft" />
-    <InputField id="gauntlet-deck-import-code" text="" placeholder="GDL1:{...}" onValueChanged="gauntletDeckImportChanged" lineType="MultiLineNewline" preferredHeight="150" fontSize="19" textColor="#282218" />
-    <Button text="IMPORT CUSTOM STARTER KIT" onClick="gauntletImportDeck" preferredHeight="58" fontSize="23" color="#324D37" textColor="#F4E8CC" />
-    <Text text="The imported bag reuses the matching official Leader kit and replaces only its playable Deck and selected Territories." preferredHeight="42" fontSize="17" color="#665A46" alignment="MiddleCenter" />
+    <Text text="1. Copy a TTS Deck Code from the Gauntlet Deckbuilder.  2. Paste it below.  3. Import the starter kit." preferredHeight="48" fontSize="18" color="#4A4134" alignment="MiddleLeft" />
+    <InputField id="gauntlet-deck-import-code" text="" placeholder="GDL1:{...}" onValueChanged="gauntletDeckImportChanged" onEndEdit="gauntletDeckImportChanged" lineType="MultiLineNewLine" preferredHeight="150" fontSize="18" textColor="#282218" />
+    <Button text="IMPORT STARTER KIT" onClick="gauntletImportDeck" preferredHeight="56" fontSize="22" color="#324D37" textColor="#F4E8CC" />
+    <Text text="You must be seated in White or Green. The imported Bag keeps the matching Leader and faction components, replaces its playable Deck and Territories, and uses the selected Mystics Rites when applicable." preferredHeight="54" fontSize="16" color="#665A46" alignment="MiddleCenter" />
   </VerticalLayout>
 </Panel>
 ${XML_END}`;
@@ -458,9 +806,16 @@ function stripGeneratedBlock(text, begin, end) {
 
 export function installDeckImporter(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer requires a TTS save.');
+  const runtimeConfig = installStarterTemplateObjects(save, config);
+  const importerLua = deckImporterLua(runtimeConfig);
+  validateGeneratedLuaStrings(importerLua);
+  const importerBytes = Buffer.byteLength(importerLua, 'utf8');
+  if (importerBytes > MAX_TTS_IMPORTER_LUA_BYTES) {
+    throw new Error(`Deck importer Global Lua is ${importerBytes} bytes; maximum is ${MAX_TTS_IMPORTER_LUA_BYTES}. Keep large object templates out of Global Lua.`);
+  }
   const existingLua = stripGeneratedBlock(save.LuaScript, LUA_BEGIN, LUA_END);
   const existingXml = stripGeneratedBlock(save.XmlUI, XML_BEGIN, XML_END);
-  save.LuaScript = [existingLua, deckImporterLua(config)].filter(Boolean).join('\n\n');
+  save.LuaScript = [existingLua, importerLua].filter(Boolean).join('\n\n');
   save.XmlUI = [existingXml, deckImporterXml()].filter(Boolean).join('\n');
   return save;
 }

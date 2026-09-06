@@ -1,13 +1,13 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium, webkit, devices } from 'playwright';
+import { CSS_PIXELS_PER_INCH, surfaceCssPixels } from '../card-design/production-surface.mjs';
 
 const BASE = process.env.TERRITORY_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const OUTPUT = 'card-design/generated/leaders';
 const ID = 'territory-difficult-terrain';
-const WIDTH = 336;
-const HEIGHT = 240;
-const ART_FLOOR = 0.78 * 96;
+const { width: WIDTH, height: HEIGHT } = surfaceCssPixels('landscape');
+const ART_FLOOR = 0.78 * CSS_PIXELS_PER_INCH;
 const CROSS_ENGINE_ART_TOLERANCE = 2.25;
 
 async function ready(frame) {
@@ -44,7 +44,7 @@ async function standalone(browser, options, screenshotPath) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
   try {
-    await page.goto(`${BASE}/card-design/territory-review-render.html?territory=${ID}`, { waitUntil: 'load' });
+    await page.goto(`${BASE}/card-design/face-render.html?id=${encodeURIComponent(`territory:${ID}`)}`, { waitUntil: 'load' });
     await ready(page);
     await page.waitForTimeout(150);
     const result = await metrics(page);
@@ -61,8 +61,8 @@ async function inspection(browser, options, screenshotPath) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
   try {
-    await page.goto(`${BASE}/card-design/`, { waitUntil: 'load' });
-    const sourceSelector = `iframe.territory-review-frame[src*="territory=${ID}"]`;
+    await page.goto(`${BASE}/card-design/?type=territory#territories`, { waitUntil: 'load' });
+    const sourceSelector = `iframe.territory-review-frame[src*="face-render.html"][src*="${ID}"]`;
     const source = page.locator(sourceSelector);
     await source.waitFor({ state: 'attached', timeout: 30000 });
 
@@ -77,7 +77,7 @@ async function inspection(browser, options, screenshotPath) {
     await sourceCard.waitFor({ state: 'attached', timeout: 30000 });
     await sourceCard.evaluate(card => card.click());
 
-    const inspectionSelector = 'iframe.territory-inspection-frame';
+    const inspectionSelector = 'iframe.gauntlet-card-inspector-frame';
     const inspectionElement = page.locator(inspectionSelector);
     await inspectionElement.waitFor({ state: 'attached', timeout: 10000 });
     const inspectionCard = page
@@ -93,7 +93,7 @@ async function inspection(browser, options, screenshotPath) {
     const settled = await metrics(frame);
     await page.waitForTimeout(500);
     const delayed = await metrics(frame);
-    if (screenshotPath) await page.locator('.territory-inspection-dialog').screenshot({ path: screenshotPath });
+    if (screenshotPath) await page.locator('.gauntlet-card-inspector').screenshot({ path: screenshotPath });
     return { settled, delayed };
   } finally {
     await context.close();

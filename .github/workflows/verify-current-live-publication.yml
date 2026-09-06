@@ -23,6 +23,7 @@ on:
       - 'design-tokens.css'
       - 'images/faction-symbols/**'
       - 'rules-assistant/**'
+      - 'artifacts/rules-refinement/resolution-ledger.json'
   workflow_dispatch:
 
 permissions:
@@ -62,31 +63,77 @@ jobs:
           test -n "$current"
           echo "version=$current" >> "$GITHUB_OUTPUT"
 
-      - name: Determine whether Rules Arbiter deployment changed
+      - name: Determine whether Rules Arbiter Worker needs deployment
         id: scope
         shell: bash
         run: |
           set -euo pipefail
+          worker=false
+          reason=unchanged
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             worker=true
+            reason=manual_dispatch
           else
-            worker=false
             while IFS= read -r file; do
               case "$file" in
-                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
+                .github/workflows/verify-current-live-publication.yml|artifacts/rules-refinement/resolution-ledger.json|rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/refinement-*.js|rules-assistant/wrangler.toml)
                   worker=true
+                  reason=worker_inputs_changed
                   ;;
               esac
             done < <(git diff --name-only HEAD^ HEAD)
           fi
-          echo "worker=$worker" >> "$GITHUB_OUTPUT"
 
-      - name: Install verification dependency
-        run: npm install --no-save --package-lock=false pdf-lib
+          local_revision=$(node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const source = readFileSync('rules-assistant/worker-v071.js', 'utf8');
+          const match = source.match(/export const BEHAVIOR_REVISION\s*=\s*["']([^"']+)["']/);
+          if (!match) {
+            console.error('Could not read BEHAVIOR_REVISION from rules-assistant/worker-v071.js.');
+            process.exit(1);
+          }
+          process.stdout.write(match[1]);
+          NODE
+          )
 
-      - name: Install Worker tooling
-        if: steps.scope.outputs.worker == 'true'
-        run: npm install --no-save --package-lock=false wrangler@4
+          live_revision=$(node --input-type=module <<'NODE'
+          try {
+            const response = await fetch('https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health', { cache: 'no-store' });
+            if (!response.ok) process.exit(0);
+            const payload = await response.json();
+            process.stdout.write(String(payload?.behaviorRevision || ''));
+          } catch {
+            process.exit(0);
+          }
+          NODE
+          )
+
+          if [[ -z "$live_revision" ]]; then
+            worker=true
+            reason=live_revision_unavailable
+          elif [[ "$live_revision" != "$local_revision" ]]; then
+            worker=true
+            reason=behavior_revision_mismatch
+          fi
+
+          {
+            echo "worker=$worker"
+            echo "reason=$reason"
+            echo "local_revision=$local_revision"
+            echo "live_revision=$live_revision"
+          } >> "$GITHUB_OUTPUT"
+          echo "Rules Arbiter Worker deployment: $worker ($reason; local=$local_revision; live=${live_revision:-unavailable})"
+
+      - name: Install verification and Worker dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.scope.outputs.worker }}" == "true" ]]; then
+            npm install --no-save --package-lock=false pdf-lib wrangler@4
+          else
+            npm install --no-save --package-lock=false pdf-lib
+          fi
 
       - name: Verify Worker deployment secrets
         if: steps.scope.outputs.worker == 'true'
@@ -94,7 +141,7 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
 
-      - name: Deploy current Rules Arbiter Worker only when its inputs changed
+      - name: Deploy current Rules Arbiter Worker when deployment is required
         if: steps.scope.outputs.worker == 'true'
         run: npx wrangler deploy --config rules-assistant/wrangler.toml
 
@@ -135,45 +182,70 @@ jobs:
           );
           NODE
 
-      - name: Request and verify exact GitHub Pages build
-        run: |
-          node --input-type=module <<'NODE'
-          const repo = process.env.GITHUB_REPOSITORY_NAME;
-          const token = process.env.GH_TOKEN;
-          const expectedSha = process.env.EXPECTED_SHA;
-          const headers = {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${token}`,
-            'X-GitHub-Api-Version': '2022-11-28',
-            'User-Agent': 'gauntlet-current-public-contract',
-          };
-          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-          async function github(url, options = {}) {
-            const response = await fetch(url, { ...options, headers });
-            const text = await response.text();
-            if (!response.ok) throw new Error(`${options.method || 'GET'} ${url} -> ${response.status} ${text}`);
-            return text ? JSON.parse(text) : null;
-          }
-          await github(`https://api.github.com/repos/${repo}/pages/builds`, { method: 'POST' });
-          for (let attempt = 1; attempt <= 60; attempt += 1) {
-            const latest = await github(`https://api.github.com/repos/${repo}/pages/builds/latest`);
-            console.log(`Pages attempt ${attempt}: status=${latest.status || ''} commit=${latest.commit || ''}`);
-            if (latest.commit === expectedSha && latest.status === 'built') process.exit(0);
-            if (attempt < 60) await sleep(5000);
-          }
-          throw new Error(`GitHub Pages did not report ${expectedSha} built within the verification window.`);
-          NODE
-
       - name: Verify deployed site against the current-publication contract
         shell: bash
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 30); do
+          for attempt in $(seq 1 120); do
             if GAUNTLET_PUBLIC_BASE_URL=https://gauntlet.run GAUNTLET_CONTRACT_BUST="$EXPECTED_SHA" node scripts/validate-current-public-contract.mjs; then
               echo "Live public contract verified on attempt $attempt."
               exit 0
             fi
-            if [[ "$attempt" -lt 30 ]]; then sleep 5; fi
+            if [[ "$attempt" -lt 120 ]]; then sleep 5; fi
           done
-          echo 'Live public contract did not converge after Pages reported the expected commit.' >&2
+          echo 'Live public contract did not converge after the Actions-driven Pages deployment window.' >&2
           exit 1
+
+      - name: Wait for current authority set to reach published site
+        if: steps.release.outputs.version == 'v0.7.1'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const expected = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json', 'utf8')).authority_set_id;
+          if (!expected) throw new Error('Local v0.7.1 manifest has no authority_set_id.');
+          const manifestUrl = 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          let last = '';
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const response = await fetch(`${manifestUrl}?publication=${encodeURIComponent(process.env.EXPECTED_SHA)}&attempt=${attempt}`, { cache: 'no-store' });
+              last = await response.text();
+              const payload = response.ok ? JSON.parse(last) : null;
+              if (response.ok && payload?.authority_set_id === expected) {
+                console.log(`Published authority set ${expected} verified on attempt ${attempt}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              last = String(error);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          throw new Error(`Published authority set ${expected} did not converge: ${last}`);
+          NODE
+
+      - name: Refresh current Rules Arbiter corpus against published authority
+        if: steps.release.outputs.version == 'v0.7.1'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const expected = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json', 'utf8')).authority_set_id;
+          if (!expected) throw new Error('Local v0.7.1 manifest has no authority_set_id.');
+          const endpoint = 'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health';
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          let last = '';
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(`${endpoint}?publication=${encodeURIComponent(process.env.EXPECTED_SHA)}&attempt=${attempt}`, { cache: 'no-store' });
+              last = await response.text();
+              const payload = response.ok ? JSON.parse(last) : null;
+              if (response.ok && payload?.ok === true && payload.authoritySetId === expected) {
+                console.log(`Rules Arbiter loaded published authority set ${expected} on attempt ${attempt}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              last = String(error);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+          throw new Error(`Rules Arbiter did not load published authority set ${expected}: ${last}`);
+          NODE

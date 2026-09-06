@@ -4,31 +4,31 @@ on:
   pull_request:
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
-      - "docs/Gauntlet_v0.6.3_*.md"
+      - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
       - "factions/**/index.html"
       - "index.html"
+      - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
       - "rulebook/**"
       - "rules-assistant/**"
       - "scripts/*v063*"
       - "scripts/publication-utils.mjs"
       - "start/index.html"
-      - "v0.6.3/**"
   push:
     branches:
       - main
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
-      - "docs/Gauntlet_v0.6.3_*.md"
+      - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
       - "factions/**/index.html"
       - "index.html"
+      - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
       - "rulebook/**"
       - "rules-assistant/**"
       - "scripts/*v063*"
       - "scripts/publication-utils.mjs"
       - "start/index.html"
-      - "v0.6.3/**"
 
 permissions:
   contents: read
@@ -59,11 +59,11 @@ jobs:
             rules-assistant/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
             rules-assistant/v063-public-corpus.js
-            docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
-            docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md
-            docs/Gauntlet_v0.6.3_Implementation_Ledger.md
-            docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md
-            docs/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md
+            docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
+            docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md
+            docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Implementation_Ledger.md
+            docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md
+            docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md
             index.html
             start/index.html
             factions/military/index.html

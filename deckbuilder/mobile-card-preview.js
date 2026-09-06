@@ -11,10 +11,10 @@
   function installRenderedCardAssets() {
     ensureStylesheet("rendered-card-preview.css?v=20260819-2", "deckbuilder-rendered-card-preview");
     ensureStylesheet("metadata-ui.css?v=20260819-2", "deckbuilder-metadata-ui");
-    ensureStylesheet("../card-reference/card-inspection.css?v=20260819-2", "shared-card-inspection");
-    ensureScript("rendered-card-preview.js?v=20260819-1", "deckbuilder-rendered-card-preview");
-    ensureScript("metadata-ui.js?v=20260819-2", "deckbuilder-metadata-ui");
-    ensureScript("../card-reference/card-inspection.js?v=20260819-2", "shared-card-inspection");
+    ensureStylesheet("../card-design/card-inspector.css?v=20260905-2", "shared-card-inspection");
+    ensureScript("rendered-card-preview.js?v=20260902-2", "deckbuilder-rendered-card-preview");
+    ensureScript("metadata-ui.js?v=20260902-1", "deckbuilder-metadata-ui");
+    ensureScript("../card-design/card-inspector.js?v=20260905-2", "shared-card-inspection");
   }
 
   function ensureStylesheet(href, key) {
@@ -93,6 +93,12 @@
   function handleDocumentClick(event) {
     if (!(event.target instanceof Element)) return;
 
+    const previewButton = event.target.closest(".compact-row-preview-button");
+    if (previewButton && mobileQuery.matches) {
+      window.requestAnimationFrame(() => openPreview());
+      return;
+    }
+
     const cardRow = event.target.closest(".compact-card-row");
     if (cardRow && !event.target.closest("button") && mobileQuery.matches) {
       window.requestAnimationFrame(() => openPreview());
@@ -105,7 +111,44 @@
   }
 
   function handleKeydown(event) {
+    if (event.key === "Tab" && open) {
+      trapModalFocus(event);
+      return;
+    }
     if (event.key === "Escape" && open) requestClosePreview();
+  }
+
+  function trapModalFocus(event) {
+    if (!preview) return;
+
+    const focusable = Array.from(preview.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+    )).filter(element => element instanceof HTMLElement && !element.hidden && element.getClientRects().length > 0);
+
+    if (!focusable.length) {
+      event.preventDefault();
+      preview.focus?.({ preventScroll: true });
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (!preview.contains(active)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+      return;
+    }
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus({ preventScroll: true });
+      return;
+    }
+    if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+    }
   }
 
   function openPreview(pushHistory = true) {
@@ -150,10 +193,9 @@
     document.body.classList.remove("mobile-card-preview-open");
     preview.setAttribute("aria-hidden", mobileQuery.matches ? "true" : "false");
 
-    const selectedRow = document.querySelector(".compact-card-row.selected");
-    if (selectedRow instanceof HTMLElement) {
-      selectedRow.tabIndex = -1;
-      selectedRow.focus({ preventScroll: true });
+    const selectedPreviewButton = document.querySelector(".compact-card-row.selected .compact-row-preview-button");
+    if (selectedPreviewButton instanceof HTMLElement) {
+      selectedPreviewButton.focus({ preventScroll: true });
     }
   }
 

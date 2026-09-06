@@ -13,10 +13,14 @@ import {
   resolveFactionBackFile,
 } from './tts-component-contract.mjs';
 import { LANDSCAPE_TTS_CELL_ROTATION_DEGREES } from './tts-supplemental-geometry.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+} from '../card-design/production-surface.mjs';
 
-const PORTRAIT_CSS = Object.freeze({ width: 240, height: 336 });
-const LANDSCAPE_CSS = Object.freeze({ width: 336, height: 240 });
-const DEVICE_SCALE = 400 / PORTRAIT_CSS.width;
+const PORTRAIT_CSS = surfaceCssPixels('portrait');
+const LANDSCAPE_CSS = surfaceCssPixels('landscape');
+const DEVICE_SCALE = surfaceDeviceScale('portrait');
 const SUPPORTED_FAMILIES = new Set(['proposal-treaty-card', 'ledger', 'deed-card']);
 
 function jsonText(value) {
@@ -133,25 +137,9 @@ function maxExistingDeckId(manifest) {
   return Math.max(199, ...(manifest.ready || []).map(record => Number(record.tts?.deckId) || 0));
 }
 
-function productionComponentRequest(item) {
-  const component = item.component;
-  if (component.family === 'proposal-treaty-card') {
-    return { kind: 'proposal', id: item.proposalId };
-  }
-  if (component.family === 'ledger' || component.family === 'deed-card') {
-    return { kind: 'supplemental', id: component.id };
-  }
-  throw new Error(`No card-design production component request for ${component.id} (${component.family}).`);
-}
-
 async function captureComponent(page, baseUrl, item, side, outputPath, displayVersion) {
-  const request = productionComponentRequest(item);
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
-  url.searchParams.set('kind', request.kind);
-  url.searchParams.set('id', request.id);
-  url.searchParams.set('side', side);
-  url.searchParams.set('orientation', item.orientation);
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${item.component.id}:${side}`);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');
@@ -189,15 +177,18 @@ async function captureComponent(page, baseUrl, item, side, outputPath, displayVe
     // packaging alone quarter-turns that exact raster into the standard
     // portrait Custom Card cell. The sign is shared with Territories so no
     // component can quietly acquire an opposite inspection orientation.
-    await card.evaluate((element, rotationDegrees) => {
+    await card.evaluate((element, geometry) => {
+      const { rotationDegrees, width, height } = geometry;
+      const widthPx = `${width}px`;
+      const heightPx = `${height}px`;
       const wrapper = document.createElement('div');
       wrapper.id = 'tts-portrait-card-cell';
       Object.assign(wrapper.style, {
         position: 'fixed',
         left: '0',
         top: '0',
-        width: '240px',
-        height: '336px',
+        width: widthPx,
+        height: heightPx,
         overflow: 'hidden',
         background: 'transparent',
       });
@@ -211,14 +202,18 @@ async function captureComponent(page, baseUrl, item, side, outputPath, displayVe
         transform: `translate(-50%, -50%) rotate(${rotationDegrees}deg)`,
         transformOrigin: 'center center',
       });
-      document.documentElement.style.width = '240px';
-      document.documentElement.style.height = '336px';
+      document.documentElement.style.width = widthPx;
+      document.documentElement.style.height = heightPx;
       document.documentElement.style.background = 'transparent';
-      document.body.style.width = '240px';
-      document.body.style.height = '336px';
+      document.body.style.width = widthPx;
+      document.body.style.height = heightPx;
       document.body.style.margin = '0';
       document.body.style.background = 'transparent';
-    }, LANDSCAPE_TTS_CELL_ROTATION_DEGREES);
+    }, {
+      rotationDegrees: LANDSCAPE_TTS_CELL_ROTATION_DEGREES,
+      width: PORTRAIT_CSS.width,
+      height: PORTRAIT_CSS.height,
+    });
     await page.locator('#tts-portrait-card-cell').screenshot({ path: outputPath, omitBackground: true });
     return;
   }

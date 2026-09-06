@@ -16,6 +16,20 @@ describe('art direction override source', () => {
     expect(normalizeArtDirection({ focus: [0.42, 0.31] })).toEqual({ focus: [0.42, 0.31] });
   });
 
+  it('preserves complete explicit production directions without compacting defaults', () => {
+    const direction = {
+      fit: 'cover',
+      focusX: 0.5,
+      focusY: 0.4182,
+      smart: false,
+      zoom: 1,
+    };
+    expect(normalizeArtDirection(direction)).toEqual(direction);
+    expect(updateArtDirectionMap({}, 'territory-example', direction)).toEqual({
+      'territory-example': direction,
+    });
+  });
+
   it('round-trips the source file and sorts ids for stable diffs', () => {
     const source = serializeArtDirectionMap({
       'z-card': { focusY: 0.4 },

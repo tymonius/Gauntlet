@@ -121,7 +121,6 @@ textarea {
   border-radius: 2px;
   color: var(--ink);
   background: rgba(255, 252, 244, .88);
-  outline: none;
 }
 input[type="text"] { min-height: 52px; padding: 0 15px; }
 textarea { min-height: 110px; padding: 14px 15px; resize: vertical; line-height: 1.55; }

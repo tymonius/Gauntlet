@@ -2,31 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <base href="/card-design/">
-  <title>Gauntlet TTS Finalized Supplemental Renderer</title>
-  <link rel="preconnect" href="https://use.typekit.net">
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css">
-  <link rel="stylesheet" href="/design-tokens.css">
-  <link rel="stylesheet" href="/card-design/card-design.css">
-  <link rel="stylesheet" href="/card-design/card-design-refinement.css">
-  <link rel="stylesheet" href="/card-design/faction-specimens.css">
-  <link rel="stylesheet" href="/card-design/leader-card.css">
-  <link rel="stylesheet" href="/card-design/supplemental-card.css">
-  <link rel="stylesheet" href="/card-design/proposal-card.css">
-  <link rel="stylesheet" href="/card-design/reference-card.css">
-  <link rel="stylesheet" href="/card-design/supplemental-refinements.css">
-  <link rel="stylesheet" href="/card-design/capital-ledger.css" data-capital-ledger-style>
-  <link rel="stylesheet" href="/card-design/deed-card.css">
-  <link rel="stylesheet" href="/tts/finalized-supplemental-renderer/renderer.css">
+  <title>Gauntlet finalized supplemental renderer redirect</title>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const component = String(params.get('component') || '').trim();
+      const side = String(params.get('side') || 'front').trim() === 'reverse' ? 'reverse' : 'front';
+      if (!component) {
+        document.documentElement.dataset.redirectError = 'missing-component';
+        return;
+      }
+      const target = new URL('/card-design/face-render.html', window.location.origin);
+      target.searchParams.set('id', `component:${component}:${side}`);
+      window.location.replace(target);
+    })();
+  </script>
 </head>
-<body class="faction-specimen-page">
-  <main id="renderTarget"></main>
-  <script src="/tts/artwork-direction-overrides.js"></script>
-  <script src="/tts/artwork-crop.js"></script>
-  <script src="/card-design/card-design.js"></script>
-  <script type="module" src="/tts/finalized-supplemental-renderer/renderer.js"></script>
-</body>
+<body></body>
 </html>

@@ -7,7 +7,7 @@ const readJson = (relative: string) => JSON.parse(fs.readFileSync(path.join(root
 const read = (relative: string) => fs.readFileSync(path.join(root, relative), 'utf8');
 
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
-const attestationPath = 'publication/v0.6.3/verification.json';
+const attestationPath = 'artifacts/reconstruction/clean-v0.6.3/publication-verification.json';
 const canonicalManifestPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json';
 
 describe('clean v0.6.3 publication closeout', () => {
@@ -77,8 +77,10 @@ describe('clean v0.6.3 publication closeout', () => {
     });
     expect(lifecycle.releases['v0.6.2'].legacy_package_aliases).toBeUndefined();
     expect(lifecycle.releases['v0.6.3']).toMatchObject({
+      status: 'historical',
       artifacts_preserved: true,
-      public_cutover: true,
+      public_cutover: false,
+      historical_package_path: 'releases/v0.6.3/',
       authority_set_id: authoritySetId,
     });
     expect(lifecycle.releases['v0.6.3'].legacy_package_aliases).toBeUndefined();

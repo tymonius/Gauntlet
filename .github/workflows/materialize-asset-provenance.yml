@@ -1,0 +1,34 @@
+name: Verify Asset Provenance Remediation
+
+on:
+  pull_request:
+    paths:
+      - .github/asset-provenance.json
+      - .github/asset-provenance-remediation.json
+      - .github/scripts/materialize-asset-provenance.py
+      - .github/workflows/materialize-asset-provenance.yml
+  push:
+    branches:
+      - main
+    paths:
+      - .github/asset-provenance.json
+      - .github/asset-provenance-remediation.json
+      - .github/scripts/materialize-asset-provenance.py
+      - .github/workflows/materialize-asset-provenance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify evidence-backed remediation records
+        run: python .github/scripts/materialize-asset-provenance.py --check
+      - name: Validate asset provenance
+        run: python .github/scripts/validate-asset-provenance.py

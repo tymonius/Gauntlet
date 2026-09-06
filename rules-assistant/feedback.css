@@ -1,3 +1,46 @@
+/*
+ * Conversation-state layout for the floating Rules Arbiter.
+ * This stylesheet is mounted with the widget after the base widget stylesheet,
+ * so these stateful overrides can reclaim transcript space once play begins.
+ */
+.ga-rules-panel {
+  --ga-rules-compact-header-height: 72px;
+}
+
+.ga-rules-header,
+.ga-rules-header-identity,
+.ga-rules-chief-justice,
+.ga-rules-header-copy {
+  transition: all 180ms ease;
+}
+
+.ga-rules-panel:has(.ga-rules-message.user) .ga-rules-header {
+  min-height: var(--ga-rules-compact-header-height);
+}
+
+.ga-rules-panel:has(.ga-rules-message.user) .ga-rules-header-identity {
+  grid-template-columns: 60px minmax(0, 1fr);
+}
+
+.ga-rules-panel:has(.ga-rules-message.user) .ga-rules-chief-justice {
+  width: auto;
+  height: var(--ga-rules-compact-header-height);
+  margin-left: 0;
+}
+
+.ga-rules-panel:has(.ga-rules-message.user) .ga-rules-header-copy {
+  padding: 10px 0 8px 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-rules-header,
+  .ga-rules-header-identity,
+  .ga-rules-chief-justice,
+  .ga-rules-header-copy {
+    transition: none;
+  }
+}
+
 .ga-rules-feedback {
   margin-top: 11px;
   padding-top: 10px;

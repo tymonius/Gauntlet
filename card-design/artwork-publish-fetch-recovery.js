@@ -2,8 +2,8 @@
   const API_ORIGIN = 'https://gauntlet-artwork-authoring.tymon-scott.workers.dev';
   const PUBLISH_PATH = '/api/art-direction/publish';
   const PR_API_PREFIX = 'https://api.github.com/repos/tymonius/Gauntlet/pulls/';
-  const RETRY_DELAYS_MS = [350, 900];
-  const RECOVERY_DELAYS_MS = [0, 350, 700, 1100];
+  const RETRY_DELAYS_MS = [500, 1500, 3000, 5000, 8000];
+  const RECOVERY_DELAYS_MS = [0, 750, 1500, 3000, 5000];
   const nativeFetch = window.fetch.bind(window);
 
   function sleep(ms) {
@@ -93,13 +93,22 @@
 
   async function publishWithRecovery(input, init) {
     const prNumber = prNumberFromBody(init);
-    let lastError = null;
+    let lastPr = null;
 
     for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
       try {
         return await nativeFetch(input, init);
-      } catch (error) {
-        lastError = error;
+      } catch {
+        if (prNumber) {
+          try {
+            lastPr = await publicPr(prNumber);
+            if (lastPr?.merged === true || lastPr?.merged_at) return recoveredSuccess(lastPr);
+          } catch {
+            // The public GitHub status check is advisory. Keep retrying the
+            // authenticated publish request even when GitHub's public API is
+            // temporarily unavailable.
+          }
+        }
         if (attempt < RETRY_DELAYS_MS.length) await sleep(RETRY_DELAYS_MS[attempt]);
       }
     }
@@ -107,8 +116,20 @@
     const recovered = await recoverPublishedPr(prNumber);
     if (recovered) return recovered;
 
-    const suffix = prNumber ? ` PR #${prNumber} is still open.` : '';
-    throw new Error(`The publish request lost its connection before completion.${suffix} Click Publish batch again.`);
+    if (prNumber) {
+      try { lastPr = await publicPr(prNumber) || lastPr; }
+      catch { /* Keep the transport error as the primary failure. */ }
+    }
+
+    if (lastPr?.state === 'closed') {
+      throw new Error(`Artwork batch PR #${prNumber} closed without being merged. Refresh the catalog before saving more positions.`);
+    }
+
+    const mergeState = lastPr?.mergeable_state && lastPr.mergeable_state !== 'unknown'
+      ? ` (GitHub merge state: ${lastPr.mergeable_state})`
+      : '';
+    const suffix = prNumber ? ` PR #${prNumber} is still open${mergeState}.` : '';
+    throw new Error(`The publish request lost its connection before completion after repeated retries.${suffix} Click Publish batch again.`);
   }
 
   window.fetch = function gauntletArtworkPublishRecovery(input, init) {

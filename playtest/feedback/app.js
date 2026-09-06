@@ -37,6 +37,9 @@
       "confusingPoint", "importantObservation", "comments", "formStatus"
     ]) el[id] = document.getElementById(id);
 
+    el.formStatus?.setAttribute("role", "status");
+    if (el.formStatus) el.formStatus.tabIndex = -1;
+
     const today = localDateValue(new Date());
     el.playedOn.max = today;
     el.playedOn.value = today;
@@ -96,7 +99,7 @@
         <div class="rating-scale" role="radiogroup" aria-label="${label}">
           ${[1, 2, 3, 4, 5].map((value) => `
             <label class="rating-option" title="${RATING_LABELS[value]}">
-              <input type="radio" name="rating_${key}" value="${value}" data-rating="${key}" />
+              <input type="radio" name="rating_${key}" value="${value}" data-rating="${key}" aria-label="${value} — ${RATING_LABELS[value]}" required />
               <span aria-hidden="true">${value}</span>
             </label>`).join("")}
         </div>
@@ -105,8 +108,12 @@
 
   async function submitFeedback(event) {
     event.preventDefault();
-    setBusy(true);
+    const returnFocusTo = document.activeElement instanceof HTMLElement && el.feedbackForm.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     setStatus("Submitting feedback…");
+    if (returnFocusTo) el.formStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       const ratings = collectRatings();
       const payload = await request("/api/standalone-feedback", {
@@ -142,11 +149,18 @@
       el.receiptCode.textContent = payload.receipt;
       el.feedbackForm.hidden = true;
       el.successPanel.hidden = false;
+      el.successPanel.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       setStatus(error.message || "Feedback could not be submitted.", "error");
     } finally {
       setBusy(false);
+      if (
+        returnFocusTo &&
+        document.activeElement === el.formStatus &&
+        !el.feedbackForm.hidden &&
+        returnFocusTo.isConnected
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 
@@ -171,6 +185,7 @@
     el.successPanel.hidden = true;
     el.feedbackForm.hidden = false;
     setStatus("");
+    el.displayName.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 

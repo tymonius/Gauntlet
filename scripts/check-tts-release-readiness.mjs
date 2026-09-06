@@ -6,6 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-curren
 
 const GENERATED_READY_FAMILIES = new Set(['proposal-treaty-card', 'ledger', 'deed-card']);
 const SUPPLEMENTAL_NOTE_PREFIX = 'gauntlet:supplemental:';
+const STARTER_KIT_NOTE_PREFIX = 'gauntlet:starter-kit:';
 const STRICT_TARGET_STATUSES = new Set(['release-candidate']);
 
 function walkObjects(objects, visit) {
@@ -74,16 +75,29 @@ function countSupplementalsById(objects) {
   return counts;
 }
 
+function riteIdFromComponent(component) {
+  const id = String(component?.id || '');
+  return id.startsWith('mystics-rite-') ? id.slice('mystics-rite-'.length) : '';
+}
+
+function componentAppliesToStarter(component, starter) {
+  if (component?.deckInclusion === 'every-deck') return true;
+  if (component?.faction !== starter?.factionId) return false;
+  if (component?.family === 'rite-card') {
+    const selectedRites = Array.isArray(starter?.selectedRites) ? starter.selectedRites : [];
+    return selectedRites.includes(riteIdFromComponent(component));
+  }
+  return true;
+}
+
 export function evaluateStarterAssembly(starterManifest, supplementalManifest, save) {
   const blockers = [];
-  const readyByFaction = new Map();
-  for (const component of supplementalManifest.ready || []) {
-    if (!component.faction) continue;
-    if (!readyByFaction.has(component.faction)) readyByFaction.set(component.faction, []);
-    readyByFaction.get(component.faction).push(component);
-  }
+  const readyComponents = supplementalManifest.ready || [];
 
-  const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
+  const bags = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(STARTER_KIT_NOTE_PREFIX)
+  ));
   const bagByNickname = new Map(bags.map(bag => [bag.Nickname, bag]));
   let expectedCopies = 0;
   let assembledCopies = 0;
@@ -102,7 +116,7 @@ export function evaluateStarterAssembly(starterManifest, supplementalManifest, s
     }
 
     const counts = countSupplementalsById(bag.ContainedObjects || []);
-    for (const component of readyByFaction.get(starter.factionId) || []) {
+    for (const component of readyComponents.filter(item => componentAppliesToStarter(item, starter))) {
       const expected = Number(component.quantity || 0);
       const actual = counts.get(component.id) || 0;
       expectedCopies += expected;
@@ -123,7 +137,7 @@ export function evaluateStarterAssembly(starterManifest, supplementalManifest, s
       id: 'starter-bag-count',
       kind: 'starter-bag',
       status: `${bags.length}/${(starterManifest.decks || []).length}`,
-      reason: `Generated save contains ${bags.length} starter Bags for ${(starterManifest.decks || []).length} starter manifests.`,
+      reason: `Generated save contains ${bags.length} visible starter Bags for ${(starterManifest.decks || []).length} starter manifests.`,
     });
   }
 
@@ -158,6 +172,19 @@ export function evaluateHostedUrls(save) {
           kind: 'hosted-url',
           status: 'invalid',
           reason: `${field} is not HTTPS: ${value}`,
+        });
+      }
+    }
+
+    const pdfUrl = object?.CustomPDF?.PDFUrl;
+    if (pdfUrl) {
+      urlCount += 1;
+      if (!/^https:\/\//i.test(String(pdfUrl))) {
+        blockers.push({
+          id: object.GUID || object.Nickname || 'custom-pdf',
+          kind: 'hosted-url',
+          status: 'invalid',
+          reason: `PDFUrl is not HTTPS: ${pdfUrl}`,
         });
       }
     }

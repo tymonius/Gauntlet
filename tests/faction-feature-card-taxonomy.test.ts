@@ -5,7 +5,7 @@ const taxonomy = readFileSync('card-design/faction-feature-taxonomy.md', 'utf8')
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const leaderRenderer = readFileSync('card-design/leader-card-copy.js', 'utf8');
 const leaderStyles = readFileSync('card-design/leader-card-copy.css', 'utf8');
-const catalogOverlay = readFileSync('card-design/v064-card-candidates.js', 'utf8');
+const catalogOverlay = readFileSync('card-design/current-card-catalog.js', 'utf8');
 const diplomatReference = readFileSync('card-design/reference-copy/v0.6.3/diplomat-reference.md', 'utf8');
 const financierReference = readFileSync('card-design/reference-copy/v0.6.3/financier-reference.md', 'utf8');
 

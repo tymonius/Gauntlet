@@ -1,5 +1,6 @@
 import { isAdminAuthorized } from "./worker.js";
-import { buildRulesCorpus, defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
+import { buildRulesCorpus } from "./local-search.js";
+import { V071_RULES_VERSION, defaultV071SourceUrls, loadV071RulesCorpus } from "./v071-public-corpus.js";
 import { buildCorpusReviewSnapshot } from "./rules-intelligence.js";
 
 const HISTORICAL_ACCURACY = new Set(["correct", "incorrect", "indeterminate", "not_applicable"]);
@@ -27,11 +28,11 @@ export async function handleReviewIntelligence(request, env) {
 
   if (request.method === "GET" && url.pathname === "/api/admin/summary") {
     const results = await env.DB.batch([
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE review_status = 'unreviewed'"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE feedback_rating IN ('unclear', 'incorrect')"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE COALESCE(ruling_status_v2, ruling_status) = 'provisional'"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE confidence = 'low'")
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND review_status = 'unreviewed'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND feedback_rating IN ('unclear', 'incorrect')"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND COALESCE(ruling_status_v2, ruling_status) = 'provisional'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND confidence = 'low'")
     ]);
     const provisional = countFromBatch(results[3]);
     return jsonResponse({
@@ -115,7 +116,7 @@ async function saveAudit(request, env, origin) {
   const sourceGap = String(payload?.sourceGap || "").trim().slice(0, 3000);
   const rationale = String(payload?.rationale || "").trim().slice(0, 5000);
   const reviewer = String(payload?.reviewer || "ChatGPT export audit").trim().slice(0, 200);
-  const reviewedAgainstVersion = String(payload?.reviewedAgainstVersion || "v0.6.1").trim().slice(0, 40);
+  const reviewedAgainstVersion = String(payload?.reviewedAgainstVersion || V071_RULES_VERSION).trim().slice(0, 40);
   const reviewedAgainstCorpusHash = String(payload?.reviewedAgainstCorpusHash || "").trim().slice(0, 128);
   const now = new Date().toISOString();
 
@@ -168,7 +169,11 @@ async function saveAudit(request, env, origin) {
 
 async function getCorpus(env) {
   if (!corpusPromise) {
-    corpusPromise = loadRulesCorpus(defaultSourceUrls(env.SITE_ORIGIN || "https://gauntlet.run")).catch((error) => {
+    const urls = defaultV071SourceUrls(env.SITE_ORIGIN || "https://gauntlet.run");
+    corpusPromise = loadV071RulesCorpus({
+      ...urls,
+      fetchImpl: fetch
+    }).catch((error) => {
       corpusPromise = null;
       throw error;
     });
@@ -231,7 +236,7 @@ async function getSnapshot(corpus) {
 }
 
 async function listInteractions(env, url, origin) {
-  const conditions = [];
+  const conditions = ["session_id NOT LIKE 'qa_v071_%'"];
   const params = [];
   const q = String(url.searchParams.get("q") || "").trim().slice(0, 200);
   const reviewStatus = String(url.searchParams.get("reviewStatus") || "").trim();

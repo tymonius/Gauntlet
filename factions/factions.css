@@ -10,7 +10,7 @@
 .faction-financiers { --faction: #227044; --faction-dark: #124429; --faction-soft: rgba(34,112,68,.11); --faction-symbol: url("/images/faction-symbols/financiers.svg"); }
 .faction-intelligence { --faction: #282827; --faction-dark: #111; --faction-soft: rgba(40,40,39,.11); --faction-symbol: url("/images/faction-symbols/intelligence.svg"); }
 .faction-mystics { --faction: #5d347e; --faction-dark: #38204e; --faction-soft: rgba(93,52,126,.11); --faction-symbol: url("/images/faction-symbols/mystics.svg"); }
-.faction-inquisition { --faction: #a67a27; --faction-dark: #66470e; --faction-soft: rgba(166,122,39,.13); --faction-symbol: url("/images/faction-symbols/inquisition.svg"); }
+.faction-inquisition { --faction: #a67a27; --faction-dark: #a67a27; --faction-soft: rgba(166,122,39,.13); --faction-symbol: url("/images/faction-symbols/inquisition.svg"); }
 
 /* Echo the Start-page selected-faction treatment as a deliberate opening accent:
  * large, stronger than a watermark, offset and partly off-canvas. */
@@ -34,6 +34,27 @@ body.faction-page::after {
 .faction-page .button.primary { background: var(--faction-dark); border-color: var(--faction-dark); }
 .faction-page .button.secondary { color: var(--faction-dark); border-color: var(--faction-dark); }
 .faction-page .text-link { color: var(--faction-dark); font-family: var(--font-interface); font-weight: 800; text-decoration: none; }
+
+/* Preserve the guides' earlier Georgia hierarchy. Standard-weight structural
+ * headings stay Georgia; headings that previously read as heavy/bold Georgia
+ * use P22 1722 Pro. P22 Declaration Pro is reserved for flavor text. */
+.faction-page .section-heading h2 {
+  font-family: var(--font-display-web);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+.faction-page .play-grid h3,
+.faction-page .mechanics-grid h3,
+.faction-page .victory-grid h3,
+.faction-page .player-fit h3,
+.faction-page .identity-panel h2,
+.faction-page .faction-next h2,
+.factions-hub .faction-hub-card h2,
+.factions-hub .hub-note h2 {
+  font-family: var(--font-display-historical);
+  font-weight: 400;
+  letter-spacing: 0;
+}
 
 .faction-hero, .factions-intro {
   width: min(1180px, calc(100% - 40px));
@@ -153,7 +174,7 @@ body.faction-page::after {
 .leader-profile-copy { padding: 52px; align-self: center; }
 .leader-kicker { color: var(--faction); font-family: var(--font-interface); font-size: .75rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
 .leader-profile h3 { margin: 8px 0 10px; font-family: var(--font-display-historical); font-size: clamp(2.7rem,5vw,4.8rem); font-weight: 400; line-height: .95; }
-.leader-motto { color: var(--faction-dark); font-family: var(--font-reading); font-size: 1.25rem; font-style: italic; }
+.faction-page .leader-profile .leader-motto { color: var(--faction-dark); font-family: var(--font-flavor); font-size: clamp(2.15rem,3vw,3rem) !important; font-style: normal; line-height: 1.05 !important; }
 .leader-profile-copy > p:not(.leader-kicker):not(.leader-motto) { color: var(--muted); font-size: 1.02rem; line-height: 1.7; }
 .ability-summary { margin-top: 28px; padding: 22px; border-left: 4px solid var(--faction); background: var(--faction-soft); }
 .ability-summary strong { color: var(--faction-dark); font-family: var(--font-interface); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase; }
@@ -196,6 +217,9 @@ body.faction-page::after {
   padding: 34px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   color: var(--ink);
   border: 1px solid var(--line);
   border-top: 6px solid var(--faction);
@@ -203,6 +227,24 @@ body.faction-page::after {
   box-shadow: 0 14px 44px rgba(55,38,18,.08);
   text-decoration: none;
   transition: transform .18s ease, box-shadow .18s ease;
+}
+.faction-hub-card > * {
+  position: relative;
+  z-index: 1;
+}
+.faction-hub-card::after {
+  content: "";
+  width: clamp(170px, 46%, 220px);
+  aspect-ratio: 1;
+  position: absolute;
+  right: -24px;
+  bottom: -42px;
+  z-index: 0;
+  background: var(--faction);
+  opacity: .075;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+  pointer-events: none;
 }
 
 .faction-hub-card.faction-military { --faction: #9e262c; }
@@ -251,6 +293,11 @@ body.faction-page::after {
   .leader-profile-art { min-height: 330px; }
   .factions-intro { margin: 0 auto; padding: 70px 0 50px; }
   .faction-hub-card { min-height: 320px; }
+  .faction-hub-card::after {
+    width: 190px;
+    right: -22px;
+    bottom: -34px;
+  }
 }
 
 /* Normalize legacy page references to the current top-level portrait assets. */

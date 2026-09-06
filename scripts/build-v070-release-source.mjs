@@ -2,6 +2,8 @@ import crypto from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
+import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 
 const RELEASE_VERSION = 'v0.7.0';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
@@ -42,6 +44,73 @@ function addCardAnatomyFigures(markdown) {
     .replace(arcaneMarker, arcaneMarker + arcaneFigure);
 }
 
+async function repairAndValidateFrozenReleaseSources() {
+  const paths = {
+    rulebook: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook.md`,
+    canonical: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`,
+    starters: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`,
+    provenance: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`,
+  };
+  let [rulebook, canonicalText, startersText, provenanceText] = await Promise.all([
+    readText(paths.rulebook),
+    readText(paths.canonical),
+    readText(paths.starters),
+    readText(paths.provenance),
+  ]);
+  let canonical = JSON.parse(canonicalText);
+  const starters = JSON.parse(startersText);
+  const provenance = JSON.parse(provenanceText);
+
+  if (!rulebook.includes(`**Version ${RELEASE_VERSION.replace(/^v/, '')}**`)) {
+    throw new Error(`${RELEASE_VERSION} frozen Rulebook source has the wrong version identity.`);
+  }
+  if (canonical.release_version !== RELEASE_VERSION || canonical.source_version !== RELEASE_VERSION) {
+    throw new Error(`${RELEASE_VERSION} frozen canonical data has the wrong release/source identity.`);
+  }
+  if (starters.release_version !== RELEASE_VERSION || starters.source_version !== RELEASE_VERSION) {
+    throw new Error(`${RELEASE_VERSION} frozen starter data has the wrong release/source identity.`);
+  }
+  if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== RELEASE_VERSION || !provenance.authority_set_id) {
+    throw new Error(`${RELEASE_VERSION} frozen source provenance is incomplete.`);
+  }
+
+  canonical = applyV070CanonicalCorrections(canonical);
+  const correctedCanonicalText = jsonText(canonical);
+  if (correctedCanonicalText !== canonicalText) {
+    canonicalText = correctedCanonicalText;
+    await writeText(join(ROOT, paths.canonical), canonicalText);
+    console.log('Re-derived maintained v0.7.0 canonical summaries from playable-card records.');
+  }
+
+  const semanticRulebook = applyV070RulebookCorrections(rulebook);
+  const synchronized = synchronizeKnownRulebookClaims(semanticRulebook, canonical);
+  rulebook = synchronized.output;
+  validateKnownRulebookClaims(rulebook, canonical);
+  if (rulebook !== await readText(paths.rulebook)) {
+    await writeText(join(ROOT, paths.rulebook), rulebook);
+    console.log('Synchronized maintained v0.7.0 Rulebook facts from canonical authority.');
+  }
+
+  const diplomats = canonical.gameplay?.factions?.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('Frozen v0.7.0 canonical Peace Treaty threshold must be six.');
+  }
+
+  const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${startersText}`, 'utf8'));
+  if (provenance.authority_set_id !== authoritySetId) {
+    provenance.authority_set_id = authoritySetId;
+    provenance.publication_corrections = {
+      ...(provenance.publication_corrections || {}),
+      derived_rulebook_facts: {
+        source: 'canonical gameplay records and faction rule fields',
+        corrected_claims: synchronized.changes.map(change => change.label),
+      },
+    };
+    await writeText(join(ROOT, paths.provenance), jsonText(provenance));
+    console.log(`Updated maintained v0.7.0 authority set after derived-fact synchronization: ${authoritySetId}`);
+  }
+}
+
 function validateAuthority(authority) {
   if (authority.schemaVersion !== 2 || authority.authority !== 'current-game' || authority.version !== RELEASE_VERSION) {
     throw new Error('v0.7.0 publication requires the complete v0.7.0 current-game authority.');
@@ -60,6 +129,10 @@ function validateAuthority(authority) {
   if (!authority.factionFeatureTaxonomy || !authority.factionFeatures) {
     throw new Error('v0.7.0 requires current Faction Feature authority.');
   }
+  const diplomats = authority.gameplay.factions.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('v0.7.0 publication requires a six-Proposal Peace Treaty threshold.');
+  }
 
   const active = JSON.stringify({
     gameplay: authority.gameplay,
@@ -74,13 +147,16 @@ function validateAuthority(authority) {
   if (retired) throw new Error(`Published authority still contains retired terminology: ${retired[0]}.`);
 }
 
-const [authority, currentRulebookSource] = await Promise.all([
-  loadCurrentGameAuthority(),
-  readText(CURRENT_RULEBOOK_SOURCE),
-]);
-validateAuthority(authority);
+const authority = await loadCurrentGameAuthority();
 
-const rulebook = addCardAnatomyFigures(currentRulebookSource);
+if (authority.version !== RELEASE_VERSION) {
+  await repairAndValidateFrozenReleaseSources();
+  console.log(`Current development is ${authority.version}; preserving the frozen ${RELEASE_VERSION} release-source snapshot with approved publication errata.`);
+} else {
+  const currentRulebookSource = await readText(CURRENT_RULEBOOK_SOURCE);
+  validateAuthority(authority);
+
+  const rulebook = addCardAnatomyFigures(currentRulebookSource);
 const canonicalData = {
   schema_version: 2,
   release_version: RELEASE_VERSION,
@@ -187,3 +263,4 @@ await writeText(join(PUBLIC_DIR, 'index.html'), landing);
 console.log(`Materialized ${RELEASE_VERSION} directly from complete current authorities.`);
 console.log(`Authority set: ${authoritySetId}`);
 console.log(`Cards: ${authority.gameplay.cards.length}; Territories: ${authority.gameplay.territories.length}; Starter Decks: ${authority.starterDecks.decks.length}.`);
+}

@@ -494,7 +494,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
   if (matches(text, /\b(fifth|five|5)\b.*\bproposal|proposal.*\b(fifth|five|5)\b/i)) {
     return result({
       id: "peace-treaty-timing",
-      answer: "You do not win immediately. At the start of your next turn, after the Capture step and before the Draw step, you win through the Peace Treaty if five different Proposals are ratified.",
+      answer: "You do not win immediately. At the start of your next turn, after the Capture step and before the Draw step, you win through the Peace Treaty if six different Proposals are ratified.",
       sourceIds: ["rulebook:treaty-articles-and-peace-treaty"],
       subject: "Peace Treaty",
       topic: "victory timing"
@@ -506,7 +506,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
       && !/\brite of (?:blood|crossing|echoes)\b/i.test(text)) {
     return result({
       id: "transmutation",
-      answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",
+      answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",
       sourceIds: ["rulebook:progression", "rulebook:transmutation", "rulebook:spirit-walker"],
       subject: "Transmutation",
       topic: "use and timing"

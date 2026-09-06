@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -25,8 +30,11 @@
   <link rel="stylesheet" href="../../../site.css" />
   <link rel="stylesheet" href="../styles.css?v=20260815-1" />
   <link rel="stylesheet" href="styles.css?v=20260815-1" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header analysis-header">
     <a class="brand" href="../../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -39,7 +47,7 @@
     </nav>
   </header>
 
-  <main class="analysis-main integrity-main">
+  <main id="main-content" tabindex="-1" class="analysis-main integrity-main">
     <section class="analysis-hero integrity-hero">
       <div>
         <p class="eyebrow">Owner research controls</p>
@@ -136,9 +144,9 @@
           <div><p class="eyebrow">Provenance</p><h2 id="history-title">Exclusion audit history.</h2></div>
           <p>Every exclusion and restoration remains visible even after a record returns to the active dataset.</p>
         </div>
-        <div class="table-scroll">
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Exclusion audit history table">
           <table class="audit-table">
-            <thead><tr><th>Status</th><th>Target</th><th>Reason</th><th>Excluded</th><th>Restored</th></tr></thead>
+            <thead><tr><th scope="col">Status</th><th scope="col">Target</th><th scope="col">Reason</th><th scope="col">Excluded</th><th scope="col">Restored</th></tr></thead>
             <tbody id="historyRows"></tbody>
           </table>
         </div>
@@ -146,10 +154,10 @@
     </section>
   </main>
 
-  <dialog id="excludeDialog" class="exclude-dialog">
+  <dialog id="excludeDialog" class="exclude-dialog" aria-labelledby="exclude-dialog-title" aria-describedby="excludeTarget">
     <form id="excludeForm" method="dialog">
       <p class="eyebrow">Remove from research dataset</p>
-      <h2>Exclude this record?</h2>
+      <h2 id="exclude-dialog-title">Exclude this record?</h2>
       <p id="excludeTarget"></p>
       <input id="excludeTargetType" type="hidden" />
       <input id="excludeTargetId" type="hidden" />
@@ -173,11 +181,30 @@
     </form>
   </dialog>
 
-  <footer>
-    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
+    </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="app.js?v=20260802-1" defer></script>
+  <script src="../refresh-focus-accessibility.js?v=20260903-1" defer></script>
 </body>
 </html>

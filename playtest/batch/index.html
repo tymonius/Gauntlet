@@ -8,28 +8,33 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Generate uniquely coded Gauntlet v0.6.3 formal playtest sheets and a private host manifest." />
+  <meta name="description" content="Generate uniquely coded Gauntlet v0.7.1 formal playtest sheets and a private host manifest." />
   <title>Gauntlet Coded Sheet Generator</title>
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../styles.css" />
   <link rel="stylesheet" href="styles.css?v=20260815-1" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link screen-only" href="#main-content">Skip to main content</a>
   <header class="site-header screen-only">
     <a class="brand" href="../../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="../host/">Host Home</a>
-      <a href="../guide/?role=host">Game-night guide</a>
-      <a href="../">Single sheet</a>
-      <a href="../../rulebook/">Rules</a>
-      <a href="../../deckbuilder/">Deckbuilder</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
-  <main class="generator-main screen-only">
+  <main id="main-content" tabindex="-1" class="generator-main screen-only">
     <section class="generator-hero">
       <div>
         <p class="eyebrow">Formal playtest administration</p>
@@ -75,10 +80,10 @@
       </section>
     </section>
 
-    <section id="resultPanel" class="generator-panel result-panel" hidden>
+    <section id="resultPanel" class="generator-panel result-panel" hidden tabindex="-1" aria-labelledby="resultTitle">
       <div>
         <p class="eyebrow">Batch ready</p>
-        <h2><span id="resultCount">0</span> coded sheets generated</h2>
+        <h2 id="resultTitle"><span id="resultCount">0</span> coded sheets generated</h2>
         <p id="resultSummary"></p>
       </div>
       <div class="result-actions">
@@ -90,14 +95,29 @@
     </section>
   </main>
 
-  <main id="printBatch" class="print-batch" aria-label="Generated coded playtest sheets"></main>
+  <div id="printBatch" class="print-batch" aria-label="Generated coded playtest sheets"></div>
 
-  <footer class="screen-only">
-    <div>
-      <strong>Gauntlet</strong>
-      <p>Unpublished pre-release playtest project.</p>
+  <footer class="ga-site-footer screen-only" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
   </footer>
 
   <script src="qrcode-loader.js?v=20260730-1"></script>

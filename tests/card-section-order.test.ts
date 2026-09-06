@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
+const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
 
 describe("card renderer section ordering", () => {
   it("preserves canonical source order for Action, Asset, Use, and Battle headings", () => {
