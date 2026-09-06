@@ -6,6 +6,11 @@ import type {
 } from './battle-types';
 import * as core from './battle-effects-core';
 import {
+  V070_ARMISTICE_BATTLE_TEXT,
+  V070_ARMISTICE_ID,
+  registerV070ArmisticeBattleEffect,
+} from './armistice-battle';
+import {
   V070_ASSASSINS_BATTLE_TEXT,
   V070_ASSASSINS_ID,
   registerV070AssassinsBattleEffect,
@@ -243,6 +248,16 @@ const decoysHandler: V070SpecializedBattleEffectHandler = {
     registerV070DecoysBattleEffect(state, owner, commitment.instanceId);
   },
 };
+const armisticeHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_ARMISTICE_ID,
+  expectedText: V070_ARMISTICE_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070ArmisticeBattleEffect(state, owner, commitment.instanceId);
+  },
+};
 
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
@@ -259,6 +274,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [capitalPunishmentHandler.cardId, capitalPunishmentHandler],
   [disruptionHandler.cardId, disruptionHandler],
   [decoysHandler.cardId, decoysHandler],
+  [armisticeHandler.cardId, armisticeHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
