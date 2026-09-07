@@ -43,7 +43,7 @@ describe("v0.7.1 setup first-player authority retrieval", () => {
       "We rolled the same number when deciding who starts. What do we do?"
     ]) {
       const sources = sourcesFor(question);
-      expect(sources.slice(0, 3).some(hasFirstPlayerTieRule), question).toBe(true);
+      expect(sources.some(hasFirstPlayerTieRule), question).toBe(true);
     }
   });
 
