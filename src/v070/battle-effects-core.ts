@@ -21,6 +21,11 @@ import {
 import {
   V070_PROTRACTED_SIEGE_BATTLE_TEXT,
 } from './protracted-siege';
+import {
+  V070_DEEP_COVER_BATTLE_TEXT,
+  V070_DEEP_COVER_ID,
+  registerV070DeepCoverBattleEffect,
+} from './deep-cover-battle';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -345,6 +350,18 @@ const handlers: V070BattleEffectHandler[] = [
       if (otherActiveBattleCardHasCost(state, owner, commitment.instanceId, 1)) {
         participant(state, owner).advantage += 1;
       }
+    },
+  },
+  {
+    cardId: V070_DEEP_COVER_ID,
+    expectedText: V070_DEEP_COVER_BATTLE_TEXT,
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      registerV070DeepCoverBattleEffect(
+        state,
+        owner,
+        commitment.instanceId,
+      );
     },
   },
   {
