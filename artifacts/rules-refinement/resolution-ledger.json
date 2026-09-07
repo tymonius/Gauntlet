@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T14:54:16.083Z",
+  "updatedAt": "2026-09-06T15:57:51.257Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -253,6 +253,20 @@
       "resolvedAt": "2026-09-06T14:54:16.083Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260906-5"
+      }
+    },
+    {
+      "id": "mystics-transmutation-progression-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "bf6b1049-6329-4ed8-87d6-f12650c820d9"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the current v0.7.1 Mystics progression and Transmutation procedure for second-Rite ability questions, natural procedure paraphrases, and terse follow-ups; preserve Spirit Walker authority when that Leader is part of the active topic.",
+      "resolvedAt": "2026-09-06T15:57:51.257Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-6"
       }
     }
   ]
