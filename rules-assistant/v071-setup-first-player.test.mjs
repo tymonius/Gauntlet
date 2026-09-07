@@ -52,7 +52,7 @@ describe("v0.7.1 setup first-player authority retrieval", () => {
       { role: "user", content: "We tied the roll to determine the first player." },
       { role: "assistant", content: "The higher roll takes the first turn." }
     ];
-    const sources = sourcesFor("What do we do now?", history);
+    const sources = sourcesFor("Then what?", history);
     expect(sources.some(hasFirstPlayerTieRule)).toBe(true);
   });
 
