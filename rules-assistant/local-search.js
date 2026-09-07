@@ -47,6 +47,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["setup", "arrange territories", "place player tokens", "own end"]
   },
   {
+    pattern: /(?:\b(?:first player|first turn|go(?:es|ing)? first|who starts?|determin(?:e|es|ed|ing) (?:the )?first player|decid(?:e|es|ed|ing) who starts?)\b[\s\S]{0,120}\b(?:roll|rolled|tie|tied|same number)\b|\b(?:roll|rolled|tie|tied|same number)\b[\s\S]{0,120}\b(?:first player|first turn|go(?:es|ing)? first|who starts?|determin(?:e|es|ed|ing) (?:the )?first player|decid(?:e|es|ed|ing) who starts?)\b)/i,
+    aliases: ["setup", "determine first player", "higher result takes the first turn", "reroll ties"]
+  },
+  {
     pattern: /\b(?:cards?|card)\b.*\bdiscard pile\b|\bdiscard pile\b.*\b(?:cards?|card)\b/i,
     aliases: ["playing a card for its action effect", "tactics reserve aftermath"]
   },

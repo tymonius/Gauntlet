@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T15:57:51.257Z",
+  "updatedAt": "2026-09-07T05:30:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -267,6 +267,21 @@
       "resolvedAt": "2026-09-06T15:57:51.257Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260906-6"
+      }
+    },
+    {
+      "id": "setup-first-player-tie-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "74607df2-5730-4e2f-9ba4-6aede32d308d"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Expand tied opening-roll and first-player phrasing to the current v0.7.1 Setup authority so the explicit 'Reroll ties' rule is retrieved rather than forcing an unnecessary provisional ruling.",
+      "resolvedAt": "2026-09-07T05:30:00.000Z",
+      "binding": {
+        "pullRequest": 1553,
+        "commit": "6094e3aec269e32502979c5497aff22e63920134"
       }
     }
   ]
