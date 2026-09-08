@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/verify-current-live-publication.yml'
+      - '.github/workflows/current-publication-contract.yml'
       - 'config/release-lifecycle.json'
       - 'scripts/validate-current-public-contract.mjs'
       - 'releases/**'
@@ -13,6 +14,7 @@ on:
       - 'release-surface.css'
       - 'index.html'
       - 'start/**'
+      - 'apps/playtest/**'
       - 'rulebook/**'
       - 'card-reference/**'
       - 'card-design/**'
