@@ -1,0 +1,61 @@
+name: Rules Arbiter current retrieval probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-next-review-scan
+    paths:
+      - '.github/workflows/rules-arbiter-current-retrieval-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe current deterministic retrieval
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { contextualQuery } from './rules-assistant/worker-v071.js';
+
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md', 'utf8');
+          const corpus = buildRulesCorpus({
+            canonicalData,
+            rulebookMarkdown,
+            siteOrigin: 'https://gauntlet.run',
+            rulebookBrowserUrl: 'https://gauntlet.run/rulebook/',
+            canonicalDataUrl: 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'
+          });
+
+          const probes = [
+            { id: 'starting-draw', question: 'How many cards do I draw to start?', expected: ['rulebook:setup'] },
+            { id: 'starting-hand', question: 'How big is your starting hand?', expected: ['rulebook:setup'] },
+            { id: 'discard-timing', question: 'When does a card go to the discard after being played?', expected: ['rulebook:playing-a-card-for-its-action-effect', 'rulebook:tactic-area'] }
+          ];
+
+          let failed = false;
+          for (const probe of probes) {
+            const query = contextualQuery(probe.question, []);
+            const sources = retrieveRules(corpus, query, { limit: 10, excerptLength: 1300 });
+            const ids = sources.map((source) => source.canonicalId || source.id);
+            const missing = probe.expected.filter((expected) => !ids.includes(expected));
+            console.log(JSON.stringify({
+              ...probe,
+              query,
+              retrieved: sources.map((source, index) => ({ rank: index + 1, id: source.canonicalId || source.id, title: source.title })),
+              missing
+            }));
+            if (missing.length) failed = true;
+          }
+          if (failed) process.exitCode = 2;
+          NODE
