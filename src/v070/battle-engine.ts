@@ -82,6 +82,9 @@ export function reduceV070BattleAction(
     );
   }
 
+  // Accusation resolves while the opponent's Discard Pile and committed
+  // battle cards still exist. Resume the established Aftermath pipeline only
+  // after every registered Accusation has resolved as far as able.
   if (action.type === 'complete_aftermath') {
     const staged = structuredClone(state) as V070GameState;
     if (openNextV070AccusationAftermathChoice(staged)) return staged;
