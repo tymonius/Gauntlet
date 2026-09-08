@@ -116,8 +116,10 @@ jobs:
           }
           if (game.playerCount !== 1 || game.resultSubmitted) throw new Error('Test setup unexpectedly gained a second player or shared result');
 
-          await page.fill('#factionInterest', 'Negotiation and political leverage interested me.');
           for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+          await page.selectOption('#feltDecidedWhen', 'late');
+          await page.selectOption('#agencyAfterDecided', 'some');
+          await page.fill('#decisiveCause', 'A late decision changed the available paths.');
           await page.selectOption('#playAgain', 'yes');
           await page.fill('#responseComments', 'Submitting without the opponent present.');
           await page.click('#responseForm button[type="submit"]');
