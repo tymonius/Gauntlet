@@ -70,31 +70,50 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Rulebook production dependencies
+      - name: Detect v0.7.1 source authority
+        id: source
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const authority = JSON.parse(fs.readFileSync('game-data/current-game.json', 'utf8'));
+          const eligible = authority.version === 'v0.7.1' && authority.status === 'current-release';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `eligible=${eligible}\n`);
+          console.log(eligible
+            ? 'Current authority is v0.7.1; release materialization is enabled.'
+            : `Current authority is ${authority.version} (${authority.status}); frozen v0.7.1 regeneration is disabled.`);
+          NODE
+
+      - name: Install release validation dependencies
         run: |
           npm install
           npm install --no-save --package-lock=false pdf-lib
-          npx playwright install --with-deps chromium
+
+      - name: Install Rulebook rendering dependencies
+        if: ${{ steps.source.outputs.eligible == 'true' }}
+        run: npx playwright install --with-deps chromium
 
       - name: Install publication utility font
+        if: ${{ steps.source.outputs.eligible == 'true' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-inter
           fc-match Inter
 
       - name: Build v0.7.1 source snapshot
+        if: ${{ steps.source.outputs.eligible == 'true' }}
         run: |
           node --check scripts/build-v071-release-source.mjs
           node scripts/build-v071-release-source.mjs
 
       - name: Render approved v0.7.1 Rulebook booklet
+        if: ${{ steps.source.outputs.eligible == 'true' }}
         run: |
           node --check scripts/render-v071-booklet.mjs
           python -m py_compile scripts/build-v063-rulebook-production.py
           node --check scripts/run-v071-rulebook-renderer.mjs
           node scripts/render-v071-booklet.mjs
 
-      - name: Validate materialized release package
+      - name: Validate frozen v0.7.1 release package
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
@@ -153,7 +172,7 @@ jobs:
 
           const pdf = await PDFDocument.load(fs.readFileSync(`${root}/Gauntlet_v0.7.1_Rulebook_Booklet.pdf`));
           assert.equal(pdf.getPageCount(), manifest.pdf_outputs[0].pages);
-          console.log(`Validated v0.7.1 package with ${pdf.getPageCount()} booklet sides.`);
+          console.log(`Validated frozen v0.7.1 package with ${pdf.getPageCount()} booklet sides.`);
           NODE
 
       - name: Upload v0.7.1 release package preview
@@ -165,7 +184,7 @@ jobs:
           if-no-files-found: error
 
       - name: Prepare protected-main release refresh
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: ${{ steps.source.outputs.eligible == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -221,7 +240,7 @@ jobs:
           fi
 
       - name: Commit materialized release package
-        if: github.event_name == 'push' && github.ref == 'refs/heads/release/v0.7.1-finalize'
+        if: ${{ steps.source.outputs.eligible == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/release/v0.7.1-finalize' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
