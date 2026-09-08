@@ -3,6 +3,13 @@ import path from 'node:path';
 
 const root = process.cwd();
 const historicalRoot = path.join(root, 'legacy', 'public-versions');
+const playtestSource = path.join(root, 'apps', 'playtest');
+const playtestDestination = path.join(root, 'playtest');
+
+if (fs.existsSync(playtestSource)) {
+  fs.mkdirSync(playtestDestination, { recursive: true });
+  fs.cpSync(playtestSource, playtestDestination, { recursive: true });
+}
 
 if (!fs.existsSync(historicalRoot)) {
   throw new Error('Historical public-version route sources are missing.');
@@ -23,4 +30,8 @@ for (const version of versions) {
   fs.copyFileSync(source, path.join(destinationDir, 'index.html'));
 }
 
-console.log(`Materialized ${versions.length} historical public-version compatibility route(s): ${versions.join(', ')}.`);
+const materialized = [
+  ...(fs.existsSync(playtestSource) ? ['playtest'] : []),
+  ...versions,
+];
+console.log(`Materialized ${materialized.length} public route compatibility target(s): ${materialized.join(', ')}.`);
