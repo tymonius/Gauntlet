@@ -1,0 +1,86 @@
+name: Rules Arbiter opening-hand alias probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-next-review-scan
+    paths:
+      - '.github/workflows/rules-arbiter-opening-hand-alias-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply candidate alias locally and probe retrieval
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('rules-assistant/local-search.js')
+          text = path.read_text()
+          old = '''  {
+    pattern: /\\b(?:cards?|hand)\\b.*\\bstart\\b|\\bstart\\b.*\\b(?:cards?|hand)\\b/i,
+    aliases: ["setup", "opening hand"]
+  },'''
+          new = '''  {
+    pattern: /(?:\\b(?:cards?|hand)\\b[\\s\\S]{0,80}\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b|\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b[\\s\\S]{0,80}\\b(?:cards?|hand)\\b|\\bsetup\\b[\\s\\S]{0,80}\\b(?:draw|hand|cards?|keep|discard)\\b)/i,
+    aliases: ["setup", "prepare draw piles opening hands", "draw four cards", "choose one discard", "other three opening hand"]
+  },'''
+          if old not in text:
+              raise SystemExit('candidate replacement anchor not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { contextualQuery } from './rules-assistant/worker-v071.js';
+
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md', 'utf8');
+          const corpus = buildRulesCorpus({
+            canonicalData,
+            rulebookMarkdown,
+            siteOrigin: 'https://gauntlet.run',
+            rulebookBrowserUrl: 'https://gauntlet.run/rulebook/',
+            canonicalDataUrl: 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'
+          });
+
+          const sourcesFor = (question) => retrieveRules(corpus, contextualQuery(question, []), { limit: 10, excerptLength: 1300 });
+          const setupId = 'rulebook:complete-rules-2';
+          const positive = [
+            'How many cards do I draw to start?',
+            'How big is your starting hand?',
+            'How many cards are in my opening hand?',
+            'During setup, how many cards do I draw and which ones do I keep?',
+            'How many cards do I begin with?'
+          ];
+          let failed = false;
+          for (const question of positive) {
+            const sources = sourcesFor(question);
+            const ids = sources.map((source) => source.canonicalId || source.id);
+            const rank = ids.indexOf(setupId) + 1;
+            console.log(JSON.stringify({ question, setupRank: rank, top3: ids.slice(0, 3) }));
+            if (rank < 1 || rank > 3) failed = true;
+          }
+
+          for (const question of [
+            'How many cards do I draw on my turn?',
+            'How does starting a Mission work?'
+          ]) {
+            const sources = sourcesFor(question);
+            const ids = sources.map((source) => source.canonicalId || source.id);
+            console.log(JSON.stringify({ negative: question, top3: ids.slice(0, 3) }));
+            if (ids[0] === setupId) failed = true;
+          }
+
+          if (failed) process.exitCode = 2;
+          NODE
