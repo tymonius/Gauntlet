@@ -14,20 +14,17 @@ import {
 import { revealV070BattleCommitmentEarly } from './battle-early-reveal';
 import { V070_COUNTERINTELLIGENCE_ID } from './counterintelligence';
 
-export const V070_COUNTERINTELLIGENCE_BATTLE_TEXT =
-  "If an opposing effect would reveal this card or another face-down Gambit or Tactic you control at this card's reveal stage before the normal reveal, reveal this card and prevent that entire effect. +1 Battle Total." as const;
-
-function validateV070CounterintelligenceBattleAuthority(): void {
-  const card = v070CanonicalContent.cardsById.get(V070_COUNTERINTELLIGENCE_ID);
-  const effect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
-  if (!card || effect?.text !== V070_COUNTERINTELLIGENCE_BATTLE_TEXT) {
-    throw new Error(
-      'v0.7.0 Counterintelligence battle text drifted from released authority.',
-    );
-  }
+const counterintelligenceBattleEffect =
+  v070CanonicalContent.cardsById
+    .get(V070_COUNTERINTELLIGENCE_ID)
+    ?.effects.find(effect => effect.label === 'Gambit/Tactic');
+if (!counterintelligenceBattleEffect) {
+  throw new Error(
+    'Published v0.7.0 Counterintelligence is missing its Gambit/Tactic effect.',
+  );
 }
-
-validateV070CounterintelligenceBattleAuthority();
+export const V070_COUNTERINTELLIGENCE_BATTLE_TEXT =
+  counterintelligenceBattleEffect.text;
 
 export function eligibleV070CounterintelligenceBattleReactions(
   state: V070GameState,
