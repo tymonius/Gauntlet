@@ -22,8 +22,15 @@ import {
 } from './counterintelligence-battle';
 
 export const V070_COUNTERWORKS_ID = 'neutral-counterworks' as const;
-export const V070_COUNTERWORKS_BATTLE_TEXT =
-  'Reveal one opposing face-down Gambit or Tactic at the same stage. You may replace this card with an eligible card from your Reserve, face up. If you replace it, put this card in your Graveyard.' as const;
+const counterworksBattleEffect = v070CanonicalContent.cardsById
+  .get(V070_COUNTERWORKS_ID)
+  ?.effects.find(effect => effect.label === 'Gambit/Tactic');
+if (!counterworksBattleEffect) {
+  throw new Error(
+    'Published v0.7.0 Counterworks is missing its Gambit/Tactic effect.',
+  );
+}
+export const V070_COUNTERWORKS_BATTLE_TEXT = counterworksBattleEffect.text;
 
 export type V070CounterworksPreRevealChoice =
   | {
@@ -86,16 +93,6 @@ declare module './battle-types' {
     counterworksPreRevealReady?: boolean;
   }
 }
-
-function validateV070CounterworksAuthority(): void {
-  const card = v070CanonicalContent.cardsById.get(V070_COUNTERWORKS_ID);
-  const effect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
-  if (!card || effect?.text !== V070_COUNTERWORKS_BATTLE_TEXT) {
-    throw new Error('v0.7.0 Counterworks battle text drifted from released authority.');
-  }
-}
-
-validateV070CounterworksAuthority();
 
 export function hasV070CounterworksPreRevealSource(
   state: V070GameState,
