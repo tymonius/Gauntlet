@@ -1,0 +1,70 @@
+name: Rules Arbiter Good Faith continuity probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-good-faith-probe
+    paths:
+      - '.github/workflows/rules-arbiter-good-faith-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe current deterministic retrieval
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md', 'utf8');
+          const corpus = buildRulesCorpus({
+            canonicalData,
+            rulebookMarkdown,
+            siteOrigin: 'https://gauntlet.run',
+            rulebookBrowserUrl: 'https://gauntlet.run/rulebook/',
+            canonicalDataUrl: 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'
+          });
+
+          const goodFaithDocs = corpus.documents
+            .filter((d) => /good faith/i.test(`${d.title || ''}\n${d.heading || ''}\n${d.body || ''}`))
+            .map((d) => ({ id: d.id, title: d.title, body: d.body }));
+          console.log('GOOD_FAITH_DOCS', JSON.stringify(goodFaithDocs));
+
+          const previousAnswer = "Good Faith is a 3-cost Diplomat Asset. When you offer Terms, before the opponent accepts or refuses, you may discard it to draw 1 card, then reveal 1 card from your hand and set that revealed card aside. If Good Faith is accepted, put it in your Graveyard; if refused, return it to your hand before Gambits are set. Its Action is to bank it.";
+          const history = [
+            { role: 'user', content: 'What does good faith do?' },
+            { role: 'assistant', content: previousAnswer, rulingStatus: 'explicit' }
+          ];
+          const cases = [
+            { q: 'What does good faith do?', history: [] },
+            { q: 'What benefit does this give me?', history },
+            { q: 'What benefit does Good Faith give me?', history: [] }
+          ];
+
+          for (const entry of cases) {
+            const query = contextualQuery(entry.q, entry.history);
+            const raw = retrieveRules(corpus, query, { limit: 10, excerptLength: 1500 });
+            const sources = augmentRetrievalForContext(corpus, entry.q, entry.history, raw);
+            console.log(JSON.stringify({
+              q: entry.q,
+              contextualQuery: query,
+              results: sources.map((s, i) => ({
+                rank: i + 1,
+                id: s.canonicalId,
+                title: s.title,
+                body: String(s.body || '').slice(0, 900)
+              }))
+            }));
+          }
+          NODE
