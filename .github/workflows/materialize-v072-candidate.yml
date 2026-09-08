@@ -23,6 +23,7 @@ jobs:
         with:
           ref: release/v0.7.2-rc1
           fetch-depth: 1
+          filter: blob:none
 
       - name: Use Node.js
         uses: actions/setup-node@v4
