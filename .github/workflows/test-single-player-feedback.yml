@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "playtest/tracked/journal.js"
+      - "apps/playtest/tracked/journal.js"
       - "tests/single-player-feedback.test.ts"
       - ".github/workflows/test-single-player-feedback.yml"
   workflow_dispatch:
@@ -38,11 +38,13 @@ jobs:
 
       - name: Check companion syntax and contract
         run: |
-          node --check playtest/tracked/journal.js
+          node --check apps/playtest/tracked/journal.js
           npx vitest run tests/single-player-feedback.test.ts
 
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+      - name: Serve repository at deployed Playtest route
+        run: |
+          ln -s apps/playtest playtest
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
       - name: Submit feedback with only one joined player
         run: |
