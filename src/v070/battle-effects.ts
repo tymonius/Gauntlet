@@ -14,6 +14,11 @@ import {
   V070_ACCUSATION_ID,
   registerV070AccusationBattleEffect,
 } from './accusation-battle';
+import {
+  V070_ACT_OF_FAITH_BATTLE_TEXT,
+  V070_ACT_OF_FAITH_ID,
+  registerV070ActOfFaithBattleEffect,
+} from './act-of-faith-battle';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
 export * from './battle-effects-pre-accusation';
@@ -31,22 +36,39 @@ const accusationHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const actOfFaithHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_ACT_OF_FAITH_ID,
+  expectedText: V070_ACT_OF_FAITH_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ActOfFaithBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_ACCUSATION_ID,
+  V070_ACT_OF_FAITH_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
   if (cardId === V070_ACCUSATION_ID) return accusationHandler;
+  if (cardId === V070_ACT_OF_FAITH_ID) return actOfFaithHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
-  if (cardId === V070_ACCUSATION_ID) return 'ordinary';
+  if (cardId === V070_ACCUSATION_ID || cardId === V070_ACT_OF_FAITH_ID) {
+    return 'ordinary';
+  }
   return previous.v070BattleRevealEffectClass(cardId);
 }
 
@@ -87,7 +109,21 @@ export function resolveV070SupportedRevealEffects(
   const forwarded: V070BattleCardCommitment[] = [];
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    if (cardId !== V070_ACCUSATION_ID) {
+    const deferred = cardId === V070_ACCUSATION_ID
+      ? {
+          registered: state.battleRuntime?.accusationBattleSourceInstanceIds
+            ?.includes(commitment.instanceId) ?? false,
+          handler: accusationHandler,
+        }
+      : cardId === V070_ACT_OF_FAITH_ID
+        ? {
+            registered: state.battleRuntime?.actOfFaithBattleSourceInstanceIds
+              ?.includes(commitment.instanceId) ?? false,
+            handler: actOfFaithHandler,
+          }
+        : null;
+
+    if (!deferred) {
       forwarded.push(commitment);
       continue;
     }
@@ -106,13 +142,8 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    const alreadyRegistered = Boolean(
-      state.battleRuntime?.accusationBattleSourceInstanceIds?.includes(
-        commitment.instanceId,
-      ),
-    );
-    if (!alreadyRegistered) {
-      accusationHandler.apply({
+    if (!deferred.registered) {
+      deferred.handler.apply({
         state,
         owner: commitment.owner,
         opponent: commitment.owner === 'A' ? 'B' : 'A',
