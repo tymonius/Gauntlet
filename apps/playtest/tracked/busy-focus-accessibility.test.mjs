@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const helper = readFileSync("playtest/tracked/busy-focus-accessibility.js", "utf8");
-const controls = readFileSync("playtest/tracked/session-controls.js", "utf8");
-const app = readFileSync("playtest/tracked/app.js", "utf8");
-const live = readFileSync("playtest/tracked/live-state.js", "utf8");
-const journal = readFileSync("playtest/tracked/journal.js", "utf8");
+const helper = readFileSync("apps/playtest/tracked/busy-focus-accessibility.js", "utf8");
+const controls = readFileSync("apps/playtest/tracked/session-controls.js", "utf8");
+const app = readFileSync("apps/playtest/tracked/app.js", "utf8");
+const live = readFileSync("apps/playtest/tracked/live-state.js", "utf8");
+const journal = readFileSync("apps/playtest/tracked/journal.js", "utf8");
 
 describe("tracked playtest busy focus", () => {
   it("loads the shared focus helper from the tracked session controller", () => {

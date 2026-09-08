@@ -86,7 +86,11 @@ Generated PDFs, browser pages, printable tools, and TTS assets are derived produ
 
 ## Repository map
 
-The repository's current/historical/generated path classifications and cleanup target are defined in [Repository Architecture](docs/Repository_Architecture.md). Stable public paths remain at the repository root until source/deployment separation can preserve their URLs explicitly.
+The repository's current/historical/generated path classifications and cleanup target are defined in [Repository Architecture](docs/Repository_Architecture.md) and enforced by `config/repository-architecture.json`. Repository source paths and deployed public URLs are intentionally allowed to differ when the Pages staging contract preserves the stable route.
+
+### apps/
+
+Maintained application source that has been separated from deployed URL layout. `apps/playtest/` is the first migrated application and is staged by GitHub Pages at the unchanged public `/playtest/` route.
 
 ### game-data/
 
@@ -120,9 +124,9 @@ Current public discovery/reference surfaces generated from current authority.
 
 Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
 
-### playtest/ and workers/playtest-sessions/
+### apps/playtest/ and workers/playtest-sessions/
 
-Formal playtest browser surfaces and session service.
+Canonical Playtest browser source and its session service. GitHub Pages stages the browser source at the stable public `/playtest/` path; do not recreate a maintained root `playtest/` source alias.
 
 ### tts/
 
@@ -148,21 +152,22 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ## Running browser tools locally
 
-From the repository root:
+Most root-resident browser surfaces can still be served directly from the repository root:
 
 ~~~bash
 python3 -m http.server 8000
 ~~~
 
-Then open:
+Then open, for example:
 
 ~~~text
 http://localhost:8000/
 http://localhost:8000/rulebook/
 http://localhost:8000/deckbuilder/
 http://localhost:8000/card-reference/
-http://localhost:8000/playtest/
 ~~~
+
+Playtest is source/deployment separated. Its canonical source is `apps/playtest/`, while production serves it at `/playtest/`. Browser/render CI stages that public layout explicitly; tests and tooling that inspect source should use `apps/playtest/`, while public links should continue to use `/playtest/`.
 
 For the rules-aware digital-engine codebase:
 

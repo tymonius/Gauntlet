@@ -3,7 +3,7 @@ name: Test playtest data integrity
 on:
   pull_request:
     paths:
-      - "playtest/analysis/integrity/**"
+      - "apps/playtest/analysis/integrity/**"
       - "workers/playtest-sessions/src/integrity.js"
       - "workers/playtest-sessions/src/integrity.test.mjs"
       - "rules-assistant/migrations/0006_playtest_analysis_exclusions.sql"
@@ -31,8 +31,9 @@ jobs:
           npm install
           npx playwright install --with-deps chromium
 
-      - name: Serve repository
+      - name: Serve repository at deployed Playtest route
         run: |
+          ln -s apps/playtest playtest
           python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/gauntlet-integrity-server.log 2>&1 &
           echo $! > /tmp/gauntlet-integrity-server.pid
           for attempt in {1..30}; do

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/onboarding/games.js", "utf8");
+const source = readFileSync("apps/playtest/onboarding/games.js", "utf8");
 
 describe("event game close focus", () => {
   it("keeps a stable identity on rendered game cards", () => {

@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const hostNavigation = readFileSync("playtest/host-navigation.js", "utf8");
-const onboardingEntry = readFileSync("playtest/onboarding/app.js", "utf8");
-const sessionEntry = readFileSync("playtest/session/app.js", "utf8");
+const hostNavigation = readFileSync("apps/playtest/host-navigation.js", "utf8");
+const onboardingEntry = readFileSync("apps/playtest/onboarding/app.js", "utf8");
+const sessionEntry = readFileSync("apps/playtest/session/app.js", "utf8");
 
 describe("playtest host navigation", () => {
   it("loads the shared navigation layer in both event and table entry points", () => {

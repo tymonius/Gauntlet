@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "playtest/analysis/**"
-      - "playtest/host/index.html"
+      - "apps/playtest/analysis/**"
+      - "apps/playtest/host/index.html"
       - "workers/playtest-sessions/src/analysis.js"
       - "workers/playtest-sessions/src/analysis.test.mjs"
       - "workers/playtest-sessions/wrangler.toml"
@@ -40,8 +40,10 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+      - name: Serve repository at deployed Playtest route
+        run: |
+          ln -s apps/playtest playtest
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
       - name: Verify protected dashboard, filters, and exports
         run: |

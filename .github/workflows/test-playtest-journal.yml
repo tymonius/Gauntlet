@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "playtest/tracked/journal.js"
-      - "playtest/tracked/index.html"
-      - "playtest/retrospective/**"
+      - "apps/playtest/tracked/journal.js"
+      - "apps/playtest/tracked/index.html"
+      - "apps/playtest/retrospective/**"
       - "workers/playtest-sessions/src/journal.js"
       - "workers/playtest-sessions/src/journal.test.mjs"
       - "workers/playtest-sessions/wrangler.toml"
@@ -42,8 +42,8 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          node --check playtest/retrospective/app.js
-          node --check playtest/tracked/journal.js
+          node --check apps/playtest/retrospective/app.js
+          node --check apps/playtest/tracked/journal.js
           node --check workers/playtest-sessions/src/journal.js
 
       - name: Run journal and tracked-playtest contracts

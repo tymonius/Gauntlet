@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "playtest/tracked/**"
+      - "apps/playtest/tracked/**"
       - "tests/tracked-playtest-live-state.test.ts"
       - ".github/workflows/test-tracked-live-state.yml"
   workflow_dispatch:
@@ -36,8 +36,10 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+      - name: Serve repository at deployed Playtest route
+        run: |
+          ln -s apps/playtest playtest
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
       - name: Verify live updates and creator-only lifecycle controls
         run: |

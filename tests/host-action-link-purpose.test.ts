@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("Host Home repeated action names", () => {
-  const source = readFileSync("playtest/host/app.js", "utf8");
+  const source = readFileSync("apps/playtest/host/app.js", "utf8");
 
   it("adds record context to repeated link and button accessible names", () => {
     expect(source).toContain('aria-label="${escapeAttribute(`${label} — ${context}`)}"');

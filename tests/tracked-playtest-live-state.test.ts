@@ -2,9 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const page = read("playtest/tracked/index.html");
-const live = read("playtest/tracked/live-state.js");
-const styles = read("playtest/tracked/live-state.css");
+const page = read("apps/playtest/tracked/index.html");
+const live = read("apps/playtest/tracked/live-state.js");
+const styles = read("apps/playtest/tracked/live-state.css");
 
 describe("tracked playtest live state and creator controls", () => {
   it("polls public game state without reloading the page", () => {

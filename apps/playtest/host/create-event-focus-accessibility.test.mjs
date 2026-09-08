@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const helper = readFileSync("playtest/host/create-event-focus-accessibility.js", "utf8");
-const html = readFileSync("playtest/host/index.html", "utf8");
-const creator = readFileSync("playtest/host/create-event.js", "utf8");
+const helper = readFileSync("apps/playtest/host/create-event-focus-accessibility.js", "utf8");
+const html = readFileSync("apps/playtest/host/index.html", "utf8");
+const creator = readFileSync("apps/playtest/host/create-event.js", "utf8");
 
 describe("Host Home event creation focus", () => {
   it("loads the focus handoff beside event creation", () => {

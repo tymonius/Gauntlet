@@ -32,10 +32,10 @@ describe('homepage showcase deployment boundary', () => {
     expect(publicManifest.cards.every((card: any) => currentIds.has(card.id))).toBe(true);
   });
 
-  it('uses only the public manifest at runtime while keeping media source-only', () => {
+  it('uses only the public manifest at runtime while keeping source-only roots out of Pages', () => {
     expect(homepage).toContain("const SHOWCASE_MANIFEST = '/assets/homepage-card-showcase.json'");
     expect(homepage).not.toContain('/media/');
     expect(pagesWorkflow).toMatch(/\n\s+assets\n/);
-    expect(pagesWorkflow).toMatch(/\.github artifacts docs governance legacy media rulebook-design/);
+    expect(pagesWorkflow).toMatch(/\.github apps artifacts docs governance legacy media rulebook-design/);
   });
 });

@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/analysis/focus-accessibility.js", "utf8");
-const html = readFileSync("playtest/analysis/index.html", "utf8");
+const source = readFileSync("apps/playtest/analysis/focus-accessibility.js", "utf8");
+const html = readFileSync("apps/playtest/analysis/index.html", "utf8");
 
 describe("analysis unlock focus", () => {
   it("loads the focus handoff on the protected analysis page", () => {

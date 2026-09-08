@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/analysis/refresh-focus-accessibility.js", "utf8");
-const analysisHtml = readFileSync("playtest/analysis/index.html", "utf8");
-const integrityHtml = readFileSync("playtest/analysis/integrity/index.html", "utf8");
+const source = readFileSync("apps/playtest/analysis/refresh-focus-accessibility.js", "utf8");
+const analysisHtml = readFileSync("apps/playtest/analysis/index.html", "utf8");
+const integrityHtml = readFileSync("apps/playtest/analysis/integrity/index.html", "utf8");
 
 describe("protected dashboard request focus", () => {
   it("loads the shared focus handoff on both protected dashboards", () => {

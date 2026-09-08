@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/session/app-core.js", "utf8");
-const html = readFileSync("playtest/session/index.html", "utf8");
+const source = readFileSync("apps/playtest/session/app-core.js", "utf8");
+const html = readFileSync("apps/playtest/session/index.html", "utf8");
 
 describe("playtest session transition focus", () => {
   it("moves focus into the joined state after the join form is hidden", () => {

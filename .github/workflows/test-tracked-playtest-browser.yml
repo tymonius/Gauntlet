@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "playtest/tracked/**"
+      - "apps/playtest/tracked/**"
       - "workers/playtest-sessions/**"
       - "rules-assistant/migrations/0005_tracked_playtests.sql"
       - "rules-assistant/migrations/0010_playtest_decision_experience.sql"
@@ -45,8 +45,10 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+      - name: Serve repository at deployed Playtest route
+        run: |
+          ln -s apps/playtest playtest
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
       - name: Exercise tracked creation, play, feedback, and closure
         run: |

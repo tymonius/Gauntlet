@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/guide/app.js", "utf8");
+const source = readFileSync("apps/playtest/guide/app.js", "utf8");
 
 describe("game-night guide tab keyboard navigation", () => {
   it("binds keyboard navigation to the ARIA tabs", () => {

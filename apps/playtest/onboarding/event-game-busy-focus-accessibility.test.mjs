@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const helper = readFileSync("playtest/onboarding/event-game-busy-focus-accessibility.js", "utf8");
-const loader = readFileSync("playtest/onboarding/app.js", "utf8");
-const games = readFileSync("playtest/onboarding/games.js", "utf8");
+const helper = readFileSync("apps/playtest/onboarding/event-game-busy-focus-accessibility.js", "utf8");
+const loader = readFileSync("apps/playtest/onboarding/app.js", "utf8");
+const games = readFileSync("apps/playtest/onboarding/games.js", "utf8");
 
 describe("event table busy focus", () => {
   it("loads the focus handoff before the event game manager", () => {

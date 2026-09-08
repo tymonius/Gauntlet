@@ -6,10 +6,10 @@ const CHECK_ONLY = process.argv.includes("--check");
 const ROOT = process.cwd();
 const SKIP_DIRECTORIES = new Set([".git", "node_modules"]);
 const ANALYTICS_EXCLUDED_FILES = new Set([
-  "playtest/session/index.html",
-  "playtest/batch/index.html",
-  "playtest/player-mat/index.html",
-  "playtest/sheet/index.html",
+  "apps/playtest/session/index.html",
+  "apps/playtest/batch/index.html",
+  "apps/playtest/player-mat/index.html",
+  "apps/playtest/sheet/index.html",
   "images/tools/mystics_rite_completed_P22_compositor_v2.html",
   "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
   "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
