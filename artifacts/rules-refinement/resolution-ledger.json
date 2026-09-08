@@ -296,7 +296,8 @@
       "summary": "Expand opening-Hand and setup query phrasing so the current v0.7.1 draw-four, discard-one, keep-three setup procedure appears in the top retrieval results for starting-draw and starting-Hand-size questions without contaminating normal turn draws or Intelligence Mission startup.",
       "resolvedAt": "2026-09-08T18:56:00.000Z",
       "binding": {
-        "pullRequest": 1557
+        "pullRequest": 1557,
+        "behaviorRevision": "v071-qa-20260908-1"
       }
     }
   ]
