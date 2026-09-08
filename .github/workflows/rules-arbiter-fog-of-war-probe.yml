@@ -1,0 +1,47 @@
+name: Rules Arbiter Fog of War continuity probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-fog-of-war-probe
+    paths:
+      - '.github/workflows/rules-arbiter-fog-of-war-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe current deterministic retrieval
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json','utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md','utf8');
+          const corpus = buildRulesCorpus({canonicalData,rulebookMarkdown,siteOrigin:'https://gauntlet.run',rulebookBrowserUrl:'https://gauntlet.run/rulebook/',canonicalDataUrl:'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'});
+          const history = [
+            {role:'user',content:'Explain fog of war'},
+            {role:'assistant',content:"Fog of War is a Territory Overlay. In the next battle there, the Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard the Overlay after that battle.",rulingStatus:'explicit'}
+          ];
+          for (const [q,h] of [
+            ['Explain fog of war',[]],
+            ['Does it depend who owns the territory',history],
+            ['Does Fog of War depend on who owns the Territory?',[]],
+            ['Does Fog of War depend on who controls the Territory?',[]]
+          ]) {
+            const query = contextualQuery(q,h);
+            const raw = retrieveRules(corpus,query,{limit:10,excerptLength:1500});
+            const sources = augmentRetrievalForContext(corpus,q,h,raw);
+            console.log(JSON.stringify({q,query,sources:sources.map((s,i)=>({rank:i+1,id:s.canonicalId,title:s.title,body:String(s.body||'').slice(0,700)}))}));
+          }
+          NODE
