@@ -3,7 +3,9 @@ import path from 'node:path';
 
 const root = process.cwd();
 const architecturePath = path.join(root, 'docs', 'Repository_Architecture.md');
+const contractPath = path.join(root, 'config', 'repository-architecture.json');
 const source = fs.readFileSync(architecturePath, 'utf8').replace(/\r\n/g, '\n');
+const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
 
 const startMarker = '## Current path classification';
 const endMarker = '## Target architecture';
@@ -13,13 +15,42 @@ const end = source.indexOf(endMarker);
 if (start < 0 || end < 0 || end <= start) {
   throw new Error('Repository Architecture is missing a valid current-classification section.');
 }
+if (contract.schema_version !== 1) {
+  throw new Error(`Unsupported repository architecture schema: ${contract.schema_version}.`);
+}
+if (!contract.root_directories || typeof contract.root_directories !== 'object' || Array.isArray(contract.root_directories)) {
+  throw new Error('Repository architecture contract is missing root_directories.');
+}
 
-const classification = source.slice(start, end);
-const classified = new Set(
-  [...classification.matchAll(/\|\s+`([^`]+)\/`\s+\|/g)]
-    .map(([, value]) => value)
-    .filter(value => !value.includes('/')),
-);
+const allowedRoles = new Set(contract.allowed_roles || []);
+const allowedTargetGroups = new Set(contract.allowed_target_groups || []);
+const configured = Object.keys(contract.root_directories).sort();
+const failures = [];
+
+for (const directory of configured) {
+  const entry = contract.root_directories[directory];
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    failures.push(`${directory}: architecture entry must be an object.`);
+    continue;
+  }
+  if (!allowedRoles.has(entry.role)) {
+    failures.push(`${directory}: unknown architecture role ${JSON.stringify(entry.role)}.`);
+  }
+  if (!Array.isArray(entry.target_groups) || entry.target_groups.length === 0) {
+    failures.push(`${directory}: target_groups must contain at least one architectural target.`);
+  } else {
+    const invalidTargets = entry.target_groups.filter(group => !allowedTargetGroups.has(group));
+    if (invalidTargets.length) {
+      failures.push(`${directory}: unknown target group(s): ${invalidTargets.join(', ')}.`);
+    }
+  }
+  if (typeof entry.transitional !== 'boolean') {
+    failures.push(`${directory}: transitional must be boolean.`);
+  }
+  if (typeof entry.note !== 'string' || entry.note.trim() === '') {
+    failures.push(`${directory}: note must explain the current ownership/boundary.`);
+  }
+}
 
 const ignoredRootDirectories = new Set(['.git', 'node_modules']);
 const actual = fs.readdirSync(root, { withFileTypes: true })
@@ -27,20 +58,39 @@ const actual = fs.readdirSync(root, { withFileTypes: true })
   .map(entry => entry.name)
   .sort();
 
-const missing = actual.filter(directory => !classified.has(directory));
-const stale = [...classified].filter(directory => !actual.includes(directory)).sort();
+const missing = actual.filter(directory => !configured.includes(directory));
+const stale = configured.filter(directory => !actual.includes(directory));
 
-const failures = [];
 if (missing.length) {
   failures.push(
     `Unclassified top-level director${missing.length === 1 ? 'y' : 'ies'}: ${missing.join(', ')}. ` +
-    'Add each current root directory to the Current path classification tables in docs/Repository_Architecture.md.',
+    'Add each root directory to config/repository-architecture.json in the same change.',
   );
 }
 if (stale.length) {
   failures.push(
-    `Stale top-level classification${stale.length === 1 ? '' : 's'}: ${stale.join(', ')}. ` +
-    'Remove or update classifications for root directories that no longer exist.',
+    `Stale top-level architecture entr${stale.length === 1 ? 'y' : 'ies'}: ${stale.join(', ')}. ` +
+    'Remove or update entries for root directories that no longer exist.',
+  );
+}
+
+const classification = source.slice(start, end);
+const documented = new Set(
+  [...classification.matchAll(/\|\s+`([^`]+)\/`\s+\|/g)]
+    .map(([, value]) => value)
+    .filter(value => !value.includes('/')),
+);
+const undocumented = configured.filter(directory => !documented.has(directory));
+const docStale = [...documented].filter(directory => !configured.includes(directory)).sort();
+
+if (undocumented.length) {
+  failures.push(
+    `Machine-classified root director${undocumented.length === 1 ? 'y is' : 'ies are'} missing from docs/Repository_Architecture.md: ${undocumented.join(', ')}.`,
+  );
+}
+if (docStale.length) {
+  failures.push(
+    `Documented top-level classification${docStale.length === 1 ? '' : 's'} missing from the machine contract: ${docStale.join(', ')}.`,
   );
 }
 
@@ -48,6 +98,8 @@ if (failures.length) {
   throw new Error(`Repository architecture validation failed:\n- ${failures.join('\n- ')}`);
 }
 
+const transitional = configured.filter(directory => contract.root_directories[directory].transitional).length;
 console.log(
-  `Repository architecture classification passed: ${actual.length} top-level directories are explicitly classified.`,
+  `Repository architecture contract passed: ${actual.length} top-level directories classified; ` +
+  `${transitional} remain explicitly transitional toward the target architecture.`,
 );

@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "purpose": "Machine-readable repository architecture contract for top-level ownership and lifecycle boundaries.",
+  "allowed_roles": [
+    "authority",
+    "active_application",
+    "production_tooling",
+    "historical_compatibility",
+    "frozen_release",
+    "generated_evidence",
+    "documentation",
+    "assets_shared_presentation"
+  ],
+  "allowed_target_groups": [
+    "root",
+    "apps",
+    "packages",
+    "tools",
+    "assets",
+    "docs",
+    "releases",
+    "legacy"
+  ],
+  "root_directories": {
+    ".github": {
+      "role": "production_tooling",
+      "target_groups": ["root"],
+      "transitional": false,
+      "note": "GitHub-native automation boundary; remains at repository root by platform contract."
+    },
+    "about": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public project/about surface."
+    },
+    "accessibility": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public accessibility surface."
+    },
+    "artifacts": {
+      "role": "generated_evidence",
+      "target_groups": ["legacy"],
+      "transitional": true,
+      "note": "Build/reconstruction/QA evidence pending retention audit."
+    },
+    "assets": {
+      "role": "assets_shared_presentation",
+      "target_groups": ["assets"],
+      "transitional": false,
+      "note": "Shared site/component assets."
+    },
+    "card-design": {
+      "role": "production_tooling",
+      "target_groups": ["packages", "tools"],
+      "transitional": true,
+      "note": "Rendering/authoring system; target split between shared rendering package and production tools."
+    },
+    "card-reference": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current card and Territory reference."
+    },
+    "changelog": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current player-facing changelog."
+    },
+    "config": {
+      "role": "authority",
+      "target_groups": ["root"],
+      "transitional": false,
+      "note": "Maintained cross-system configuration; root placement is deliberate."
+    },
+    "contact": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public contact surface."
+    },
+    "deckbuilder": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current Deckbuilder."
+    },
+    "docs": {
+      "role": "documentation",
+      "target_groups": ["docs"],
+      "transitional": false,
+      "note": "Maintained documentation and explicitly archived development records."
+    },
+    "factions": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current faction discovery/reference surface."
+    },
+    "faq": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public FAQ."
+    },
+    "game-data": {
+      "role": "authority",
+      "target_groups": ["packages"],
+      "transitional": true,
+      "note": "Complete current gameplay authority and adapters."
+    },
+    "governance": {
+      "role": "authority",
+      "target_groups": ["tools"],
+      "transitional": true,
+      "note": "Decision provenance, schemas, traceability, and audit records."
+    },
+    "images": {
+      "role": "assets_shared_presentation",
+      "target_groups": ["assets"],
+      "transitional": true,
+      "note": "Source and derived visual assets remain mixed pending asset-lifecycle audit."
+    },
+    "legacy": {
+      "role": "historical_compatibility",
+      "target_groups": ["legacy"],
+      "transitional": false,
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance."
+    },
+    "media": {
+      "role": "production_tooling",
+      "target_groups": ["assets", "tools"],
+      "transitional": true,
+      "note": "Current reproducible media/composition configuration and export tooling."
+    },
+    "playtest": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current playtest browser surfaces; source/deployment separation is the next application migration model."
+    },
+    "press": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public press/media surface."
+    },
+    "privacy": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Public privacy/data-handling surface."
+    },
+    "releases": {
+      "role": "frozen_release",
+      "target_groups": ["releases"],
+      "transitional": false,
+      "note": "Immutable published release packages."
+    },
+    "rulebook": {
+      "role": "authority",
+      "target_groups": ["apps", "packages"],
+      "transitional": true,
+      "note": "Current Rulebook authority plus browser/production support; target split is explicit."
+    },
+    "rules-arbiter": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current static Rules Arbiter browser shell."
+    },
+    "rules-assistant": {
+      "role": "active_application",
+      "target_groups": ["apps", "packages"],
+      "transitional": true,
+      "note": "Rules Arbiter implementation, retrieval, tests, and deployable endpoint."
+    },
+    "scripts": {
+      "role": "production_tooling",
+      "target_groups": ["tools"],
+      "transitional": true,
+      "note": "Cross-project generation, validation, release, migration, and maintenance tooling."
+    },
+    "src": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Active rules-aware digital engine."
+    },
+    "start": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Current onboarding/start surface."
+    },
+    "tests": {
+      "role": "production_tooling",
+      "target_groups": ["root"],
+      "transitional": false,
+      "note": "Repository-wide contract/regression harness; root placement is deliberate."
+    },
+    "tts": {
+      "role": "production_tooling",
+      "target_groups": ["tools", "releases"],
+      "transitional": true,
+      "note": "TTS generation/packaging plus versioned release evidence."
+    },
+    "v0.7.1": {
+      "role": "historical_compatibility",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Lifecycle-selected current versioned public entrypoint; transitions to legacy when historical."
+    },
+    "workers": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": true,
+      "note": "Deployed support services."
+    }
+  }
+}
