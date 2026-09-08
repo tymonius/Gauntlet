@@ -7,72 +7,49 @@ import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
 } from './battle-types';
-import * as previous from './battle-effects-pre-counterworks';
+import * as previous from './battle-effects-pre-accusation';
+import { isV070BattleCardEffectNegated } from './battle-effect-status';
 import {
-  hasV070BattleCardEffectApplied,
-  isV070BattleCardEffectNegated,
-  markV070BattleCardEffectApplied,
-} from './battle-effect-status';
-import {
-  V070_COUNTERWORKS_BATTLE_TEXT,
-  V070_COUNTERWORKS_ID,
-} from './counterworks-battle';
-import {
-  V070_COUNTERINTELLIGENCE_BATTLE_TEXT,
-} from './counterintelligence-battle';
-import { V070_COUNTERINTELLIGENCE_ID } from './counterintelligence';
+  V070_ACCUSATION_BATTLE_TEXT,
+  V070_ACCUSATION_ID,
+  registerV070AccusationBattleEffect,
+} from './accusation-battle';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
-export * from './battle-effects-pre-counterworks';
+export * from './battle-effects-pre-accusation';
 
-const counterworksHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_COUNTERWORKS_ID,
-  expectedText: V070_COUNTERWORKS_BATTLE_TEXT,
+const accusationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_ACCUSATION_ID,
+  expectedText: V070_ACCUSATION_BATTLE_TEXT,
   timing: 'reveal',
-  // Counterworks resolves in the pre-normal-reveal procedure owned by the
-  // outer battle facade. It is filtered before the normal reveal scheduler.
-  apply: () => undefined,
-};
-
-const counterintelligenceHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_COUNTERINTELLIGENCE_ID,
-  expectedText: V070_COUNTERINTELLIGENCE_BATTLE_TEXT,
-  timing: 'reveal',
-  // A face-down Counterintelligence can apply reactively before normal reveal.
-  // If it reaches normal reveal without triggering, its condition simply did
-  // not occur; this wrapper records that resolution and filters the card.
-  apply: () => undefined,
+  apply: ({ state, owner, commitment }) => {
+    registerV070AccusationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
 };
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  V070_COUNTERWORKS_ID,
-  V070_COUNTERINTELLIGENCE_ID,
+  V070_ACCUSATION_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
-  if (cardId === V070_COUNTERWORKS_ID) return counterworksHandler;
-  if (cardId === V070_COUNTERINTELLIGENCE_ID) {
-    return counterintelligenceHandler;
-  }
+  if (cardId === V070_ACCUSATION_ID) return accusationHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
-  if (cardId === V070_COUNTERINTELLIGENCE_ID) return 'interference';
-  if (cardId === V070_COUNTERWORKS_ID) return 'interference';
+  if (cardId === V070_ACCUSATION_ID) return 'ordinary';
   return previous.v070BattleRevealEffectClass(cardId);
 }
 
-/**
- * Counterworks must not mutate hidden battle state before the ordinary reveal
- * validator knows every same-stage effect is executable. The outer battle
- * facade uses this pure check before opening the pre-normal-reveal window.
- */
 export function v070BattleRoleSupportsPreReveal(
   state: V070GameState,
   role: 'gambit' | 'tactic',
@@ -91,27 +68,9 @@ export function v070BattleRoleSupportsPreReveal(
           ...participant.additionalTactics,
         ];
   });
-
-  return commitments.every(commitment => {
-    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    const card = v070CanonicalContent.cardsById.get(cardId);
-    if (!card) return false;
-    if (card.trait === 'Arcane'
-      && v070MonasterySuppressesArcaneBattleEffects(state)) {
-      return true;
-    }
-    const relevant = card.effects.filter(effect =>
-      effect.label === (role === 'gambit' ? 'Gambit' : 'Tactic')
-      || effect.label === 'Gambit/Tactic'
-    );
-    if (relevant.length === 0) return true;
-    const handler = v070BattleEffectHandler(cardId);
-    return Boolean(
-      handler
-      && relevant.length === 1
-      && relevant[0]?.text === handler.expectedText,
-    );
-  });
+  return commitments.every(commitment =>
+    unsupportedRevealEffect(state, commitment, role).length === 0
+  );
 }
 
 export function resolveV070SupportedRevealEffects(
@@ -119,12 +78,16 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const forwarded: V070BattleCardCommitment[] = [];
+  const role = encounteredAt === 'reveal_gambits' ? 'gambit' : 'tactic';
+  const unsupported = commitments.flatMap(commitment =>
+    unsupportedRevealEffect(state, commitment, role, encounteredAt)
+  );
+  if (unsupported.length > 0) return unsupported;
 
+  const forwarded: V070BattleCardCommitment[] = [];
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    if (cardId !== V070_COUNTERWORKS_ID
-      && cardId !== V070_COUNTERINTELLIGENCE_ID) {
+    if (cardId !== V070_ACCUSATION_ID) {
       forwarded.push(commitment);
       continue;
     }
@@ -143,14 +106,18 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    if (cardId === V070_COUNTERWORKS_ID
-      && !hasV070BattleCardEffectApplied(state, commitment.instanceId)) {
-      return unsupportedPreRevealCommitment(state, commitment, encounteredAt);
-    }
-
-    if (cardId === V070_COUNTERINTELLIGENCE_ID
-      && !hasV070BattleCardEffectApplied(state, commitment.instanceId)) {
-      markV070BattleCardEffectApplied(state, commitment.instanceId);
+    const alreadyRegistered = Boolean(
+      state.battleRuntime?.accusationBattleSourceInstanceIds?.includes(
+        commitment.instanceId,
+      ),
+    );
+    if (!alreadyRegistered) {
+      accusationHandler.apply({
+        state,
+        owner: commitment.owner,
+        opponent: commitment.owner === 'A' ? 'B' : 'A',
+        commitment,
+      });
       appendV070Event(state, {
         type: 'battle_card_effect_applied',
         actor: commitment.owner,
@@ -160,8 +127,8 @@ export function resolveV070SupportedRevealEffects(
           cardId,
           role: commitment.role,
           timing: 'reveal',
-          revealClass: 'interference',
-          conditionMet: false,
+          revealClass: 'ordinary',
+          deferredUntil: 'aftermath',
         },
       });
     }
@@ -175,18 +142,44 @@ export function resolveV070SupportedRevealEffects(
   );
 }
 
-function unsupportedPreRevealCommitment(
+function unsupportedRevealEffect(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
-  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
+  role: 'gambit' | 'tactic',
+  encounteredAt: 'reveal_gambits' | 'reveal_tactics' =
+    role === 'gambit' ? 'reveal_gambits' : 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const cardId = state.cardInstances[commitment.instanceId]?.cardId
-    ?? V070_COUNTERWORKS_ID;
+  const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
   const card = v070CanonicalContent.cardsById.get(cardId);
-  const relevant = card?.effects.filter(effect =>
-    effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
+  if (!card) {
+    return [{
+      owner: commitment.owner,
+      instanceId: commitment.instanceId,
+      cardId,
+      role: commitment.role,
+      label: role === 'gambit' ? 'Gambit' : 'Tactic',
+      text: 'Unknown canonical card.',
+      encounteredAt,
+    }];
+  }
+  if (card.trait === 'Arcane'
+    && v070MonasterySuppressesArcaneBattleEffects(state)) {
+    return [];
+  }
+
+  const relevant = card.effects.filter(effect =>
+    effect.label === (role === 'gambit' ? 'Gambit' : 'Tactic')
     || effect.label === 'Gambit/Tactic'
-  ) ?? [];
+  );
+  if (relevant.length === 0) return [];
+
+  const handler = v070BattleEffectHandler(cardId);
+  if (handler
+    && relevant.length === 1
+    && relevant[0]?.text === handler.expectedText) {
+    return [];
+  }
+
   return relevant.map(effect => ({
     owner: commitment.owner,
     instanceId: commitment.instanceId,
