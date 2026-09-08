@@ -33,7 +33,7 @@ describe("Playtest source/deployment boundary", () => {
   it("keeps publication validation source-aware while checking the stable public route", () => {
     const publication = read(".github/workflows/current-publication-contract.yml");
     expect(publication).toContain("/apps/playtest/**/index.html");
-    expect(publication).not.toContain("/playtest/**/index.html");
+    expect(publication).not.toMatch(/^\s*\/playtest\/\*\*\/index\.html\s*$/m);
     expect(publication).toContain("cp -a apps/playtest/. playtest/");
 
     const livePublication = read(".github/workflows/verify-current-live-publication.yml");
