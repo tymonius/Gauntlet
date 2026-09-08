@@ -163,6 +163,13 @@ function cancelDeferredRegistration(
   if (runtime.pendingAccusationAftermath?.sourceInstanceId === targetInstanceId) {
     runtime.pendingAccusationAftermath = null;
   }
+  runtime.actOfFaithBattleSourceInstanceIds =
+    runtime.actOfFaithBattleSourceInstanceIds?.filter(
+      instanceId => instanceId !== targetInstanceId,
+    );
+  if (runtime.pendingActOfFaithAftermath?.sourceInstanceId === targetInstanceId) {
+    runtime.pendingActOfFaithAftermath = null;
+  }
 
   const augmented = runtime as typeof runtime & DeferredRuntimeSurface;
   augmented.landslideBattleInstanceIds =
