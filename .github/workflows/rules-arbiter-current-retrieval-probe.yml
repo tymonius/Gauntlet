@@ -22,22 +22,7 @@ jobs:
       - name: Probe candidate opening-hand alias
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('rules-assistant/local-search.js')
-          text = path.read_text()
-          old = '''  {
-    pattern: /\\b(?:cards?|hand)\\b.*\\bstart\\b|\\bstart\\b.*\\b(?:cards?|hand)\\b/i,
-    aliases: ["setup", "opening hand"]
-  },'''
-          new = '''  {
-    pattern: /(?:\\b(?:cards?|hand)\\b[\\s\\S]{0,80}\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b|\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b[\\s\\S]{0,80}\\b(?:cards?|hand)\\b|\\bsetup\\b[\\s\\S]{0,80}\\b(?:draw|hand|cards?|keep|discard)\\b)/i,
-    aliases: ["setup", "prepare draw piles opening hands", "draw four cards", "choose one discard", "other three opening hand"]
-  },'''
-          if old not in text:
-              raise SystemExit('candidate replacement anchor not found')
-          path.write_text(text.replace(old, new, 1))
-          PY
+          python -c 'from pathlib import Path; p=Path("rules-assistant/local-search.js"); t=p.read_text(); old="  {\n    pattern: /\\b(?:cards?|hand)\\b.*\\bstart\\b|\\bstart\\b.*\\b(?:cards?|hand)\\b/i,\n    aliases: [\"setup\", \"opening hand\"]\n  },"; new="  {\n    pattern: /(?:\\b(?:cards?|hand)\\b[\\s\\S]{0,80}\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b|\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b[\\s\\S]{0,80}\\b(?:cards?|hand)\\b|\\bsetup\\b[\\s\\S]{0,80}\\b(?:draw|hand|cards?|keep|discard)\\b)/i,\n    aliases: [\"setup\", \"prepare draw piles opening hands\", \"draw four cards\", \"choose one discard\", \"other three opening hand\"]\n  },"; assert old in t, "candidate replacement anchor not found"; p.write_text(t.replace(old,new,1))'
 
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
