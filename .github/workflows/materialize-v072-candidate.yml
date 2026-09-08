@@ -35,7 +35,9 @@ jobs:
       - name: Promote approved v0.7.2 design
         run: |
           node --check scripts/promote-v072-candidate.mjs
+          node --check scripts/promote-v072-candidate-test-contract.mjs
           node scripts/promote-v072-candidate.mjs
+          node scripts/promote-v072-candidate-test-contract.mjs
 
       - name: Validate current authority and v0.7.2 integration
         run: |
@@ -56,7 +58,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add game-data/current-game.json rulebook/player-facing/current-rulebook.md
+          git add game-data/current-game.json rulebook/player-facing/current-rulebook.md tests/current-game-authority.test.ts
           if git diff --cached --quiet; then
             echo "Candidate authority already materialized."
             exit 0
