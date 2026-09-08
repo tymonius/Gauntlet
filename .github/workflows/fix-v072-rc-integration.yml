@@ -1,0 +1,69 @@
+name: Fix v0.7.2 RC integration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-v072-rc-integration.yml'
+      - 'scripts/fix-v072-rc-integration.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout RC branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/v0.7.2-rc1
+          fetch-depth: 0
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /game-data/
+            /rulebook/player-facing/
+            /scripts/current-game-authority.mjs
+            /scripts/sync-current-rulebook-facts.mjs
+            /scripts/fix-v072-rc-integration.mjs
+            /scripts/stage-tts-release-assets.mjs
+            /scripts/generate-tts-save.mjs
+            /tts/validate-current-authoritative-save.mjs
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply exact RC fixes
+        run: node scripts/fix-v072-rc-integration.mjs
+
+      - name: Validate tracked Rulebook facts
+        run: node scripts/sync-current-rulebook-facts.mjs
+
+      - name: Validate patched script syntax
+        run: |
+          node --check rulebook/player-facing/rule-facts.js
+          node --check scripts/stage-tts-release-assets.mjs
+          node --check scripts/generate-tts-save.mjs
+          node --check tts/validate-current-authoritative-save.mjs
+
+      - name: Commit source-contract fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rulebook/player-facing/rule-facts.js \
+                  rulebook/player-facing/current-rulebook.md \
+                  scripts/stage-tts-release-assets.mjs \
+                  scripts/generate-tts-save.mjs \
+                  tts/validate-current-authoritative-save.mjs
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'No patch changes produced.'; exit 1; }
+          git commit -m 'Fix v0.7.2 RC governance and TTS staging'
+          git push origin HEAD:release/v0.7.2-rc1
