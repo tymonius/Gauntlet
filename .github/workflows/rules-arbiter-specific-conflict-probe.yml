@@ -1,0 +1,25 @@
+name: Rules Arbiter specific-conflict retrieval probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-reviewed-backlog-scan
+    paths:
+      - '.github/workflows/rules-arbiter-specific-conflict-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe current deterministic retrieval
+        shell: bash
+        run: |
+          node --input-type=module -e "import {readFileSync} from 'node:fs'; import {buildRulesCorpus,retrieveRules} from './rules-assistant/local-search.js'; import {augmentRetrievalForContext,contextualQuery} from './rules-assistant/worker-v071.js'; const canonicalData=JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json','utf8')); const rulebookMarkdown=readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md','utf8'); const corpus=buildRulesCorpus({canonicalData,rulebookMarkdown,siteOrigin:'https://gauntlet.run',rulebookBrowserUrl:'https://gauntlet.run/rulebook/',canonicalDataUrl:'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'}); const qs=[\"What happens when a card’s specific instruction conflicts with the normal battle sequence?\",\"If a card tells me to do something different from the normal battle order, which rule wins?\",\"Does a card-specific battle instruction override the normal sequence?\"]; for(const q of qs){const raw=retrieveRules(corpus,contextualQuery(q,[]),{limit:10,excerptLength:1300});const src=augmentRetrievalForContext(corpus,q,[],raw);console.log(JSON.stringify({q,results:src.map((s,i)=>({rank:i+1,id:s.canonicalId,title:s.title,body:String(s.body||'').slice(0,260)}))}));}"
