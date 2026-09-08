@@ -30,6 +30,17 @@ describe("Playtest source/deployment boundary", () => {
     expect(publicDirectories).not.toMatch(/^\s*playtest\s*$/m);
   });
 
+  it("keeps publication validation source-aware while checking the stable public route", () => {
+    const publication = read(".github/workflows/current-publication-contract.yml");
+    expect(publication).toContain("/apps/playtest/**/index.html");
+    expect(publication).not.toContain("/playtest/**/index.html");
+    expect(publication).toContain("cp -a apps/playtest/. playtest/");
+
+    const livePublication = read(".github/workflows/verify-current-live-publication.yml");
+    expect(livePublication).toContain("'apps/playtest/**'");
+    expect(livePublication).toContain("'.github/workflows/current-publication-contract.yml'");
+  });
+
   it("preserves player-facing /playtest navigation contracts", () => {
     const start = read("start/app.js");
     expect(start).toContain('new URL("../playtest/tracked/"');
