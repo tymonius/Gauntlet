@@ -11,6 +11,11 @@ import {
 import { pendingV070LandslideAftermath } from './landslide';
 import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
 import { pendingV070AccusationAftermath } from './accusation-battle';
+import { pendingV070ActOfFaithAftermath } from './act-of-faith-battle';
+import {
+  pendingV070DeferredAftermathOrder,
+  type V070DeferredAftermathEffectKind,
+} from './battle-aftermath';
 
 export * from './views-postdraw';
 
@@ -51,6 +56,12 @@ export interface V070CounterworksPreRevealView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070DeferredAftermathOrderView {
+  playerId: PlayerId;
+  candidateCount: number;
+  candidateKinds?: V070DeferredAftermathEffectKind[];
+}
+
 export interface V070AccusationAftermathView {
   stage: 'target' | 'destination';
   playerId: PlayerId;
@@ -62,12 +73,23 @@ export interface V070AccusationAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070ActOfFaithAftermathView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  candidateInstanceIds: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
   pendingLandslideAftermath: V070LandslideAftermathView | null;
   pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
+  pendingDeferredAftermathOrder: V070DeferredAftermathOrderView | null;
   pendingAccusationAftermath: V070AccusationAftermathView | null;
+  pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -121,6 +143,17 @@ export function viewV070GameForPlayer(
             : {}),
         }
       : null;
+  const aftermathOrder = pendingV070DeferredAftermathOrder(state);
+  const pendingDeferredAftermathOrder: V070DeferredAftermathOrderView | null =
+    aftermathOrder
+      ? {
+          playerId: aftermathOrder.playerId,
+          candidateCount: aftermathOrder.candidateKinds.length,
+          ...(viewer === aftermathOrder.playerId
+            ? { candidateKinds: [...aftermathOrder.candidateKinds] }
+            : {}),
+        }
+      : null;
   const accusation = pendingV070AccusationAftermath(state);
   const pendingAccusationAftermath: V070AccusationAftermathView | null =
     accusation
@@ -143,6 +176,20 @@ export function viewV070GameForPlayer(
             : {}),
         }
       : null;
+  const actOfFaith = pendingV070ActOfFaithAftermath(state);
+  const pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null =
+    actOfFaith
+      ? {
+          playerId: actOfFaith.playerId,
+          owner: actOfFaith.owner,
+          opponent: actOfFaith.opponent,
+          sourceInstanceId: actOfFaith.sourceInstanceId,
+          candidateCount: actOfFaith.candidateInstanceIds.length,
+          // Act of Faith explicitly reveals these cards, so their instance
+          // identities are public to both players while the choice is pending.
+          candidateInstanceIds: [...actOfFaith.candidateInstanceIds],
+        }
+      : null;
 
   return {
     ...core,
@@ -150,6 +197,8 @@ export function viewV070GameForPlayer(
     pendingReembodimentRecovery,
     pendingLandslideAftermath,
     pendingCounterworksPreReveal,
+    pendingDeferredAftermathOrder,
     pendingAccusationAftermath,
+    pendingActOfFaithAftermath,
   };
 }
