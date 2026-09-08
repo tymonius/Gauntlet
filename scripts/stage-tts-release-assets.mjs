@@ -108,8 +108,17 @@ async function stageReleaseAssets() {
     throw new Error(`Supplemental manifest must declare starter-faction save assembly; found ${supplementalManifest.placement?.assembly || 'missing'}.`);
   }
 
-  const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
-  await generateTtsRulebookReader();
+  const targetStatus = String(release.targetStatus || '').trim();
+  if (!['current-release', 'active-development'].includes(targetStatus)) {
+    throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + '.');
+  }
+  const includeRulebook = targetStatus === 'current-release';
+  if (includeRulebook) {
+    const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
+    await generateTtsRulebookReader();
+  } else {
+    console.log('TTS active-development staging for ' + release.version + ': publication Rulebook PDF is intentionally omitted until release materialization.');
+  }
 
   const prefix = assetPrefix(release.version);
   const records = [];
@@ -125,14 +134,16 @@ async function stageReleaseAssets() {
     );
   }
 
-  addAsset(
-    records,
-    seenNames,
-    'rulebook-reader.pdf',
-    `${prefix}_Rulebook.pdf`,
-    'rulebook-reader',
-    { pageFormat: 'half-letter', pageOrder: 'reading' },
-  );
+  if (includeRulebook) {
+    addAsset(
+      records,
+      seenNames,
+      'rulebook-reader.pdf',
+      `${prefix}_Rulebook.pdf`,
+      'rulebook-reader',
+      { pageFormat: 'half-letter', pageOrder: 'reading' },
+    );
+  }
 
   for (const sheet of cardManifest.sheets || []) {
     addAsset(
@@ -270,6 +281,7 @@ async function stageReleaseAssets() {
   const releaseManifest = {
     schemaVersion: 3,
     gameVersion: release.version,
+    targetStatus,
     repository,
     releaseTag: release.version,
     releasePage: `https://github.com/${repository}/releases/tag/${release.version}`,

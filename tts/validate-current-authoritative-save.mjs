@@ -107,9 +107,17 @@ function validateEnvironment(save) {
   }
 }
 
-function validateSharedRulebook(save) {
+function validateSharedRulebook(save, release) {
   const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
-  if (rulebooks.length !== 1) throw new Error(`Expected exactly one shared Rulebook Custom PDF; found ${rulebooks.length}.`);
+  const targetStatus = String(release?.targetStatus || '').trim();
+  if (targetStatus === 'active-development' && rulebooks.length === 0) return;
+  if (targetStatus !== 'active-development' && targetStatus !== 'current-release') {
+    throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + ' while validating shared Rulebook.');
+  }
+  if (rulebooks.length !== 1) {
+    const expectation = targetStatus === 'current-release' ? 'exactly one' : 'zero or one';
+    throw new Error('Expected ' + expectation + ' shared Rulebook Custom PDF for ' + targetStatus + '; found ' + rulebooks.length + '.');
+  }
 
   const rulebook = rulebooks[0];
   if (rulebook.Name !== 'Custom_PDF' || !rulebook.CustomPDF) {
@@ -652,7 +660,7 @@ async function main() {
   ]);
 
   validateEnvironment(save);
-  validateSharedRulebook(save);
+  validateSharedRulebook(save, release);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);

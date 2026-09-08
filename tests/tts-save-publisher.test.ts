@@ -66,7 +66,7 @@ describe('TTS save publisher', () => {
     }
   });
 
-  it('adds one shared reader-order Custom PDF Rulebook in the neutral east-center table space', () => {
+  it('includes the shared reader-order Rulebook when staged and keeps it mandatory for published releases', () => {
     const releaseAssets = {
       bySourceFile: {
         'rulebook-reader.pdf': 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_TTS_Rulebook.pdf?v=123456789abc',
@@ -86,7 +86,9 @@ describe('TTS save publisher', () => {
       },
     });
     expect(publisher).toContain("const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf'");
-    expect(publisher).toContain('ObjectStates: [rulebook, ...starterKits]');
+    expect(publisher).toContain("const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE])");
+    expect(publisher).toContain("if (targetStatus === 'current-release' && !hasRulebook)");
+    expect(publisher).toContain('ObjectStates: [...(rulebook ? [rulebook] : []), ...starterKits]');
     expect(validator).toContain("isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')");
     expect(validator).toContain("approved physical-table scale of 2.55×");
   });

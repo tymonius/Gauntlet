@@ -327,8 +327,17 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const tableUrl = requireHostedUrl(releaseAssets, TABLE_IMAGE_SOURCE);
   const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
 
+  const targetStatus = String(releaseAssets?.targetStatus || 'current-release').trim();
+  if (!['current-release', 'active-development'].includes(targetStatus)) {
+    throw new Error('Unsupported staged TTS target status ' + (targetStatus || 'missing') + '.');
+  }
+  const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE]);
+  if (targetStatus === 'current-release' && !hasRulebook) {
+    throw new Error('Published/current TTS save requires a staged Rulebook reader PDF.');
+  }
+
   const guid = makeGuidFactory();
-  const rulebook = makeSharedRulebook(version, releaseAssets, guid());
+  const rulebook = hasRulebook ? makeSharedRulebook(version, releaseAssets, guid()) : null;
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
   const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z) }));
@@ -338,6 +347,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
     'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
     'White sits at the south end; Green sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
     'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
+    rulebook ? 'The shared Rulebook PDF is included from the materialized release package.' : 'This active-development QA save omits the publication-only Rulebook PDF; use the maintained current Rulebook while testing.',
   ].join('\n\n');
 
   return {
@@ -388,7 +398,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
       TurnColor: 'White',
     },
     SnapPoints: snapPoints,
-    ObjectStates: [rulebook, ...starterKits],
+    ObjectStates: [...(rulebook ? [rulebook] : []), ...starterKits],
   };
 }
 
