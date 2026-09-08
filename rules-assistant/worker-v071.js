@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260908-2";
+export const BEHAVIOR_REVISION = "v071-qa-20260908-3";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -35,6 +35,9 @@ const PEACE_TREATY_AUTHORITY_IDS = [
 ];
 const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
   "rulebook:transmutation"
+];
+const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
+  "rulebook:golden-rules"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -573,8 +576,20 @@ const mysticsTransmutationAuthorityIds = mysticsTransmutationFocus
       ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
     ]
   : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
-const preferredAuthorityIds = mysticsTransmutationFocus
-  ? mysticsTransmutationAuthorityIds
+const specificRulePrecedenceFocus =
+  /\b(?:conflict(?:s|ing)?|override(?:s|d|ing)?|different|which rule wins|more specific)\b/.test(current)
+  && /\b(?:specific|card|rule|instruction|effect)\b/.test(combined)
+  && /\b(?:normal|general|sequence|order|rule|effect)\b/.test(combined);
+const specificRulePrecedenceAuthorityIds = specificRulePrecedenceFocus
+  ? [
+      ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS,
+      ...(/\b(?:battle|gambit|tactic|sequence)\b/.test(combined) ? ["rulebook:battle-sequence"] : [])
+    ]
+  : SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS;
+const preferredAuthorityIds = specificRulePrecedenceFocus
+  ? specificRulePrecedenceAuthorityIds
+  : mysticsTransmutationFocus
+    ? mysticsTransmutationAuthorityIds
   : peaceTreatyFocus
     ? peaceTreatyAuthorityIds
     : shockAndAweFocus
