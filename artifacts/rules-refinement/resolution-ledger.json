@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T20:55:00.000Z",
+  "updatedAt": "2026-09-08T21:05:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -396,6 +396,23 @@
       "resolutionSurface": "arbiter_retrieval_prompt",
       "summary": "The production session chronology shows 'What benefit does this give me?' immediately followed the Good Faith exchange despite a stale audit rationale describing a different prior topic. Current contextual retrieval preserves that real Good Faith referent and returns Good Faith as the first authority source; regression coverage now locks the exact continuity behavior.",
       "resolvedAt": "2026-09-08T20:55:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "defender-advantage-defensive-edge-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "476b8f67-9bdf-4364-8d47-add65b67707e"
+      ],
+      "caseIds": [
+        "legacy-defender-advantage-defensive-edge"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Map the legacy phrase 'defender advantage' and close variants to the current v0.7.1 Defensive Edge authority. This prevents generic dice Advantage from outranking the controlling tie-break rule while leaving ordinary Advantage and double-Advantage questions unchanged.",
+      "resolvedAt": "2026-09-08T21:05:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
       }
