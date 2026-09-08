@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-07T05:30:00.000Z",
+  "updatedAt": "2026-09-08T18:56:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -282,6 +282,22 @@
       "binding": {
         "pullRequest": 1553,
         "commit": "6094e3aec269e32502979c5497aff22e63920134"
+      }
+    },
+    {
+      "id": "setup-opening-hand-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "6aae2d09-3e2f-444d-890b-bd07561c186c",
+        "91b91a64-7e4c-4f39-abf7-2fe0768213c4"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Expand opening-Hand and setup query phrasing so the current v0.7.1 draw-four, discard-one, keep-three setup procedure appears in the top retrieval results for starting-draw and starting-Hand-size questions without contaminating normal turn draws or Intelligence Mission startup.",
+      "resolvedAt": "2026-09-08T18:56:00.000Z",
+      "binding": {
+        "pullRequest": 1557,
+        "behaviorRevision": "v071-qa-20260908-1"
       }
     }
   ]

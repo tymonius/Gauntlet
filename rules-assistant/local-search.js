@@ -39,8 +39,8 @@ const QUERY_ALIASES = {
 
 const QUERY_PHRASE_ALIASES = [
   {
-    pattern: /\b(?:cards?|hand)\b.*\bstart\b|\bstart\b.*\b(?:cards?|hand)\b/i,
-    aliases: ["setup", "opening hand"]
+    pattern: /(?:\b(?:cards?|hand)\b[\s\S]{0,80}\b(?:start(?:ing)?|opening|begin(?:ning)?)\b|\b(?:start(?:ing)?|opening|begin(?:ning)?)\b[\s\S]{0,80}\b(?:cards?|hand)\b|\bsetup\b[\s\S]{0,80}\b(?:draw|hand|cards?|keep|discard)\b)/i,
+    aliases: ["setup", "prepare draw piles opening hands", "draw four cards", "choose one discard", "other three opening hand"]
   },
   {
     pattern: /\bstarting territory\b/i,
