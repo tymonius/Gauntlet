@@ -1,0 +1,75 @@
+name: Rules Arbiter next reviewed scan
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-next-reviewed-scan
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read reviewed production backlog
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/rules-scan
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT id, session_id, sequence_index, created_at, question, CASE WHEN answer IS NULL OR TRIM(answer) = '' THEN '' ELSE 'present' END AS answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' ORDER BY created_at DESC LIMIT 10000" > .tmp/rules-scan/interactions.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT interaction_id, created_at, retrieval_queries_json, candidate_sources_json FROM rules_interaction_diagnostics ORDER BY created_at DESC LIMIT 10000" > .tmp/rules-scan/diagnostics.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT interaction_id, reviewed_at, historical_accuracy, current_validity, retrieval_assessment, classification_assessment, designer_review_required, recommended_action, reviewed_against_version FROM rules_interaction_audits ORDER BY reviewed_at DESC LIMIT 10000" > .tmp/rules-scan/audits.json
+          node scripts/build-rules-refinement-snapshot.mjs \
+            --interactions .tmp/rules-scan/interactions.json \
+            --diagnostics .tmp/rules-scan/diagnostics.json \
+            --audits .tmp/rules-scan/audits.json \
+            --output .tmp/rules-scan/snapshot.json
+      - name: Print top active reviewed cases with production questions
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const rows = path => {
+            const parsed = JSON.parse(fs.readFileSync(path, 'utf8'));
+            return (Array.isArray(parsed) ? parsed : [parsed]).flatMap(block => Array.isArray(block?.results) ? block.results : []);
+          };
+          const interactions = rows('.tmp/rules-scan/interactions.json');
+          const audits = rows('.tmp/rules-scan/audits.json');
+          const snapshot = JSON.parse(fs.readFileSync('.tmp/rules-scan/snapshot.json', 'utf8'));
+          const byId = new Map(interactions.map(row => [String(row.id), row]));
+          const auditById = new Map();
+          for (const row of audits) if (!auditById.has(String(row.interaction_id))) auditById.set(String(row.interaction_id), row);
+          const top = snapshot.interactions.slice(0, 25).map(item => {
+            const row = byId.get(item.interactionId) || {};
+            const audit = auditById.get(item.interactionId) || {};
+            return {
+              interactionId: item.interactionId,
+              score: item.score,
+              priority: item.priority,
+              rootCause: item.rootCause,
+              question: row.question || '',
+              gameVersion: row.game_version || '',
+              sessionId: row.session_id || '',
+              sequenceIndex: row.sequence_index,
+              reviewStatus: row.review_status || '',
+              currentValidity: audit.current_validity || '',
+              historicalAccuracy: audit.historical_accuracy || '',
+              retrievalAssessment: audit.retrieval_assessment || '',
+              classificationAssessment: audit.classification_assessment || '',
+              recommendedAction: audit.recommended_action || '',
+              reviewedAgainstVersion: audit.reviewed_against_version || ''
+            };
+          });
+          console.log(JSON.stringify({ stats: snapshot.stats, top }, null, 2));
+          NODE
