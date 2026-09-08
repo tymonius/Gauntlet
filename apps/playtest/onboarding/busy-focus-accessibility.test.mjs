@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const loader = readFileSync("playtest/onboarding/app.js", "utf8");
-const source = readFileSync("playtest/onboarding/busy-focus-accessibility.js", "utf8");
+const loader = readFileSync("apps/playtest/onboarding/app.js", "utf8");
+const source = readFileSync("apps/playtest/onboarding/busy-focus-accessibility.js", "utf8");
 
 describe("game-night onboarding busy focus", () => {
   it("loads the focus handoff after the onboarding core", () => {

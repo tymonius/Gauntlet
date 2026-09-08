@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/tracked/session-controls.js", "utf8");
+const source = readFileSync("apps/playtest/tracked/session-controls.js", "utf8");
 
 describe("tracked session end busy focus", () => {
   it("makes the session-end live status a programmatic focus target", () => {

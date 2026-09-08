@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const helper = readFileSync("playtest/session/busy-focus-accessibility.js", "utf8");
-const loader = readFileSync("playtest/session/app.js", "utf8");
-const app = readFileSync("playtest/session/app-core.js", "utf8");
-const styles = readFileSync("playtest/session/styles.css", "utf8");
+const helper = readFileSync("apps/playtest/session/busy-focus-accessibility.js", "utf8");
+const loader = readFileSync("apps/playtest/session/app.js", "utf8");
+const app = readFileSync("apps/playtest/session/app-core.js", "utf8");
+const styles = readFileSync("apps/playtest/session/styles.css", "utf8");
 
 describe("formal session busy focus", () => {
   it("loads the focus helper after the formal-session controller", () => {

@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/batch/app.js", "utf8");
-const html = readFileSync("playtest/batch/index.html", "utf8");
+const source = readFileSync("apps/playtest/batch/app.js", "utf8");
+const html = readFileSync("apps/playtest/batch/index.html", "utf8");
 
 describe("coded playtest batch focus", () => {
   it("moves focus to newly revealed results", () => {

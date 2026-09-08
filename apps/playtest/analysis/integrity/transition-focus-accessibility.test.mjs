@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/analysis/integrity/app.js", "utf8");
+const source = readFileSync("apps/playtest/analysis/integrity/app.js", "utf8");
 
 describe("integrity transition focus", () => {
   it("makes rebuilt integrity regions programmatically focusable", () => {

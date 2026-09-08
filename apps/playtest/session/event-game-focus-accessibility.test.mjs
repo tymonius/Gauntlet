@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/session/event-game.js", "utf8");
+const source = readFileSync("apps/playtest/session/event-game.js", "utf8");
 
 describe("event game join focus", () => {
   it("keeps every event join status focusable while asynchronous joining disables the form", () => {

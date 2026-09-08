@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/host/app.js", "utf8");
-const html = readFileSync("playtest/host/index.html", "utf8");
+const source = readFileSync("apps/playtest/host/app.js", "utf8");
+const html = readFileSync("apps/playtest/host/index.html", "utf8");
 
 describe("Host Home removal focus", () => {
   it("restores focus to a neighboring record after removing a saved event or standalone session", () => {

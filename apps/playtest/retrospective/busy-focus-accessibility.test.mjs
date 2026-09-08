@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/retrospective/app.js", "utf8");
+const source = readFileSync("apps/playtest/retrospective/app.js", "utf8");
 
 describe("retrospective creation focus", () => {
   it("makes the creation status a programmatic live target", () => {

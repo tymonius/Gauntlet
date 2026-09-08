@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("playtest/feedback/app.js", "utf8");
+const source = readFileSync("apps/playtest/feedback/app.js", "utf8");
 
 describe("standalone feedback busy focus", () => {
   it("makes the submission status a programmatic live target", () => {
