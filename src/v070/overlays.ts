@@ -8,7 +8,27 @@ import {
 } from './overlays-pre-deferred';
 import { pauseV070DeferredBattleAftermathCarrier } from './battle-aftermath';
 
-export * from './overlays-pre-deferred';
+export {
+  V070_DEMILITARIZED_ZONE_ID,
+  activeV070Overlay,
+  activeV070OverlayAtBattleOnset,
+  cardIdForV070Overlay,
+  discardV070Overlay,
+  expireV070TerritoryTurnRestrictions,
+  graveyardV070Overlay,
+  openV070StartTurnOverlayChoice,
+  placeV070OverlayFromHand,
+  placeV070OverlayFromPendingAction,
+  registerV070DmzEntryLock,
+  replaceV070CaptureWithOverlay,
+  resolveV070OverlayAfterBattle,
+  resolveV070OverlayCaptureEffects,
+  resolveV070OverlayEntryRequirements,
+  resolveV070StartTurnOverlayChoice,
+  v070DmzBlocksEntryThisTurn,
+  v070OverlaysAt,
+  withdrawV070PlayersFromNewDemilitarizedZone,
+} from './overlays-pre-deferred';
 
 const V070_DEFERRED_BATTLE_AFTERMATH_IDS = new Set([
   'inquisition-accusation',
