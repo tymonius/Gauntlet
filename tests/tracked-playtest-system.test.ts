@@ -2,9 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const page = read("playtest/tracked/index.html");
-const app = read("playtest/tracked/app.js");
-const styles = read("playtest/tracked/styles.css");
+const page = read("apps/playtest/tracked/index.html");
+const app = read("apps/playtest/tracked/app.js");
+const styles = read("apps/playtest/tracked/styles.css");
 const start = read("start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const analysisWorker = read("workers/playtest-sessions/src/analysis.js");

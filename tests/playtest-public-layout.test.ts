@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const css = readFileSync('playtest/portal.css', 'utf8');
+const css = readFileSync('apps/playtest/portal.css', 'utf8');
 
 describe('public Playtest hero layout', () => {
   it('uses the same constrained public-page width as the global header and Start page', () => {

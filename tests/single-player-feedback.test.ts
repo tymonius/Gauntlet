@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const companion = read("playtest/tracked/journal.js");
+const companion = read("apps/playtest/tracked/journal.js");
 const trackedWorker = read("workers/playtest-sessions/src/tracked.js");
 
 describe("single-player playtest feedback", () => {

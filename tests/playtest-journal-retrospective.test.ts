@@ -2,10 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const trackedPage = read("playtest/tracked/index.html");
-const journalApp = read("playtest/tracked/journal.js");
-const retrospectivePage = read("playtest/retrospective/index.html");
-const retrospectiveApp = read("playtest/retrospective/app.js");
+const trackedPage = read("apps/playtest/tracked/index.html");
+const journalApp = read("apps/playtest/tracked/journal.js");
+const retrospectivePage = read("apps/playtest/retrospective/index.html");
+const retrospectiveApp = read("apps/playtest/retrospective/app.js");
 const worker = read("workers/playtest-sessions/src/journal.js");
 const closureWorker = read("workers/playtest-sessions/src/closure.js");
 const completenessWorker = read("workers/playtest-sessions/src/completeness.js");

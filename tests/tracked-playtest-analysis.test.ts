@@ -2,20 +2,20 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const page = read("playtest/analysis/index.html");
-const app = read("playtest/analysis/app.js");
-const styles = read("playtest/analysis/styles.css");
+const page = read("apps/playtest/analysis/index.html");
+const app = read("apps/playtest/analysis/app.js");
+const styles = read("apps/playtest/analysis/styles.css");
 const developerStyles = read("developer-tools.css");
 const worker = read("workers/playtest-sessions/src/analysis.js");
 const integrityWorker = read("workers/playtest-sessions/src/integrity.js");
 const journalWorker = read("workers/playtest-sessions/src/journal.js");
 const closureWorker = read("workers/playtest-sessions/src/closure.js");
 const completenessWorker = read("workers/playtest-sessions/src/completeness.js");
-const integrityPage = read("playtest/analysis/integrity/index.html");
-const integrityApp = read("playtest/analysis/integrity/app.js");
-const integrityStyles = read("playtest/analysis/integrity/styles.css");
+const integrityPage = read("apps/playtest/analysis/integrity/index.html");
+const integrityApp = read("apps/playtest/analysis/integrity/app.js");
+const integrityStyles = read("apps/playtest/analysis/integrity/styles.css");
 const integrityMigration = read("rules-assistant/migrations/0006_playtest_analysis_exclusions.sql");
-const host = read("playtest/host/index.html");
+const host = read("apps/playtest/host/index.html");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
 describe("compiled tracked playtest analysis", () => {

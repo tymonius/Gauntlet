@@ -42,11 +42,13 @@ Every maintained top-level subsystem should be classifiable as one of:
 
 A path that cannot be classified cleanly is a cleanup target.
 
-### 3. Public URLs are compatibility contracts
+### 3. Public URLs are compatibility contracts, not source locations
 
 Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` must not move merely to make the source tree prettier.
 
 GitHub Pages is staged from an explicit public-root allowlist rather than from the entire repository tree. Source organization may therefore change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists.
+
+`apps/playtest/` is the first current application to use this separation deliberately: its canonical repository source lives under `apps/`, while Pages stages it at the unchanged `/playtest/` public path. Future application moves should follow this model rather than recreating root source aliases.
 
 ### 4. Frozen releases stay frozen
 
@@ -79,7 +81,7 @@ The repository currently contains a large binary footprint, especially under `im
 
 ## Current path classification
 
-The current top-level directory inventory is enforced by `scripts/validate-repository-architecture.mjs` in required Governance Integrity CI. Adding or removing a root directory requires updating these classifications in the same change.
+The machine-readable root inventory and transition target are defined by `config/repository-architecture.json` and enforced by `scripts/validate-repository-architecture.mjs` in required Governance Integrity CI. This human-facing classification must stay in sync with that contract. Adding, removing, or reclassifying a root directory requires updating both in the same architectural change.
 
 ### Authority
 
@@ -94,13 +96,13 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 
 | Path | Role |
 |---|---|
+| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; currently contains `apps/playtest/`, deployed at `/playtest/` |
 | `deckbuilder/` | Current Deckbuilder |
 | `card-reference/` | Current card/Territory reference |
 | `factions/` | Current faction discovery/reference surface |
 | `start/` | Current onboarding/start surface |
 | `rulebook/` | Current browser Rulebook plus maintained source |
 | `rules-assistant/` | Rules Arbiter implementation |
-| `playtest/` | Current playtest browser surfaces |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine plus explicitly versioned migration layers still undergoing promotion; quarantined historical engine implementations live under `legacy/` |
 | `rules-arbiter/` | Current static Rules Arbiter browser shell; implementation/service logic lives under `rules-assistant/` |
@@ -204,7 +206,7 @@ releases/
 legacy/
 ```
 
-This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages now stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged.
+This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged. `apps/playtest/` is the first concrete application migration toward this target.
 
 ## Cleanup sequence
 
@@ -227,6 +229,7 @@ This is a **conceptual dependency target, not an instruction to move every exist
 
 - Keep GitHub Pages staging explicit rather than mirroring the repository.
 - Preserve current public URLs while source directories are consolidated.
+- Use `apps/playtest/` → `/playtest/` as the reference pattern for subsequent current application moves.
 - Move application source into clearer package boundaries only after verifying each deployed compatibility path.
 
 ### Phase 4 — Digital-engine boundary

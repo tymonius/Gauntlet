@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const page = readFileSync("playtest/analysis/integrity/index.html", "utf8");
-const styles = readFileSync("playtest/analysis/integrity/styles.css", "utf8");
+const page = readFileSync("apps/playtest/analysis/integrity/index.html", "utf8");
+const styles = readFileSync("apps/playtest/analysis/integrity/styles.css", "utf8");
 const developerStyles = readFileSync("developer-tools.css", "utf8");
 
 describe("playtest integrity access form", () => {

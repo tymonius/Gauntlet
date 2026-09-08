@@ -2,12 +2,12 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const trackedPage = read("playtest/tracked/index.html");
-const controls = read("playtest/tracked/session-controls.js");
-const feedbackPage = read("playtest/feedback/index.html");
-const feedbackApp = read("playtest/feedback/app.js");
-const feedbackCompleteness = read("playtest/feedback/completeness.js");
-const feedbackStyles = read("playtest/feedback/styles.css");
+const trackedPage = read("apps/playtest/tracked/index.html");
+const controls = read("apps/playtest/tracked/session-controls.js");
+const feedbackPage = read("apps/playtest/feedback/index.html");
+const feedbackApp = read("apps/playtest/feedback/app.js");
+const feedbackCompleteness = read("apps/playtest/feedback/completeness.js");
+const feedbackStyles = read("apps/playtest/feedback/styles.css");
 const worker = read("workers/playtest-sessions/src/closure.js");
 const completenessWorker = read("workers/playtest-sessions/src/completeness.js");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");

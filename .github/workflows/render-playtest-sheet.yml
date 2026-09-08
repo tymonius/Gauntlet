@@ -5,17 +5,17 @@ on:
     branches:
       - main
     paths:
-      - playtest/sheet/index.html
-      - playtest/styles.css
-      - playtest/README.md
+      - apps/playtest/sheet/index.html
+      - apps/playtest/styles.css
+      - apps/playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
   pull_request:
     branches:
       - main
     paths:
-      - playtest/sheet/index.html
-      - playtest/styles.css
-      - playtest/README.md
+      - apps/playtest/sheet/index.html
+      - apps/playtest/styles.css
+      - apps/playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
       - README.md
   workflow_dispatch:
@@ -47,6 +47,11 @@ jobs:
           npx playwright install --with-deps chromium
           python3 -m pip install pypdf
 
+      - name: Stage Playtest public path
+        run: |
+          rm -rf playtest
+          cp -a apps/playtest playtest
+
       - name: Serve repository
         run: |
           python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
@@ -66,13 +71,13 @@ jobs:
 
           await page.goto('http://127.0.0.1:8000/playtest/sheet/?serial=G071-PREVIEW', { waitUntil: 'networkidle' });
           await page.screenshot({
-            path: 'playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png',
+            path: 'apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png',
             fullPage: true
           });
 
           await page.emulateMedia({ media: 'print' });
           await page.pdf({
-            path: 'playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf',
+            path: 'apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf',
             format: 'Letter',
             printBackground: true,
             preferCSSPageSize: true,
@@ -91,7 +96,7 @@ jobs:
           from pathlib import Path
           from pypdf import PdfReader
 
-          path = Path('playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf')
+          path = Path('apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf')
           if not path.exists() or path.stat().st_size < 20_000:
               raise SystemExit('Generated PDF is missing or unexpectedly small')
           reader = PdfReader(str(path))
@@ -124,8 +129,8 @@ jobs:
         with:
           name: gauntlet-v071-playtest-sheet
           path: |
-            playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
-            playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png
+            apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
+            apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png
           if-no-files-found: error
 
       - name: Commit generated PDF on main
@@ -133,4 +138,4 @@ jobs:
         run: |
           node scripts/commit-generated-files.mjs \
             "Render v0.7.1 printable playtest sheet PDF" \
-            -- playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
+            -- apps/playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
