@@ -1,0 +1,890 @@
+{
+  "schemaVersion": 1,
+  "authoritySource": "game-data/current-game.json",
+  "principles": {
+    "singleAuthority": "current-game.json is the only gameplay authority; rules surfaces are projections or reviewed explanations of it.",
+    "technicalCorpus": "The Comprehensive Gauntlet Rules are the single complete technical rules corpus for core and faction rules.",
+    "teachingSurfaces": "The Player's Guide and Faction Guides may simplify wording but may not change mechanics.",
+    "referenceCards": "Reference cards are compact procedural projections, not independent rule authorities.",
+    "arbiter": "The Rules Arbiter resolves from technical authority and canonical game objects, then answers in player-friendly language."
+  },
+  "dependencyModes": {
+    "direct": "Mechanical copy is rendered or assembled directly from registered authority rules.",
+    "reviewedTeaching": "Human-authored copy declares registered rule dependencies and must be re-reviewed when those dependencies change.",
+    "procedural": "Compact at-table copy is derived from authority; bespoke phrasing must retain declared dependencies."
+  },
+  "ruleRegistry": [
+    {
+      "id": "core.deck-construction",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "deck_construction"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.setup",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "setup"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.turn",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "turn"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.capture",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "capture"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.front-line",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "front_line"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.last-stand",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "last_stand"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.starting-position",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "starting_position"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.victory",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "victory"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.sequence",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "sequence"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.onset",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "onset"
+          ]
+        },
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "onset_steps"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.gambit-count",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "normal_gambits"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.tactic-count",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "normal_tactics"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.reserve-size",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "normal_reserve_size"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.defensive-edge",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "defensive_edge"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.tiebreak",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "tiebreak_roll"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.withdrawal",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "withdrawal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.retreat",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.movement-initiation",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "movement"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.factions.framework",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "factionFeatureTaxonomy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.components",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "componentContract"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faction.military.definition",
+      "scope": "faction:military",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "military"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.military.features",
+      "scope": "faction:military",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "military"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.diplomats.definition",
+      "scope": "faction:diplomats",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "diplomats"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.diplomats.features",
+      "scope": "faction:diplomats",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "diplomats"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.financiers.definition",
+      "scope": "faction:financiers",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "financiers"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.financiers.features",
+      "scope": "faction:financiers",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "financiers"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.intelligence.definition",
+      "scope": "faction:intelligence",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "intelligence"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.intelligence.features",
+      "scope": "faction:intelligence",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "intelligence"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.mystics.definition",
+      "scope": "faction:mystics",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "mystics"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.mystics.features",
+      "scope": "faction:mystics",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "mystics"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.inquisition.definition",
+      "scope": "faction:inquisition",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "factions"
+          ],
+          "select": {
+            "field": "id",
+            "equals": "inquisition"
+          }
+        }
+      ]
+    },
+    {
+      "id": "faction.inquisition.features",
+      "scope": "faction:inquisition",
+      "sources": [
+        {
+          "path": [
+            "factionFeatures",
+            "inquisition"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "faction.diplomats.proposals",
+      "scope": "faction:diplomats",
+      "sources": [
+        {
+          "path": [
+            "proposals"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "faction.mystics.rites",
+      "scope": "faction:mystics",
+      "sources": [
+        {
+          "path": [
+            "mystics"
+          ]
+        }
+      ]
+    }
+  ],
+  "publicationArchitecture": {
+    "playerGuide": {
+      "id": "player-guide",
+      "kind": "teaching",
+      "dependencyMode": "reviewedTeaching",
+      "scope": "core-with-opponent-faction-overviews",
+      "status": "planned",
+      "chapters": [
+        {
+          "id": "welcome",
+          "title": "Welcome to Gauntlet",
+          "dependsOn": [
+            "core.battlefield",
+            "core.battlefield.victory"
+          ]
+        },
+        {
+          "id": "battlefield-and-victory",
+          "title": "The Battlefield and How You Win",
+          "dependsOn": [
+            "core.battlefield",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand"
+          ]
+        },
+        {
+          "id": "cards-and-play-area",
+          "title": "Cards and Your Play Area",
+          "dependsOn": [
+            "core.cards",
+            "core.components"
+          ]
+        },
+        {
+          "id": "setup",
+          "title": "Setting Up",
+          "dependsOn": [
+            "core.setup",
+            "core.deck-construction",
+            "core.battlefield.starting-position"
+          ]
+        },
+        {
+          "id": "turn",
+          "title": "Your Turn",
+          "dependsOn": [
+            "core.turn"
+          ]
+        },
+        {
+          "id": "movement",
+          "title": "Movement",
+          "dependsOn": [
+            "core.turn",
+            "core.battle.movement-initiation"
+          ]
+        },
+        {
+          "id": "battles",
+          "title": "Battles",
+          "dependsOn": [
+            "core.battle",
+            "core.battle.sequence",
+            "core.battle.gambit-count",
+            "core.battle.tactic-count",
+            "core.battle.reserve-size",
+            "core.battle.defensive-edge"
+          ]
+        },
+        {
+          "id": "ground",
+          "title": "Taking and Holding Ground",
+          "dependsOn": [
+            "core.battlefield.capture",
+            "core.battlefield.front-line"
+          ]
+        },
+        {
+          "id": "run-the-gauntlet",
+          "title": "Running the Gauntlet",
+          "dependsOn": [
+            "core.battlefield.victory",
+            "core.battlefield.last-stand"
+          ]
+        },
+        {
+          "id": "factions",
+          "title": "The Six Factions",
+          "dependsOn": [
+            "faction.military.definition",
+            "faction.diplomats.definition",
+            "faction.financiers.definition",
+            "faction.intelligence.definition",
+            "faction.mystics.definition",
+            "faction.inquisition.definition"
+          ]
+        },
+        {
+          "id": "deckbuilding",
+          "title": "Building a Deck",
+          "dependsOn": [
+            "core.deck-construction"
+          ]
+        },
+        {
+          "id": "next",
+          "title": "Where to Go From Here",
+          "dependsOn": []
+        }
+      ]
+    },
+    "factionGuideTemplate": {
+      "kind": "teaching",
+      "dependencyMode": "reviewedTeaching",
+      "status": "planned",
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference"
+        }
+      ]
+    },
+    "comprehensiveRules": {
+      "id": "comprehensive-rules",
+      "kind": "technical",
+      "dependencyMode": "direct",
+      "scope": "all-gameplay",
+      "status": "planned",
+      "parts": [
+        {
+          "id": "foundations",
+          "title": "Foundations",
+          "covers": [
+            "core.factions.framework",
+            "core.components"
+          ]
+        },
+        {
+          "id": "construction-setup",
+          "title": "Game Construction and Setup",
+          "covers": [
+            "core.deck-construction",
+            "core.setup",
+            "core.battlefield.starting-position"
+          ]
+        },
+        {
+          "id": "turn-structure",
+          "title": "Turn Structure",
+          "covers": [
+            "core.turn"
+          ]
+        },
+        {
+          "id": "movement-battlefield",
+          "title": "Movement and Battlefield State",
+          "covers": [
+            "core.battlefield",
+            "core.battle.movement-initiation"
+          ]
+        },
+        {
+          "id": "battles",
+          "title": "Battles",
+          "covers": [
+            "core.battle"
+          ]
+        },
+        {
+          "id": "territory-victory",
+          "title": "Territory and Victory Rules",
+          "covers": [
+            "core.battlefield.capture",
+            "core.battlefield.front-line",
+            "core.battlefield.last-stand",
+            "core.battlefield.victory"
+          ]
+        },
+        {
+          "id": "cards-zones",
+          "title": "Cards and Zones",
+          "covers": [
+            "core.cards"
+          ]
+        },
+        {
+          "id": "effects-timing",
+          "title": "Effects and Timing",
+          "covers": [
+            "core.cards",
+            "core.battle"
+          ]
+        },
+        {
+          "id": "persistent-shared",
+          "title": "Persistent and Special Shared Rules",
+          "covers": [
+            "core.cards"
+          ]
+        },
+        {
+          "id": "military",
+          "title": "Military Rules",
+          "covers": [
+            "faction.military.definition",
+            "faction.military.features"
+          ]
+        },
+        {
+          "id": "diplomats",
+          "title": "Diplomat Rules",
+          "covers": [
+            "faction.diplomats.definition",
+            "faction.diplomats.features",
+            "faction.diplomats.proposals"
+          ]
+        },
+        {
+          "id": "financiers",
+          "title": "Financier Rules",
+          "covers": [
+            "faction.financiers.definition",
+            "faction.financiers.features"
+          ]
+        },
+        {
+          "id": "intelligence",
+          "title": "Intelligence Rules",
+          "covers": [
+            "faction.intelligence.definition",
+            "faction.intelligence.features"
+          ]
+        },
+        {
+          "id": "mystics",
+          "title": "Mystics Rules",
+          "covers": [
+            "faction.mystics.definition",
+            "faction.mystics.features",
+            "faction.mystics.rites"
+          ]
+        },
+        {
+          "id": "inquisition",
+          "title": "Inquisition Rules",
+          "covers": [
+            "faction.inquisition.definition",
+            "faction.inquisition.features"
+          ]
+        },
+        {
+          "id": "definitions-index",
+          "title": "Definitions and Index",
+          "covers": []
+        }
+      ]
+    }
+  },
+  "factions": [
+    {
+      "id": "military",
+      "guideId": "military-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.military.definition",
+        "faction.military.features"
+      ]
+    },
+    {
+      "id": "diplomats",
+      "guideId": "diplomats-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.diplomats.definition",
+        "faction.diplomats.features",
+        "faction.diplomats.proposals"
+      ]
+    },
+    {
+      "id": "financiers",
+      "guideId": "financiers-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.financiers.definition",
+        "faction.financiers.features"
+      ]
+    },
+    {
+      "id": "intelligence",
+      "guideId": "intelligence-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.intelligence.definition",
+        "faction.intelligence.features"
+      ]
+    },
+    {
+      "id": "mystics",
+      "guideId": "mystics-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.mystics.definition",
+        "faction.mystics.features",
+        "faction.mystics.rites"
+      ]
+    },
+    {
+      "id": "inquisition",
+      "guideId": "inquisition-guide",
+      "status": "planned",
+      "dependsOn": [
+        "faction.inquisition.definition",
+        "faction.inquisition.features"
+      ]
+    }
+  ],
+  "otherSurfaces": {
+    "referenceCards": {
+      "kind": "reference",
+      "dependencyMode": "procedural",
+      "authorityRole": "consumer"
+    },
+    "rulesArbiter": {
+      "kind": "interactive",
+      "retrievalAuthority": [
+        "comprehensive-rules",
+        "canonical-game-objects"
+      ],
+      "teachingSourcesMayInfluencePresentation": true,
+      "teachingSourcesMayResolveConflicts": false,
+      "answerOrder": [
+        "ruling",
+        "plain-language explanation",
+        "needed timing or exception",
+        "technical citation when useful"
+      ]
+    }
+  },
+  "activationPolicy": {
+    "planned": "Structure may exist without publication source files or review fingerprints.",
+    "activeTeaching": "Every mechanically substantive section must declare dependencies and a review fingerprint for those dependencies.",
+    "activeTechnical": "Every registered rule must be covered by the Comprehensive Rules or explicitly marked non-publication.",
+    "retirement": "The legacy monolithic rulebook remains checked until the new surfaces reach active status and a coverage crosswalk is complete."
+  }
+}
