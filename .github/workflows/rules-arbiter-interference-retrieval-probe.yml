@@ -1,0 +1,23 @@
+name: Rules Arbiter Interference retrieval probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-interference-context-scan
+    paths:
+      - '.github/workflows/rules-arbiter-interference-retrieval-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe reviewed conversation
+        run: node --input-type=module -e "import {readFileSync} from 'node:fs'; import {buildRulesCorpus,retrieveRules} from './rules-assistant/local-search.js'; import {augmentRetrievalForContext,contextualQuery} from './rules-assistant/worker-v071.js'; const canonicalData=JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json','utf8')); const rulebookMarkdown=readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md','utf8'); const corpus=buildRulesCorpus({canonicalData,rulebookMarkdown,siteOrigin:'https://gauntlet.run',rulebookBrowserUrl:'https://gauntlet.run/rulebook/',canonicalDataUrl:'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'}); const run=(q,h=[])=>{const rq=contextualQuery(q,h);const raw=retrieveRules(corpus,rq,{limit:10,excerptLength:1300});const ids=augmentRetrievalForContext(corpus,q,h,raw).map(s=>s.canonicalId);console.log(JSON.stringify({q,rq,top8:ids.slice(0,8)}));return ids}; const h1=[]; const q1='How does Surveillance work?'; const i1=run(q1,h1); const h2=[{role:'user',content:q1},{role:'assistant',content:'Surveillance reveals opposing face-down Gambits or Tactics for Intel and can be followed by Interference.'}]; const q2='What if the commitment is already face up?'; const i2=run(q2,h2); const h3=[...h2,{role:'user',content:q2},{role:'assistant',content:'A face-up opposing commitment may use Direct Interference at the same response timing.'}]; const q3='Does that change the cost of Interference?'; const i3=run(q3,h3); const required=['rulebook:gambit-surveillance','rulebook:tactic-surveillance','rulebook:interference-after-surveillance','rulebook:direct-interference','rulebook:intelligence-mirrors']; for(const id of required){if(!i1.includes(id)) throw new Error('opening Surveillance miss '+id)}; for(const ids of [i2,i3]){for(const id of ['rulebook:direct-interference','rulebook:interference-after-surveillance']) if(!ids.includes(id)) throw new Error('follow-up miss '+id)}"
