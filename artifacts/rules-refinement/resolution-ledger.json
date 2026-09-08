@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T22:31:00.000Z",
+  "updatedAt": "2026-09-08T22:34:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -447,6 +447,23 @@
       "resolutionSurface": "arbiter_retrieval_prompt",
       "summary": "Current v0.7.1 retrieval supplies Command and Repel as the first two authority sources and also includes the complete Military rule that directly states Command may be gained during either player's turn and that newly gained Command may pay for an Aftermath Order. The existing explicit-classification prompt contract therefore covers the reviewed Commandant/Repel question; regression coverage locks that behavior without a new runtime change.",
       "resolvedAt": "2026-09-08T22:31:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "inquisition-purification-reserve-draw-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "32cfc27f-1025-4868-a4e5-f97c09edd4a1"
+      ],
+      "caseIds": [
+        "inquisition-purification-reserve-draw"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Current v0.7.1 retrieval returns the complete Purification rule first for the reviewed failed-Reserve question. That rule directly states that Purification checks the opponent's normal start-of-turn draw and that a failed Reserve draw or effect-generated draw does not trigger it. The existing explicit-classification prompt contract therefore covers the reviewed question; regression coverage locks the distinction without a new runtime change.",
+      "resolvedAt": "2026-09-08T22:34:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
       }
