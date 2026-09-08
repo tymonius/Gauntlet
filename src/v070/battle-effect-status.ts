@@ -4,7 +4,6 @@ import {
   type V070GameState,
 } from './engine';
 import type { V070BattleCardCommitment } from './battle-types';
-import { removeV070AccusationBattleRegistration } from './accusation-battle';
 
 interface DeferredRuntimeSurface {
   landslideBattleInstanceIds?: string[];
@@ -157,7 +156,13 @@ function cancelDeferredRegistration(
   runtime.unbrokenRanksInstanceIds = runtime.unbrokenRanksInstanceIds.filter(
     instanceId => instanceId !== targetInstanceId,
   );
-  removeV070AccusationBattleRegistration(state, targetInstanceId);
+  runtime.accusationBattleSourceInstanceIds =
+    runtime.accusationBattleSourceInstanceIds?.filter(
+      instanceId => instanceId !== targetInstanceId,
+    );
+  if (runtime.pendingAccusationAftermath?.sourceInstanceId === targetInstanceId) {
+    runtime.pendingAccusationAftermath = null;
+  }
 
   const augmented = runtime as typeof runtime & DeferredRuntimeSurface;
   augmented.landslideBattleInstanceIds =
