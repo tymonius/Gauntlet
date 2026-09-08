@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "authority": "current-game",
-  "version": "v0.7.1",
-  "displayVersion": "v0.7.1",
-  "status": "current-release",
+  "version": "v0.7.2-candidate",
+  "displayVersion": "v0.7.2 Candidate",
+  "status": "release-candidate",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",
@@ -20,7 +20,8 @@
       "starterDecks": "/deckbuilder/starter-decks.json"
     },
     "currentDevelopmentInputs": {
-      "mysticsRites": "/docs/v0.7.1-mystics-rites.json"
+      "mysticsRites": "/docs/v0.7.1-mystics-rites.json",
+      "v072TimingAndCaptureCleanup": "/docs/v0.7.2-timing-and-capture-cleanup.json"
     }
   },
   "visualPolicy": {
@@ -182,7 +183,7 @@
                     "name": "Fortify",
                     "cost": "2 Command",
                     "descriptor": "No Action · Aftermath · Win while occupying enemy Territory",
-                    "text": "Advance your Front Line by one Territory, if able."
+                    "text": "Capture the Territory you occupy, if able."
                   }
                 ]
               },
@@ -313,7 +314,7 @@
                 "classification": "Leader Ability",
                 "name": "Hostile Takeover",
                 "descriptor": "1 Action · Denouement · After winning as attacker",
-                "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able."
+                "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able."
               },
               {
                 "classification": "Resource",
@@ -716,15 +717,16 @@
         "effects": [
           {
             "label": "Action",
-            "text": "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle."
+            "text": "Play only during Opening. During your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Attacker without a Gambit — gain Advantage."
           }
         ],
-        "action": "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle.",
-        "gambit_tactic": "Attacker without a Gambit — gain Advantage."
+        "action": "Play only during Opening. During your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle.",
+        "gambit_tactic": "Attacker without a Gambit — gain Advantage.",
+        "action_phase": "Opening"
       },
       {
         "id": "neutral-arcane-knowledge",
@@ -809,15 +811,15 @@
         "effects": [
           {
             "label": "Asset",
-            "text": "In the Aftermath, if you initiated and won this battle on a Territory the opponent controls, you may put this card in your Graveyard to advance Front Line 1, if able, instead of occupying it."
+            "text": "In the Aftermath, if you initiated and won this battle on a Territory the opponent controls, you may put this card in your Graveyard to capture that Territory, if able, instead of occupying it."
           },
           {
             "label": "Gambit/Tactic",
-            "text": "In the Aftermath, if you win as the attacker on a Territory the opponent controls, advance Front Line 1, if able, instead of occupying it. Put this card in your Graveyard after the Front Line advance."
+            "text": "In the Aftermath, if you win as the attacker on a Territory the opponent controls, capture that Territory, if able, instead of occupying it. Then put this card in your Graveyard."
           }
         ],
-        "gambit_tactic": "In the Aftermath, if you win as the attacker on a Territory the opponent controls, advance Front Line 1, if able, instead of occupying it. Put this card in your Graveyard after the Front Line advance.",
-        "asset": "In the Aftermath, if you initiated and won this battle on a Territory the opponent controls, you may put this card in your Graveyard to advance Front Line 1, if able, instead of occupying it."
+        "gambit_tactic": "In the Aftermath, if you win as the attacker on a Territory the opponent controls, capture that Territory, if able, instead of occupying it. Then put this card in your Graveyard.",
+        "asset": "In the Aftermath, if you initiated and won this battle on a Territory the opponent controls, you may put this card in your Graveyard to capture that Territory, if able, instead of occupying it."
       },
       {
         "id": "neutral-attrition",
@@ -861,7 +863,8 @@
           }
         ],
         "action": "Play only during Denouement if you won a battle this turn. Return one Tactic you chose during that battle from your Discard Pile to your Hand.",
-        "gambit_tactic": "In the Aftermath, if you win, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile."
+        "gambit_tactic": "In the Aftermath, if you win, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.",
+        "action_phase": "Denouement"
       },
       {
         "id": "mystics-black-covenant",
@@ -1641,15 +1644,16 @@
         "effects": [
           {
             "label": "Action",
-            "text": "Put one other card from your Hand in your Graveyard. Move one additional Position this turn."
+            "text": "Play only during Opening. Put one other card from your Hand in your Graveyard. During your Movement this turn, you may move one additional Position."
           },
           {
             "label": "Gambit/Tactic",
             "text": "After you roll, you may put one other card from your Hand in your Graveyard to reroll."
           }
         ],
-        "action": "Put one other card from your Hand in your Graveyard. Move one additional Position this turn.",
-        "gambit_tactic": "After you roll, you may put one other card from your Hand in your Graveyard to reroll."
+        "action": "Play only during Opening. Put one other card from your Hand in your Graveyard. During your Movement this turn, you may move one additional Position.",
+        "gambit_tactic": "After you roll, you may put one other card from your Hand in your Graveyard to reroll.",
+        "action_phase": "Opening"
       },
       {
         "id": "neutral-fealty",
@@ -1761,15 +1765,16 @@
         "effects": [
           {
             "label": "Action",
-            "text": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
+            "text": "Play only during Opening. During your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Attacker — +1 Battle Total."
           }
         ],
-        "action": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle.",
-        "gambit_tactic": "Attacker — +1 Battle Total."
+        "action": "Play only during Opening. During your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle.",
+        "gambit_tactic": "Attacker — +1 Battle Total.",
+        "action_phase": "Opening"
       },
       {
         "id": "financiers-foreclosure",
@@ -1783,15 +1788,16 @@
         "effects": [
           {
             "label": "Action",
-            "text": "During Denouement, choose the next opposing Territory immediately beyond your Front Line if its Deed is yours and it is unoccupied. Advance Front Line 1."
+            "text": "Play only during Denouement. If the next opposing Territory immediately beyond your Front Line is unoccupied and you own its Deed, advance your Front Line 1."
           },
           {
             "label": "Gambit/Tactic",
-            "text": "In the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance Front Line 1, if able, instead of becoming the occupier."
+            "text": "In the Aftermath, if you initiated and won this battle on a Territory whose Deed you owned when the battle began, capture that Territory, if able, instead of becoming the occupier."
           }
         ],
-        "action": "During Denouement, choose the next opposing Territory immediately beyond your Front Line if its Deed is yours and it is unoccupied. Advance Front Line 1.",
-        "gambit_tactic": "In the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance Front Line 1, if able, instead of becoming the occupier."
+        "action": "Play only during Denouement. If the next opposing Territory immediately beyond your Front Line is unoccupied and you own its Deed, advance your Front Line 1.",
+        "gambit_tactic": "In the Aftermath, if you initiated and won this battle on a Territory whose Deed you owned when the battle began, capture that Territory, if able, instead of becoming the occupier.",
+        "action_phase": "Denouement"
       },
       {
         "id": "neutral-fortifications",
@@ -1827,15 +1833,16 @@
         "effects": [
           {
             "label": "Action",
-            "text": "During Denouement, if you won a battle you initiated this turn, advance 1 Position. Then put this card in your Graveyard."
+            "text": "Play only during Denouement if you won a battle you initiated this turn. Advance 1 Position. Then put this card in your Graveyard."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Following the Aftermath, if you won as the attacker, you may advance 1 Position. Put this card in your Graveyard.\n\nIf an advance from this card starts a battle, you cannot set a Gambit or use Orders in it. In that battle, −1 Reserve for each battle you already fought this turn beyond the first, to a minimum of 0."
           }
         ],
-        "action": "During Denouement, if you won a battle you initiated this turn, advance 1 Position. Then put this card in your Graveyard.",
-        "gambit_tactic": "Following the Aftermath, if you won as the attacker, you may advance 1 Position. Put this card in your Graveyard.\n\nIf an advance from this card starts a battle, you cannot set a Gambit or use Orders in it. In that battle, −1 Reserve for each battle you already fought this turn beyond the first, to a minimum of 0."
+        "action": "Play only during Denouement if you won a battle you initiated this turn. Advance 1 Position. Then put this card in your Graveyard.",
+        "gambit_tactic": "Following the Aftermath, if you won as the attacker, you may advance 1 Position. Put this card in your Graveyard.\n\nIf an advance from this card starts a battle, you cannot set a Gambit or use Orders in it. In that battle, −1 Reserve for each battle you already fought this turn beyond the first, to a minimum of 0.",
+        "action_phase": "Denouement"
       },
       {
         "id": "diplomats-good-faith",
@@ -2062,14 +2069,14 @@
         "effects": [
           {
             "label": "Action",
-            "text": "During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance."
+            "text": "Play only during Opening. During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Attacker — +1 Reserve, +1 Tactic."
           }
         ],
-        "action": "During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance.",
+        "action": "Play only during Opening. During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance.",
         "action_phase": "Opening",
         "gambit_tactic": "Attacker — +1 Reserve, +1 Tactic."
       },
@@ -3062,11 +3069,11 @@
           },
           {
             "label": "Gambit/Tactic",
-            "text": "When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Advance Front Line 1, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard."
+            "text": "When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Capture that Territory, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard."
           }
         ],
         "asset": "During Onset, you may put this card in your Graveyard to apply its Gambit/Tactic effect after Tactics are revealed.",
-        "gambit_tactic": "When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Advance Front Line 1, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard."
+        "gambit_tactic": "When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Capture that Territory, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard."
       },
       {
         "id": "intelligence-sleeper-network",
@@ -4324,8 +4331,8 @@
         "name": "Diplomatic Recognition",
         "stake": 2,
         "requirement": "The Diplomat must be defending a Counterattack while occupying a Territory the opposing player controlled immediately before the Diplomat became its occupier.",
-        "accepted": "The Diplomat advances their Front Line by one Territory, if able. The accepting player withdraws, then draws two cards.",
-        "refused": "If the Diplomat wins, advance the Diplomat's Front Line by one Territory during the Aftermath, if able. The Diplomat gains no Influence for imposing this Proposal."
+        "accepted": "The Diplomat captures the Territory they occupy, if able. The accepting player withdraws, then draws two cards.",
+        "refused": "If the Diplomat wins, they capture the Territory they occupy during the Aftermath, if able. The Diplomat gains no Influence for imposing this Proposal."
       }
     ],
     "setup": {
@@ -4564,8 +4571,8 @@
       "name": "Diplomatic Recognition",
       "stake": 2,
       "requirement": "The Diplomat must be defending a Counterattack.",
-      "accepted": "Diplomat: Advance Front Line 1, if able. Accepting player withdraws, then +2 Cards.",
-      "refused": "If the Diplomat wins: Advance Front Line 1 during the Aftermath, if able. No Influence for imposing this Proposal."
+      "accepted": "Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.",
+      "refused": "If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal."
     }
   ],
   "arcaneSymbol": {
@@ -7291,7 +7298,7 @@
               "name": "Fortify",
               "cost": "2 Command",
               "descriptor": "No Action · Aftermath · Win while occupying enemy Territory",
-              "text": "Advance your Front Line by one Territory, if able.",
+              "text": "Capture the Territory you occupy, if able.",
               "classification": "Leader Ability"
             }
           ],
@@ -7401,7 +7408,7 @@
           "classification": "Leader Ability",
           "name": "Hostile Takeover",
           "descriptor": "1 Action · Denouement · After winning as attacker",
-          "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able."
+          "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able."
         },
         {
           "classification": "Resource",

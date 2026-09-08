@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.1**
+**Version 0.7.2 Candidate**
 
 ---
 
@@ -655,6 +655,9 @@ Position and control are separate:
 
 A token may be several Territories beyond its Front Line without granting control of the intervening or occupied Territories.
 
+**Capture and Front Line advancement are different operations.** Capture changes control of the specified Territory. If a direct capture would violate the contiguous Front Line or another rule prevents it, an “if able” instruction does not change control.
+
+**Advance Front Line** changes control of the next opposing Territory immediately beyond that player’s Front Line. It does not mean “capture the Territory occupied by the player” unless that Territory is itself the next opposing Territory beyond the Front Line.
 ### Normal Capture
 
 During the Capture step, if the active player's token is beyond their Front Line, identify the next opponent-controlled Territory immediately beyond that Front Line.
@@ -1253,7 +1256,7 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 > **Repel — 1 Command · No Action · Aftermath · Win as defender:** After the opponent's normal retreat, they retreat one additional Position, if able.
 
-> **Fortify — 2 Command · No Action · Aftermath · Win while occupying enemy Territory:** Advance your Front Line by one Territory, if able.
+> **Fortify — 2 Command · No Action · Aftermath · Win while occupying enemy Territory:** Capture the Territory you occupy, if able.
 
 ## Military-specific rules
 
@@ -1501,9 +1504,9 @@ Proposal cards are physically presented to the receiving player. Accepted and Re
 **Stake:** 2
 **Requirement:** The Diplomat must be defending a Counterattack.
 
-> **Accepted:** Diplomat: Advance Front Line 1, if able. Accepting player withdraws, then +2 Cards.
+> **Accepted:** Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.
 
-> **Refused:** If the Diplomat wins: Advance Front Line 1 during the Aftermath, if able. No Influence for imposing this Proposal.
+> **Refused:** If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal.
 
 ## Diplomat-specific rules
 
@@ -1688,7 +1691,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 **Archetype:** Offensive acquisition, Occupation, and immediate control
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover — 1 Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able.
+> **Hostile Takeover — 1 Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.
 
 ## Financier-specific rules
 

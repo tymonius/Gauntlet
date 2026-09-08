@@ -36,12 +36,14 @@ const TRANSITIONAL_RUNTIME_MARKERS = [
 ];
 
 describe('complete current-game authority', () => {
-  it('is a native, complete v0.7.1 release authority rather than a resolution manifest', () => {
+  it('is a native, complete v0.7.2 candidate authority rather than a resolution manifest', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
-    expect(authority.version).toBe('v0.7.1');
-    expect(authority.displayVersion).toBe('v0.7.1');
-    expect(authority.status).toBe('current-release');
+    expect(authority.version).toBe('v0.7.2-candidate');
+    expect(authority.displayVersion).toBe('v0.7.2 Candidate');
+    expect(authority.status).toBe('release-candidate');
+    expect(authority.provenance.currentDevelopmentInputs.v072TimingAndCaptureCleanup)
+      .toBe('/docs/v0.7.2-timing-and-capture-cleanup.json');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');
     expect(authority.runtimePolicy).toContain('historical source and change documents are provenance only');
 
@@ -429,9 +431,9 @@ describe('complete current-game authority', () => {
     expect(livePublicationVerifier).toContain("replace(/<!--[\\s\\S]*?-->/g, '')");
   });
 
-  it('keeps the maintained Rulebook on the v0.7.1 release identity', () => {
-    expect(rulebook).toContain('**Version 0.7.1**');
-    expect(rulebook).not.toContain('**Version 0.7.1 Candidate**');
+  it('keeps the maintained Rulebook on the v0.7.2 candidate identity', () => {
+    expect(rulebook).toContain('**Version 0.7.2 Candidate**');
+    expect(rulebook).not.toContain('**Version 0.7.1**');
     expect(rulebook).toContain('## Card anatomy');
     expect(rulebook).toContain('Terms occur during Onset');
     expect(rulebook).not.toContain('GENERATED CLEAN V0.6.3');
