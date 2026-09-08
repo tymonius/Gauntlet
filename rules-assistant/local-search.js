@@ -51,6 +51,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["setup", "determine first player", "higher result takes the first turn", "reroll ties"]
   },
   {
+    pattern: /^(?![\s\S]*\b(?:gambits?|tactics?|reserve|aftermath)\b)(?=[\s\S]*\b(?:play|plays|played|playing)\b)(?=[\s\S]*\b(?:discard|discarded|discarding|discard pile)\b)[\s\S]*$/i,
+    aliases: ["playing a card for its action effect", "resolve the action effect", "put the card in the discard pile", "unless it becomes an asset becomes an overlay another destination"]
+  },
+  {
     pattern: /\b(?:cards?|card)\b.*\bdiscard pile\b|\bdiscard pile\b.*\b(?:cards?|card)\b/i,
     aliases: ["playing a card for its action effect", "tactics reserve aftermath"]
   },

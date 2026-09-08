@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T18:56:00.000Z",
+  "updatedAt": "2026-09-08T19:30:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -297,7 +297,21 @@
       "resolvedAt": "2026-09-08T18:56:00.000Z",
       "binding": {
         "pullRequest": 1557,
-        "behaviorRevision": "v071-qa-20260908-1"
+        "commit": "53976b1e25d767e3bb26c4b8be4147b9c5fe1395"
+      }
+    },
+    {
+      "id": "action-card-discard-destination-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "44f5bb3c-dc46-4db8-82c6-6ffb949f4028"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Recognize natural questions about when a played card is discarded and promote the current v0.7.1 Action-card destination rule: resolve the Action effect, then put the card in the Discard Pile unless it becomes an Asset or Overlay or its effect gives another destination, without overriding Gambit or Tactic destination authority.",
+      "resolvedAt": "2026-09-08T19:30:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-2"
       }
     }
   ]
