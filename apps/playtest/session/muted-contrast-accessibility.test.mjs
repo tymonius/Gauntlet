@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const styles = readFileSync('playtest/session/styles.css', 'utf8');
+const styles = readFileSync('apps/playtest/session/styles.css', 'utf8');
 
 function channel(value) {
   const normalized = value / 255;
