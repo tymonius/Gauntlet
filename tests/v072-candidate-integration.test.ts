@@ -5,7 +5,9 @@ import path from 'node:path';
 const root = process.cwd();
 const authority = JSON.parse(fs.readFileSync(path.join(root, 'game-data/current-game.json'), 'utf8'));
 const design = JSON.parse(fs.readFileSync(path.join(root, 'docs/v0.7.2-timing-and-capture-cleanup.json'), 'utf8'));
-const rulebook = fs.readFileSync(path.join(root, 'rulebook/player-facing/current-rulebook.md'), 'utf8');
+const rulebook = fs
+  .readFileSync(path.join(root, 'rulebook/player-facing/current-rulebook.md'), 'utf8')
+  .replace(/<!--\s*RULE-FACT:[^>]*-->/g, '');
 
 const card = (id: string) => authority.gameplay.cards.find((entry: any) => entry.id === id);
 const effect = (id: string, label: string) => card(id)?.effects?.find((entry: any) => entry.label === label)?.text;
