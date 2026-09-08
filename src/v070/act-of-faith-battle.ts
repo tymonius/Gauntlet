@@ -18,11 +18,17 @@ if (!actOfFaithBattleEffect) {
 }
 export const V070_ACT_OF_FAITH_BATTLE_TEXT = actOfFaithBattleEffect.text;
 
+export type V070ActOfFaithAftermathStage =
+  | 'reveal_count'
+  | 'graveyard';
+
 export interface V070PendingActOfFaithAftermath {
   sourceInstanceId: string;
   owner: PlayerId;
   opponent: PlayerId;
   playerId: PlayerId;
+  stage: V070ActOfFaithAftermathStage;
+  maximumRevealCount: number;
   candidateInstanceIds: string[];
 }
 
@@ -90,39 +96,30 @@ export function unresolvedV070ActOfFaithSourcesForPlayer(
   );
 }
 
-export function openV070ActOfFaithAftermathForPlayer(
+export function openV070ActOfFaithAftermathForSource(
   state: V070GameState,
-  owner: PlayerId,
+  sourceInstanceId: string,
 ): boolean {
   const runtime = state.battleRuntime;
   if (!runtime || runtime.stage !== 'aftermath') return false;
   if (runtime.pendingActOfFaithAftermath) return true;
 
-  const sourceInstanceId = unresolvedV070ActOfFaithSourcesForPlayer(
-    state,
-    owner,
-  )[0];
-  if (!sourceInstanceId) return false;
+  const owner = state.cardInstances[sourceInstanceId]?.owner;
+  if (owner !== 'A' && owner !== 'B') {
+    markV070ActOfFaithSourceResolved(state, sourceInstanceId);
+    return false;
+  }
+  if (!unresolvedV070ActOfFaithSourcesForPlayer(state, owner)
+    .includes(sourceInstanceId)) {
+    return false;
+  }
 
   const opponent = otherPlayer(owner);
-  const candidates = state.players[opponent].zones.drawPile.slice(0, 2);
-
-  appendV070Event(state, {
-    type: 'act_of_faith_battle_cards_revealed',
-    actor: owner,
-    visibility: 'public',
-    payload: {
-      sourceInstanceId,
-      sourceCardId: V070_ACT_OF_FAITH_ID,
-      opponent,
-      candidateInstanceIds: [...candidates],
-      candidateCardIds: candidates.map(
-        instanceId => state.cardInstances[instanceId]?.cardId ?? null,
-      ),
-    },
-  });
-
-  if (candidates.length === 0) {
+  const maximumRevealCount = Math.min(
+    2,
+    state.players[opponent].zones.drawPile.length,
+  );
+  if (maximumRevealCount === 0) {
     markV070ActOfFaithSourceResolved(state, sourceInstanceId);
     appendV070Event(state, {
       type: 'act_of_faith_battle_resolved_empty_draw_pile',
@@ -137,10 +134,102 @@ export function openV070ActOfFaithAftermathForPlayer(
     return false;
   }
 
+  runtime.pendingActOfFaithAftermath = {
+    sourceInstanceId,
+    owner,
+    opponent,
+    playerId: owner,
+    stage: 'reveal_count',
+    maximumRevealCount,
+    candidateInstanceIds: [],
+  };
+  appendV070Event(state, {
+    type: 'act_of_faith_battle_reveal_count_pending',
+    actor: owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: V070_ACT_OF_FAITH_ID,
+      opponent,
+      maximumRevealCount,
+    },
+  });
+  return true;
+}
+
+export function resolveV070ActOfFaithRevealCount(
+  state: V070GameState,
+  playerId: PlayerId,
+  revealCount: number,
+): PlayerId | null {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingActOfFaithAftermath;
+  if (!runtime || !pending || pending.stage !== 'reveal_count') {
+    throw new V070GameActionError(
+      'There is no pending Act of Faith reveal-count choice.',
+    );
+  }
+  if (pending.playerId !== playerId || pending.owner !== playerId) {
+    throw new V070GameActionError(
+      'Only the Act of Faith owner may choose how many cards to reveal.',
+    );
+  }
+  if (!Number.isInteger(revealCount)
+    || revealCount < 0
+    || revealCount > pending.maximumRevealCount) {
+    throw new V070GameActionError(
+      `Act of Faith may reveal from zero to ${pending.maximumRevealCount} card(s).`,
+    );
+  }
+
+  if (revealCount === 0) {
+    const owner = pending.owner;
+    const sourceInstanceId = pending.sourceInstanceId;
+    runtime.pendingActOfFaithAftermath = null;
+    markV070ActOfFaithSourceResolved(state, sourceInstanceId);
+    appendV070Event(state, {
+      type: 'act_of_faith_battle_reveal_declined',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId,
+        sourceCardId: V070_ACT_OF_FAITH_ID,
+        opponent: pending.opponent,
+      },
+    });
+    return owner;
+  }
+
+  const candidates = state.players[pending.opponent].zones.drawPile
+    .slice(0, revealCount);
+  if (candidates.length !== revealCount) {
+    throw new V070GameActionError(
+      'The opponent no longer has enough cards on top of their Draw Pile for that Act of Faith choice.',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'act_of_faith_battle_cards_revealed',
+    actor: pending.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: V070_ACT_OF_FAITH_ID,
+      opponent: pending.opponent,
+      candidateInstanceIds: [...candidates],
+      candidateCardIds: candidates.map(
+        instanceId => state.cardInstances[instanceId]?.cardId ?? null,
+      ),
+    },
+  });
+
   if (candidates.length === 1) {
     const [targetInstanceId] = candidates;
-    state.players[opponent].zones.drawPile.shift();
-    state.players[opponent].zones.graveyard.push(targetInstanceId);
+    state.players[pending.opponent].zones.drawPile.shift();
+    state.players[pending.opponent].zones.graveyard.push(targetInstanceId);
+    const owner = pending.owner;
+    const sourceInstanceId = pending.sourceInstanceId;
+    runtime.pendingActOfFaithAftermath = null;
     markV070ActOfFaithSourceResolved(state, sourceInstanceId);
     appendV070Event(state, {
       type: 'act_of_faith_battle_resolved_single_card',
@@ -149,49 +238,47 @@ export function openV070ActOfFaithAftermathForPlayer(
       payload: {
         sourceInstanceId,
         sourceCardId: V070_ACT_OF_FAITH_ID,
-        opponent,
+        opponent: pending.opponent,
         graveyardInstanceId: targetInstanceId,
         graveyardCardId:
           state.cardInstances[targetInstanceId]?.cardId ?? null,
       },
     });
-    return false;
+    return owner;
   }
 
   runtime.pendingActOfFaithAftermath = {
-    sourceInstanceId,
-    owner,
-    opponent,
-    playerId: owner,
+    ...pending,
+    stage: 'graveyard',
     candidateInstanceIds: [...candidates],
   };
   appendV070Event(state, {
     type: 'act_of_faith_battle_graveyard_choice_pending',
-    actor: owner,
+    actor: pending.owner,
     visibility: 'public',
     payload: {
-      sourceInstanceId,
+      sourceInstanceId: pending.sourceInstanceId,
       sourceCardId: V070_ACT_OF_FAITH_ID,
-      opponent,
+      opponent: pending.opponent,
       candidateInstanceIds: [...candidates],
       candidateCardIds: candidates.map(
         instanceId => state.cardInstances[instanceId]?.cardId ?? null,
       ),
     },
   });
-  return true;
+  return null;
 }
 
-export function resolveV070ActOfFaithAftermath(
+export function resolveV070ActOfFaithGraveyardChoice(
   state: V070GameState,
   playerId: PlayerId,
   graveyardInstanceId: string,
 ): PlayerId {
   const runtime = state.battleRuntime;
   const pending = runtime?.pendingActOfFaithAftermath;
-  if (!runtime || !pending) {
+  if (!runtime || !pending || pending.stage !== 'graveyard') {
     throw new V070GameActionError(
-      'There is no pending Act of Faith Aftermath choice.',
+      'There is no pending Act of Faith Graveyard choice.',
     );
   }
   if (pending.playerId !== playerId || pending.owner !== playerId) {
