@@ -15,6 +15,9 @@ import {
 import {
   v070BattleEarlyRevealRecords,
 } from './battle-early-reveal';
+import {
+  pendingV070BattleRevealEffectOrderChoice,
+} from './battle-reveal-order';
 
 function startBattle(): V070GameState {
   let state = createV070StarterGame({
@@ -287,6 +290,20 @@ describe('v0.7.0 Counterworks pre-normal reveal', () => {
     });
 
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.participants.B.advantage).toBe(0);
+    expect(pendingV070BattleRevealEffectOrderChoice(state)).toEqual(
+      expect.objectContaining({
+        playerId: 'B',
+        candidateInstanceIds: expect.arrayContaining([deepCover, second]),
+      }),
+    );
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_battle_reveal_effect_order',
+      playerId: 'B',
+      sourceInstanceId: deepCover,
+    });
+
     expect(state.battleRuntime?.participants.B.advantage).toBe(1);
   });
 
