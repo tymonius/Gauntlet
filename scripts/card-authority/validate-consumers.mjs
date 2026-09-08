@@ -8,7 +8,7 @@ const LIVE_SOURCE_DIRS = Object.freeze([
   'card-reference',
   'deckbuilder',
   'factions',
-  'playtest',
+  'apps/playtest',
   'rulebook',
   'rules-arbiter',
   'scripts',
