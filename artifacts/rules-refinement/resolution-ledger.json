@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T20:20:00.000Z",
+  "updatedAt": "2026-09-08T20:32:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -344,6 +344,24 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Promote the v0.7.1 Golden Rules authority whenever a player asks which instruction controls a genuine specific-versus-general conflict, while retaining the normal battle sequence alongside it for battle-order questions.",
       "resolvedAt": "2026-09-08T20:20:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-3"
+      }
+    },
+    {
+      "id": "onward-battle-movement-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "2207772f-cc40-48e8-8585-7df489cb3d76",
+        "18751949-fcd4-4d29-8786-6bce59190caf"
+      ],
+      "caseIds": [
+        "onward-battle-movement-termination"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Current v0.7.1 retrieval directly supplies Onward's During Movement permission together with the shared rule that movement which begins a battle ends that movement sequence and loses unused movement. The reviewed continuation and post-battle questions are now regression-covered without a new runtime behavior change.",
+      "resolvedAt": "2026-09-08T20:32:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-3"
       }
