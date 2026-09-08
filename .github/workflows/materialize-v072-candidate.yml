@@ -24,6 +24,16 @@ jobs:
           ref: release/v0.7.2-rc1
           fetch-depth: 1
           filter: blob:none
+          sparse-checkout: |
+            package.json
+            game-data
+            docs
+            rulebook
+            scripts
+            tests
+            card-design
+            workers/artwork-authoring
+            .github/workflows
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -52,7 +62,7 @@ jobs:
 
       - name: Verify frozen v0.7.1 release is untouched
         run: |
-          git diff --exit-code HEAD -- releases/v0.7.1
+          test -z "$(git diff --name-only HEAD -- releases/v0.7.1)"
 
       - name: Commit promoted candidate authority
         run: |
