@@ -9,6 +9,7 @@ import {
   viewV070ReembodimentRecoveryForPlayer,
 } from './reembodiment';
 import { pendingV070LandslideAftermath } from './landslide';
+import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
 
 export * from './views-postdraw';
 
@@ -36,10 +37,24 @@ export interface V070LandslideAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070CounterworksPreRevealView {
+  kind:
+    | 'counterworks_source_order'
+    | 'counterworks_target'
+    | 'counterintelligence_pre_reveal'
+    | 'counterworks_replacement';
+  playerId: PlayerId;
+  role: 'gambit' | 'tactic';
+  candidateCount: number;
+  optional: boolean;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
   pendingLandslideAftermath: V070LandslideAftermathView | null;
+  pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -77,11 +92,28 @@ export function viewV070GameForPlayer(
           : {}),
       }
     : null;
+  const preReveal = pendingV070CounterworksPreRevealChoice(state);
+  const pendingCounterworksPreReveal: V070CounterworksPreRevealView | null =
+    preReveal
+      ? {
+          kind: preReveal.kind,
+          playerId: preReveal.playerId,
+          role: preReveal.role,
+          candidateCount: preReveal.candidateInstanceIds.length,
+          optional: preReveal.kind === 'counterworks_replacement',
+          ...(viewer === preReveal.playerId
+            ? {
+                candidateInstanceIds: [...preReveal.candidateInstanceIds],
+              }
+            : {}),
+        }
+      : null;
 
   return {
     ...core,
     pendingWarBondsChoice,
     pendingReembodimentRecovery,
     pendingLandslideAftermath,
+    pendingCounterworksPreReveal,
   };
 }
