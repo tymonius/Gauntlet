@@ -22,10 +22,14 @@ const corpus = buildRulesCorpus({
 });
 
 // Keep this suite deterministic: it exercises retrieval and prompt contracts without model/API calls.
-function augmentedIds(question, history = []) {
+function augmentedSources(question, history = []) {
   const retrievalQuery = contextualQuery(question, history);
   const raw = retrieveRules(corpus, retrievalQuery, { limit: 10, excerptLength: 1300 });
-  return augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
+  return augmentRetrievalForContext(corpus, question, history, raw);
+}
+
+function augmentedIds(question, history = []) {
+  return augmentedSources(question, history).map((source) => source.canonicalId);
 }
 
 describe("v0.7.1 Intelligence Surveillance and Interference", () => {
@@ -63,6 +67,52 @@ describe("v0.7.1 Intelligence Surveillance and Interference", () => {
     });
   }
 
+  test("preserves the reviewed Surveillance -> face-up -> cost follow-up chain", () => {
+    const surveillanceQuestion = "How does Surveillance work?";
+    const surveillanceSources = augmentedSources(surveillanceQuestion);
+    const surveillanceIds = surveillanceSources.map((source) => source.canonicalId);
+    for (const expected of [
+      "rulebook:gambit-surveillance",
+      "rulebook:tactic-surveillance",
+      "rulebook:interference-after-surveillance",
+      "rulebook:direct-interference",
+      "rulebook:intelligence-mirrors"
+    ]) {
+      expect(surveillanceIds).toContain(expected);
+    }
+
+    const surveillanceHistory = [
+      { role: "user", content: surveillanceQuestion },
+      {
+        role: "assistant",
+        content: "Surveillance reveals opposing face-down Gambits or Tactics for Intel and may be followed by Interference."
+      }
+    ];
+    const faceUpQuestion = "What if the commitment is already face up?";
+    const faceUpSources = augmentedSources(faceUpQuestion, surveillanceHistory);
+    const faceUpIds = faceUpSources.map((source) => source.canonicalId);
+    expect(faceUpIds).toContain("rulebook:direct-interference");
+    expect(faceUpIds).toContain("rulebook:interference-after-surveillance");
+    const directAuthority = faceUpSources.find((source) => source.canonicalId === "rulebook:direct-interference");
+    expect(String(directAuthority?.body || "")).toContain("spend 2 Intel to Interfere with that card directly");
+
+    const costHistory = [
+      ...surveillanceHistory,
+      { role: "user", content: faceUpQuestion },
+      {
+        role: "assistant",
+        content: "A face-up opposing commitment may use Direct Interference at the same response timing for 2 Intel."
+      }
+    ];
+    const costQuestion = "Does that change the cost of Interference?";
+    const costSources = augmentedSources(costQuestion, costHistory);
+    const costIds = costSources.map((source) => source.canonicalId);
+    expect(costIds).toContain("rulebook:direct-interference");
+    expect(costIds).toContain("rulebook:interference-after-surveillance");
+    const surveillanceInterference = costSources.find((source) => source.canonicalId === "rulebook:interference-after-surveillance");
+    expect(String(surveillanceInterference?.body || "")).toContain("spend 2 additional Intel per revealed card you remove");
+  });
+
   test("does not pin Intelligence authority after the conversation pivots to another topic", () => {
     const history = [
       { role: "user", content: "Can I use Interference on that Gambit?" },
@@ -73,8 +123,8 @@ describe("v0.7.1 Intelligence Surveillance and Interference", () => {
     expect(retrievalQuery).toBe(question);
     const raw = retrieveRules(corpus, retrievalQuery, { limit: 10, excerptLength: 1300 });
     const rawIds = raw.map((source) => source.canonicalId);
-    const augmentedIds = augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
-    expect(augmentedIds).toEqual(rawIds);
+    const augmented = augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
+    expect(augmented).toEqual(rawIds);
   });
 
   test("prompt preserves the full procedure instead of collapsing Surveillance and Interference", () => {

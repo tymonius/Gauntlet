@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T19:30:00.000Z",
+  "updatedAt": "2026-09-08T19:40:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -201,9 +201,12 @@
       "status": "resolved",
       "rootCause": "answer_completeness",
       "resolutionSurface": "arbiter_retrieval_prompt",
-      "summary": "Force the complete v0.7.1 Surveillance/Interference procedure into Intelligence interaction retrieval and require the Arbiter to preserve prerequisites, separate costs and timings, destinations, replacement/pass choices, revision rights, and no-reopen rules.",
+      "summary": "Force the complete v0.7.1 Surveillance/Interference procedure into Intelligence interaction retrieval and require the Arbiter to preserve prerequisites, separate costs and timings, destinations, replacement/pass choices, revision rights, and no-reopen rules. The exact reviewed Surveillance -> already-face-up commitment -> Interference-cost follow-up chain is regression-covered against Direct Interference and Interference-after-Surveillance authority.",
       "interactionIds": [
-        "121ea8a8-717e-454c-a60f-491ef6f2e52f"
+        "121ea8a8-717e-454c-a60f-491ef6f2e52f",
+        "a3c140c1-c03e-4e7b-8d99-27f45e77455b",
+        "cdb61fb6-d270-4452-a445-e7a0acaf29d4",
+        "137ee7d3-8c41-42bb-a2de-ae051657d078"
       ],
       "resolvedAt": "2026-09-06T08:11:05.017Z",
       "binding": {
