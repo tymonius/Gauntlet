@@ -14,25 +14,15 @@ import {
 } from './accusation-battle';
 import {
   pendingV070ActOfFaithAftermath,
-  resolveV070ActOfFaithAftermath,
+  resolveV070ActOfFaithGraveyardChoice,
+  resolveV070ActOfFaithRevealCount,
 } from './act-of-faith-battle';
-import {
-  continueV070DeferredAftermathAfterResolution,
-  openNextV070DeferredAftermathEffect,
-  pendingV070DeferredAftermathOrder,
-  resolveV070DeferredAftermathOrder,
-  type V070DeferredAftermathEffectKind,
-} from './battle-aftermath';
+import { V070DeferredBattleAftermathPause } from './battle-aftermath';
 
 export * from './battle-engine-pre-accusation';
 
 export type V070BattleAction =
   | V070BaseBattleAction
-  | {
-      type: 'resolve_battle_aftermath_effect_order';
-      playerId: PlayerId;
-      effectKind: V070DeferredAftermathEffectKind;
-    }
   | {
       type: 'resolve_accusation_target';
       playerId: PlayerId;
@@ -44,7 +34,12 @@ export type V070BattleAction =
       destination: 'draw_top' | 'graveyard';
     }
   | {
-      type: 'resolve_act_of_faith_aftermath';
+      type: 'resolve_act_of_faith_reveal_count';
+      playerId: PlayerId;
+      revealCount: number;
+    }
+  | {
+      type: 'resolve_act_of_faith_graveyard';
       playerId: PlayerId;
       graveyardInstanceId: string;
     };
@@ -53,24 +48,6 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  const order = pendingV070DeferredAftermathOrder(state);
-  if (order) {
-    if (action.type !== 'resolve_battle_aftermath_effect_order') {
-      throw new V070GameActionError(
-        'Resolve the pending battle Aftermath effect order before continuing.',
-      );
-    }
-    const next = structuredClone(state) as V070GameState;
-    if (resolveV070DeferredAftermathOrder(
-      next,
-      action.playerId,
-      action.effectKind,
-    )) {
-      return next;
-    }
-    return resumeEstablishedAftermath(next);
-  }
-
   const accusation = pendingV070AccusationAftermath(state);
   if (accusation) {
     if (accusation.stage === 'target') {
@@ -94,48 +71,47 @@ export function reduceV070BattleAction(
       );
     }
     const next = structuredClone(state) as V070GameState;
-    const resolvedOwner = accusation.owner;
-    resolveV070AccusationDestination(
+    const resolvedOwner = resolveV070AccusationDestination(
       next,
       action.playerId,
       action.destination,
     );
-    if (continueV070DeferredAftermathAfterResolution(
-      next,
-      resolvedOwner,
-    )) {
-      return next;
-    }
-    return resumeEstablishedAftermath(next);
+    return resumeAfterDeferredEffect(next, resolvedOwner);
   }
 
   const actOfFaith = pendingV070ActOfFaithAftermath(state);
   if (actOfFaith) {
-    if (action.type !== 'resolve_act_of_faith_aftermath') {
+    if (actOfFaith.stage === 'reveal_count') {
+      if (action.type !== 'resolve_act_of_faith_reveal_count') {
+        throw new V070GameActionError(
+          'Choose how many cards Act of Faith reveals before continuing the Aftermath.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      const resolvedOwner = resolveV070ActOfFaithRevealCount(
+        next,
+        action.playerId,
+        action.revealCount,
+      );
+      return resolvedOwner
+        ? resumeAfterDeferredEffect(next, resolvedOwner)
+        : next;
+    }
+
+    if (action.type !== 'resolve_act_of_faith_graveyard') {
       throw new V070GameActionError(
-        'Resolve the pending Act of Faith choice before continuing the Aftermath.',
+        'Choose which card revealed by Act of Faith enters the Graveyard before continuing the Aftermath.',
       );
     }
     const next = structuredClone(state) as V070GameState;
-    const resolvedOwner = resolveV070ActOfFaithAftermath(
+    const resolvedOwner = resolveV070ActOfFaithGraveyardChoice(
       next,
       action.playerId,
       action.graveyardInstanceId,
     );
-    if (continueV070DeferredAftermathAfterResolution(
-      next,
-      resolvedOwner,
-    )) {
-      return next;
-    }
-    return resumeEstablishedAftermath(next);
+    return resumeAfterDeferredEffect(next, resolvedOwner);
   }
 
-  if (action.type === 'resolve_battle_aftermath_effect_order') {
-    throw new V070GameActionError(
-      'There is no pending battle Aftermath effect-order choice.',
-    );
-  }
   if (action.type === 'resolve_accusation_target') {
     throw new V070GameActionError(
       'There is no pending Accusation target choice.',
@@ -146,34 +122,50 @@ export function reduceV070BattleAction(
       'There is no pending Accusation destination choice.',
     );
   }
-  if (action.type === 'resolve_act_of_faith_aftermath') {
+  if (action.type === 'resolve_act_of_faith_reveal_count') {
     throw new V070GameActionError(
-      'There is no pending Act of Faith Aftermath choice.',
+      'There is no pending Act of Faith reveal-count choice.',
+    );
+  }
+  if (action.type === 'resolve_act_of_faith_graveyard') {
+    throw new V070GameActionError(
+      'There is no pending Act of Faith Graveyard choice.',
     );
   }
 
-  // Deferred battle-card effects resolve while the relevant public zones and
-  // committed battle cards still exist. Resume the established Aftermath
-  // pipeline only after shared-timing ordering has exhausted this layer.
-  if (action.type === 'complete_aftermath') {
-    const staged = structuredClone(state) as V070GameState;
-    if (openNextV070DeferredAftermathEffect(staged)) return staged;
-    return reduceV070BattleActionBase(
-      staged,
-      action as V070BaseBattleAction,
-    );
-  }
-
-  return reduceV070BattleActionBase(
+  return reduceBaseWithDeferredPause(
     state,
     action as V070BaseBattleAction,
   );
 }
 
-function resumeEstablishedAftermath(state: V070GameState): V070GameState {
+function reduceBaseWithDeferredPause(
+  state: V070GameState,
+  action: V070BaseBattleAction,
+): V070GameState {
+  try {
+    return reduceV070BattleActionBase(state, action);
+  } catch (error) {
+    if (!(error instanceof V070DeferredBattleAftermathPause)) throw error;
+    if (error.choicePending) return error.state;
+    return resumeAfterDeferredEffect(error.state, error.owner);
+  }
+}
+
+function resumeAfterDeferredEffect(
+  state: V070GameState,
+  resolvedOwner: PlayerId,
+): V070GameState {
   const battle = state.battle;
-  if (!battle) return state;
-  return reduceV070BattleActionBase(state, {
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime) return state;
+
+  runtime.battleAftermathControlledEffectNextPlayer =
+    resolvedOwner === battle.attacker
+      ? battle.defender
+      : battle.attacker;
+
+  return reduceBaseWithDeferredPause(state, {
     type: 'complete_aftermath',
     playerId: battle.attacker,
   });
