@@ -63,8 +63,8 @@ jobs:
           };
           const game = {
             sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-            sheetSerial: 'G061-SOLO001', rulesVersion: 'v0.6.1', status: 'open', lifecycleState: 'joining',
-            createdAt: '2026-08-02T22:00:00.000Z', closedAt: null,
+            sheetSerial: 'G071-SOLO001', rulesVersion: 'v0.7.1', status: 'open', lifecycleState: 'joining',
+            playMode: 'physical', createdAt: '2026-08-02T22:00:00.000Z', closedAt: null,
             players: [participant], playerCount: 1, resultSubmitted: false,
             responseCount: 0, arbiterQuestionCount: 0, complete: false
           };
@@ -84,7 +84,8 @@ jobs:
                 joinUrl: `${origin}/playtest/tracked/?code=${token}`,
                 reviewUrl: `${origin}/playtest/tracked/?code=${token}&host=host-key-abcdefghijklmnopqrstuvwxyz012345`,
                 participantId: participant.participantId, participantToken: participant.participantToken,
-                seatIndex: 1, faction: participant.faction, leader: participant.leader, createdAt: game.createdAt
+                seatIndex: 1, faction: participant.faction, leader: participant.leader,
+                playMode: game.playMode, createdAt: game.createdAt
               });
             }
             if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
@@ -99,8 +100,10 @@ jobs:
 
           await page.goto(`${origin}/playtest/tracked/`, { waitUntil: 'networkidle' });
           await page.fill('#createName', 'Alice');
+          await page.selectOption('#createPlayMode', 'physical');
           await page.selectOption('#createFaction', 'diplomats');
           await page.selectOption('#createLeader', 'ambassador');
+          await page.fill('#createSelectionReason', 'Negotiation and political leverage interested me.');
           await Promise.all([
             page.waitForURL(new RegExp(`/playtest/tracked/\\?code=${token}`)),
             page.click('#createForm button[type="submit"]')
