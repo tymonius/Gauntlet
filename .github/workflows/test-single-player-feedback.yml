@@ -59,7 +59,8 @@ jobs:
           const participant = {
             participantId: '11111111-1111-4111-8111-111111111111',
             participantToken: 'single-player-private-token-abcdefghijklmnopqrstuvwxyz',
-            displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', responseSubmitted: false
+            displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador',
+            selectionReasonCaptured: true, responseSubmitted: false
           };
           const game = {
             sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
