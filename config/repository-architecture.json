@@ -40,6 +40,12 @@
       "transitional": true,
       "note": "Public accessibility surface."
     },
+    "apps": {
+      "role": "active_application",
+      "target_groups": ["apps"],
+      "transitional": false,
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Playtest."
+    },
     "artifacts": {
       "role": "generated_evidence",
       "target_groups": ["legacy"],
@@ -135,12 +141,6 @@
       "target_groups": ["assets", "tools"],
       "transitional": true,
       "note": "Current reproducible media/composition configuration and export tooling."
-    },
-    "playtest": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current playtest browser surfaces; source/deployment separation is the next application migration model."
     },
     "press": {
       "role": "active_application",

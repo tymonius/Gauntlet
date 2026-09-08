@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T20:20:00.000Z",
+  "updatedAt": "2026-09-08T20:55:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -346,6 +346,58 @@
       "resolvedAt": "2026-09-08T20:20:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-3"
+      }
+    },
+    {
+      "id": "onward-battle-movement-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "2207772f-cc40-48e8-8585-7df489cb3d76",
+        "18751949-fcd4-4d29-8786-6bce59190caf"
+      ],
+      "caseIds": [
+        "onward-battle-movement-termination"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Current v0.7.1 retrieval directly supplies Onward's During Movement permission together with the shared rule that movement which begins a battle ends that movement sequence and loses unused movement. The reviewed continuation and post-battle questions are now regression-covered without a new runtime behavior change.",
+      "resolvedAt": "2026-09-08T20:32:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-3"
+      }
+    },
+    {
+      "id": "good-faith-card-reference-resolution-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "9b1b6d36-4122-4c35-bfb6-6274a36be26a"
+      ],
+      "caseIds": [
+        "good-faith-reference-resolution"
+      ],
+      "resolutionSurface": "arbiter_prompt",
+      "summary": "Add a general ordered-reference rule for multi-object card text so pronouns such as 'that card' and 'it' remain bound to the most recent compatible object introduced by the instruction after already-resolved card movement. Good Faith therefore cannot silently switch those later references back to the source Asset after that Asset has been discarded.",
+      "resolvedAt": "2026-09-08T20:55:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "good-faith-followup-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "7f152009-3543-4637-808c-3e1ececc3a51"
+      ],
+      "caseIds": [
+        "good-faith-followup-continuity"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The production session chronology shows 'What benefit does this give me?' immediately followed the Good Faith exchange despite a stale audit rationale describing a different prior topic. Current contextual retrieval preserves that real Good Faith referent and returns Good Faith as the first authority source; regression coverage now locks the exact continuity behavior.",
+      "resolvedAt": "2026-09-08T20:55:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
       }
     }
   ]

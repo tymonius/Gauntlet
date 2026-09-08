@@ -23,6 +23,9 @@ export const RULE_FACT_MARKER_COUNTS = Object.freeze({
   'cards.inquisition.count': 1,
   'cards.mystics.arcane_count': 1,
   'proposals.count': 1,
+  'military.commandant.fortify.command_cost': 1,
+  'diplomats.diplomatic_recognition.accepted_draw': 1,
+  'financiers.executive.hostile_takeover.action_cost': 1,
 });
 
 function faction(authority, id) {
@@ -31,6 +34,31 @@ function faction(authority, id) {
 
 function cardCount(authority, allegiance) {
   return (authority?.gameplay?.cards || []).filter(card => card?.allegiance === allegiance).length;
+}
+
+function leaderAbility(authority, factionId, leaderId, abilityName) {
+  const leader = faction(authority, factionId)?.leaders?.find(candidate => candidate?.id === leaderId);
+  for (const section of leader?.sections || []) {
+    for (const item of section?.items || []) {
+      if (item?.name === abilityName) return item;
+    }
+    if (section?.name === abilityName) return section;
+  }
+  return null;
+}
+
+function leadingNumber(value, label) {
+  const match = String(value ?? '').trim().match(/^(\d+)\b/);
+  if (!match) throw new Error('Cannot derive numeric Rulebook fact from ' + label + ': ' + value);
+  return Number(match[1]);
+}
+
+function proposalAcceptedDraw(authority, proposalId) {
+  const proposal = (authority?.proposals || []).find(candidate => candidate?.id === proposalId);
+  const accepted = String(proposal?.accepted || '');
+  const match = accepted.match(/\+(\d+)\s+Cards?\b/i);
+  if (!match) throw new Error('Cannot derive accepted draw for Proposal ' + proposalId + ': ' + accepted);
+  return Number(match[1]);
 }
 
 export function ruleNumberWord(value) {
@@ -53,6 +81,18 @@ export function deriveRuleFacts(authority) {
     ),
     'cards.mystics.arcane_count': mysticsCards.filter(card => card?.trait === 'Arcane').length,
     'proposals.count': (authority?.proposals || []).length,
+    'military.commandant.fortify.command_cost': leadingNumber(
+      leaderAbility(authority, 'military', 'commandant', 'Fortify')?.cost,
+      'Commandant Fortify cost',
+    ),
+    'diplomats.diplomatic_recognition.accepted_draw': proposalAcceptedDraw(
+      authority,
+      'diplomatic-recognition',
+    ),
+    'financiers.executive.hostile_takeover.action_cost': leadingNumber(
+      leaderAbility(authority, 'financiers', 'executive', 'Hostile Takeover')?.descriptor,
+      'Executive Hostile Takeover descriptor',
+    ),
   };
 
   const rites = authority?.mystics?.rites;

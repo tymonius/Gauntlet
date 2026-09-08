@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("standalone feedback text contrast", () => {
-  const css = readFileSync("playtest/feedback/styles.css", "utf8");
+  const css = readFileSync("apps/playtest/feedback/styles.css", "utf8");
 
   it("uses the dark tracked muted token for explanatory copy", () => {
     expect(css).toContain(".section-note{margin:0;color:var(--tracked-muted)");

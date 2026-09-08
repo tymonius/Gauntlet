@@ -13,7 +13,7 @@ const PUBLIC_ROOTS = [
   "deckbuilder",
   "faq",
   "factions",
-  "playtest",
+  "apps/playtest",
   "privacy",
   "rulebook",
   "rules-arbiter",

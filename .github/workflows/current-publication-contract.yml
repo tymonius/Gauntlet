@@ -59,7 +59,7 @@ jobs:
             /factions/*/index.html
             /deckbuilder/index.html
             /rules-arbiter/index.html
-            /playtest/**/index.html
+            /apps/playtest/**/index.html
             /site-footer.css
             /site-polish.css
             /analytics-consent.js
@@ -71,8 +71,12 @@ jobs:
             /releases/v0.7.0/**
             /releases/v0.7.1/**
 
-      - name: Materialize relocated historical public routes
+      - name: Materialize relocated public routes
         run: |
+          if [ -d apps/playtest ]; then
+            mkdir -p playtest
+            cp -a apps/playtest/. playtest/
+          fi
           for version in v0.6.2 v0.6.3 v0.7.0; do
             source="legacy/public-versions/$version/index.html"
             if [ -f "$source" ]; then

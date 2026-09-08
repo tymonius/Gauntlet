@@ -5,7 +5,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 
 describe("game-night playtest guide", () => {
   it("publishes distinct host and participant walkthroughs", () => {
-    const html = read("playtest/guide/index.html");
+    const html = read("apps/playtest/guide/index.html");
     expect(html).toContain('data-guide-role="host"');
     expect(html).toContain('data-guide-role="participant"');
     expect(html).toContain("Four pages, four distinct jobs");
@@ -17,8 +17,8 @@ describe("game-night playtest guide", () => {
   });
 
   it("supports role-specific links and print output", () => {
-    const app = read("playtest/guide/app.js");
-    const css = read("playtest/guide/styles.css");
+    const app = read("apps/playtest/guide/app.js");
+    const css = read("apps/playtest/guide/styles.css");
     expect(app).toContain('params.get("role") === "participant"');
     expect(app).toContain("window.print()");
     expect(css).toContain('@media print');
@@ -27,9 +27,9 @@ describe("game-night playtest guide", () => {
   });
 
   it("links the guide from onboarding and table-session loaders", () => {
-    const onboarding = read("playtest/onboarding/app.js");
-    const session = read("playtest/session/app.js");
-    const helper = read("playtest/guide-link.js");
+    const onboarding = read("apps/playtest/onboarding/app.js");
+    const session = read("apps/playtest/session/app.js");
+    const helper = read("apps/playtest/guide-link.js");
     expect(onboarding).toMatch(/guide-link\.js\?v=\d{8}-\d+/);
     expect(session).toMatch(/guide-link\.js\?v=\d{8}-\d+/);
     expect(helper).toContain('role = hostContext ? "host" : "participant"');
@@ -40,8 +40,8 @@ describe("game-night playtest guide", () => {
 
 describe("Host Home game-night event creator", () => {
   it("creates one event through the existing protected session API", () => {
-    const html = read("playtest/host/index.html");
-    const creator = read("playtest/host/create-event.js");
+    const html = read("apps/playtest/host/index.html");
+    const creator = read("apps/playtest/host/create-event.js");
     expect(html).toContain("create-event.css");
     expect(html).toContain("create-event.js");
     expect(html).toContain("Game-night guide");
@@ -54,7 +54,7 @@ describe("Host Home game-night event creator", () => {
   });
 
   it("does not save the facilitator creation key", () => {
-    const creator = read("playtest/host/create-event.js");
+    const creator = read("apps/playtest/host/create-event.js");
     expect(creator).not.toMatch(/localStorage\.setItem\([^\n]*adminToken/);
     expect(creator).toContain('el.eventAdminToken.value = ""');
     expect(creator).toContain("It is not saved in Host Home");

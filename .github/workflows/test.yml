@@ -178,6 +178,8 @@ jobs:
               [[ -z "$match" ]] && continue
               [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
               [[ "$match" == docs/recovery/frozen-scripts/* ]] && continue
+              remaining="${match//apps\/$retired/}"
+              [[ "$remaining" != *"$retired"* ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2
               found=1
             done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)

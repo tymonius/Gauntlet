@@ -44,7 +44,7 @@ describe("v0.7.1 specific-rule precedence retrieval", () => {
     });
   }
 
-  test("behavior revision records the retrieval change", () => {
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260908-3"');
+  test("behavior revision remains versioned without pinning a historical revision", () => {
+    expect(workerSource).toMatch(/export const BEHAVIOR_REVISION = "v071-qa-\d{8}-\d+"/);
   });
 });

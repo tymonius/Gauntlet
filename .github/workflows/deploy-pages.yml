@@ -13,6 +13,7 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
+      - 'apps/playtest/**'
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
@@ -77,7 +78,6 @@ jobs:
             faq
             game-data
             images
-            playtest
             press
             privacy
             releases
@@ -102,6 +102,16 @@ jobs:
 
           git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
             | tar -xf - -C "$site"
+
+          # Maintained application source may live independently from its stable public URL.
+          # Playtest is the first source/deployment-separated app: repository source lives in
+          # apps/playtest/, while the deployed compatibility contract remains /playtest/.
+          source="apps/playtest"
+          target="$site/playtest"
+          test -d "$source"
+          rm -rf "$target"
+          mkdir -p "$target"
+          cp -a "$source/." "$target/"
 
           # Keep historical source under legacy/ while materializing real files at the stable
           # public version URLs without exposing the legacy source boundary itself.
@@ -165,12 +175,13 @@ jobs:
           # Source-only repository roots must never re-enter Pages implicitly. Add a path to
           # public_directories above only when it is intentionally part of the deployed site.
           for excluded in \
-            .github artifacts docs governance legacy media rulebook-design rulebook-production \
+            .github apps artifacts docs governance legacy media rulebook-design rulebook-production \
             scripts src tests workers; do
             test ! -e "$site/$excluded"
           done
 
           test -s "$site/index.html"
+          test -s "$site/playtest/index.html"
           test -s "$site/CNAME"
           test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
           touch "$site/.nojekyll"
@@ -304,6 +315,7 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/playtest/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
           test -s "$SITE_DIR/faction-sheets/index.html"

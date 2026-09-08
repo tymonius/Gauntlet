@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
-const page = read("playtest/analysis/index.html");
-const enhancement = read("playtest/analysis/complete-responses.js");
+const page = read("apps/playtest/analysis/index.html");
+const enhancement = read("apps/playtest/analysis/complete-responses.js");
 
 describe("complete playtest response analysis", () => {
   it("loads a syntactically valid completeness layer before the existing analysis application", () => {

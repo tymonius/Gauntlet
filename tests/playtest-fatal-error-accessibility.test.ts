@@ -2,9 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const surfaces = [
-  ["onboarding", "playtest/onboarding/index.html", "playtest/onboarding/app-core.js"],
-  ["formal session", "playtest/session/index.html", "playtest/session/app-core.js"],
-  ["tracked playtest", "playtest/tracked/index.html", "playtest/tracked/app.js"],
+  ["onboarding", "apps/playtest/onboarding/index.html", "apps/playtest/onboarding/app-core.js"],
+  ["formal session", "apps/playtest/session/index.html", "apps/playtest/session/app-core.js"],
+  ["tracked playtest", "apps/playtest/tracked/index.html", "apps/playtest/tracked/app.js"],
 ] as const;
 
 describe("fatal playtest error accessibility", () => {

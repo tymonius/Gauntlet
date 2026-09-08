@@ -5,15 +5,15 @@ const read = (path: string) => readFileSync(path, "utf8");
 
 describe("playtest Host Home", () => {
   it("loads the shared registry in event and table entry points", () => {
-    expect(read("playtest/onboarding/app.js")).toContain("../host-registry.js");
-    expect(read("playtest/session/app.js")).toContain("../host-registry.js");
+    expect(read("apps/playtest/onboarding/app.js")).toContain("../host-registry.js");
+    expect(read("apps/playtest/session/app.js")).toContain("../host-registry.js");
   });
 
   it("cache-busts organizer entry points and shared navigation layers", () => {
-    const onboardingHtml = read("playtest/onboarding/index.html");
-    const sessionHtml = read("playtest/session/index.html");
-    const onboardingApp = read("playtest/onboarding/app.js");
-    const sessionApp = read("playtest/session/app.js");
+    const onboardingHtml = read("apps/playtest/onboarding/index.html");
+    const sessionHtml = read("apps/playtest/session/index.html");
+    const onboardingApp = read("apps/playtest/onboarding/app.js");
+    const sessionApp = read("apps/playtest/session/app.js");
 
     expect(onboardingHtml).toMatch(/app\.js\?v=\d{8}-\d+/);
     expect(onboardingHtml).not.toContain('<script src="app.js" defer></script>');
@@ -25,8 +25,8 @@ describe("playtest Host Home", () => {
   });
 
   it("provides a dedicated organizer launcher", () => {
-    const html = read("playtest/host/index.html");
-    const app = read("playtest/host/app.js");
+    const html = read("apps/playtest/host/index.html");
+    const app = read("apps/playtest/host/app.js");
     expect(html).toContain("Host Home");
     expect(html).toContain("Event dashboards");
     expect(app).toContain("Open event dashboard");
@@ -35,7 +35,7 @@ describe("playtest Host Home", () => {
   });
 
   it("keeps host credentials out of player links", () => {
-    const registry = read("playtest/host-registry.js");
+    const registry = read("apps/playtest/host-registry.js");
     expect(registry).toContain('participantUrl.searchParams.delete("host")');
     expect(registry).toContain("safeUrl");
   });

@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PLAYTEST_SOURCE = "apps/playtest"
 
 REQUIRED = [
     "rules-assistant/migrations/0003_playtest_sessions.sql",
@@ -18,16 +19,16 @@ REQUIRED = [
     "workers/playtest-sessions/src/index.js",
     "workers/playtest-sessions/src/tracked.js",
     "workers/playtest-sessions/src/analysis.js",
-    "playtest/index.html",
-    "playtest/portal.css",
-    "playtest/sheet/index.html",
-    "playtest/tracked/index.html",
-    "playtest/tracked/app.js",
-    "playtest/tracked/styles.css",
-    "playtest/session/index.html",
-    "playtest/onboarding/index.html",
-    "playtest/guide/index.html",
-    "playtest/player-mat/index.html",
+    f"{PLAYTEST_SOURCE}/index.html",
+    f"{PLAYTEST_SOURCE}/portal.css",
+    f"{PLAYTEST_SOURCE}/sheet/index.html",
+    f"{PLAYTEST_SOURCE}/tracked/index.html",
+    f"{PLAYTEST_SOURCE}/tracked/app.js",
+    f"{PLAYTEST_SOURCE}/tracked/styles.css",
+    f"{PLAYTEST_SOURCE}/session/index.html",
+    f"{PLAYTEST_SOURCE}/onboarding/index.html",
+    f"{PLAYTEST_SOURCE}/guide/index.html",
+    f"{PLAYTEST_SOURCE}/player-mat/index.html",
     "start/index.html",
     "start/app.js",
     "scripts/test_v063_formal_session_e2e.mjs",
@@ -80,7 +81,7 @@ def main() -> int:
         "decisive_cause",
         "selection_reason",
     ], errors)
-    require("playtest/index.html", [
+    require(f"{PLAYTEST_SOURCE}/index.html", [
         "Self-serve playtesting · canonical v0.7.1",
         "Start a self-serve playtest",
         "Together in person",
@@ -88,10 +89,10 @@ def main() -> int:
         'mode=physical',
         'mode=tts',
     ], errors)
-    require("playtest/sheet/index.html", [
+    require(f"{PLAYTEST_SOURCE}/sheet/index.html", [
         "Gauntlet Playtest Sheet",
     ], errors)
-    require("playtest/tracked/index.html", [
+    require(f"{PLAYTEST_SOURCE}/tracked/index.html", [
         'id="createPlayMode"',
         "Together in person — physical tabletop",
         "Remotely — Tabletop Simulator",
@@ -105,7 +106,7 @@ def main() -> int:
         "3790840635",
         "v0.7.1",
     ], errors)
-    require("playtest/tracked/app.js", [
+    require(f"{PLAYTEST_SOURCE}/tracked/app.js", [
         "requestedPlayMode",
         "renderTransport",
         "recordDiagnostic",
@@ -129,22 +130,22 @@ def main() -> int:
     ], errors)
 
     for rel in [
-        "playtest/index.html",
-        "playtest/tracked/index.html",
-        "playtest/session/index.html",
-        "playtest/onboarding/index.html",
-        "playtest/guide/index.html",
-        "playtest/player-mat/index.html",
+        f"{PLAYTEST_SOURCE}/index.html",
+        f"{PLAYTEST_SOURCE}/tracked/index.html",
+        f"{PLAYTEST_SOURCE}/session/index.html",
+        f"{PLAYTEST_SOURCE}/onboarding/index.html",
+        f"{PLAYTEST_SOURCE}/guide/index.html",
+        f"{PLAYTEST_SOURCE}/player-mat/index.html",
     ]:
         visible = re.sub(r"<[^>]+>", " ", read(rel))
         if re.search(r"(?:current|canonical|formal|game-night|play aid)[^\n]{0,60}v0\.6\.[13]", visible, re.I):
             errors.append(f"{rel}: still advertises a v0.6.x identity as current")
     if "pending battle" in read("start/index.html").lower():
         errors.append("start/index.html: still teaches Pending Battle")
-    if "Faction Action" in read("playtest/onboarding/index.html"):
-        errors.append("playtest/onboarding/index.html: still teaches retired Faction Action terminology")
-    if "Defender's Advantage" in read("playtest/onboarding/index.html"):
-        errors.append("playtest/onboarding/index.html: still teaches retired Defender's Advantage terminology")
+    if "Faction Action" in read(f"{PLAYTEST_SOURCE}/onboarding/index.html"):
+        errors.append(f"{PLAYTEST_SOURCE}/onboarding/index.html: still teaches retired Faction Action terminology")
+    if "Defender's Advantage" in read(f"{PLAYTEST_SOURCE}/onboarding/index.html"):
+        errors.append(f"{PLAYTEST_SOURCE}/onboarding/index.html: still teaches retired Defender's Advantage terminology")
 
     session_toml = read("workers/playtest-sessions/wrangler.toml")
     rules_toml = read("rules-assistant/wrangler.toml")
