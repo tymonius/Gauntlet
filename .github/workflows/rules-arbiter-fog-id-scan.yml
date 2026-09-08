@@ -1,0 +1,41 @@
+name: Rules Arbiter Fog ID scan
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-fog-id-scan
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read matching production interaction and local session context
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          echo '--- matching interaction ---'
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+            --remote \
+            --config rules-assistant/wrangler.toml \
+            --json \
+            --command "SELECT id, session_id, sequence_index, created_at, question, game_version, review_status FROM rules_interactions WHERE lower(question) LIKE '%does it depend who owns the territory%' ORDER BY created_at DESC LIMIT 10"
+          echo '--- surrounding session context ---'
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+            --remote \
+            --config rules-assistant/wrangler.toml \
+            --json \
+            --command "WITH target AS (SELECT session_id, sequence_index FROM rules_interactions WHERE lower(question) LIKE '%does it depend who owns the territory%' ORDER BY created_at DESC LIMIT 1) SELECT r.id, r.session_id, r.sequence_index, r.created_at, r.question, r.game_version, r.review_status FROM rules_interactions r JOIN target t ON r.session_id = t.session_id WHERE r.sequence_index BETWEEN t.sequence_index - 3 AND t.sequence_index + 1 ORDER BY r.sequence_index, r.created_at"
