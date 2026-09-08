@@ -1,0 +1,67 @@
+name: Rules Arbiter Defensive Edge probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-defensive-edge-probe
+    paths:
+      - '.github/workflows/rules-arbiter-defensive-edge-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read reviewed conversation without model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/defensive-edge-probe
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, COALESCE(ruling_status_v2, ruling_status) AS ruling_status, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id IN (SELECT session_id FROM rules_interactions WHERE id IN ('476b8f67-9bdf-4364-8d47-add65b67707e','14724479-bfbd-474c-b35c-151fb0483480')) ORDER BY session_id, sequence_index, created_at" > .tmp/defensive-edge-probe/interactions.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ('476b8f67-9bdf-4364-8d47-add65b67707e','14724479-bfbd-474c-b35c-151fb0483480') ORDER BY reviewed_at DESC" > .tmp/defensive-edge-probe/audits.json
+      - name: Probe current deterministic retrieval
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE' > .tmp/defensive-edge-probe/retrieval.json
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json','utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md','utf8');
+          const corpus = buildRulesCorpus({canonicalData,rulebookMarkdown,siteOrigin:'https://gauntlet.run',rulebookBrowserUrl:'https://gauntlet.run/rulebook/',canonicalDataUrl:'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'});
+          const matchingDocs = corpus.documents.filter((d) => /defensive edge/i.test(`${d.title || ''}\n${d.heading || ''}\n${d.body || ''}`)).map((d)=>({id:d.id,title:d.title,body:d.body}));
+          const history = [
+            {role:'user',content:'How does defender advantage work?'},
+            {role:'assistant',content:'Defender advantage affects tied battle totals.',rulingStatus:'explicit'}
+          ];
+          const cases = [
+            {q:'How does defender advantage work?', history:[]},
+            {q:'How does Defensive Edge work?', history:[]},
+            {q:'Does it depend who owns the territory', history},
+            {q:'Does defender advantage depend on who owns the Territory?', history:[]}
+          ];
+          const results = cases.map(({q,history}) => {
+            const query = contextualQuery(q, history);
+            const raw = retrieveRules(corpus, query, {limit:10, excerptLength:1500});
+            const sources = augmentRetrievalForContext(corpus, q, history, raw);
+            return {q,query,sources:sources.map((s,i)=>({rank:i+1,id:s.canonicalId,title:s.title,body:String(s.body||'').slice(0,900)}))};
+          });
+          console.log(JSON.stringify({matchingDocs,results}, null, 2));
+          NODE
+      - name: Upload probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-defensive-edge-probe
+          path: .tmp/defensive-edge-probe
+          retention-days: 1
