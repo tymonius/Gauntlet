@@ -1256,7 +1256,7 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 > **Repel — 1 Command · No Action · Aftermath · Win as defender:** After the opponent's normal retreat, they retreat one additional Position, if able.
 
-> **Fortify — 2 Command · No Action · Aftermath · Win while occupying enemy Territory:** Capture the Territory you occupy, if able.
+> **Fortify — 2<!-- RULE-FACT:military.commandant.fortify.command_cost:number --> Command · No Action · Aftermath · Win while occupying enemy Territory:** Capture the Territory you occupy, if able.
 
 ## Military-specific rules
 
@@ -1504,7 +1504,7 @@ Proposal cards are physically presented to the receiving player. Accepted and Re
 **Stake:** 2
 **Requirement:** The Diplomat must be defending a Counterattack.
 
-> **Accepted:** Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.
+> **Accepted:** Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2<!-- RULE-FACT:diplomats.diplomatic_recognition.accepted_draw:number --> Cards.
 
 > **Refused:** If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal.
 
@@ -1691,7 +1691,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 **Archetype:** Offensive acquisition, Occupation, and immediate control
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover — 1 Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.
+> **Hostile Takeover — 1<!-- RULE-FACT:financiers.executive.hostile_takeover.action_cost:number --> Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.
 
 ## Financier-specific rules
 
