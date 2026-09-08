@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T21:05:00.000Z",
+  "updatedAt": "2026-09-08T22:22:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -413,6 +413,23 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Map the legacy phrase 'defender advantage' and close variants to the current v0.7.1 Defensive Edge authority. This prevents generic dice Advantage from outranking the controlling tie-break rule while leaving ordinary Advantage and double-Advantage questions unchanged.",
       "resolvedAt": "2026-09-08T21:05:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "fog-of-war-ownership-followup-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "14724479-bfbd-474c-b35c-151fb0483480"
+      ],
+      "caseIds": [
+        "fog-of-war-ownership-followup-continuity"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Production session chronology confirms that 'Does it depend who owns the territory' immediately followed 'Explain fog of war'. Current v0.7.1 contextual retrieval keeps Fog of War as the first authority source, and the card explicitly keys its delayed Gambit/Tactic order to the Territory's controller. The exact reviewed continuation is regression-covered without a new runtime behavior change.",
+      "resolvedAt": "2026-09-08T22:22:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
       }
