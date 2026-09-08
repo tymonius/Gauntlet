@@ -19,6 +19,9 @@ import {
   V070_ACT_OF_FAITH_ID,
   registerV070ActOfFaithBattleEffect,
 } from './act-of-faith-battle';
+import {
+  registerV070DeferredBattleAftermathCarrier,
+} from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
 export * from './battle-effects-pre-accusation';
@@ -33,6 +36,12 @@ const accusationHandler: previous.V070BattleEffectHandler = {
       owner,
       commitment.instanceId,
     );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_ACCUSATION_ID,
+    );
   },
 };
 
@@ -45,6 +54,12 @@ const actOfFaithHandler: previous.V070BattleEffectHandler = {
       state,
       owner,
       commitment.instanceId,
+    );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_ACT_OF_FAITH_ID,
     );
   },
 };
