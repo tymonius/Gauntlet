@@ -1,0 +1,31 @@
+name: Rules Arbiter next two reviewed scan
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-next-two-scan
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read exact reviewed cases and local session context
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "WITH targets AS (SELECT id, session_id, sequence_index FROM rules_interactions WHERE id IN ('4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4','cbcae027-954f-4620-a2fc-0cd7164f9762')) SELECT r.id, r.session_id, r.sequence_index, r.created_at, r.question, r.answer, r.game_version, r.ruling_status, r.ruling_status_v2, r.confidence, r.review_status FROM rules_interactions r JOIN targets t ON r.session_id=t.session_id WHERE r.sequence_index BETWEEN t.sequence_index-2 AND t.sequence_index+1 ORDER BY r.session_id, r.sequence_index, r.created_at"
+          echo '--- audits ---'
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT interaction_id, historical_accuracy, current_validity, retrieval_assessment, classification_assessment, designer_review_required, recommended_action, reviewed_against_version FROM rules_interaction_audits WHERE interaction_id IN ('4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4','cbcae027-954f-4620-a2fc-0cd7164f9762') ORDER BY interaction_id, reviewed_at DESC"
