@@ -19,9 +19,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Probe current deterministic retrieval
+      - name: Probe candidate opening-hand alias
         shell: bash
         run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('rules-assistant/local-search.js')
+          text = path.read_text()
+          old = '''  {
+    pattern: /\\b(?:cards?|hand)\\b.*\\bstart\\b|\\bstart\\b.*\\b(?:cards?|hand)\\b/i,
+    aliases: ["setup", "opening hand"]
+  },'''
+          new = '''  {
+    pattern: /(?:\\b(?:cards?|hand)\\b[\\s\\S]{0,80}\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b|\\b(?:start(?:ing)?|opening|begin(?:ning)?)\\b[\\s\\S]{0,80}\\b(?:cards?|hand)\\b|\\bsetup\\b[\\s\\S]{0,80}\\b(?:draw|hand|cards?|keep|discard)\\b)/i,
+    aliases: ["setup", "prepare draw piles opening hands", "draw four cards", "choose one discard", "other three opening hand"]
+  },'''
+          if old not in text:
+              raise SystemExit('candidate replacement anchor not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
           import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
@@ -37,25 +54,31 @@ jobs:
             canonicalDataUrl: 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'
           });
 
-          const probes = [
-            { id: 'starting-draw', question: 'How many cards do I draw to start?', expected: ['rulebook:setup'] },
-            { id: 'starting-hand', question: 'How big is your starting hand?', expected: ['rulebook:setup'] },
-            { id: 'discard-timing', question: 'When does a card go to the discard after being played?', expected: ['rulebook:playing-a-card-for-its-action-effect', 'rulebook:tactic-area'] }
+          const setupId = 'rulebook:complete-rules-2';
+          const positives = [
+            'How many cards do I draw to start?',
+            'How big is your starting hand?',
+            'How many cards are in my opening hand?',
+            'During setup, how many cards do I draw and which ones do I keep?',
+            'How many cards do I begin with?'
           ];
-
           let failed = false;
-          for (const probe of probes) {
-            const query = contextualQuery(probe.question, []);
-            const sources = retrieveRules(corpus, query, { limit: 10, excerptLength: 1300 });
+          for (const question of positives) {
+            const sources = retrieveRules(corpus, contextualQuery(question, []), { limit: 10, excerptLength: 1300 });
             const ids = sources.map((source) => source.canonicalId || source.id);
-            const missing = probe.expected.filter((expected) => !ids.includes(expected));
-            console.log(JSON.stringify({
-              ...probe,
-              query,
-              retrieved: sources.map((source, index) => ({ rank: index + 1, id: source.canonicalId || source.id, title: source.title })),
-              missing
-            }));
-            if (missing.length) failed = true;
+            const rank = ids.indexOf(setupId) + 1;
+            console.log(JSON.stringify({ question, setupRank: rank, top3: ids.slice(0, 3) }));
+            if (rank < 1 || rank > 3) failed = true;
+          }
+
+          for (const question of [
+            'How many cards do I draw on my turn?',
+            'How does starting a Mission work?'
+          ]) {
+            const sources = retrieveRules(corpus, contextualQuery(question, []), { limit: 10, excerptLength: 1300 });
+            const ids = sources.map((source) => source.canonicalId || source.id);
+            console.log(JSON.stringify({ negative: question, top3: ids.slice(0, 3) }));
+            if (ids[0] === setupId) failed = true;
           }
           if (failed) process.exitCode = 2;
           NODE
