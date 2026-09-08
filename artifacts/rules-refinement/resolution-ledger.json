@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T22:22:00.000Z",
+  "updatedAt": "2026-09-08T22:31:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -430,6 +430,23 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Production session chronology confirms that 'Does it depend who owns the territory' immediately followed 'Explain fog of war'. Current v0.7.1 contextual retrieval keeps Fog of War as the first authority source, and the card explicitly keys its delayed Gambit/Tactic order to the Territory's controller. The exact reviewed continuation is regression-covered without a new runtime behavior change.",
       "resolvedAt": "2026-09-08T22:22:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "commandant-repel-command-timing-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "77507537-64d5-4c8d-a8d1-bada21f7fd44"
+      ],
+      "caseIds": [
+        "commandant-repel-command-timing"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Current v0.7.1 retrieval supplies Command and Repel as the first two authority sources and also includes the complete Military rule that directly states Command may be gained during either player's turn and that newly gained Command may pay for an Aftermath Order. The existing explicit-classification prompt contract therefore covers the reviewed Commandant/Repel question; regression coverage locks that behavior without a new runtime change.",
+      "resolvedAt": "2026-09-08T22:31:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
       }
