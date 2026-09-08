@@ -31,7 +31,11 @@
       "artifacts_preserved": true,
       "public_cutover": true,
       "current_package_path": "releases/v0.7.1/",
-      "publication_date": "2026-08-30"
+      "publication_date": "2026-08-30",
+      "publication": {
+        "source_builder": "scripts/build-v071-release-source.mjs",
+        "rulebook_booklet_renderer": "scripts/render-v071-booklet.mjs"
+      }
     }
   }
 }
