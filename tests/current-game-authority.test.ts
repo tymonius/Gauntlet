@@ -40,8 +40,8 @@ describe('complete current-game authority', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
     expect(authority.version).toBe('v0.7.2-candidate');
-    expect(authority.displayVersion).toBe('v0.7.2 Candidate');
-    expect(authority.status).toBe('release-candidate');
+    expect(authority.displayVersion).toBe('v0.7.2-candidate');
+    expect(authority.status).toBe('active-development');
     expect(authority.provenance.currentDevelopmentInputs.v072TimingAndCaptureCleanup)
       .toBe('/docs/v0.7.2-timing-and-capture-cleanup.json');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');

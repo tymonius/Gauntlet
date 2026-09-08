@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "authority": "current-game",
   "version": "v0.7.2-candidate",
-  "displayVersion": "v0.7.2 Candidate",
-  "status": "release-candidate",
+  "displayVersion": "v0.7.2-candidate",
+  "status": "active-development",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",

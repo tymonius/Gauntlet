@@ -27,8 +27,8 @@ function namedText(value: any, name: string, output: string[] = []): string[] {
 describe('v0.7.2 release candidate integration', () => {
   it('promotes current development without modifying the frozen v0.7.1 package', () => {
     expect(authority.version).toBe('v0.7.2-candidate');
-    expect(authority.displayVersion).toBe('v0.7.2 Candidate');
-    expect(authority.status).toBe('release-candidate');
+    expect(authority.displayVersion).toBe('v0.7.2-candidate');
+    expect(authority.status).toBe('active-development');
     expect(authority.provenance.currentDevelopmentInputs.v072TimingAndCaptureCleanup)
       .toBe('/docs/v0.7.2-timing-and-capture-cleanup.json');
     expect(rulebook).toContain('**Version 0.7.2 Candidate**');
