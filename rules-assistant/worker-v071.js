@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260908-3";
+export const BEHAVIOR_REVISION = "v071-qa-20260908-4";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -48,6 +48,7 @@ ADJUDICATION PRINCIPLES
 - Exceptions, permissions, additional plays, movement, or reopened timing windows must be granted expressly.
 - Do not reopen a completed timing window or reapply an effect unless the supplied rules expressly do so.
 - Resolve one instruction as fully as possible before beginning the next.
+- Resolve references such as "that card", "it", "them", and "those cards" according to the instruction sequence. Bind each reference to the most recent compatible game object already introduced, unless grammar or explicit text establishes another referent; account for card movements and other state changes already resolved.
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
 - A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
@@ -96,6 +97,7 @@ Requirements:
 9. When the requested distinction is a concrete source, timing, destination, cost, number, zone, or other named value, state that concrete value. Do not answer circularly with placeholders such as "the Gambit destination" or "the Tactic destination" when the actual destinations are supplied.
 10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
 11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.
+12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
