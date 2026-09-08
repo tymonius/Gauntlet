@@ -19,6 +19,33 @@ export interface V070DeferredBattleAftermathEffectRef {
   sourceInstanceId: string;
 }
 
+/**
+ * The core shared-timing scheduler calls its normal Overlay-placement seam for
+ * the inert carrier record. This typed pause exits before any Overlay behavior
+ * or placement occurs and returns the already-cloned scheduler state to the
+ * public battle reducer.
+ */
+export class V070DeferredBattleAftermathPause extends Error {
+  readonly state: V070GameState;
+  readonly sourceInstanceId: string;
+  readonly owner: PlayerId;
+  readonly choicePending: boolean;
+
+  constructor(
+    state: V070GameState,
+    sourceInstanceId: string,
+    owner: PlayerId,
+    choicePending: boolean,
+  ) {
+    super('Deferred battle Aftermath effect interrupted core resolution.');
+    this.name = 'V070DeferredBattleAftermathPause';
+    this.state = state;
+    this.sourceInstanceId = sourceInstanceId;
+    this.owner = owner;
+    this.choicePending = choicePending;
+  }
+}
+
 export function v070DeferredBattleAftermathEffectRefs(
   state: V070GameState,
 ): V070DeferredBattleAftermathEffectRef[] {
@@ -57,6 +84,28 @@ export function openV070DeferredBattleAftermathEffect(
   }
   throw new V070GameActionError(
     'That card is not a supported deferred battle Aftermath effect.',
+  );
+}
+
+export function pauseV070DeferredBattleAftermathCarrier(
+  state: V070GameState,
+  sourceInstanceId: string,
+): never {
+  const owner = state.cardInstances[sourceInstanceId]?.owner;
+  if (owner !== 'A' && owner !== 'B') {
+    throw new V070GameActionError(
+      'Deferred battle Aftermath source has no valid owner.',
+    );
+  }
+  const choicePending = openV070DeferredBattleAftermathEffect(
+    state,
+    sourceInstanceId,
+  );
+  throw new V070DeferredBattleAftermathPause(
+    state,
+    sourceInstanceId,
+    owner,
+    choicePending,
   );
 }
 
