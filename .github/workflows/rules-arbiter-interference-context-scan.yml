@@ -1,0 +1,37 @@
+name: Rules Arbiter Interference context scan
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-interference-context-scan
+    paths:
+      - '.github/workflows/rules-arbiter-interference-context-scan.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read reviewed conversation without model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/interference-context
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count FROM rules_interactions WHERE session_id = (SELECT session_id FROM rules_interactions WHERE id = '137ee7d3-8c41-42bb-a2de-ae051657d078') ORDER BY sequence_index, created_at" > .tmp/interference-context/conversation.json
+      - name: Upload conversation
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-interference-context
+          path: .tmp/interference-context/conversation.json
+          retention-days: 1
