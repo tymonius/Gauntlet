@@ -1,0 +1,66 @@
+name: Fix v0.7.2 candidate authority identity
+
+on:
+  push:
+    branches:
+      - release/v0.7.2-rc1
+    paths:
+      - .github/workflows/fix-v072-candidate-identity.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout candidate identity inputs
+        uses: actions/checkout@v4
+        with:
+          ref: release/v0.7.2-rc1
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/workflows
+            game-data
+            tests
+
+      - name: Conform candidate identity to current authority contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('game-data/current-game.json'): [
+                  ('  "displayVersion": "v0.7.2 Candidate",', '  "displayVersion": "v0.7.2-candidate",'),
+                  ('  "status": "release-candidate",', '  "status": "active-development",'),
+              ],
+              Path('tests/current-game-authority.test.ts'): [
+                  ("    expect(authority.displayVersion).toBe('v0.7.2 Candidate');", "    expect(authority.displayVersion).toBe('v0.7.2-candidate');"),
+                  ("    expect(authority.status).toBe('release-candidate');", "    expect(authority.status).toBe('active-development');"),
+              ],
+              Path('tests/v072-candidate-integration.test.ts'): [
+                  ("    expect(authority.displayVersion).toBe('v0.7.2 Candidate');", "    expect(authority.displayVersion).toBe('v0.7.2-candidate');"),
+                  ("    expect(authority.status).toBe('release-candidate');", "    expect(authority.status).toBe('active-development');"),
+              ],
+          }
+
+          for path, pairs in replacements.items():
+              text = path.read_text()
+              for old, new in pairs:
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected exactly one occurrence of {old!r}, found {count}')
+                  text = text.replace(old, new)
+              path.write_text(text)
+          PY
+
+      - name: Remove one-shot workflow and commit fix
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          rm .github/workflows/fix-v072-candidate-identity.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game-data/current-game.json tests/current-game-authority.test.ts tests/v072-candidate-integration.test.ts .github/workflows/fix-v072-candidate-identity.yml
+          git commit -m "Conform v0.7.2 candidate identity to authority contract"
+          git push origin HEAD:release/v0.7.2-rc1
