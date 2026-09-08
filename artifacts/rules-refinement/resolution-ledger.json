@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T19:40:00.000Z",
+  "updatedAt": "2026-09-08T19:50:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -313,6 +313,20 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Recognize natural questions about when a played card is discarded and promote the current v0.7.1 Action-card destination rule: resolve the Action effect, then put the card in the Discard Pile unless it becomes an Asset or Overlay or its effect gives another destination, without overriding Gambit or Tactic destination authority.",
       "resolvedAt": "2026-09-08T19:30:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-2"
+      }
+    },
+    {
+      "id": "battle-sequence-state-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "016e3792-4419-4bd3-8ace-2dd16a520d84"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The current v0.7.1 retrieval and prompt path now supplies the Quick Battle Reference, complete Battle Sequence, advantage/disadvantage authority, and Defensive Edge authority for the reviewed post-commitment game-state question. Regression coverage requires whole-sequence reconstruction and preserves the distinction between ordinary advantage on battle dice and Defensive Edge on tied battle totals.",
+      "resolvedAt": "2026-09-08T19:50:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-2"
       }
