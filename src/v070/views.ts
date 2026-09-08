@@ -10,6 +10,7 @@ import {
 } from './reembodiment';
 import { pendingV070LandslideAftermath } from './landslide';
 import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
+import { pendingV070AccusationAftermath } from './accusation-battle';
 
 export * from './views-postdraw';
 
@@ -50,11 +51,23 @@ export interface V070CounterworksPreRevealView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070AccusationAftermathView {
+  stage: 'target' | 'destination';
+  playerId: PlayerId;
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  targetInstanceId?: string;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
   pendingLandslideAftermath: V070LandslideAftermathView | null;
   pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
+  pendingAccusationAftermath: V070AccusationAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -108,6 +121,28 @@ export function viewV070GameForPlayer(
             : {}),
         }
       : null;
+  const accusation = pendingV070AccusationAftermath(state);
+  const pendingAccusationAftermath: V070AccusationAftermathView | null =
+    accusation
+      ? {
+          stage: accusation.stage,
+          playerId: accusation.playerId,
+          owner: accusation.owner,
+          opponent: accusation.opponent,
+          sourceInstanceId: accusation.sourceInstanceId,
+          candidateCount: accusation.candidateInstanceIds.length,
+          ...(accusation.targetInstanceId
+            ? { targetInstanceId: accusation.targetInstanceId }
+            : {}),
+          ...(viewer === accusation.playerId
+            ? {
+                candidateInstanceIds: [
+                  ...accusation.candidateInstanceIds,
+                ],
+              }
+            : {}),
+        }
+      : null;
 
   return {
     ...core,
@@ -115,5 +150,6 @@ export function viewV070GameForPlayer(
     pendingReembodimentRecovery,
     pendingLandslideAftermath,
     pendingCounterworksPreReveal,
+    pendingAccusationAftermath,
   };
 }
