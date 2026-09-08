@@ -1,0 +1,39 @@
+name: Rules Arbiter Deed clarity probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-deed-clarity-probe
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe deterministic v0.7.1 continuity
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json','utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md','utf8');
+          const corpus = buildRulesCorpus({canonicalData,rulebookMarkdown,siteOrigin:'https://gauntlet.run',rulebookBrowserUrl:'https://gauntlet.run/rulebook/',canonicalDataUrl:'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'});
+          const history = [
+            {role:'user',content:'how much do deeds cost?'},
+            {role:'assistant',content:'A Deed costs: min(the number of Deeds you own + 1, 6) + position modifier + buyout premium, with a minimum of 1 Capital. Position modifier: control it −1; occupy it 0; neither control nor occupy it +1. Buyout premium is 0 if unowned; otherwise min(the opposing owner’s Deeds, 6).',rulingStatus:'explicit'}
+          ];
+          for (const q of ['can you explain that more clearly','i mean the deed cost','what does that cost formula mean?']) {
+            const query = contextualQuery(q, history);
+            const raw = retrieveRules(corpus, query, { limit: 10, excerptLength: 1700 });
+            const sources = augmentRetrievalForContext(corpus, q, history, raw);
+            console.log(JSON.stringify({q,query,sources:sources.map((s,i)=>({rank:i+1,id:s.canonicalId,title:s.title,body:String(s.body||'').slice(0,1200)}))}));
+          }
+          NODE
