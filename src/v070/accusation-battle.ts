@@ -34,7 +34,6 @@ declare module './battle-types' {
   interface V070BattleRuntime {
     accusationBattleSourceInstanceIds?: string[];
     resolvedAccusationBattleSourceInstanceIds?: string[];
-    accusationAftermathNextPlayer?: PlayerId | null;
     pendingAccusationAftermath?: V070PendingAccusationAftermath | null;
   }
 }
@@ -79,78 +78,98 @@ export function pendingV070AccusationAftermath(
   return state.battleRuntime?.pendingAccusationAftermath ?? null;
 }
 
-export function openNextV070AccusationAftermathChoice(
+export function unresolvedV070AccusationSourcesForPlayer(
   state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const resolved = new Set(
+    runtime.resolvedAccusationBattleSourceInstanceIds ?? [],
+  );
+  return (runtime.accusationBattleSourceInstanceIds ?? []).filter(
+    instanceId =>
+      !resolved.has(instanceId)
+      && state.cardInstances[instanceId]?.owner === playerId,
+  );
+}
+
+export function openV070AccusationAftermathForSource(
+  state: V070GameState,
+  sourceInstanceId: string,
 ): boolean {
   const runtime = state.battleRuntime;
   if (!runtime || runtime.stage !== 'aftermath') return false;
   if (runtime.pendingAccusationAftermath) return true;
 
-  while (true) {
-    const source = nextUnresolvedSource(state);
-    if (!source) {
-      runtime.accusationAftermathNextPlayer = null;
-      return false;
-    }
+  const owner = state.cardInstances[sourceInstanceId]?.owner;
+  if (owner !== 'A' && owner !== 'B') {
+    markV070AccusationSourceResolved(state, sourceInstanceId);
+    return false;
+  }
+  if (!unresolvedV070AccusationSourcesForPlayer(state, owner)
+    .includes(sourceInstanceId)) {
+    return false;
+  }
 
-    const owner = state.cardInstances[source]?.owner;
-    if (owner !== 'A' && owner !== 'B') {
-      markV070AccusationSourceResolved(state, source);
-      continue;
-    }
-    const opponent = otherPlayer(owner);
-    const candidates = [...state.players[opponent].zones.discardPile];
+  const opponent = otherPlayer(owner);
+  const candidates = [...state.players[opponent].zones.discardPile];
 
-    if (candidates.length === 0) {
-      appendV070Event(state, {
-        type: 'accusation_battle_resolved_empty_discard',
-        actor: owner,
-        visibility: 'public',
-        payload: {
-          sourceInstanceId: source,
-          sourceCardId: V070_ACCUSATION_ID,
-          opponent,
-        },
-      });
-      markV070AccusationSourceResolved(state, source);
-      continue;
-    }
-
-    if (candidates.length === 1) {
-      openDestinationChoice(state, source, owner, opponent, candidates[0]);
-      return true;
-    }
-
-    runtime.pendingAccusationAftermath = {
-      sourceInstanceId: source,
-      owner,
-      opponent,
-      playerId: owner,
-      stage: 'target',
-      candidateInstanceIds: candidates,
-    };
+  if (candidates.length === 0) {
     appendV070Event(state, {
-      type: 'accusation_battle_target_choice_pending',
+      type: 'accusation_battle_resolved_empty_discard',
       actor: owner,
       visibility: 'public',
       payload: {
-        sourceInstanceId: source,
+        sourceInstanceId,
         sourceCardId: V070_ACCUSATION_ID,
         opponent,
-        candidateCount: candidates.length,
       },
     });
-    appendV070Event(state, {
-      type: 'accusation_battle_target_options',
-      actor: owner,
-      visibility: owner,
-      payload: {
-        sourceInstanceId: source,
-        candidateInstanceIds: [...candidates],
-      },
-    });
+    markV070AccusationSourceResolved(state, sourceInstanceId);
+    return false;
+  }
+
+  if (candidates.length === 1) {
+    openDestinationChoice(
+      state,
+      sourceInstanceId,
+      owner,
+      opponent,
+      candidates[0],
+    );
     return true;
   }
+
+  runtime.pendingAccusationAftermath = {
+    sourceInstanceId,
+    owner,
+    opponent,
+    playerId: owner,
+    stage: 'target',
+    candidateInstanceIds: candidates,
+  };
+  appendV070Event(state, {
+    type: 'accusation_battle_target_choice_pending',
+    actor: owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: V070_ACCUSATION_ID,
+      opponent,
+      candidateCount: candidates.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'accusation_battle_target_options',
+    actor: owner,
+    visibility: owner,
+    payload: {
+      sourceInstanceId,
+      candidateInstanceIds: [...candidates],
+    },
+  });
+  return true;
 }
 
 export function resolveV070AccusationTarget(
@@ -192,7 +211,7 @@ export function resolveV070AccusationDestination(
   state: V070GameState,
   playerId: PlayerId,
   destination: 'draw_top' | 'graveyard',
-): void {
+): PlayerId {
   const runtime = state.battleRuntime;
   const pending = runtime?.pendingAccusationAftermath;
   if (!runtime || !pending || pending.stage !== 'destination'
@@ -239,14 +258,7 @@ export function resolveV070AccusationDestination(
   const owner = pending.owner;
   runtime.pendingAccusationAftermath = null;
   markV070AccusationSourceResolved(state, sourceInstanceId);
-  runtime.accusationAftermathNextPlayer = unresolvedSourcesForPlayer(
-    state,
-    otherPlayer(owner),
-  ).length > 0
-    ? otherPlayer(owner)
-    : unresolvedSourcesForPlayer(state, owner).length > 0
-      ? owner
-      : firstUnresolvedPlayer(state);
+  return owner;
 }
 
 export function removeV070AccusationBattleRegistration(
@@ -331,48 +343,6 @@ function markV070AccusationSourceResolved(
   )) {
     runtime.resolvedAccusationBattleSourceInstanceIds.push(sourceInstanceId);
   }
-}
-
-function nextUnresolvedSource(state: V070GameState): string | null {
-  const runtime = state.battleRuntime;
-  if (!runtime) return null;
-  const preferred = runtime.accusationAftermathNextPlayer;
-  if (preferred) {
-    const source = unresolvedSourcesForPlayer(state, preferred)[0];
-    if (source) return source;
-  }
-  const player = firstUnresolvedPlayer(state);
-  if (!player) return null;
-  runtime.accusationAftermathNextPlayer = player;
-  return unresolvedSourcesForPlayer(state, player)[0] ?? null;
-}
-
-function firstUnresolvedPlayer(state: V070GameState): PlayerId | null {
-  const battle = state.battle;
-  if (!battle) return null;
-  if (unresolvedSourcesForPlayer(state, battle.attacker).length > 0) {
-    return battle.attacker;
-  }
-  if (unresolvedSourcesForPlayer(state, battle.defender).length > 0) {
-    return battle.defender;
-  }
-  return null;
-}
-
-function unresolvedSourcesForPlayer(
-  state: V070GameState,
-  playerId: PlayerId,
-): string[] {
-  const runtime = state.battleRuntime;
-  if (!runtime) return [];
-  const resolved = new Set(
-    runtime.resolvedAccusationBattleSourceInstanceIds ?? [],
-  );
-  return (runtime.accusationBattleSourceInstanceIds ?? []).filter(
-    instanceId =>
-      !resolved.has(instanceId)
-      && state.cardInstances[instanceId]?.owner === playerId,
-  );
 }
 
 function otherPlayer(playerId: PlayerId): PlayerId {
