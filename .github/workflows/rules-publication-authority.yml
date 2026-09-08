@@ -1,0 +1,46 @@
+name: Rules publication authority
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'game-data/current-game.json'
+      - 'game-data/current-game-validation.mjs'
+      - 'config/rules-surface-contract.json'
+      - 'scripts/current-game-authority.mjs'
+      - 'scripts/validate-rules-publication-contract.mjs'
+      - 'rulebook/publication/**'
+      - 'rulebook/player-guide/**'
+      - 'rulebook/faction-guides/**'
+      - 'rulebook/comprehensive/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rules-publication-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout rules authority contract inputs
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /config/rules-surface-contract.json
+            /game-data/current-game.json
+            /game-data/current-game-validation.mjs
+            /game-data/art-direction.mjs
+            /scripts/current-game-authority.mjs
+            /scripts/validate-rules-publication-contract.mjs
+            /rulebook/publication/rule-dependencies.mjs
+            /rulebook/player-facing/rule-facts.js
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate rules publication authority
+        run: node scripts/validate-rules-publication-contract.mjs
