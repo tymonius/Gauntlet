@@ -1,0 +1,31 @@
+name: Rules Arbiter clarity follow-up scan
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-clarity-followup-scan
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read reviewed interaction and surrounding session
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, review_status FROM rules_interactions WHERE session_id = 'c4e4657c-7c43-40cd-a668-4aa6d4753aeb' ORDER BY sequence_index, created_at"
+          echo '--- target audit ---'
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT interaction_id, historical_accuracy, current_validity, retrieval_assessment, classification_assessment, designer_review_required, recommended_action, notes FROM rules_interaction_audits WHERE interaction_id = '999db05a-01a7-4d4d-85fc-babf8f75d5a5' ORDER BY reviewed_at DESC LIMIT 1"
