@@ -311,7 +311,7 @@ describe('v0.7.0 Burning at the Stake battle effect', () => {
   });
 
   test('Counterintelligence prevents the entire revealing effect', () => {
-    let { state, hand } = prepareBurningBattle([
+    let { state, source, hand } = prepareBurningBattle([
       V070_BURNING_AT_THE_STAKE_ID,
     ]);
     const counterintelligence = injectCard(
@@ -329,10 +329,7 @@ describe('v0.7.0 Burning at the Stake battle effect', () => {
     expect(state.events.some(event =>
       event.type === 'counterintelligence_prevented_reveal'
       && (event.payload as { sourceInstanceId?: string }).sourceInstanceId
-        === state.cardInstances[Object.keys(state.cardInstances).find(id =>
-          state.cardInstances[id]?.cardId === V070_BURNING_AT_THE_STAKE_ID
-          && state.cardInstances[id]?.owner === 'A'
-        ) ?? '']?.instanceId
+        === source
     )).toBe(true);
     expect(state.events.some(event =>
       event.type === 'burning_at_the_stake_hand_revealed'
