@@ -29,6 +29,11 @@ import {
   V070_BROTHERS_IN_ARMS_ID,
 } from './brothers-in-arms-battle';
 import {
+  V070_BURNING_AT_THE_STAKE_BATTLE_TEXT,
+  V070_BURNING_AT_THE_STAKE_ID,
+  registerV070BurningAtTheStakeBattleEffect,
+} from './burning-at-the-stake-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -97,12 +102,32 @@ const brothersInArmsHandler: previous.V070BattleEffectHandler = {
   apply: () => {},
 };
 
+const burningAtTheStakeHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_BURNING_AT_THE_STAKE_ID,
+  expectedText: V070_BURNING_AT_THE_STAKE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070BurningAtTheStakeBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_BURNING_AT_THE_STAKE_ID,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_ACCUSATION_ID,
   V070_ACT_OF_FAITH_ID,
   V070_BOMBARDMENT_ID,
   V070_BROTHERS_IN_ARMS_ID,
+  V070_BURNING_AT_THE_STAKE_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -112,6 +137,9 @@ export function v070BattleEffectHandler(
   if (cardId === V070_ACT_OF_FAITH_ID) return actOfFaithHandler;
   if (cardId === V070_BOMBARDMENT_ID) return bombardmentHandler;
   if (cardId === V070_BROTHERS_IN_ARMS_ID) return brothersInArmsHandler;
+  if (cardId === V070_BURNING_AT_THE_STAKE_ID) {
+    return burningAtTheStakeHandler;
+  }
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -121,7 +149,8 @@ export function v070BattleRevealEffectClass(
   if (cardId === V070_ACCUSATION_ID
     || cardId === V070_ACT_OF_FAITH_ID
     || cardId === V070_BOMBARDMENT_ID
-    || cardId === V070_BROTHERS_IN_ARMS_ID) {
+    || cardId === V070_BROTHERS_IN_ARMS_ID
+    || cardId === V070_BURNING_AT_THE_STAKE_ID) {
     return 'ordinary';
   }
   return previous.v070BattleRevealEffectClass(cardId);
@@ -176,7 +205,14 @@ export function resolveV070SupportedRevealEffects(
               ?.includes(commitment.instanceId) ?? false,
             handler: actOfFaithHandler,
           }
-        : null;
+        : cardId === V070_BURNING_AT_THE_STAKE_ID
+          ? {
+              registered: state.battleRuntime
+                ?.burningAtTheStakeBattleSourceInstanceIds
+                ?.includes(commitment.instanceId) ?? false,
+              handler: burningAtTheStakeHandler,
+            }
+          : null;
 
     if (cardId === V070_BOMBARDMENT_ID
       || cardId === V070_BROTHERS_IN_ARMS_ID) {
