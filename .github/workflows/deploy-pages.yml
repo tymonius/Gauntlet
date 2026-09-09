@@ -12,11 +12,13 @@ on:
       - 'config/github-release-contract.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
+      - 'images/rules-arbiter/**'
       - 'images/sketches/*.png'
       - 'apps/playtest/**'
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'card-reference/**'
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
@@ -146,9 +148,13 @@ jobs:
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
 
-          # Keep newly added source/alternate artwork in Git without publishing redundant
-          # copies. The 12 production Leader woodcuts and all hero compositions remain public.
-          rm -rf "$site/images/rules-arbiter"
+          # Keep source/alternate Chief Justice artwork in Git without publishing redundant
+          # copies. Preserve the three production WebP assets consumed by public surfaces.
+          rm -f \
+            "$site/images/rules-arbiter/chief-justice.png" \
+            "$site/images/rules-arbiter/gavel-crop.png" \
+            "$site/images/rules-arbiter/tight-crop-left.png" \
+            "$site/images/rules-arbiter/tight-crop.png"
           rm -f \
             "$site/images/chief justice.png" \
             "$site/images/chief-justice-rules-arbiter-alt.webp" \
@@ -223,7 +229,9 @@ jobs:
           release_dir="$RUNNER_TEMP/gauntlet-tts-release"
           rm -rf "$release_dir"
           mkdir -p "$release_dir"
-          gh release download "$TTS_RELEASE_TAG"             --repo "$GITHUB_REPOSITORY"             --dir "$release_dir"
+          gh release download "$TTS_RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$release_dir"
 
           test -s "$release_dir/$TTS_PREVIEW_SAVE"
           count="$(find "$release_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
@@ -241,7 +249,11 @@ jobs:
 
           find "$TTS_RELEASE_DIR" -maxdepth 1 -type f ! -name "$TTS_PREVIEW_SAVE" -exec cp '{}' "$asset_root/" ';'
 
-          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE"           TARGET="$public_root/$TTS_PUBLIC_SAVE"           APPROVED_PREFIX="$TTS_APPROVED_PREFIX"           PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX"           node <<'NODE'
+          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE" \
+          TARGET="$public_root/$TTS_PUBLIC_SAVE" \
+          APPROVED_PREFIX="$TTS_APPROVED_PREFIX" \
+          PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" \
+          node <<'NODE'
           const fs = require('fs');
 
           const source = fs.readFileSync(process.env.SOURCE, 'utf8');
@@ -312,7 +324,9 @@ jobs:
 
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
-          test "$bytes" -lt 950000000
+          # Keep a bounded guard below the 1 GB Pages target while allowing the approved
+          # production Chief Justice assets to ship with the site.
+          test "$bytes" -lt 970000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           test -s "$SITE_DIR/playtest/index.html"
@@ -322,6 +336,12 @@ jobs:
           test -s "$SITE_DIR/v0.6.2/index.html"
           test -s "$SITE_DIR/v0.6.3/index.html"
           test -s "$SITE_DIR/v0.7.0/index.html"
+          for image in \
+            "chief-justice-homepage.webp" \
+            "chief-justice-rules-arbiter-popup.webp" \
+            "chief-justice-rules-arbiter.webp"; do
+            test -s "$SITE_DIR/images/rules-arbiter/$image"
+          done
           for image in \
             "hero sketch.png" \
             "general.png" \
