@@ -8,97 +8,131 @@ on:
       - '.github/workflows/rules-arbiter-targeted-review.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  review:
+  refine:
     runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 10
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      TARGET_ID: 04b09828-aadf-467e-82a8-32ce71f1bfe0
-      OUT_DIR: .tmp/rules-arbiter-targeted-review
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      - name: Verify production D1 credentials
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
-
-      - name: Read targeted production review bundle
+      - name: Apply reviewed clarification fix
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          DB='gauntlet-rules-assistant'
-          CFG='rules-assistant/wrangler.toml'
-          SID="(SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID')"
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from datetime import datetime, timezone
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interactions WHERE session_id = $SID ORDER BY sequence_index" \
-            > "$OUT_DIR/interactions.json"
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one match in {path}, found {count}: {old[:80]!r}")
+              p.write_text(text.replace(old, new, 1))
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY interaction_id, ordinal" \
-            > "$OUT_DIR/sources.json"
+          worker = Path('rules-assistant/worker-v071.js')
+          text = worker.read_text()
+          text = text.replace('export const BEHAVIOR_REVISION = "v071-qa-20260909-8";', 'export const BEHAVIOR_REVISION = "v071-qa-20260909-9";', 1)
+          if 'v071-qa-20260909-9' not in text:
+              raise SystemExit('Behavior revision bump failed')
+          worker.write_text(text)
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" \
-            > "$OUT_DIR/diagnostics.json"
+          replace_once(
+              worker,
+              '12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.\n${ADJUDICATION_GUIDE}',
+              '12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.\n13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.\n${ADJUDICATION_GUIDE}'
+          )
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" \
-            > "$OUT_DIR/audits.json"
+          old_flow = '''      retrieval = augmentRetrievalForContext(corpus, question, history, retrieval);\n      const diagnostics = {\n        questionPlan: null,\n        retrievalQueries: [retrievalQuery],\n        candidateSources: retrieval.map(toDiagnosticSource),\n        reasoningEffort: env.OPENAI_REASONING_EFFORT || "low",\n        verification: null,\n        retryCount: 0,\n        gameState: null,\n        corpusHash: corpus.authoritySetId || ""\n      };\n\n      const modelBudget = env.OPENAI_API_KEY\n'''
+          new_flow = '''      retrieval = augmentRetrievalForContext(corpus, question, history, retrieval);\n      const clarification = buildAmbiguousReferentClarification(question, history, retrieval);\n      const diagnostics = {\n        questionPlan: clarification\n          ? { contextDependent: true, clarificationReason: clarification.reason }\n          : null,\n        retrievalQueries: [retrievalQuery],\n        candidateSources: retrieval.map(toDiagnosticSource),\n        reasoningEffort: env.OPENAI_REASONING_EFFORT || "low",\n        verification: null,\n        retryCount: 0,\n        gameState: null,\n        corpusHash: corpus.authoritySetId || ""\n      };\n\n      if (clarification) {\n        failureStage = "persistence";\n        const result = {\n          answer: clarification.answer,\n          rulingStatus: clarification.rulingStatus,\n          confidence: clarification.confidence,\n          responseType: clarification.responseType,\n          sources: [],\n          executionPath: clarification.executionPath\n        };\n        result.interactionId = await persistSmartInteraction(env, {\n          sessionId,\n          playtestSessionId,\n          sheetSerial,\n          question,\n          answer: clarification.answer,\n          gameVersion: RULES_VERSION,\n          rulingStatus: clarification.rulingStatus,\n          confidence: clarification.confidence,\n          mode: "clarification",\n          model: null,\n          sources: [],\n          diagnostics\n        });\n        return answerResponse(result, origin);\n      }\n\n      const modelBudget = env.OPENAI_API_KEY\n'''
+          if old_flow not in worker.read_text():
+              raise SystemExit('Could not find worker retrieval/diagnostics insertion point')
+          worker.write_text(worker.read_text().replace(old_flow, new_flow, 1))
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" \
-            > "$OUT_DIR/reviews.json"
+          contextual_anchor = '''export function contextualQuery(question, history = []) {\n  const current = String(question || "").trim();\n  if (!current || !Array.isArray(history) || !history.length || !isContextDependentQuestion(current)) {\n    return current;\n  }\n  const prior = history.slice(-2).map((item) => String(item?.content || "").trim()).filter(Boolean).join(" ").slice(-1200);\n  return prior ? `${prior} ${current}` : current;\n}\n\n'''
+          clarification_code = '''function normalizeReferentSubject(value) {\n  return String(value || "")\n    .toLowerCase()\n    .replace(/[’']s\\b/g, "")\n    .replace(/^(?:card|leader|faction|rulebook):\\s*/i, "")\n    .replace(/[^a-z0-9]+/g, " ")\n    .trim();\n}\n\nfunction recentSpecificSubjects(history = [], retrieval = []) {\n  const recent = normalizeReferentSubject(\n    history.slice(-2).map((item) => String(item?.content || "")).join(" ")\n  );\n  if (!recent) return [];\n\n  const generic = new Set([\n    "battle", "battle sequence", "complete rules", "rules", "timing", "action",\n    "movement", "territory", "advantage", "after phase", "aftermath"\n  ]);\n  const subjects = [];\n  const seen = new Set();\n  for (const source of retrieval.slice(0, 8)) {\n    const subject = normalizeReferentSubject(source?.heading || source?.title || "");\n    if (!subject || subject.length < 4 || generic.has(subject) || seen.has(subject)) continue;\n    if (!recent.includes(subject)) continue;\n    seen.add(subject);\n    subjects.push(subject);\n  }\n  return subjects;\n}\n\nexport function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {\n  const current = String(question || "").trim();\n  const match = current.match(/\\b(?:this|that)\\s+(ability|effect|feature)\\b/i);\n  if (!match) return null;\n\n  const subjects = recentSpecificSubjects(history, retrieval);\n  if (subjects.length === 1) return null;\n\n  const noun = String(match[1] || "ability").toLowerCase();\n  return {\n    answer: `Which ${noun} do you mean? Give me its name or the card, Leader, or Faction feature it comes from, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.`,\n    rulingStatus: "unresolved",\n    confidence: "low",\n    responseType: "clarification",\n    executionPath: "deterministic-clarification",\n    reason: "unidentified_followup_referent"\n  };\n}\n\n'''
+          if contextual_anchor not in worker.read_text():
+              raise SystemExit('Could not find contextualQuery anchor')
+          worker.write_text(worker.read_text().replace(contextual_anchor, contextual_anchor + clarification_code, 1))
 
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
-            --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" \
-            > "$OUT_DIR/audit-history.json"
+          replace_once(
+              'rules-assistant/rules-status.js',
+              '  "source_lookup"\n]);',
+              '  "source_lookup",\n  "clarification"\n]);'
+          )
 
-      - name: Assemble targeted review bundle
+          replace_once(
+              'rules-assistant/widget.js',
+              '    inferred: "Rules interpretation complete"\n  }[answer?.rulingStatus] || "AI ruling complete";',
+              '    inferred: "Rules interpretation complete",\n    unresolved: "Clarification needed"\n  }[answer?.rulingStatus] || "AI ruling complete";'
+          )
+          replace_once(
+              'rules-assistant/widget.js',
+              '    unresolved: "Unresolved source lookup",',
+              '    unresolved: "Clarification needed",'
+          )
+
+          for test_path in Path('rules-assistant').glob('*.test.mjs'):
+              test_text = test_path.read_text()
+              if 'v071-qa-20260909-8' in test_text:
+                  test_path.write_text(test_text.replace('v071-qa-20260909-8', 'v071-qa-20260909-9'))
+
+          test_file = Path('rules-assistant/v071-ambiguous-referent-clarification.test.mjs')
+          test_file.write_text('''import { describe, expect, test } from "vitest";\nimport { BEHAVIOR_REVISION, buildAmbiguousReferentClarification } from "./worker-v071.js";\nimport { normalizeCurrentAnswerMode, toLegacyAnswerMode } from "./rules-status.js";\n\nconst reviewedHistory = [\n  { role: "user", content: "I am the defender, I currently have advantage, and both players have committed their Battle Hands. What happens next?" },\n  { role: "assistant", content: "The complete battle sequence is not clear from that phrasing. Defender Advantage matters later when dice are rolled." }\n];\n\nconst reviewedRetrieval = [\n  { canonicalId: "rulebook:defenders-advantage", title: "Defender's Advantage" },\n  { canonicalId: "rulebook:battle-sequence", title: "Battle Sequence" }\n];\n\ndescribe("v0.7.1 ambiguous follow-up clarification", () => {\n  test("the reviewed unidentified-ability follow-up asks for the missing referent instead of speculating", () => {\n    const result = buildAmbiguousReferentClarification(\n      "Can I use this ability right now?",\n      reviewedHistory,\n      reviewedRetrieval\n    );\n    expect(result).not.toBeNull();\n    expect(result?.rulingStatus).toBe("unresolved");\n    expect(result?.responseType).toBe("clarification");\n    expect(result?.executionPath).toBe("deterministic-clarification");\n    expect(result?.answer).toContain("Which ability do you mean?");\n    expect(result?.answer).toContain("current phase or step");\n    expect(result?.answer).not.toMatch(/Intelligence|Surveillance|Interference/i);\n  });\n\n  test("a single clearly named subject in the immediate exchange remains eligible for ordinary follow-up resolution", () => {\n    const history = [\n      { role: "user", content: "How does Transmutation work?" },\n      { role: "assistant", content: "Transmutation may be used before dice are rolled in a battle." }\n    ];\n    const retrieval = [\n      { canonicalId: "rulebook:transmutation", title: "Transmutation" }\n    ];\n    expect(buildAmbiguousReferentClarification("Can I use this ability right now?", history, retrieval)).toBeNull();\n  });\n\n  test("self-contained questions are not diverted into clarification", () => {\n    expect(buildAmbiguousReferentClarification(\n      "Can I use Transmutation before dice are rolled?",\n      reviewedHistory,\n      reviewedRetrieval\n    )).toBeNull();\n  });\n\n  test("clarification is a first-class current answer mode while remaining legacy compatible", () => {\n    expect(normalizeCurrentAnswerMode("clarification")).toBe("clarification");\n    expect(toLegacyAnswerMode("clarification")).toBe("ai");\n    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260909-9");\n  });\n});\n''')
+
+          ledger_path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          ledger = json.loads(ledger_path.read_text())
+          entry_id = 'ambiguous-followup-referent-clarification-v071'
+          if not any(entry.get('id') == entry_id for entry in ledger.get('entries', [])):
+              now = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+              ledger.setdefault('entries', []).append({
+                  'id': entry_id,
+                  'status': 'resolved',
+                  'rootCause': 'classification',
+                  'interactionIds': ['04b09828-aadf-467e-82a8-32ce71f1bfe0'],
+                  'caseIds': ['unidentified-ability-followup-clarification'],
+                  'resolutionSurface': 'arbiter_context_clarification',
+                  'summary': 'A terse follow-up such as “Can I use this ability right now?” now stops before model use when the immediate exchange does not identify exactly one plausible named subject. The Arbiter asks for the missing ability/effect/feature and relevant timing state instead of speculating about unrelated factions or mechanics. A single clearly named subject still flows through normal contextual retrieval.',
+                  'resolvedAt': now,
+                  'binding': {'behaviorRevision': 'v071-qa-20260909-9'}
+              })
+              ledger['updatedAt'] = now
+              ledger_path.write_text(json.dumps(ledger, indent=2) + '\n')
+          PY
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run focused Rules Arbiter tests
+        run: |
+          npx vitest run \
+            rules-assistant/v071-ambiguous-referent-clarification.test.mjs \
+            rules-assistant/v071-battle-card-replacement-retrieval.test.mjs \
+            rules-assistant/v071-short-counterfactual-continuity.test.mjs \
+            rules-assistant/v071-strategic-withdrawal-review.test.mjs
+          node scripts/validate-rules-refinement-source-first.mjs
+
+      - name: Remove review probe and commit refinement
         shell: bash
         run: |
-          node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
-          const dir = process.env.OUT_DIR;
-          const rows = (name) => {
-            const parsed = JSON.parse(readFileSync(`${dir}/${name}.json`, 'utf8'));
-            return (Array.isArray(parsed) ? parsed : [parsed]).flatMap((block) => Array.isArray(block?.results) ? block.results : []);
-          };
-          const bundle = {
-            schema: 'gauntlet.rules-arbiter-targeted-review.v1',
-            targetInteractionId: process.env.TARGET_ID,
-            generatedAt: new Date().toISOString(),
-            interactions: rows('interactions'),
-            sources: rows('sources'),
-            diagnostics: rows('diagnostics'),
-            audits: rows('audits'),
-            reviews: rows('reviews'),
-            auditHistory: rows('audit-history')
-          };
-          if (!bundle.interactions.some((item) => item.id === process.env.TARGET_ID)) {
-            throw new Error(`Target interaction ${process.env.TARGET_ID} was not found.`);
-          }
-          writeFileSync(`${dir}/review-bundle.json`, `${JSON.stringify(bundle, null, 2)}\n`, 'utf8');
-          console.log(`Targeted review bundle assembled: ${bundle.interactions.length} conversation turns, ${bundle.sources.length} source rows, ${bundle.diagnostics.length} diagnostics rows, ${bundle.audits.length} audit rows.`);
-          NODE
-
-      - name: Upload targeted review bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: rules-arbiter-targeted-review-04b09828
-          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
-          if-no-files-found: error
-          retention-days: 1
+          set -euo pipefail
+          rm .github/workflows/rules-arbiter-targeted-review.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant artifacts/rules-refinement/resolution-ledger.json .github/workflows/rules-arbiter-targeted-review.yml
+          git diff --cached --check
+          git commit -m "Fix ambiguous Rules Arbiter follow-up clarification"
+          git push origin HEAD:rules-arbiter-review-04b09828
