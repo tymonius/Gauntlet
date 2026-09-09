@@ -12,6 +12,9 @@ import { pendingV070LandslideAftermath } from './landslide';
 import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
 import { pendingV070AccusationAftermath } from './accusation-battle';
 import { pendingV070ActOfFaithAftermath } from './act-of-faith-battle';
+import {
+  pendingV070BrothersInArmsAdditionalTactic,
+} from './brothers-in-arms-battle';
 
 export * from './views-postdraw';
 
@@ -74,6 +77,14 @@ export interface V070ActOfFaithAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070BrothersInArmsAdditionalTacticView {
+  playerId: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  optional: true;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
@@ -81,6 +92,8 @@ export type V070GameView = V070PostDrawGameView & {
   pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
   pendingAccusationAftermath: V070AccusationAftermathView | null;
   pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null;
+  pendingBrothersInArmsAdditionalTactic:
+    V070BrothersInArmsAdditionalTacticView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -175,6 +188,23 @@ export function viewV070GameForPlayer(
             : {}),
         }
       : null;
+  const brothersInArms = pendingV070BrothersInArmsAdditionalTactic(state);
+  const pendingBrothersInArmsAdditionalTactic:
+    V070BrothersInArmsAdditionalTacticView | null = brothersInArms
+      ? {
+          playerId: brothersInArms.playerId,
+          sourceInstanceId: brothersInArms.sourceInstanceId,
+          candidateCount: brothersInArms.candidateInstanceIds.length,
+          optional: true,
+          ...(viewer === brothersInArms.playerId
+            ? {
+                candidateInstanceIds: [
+                  ...brothersInArms.candidateInstanceIds,
+                ],
+              }
+            : {}),
+        }
+      : null;
 
   return {
     ...core,
@@ -184,5 +214,6 @@ export function viewV070GameForPlayer(
     pendingCounterworksPreReveal,
     pendingAccusationAftermath,
     pendingActOfFaithAftermath,
+    pendingBrothersInArmsAdditionalTactic,
   };
 }
