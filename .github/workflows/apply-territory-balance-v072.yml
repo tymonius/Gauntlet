@@ -102,6 +102,10 @@ jobs:
 
           starters.version = 'v0.7.2-candidate';
           starters.status = 'Active v0.7.2-candidate starter set';
+          starters.purpose = starters.purpose.replace(
+            'Recommended v0.7.1 starter Decks',
+            'Recommended v0.7.2-candidate starter Decks'
+          );
           starters.optimizationPolicy.status = 'active-for-v0.7.2-candidate';
           starters.approval.status = 'approved-for-v0.7.2-candidate';
           fs.writeFileSync(path, JSON.stringify(game, null, 2) + '\n');
@@ -113,11 +117,13 @@ jobs:
             ["expect(authority.starterDecks.version).toBe('v0.7.1');", "expect(authority.starterDecks.version).toBe('v0.7.2-candidate');"],
             ["expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');", "expect(authority.starterDecks.status).toBe('Active v0.7.2-candidate starter set');"],
             ["expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');", "expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2-candidate');"],
-            ["expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');", "expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');"]
+            ["expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');", "expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');"],
+            ["// Historical source paths remain provenance; active release identity must not.", "// Historical source paths remain provenance; active starter identity must not be stale."],
+            ["})).not.toMatch(/v0\\.6\\.4|v0\\.6\\.3/i);", "})).not.toMatch(/v0\\.7\\.1|v0\\.6\\.4|v0\\.6\\.3/i);"]
           ];
           for (const [from, to] of replacements) {
-            if (!test.includes(from)) throw new Error(`Starter contract text not found: ${from}`);
-            test = test.replace(from, to);
+            if (test.includes(from)) test = test.replace(from, to);
+            else if (!test.includes(to)) throw new Error(`Starter contract text not found: ${from}`);
           }
           fs.writeFileSync(testPath, test);
           NODE
@@ -131,5 +137,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add game-data/current-game.json tests/current-game-authority.test.ts
           git diff --cached --exit-code && exit 0
-          git commit -m "Rebalance Territories and starter choices"
+          git commit -m "Synchronize v0.7.2 starter authority metadata"
           git push origin HEAD:balance/territory-pass-v072
