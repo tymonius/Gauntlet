@@ -19,6 +19,14 @@ jobs:
           ref: balance/territory-pass-v072
           fetch-depth: 1
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Update Territory authority and starter choices
         run: |
           node <<'NODE'
@@ -97,7 +105,7 @@ jobs:
           NODE
 
       - name: Validate current authority
-        run: node --test tests/current-game-authority.test.ts
+        run: npx vitest run tests/current-game-authority.test.ts
 
       - name: Commit Territory and starter changes
         run: |
