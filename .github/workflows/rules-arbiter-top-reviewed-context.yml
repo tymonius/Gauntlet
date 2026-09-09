@@ -1,0 +1,46 @@
+name: Rules Arbiter top reviewed context
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-reviewed-backlog-refresh-20260909
+    paths:
+      - '.github/workflows/rules-arbiter-top-reviewed-context.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read top reviewed conversations without model calls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/top-reviewed-context
+          IDS="'cdbf21bb-83b7-479c-bca4-e303a0c25b1e','fcd97287-272d-4a8c-8c1c-5eaa8727cbff','b2bde472-270d-4b6e-82c2-7ab6b92b58f3','332e9263-826f-448b-8ab3-4fcaa1edd90c'"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, COALESCE(ruling_status_v2, ruling_status) AS ruling_status, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id IN (SELECT session_id FROM rules_interactions WHERE id IN ($IDS)) ORDER BY session_id, sequence_index, created_at" > .tmp/top-reviewed-context/interactions.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($IDS) ORDER BY interaction_id, reviewed_at DESC" > .tmp/top-reviewed-context/audits.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($IDS) ORDER BY interaction_id, created_at DESC" > .tmp/top-reviewed-context/diagnostics.json
+      - name: Print context
+        shell: bash
+        run: |
+          echo '=== INTERACTIONS ==='
+          cat .tmp/top-reviewed-context/interactions.json
+          echo '=== AUDITS ==='
+          cat .tmp/top-reviewed-context/audits.json
+          echo '=== DIAGNOSTICS ==='
+          cat .tmp/top-reviewed-context/diagnostics.json
+      - name: Upload context
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-top-reviewed-context
+          path: .tmp/top-reviewed-context
+          retention-days: 1
