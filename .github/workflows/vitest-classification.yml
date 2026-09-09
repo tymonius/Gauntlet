@@ -1,0 +1,56 @@
+name: Maintained Vitest Gate
+
+on:
+  pull_request:
+    paths:
+      - 'vitest.config.ts'
+      - 'vitest.discovered.config.ts'
+      - 'tests/vitest-quarantine.json'
+      - 'scripts/validate-vitest-classification.mjs'
+  push:
+    branches:
+      - main
+    paths:
+      - 'vitest.config.ts'
+      - 'vitest.discovered.config.ts'
+      - 'tests/vitest-quarantine.json'
+      - 'scripts/validate-vitest-classification.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  maintained-vitest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate test classification
+        run: node scripts/validate-vitest-classification.mjs
+
+      - name: Run maintained Vitest suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx vitest run 2>&1 | tee vitest-output.log
+
+      - name: Upload Vitest failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maintained-vitest-failure-log
+          path: vitest-output.log
+          if-no-files-found: warn
+          retention-days: 3

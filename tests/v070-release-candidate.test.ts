@@ -173,7 +173,7 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
     expect(homepage).toContain('<h3>v0.7.1 Release</h3>');
     expect(startPage).toContain('aria-label="Current playtest edition v0.7.1"');
-    expect(cardReferencePage).toContain('<title>Gauntlet v0.7.1 Card Reference</title>');
+    expect(cardReferencePage).toContain('<title>Gauntlet Card Reference</title>');
     expect(cardReferencePage).toContain('aria-label="Current playtest edition v0.7.1"');
     expect(deckbuilderPage).toContain('<title>Gauntlet v0.7.1 Deckbuilder</title>');
     expect(deckbuilderPage).toContain('aria-label="Current playtest edition v0.7.1"');

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "date": "2026-09-09",
+    "discoveredTestFiles": 573,
+    "legacyTestFiles": 156,
+    "quarantinedNonLegacyTestFiles": 57,
+    "maintainedTestFiles": 360,
+    "note": "Baseline captured while repairing PR #1611. The all-discovered run had 377 passing files and 196 failing files; 139 failures were under legacy/ and the remaining 57 are classified below instead of being silently ignored."
+  },
+  "groups": [
+    {
+      "id": "rules-arbiter-refactor-drift",
+      "reason": "Rules Arbiter / Chief Justice tests whose literal workflow, markup, or interaction assertions predate the current refactor. Rehabilitate against current behavior before removing from quarantine.",
+      "files": [
+        "rules-assistant/busy-focus-accessibility.test.mjs",
+        "rules-assistant/reliable-worker.test.mjs",
+        "rules-assistant/v071-corpus-sync-guard.test.mjs",
+        "rules-assistant/widget-accessibility.test.mjs",
+        "tests/homepage-chief-justice.test.ts",
+        "tests/rules-arbiter-live-qa-transport.test.ts",
+        "tests/rules-arbiter-live-qa-workflow.test.ts"
+      ]
+    },
+    {
+      "id": "release-version-transition-drift",
+      "reason": "Tests still pinned to v0.7.0/v0.7.1-era publication or presentation contracts while the current authority has moved into the v0.7.2 candidate cycle. Update the intended current contract before re-enabling.",
+      "files": [
+        "tests/current-public-faction-overviews.test.ts",
+        "tests/current-rulebook-player-experience.test.ts",
+        "tests/current-rulebook-source.test.ts",
+        "tests/deckbuilder-current-leader-print.test.ts",
+        "tests/public-faction-pages.test.ts",
+        "tests/reference-card-universal-and-title-fit.test.ts",
+        "tests/rulebook-ruleset-toggle.test.ts",
+        "tests/tts-card-render-authority.test.ts",
+        "tests/tts-current-release.test.ts",
+        "tests/tts-v071-candidate-qa.test.ts"
+      ]
+    },
+    {
+      "id": "removed-surface-or-fixture",
+      "reason": "Tests that currently fail before exercising an assertion because they read files or public/playtest surfaces that were removed, renamed, or moved during repository cleanup. Decide whether to retarget or formally retire each test.",
+      "files": [
+        "tests/card-art-lightbox.test.ts",
+        "tests/current-card-catalog-provenance.test.ts",
+        "tests/current-territory-authority-propagation.test.ts",
+        "tests/developer-table-accessibility.test.ts",
+        "tests/faction-guide-label-in-name.test.ts",
+        "tests/faction-guide-link-purpose.test.ts",
+        "tests/inquisition-canonical-text-color.test.ts",
+        "tests/player-facing-terminology.test.ts",
+        "tests/proposal-card-design.test.ts",
+        "tests/public-focus-contrast.test.ts",
+        "tests/public-static-accessibility-contract.test.ts",
+        "tests/reduced-motion-accessibility.test.ts",
+        "tests/residual-public-focus-contrast.test.ts",
+        "tests/scrollable-table-keyboard-access.test.ts",
+        "tests/v062-published-player-surfaces.test.ts",
+        "tests/v063-last-stand-language.test.ts",
+        "tests/v064-rules-arbiter-proposals.test.ts",
+        "tests/v064-rules-arbiter-territories.test.ts",
+        "tests/v064-territory-source.test.ts"
+      ]
+    },
+    {
+      "id": "current-contract-assertion-drift",
+      "reason": "Non-legacy tests that reach current files but assert implementation details, copy, asset paths, or presentation contracts that no longer match the repository. These remain visible debt rather than defining the maintained gate.",
+      "files": [
+        "tests/artwork-canonical-divergence.test.ts",
+        "tests/capital-ledger-production.test.ts",
+        "tests/card-back-design.test.ts",
+        "tests/card-reference-component-integration.test.ts",
+        "tests/current-player-site-integrity.test.ts",
+        "tests/deckbuilder-component-render-parity.test.ts",
+        "tests/deckbuilder-header-width.test.ts",
+        "tests/deckbuilder-print-pipeline.test.ts",
+        "tests/deckbuilder-print-request.test.ts",
+        "tests/deckbuilder-production-print.test.ts",
+        "tests/deckbuilder-territory-preview.test.ts",
+        "tests/deed-card-design.test.ts",
+        "tests/deed-title-overhang.test.ts",
+        "tests/faction-deckbuilder-handoff.test.ts",
+        "tests/faction-feature-card-taxonomy.test.ts",
+        "tests/favicon.test.ts",
+        "tests/leader-card-design.test.ts",
+        "tests/military-command-tracker-label.test.ts",
+        "tests/start-public-theme.test.ts",
+        "tests/starter-handoff-faction-accent.test.ts",
+        "tests/tracker-card-layout.test.ts"
+      ]
+    }
+  ]
+}
