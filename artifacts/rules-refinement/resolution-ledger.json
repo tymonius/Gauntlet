@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T04:19:58.968Z",
+  "updatedAt": "2026-09-09T04:51:34.345Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -148,7 +148,8 @@
         "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
         "6372e467-23a7-420e-8717-4685d50226e5",
         "487240d8-48e2-4936-b840-06307d498211",
-        "4506c963-531c-46c5-880f-7b7027824878"
+        "4506c963-531c-46c5-880f-7b7027824878",
+        "cdbf21bb-83b7-479c-bca4-e303a0c25b1e"
       ],
       "caseIds": [
         "scope-strategy-lore-costume-version-history"
