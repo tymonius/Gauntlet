@@ -25,6 +25,7 @@ on:
       - 'legacy/public-versions/v0.7.0/**'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
       - 'scripts/current-game-authority.mjs'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
