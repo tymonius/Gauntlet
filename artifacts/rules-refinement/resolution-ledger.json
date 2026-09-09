@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T04:07:05.322Z",
+  "updatedAt": "2026-09-09T04:19:58.968Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -498,6 +498,23 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Promote current v0.7.1 Tiebreak Roll authority when battle-tie questions describe the procedure as a reroll rather than naming it. The current rule treats the Tiebreak Roll as a separate sudden-death roll: advantage, disadvantage, card effects, numerical modifiers, and previous battle totals do not apply unless a rule expressly modifies a Tiebreak Roll. Setup first-player tie rerolls remain on setup authority.",
       "resolvedAt": "2026-09-09T04:07:05.322Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-5"
+      }
+    },
+    {
+      "id": "rite-of-crossing-completion-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4"
+      ],
+      "caseIds": [
+        "rite-of-crossing-completion"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Current v0.7.1 retrieval returns the complete Rite of Crossing authority first for the reviewed completion question. The written rules directly state the next-turn completion condition, interruption/reset behavior, no same-turn completion rule, and paid-cost handling, so the answer is explicit rather than provisional.",
+      "resolvedAt": "2026-09-09T04:19:58.968Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-5"
       }
