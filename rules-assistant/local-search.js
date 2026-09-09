@@ -59,6 +59,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["Tiebreak Roll", "separate sudden-death procedure", "do not apply advantage disadvantage card effects numerical modifiers previous battle totals", "reroll further ties"]
   },
   {
+    pattern: /(?=[\s\S]*\b(?:both|two|multiple|several)\b)(?=[\s\S]*\beffects?\b)(?=[\s\S]*\b(?:one after (?:the )?other|same (?:time|timing)|in what order|sequentially)\b)/i,
+    aliases: ["Shared timing", "multiple controlled effects would apply at the same time", "each player chooses the order of effects they control", "continue alternating until no effects remain at that timing"]
+  },
+  {
     pattern: /^(?![\s\S]*\b(?:gambits?|tactics?|reserve|aftermath)\b)(?=[\s\S]*\b(?:play|plays|played|playing)\b)(?=[\s\S]*\b(?:discard|discarded|discarding|discard pile)\b)[\s\S]*$/i,
     aliases: ["playing a card for its action effect", "resolve the action effect", "put the card in the discard pile", "unless it becomes an asset becomes an overlay another destination"]
   },
