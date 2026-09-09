@@ -3,7 +3,7 @@ import { buildOutOfScopeRuling, isClearlyOutOfScopeQuestion } from "./rules-stat
 import { BEHAVIOR_REVISION, RULES_VERSION } from "./worker-v071.js";
 import { V071_VERSION_LABEL } from "./v071-public-corpus.js";
 
-export const V071_SCOPE_PRECHECK_REVISION = "v071-scope-20260905-1";
+export const V071_SCOPE_PRECHECK_REVISION = "v071-scope-20260909-2";
 
 const CURRENT_RULE_PATHS = new Set([
   "/rules",

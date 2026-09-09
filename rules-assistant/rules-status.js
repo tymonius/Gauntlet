@@ -66,7 +66,10 @@ const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(strategy|deck|build) recommendation\b/i,
   /\bwho should i play\b/i,
   /\b(?:what(?:'s| is)? changed|what changed|changes? since)\b[\s\S]*\b(?:version|v?\d+\.\d+)\b/i,
-  /\b(?:compare|difference between)\b[\s\S]*\bv?\d+\.\d+\b/i
+  /\b(?:compare|difference between)\b[\s\S]*\bv?\d+\.\d+\b/i,
+  /\b(?:will there be|are there plans? for|is there (?:an?|any) plan for|when is|when will)\b[\s\S]{0,120}\b(?:expansions?|roadmap)\b/i,
+  /\b(?:next|future|upcoming|planned)\s+(?:expansion|release)\b/i,
+  /\b(?:expansions?|development|release) roadmap\b/i
 ];
 
 export function isClearlyOutOfScopeQuestion(question) {
@@ -77,7 +80,7 @@ export function isClearlyOutOfScopeQuestion(question) {
 export function buildOutOfScopeRuling() {
   return {
     id: "out-of-scope-precheck",
-    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, or game-design judgments.",
+    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, game-design judgments, or future development plans.",
     rulingStatus: "out_of_scope",
     sourceIds: [],
     subject: null,
