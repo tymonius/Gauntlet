@@ -12,21 +12,16 @@ import {
 export * from './overlays-pre-counterworks-authority';
 
 /**
- * Counterworks makes the chosen exposed Overlay inactive for this battle but
- * does not uncover the Territory beneath it. Callers asking for the active
- * Overlay therefore see no active Overlay effect while the physical attachment
- * remains in state.overlays.
+ * Counterworks makes an Overlay's effect inactive; it does not uncover the
+ * Territory beneath it. The physical top Overlay therefore remains the active
+ * attachment for covering/control purposes. Battle-time Overlay effects must
+ * separately honor v070CounterworksOverlayInactiveDuringBattle.
  */
 export function activeV070Overlay(
   state: V070GameState,
   territoryPosition: number,
 ): V070OverlayAttachment | null {
-  const active = previous.activeV070Overlay(state, territoryPosition);
-  if (active
-    && v070CounterworksOverlayInactiveDuringBattle(state, active.instanceId)) {
-    return null;
-  }
-  return active;
+  return previous.activeV070Overlay(state, territoryPosition);
 }
 
 export function activeV070OverlayAtBattleOnset(
