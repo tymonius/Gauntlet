@@ -23,6 +23,10 @@ import {
   pendingV070BrothersInArmsAdditionalTactic,
   resolveV070BrothersInArmsAdditionalTacticChoice,
 } from './brothers-in-arms-battle';
+import {
+  pendingV070BurningAtTheStakeAftermath,
+  resolveV070BurningAtTheStakeAftermathChoice,
+} from './burning-at-the-stake-battle';
 import { V070DeferredBattleAftermathPause } from './battle-aftermath';
 
 export * from './battle-engine-pre-accusation';
@@ -53,6 +57,11 @@ export type V070BattleAction =
       type: 'resolve_brothers_in_arms_additional_tactic';
       playerId: PlayerId;
       cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_burning_at_the_stake_aftermath';
+      playerId: PlayerId;
+      targetInstanceId: string;
     };
 
 export function reduceV070BattleAction(
@@ -139,6 +148,22 @@ export function reduceV070BattleAction(
     return resumeAfterDeferredEffect(next, resolvedOwner);
   }
 
+  const burningAtTheStake = pendingV070BurningAtTheStakeAftermath(state);
+  if (burningAtTheStake) {
+    if (action.type !== 'resolve_burning_at_the_stake_aftermath') {
+      throw new V070GameActionError(
+        'Choose among the tied highest-value cards revealed by Burning at the Stake before continuing the Aftermath.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const resolvedOwner = resolveV070BurningAtTheStakeAftermathChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+    );
+    return resumeAfterDeferredEffect(next, resolvedOwner);
+  }
+
   if (action.type === 'resolve_accusation_target') {
     throw new V070GameActionError(
       'There is no pending Accusation target choice.',
@@ -162,6 +187,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_brothers_in_arms_additional_tactic') {
     throw new V070GameActionError(
       'There is no pending Brothers in Arms additional Tactic choice.',
+    );
+  }
+  if (action.type === 'resolve_burning_at_the_stake_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Burning at the Stake Aftermath choice.',
     );
   }
 
