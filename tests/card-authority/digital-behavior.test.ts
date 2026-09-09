@@ -9,6 +9,7 @@ describe('v0.7.0 digital card behavior authority', () => {
       { encoding: 'utf8' },
     );
 
+    process.stdout.write(output);
     expect(output).toContain('v0.7.0 digital behavior audit:');
     expect(output).toContain('printed effect surfaces');
     expect(output).toContain('authority digest:');
