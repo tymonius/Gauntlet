@@ -1,12 +1,12 @@
-import type {
-  V070GameState,
-  V070OverlayAttachment,
+import { v070CanonicalContent } from '../content/v070';
+import {
+  V070GameActionError,
+  appendV070Event,
+  type V070GameState,
+  type V070OverlayAttachment,
 } from './engine';
 import type { PlayerId } from './rules';
 import * as previous from './overlays-pre-deferred';
-import {
-  placeV070OverlayFromBattle as placeV070OverlayFromBattlePrevious,
-} from './overlays-pre-deferred';
 import { pauseV070DeferredBattleAftermathCarrier } from './battle-aftermath';
 import {
   isV070RuinsOverlay,
@@ -41,17 +41,15 @@ const V070_DEFERRED_BATTLE_AFTERMATH_IDS = new Set([
 ]);
 
 /**
- * Returns the top Overlay whose printed Overlay effect is still active.
- * Ruins remain physically attached and continue to count as Overlays, but
- * their former printed Overlay effect no longer applies.
+ * Returns the top exposed Overlay. A Ruins Overlay has no printed Overlay
+ * effect, but it remains exposed and continues to supersede the Territory
+ * beneath it until it leaves play.
  */
 export function activeV070Overlay(
   state: V070GameState,
   territoryPosition: number,
 ): V070OverlayAttachment | null {
-  const overlays = previous.v070OverlaysAt(state, territoryPosition)
-    .filter(overlay => !isV070RuinsOverlay(overlay));
-  return overlays[overlays.length - 1] ?? null;
+  return previous.activeV070Overlay(state, territoryPosition);
 }
 
 export function activeV070OverlayAtBattleOnset(
@@ -73,13 +71,47 @@ export function placeV070OverlayFromBattle(
     pauseV070DeferredBattleAftermathCarrier(state, instanceId);
   }
 
-  return placeV070OverlayFromBattlePrevious(
-    state,
-    owner,
+  const territory = state.board.find(item => item.position === territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'An Overlay must be attached to a Territory in the Gauntlet.',
+    );
+  }
+
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  const hasOverlayEffect = card?.effects.some(effect => effect.label === 'Overlay') ?? false;
+  if (!card || (card.card_form !== 'Territory Overlay' && !hasOverlayEffect)) {
+    throw new V070GameActionError(
+      'That card is not a released Territory Overlay and has no released Overlay effect.',
+    );
+  }
+
+  const overlay: V070OverlayAttachment = {
     instanceId,
-    territoryPosition,
-    source,
-  );
+    owner,
+    territoryInstanceId: territory.territoryInstanceId,
+    placedTurn: state.turnNumber,
+    sequence: state.nextOverlaySequence,
+  };
+  state.nextOverlaySequence += 1;
+  state.overlays.push(overlay);
+
+  appendV070Event(state, {
+    type: 'overlay_placed',
+    actor: owner,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+      territoryId: territory.territoryId,
+      source,
+      sequence: overlay.sequence,
+    },
+  });
+
+  return overlay;
 }
 
 export function resolveV070OverlayCaptureEffects(
