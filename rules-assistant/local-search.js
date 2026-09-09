@@ -55,6 +55,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["setup", "determine first player", "higher result takes the first turn", "reroll ties"]
   },
   {
+    pattern: /(?=[\s\S]*\b(?:tie|tied|ties)\b)(?=[\s\S]*\b(?:re[\s-]?roll(?:ed|ing|s)?|roll(?:ed|ing)?\s+again)\b)(?=[\s\S]*\b(?:battle|gambits?|tactics?|advantage|disadvantage|totals?|modifier|modifiers)\b)/i,
+    aliases: ["Tiebreak Roll", "separate sudden-death procedure", "do not apply advantage disadvantage card effects numerical modifiers previous battle totals", "reroll further ties"]
+  },
+  {
     pattern: /^(?![\s\S]*\b(?:gambits?|tactics?|reserve|aftermath)\b)(?=[\s\S]*\b(?:play|plays|played|playing)\b)(?=[\s\S]*\b(?:discard|discarded|discarding|discard pile)\b)[\s\S]*$/i,
     aliases: ["playing a card for its action effect", "resolve the action effect", "put the card in the discard pile", "unless it becomes an asset becomes an overlay another destination"]
   },
