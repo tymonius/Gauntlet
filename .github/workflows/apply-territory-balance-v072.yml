@@ -100,8 +100,26 @@ jobs:
             deck.territories = choices;
           }
 
+          starters.version = 'v0.7.2-candidate';
+          starters.status = 'Active v0.7.2-candidate starter set';
           starters.optimizationPolicy.status = 'active-for-v0.7.2-candidate';
+          starters.approval.status = 'approved-for-v0.7.2-candidate';
           fs.writeFileSync(path, JSON.stringify(game, null, 2) + '\n');
+
+          const testPath = 'tests/current-game-authority.test.ts';
+          let test = fs.readFileSync(testPath, 'utf8');
+          const replacements = [
+            ["it('publishes the v0.7.1 starter Deck authority with the Mystics packages'", "it('publishes the v0.7.2 candidate starter Deck authority with the Mystics packages'"],
+            ["expect(authority.starterDecks.version).toBe('v0.7.1');", "expect(authority.starterDecks.version).toBe('v0.7.2-candidate');"],
+            ["expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');", "expect(authority.starterDecks.status).toBe('Active v0.7.2-candidate starter set');"],
+            ["expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');", "expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2-candidate');"],
+            ["expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');", "expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');"]
+          ];
+          for (const [from, to] of replacements) {
+            if (!test.includes(from)) throw new Error(`Starter contract text not found: ${from}`);
+            test = test.replace(from, to);
+          }
+          fs.writeFileSync(testPath, test);
           NODE
 
       - name: Validate current authority
@@ -111,7 +129,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add game-data/current-game.json
+          git add game-data/current-game.json tests/current-game-authority.test.ts
           git diff --cached --exit-code && exit 0
           git commit -m "Rebalance Territories and starter choices"
           git push origin HEAD:balance/territory-pass-v072
