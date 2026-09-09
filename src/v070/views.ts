@@ -15,6 +15,9 @@ import { pendingV070ActOfFaithAftermath } from './act-of-faith-battle';
 import {
   pendingV070BrothersInArmsAdditionalTactic,
 } from './brothers-in-arms-battle';
+import {
+  pendingV070BurningAtTheStakeAftermath,
+} from './burning-at-the-stake-battle';
 
 export * from './views-postdraw';
 
@@ -85,6 +88,17 @@ export interface V070BrothersInArmsAdditionalTacticView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070BurningAtTheStakeAftermathView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  highestCardValue: number;
+  candidateCount: number;
+  revealedHandInstanceIds: string[];
+  candidateInstanceIds: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
@@ -94,6 +108,8 @@ export type V070GameView = V070PostDrawGameView & {
   pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null;
   pendingBrothersInArmsAdditionalTactic:
     V070BrothersInArmsAdditionalTacticView | null;
+  pendingBurningAtTheStakeAftermath:
+    V070BurningAtTheStakeAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -205,6 +221,26 @@ export function viewV070GameForPlayer(
             : {}),
         }
       : null;
+  const burningAtTheStake = pendingV070BurningAtTheStakeAftermath(state);
+  const pendingBurningAtTheStakeAftermath:
+    V070BurningAtTheStakeAftermathView | null = burningAtTheStake
+      ? {
+          playerId: burningAtTheStake.playerId,
+          owner: burningAtTheStake.owner,
+          opponent: burningAtTheStake.opponent,
+          sourceInstanceId: burningAtTheStake.sourceInstanceId,
+          highestCardValue: burningAtTheStake.highestCardValue,
+          candidateCount: burningAtTheStake.candidateInstanceIds.length,
+          // The effect has explicitly revealed the entire Hand, so these
+          // identities and the tied-highest candidates are public to both players.
+          revealedHandInstanceIds: [
+            ...burningAtTheStake.revealedHandInstanceIds,
+          ],
+          candidateInstanceIds: [
+            ...burningAtTheStake.candidateInstanceIds,
+          ],
+        }
+      : null;
 
   return {
     ...core,
@@ -215,5 +251,6 @@ export function viewV070GameForPlayer(
     pendingAccusationAftermath,
     pendingActOfFaithAftermath,
     pendingBrothersInArmsAdditionalTactic,
+    pendingBurningAtTheStakeAftermath,
   };
 }
