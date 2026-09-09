@@ -52,7 +52,7 @@ jobs:
               'game-data/current-game.json',
               '"text": "Capture the Territory at the opponent\'s end, or force a Last Stand and win the resulting battle."',
               '"text": "Control the entire Gauntlet, or force a Last Stand and win the resulting battle."',
-              expected=2
+              expected=4
           )
           replace_exact(
               'game-data/current-game.json',
