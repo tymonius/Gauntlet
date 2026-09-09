@@ -1,0 +1,107 @@
+name: Refresh unresolved Rules Arbiter review backlog
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-current-backlog-refresh
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Read reviewed production interactions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT i.id, i.session_id, i.sequence_index, i.created_at, i.question, i.answer, i.game_version, i.ruling_status, i.ruling_status_v2, i.confidence, i.source_count, i.feedback_rating, i.review_status, i.issue_types_json, i.reviewer_notes, i.resolution, a.historical_accuracy, a.current_validity, a.retrieval_assessment, a.classification_assessment, a.designer_review_required, a.recommended_action, a.reviewed_against_version FROM rules_interactions i LEFT JOIN rules_interaction_audits a ON a.interaction_id = i.id WHERE i.review_status IS NOT NULL AND TRIM(i.review_status) <> '' ORDER BY i.created_at DESC LIMIT 10000" > /tmp/reviewed.json
+      - name: Rank unresolved reviewed cases after ledger filtering
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const raw = JSON.parse(fs.readFileSync('/tmp/reviewed.json', 'utf8'));
+          const rows = raw.flatMap((part) => Array.isArray(part?.results) ? part.results : []);
+          const ledger = JSON.parse(fs.readFileSync('artifacts/rules-refinement/resolution-ledger.json', 'utf8'));
+          const resolved = new Set(ledger.entries.flatMap((entry) => entry.status === 'resolved' ? (entry.interactionIds || []) : []));
+          const active = rows.filter((row) => !resolved.has(row.id));
+
+          function score(row) {
+            let n = 0;
+            if (row.review_status === 'needs_correction') n += 45;
+            else if (row.review_status === 'correct') n += 12;
+            else n += 20;
+            if (row.current_validity === 'current') n += 30;
+            else if (row.current_validity === 'indeterminate') n += 12;
+            if (row.retrieval_assessment === 'weak') n += 18;
+            else if (row.retrieval_assessment === 'sufficient') n += 6;
+            if (row.classification_assessment === 'should_be_explicit') n += 10;
+            if (row.ruling_status_v2 === 'provisional' || row.ruling_status === 'unresolved') n += 12;
+            if (row.confidence === 'low') n += 8;
+            else if (row.confidence === 'medium') n += 4;
+            if (row.feedback_rating === 'negative') n += 15;
+            if (row.designer_review_required) n += 5;
+            return Math.min(n, 100);
+          }
+
+          const ranked = active.map((row) => ({ ...row, score: score(row) }))
+            .sort((a, b) => {
+              const ac = a.current_validity === 'current' ? 1 : 0;
+              const bc = b.current_validity === 'current' ? 1 : 0;
+              if (ac !== bc) return bc - ac;
+              return b.score - a.score || String(b.created_at).localeCompare(String(a.created_at));
+            });
+
+          console.log(`reviewed=${rows.length} ledgerResolvedIds=${resolved.size} unresolvedReviewed=${active.length}`);
+          console.log('\n=== CURRENT VALIDITY — TOP 30 ===');
+          const current = ranked.filter((row) => row.current_validity === 'current').slice(0, 30);
+          for (const [index, row] of current.entries()) {
+            console.log(JSON.stringify({
+              rank: index + 1,
+              score: row.score,
+              id: row.id,
+              created_at: row.created_at,
+              question: row.question,
+              answer: row.answer,
+              game_version: row.game_version,
+              ruling_status: row.ruling_status_v2 || row.ruling_status,
+              confidence: row.confidence,
+              review_status: row.review_status,
+              reviewer_notes: row.reviewer_notes,
+              resolution: row.resolution,
+              retrieval: row.retrieval_assessment,
+              classification: row.classification_assessment,
+              recommended_action: row.recommended_action,
+              reviewed_against_version: row.reviewed_against_version
+            }, null, 2));
+          }
+          console.log('\n=== INDETERMINATE / NO CURRENT AUDIT — TOP 20 ===');
+          const other = ranked.filter((row) => row.current_validity !== 'current').slice(0, 20);
+          for (const [index, row] of other.entries()) {
+            console.log(JSON.stringify({
+              rank: index + 1,
+              score: row.score,
+              id: row.id,
+              created_at: row.created_at,
+              question: row.question,
+              game_version: row.game_version,
+              ruling_status: row.ruling_status_v2 || row.ruling_status,
+              confidence: row.confidence,
+              review_status: row.review_status,
+              current_validity: row.current_validity,
+              retrieval: row.retrieval_assessment,
+              classification: row.classification_assessment,
+              recommended_action: row.recommended_action
+            }, null, 2));
+          }
+          NODE
