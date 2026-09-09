@@ -1,0 +1,65 @@
+name: Apply Territory balance v0.7.2
+
+on:
+  push:
+    branches:
+      - balance/territory-pass-v072
+    paths:
+      - .github/workflows/apply-territory-balance-v072.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: balance/territory-pass-v072
+          fetch-depth: 0
+
+      - name: Update Territory authority
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'game-data/current-game.json';
+          const game = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+          const territories = game.territories;
+          if (!Array.isArray(territories)) throw new Error('current-game.json territories array not found');
+
+          function updateTerritory(name, text) {
+            const territory = territories.find((entry) => entry.name === name);
+            if (!territory) throw new Error(`Territory not found: ${name}`);
+            territory.text = text;
+            if (!Array.isArray(territory.effects) || territory.effects.length !== 1) {
+              throw new Error(`Unexpected effects shape for ${name}`);
+            }
+            territory.effects[0].text = text;
+          }
+
+          updateTerritory(
+            'Supply Depot',
+            "If Supply Depot's controller starts their turn here, they may draw 1 card, then discard 1 card."
+          );
+
+          updateTerritory(
+            "Smuggler's Run",
+            "Once per turn during Opening or Denouement, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile they control this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded."
+          );
+
+          fs.writeFileSync(path, JSON.stringify(game, null, 2) + '\n');
+          NODE
+
+      - name: Validate current authority
+        run: node --test tests/current-game-authority.test.ts
+
+      - name: Commit Territory changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game-data/current-game.json
+          git diff --cached --exit-code && exit 0
+          git commit -m "Balance Supply Depot and Smuggler's Run"
+          git push origin HEAD:balance/territory-pass-v072
