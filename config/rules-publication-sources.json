@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "surfaceContract": "config/rules-surface-contract.json",
   "authoritySource": "game-data/current-game.json",
+  "editorialPolicy": "rulebook/publication/editorial-policy.md",
   "surfaces": {
     "player-guide": {
       "path": "rulebook/player-guide/player-guide.md",
