@@ -1,0 +1,189 @@
+name: Restore shared baseline once
+
+on:
+  push:
+    branches:
+      - rules/restore-shared-baseline
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  restore:
+    if: ${{ !contains(github.event.head_commit.message, '[shared-baseline-materialized]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules/restore-shared-baseline
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore audited shared rules to canonical authority
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const path = 'game-data/current-game.json';
+          const authority = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+          authority.provenance.currentDevelopmentInputs.v072SharedBaselineRestoration = '/docs/v0.7.2-shared-baseline-restoration.json';
+
+          Object.assign(authority.gameplay.battlefield, {
+            position: 'A Position is any Territory or off-board space where a Player Token may be placed under the positioning rules.',
+            movement_rules: {
+              voluntary_fall_back_boundary: 'A player cannot voluntarily Fall Back beyond their own end of the Gauntlet.',
+              tokens_cannot_pass: 'Player Tokens cannot move through or past one another.',
+              additional_movement: 'If an effect grants additional movement, resolve it one Position at a time unless the effect says otherwise.',
+              battle_ends_sequence: 'When movement initiates a battle, that movement sequence ends and all unused movement from that sequence is lost, even if the battle sequence ends during Onset.',
+              new_sequence_after_battle: 'A player moves again after a battle only when a rule or effect directly permits another movement sequence.'
+            },
+            occupation: "Occupation is the state in which a player's token is on an opposing Territory that player does not control. That player is the occupier. Occupation does not itself change control.",
+            counterattack: 'A Counterattack is a battle initiated by the controller of a Territory against an opponent who is the occupier of that Territory.'
+          });
+
+          Object.assign(authority.gameplay.battle, {
+            battle_total: {
+              ordinary_die_count: 1,
+              calculation: "A player's battle total is the selected battle die result plus all applicable numerical battle-total modifiers.",
+              winner: 'The higher battle total wins, subject to Defensive Edge and the Tiebreak Roll rules.'
+            },
+            advantage_disadvantage: {
+              instances_stack: true,
+              cancellation: 'Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.',
+              advantage_roll: 'If N advantage remains, roll N + 1 dice and use the highest result.',
+              disadvantage_roll: 'If N disadvantage remains, roll N + 1 dice and use the lowest result.',
+              neutral_roll: 'If neither advantage nor disadvantage remains, roll one die normally.',
+              fixed_stacking_cap: null
+            },
+            normal_result: {
+              losing_attacker: 'A losing attacker returns to the Position from which they entered the contested Position.',
+              losing_defender: 'A losing defender retreats one Position toward their own end.',
+              winning_attacker: 'A winning attacker takes the contested Position and becomes its occupier if it is an opposing Territory they do not control.',
+              winning_defender: 'A winning defender remains in the contested Position.',
+              additional_retreat: 'Carry out additional retreats one Position at a time. A player cannot retreat through the opponent. A player on their final Territory may retreat beyond the Gauntlet normally.'
+            },
+            aftermath: {
+              sequence: [
+                'determine_result',
+                'replace_loss_with_withdrawal',
+                'immediate_result_triggers',
+                'normal_retreat_and_occupation',
+                'additional_position_effects',
+                'other_pre_clear_aftermath_effects',
+                'clear_battle_cards',
+                'card_movement_triggers',
+                'end_of_aftermath'
+              ],
+              steps: {
+                determine_result: 'Determine the battle result, or record that the battle ended without a winner.',
+                replace_loss_with_withdrawal: 'Apply effects that replace losing with withdrawal.',
+                immediate_result_triggers: 'If the battle still has a winner, apply immediate result triggers.',
+                normal_retreat_and_occupation: 'If there is a winner, carry out normal retreat and determine whether the winner becomes the occupier, including replacements.',
+                additional_position_effects: 'Carry out additional retreats, withdrawals, and final-position effects as applicable.',
+                other_pre_clear_aftermath_effects: 'Apply other Aftermath effects that occur before cards leave battle.',
+                clear_battle_cards: 'Clear the battle cards.',
+                card_movement_triggers: 'Apply effects triggered by cards leaving battle or entering another zone.',
+                end_of_aftermath: 'Apply end-of-Aftermath effects, including any that grant follow-up movement.'
+              },
+              battle_card_clear: {
+                gambits: "Gambits go to their owners' Graveyards.",
+                tactics: "Tactics go to their owners' Discard Piles.",
+                remaining_reserve: "Cards remaining in Reserve go to their owners' Discard Piles.",
+                specific_destination_override: 'If a card tells you to put it somewhere else, follow the card.',
+                source_return: 'A card returned to its source returns to the zone from which it entered battle unless another rule says otherwise.'
+              }
+            }
+          });
+
+          Object.assign(authority.gameplay.turn, {
+            draw: {
+              normal_cards: 1,
+              recycle: 'When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile, then continue the draw.',
+              graveyard_recycles: false,
+              partial_resolution: 'If the draw still cannot be completed after normal recycling, draw as many cards as possible unless the instruction requires the complete draw as a cost, requirement, or target.',
+              normal_draw_failure: "The normal start-of-turn Draw fails when no card can be drawn because both that player's Draw Pile and Discard Pile are empty."
+            },
+            actions: {
+              normal_total: 1,
+              maximum_per_phase: 1,
+              normal_timing: 'The active player normally takes one Action total during the turn, during either Opening or Denouement.',
+              additional_actions: 'An effect that grants an additional Action increases the total number of Actions available that turn; it does not change the normal limit of one Action in each Action phase.',
+              same_phase_permission: 'An effect intended to permit more than one Action during the same phase must say so directly.',
+              direct_permission: 'A directly permitted effect occurs at its stated timing and spends an Action only if it says 1 Action or expressly instructs the player to spend or take an Action.'
+            },
+            cleanup: {
+              hand_limit: 'The normal Hand limit is three at end-of-turn Cleanup.',
+              procedure: 'Apply end-of-turn effects and discard down to the normal Hand limit.',
+              expiration: 'All unused Actions and turn-limited Action permissions expire when the turn ends.'
+            }
+          });
+
+          Object.assign(authority.gameplay.card_rules, {
+            golden_rules: {
+              specificity: 'When two rules or effects genuinely conflict, follow the more specific one. If both can apply, use normal timing and order instead; specificity does not undo an effect that has already been applied.',
+              may: 'May means an effect is optional.',
+              must: 'Must means an effect is required.',
+              instruction_order: 'Follow instructions in the order written.',
+              partial_resolution: 'Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.'
+            },
+            shared_timing: {
+              alternation: 'When multiple controlled effects would apply at the same time, the attacker applies one effect they control, then the defender applies one effect they control, and the players continue alternating until no effects remain at that timing.',
+              controller_order: 'Each player chooses the order of effects they control.',
+              simultaneous_reveal: 'A simultaneous reveal does not make all revealed effects apply simultaneously.'
+            },
+            reveal: {
+              card: 'To reveal a face-down card, turn it face up and leave it face up.',
+              zone: 'To reveal a Hand or Reserve, its owner shows the entire zone to the opponent. The cards remain in that zone.'
+            },
+            negation: {
+              effect: 'A negated card has no effect but remains in battle.',
+              gambit_destination: "Unless an effect says otherwise, a negated Gambit still goes to its owner's Graveyard during the Aftermath.",
+              tactic_destination: "Unless an effect says otherwise, a negated Tactic still goes to its owner's Discard Pile during the Aftermath.",
+              too_late: 'An effect cannot be negated after it has been applied.'
+            },
+            replacement: {
+              same_role: 'A replacement takes the same role as the card it replaces.',
+              eligibility: 'A replacement Gambit must be Gambit-eligible and a replacement Tactic must be Tactic-eligible.',
+              face_state: 'Place the replacement in the face state instructed by the replacing effect.',
+              no_reopen: 'Replacing a card does not reopen an earlier timing window.',
+              remaining_timing: 'Only effects whose timing is still available and that have not already been applied may apply after the replacement.'
+            },
+            revising_choice: {
+              procedure: 'When an effect lets a player revise a choice, make the revised choice as instructed.',
+              no_implicit_window: 'Revising a choice does not create another reveal, response, or replacement opportunity unless the effect says otherwise.'
+            },
+            overlay: {
+              active_layer: 'An Overlay is a persistent card attached to a Territory. The top exposed Overlay is active and supersedes the printed effect immediately beneath it while exposed.',
+              covered_layer: "Lower Overlays remain attached but dormant. When the top Overlay leaves, the next becomes active, or the Territory's printed effect becomes active if none remain.",
+              dormant_timer: "A dormant Overlay's effect and expiration timer pause.",
+              dormant_removal_conditions: 'A printed removal condition remains active while an Overlay is dormant.',
+              control_follows_territory: true,
+              ownership_changes: false,
+              orientation: 'Each Overlay faces the same direction as the Territory beneath it and rotates with it.',
+              is_asset: false,
+              default_removal_destination: "When removed, put an Overlay in its owner's Discard Pile unless stated otherwise.",
+              you_reference: 'On an Overlay, you means its current controller unless the text identifies its owner, the player who placed it, or another player.'
+            }
+          });
+
+          fs.writeFileSync(path, `${JSON.stringify(authority, null, 2)}\n`);
+          NODE
+
+      - name: Validate canonical authority
+        run: node scripts/card-authority/validate-current-game.mjs
+
+      - name: Commit materialized authority and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/restore-shared-baseline-once.yml
+          git config user.name 'Gauntlet authority materializer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add game-data/current-game.json .github/workflows/restore-shared-baseline-once.yml
+          git commit -m 'Restore shared gameplay baseline [shared-baseline-materialized]'
+          git push origin HEAD:rules/restore-shared-baseline
