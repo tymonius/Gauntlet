@@ -1,0 +1,61 @@
+name: Probe Strategic Withdrawal reviewed case
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-strategic-withdrawal-probe
+    paths:
+      - '.github/workflows/rules-arbiter-strategic-withdrawal-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Inspect production interaction and audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== SESSION ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = (SELECT session_id FROM rules_interactions WHERE id = '8a95ef53-3dbd-46e1-b737-3f504d2d3874') ORDER BY sequence_index, created_at"
+          echo '=== AUDIT ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '8a95ef53-3dbd-46e1-b737-3f504d2d3874'"
+      - name: Probe current v0.7.1 deterministic retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
+
+          const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
+          const questions = [
+            "I lose as the defender while Strategic Withdrawal is one of my Battle cards. After my normal retreat I take its additional movement. May I return the other Gambit I set in that battle to my Hand before cards are cleared?",
+            "Can Strategic Withdrawal return my other Gambit to my Hand before battle cards are cleared?",
+            "When does Strategic Withdrawal's extra movement happen relative to clearing battle cards?"
+          ];
+          for (const question of questions) {
+            const query = contextualQuery(question, []);
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2200 });
+            const results = augmentRetrievalForContext(corpus, question, [], raw);
+            console.log('\n=== QUESTION ===\n' + question);
+            console.log(JSON.stringify(results.slice(0, 12).map((r, i) => ({ rank: i + 1, id: r.canonicalId, title: r.title, body: r.body })), null, 2));
+          }
+
+          console.log('\n=== RELEVANT CORPUS ===');
+          console.log(JSON.stringify(corpus.documents.filter((r) => /strategic withdrawal|clearing battle cards|return.*gambit|gambit.*hand|additional movement/i.test(`${r.id} ${r.title} ${r.body}`)).map((r) => ({ id: r.id, title: r.title, body: r.body })).slice(0, 30), null, 2));
+          NODE
