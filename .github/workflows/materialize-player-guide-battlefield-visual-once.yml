@@ -1,0 +1,63 @@
+name: Materialize Player Guide battlefield visual once
+
+on:
+  push:
+    branches:
+      - docs/player-guide-battlefield-visual
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[player-guide-battlefield-visual]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/player-guide-battlefield-visual
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Wire battlefield visual into the Player Guide
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const guidePath = 'rulebook/player-guide/player-guide.md';
+          let guide = fs.readFileSync(guidePath, 'utf8');
+          const before = `Each player begins on the Territory at their own end. From your point of view, **forward** is always toward your opponent's end and **backward** is always toward your own.\n\nYour Player Token shows where you are. A Territory's orientation shows who controls it: a Territory faces the player who controls it.\n\nAt the beginning of the game, you control your three Territories and your opponent controls theirs. As the game progresses, battles move the Player Tokens back and forth while captured Territories move the boundary between the two sides.`;
+          const after = `Each player begins on the Territory at their own end. From your point of view, **forward** is always toward your opponent's end and **backward** is always toward your own.\n\n![Starting Gauntlet showing the six Territories, each player's starting position, forward direction, and starting control.](/rulebook/player-guide/assets/figures/battlefield-position-control.svg)\n\n> **Remember — Position is not control.** Your Player Token shows where you are. Territory orientation shows who controls that ground: a Territory faces the player who controls it.\n\nAt the beginning of the game, you control your three Territories and your opponent controls theirs. As the game progresses, battles move the Player Tokens back and forth while captured Territories move the boundary between the two sides.`;
+          if (!guide.includes(before)) throw new Error('Expected Chapter 1 battlefield paragraph not found.');
+          guide = guide.replace(before, after);
+          fs.writeFileSync(guidePath, guide);
+
+          const cssPath = 'rulebook/publication.css';
+          let css = fs.readFileSync(cssPath, 'utf8');
+          const cssAnchor = `.rulebook-content img.leader-portrait {\n  width: min(100%, 470px);\n  -webkit-mask-image: linear-gradient(to bottom, #000 0 82%, transparent 100%);\n  mask-image: linear-gradient(to bottom, #000 0 82%, transparent 100%);\n}\n`;
+          const cssAddition = `${cssAnchor}\n.rulebook-content img[src^="/rulebook/player-guide/assets/figures/"] {\n  display: block;\n  width: 100%;\n  max-height: none;\n  margin: 1.5rem auto;\n  filter: none;\n  mix-blend-mode: normal;\n}\n`;
+          if (!css.includes(cssAnchor)) throw new Error('Expected publication image styling anchor not found.');
+          css = css.replace(cssAnchor, cssAddition);
+          fs.writeFileSync(cssPath, css);
+          NODE
+
+      - name: Validate publication integration
+        shell: bash
+        run: |
+          test -f rulebook/player-guide/assets/figures/battlefield-position-control.svg
+          grep -Fq '/rulebook/player-guide/assets/figures/battlefield-position-control.svg' rulebook/player-guide/player-guide.md
+          node scripts/validate-rules-publication-scaffolds.mjs
+
+      - name: Commit and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/materialize-player-guide-battlefield-visual-once.yml
+          git config user.name 'Gauntlet publication materializer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rulebook/player-guide/player-guide.md rulebook/publication.css .github/workflows/materialize-player-guide-battlefield-visual-once.yml
+          git commit -m 'Integrate battlefield position-control visual [player-guide-battlefield-visual]'
+          git push origin HEAD:docs/player-guide-battlefield-visual
