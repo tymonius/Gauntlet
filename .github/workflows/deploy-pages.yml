@@ -12,6 +12,7 @@ on:
       - 'config/github-release-contract.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
+      - 'images/rules-arbiter/**'
       - 'images/sketches/*.png'
       - 'apps/playtest/**'
       - 'rulebook/**'
@@ -146,9 +147,13 @@ jobs:
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
 
-          # Keep newly added source/alternate artwork in Git without publishing redundant
-          # copies. The 12 production Leader woodcuts and all hero compositions remain public.
-          rm -rf "$site/images/rules-arbiter"
+          # Keep source/alternate Chief Justice artwork in Git without publishing redundant
+          # copies. Preserve the three production WebP assets consumed by public surfaces.
+          rm -f \
+            "$site/images/rules-arbiter/chief-justice.png" \
+            "$site/images/rules-arbiter/gavel-crop.png" \
+            "$site/images/rules-arbiter/tight-crop-left.png" \
+            "$site/images/rules-arbiter/tight-crop.png"
           rm -f \
             "$site/images/chief justice.png" \
             "$site/images/chief-justice-rules-arbiter-alt.webp" \
@@ -322,6 +327,12 @@ jobs:
           test -s "$SITE_DIR/v0.6.2/index.html"
           test -s "$SITE_DIR/v0.6.3/index.html"
           test -s "$SITE_DIR/v0.7.0/index.html"
+          for image in \
+            "chief-justice-homepage.webp" \
+            "chief-justice-rules-arbiter-popup.webp" \
+            "chief-justice-rules-arbiter.webp"; do
+            test -s "$SITE_DIR/images/rules-arbiter/$image"
+          done
           for image in \
             "hero sketch.png" \
             "general.png" \
