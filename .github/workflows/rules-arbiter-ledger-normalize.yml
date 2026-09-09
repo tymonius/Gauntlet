@@ -1,0 +1,39 @@
+name: Normalize Rules Arbiter ledger
+
+on:
+  push:
+    branches:
+      - rules-arbiter-review-04b09828
+    paths:
+      - '.github/workflows/rules-arbiter-ledger-normalize.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Restore literal Unicode in ledger
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          data = json.loads(path.read_text())
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+          PY
+
+      - name: Remove probe and commit
+        run: |
+          rm .github/workflows/rules-arbiter-ledger-normalize.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add artifacts/rules-refinement/resolution-ledger.json .github/workflows/rules-arbiter-ledger-normalize.yml
+          git diff --cached --check
+          git commit -m "Normalize Rules Arbiter ledger encoding"
+          git push origin HEAD:rules-arbiter-review-04b09828
