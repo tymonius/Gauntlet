@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T04:58:13.295Z",
+  "updatedAt": "2026-09-09T05:07:34.858Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -533,6 +533,23 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Promote the detailed current v0.7.1 Ranger/Fieldcraft authority when Fieldcraft questions concern Territory control, Occupation, Capture, Defensive Edge, Last Stand bonuses, or Territory-derived limits. This supplies the explicit limitation that Fieldcraft does not alter those game states instead of leaving the Arbiter to infer from abbreviated ability text.",
       "resolvedAt": "2026-09-09T04:58:13.295Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "safe-conduct-political-capital-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "b2bde472-270d-4b6e-82c2-7ab6b92b58f3"
+      ],
+      "caseIds": [
+        "safe-conduct-political-capital"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Current v0.7.1 retrieval directly supplies Safe Conduct and Political Capital for the reviewed interaction. Safe Conduct replaces the qualifying battle loss with withdrawal, while Political Capital is expressly conditioned on losing following refused Terms; the ruling is therefore explicit rather than provisional. No runtime change is required.",
+      "resolvedAt": "2026-09-09T05:07:34.858Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-6"
       }
