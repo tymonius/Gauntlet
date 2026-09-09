@@ -1,0 +1,50 @@
+name: Temporary v0.7.2 territory authority update
+
+on:
+  push:
+    branches:
+      - balance/territory-pass-v072-final
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: balance/territory-pass-v072-final
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Update Quicksand
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'game-data/current-game.json';
+          const authority = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const quicksand = authority.gameplay.territories.find(t => t.name === 'Quicksand');
+          if (!quicksand) throw new Error('Quicksand not found');
+          const text = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';
+          quicksand.text = text;
+          if (!Array.isArray(quicksand.effects) || !quicksand.effects[0]) throw new Error('Quicksand effect mirror missing');
+          quicksand.effects[0].text = text;
+          fs.writeFileSync(path, JSON.stringify(authority, null, 2) + '\n');
+          NODE
+      - run: npx vitest run tests/current-game-authority.test.ts
+      - name: Commit authority update
+        run: |
+          if git diff --quiet -- game-data/current-game.json; then
+            echo 'No authority changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add game-data/current-game.json
+          git commit -m 'Update Quicksand for v0.7.2'
+          git push origin HEAD:balance/territory-pass-v072-final
