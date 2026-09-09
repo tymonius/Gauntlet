@@ -7,8 +7,10 @@ on:
       - 'game-data/current-game.json'
       - 'game-data/current-game-validation.mjs'
       - 'config/rules-surface-contract.json'
+      - 'config/rules-publication-sources.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/validate-rules-publication-contract.mjs'
+      - 'scripts/validate-rules-publication-scaffolds.mjs'
       - 'rulebook/publication/**'
       - 'rulebook/player-guide/**'
       - 'rulebook/faction-guides/**'
@@ -29,13 +31,18 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /config/rules-surface-contract.json
+            /config/rules-publication-sources.json
             /game-data/current-game.json
             /game-data/current-game-validation.mjs
             /game-data/art-direction.mjs
             /scripts/current-game-authority.mjs
             /scripts/validate-rules-publication-contract.mjs
+            /scripts/validate-rules-publication-scaffolds.mjs
             /rulebook/publication/rule-dependencies.mjs
             /rulebook/player-facing/rule-facts.js
+            /rulebook/player-guide/
+            /rulebook/faction-guides/
+            /rulebook/comprehensive/
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -43,4 +50,6 @@ jobs:
           node-version: 22
 
       - name: Validate rules publication authority
-        run: node scripts/validate-rules-publication-contract.mjs
+        run: |
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs

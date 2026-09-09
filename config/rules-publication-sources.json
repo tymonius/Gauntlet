@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "surfaceContract": "config/rules-surface-contract.json",
+  "authoritySource": "game-data/current-game.json",
+  "surfaces": {
+    "player-guide": {
+      "path": "rulebook/player-guide/player-guide.md",
+      "marker": "RULES-SURFACE:player-guide",
+      "sectionMarker": "RULES-SECTION"
+    },
+    "comprehensive-rules": {
+      "path": "rulebook/comprehensive/comprehensive-rules.md",
+      "marker": "RULES-SURFACE:comprehensive-rules",
+      "sectionMarker": "RULES-PART",
+      "coverageMarker": "RULES-COVER"
+    },
+    "faction-guide-template": {
+      "path": "rulebook/faction-guides/template.md",
+      "marker": "RULES-SURFACE:faction-guide-template",
+      "sectionMarker": "RULES-SECTION"
+    }
+  },
+  "factionGuides": {
+    "military": "rulebook/faction-guides/military.md",
+    "diplomats": "rulebook/faction-guides/diplomats.md",
+    "financiers": "rulebook/faction-guides/financiers.md",
+    "intelligence": "rulebook/faction-guides/intelligence.md",
+    "mystics": "rulebook/faction-guides/mystics.md",
+    "inquisition": "rulebook/faction-guides/inquisition.md"
+  }
+}
