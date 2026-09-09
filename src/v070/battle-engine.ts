@@ -3,63 +3,18 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import * as previous from './battle-engine-pre-capital-gains';
 import {
-  reduceV070BattleAction as reduceV070BattleActionBase,
-  type V070BattleAction as V070BaseBattleAction,
-} from './battle-engine-pre-accusation';
-import {
-  pendingV070AccusationAftermath,
-  resolveV070AccusationDestination,
-  resolveV070AccusationTarget,
-} from './accusation-battle';
-import {
-  pendingV070ActOfFaithAftermath,
-  resolveV070ActOfFaithGraveyardChoice,
-  resolveV070ActOfFaithRevealCount,
-} from './act-of-faith-battle';
-import {
-  V070_BROTHERS_IN_ARMS_ID,
-  openV070BrothersInArmsAdditionalTacticChoice,
-  pendingV070BrothersInArmsAdditionalTactic,
-  resolveV070BrothersInArmsAdditionalTacticChoice,
-} from './brothers-in-arms-battle';
-import {
-  pendingV070BurningAtTheStakeAftermath,
-  resolveV070BurningAtTheStakeAftermathChoice,
-} from './burning-at-the-stake-battle';
-import { V070DeferredBattleAftermathPause } from './battle-aftermath';
+  pendingV070CapitalGainsAftermath,
+  resolveV070CapitalGainsAftermathChoice,
+} from './capital-gains-battle';
 
-export * from './battle-engine-pre-accusation';
+export * from './battle-engine-pre-capital-gains';
 
 export type V070BattleAction =
-  | V070BaseBattleAction
+  | previous.V070BattleAction
   | {
-      type: 'resolve_accusation_target';
-      playerId: PlayerId;
-      targetInstanceId: string;
-    }
-  | {
-      type: 'resolve_accusation_destination';
-      playerId: PlayerId;
-      destination: 'draw_top' | 'graveyard';
-    }
-  | {
-      type: 'resolve_act_of_faith_reveal_count';
-      playerId: PlayerId;
-      revealCount: number;
-    }
-  | {
-      type: 'resolve_act_of_faith_graveyard';
-      playerId: PlayerId;
-      graveyardInstanceId: string;
-    }
-  | {
-      type: 'resolve_brothers_in_arms_additional_tactic';
-      playerId: PlayerId;
-      cardInstanceId?: string;
-    }
-  | {
-      type: 'resolve_burning_at_the_stake_aftermath';
+      type: 'resolve_capital_gains_aftermath';
       playerId: PlayerId;
       targetInstanceId: string;
     };
@@ -68,166 +23,32 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  const brothersInArms = pendingV070BrothersInArmsAdditionalTactic(state);
-  if (brothersInArms) {
-    if (action.type !== 'resolve_brothers_in_arms_additional_tactic') {
+  const pending = pendingV070CapitalGainsAftermath(state);
+  if (pending) {
+    if (action.type !== 'resolve_capital_gains_aftermath') {
       throw new V070GameActionError(
-        'Resolve or decline the pending Brothers in Arms additional Tactic before continuing the battle.',
+        'Choose the card Capital Gains places in Treasury before continuing the Aftermath.',
       );
     }
     const next = structuredClone(state) as V070GameState;
-    resolveV070BrothersInArmsAdditionalTacticChoice(
-      next,
-      action.playerId,
-      action.cardInstanceId,
-    );
-    return next;
-  }
-
-  const accusation = pendingV070AccusationAftermath(state);
-  if (accusation) {
-    if (accusation.stage === 'target') {
-      if (action.type !== 'resolve_accusation_target') {
-        throw new V070GameActionError(
-          'Resolve the pending Accusation Discard Pile target before continuing the Aftermath.',
-        );
-      }
-      const next = structuredClone(state) as V070GameState;
-      resolveV070AccusationTarget(
-        next,
-        action.playerId,
-        action.targetInstanceId,
-      );
-      return next;
-    }
-
-    if (action.type !== 'resolve_accusation_destination') {
-      throw new V070GameActionError(
-        'Resolve the pending Accusation destination before continuing the Aftermath.',
-      );
-    }
-    const next = structuredClone(state) as V070GameState;
-    const resolvedOwner = resolveV070AccusationDestination(
-      next,
-      action.playerId,
-      action.destination,
-    );
-    return resumeAfterDeferredEffect(next, resolvedOwner);
-  }
-
-  const actOfFaith = pendingV070ActOfFaithAftermath(state);
-  if (actOfFaith) {
-    if (actOfFaith.stage === 'reveal_count') {
-      if (action.type !== 'resolve_act_of_faith_reveal_count') {
-        throw new V070GameActionError(
-          'Choose how many cards Act of Faith reveals before continuing the Aftermath.',
-        );
-      }
-      const next = structuredClone(state) as V070GameState;
-      const resolvedOwner = resolveV070ActOfFaithRevealCount(
-        next,
-        action.playerId,
-        action.revealCount,
-      );
-      return resolvedOwner
-        ? resumeAfterDeferredEffect(next, resolvedOwner)
-        : next;
-    }
-
-    if (action.type !== 'resolve_act_of_faith_graveyard') {
-      throw new V070GameActionError(
-        'Choose which card revealed by Act of Faith enters the Graveyard before continuing the Aftermath.',
-      );
-    }
-    const next = structuredClone(state) as V070GameState;
-    const resolvedOwner = resolveV070ActOfFaithGraveyardChoice(
-      next,
-      action.playerId,
-      action.graveyardInstanceId,
-    );
-    return resumeAfterDeferredEffect(next, resolvedOwner);
-  }
-
-  const burningAtTheStake = pendingV070BurningAtTheStakeAftermath(state);
-  if (burningAtTheStake) {
-    if (action.type !== 'resolve_burning_at_the_stake_aftermath') {
-      throw new V070GameActionError(
-        'Choose among the tied highest-value cards revealed by Burning at the Stake before continuing the Aftermath.',
-      );
-    }
-    const next = structuredClone(state) as V070GameState;
-    const resolvedOwner = resolveV070BurningAtTheStakeAftermathChoice(
+    const resolvedOwner = resolveV070CapitalGainsAftermathChoice(
       next,
       action.playerId,
       action.targetInstanceId,
     );
-    return resumeAfterDeferredEffect(next, resolvedOwner);
+    return resumeAfterCapitalGains(next, resolvedOwner);
   }
 
-  if (action.type === 'resolve_accusation_target') {
+  if (action.type === 'resolve_capital_gains_aftermath') {
     throw new V070GameActionError(
-      'There is no pending Accusation target choice.',
-    );
-  }
-  if (action.type === 'resolve_accusation_destination') {
-    throw new V070GameActionError(
-      'There is no pending Accusation destination choice.',
-    );
-  }
-  if (action.type === 'resolve_act_of_faith_reveal_count') {
-    throw new V070GameActionError(
-      'There is no pending Act of Faith reveal-count choice.',
-    );
-  }
-  if (action.type === 'resolve_act_of_faith_graveyard') {
-    throw new V070GameActionError(
-      'There is no pending Act of Faith Graveyard choice.',
-    );
-  }
-  if (action.type === 'resolve_brothers_in_arms_additional_tactic') {
-    throw new V070GameActionError(
-      'There is no pending Brothers in Arms additional Tactic choice.',
-    );
-  }
-  if (action.type === 'resolve_burning_at_the_stake_aftermath') {
-    throw new V070GameActionError(
-      'There is no pending Burning at the Stake Aftermath choice.',
+      'There is no pending Capital Gains Aftermath choice.',
     );
   }
 
-  const next = reduceBaseWithDeferredPause(
-    state,
-    action as V070BaseBattleAction,
-  );
-
-  if (action.type === 'choose_tactic'
-    && action.cardInstanceId
-    && next.cardInstances[action.cardInstanceId]?.cardId ===
-      V070_BROTHERS_IN_ARMS_ID) {
-    openV070BrothersInArmsAdditionalTacticChoice(
-      next,
-      action.playerId,
-      action.cardInstanceId,
-    );
-  }
-
-  return next;
+  return previous.reduceV070BattleAction(state, action);
 }
 
-function reduceBaseWithDeferredPause(
-  state: V070GameState,
-  action: V070BaseBattleAction,
-): V070GameState {
-  try {
-    return reduceV070BattleActionBase(state, action);
-  } catch (error) {
-    if (!(error instanceof V070DeferredBattleAftermathPause)) throw error;
-    if (error.choicePending) return error.state;
-    return resumeAfterDeferredEffect(error.state, error.owner);
-  }
-}
-
-function resumeAfterDeferredEffect(
+function resumeAfterCapitalGains(
   state: V070GameState,
   resolvedOwner: PlayerId,
 ): V070GameState {
@@ -240,7 +61,7 @@ function resumeAfterDeferredEffect(
       ? battle.defender
       : battle.attacker;
 
-  return reduceBaseWithDeferredPause(state, {
+  return previous.reduceV070BattleAction(state, {
     type: 'complete_aftermath',
     playerId: battle.attacker,
   });
