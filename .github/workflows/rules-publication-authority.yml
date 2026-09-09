@@ -38,7 +38,7 @@ jobs:
             /scripts/current-game-authority.mjs
             /scripts/validate-rules-publication-contract.mjs
             /scripts/validate-rules-publication-scaffolds.mjs
-            /rulebook/publication/rule-dependencies.mjs
+            /rulebook/publication/
             /rulebook/player-facing/rule-facts.js
             /rulebook/player-guide/
             /rulebook/faction-guides/

@@ -55,6 +55,18 @@ if (sources.authoritySource !== contract.authoritySource) {
   );
 }
 
+if (!sources.editorialPolicy) {
+  errors.push('Rules publication source manifest must declare an editorialPolicy source.');
+} else {
+  const policy = await requireSource(errors, sources.editorialPolicy, 'Rules publication editorial policy');
+  if (!policy.includes('## Defined terms must still read as normal English')) {
+    errors.push('Rules publication editorial policy must define the natural-English rule for defined game terms.');
+  }
+  if (!policy.includes('## Prefer player actions over abstract noun phrases')) {
+    errors.push('Rules publication editorial policy must preserve action-oriented player language.');
+  }
+}
+
 const authorityMarker = `AUTHORITY:${contract.authoritySource}`;
 
 const player = sources.surfaces?.['player-guide'];
@@ -162,5 +174,5 @@ if (errors.length) {
 }
 
 console.log(
-  `Rules publication scaffolds passed: Player Guide, Comprehensive Rules, faction template, and ${factionContracts.length} faction guides match the authority-derived publication contract.`,
+  `Rules publication scaffolds passed: editorial policy, Player Guide, Comprehensive Rules, faction template, and ${factionContracts.length} faction guides match the authority-derived publication contract.`,
 );
