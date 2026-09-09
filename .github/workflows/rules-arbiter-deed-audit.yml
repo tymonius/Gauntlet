@@ -1,0 +1,32 @@
+name: Rules Arbiter Deed reviewed audit
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-deed-audit-20260909
+    paths:
+      - '.github/workflows/rules-arbiter-deed-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query reviewed Deed interactions
+        shell: bash
+        run: |
+          set -euo pipefail
+          IDS="'eb878722-a732-492f-814e-df3c5ccded9a','54962556-f04e-428b-89c5-2c193d47cf0f'"
+          echo '=== INTERACTIONS ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, COALESCE(ruling_status_v2, ruling_status) AS ruling_status, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id IN (SELECT session_id FROM rules_interactions WHERE id IN ($IDS)) ORDER BY session_id, sequence_index, created_at"
+          echo '=== AUDITS ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($IDS) ORDER BY interaction_id, reviewed_at DESC"
+          echo '=== DIAGNOSTICS ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($IDS) ORDER BY interaction_id, created_at DESC"
