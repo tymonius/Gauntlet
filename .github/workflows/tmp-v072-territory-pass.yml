@@ -22,29 +22,76 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Update Quicksand
+      - name: Finalize Territory authority and regression coverage
         run: |
           node <<'NODE'
           const fs = require('fs');
-          const path = 'game-data/current-game.json';
-          const authority = JSON.parse(fs.readFileSync(path, 'utf8'));
-          const quicksand = authority.gameplay.territories.find(t => t.name === 'Quicksand');
+
+          const authorityPath = 'game-data/current-game.json';
+          const authority = JSON.parse(fs.readFileSync(authorityPath, 'utf8'));
+
+          const territoryByName = new Map(authority.gameplay.territories.map((territory) => [territory.name, territory]));
+          const quicksand = territoryByName.get('Quicksand');
           if (!quicksand) throw new Error('Quicksand not found');
-          const text = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';
-          quicksand.text = text;
-          if (!Array.isArray(quicksand.effects) || !quicksand.effects[0]) throw new Error('Quicksand effect mirror missing');
-          quicksand.effects[0].text = text;
-          fs.writeFileSync(path, JSON.stringify(authority, null, 2) + '\n');
+          const quicksandText = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';
+          quicksand.text = quicksandText;
+          if (!Array.isArray(quicksand.effects) || quicksand.effects.length !== 1) {
+            throw new Error('Quicksand effect mirror missing or unexpected');
+          }
+          quicksand.effects[0].text = quicksandText;
+
+          const expectedTerritories = {
+            general: ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+            commandant: ['Garrison', 'Training Grounds', 'High Ground'],
+            ambassador: ['Refuge', 'Supply Depot', 'Command Tent'],
+            senator: ['Refuge', 'Garrison', 'Fortified Pass'],
+            banker: ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'],
+            executive: ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+            'spirit-walker': ['Garrison', 'Training Grounds', 'High Ground'],
+            alchemist: ['Poisonous Gas', 'Old Battlefield', 'Ruined Storehouse'],
+            'grand-inquisitor': ['Poisonous Gas', 'Toll Bridge', 'Arena: Grand Melee'],
+            'witch-hunter': ['Garrison', 'Training Grounds', 'High Ground'],
+            spymaster: ['Refuge', 'Ruined Storehouse', 'Field Hospital'],
+            ranger: ['Quicksand', 'Difficult Terrain', 'Poisonous Gas'],
+          };
+
+          const deckByLeader = new Map(authority.starterDecks.decks.map((deck) => [deck.leaderId, deck]));
+          for (const [leaderId, territories] of Object.entries(expectedTerritories)) {
+            const deck = deckByLeader.get(leaderId);
+            if (!deck) throw new Error(`Starter deck not found for ${leaderId}`);
+            for (const territoryName of territories) {
+              if (!territoryByName.has(territoryName)) throw new Error(`Unknown Territory: ${territoryName}`);
+            }
+            deck.territories = territories;
+          }
+          if (deckByLeader.size !== Object.keys(expectedTerritories).length) {
+            throw new Error(`Expected exactly 12 starter decks, found ${deckByLeader.size}`);
+          }
+
+          fs.writeFileSync(authorityPath, JSON.stringify(authority, null, 2) + '\n');
+
+          const testPath = 'tests/current-game-authority.test.ts';
+          let test = fs.readFileSync(testPath, 'utf8');
+          const testName = "locks the v0.7.2 Territory text and all 12 starter Territory packages";
+          if (!test.includes(testName)) {
+            const marker = "  it('contains the entire resolved gameplay and component state in one document', () => {";
+            if (!test.includes(marker)) throw new Error('Could not find Territory regression insertion marker');
+            const block = `  it('${testName}', () => {\n    const territoryByName = new Map(authority.gameplay.territories.map((territory: any) => [territory.name, territory]));\n    const quicksandText = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';\n    const refugeText = 'After a player Falls Back or withdraws to this Territory: +1 Card.';\n\n    expect(territoryByName.get('Quicksand')?.text).toBe(quicksandText);\n    expect(territoryByName.get('Quicksand')?.effects).toEqual([{ label: 'Text', text: quicksandText }]);\n    expect(territoryByName.get('Refuge')?.text).toBe(refugeText);\n    expect(territoryByName.get('Refuge')?.effects).toEqual([{ label: 'Text', text: refugeText }]);\n\n    const expectedTerritories: Record<string, string[]> = {\n      general: [\"Smuggler's Run\", \"King's Road\", 'Arena: No Quarter'],\n      commandant: ['Garrison', 'Training Grounds', 'High Ground'],\n      ambassador: ['Refuge', 'Supply Depot', 'Command Tent'],\n      senator: ['Refuge', 'Garrison', 'Fortified Pass'],\n      banker: ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'],\n      executive: [\"Smuggler's Run\", \"King's Road\", 'Arena: No Quarter'],\n      'spirit-walker': ['Garrison', 'Training Grounds', 'High Ground'],\n      alchemist: ['Poisonous Gas', 'Old Battlefield', 'Ruined Storehouse'],\n      'grand-inquisitor': ['Poisonous Gas', 'Toll Bridge', 'Arena: Grand Melee'],\n      'witch-hunter': ['Garrison', 'Training Grounds', 'High Ground'],\n      spymaster: ['Refuge', 'Ruined Storehouse', 'Field Hospital'],\n      ranger: ['Quicksand', 'Difficult Terrain', 'Poisonous Gas'],\n    };\n    const actualTerritories = Object.fromEntries(\n      authority.starterDecks.decks.map((deck: any) => [deck.leaderId, deck.territories])\n    );\n    expect(actualTerritories).toEqual(expectedTerritories);\n\n    const counts = authority.starterDecks.decks\n      .flatMap((deck: any) => deck.territories)\n      .reduce((result: Record<string, number>, territory: string) => {\n        result[territory] = (result[territory] || 0) + 1;\n        return result;\n      }, {});\n    expect(counts).toEqual({\n      \"Smuggler's Run\": 2,\n      \"King's Road\": 2,\n      'Arena: No Quarter': 2,\n      Garrison: 4,\n      'Training Grounds': 3,\n      'High Ground': 3,\n      Refuge: 3,\n      'Supply Depot': 2,\n      'Command Tent': 1,\n      'Fortified Pass': 1,\n      'Ruined Storehouse': 3,\n      'Arena: Spoils of War': 1,\n      'Poisonous Gas': 3,\n      'Old Battlefield': 1,\n      'Toll Bridge': 1,\n      'Arena: Grand Melee': 1,\n      'Field Hospital': 1,\n      Quicksand: 1,\n      'Difficult Terrain': 1,\n    });\n    expect(Object.keys(counts)).toHaveLength(19);\n\n    const unused = authority.gameplay.territories\n      .map((territory: any) => territory.name)\n      .filter((name: string) => !counts[name])\n      .sort();\n    expect(unused).toEqual([\n      'Arena: Single Combat',\n      'Disrupted Supply Lines',\n      'Exposed Flank',\n      'Insurgency',\n      'Monastery',\n      'Watchtower',\n    ]);\n  });\n\n`;
+            test = test.replace(marker, block + marker);
+            fs.writeFileSync(testPath, test);
+          }
           NODE
-      - run: npx vitest run tests/current-game-authority.test.ts
-      - name: Commit authority update
+      - name: Run current-game authority suite
+        run: npx vitest run tests/current-game-authority.test.ts
+      - name: Commit final Territory authority pass
         run: |
-          if git diff --quiet -- game-data/current-game.json; then
-            echo 'No authority changes to commit.'
-            exit 0
-          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add game-data/current-game.json
-          git commit -m 'Update Quicksand for v0.7.2'
+          git rm .github/workflows/tmp-v072-territory-pass.yml
+          git add game-data/current-game.json tests/current-game-authority.test.ts
+          if git diff --cached --quiet; then
+            echo 'No final Territory changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Finalize v0.7.2 Territory starter packages'
           git push origin HEAD:balance/territory-pass-v072-final
