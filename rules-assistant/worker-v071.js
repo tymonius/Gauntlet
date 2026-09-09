@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260908-5";
+export const BEHAVIOR_REVISION = "v071-qa-20260908-6";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -38,6 +38,11 @@ const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
 ];
 const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
   "rulebook:golden-rules"
+];
+const FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS = [
+  "rulebook:ranger",
+  "faction:fieldcraft",
+  "leader:fieldcraft"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -588,8 +593,17 @@ const specificRulePrecedenceAuthorityIds = specificRulePrecedenceFocus
       ...(/\b(?:battle|gambit|tactic|sequence)\b/.test(combined) ? ["rulebook:battle-sequence"] : [])
     ]
   : SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS;
-const preferredAuthorityIds = specificRulePrecedenceFocus
-  ? specificRulePrecedenceAuthorityIds
+const fieldcraftTopic = /\bfieldcraft\b/;
+const fieldcraftTerritoryStateCue = /\b(?:control(?:s|led|ling)?|occupation|occupier|capture(?:s|d|ing)?|defensive edge|last stand|battle bonus(?:es)?|territor(?:y|ies)[ -]?(?:limit|limits)|limits? calculated from territor(?:y|ies))\b/;
+const fieldcraftFollowupCue = /\b(?:it|that|this|control|occupation|occupier|capture|defensive edge|last stand|bonus|limit|territory|territories)\b/.test(current);
+const fieldcraftFocus = (
+  fieldcraftTopic.test(current)
+  || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
+) && fieldcraftTerritoryStateCue.test(combined);
+const preferredAuthorityIds = fieldcraftFocus
+  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+  : specificRulePrecedenceFocus
+    ? specificRulePrecedenceAuthorityIds
   : mysticsTransmutationFocus
     ? mysticsTransmutationAuthorityIds
   : peaceTreatyFocus
