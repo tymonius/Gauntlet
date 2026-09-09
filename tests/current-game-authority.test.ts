@@ -52,15 +52,15 @@ describe('complete current-game authority', () => {
     }
   });
 
-  it('publishes the v0.7.1 starter Deck authority with the Mystics packages', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.1');
-    expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');
+  it('publishes the v0.7.2 candidate starter Deck authority with the Mystics packages', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.2-candidate');
+    expect(authority.starterDecks.status).toBe('Active v0.7.2-candidate starter set');
     expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2-candidate');
     expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
-    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');
 
-    // Historical source paths remain provenance; active release identity must not.
+    // Historical source paths remain provenance; active starter identity must not be stale.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
     expect(authority.starterDecks.optimizationPolicy.cardAdditions).toContain('v0.6.4-card-additions.json');
     expect(JSON.stringify({
@@ -69,7 +69,7 @@ describe('complete current-game authority', () => {
       purpose: authority.starterDecks.purpose,
       optimizationStatus: authority.starterDecks.optimizationPolicy.status,
       approvalStatus: authority.starterDecks.approval.status,
-    })).not.toMatch(/v0\.6\.4|v0\.6\.3/i);
+    })).not.toMatch(/v0\.7\.1|v0\.6\.4|v0\.6\.3/i);
   });
 
   it('contains the entire resolved gameplay and component state in one document', () => {
