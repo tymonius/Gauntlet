@@ -5,812 +5,341 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
-import type { V070BattleCardCommitment } from './battle-types';
 import {
-  hasV070BattleCardEffectApplied,
-  isV070BattleCardEffectNegated,
-  markV070BattleCardEffectApplied,
-  v070BattleCommitment,
-} from './battle-effect-status';
-import { revealV070BattleCommitmentEarly } from './battle-early-reveal';
-import {
-  preventV070OpposingBattleCardReveal,
-} from './counterintelligence';
-import {
-  applyV070CounterintelligenceBattleReaction,
-  eligibleV070CounterintelligenceBattleReactions,
-} from './counterintelligence-battle';
+  completeV070BattleRevealChoice,
+  markV070BattleRevealChoiceOpen,
+  pendingV070BattleRevealChoice,
+  queueV070BattleRevealChoice,
+} from './battle-reveal-choices';
+import { markV070BattleCardEffectApplied } from './battle-effect-status';
 
 export const V070_COUNTERWORKS_ID = 'neutral-counterworks' as const;
-const counterworksBattleEffect = v070CanonicalContent.cardsById
-  .get(V070_COUNTERWORKS_ID)
-  ?.effects.find(effect => effect.label === 'Gambit/Tactic');
-if (!counterworksBattleEffect) {
-  throw new Error(
-    'Published v0.7.0 Counterworks is missing its Gambit/Tactic effect.',
-  );
-}
-export const V070_COUNTERWORKS_BATTLE_TEXT = counterworksBattleEffect.text;
-
-export type V070CounterworksPreRevealChoice =
-  | {
-      kind: 'counterworks_source_order';
-      playerId: PlayerId;
-      role: 'gambit' | 'tactic';
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'counterworks_target';
-      playerId: PlayerId;
-      role: 'gambit' | 'tactic';
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'counterintelligence_pre_reveal';
-      playerId: PlayerId;
-      role: 'gambit' | 'tactic';
-      opposingPlayer: PlayerId;
-      opposingSourceInstanceId: string;
-      targetInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'counterworks_replacement';
-      playerId: PlayerId;
-      role: 'gambit' | 'tactic';
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    };
-
-export type V070CounterworksPreRevealAction =
-  | {
-      type: 'choose_counterworks_source';
-      playerId: PlayerId;
-      sourceInstanceId: string;
-    }
-  | {
-      type: 'choose_counterworks_target';
-      playerId: PlayerId;
-      targetInstanceId: string;
-    }
-  | {
-      type: 'choose_counterintelligence_pre_reveal';
-      playerId: PlayerId;
-      counterintelligenceInstanceId: string;
-    }
-  | {
-      type: 'resolve_counterworks_replacement';
-      playerId: PlayerId;
-      replacementInstanceId?: string;
-    };
+export const V070_COUNTERWORKS_BATTLE_TEXT =
+  'Choose one: one Overlay on the contested Territory is inactive during this battle; or the next opposing Overlay that would be placed there during this battle or its Aftermath is not placed. The card that would become that Overlay is discarded.' as const;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
-    counterworksPreRevealRole?: 'gambit' | 'tactic' | null;
-    counterworksPreRevealNextPlayer?: PlayerId | null;
-    counterworksPreRevealChoice?: V070CounterworksPreRevealChoice | null;
-    counterworksPreRevealReady?: boolean;
+    counterworksInactiveOverlayInstanceIds?: string[];
+    counterworksOverlayPlacementPreventions?: Array<{
+      owner: PlayerId;
+      sourceInstanceId: string;
+      territoryInstanceId: string;
+    }>;
   }
 }
 
-export function hasV070CounterworksPreRevealSource(
-  state: V070GameState,
-  role: 'gambit' | 'tactic',
-): boolean {
-  return (['A', 'B'] as const).some(playerId =>
-    unresolvedCounterworksSources(state, playerId, role).length > 0
-  );
+export type V070CounterworksBattleAction = {
+  type: 'resolve_counterworks_battle';
+  playerId: PlayerId;
+  mode: 'suppress_overlay' | 'prevent_next_opposing_overlay';
+  overlayInstanceId?: string;
+};
+
+export interface V070CounterworksBattleChoice {
+  kind: 'counterworks';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  territoryPosition: number;
+  candidateOverlayInstanceIds: string[];
 }
 
-export function beginV070CounterworksPreReveal(
+function validateV070CounterworksAuthority(): void {
+  const card = v070CanonicalContent.cardsById.get(V070_COUNTERWORKS_ID);
+  const effect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
+  if (!card || effect?.text !== V070_COUNTERWORKS_BATTLE_TEXT) {
+    throw new Error(
+      'v0.7.0 Counterworks battle text drifted from released authority.',
+    );
+  }
+}
+
+validateV070CounterworksAuthority();
+
+export function registerV070CounterworksBattleEffect(
   state: V070GameState,
-  playerId: PlayerId,
-  role: 'gambit' | 'tactic',
+  owner: PlayerId,
+  sourceInstanceId: string,
 ): void {
   const battle = state.battle;
   const runtime = state.battleRuntime;
   if (!battle || !runtime) {
     throw new V070GameActionError(
-      'Counterworks pre-reveal resolution requires an active battle.',
+      'Counterworks battle resolution requires an active battle.',
     );
   }
-  const expectedStage = role === 'gambit' ? 'reveal_gambits' : 'reveal_tactics';
-  if (runtime.stage !== expectedStage) {
+  if (state.cardInstances[sourceInstanceId]?.owner !== owner
+    || state.cardInstances[sourceInstanceId]?.cardId !== V070_COUNTERWORKS_ID) {
     throw new V070GameActionError(
-      `Counterworks ${role} resolution requires the ${expectedStage} stage.`,
-    );
-  }
-  if (playerId !== battle.attacker) {
-    throw new V070GameActionError(
-      `The attacker advances the shared ${role} reveal procedure.`,
-    );
-  }
-  if (runtime.counterworksPreRevealRole) {
-    throw new V070GameActionError(
-      'A Counterworks pre-reveal procedure is already active.',
+      'Counterworks battle source does not match the revealed card instance.',
     );
   }
 
-  runtime.counterworksPreRevealRole = role;
-  runtime.counterworksPreRevealChoice = null;
-  runtime.counterworksPreRevealReady = false;
-  runtime.counterworksPreRevealNextPlayer = firstCounterworksPlayer(state, role);
+  const territory = state.board.find(
+    item => item.position === battle.contestedPosition,
+  );
+  if (!territory) {
+    throw new V070GameActionError(
+      'Counterworks requires a contested Territory in the Gauntlet.',
+    );
+  }
+
+  const candidateOverlayInstanceIds = state.overlays
+    .filter(overlay => overlay.territoryInstanceId === territory.territoryInstanceId)
+    .sort((a, b) => a.sequence - b.sequence)
+    .map(overlay => overlay.instanceId);
+
+  queueV070BattleRevealChoice(state, {
+    kind: 'counterworks',
+    owner,
+    sourceInstanceId,
+    territoryPosition: battle.contestedPosition,
+    candidateOverlayInstanceIds,
+  });
 }
 
-export function pendingV070CounterworksPreRevealChoice(
+export function pendingV070CounterworksBattleChoice(
   state: V070GameState,
-): V070CounterworksPreRevealChoice | null {
-  return state.battleRuntime?.counterworksPreRevealChoice ?? null;
+): V070CounterworksBattleChoice | null {
+  const pending = pendingV070BattleRevealChoice(state);
+  return pending?.kind === 'counterworks' ? pending : null;
 }
 
-export function advanceV070CounterworksPreReveal(
+export function openV070CounterworksBattleChoice(
   state: V070GameState,
 ): boolean {
-  const runtime = state.battleRuntime;
-  const role = runtime?.counterworksPreRevealRole;
-  if (!runtime || !role) return false;
-  if (runtime.counterworksPreRevealChoice) return true;
+  const pending = pendingV070CounterworksBattleChoice(state);
+  if (!pending) return false;
+  markV070BattleRevealChoiceOpen(state);
 
-  while (true) {
-    const playerId = normalizeNextCounterworksPlayer(state, role);
-    if (!playerId) {
-      runtime.counterworksPreRevealReady = true;
-      return false;
-    }
-
-    const candidates = unresolvedCounterworksSources(state, playerId, role);
-    if (candidates.length > 1) {
-      openChoice(state, {
-        kind: 'counterworks_source_order',
-        playerId,
-        role,
-        candidateInstanceIds: candidates,
-      });
-      return true;
-    }
-    if (candidates.length === 0) {
-      runtime.counterworksPreRevealNextPlayer = firstCounterworksPlayer(state, role);
-      continue;
-    }
-
-    processCounterworksSource(state, playerId, role, candidates[0]);
-    if (runtime.counterworksPreRevealChoice) return true;
-  }
+  appendV070Event(state, {
+    type: 'counterworks_battle_choice_pending',
+    actor: pending.owner,
+    visibility: 'public',
+    payload: {
+      playerId: pending.owner,
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: V070_COUNTERWORKS_ID,
+      territoryPosition: pending.territoryPosition,
+      existingOverlayCount: pending.candidateOverlayInstanceIds.length,
+      choices: [
+        ...(pending.candidateOverlayInstanceIds.length > 0
+          ? ['suppress_overlay']
+          : []),
+        'prevent_next_opposing_overlay',
+      ],
+    },
+  });
+  return true;
 }
 
-export function resolveV070CounterworksPreRevealAction(
+export function resolveV070CounterworksBattleChoice(
   state: V070GameState,
-  action: V070CounterworksPreRevealAction,
+  action: V070CounterworksBattleAction,
 ): void {
-  const pending = pendingV070CounterworksPreRevealChoice(state);
+  const pending = pendingV070CounterworksBattleChoice(state);
   if (!pending) {
     throw new V070GameActionError(
-      'There is no Counterworks pre-reveal choice to resolve.',
+      'There is no pending Counterworks battle choice.',
     );
   }
-  if (pending.playerId !== action.playerId) {
+  if (pending.owner !== action.playerId) {
     throw new V070GameActionError(
-      'Only the player controlling the pending pre-reveal choice may resolve it.',
+      'Only the Counterworks controller may resolve its battle choice.',
     );
   }
 
-  switch (pending.kind) {
-    case 'counterworks_source_order': {
-      if (action.type !== 'choose_counterworks_source'
-        || !pending.candidateInstanceIds.includes(action.sourceInstanceId)) {
-        throw new V070GameActionError(
-          'Choose one eligible Counterworks source to resolve next.',
-        );
-      }
-      clearChoice(state);
-      processCounterworksSource(
-        state,
-        action.playerId,
-        pending.role,
-        action.sourceInstanceId,
-      );
-      return;
-    }
-    case 'counterworks_target': {
-      if (action.type !== 'choose_counterworks_target'
-        || !pending.candidateInstanceIds.includes(action.targetInstanceId)) {
-        throw new V070GameActionError(
-          'Choose one eligible opposing face-down battle card.',
-        );
-      }
-      clearChoice(state);
-      resolveCounterworksTarget(
-        state,
-        action.playerId,
-        pending.role,
-        pending.sourceInstanceId,
-        action.targetInstanceId,
-      );
-      return;
-    }
-    case 'counterintelligence_pre_reveal': {
-      if (action.type !== 'choose_counterintelligence_pre_reveal'
-        || !pending.candidateInstanceIds.includes(
-          action.counterintelligenceInstanceId,
-        )) {
-        throw new V070GameActionError(
-          'Choose one eligible Counterintelligence to reveal.',
-        );
-      }
-      const stillEligible = eligibleV070CounterintelligenceBattleReactions(
-        state,
-        action.playerId,
-        pending.role,
-      );
-      if (!stillEligible.includes(action.counterintelligenceInstanceId)) {
-        throw new V070GameActionError(
-          'That Counterintelligence can no longer prevent the pending reveal.',
-        );
-      }
-      clearChoice(state);
-      applyV070CounterintelligenceBattleReaction(
-        state,
-        action.playerId,
-        action.counterintelligenceInstanceId,
-        {
-          opposingPlayer: pending.opposingPlayer,
-          opposingSourceInstanceId: pending.opposingSourceInstanceId,
-          opposingSourceCardId: V070_COUNTERWORKS_ID,
-          targetInstanceId: pending.targetInstanceId,
-          role: pending.role,
-        },
-      );
-      completeCounterworksSource(
-        state,
-        pending.opposingPlayer,
-        pending.role,
-        pending.opposingSourceInstanceId,
-        'prevented_by_counterintelligence',
-      );
-      return;
-    }
-    case 'counterworks_replacement': {
-      if (action.type !== 'resolve_counterworks_replacement') {
-        throw new V070GameActionError(
-          'Resolve or decline the pending Counterworks replacement.',
-        );
-      }
-      if (action.replacementInstanceId !== undefined
-        && !pending.candidateInstanceIds.includes(action.replacementInstanceId)) {
-        throw new V070GameActionError(
-          'Choose an eligible Reserve card for Counterworks or decline replacement.',
-        );
-      }
-      clearChoice(state);
-      resolveCounterworksReplacement(
-        state,
-        action.playerId,
-        pending.role,
-        pending.sourceInstanceId,
-        action.replacementInstanceId,
-      );
-      return;
-    }
+  const completed = completeV070BattleRevealChoice(state, 'counterworks');
+  if (completed.kind !== 'counterworks') {
+    throw new V070GameActionError('Counterworks choice state changed unexpectedly.');
   }
-}
-
-export function finishV070CounterworksPreReveal(
-  state: V070GameState,
-): 'gambit' | 'tactic' {
-  const runtime = state.battleRuntime;
-  const role = runtime?.counterworksPreRevealRole;
-  if (!runtime || !role || !runtime.counterworksPreRevealReady
-    || runtime.counterworksPreRevealChoice) {
-    throw new V070GameActionError(
-      'Counterworks pre-reveal resolution is not ready to finish.',
-    );
-  }
-
-  runtime.counterworksPreRevealRole = null;
-  runtime.counterworksPreRevealNextPlayer = null;
-  runtime.counterworksPreRevealChoice = null;
-  runtime.counterworksPreRevealReady = false;
-  return role;
-}
-
-function processCounterworksSource(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-): void {
-  const source = v070BattleCommitment(state, sourceInstanceId);
-  if (!source
-    || source.owner !== owner
-    || source.role !== role
-    || state.cardInstances[sourceInstanceId]?.cardId !== V070_COUNTERWORKS_ID
-    || isV070BattleCardEffectNegated(state, sourceInstanceId)
-    || hasV070BattleCardEffectApplied(state, sourceInstanceId)) {
-    throw new V070GameActionError(
-      'That Counterworks is no longer eligible to resolve at this reveal stage.',
-    );
-  }
-
-  if (!source.faceUp) {
-    revealV070BattleCommitmentEarly(state, {
-      targetInstanceId: sourceInstanceId,
-      sourceKind: 'effect',
-      sourceController: owner,
-      sourceInstanceId,
-      sourceId: V070_COUNTERWORKS_ID,
-    });
-  }
-
-  const targets = eligibleCounterworksTargets(state, owner, role);
-  if (targets.length > 1) {
-    openChoice(state, {
-      kind: 'counterworks_target',
-      playerId: owner,
-      role,
-      sourceInstanceId,
-      candidateInstanceIds: targets,
-    });
-    return;
-  }
-  if (targets.length === 1) {
-    resolveCounterworksTarget(state, owner, role, sourceInstanceId, targets[0]);
-    return;
-  }
-
-  openReplacementOrComplete(state, owner, role, sourceInstanceId);
-}
-
-function resolveCounterworksTarget(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-  targetInstanceId: string,
-): void {
-  const target = v070BattleCommitment(state, targetInstanceId);
-  const opponent = otherPlayer(owner);
-  if (!target
-    || target.owner !== opponent
-    || target.role !== role
-    || target.faceUp) {
-    throw new V070GameActionError(
-      'Counterworks must reveal an opposing face-down card at the same stage.',
-    );
-  }
-
-  if (preventV070OpposingBattleCardReveal(
-    state,
-    owner,
-    opponent,
-    {
-      purpose: 'Counterworks battle effect',
-      sourceInstanceId,
-      targetInstanceId,
-      role,
-    },
-  )) {
-    appendV070Event(state, {
-      type: 'counterworks_battle_effect_prevented',
-      actor: opponent,
-      visibility: 'public',
-      payload: {
-        sourceInstanceId,
-        sourceCardId: V070_COUNTERWORKS_ID,
-        targetInstanceId,
-        protectedPlayer: opponent,
-        revealRole: role,
-        prevention: 'counterintelligence_asset',
-      },
-    });
-    completeCounterworksSource(
-      state,
-      owner,
-      role,
-      sourceInstanceId,
-      'prevented_by_counterintelligence',
-    );
-    return;
-  }
-
-  const reactions = eligibleV070CounterintelligenceBattleReactions(
-    state,
-    opponent,
-    role,
-  );
-  if (reactions.length > 1) {
-    openChoice(state, {
-      kind: 'counterintelligence_pre_reveal',
-      playerId: opponent,
-      role,
-      opposingPlayer: owner,
-      opposingSourceInstanceId: sourceInstanceId,
-      targetInstanceId,
-      candidateInstanceIds: reactions,
-    });
-    return;
-  }
-  if (reactions.length === 1) {
-    applyV070CounterintelligenceBattleReaction(
-      state,
-      opponent,
-      reactions[0],
-      {
-        opposingPlayer: owner,
-        opposingSourceInstanceId: sourceInstanceId,
-        opposingSourceCardId: V070_COUNTERWORKS_ID,
-        targetInstanceId,
-        role,
-      },
-    );
-    appendV070Event(state, {
-      type: 'counterworks_battle_effect_prevented',
-      actor: opponent,
-      visibility: 'public',
-      payload: {
-        sourceInstanceId,
-        sourceCardId: V070_COUNTERWORKS_ID,
-        targetInstanceId,
-        protectedPlayer: opponent,
-        revealRole: role,
-        prevention: 'counterintelligence_battle',
-        counterintelligenceInstanceId: reactions[0],
-      },
-    });
-    completeCounterworksSource(
-      state,
-      owner,
-      role,
-      sourceInstanceId,
-      'prevented_by_counterintelligence',
-    );
-    return;
-  }
-
-  const revealed = revealV070BattleCommitmentEarly(state, {
-    targetInstanceId,
-    sourceKind: 'effect',
-    sourceController: owner,
-    sourceInstanceId,
-    sourceId: V070_COUNTERWORKS_ID,
-  });
-  if (!revealed) {
-    throw new V070GameActionError(
-      'The Counterworks target is no longer face down.',
-    );
-  }
-
-  appendV070Event(state, {
-    type: 'counterworks_battle_target_revealed',
-    actor: owner,
-    visibility: 'public',
-    payload: {
-      sourceInstanceId,
-      sourceCardId: V070_COUNTERWORKS_ID,
-      targetInstanceId,
-      targetCardId: state.cardInstances[targetInstanceId]?.cardId ?? null,
-      targetOwner: opponent,
-      revealRole: role,
-    },
-  });
-  openReplacementOrComplete(state, owner, role, sourceInstanceId);
-}
-
-function openReplacementOrComplete(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-): void {
-  const candidates = eligibleCounterworksReplacements(state, owner, role);
-  if (candidates.length === 0) {
-    completeCounterworksSource(
-      state,
-      owner,
-      role,
-      sourceInstanceId,
-      'kept',
-    );
-    return;
-  }
-
-  openChoice(state, {
-    kind: 'counterworks_replacement',
-    playerId: owner,
-    role,
-    sourceInstanceId,
-    candidateInstanceIds: candidates,
-  });
-}
-
-function resolveCounterworksReplacement(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-  replacementInstanceId: string | undefined,
-): void {
-  if (replacementInstanceId === undefined) {
-    appendV070Event(state, {
-      type: 'counterworks_battle_replacement_declined',
-      actor: owner,
-      visibility: 'public',
-      payload: {
-        sourceInstanceId,
-        sourceCardId: V070_COUNTERWORKS_ID,
-        revealRole: role,
-      },
-    });
-    completeCounterworksSource(state, owner, role, sourceInstanceId, 'kept');
-    return;
-  }
-
-  if (!eligibleCounterworksReplacements(state, owner, role)
-    .includes(replacementInstanceId)) {
-    throw new V070GameActionError(
-      'That card is no longer an eligible Counterworks replacement.',
-    );
-  }
-  const runtime = state.battleRuntime!;
-  const participant = runtime.participants[owner];
-  const reserveIndex = participant.reserve.indexOf(replacementInstanceId);
-  if (reserveIndex < 0) {
-    throw new V070GameActionError(
-      'A Counterworks replacement must still be in that player’s Reserve.',
-    );
-  }
-  participant.reserve.splice(reserveIndex, 1);
-
-  const replacement: V070BattleCardCommitment = {
-    instanceId: replacementInstanceId,
-    owner,
-    role,
-    faceUp: true,
-  };
-  replaceCommitment(state, owner, role, sourceInstanceId, replacement);
-  if (!state.players[owner].zones.graveyard.includes(sourceInstanceId)) {
-    state.players[owner].zones.graveyard.push(sourceInstanceId);
-  }
-
-  appendV070Event(state, {
-    type: 'counterworks_battle_replaced',
-    actor: owner,
-    visibility: 'public',
-    payload: {
-      sourceInstanceId,
-      sourceCardId: V070_COUNTERWORKS_ID,
-      replacementInstanceId,
-      replacementCardId:
-        state.cardInstances[replacementInstanceId]?.cardId ?? null,
-      revealRole: role,
-      replacementFaceUp: true,
-      sourceDestination: 'graveyard',
-    },
-  });
-  completeCounterworksSource(
-    state,
-    owner,
-    role,
-    sourceInstanceId,
-    'replaced',
-  );
-}
-
-function completeCounterworksSource(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-  outcome: 'kept' | 'replaced' | 'prevented_by_counterintelligence',
-): void {
-  markV070BattleCardEffectApplied(state, sourceInstanceId);
-  appendV070Event(state, {
-    type: 'battle_card_effect_applied',
-    actor: owner,
-    visibility: 'public',
-    payload: {
-      instanceId: sourceInstanceId,
-      cardId: V070_COUNTERWORKS_ID,
-      role,
-      timing: 'pre_normal_reveal',
-      outcome,
-    },
-  });
 
   const runtime = state.battleRuntime!;
-  const opponent = otherPlayer(owner);
-  runtime.counterworksPreRevealNextPlayer =
-    unresolvedCounterworksSources(state, opponent, role).length > 0
-      ? opponent
-      : unresolvedCounterworksSources(state, owner, role).length > 0
-        ? owner
-        : firstCounterworksPlayer(state, role);
-}
-
-function eligibleCounterworksTargets(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-): string[] {
-  return roleCommitments(state, otherPlayer(owner), role)
-    .filter(commitment => !commitment.faceUp)
-    .map(commitment => commitment.instanceId);
-}
-
-function eligibleCounterworksReplacements(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-): string[] {
-  const runtime = state.battleRuntime;
-  if (!runtime) return [];
-  const prohibited = new Set(runtime.disruptionProhibitedInstanceIds ?? []);
-  return runtime.participants[owner].reserve.filter(instanceId => {
-    const cardId = state.cardInstances[instanceId]?.cardId;
-    return Boolean(
-      cardId
-      && cardEligibleForRole(cardId, role)
-      && !prohibited.has(instanceId),
-    );
-  });
-}
-
-function cardEligibleForRole(
-  cardId: string,
-  role: 'gambit' | 'tactic',
-): boolean {
-  const card = v070CanonicalContent.cardsById.get(cardId);
-  if (!card) return false;
-  const label = role === 'gambit' ? 'Gambit' : 'Tactic';
-  return card.effects.some(effect =>
-    effect.label === label || effect.label === 'Gambit/Tactic'
+  const territory = state.board.find(
+    item => item.position === completed.territoryPosition,
   );
-}
-
-function unresolvedCounterworksSources(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-): string[] {
-  return roleCommitments(state, owner, role)
-    .filter(commitment =>
-      state.cardInstances[commitment.instanceId]?.cardId === V070_COUNTERWORKS_ID
-      && !isV070BattleCardEffectNegated(state, commitment.instanceId)
-      && !hasV070BattleCardEffectApplied(state, commitment.instanceId)
-    )
-    .map(commitment => commitment.instanceId);
-}
-
-function roleCommitments(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-): V070BattleCardCommitment[] {
-  const runtime = state.battleRuntime;
-  if (!runtime) return [];
-  const participant = runtime.participants[owner];
-  if (role === 'gambit') {
-    return [
-      ...(participant.gambit ? [participant.gambit] : []),
-      ...participant.additionalGambits,
-    ];
-  }
-  return [
-    ...(participant.tactic ? [participant.tactic] : []),
-    ...participant.additionalTactics,
-  ];
-}
-
-function replaceCommitment(
-  state: V070GameState,
-  owner: PlayerId,
-  role: 'gambit' | 'tactic',
-  sourceInstanceId: string,
-  replacement: V070BattleCardCommitment,
-): void {
-  const participant = state.battleRuntime!.participants[owner];
-  if (role === 'gambit') {
-    if (participant.gambit?.instanceId === sourceInstanceId) {
-      participant.gambit = replacement;
-      return;
-    }
-    const index = participant.additionalGambits.findIndex(
-      commitment => commitment.instanceId === sourceInstanceId,
+  if (!territory) {
+    throw new V070GameActionError(
+      'The contested Territory is no longer available for Counterworks.',
     );
-    if (index >= 0) {
-      participant.additionalGambits[index] = replacement;
-      return;
+  }
+
+  if (action.mode === 'suppress_overlay') {
+    if (!action.overlayInstanceId
+      || !completed.candidateOverlayInstanceIds.includes(action.overlayInstanceId)) {
+      throw new V070GameActionError(
+        'Counterworks must choose one Overlay that was on the contested Territory when the effect opened.',
+      );
     }
+    const stillAttached = state.overlays.some(overlay =>
+      overlay.instanceId === action.overlayInstanceId
+      && overlay.territoryInstanceId === territory.territoryInstanceId
+    );
+    if (!stillAttached) {
+      throw new V070GameActionError(
+        'That Counterworks Overlay target is no longer attached to the contested Territory.',
+      );
+    }
+
+    runtime.counterworksInactiveOverlayInstanceIds ??= [];
+    if (!runtime.counterworksInactiveOverlayInstanceIds.includes(
+      action.overlayInstanceId,
+    )) {
+      runtime.counterworksInactiveOverlayInstanceIds.push(action.overlayInstanceId);
+    }
+
+    appendV070Event(state, {
+      type: 'counterworks_overlay_suppressed',
+      actor: action.playerId,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: completed.sourceInstanceId,
+        sourceCardId: V070_COUNTERWORKS_ID,
+        overlayInstanceId: action.overlayInstanceId,
+        overlayCardId: state.cardInstances[action.overlayInstanceId]?.cardId ?? null,
+        territoryPosition: completed.territoryPosition,
+        duration: 'battle',
+      },
+    });
   } else {
-    if (participant.tactic?.instanceId === sourceInstanceId) {
-      participant.tactic = replacement;
-      return;
+    if (action.overlayInstanceId !== undefined) {
+      throw new V070GameActionError(
+        'Counterworks prevention mode does not choose an existing Overlay.',
+      );
     }
-    const index = participant.additionalTactics.findIndex(
-      commitment => commitment.instanceId === sourceInstanceId,
-    );
-    if (index >= 0) {
-      participant.additionalTactics[index] = replacement;
-      return;
-    }
+    runtime.counterworksOverlayPlacementPreventions ??= [];
+    runtime.counterworksOverlayPlacementPreventions.push({
+      owner: action.playerId,
+      sourceInstanceId: completed.sourceInstanceId,
+      territoryInstanceId: territory.territoryInstanceId,
+    });
+
+    appendV070Event(state, {
+      type: 'counterworks_overlay_prevention_armed',
+      actor: action.playerId,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: completed.sourceInstanceId,
+        sourceCardId: V070_COUNTERWORKS_ID,
+        territoryPosition: completed.territoryPosition,
+        territoryInstanceId: territory.territoryInstanceId,
+      },
+    });
   }
-  throw new V070GameActionError(
-    'The Counterworks source is no longer committed in this battle.',
+
+  markV070BattleCardEffectApplied(state, completed.sourceInstanceId);
+}
+
+export function v070CounterworksOverlayInactiveDuringBattle(
+  state: V070GameState,
+  overlayInstanceId: string,
+): boolean {
+  return Boolean(
+    state.battle
+    && state.battleRuntime?.counterworksInactiveOverlayInstanceIds
+      ?.includes(overlayInstanceId),
   );
 }
 
-function firstCounterworksPlayer(
+export function preventV070OverlayPlacementWithCounterworks(
   state: V070GameState,
-  role: 'gambit' | 'tactic',
-): PlayerId | null {
+  placingOwner: PlayerId,
+  overlayInstanceId: string,
+  territoryPosition: number,
+  source: string,
+): boolean {
   const battle = state.battle;
-  if (!battle) return null;
-  if (unresolvedCounterworksSources(state, battle.attacker, role).length > 0) {
-    return battle.attacker;
-  }
-  if (unresolvedCounterworksSources(state, battle.defender, role).length > 0) {
-    return battle.defender;
-  }
-  return null;
-}
-
-function normalizeNextCounterworksPlayer(
-  state: V070GameState,
-  role: 'gambit' | 'tactic',
-): PlayerId | null {
   const runtime = state.battleRuntime;
-  const preferred = runtime?.counterworksPreRevealNextPlayer ?? null;
-  if (preferred
-    && unresolvedCounterworksSources(state, preferred, role).length > 0) {
-    return preferred;
+  if (!battle || !runtime || territoryPosition !== battle.contestedPosition) {
+    return false;
   }
-  return firstCounterworksPlayer(state, role);
-}
+  const territory = state.board.find(item => item.position === territoryPosition);
+  if (!territory) return false;
 
-function openChoice(
-  state: V070GameState,
-  choice: V070CounterworksPreRevealChoice,
-): void {
-  const runtime = state.battleRuntime;
-  if (!runtime || runtime.counterworksPreRevealChoice) {
-    throw new V070GameActionError(
-      'Cannot open a Counterworks choice while another pre-reveal choice is pending.',
-    );
-  }
-  runtime.counterworksPreRevealChoice = choice;
+  const preventions = runtime.counterworksOverlayPlacementPreventions ?? [];
+  const index = preventions.findIndex(prevention =>
+    prevention.owner !== placingOwner
+    && prevention.territoryInstanceId === territory.territoryInstanceId
+  );
+  if (index < 0) return false;
+
+  const [prevention] = preventions.splice(index, 1);
+  discardPreventedOverlayCard(state, overlayInstanceId);
 
   appendV070Event(state, {
-    type: `${choice.kind}_pending`,
-    actor: choice.playerId,
+    type: 'counterworks_overlay_placement_prevented',
+    actor: prevention.owner,
     visibility: 'public',
     payload: {
-      playerId: choice.playerId,
-      revealRole: choice.role,
-      candidateCount: choice.candidateInstanceIds.length,
-      ...(choice.kind === 'counterworks_target'
-        || choice.kind === 'counterworks_replacement'
-        ? { sourceInstanceId: choice.sourceInstanceId }
-        : {}),
-      mandatory: choice.kind !== 'counterworks_replacement',
+      sourceInstanceId: prevention.sourceInstanceId,
+      sourceCardId: V070_COUNTERWORKS_ID,
+      preventedOverlayInstanceId: overlayInstanceId,
+      preventedOverlayCardId:
+        state.cardInstances[overlayInstanceId]?.cardId ?? null,
+      preventedOverlayOwner: placingOwner,
+      territoryPosition,
+      territoryInstanceId: territory.territoryInstanceId,
+      placementSource: source,
     },
   });
-  appendV070Event(state, {
-    type: `${choice.kind}_options`,
-    actor: choice.playerId,
-    visibility: choice.playerId,
-    payload: {
-      revealRole: choice.role,
-      candidateInstanceIds: [...choice.candidateInstanceIds],
-    },
-  });
+  return true;
 }
 
-function clearChoice(state: V070GameState): void {
-  if (state.battleRuntime) {
-    state.battleRuntime.counterworksPreRevealChoice = null;
+function discardPreventedOverlayCard(
+  state: V070GameState,
+  instanceId: string,
+): void {
+  const card = state.cardInstances[instanceId];
+  if (!card) {
+    throw new V070GameActionError(
+      'Counterworks could not identify the card that would become the Overlay.',
+    );
+  }
+  const owner = card.owner;
+  const player = state.players[owner];
+
+  for (const zone of [
+    player.zones.drawPile,
+    player.zones.hand,
+    player.zones.discardPile,
+    player.zones.graveyard,
+    player.zones.assetBank,
+    player.zones.removed,
+  ]) {
+    removeAll(zone, instanceId);
+  }
+
+  const runtime = state.battleRuntime;
+  if (runtime) {
+    const participant = runtime.participants[owner];
+    if (participant.gambit?.instanceId === instanceId) participant.gambit = null;
+    participant.additionalGambits = participant.additionalGambits.filter(
+      commitment => commitment.instanceId !== instanceId,
+    );
+    if (participant.tactic?.instanceId === instanceId) participant.tactic = null;
+    participant.additionalTactics = participant.additionalTactics.filter(
+      commitment => commitment.instanceId !== instanceId,
+    );
+    removeAll(participant.reserve, instanceId);
+
+    runtime.battleCardAftermathOverlayPlacements =
+      runtime.battleCardAftermathOverlayPlacements.filter(
+        placement => placement.sourceInstanceId !== instanceId,
+      );
+    runtime.battleCardAftermathDestinationOverrides =
+      runtime.battleCardAftermathDestinationOverrides.filter(
+        override => override.instanceId !== instanceId,
+      );
+  }
+
+  if (!player.zones.discardPile.includes(instanceId)) {
+    player.zones.discardPile.push(instanceId);
   }
 }
 
-function otherPlayer(playerId: PlayerId): PlayerId {
-  return playerId === 'A' ? 'B' : 'A';
+function removeAll(target: string[], instanceId: string): void {
+  let index = target.indexOf(instanceId);
+  while (index >= 0) {
+    target.splice(index, 1);
+    index = target.indexOf(instanceId);
+  }
 }

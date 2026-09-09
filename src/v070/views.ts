@@ -9,7 +9,7 @@ import {
   viewV070ReembodimentRecoveryForPlayer,
 } from './reembodiment';
 import { pendingV070LandslideAftermath } from './landslide';
-import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
+import { pendingV070CounterworksBattleChoice } from './counterworks-battle';
 import { pendingV070AccusationAftermath } from './accusation-battle';
 
 export * from './views-postdraw';
@@ -38,17 +38,14 @@ export interface V070LandslideAftermathView {
   candidateInstanceIds?: string[];
 }
 
-export interface V070CounterworksPreRevealView {
-  kind:
-    | 'counterworks_source_order'
-    | 'counterworks_target'
-    | 'counterintelligence_pre_reveal'
-    | 'counterworks_replacement';
+export interface V070CounterworksBattleView {
   playerId: PlayerId;
-  role: 'gambit' | 'tactic';
-  candidateCount: number;
-  optional: boolean;
-  candidateInstanceIds?: string[];
+  sourceInstanceId: string;
+  territoryPosition: number;
+  candidateOverlayCount: number;
+  candidateOverlayInstanceIds: string[];
+  canSuppressOverlay: boolean;
+  canPreventNextOpposingOverlay: true;
 }
 
 export interface V070AccusationAftermathView {
@@ -66,7 +63,7 @@ export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
   pendingLandslideAftermath: V070LandslideAftermathView | null;
-  pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
+  pendingCounterworksBattle: V070CounterworksBattleView | null;
   pendingAccusationAftermath: V070AccusationAftermathView | null;
 };
 
@@ -105,20 +102,21 @@ export function viewV070GameForPlayer(
           : {}),
       }
     : null;
-  const preReveal = pendingV070CounterworksPreRevealChoice(state);
-  const pendingCounterworksPreReveal: V070CounterworksPreRevealView | null =
-    preReveal
+  const counterworks = pendingV070CounterworksBattleChoice(state);
+  const pendingCounterworksBattle: V070CounterworksBattleView | null =
+    counterworks
       ? {
-          kind: preReveal.kind,
-          playerId: preReveal.playerId,
-          role: preReveal.role,
-          candidateCount: preReveal.candidateInstanceIds.length,
-          optional: preReveal.kind === 'counterworks_replacement',
-          ...(viewer === preReveal.playerId
-            ? {
-                candidateInstanceIds: [...preReveal.candidateInstanceIds],
-              }
-            : {}),
+          playerId: counterworks.owner,
+          sourceInstanceId: counterworks.sourceInstanceId,
+          territoryPosition: counterworks.territoryPosition,
+          candidateOverlayCount:
+            counterworks.candidateOverlayInstanceIds.length,
+          candidateOverlayInstanceIds: [
+            ...counterworks.candidateOverlayInstanceIds,
+          ],
+          canSuppressOverlay:
+            counterworks.candidateOverlayInstanceIds.length > 0,
+          canPreventNextOpposingOverlay: true,
         }
       : null;
   const accusation = pendingV070AccusationAftermath(state);
@@ -149,7 +147,7 @@ export function viewV070GameForPlayer(
     pendingWarBondsChoice,
     pendingReembodimentRecovery,
     pendingLandslideAftermath,
-    pendingCounterworksPreReveal,
+    pendingCounterworksBattle,
     pendingAccusationAftermath,
   };
 }

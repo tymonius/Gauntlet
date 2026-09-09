@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { v070CanonicalContent } from '../content/v070';
 import {
   createV070StarterGame,
   reduceV070SetupAction,
@@ -7,19 +8,25 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import {
-  pendingV070CounterworksPreRevealChoice,
+  V070_COUNTERWORKS_BATTLE_TEXT,
+  V070_COUNTERWORKS_ID,
+  pendingV070CounterworksBattleChoice,
+  v070CounterworksOverlayInactiveDuringBattle,
 } from './counterworks-battle';
 import {
-  hasV070BattleCardEffectApplied,
-} from './battle-effect-status';
+  activeV070Overlay,
+  placeV070OverlayFromBattle,
+} from './overlays';
 import {
-  v070BattleEarlyRevealRecords,
-} from './battle-early-reveal';
-import {
-  pendingV070BattleRevealEffectOrderChoice,
-} from './battle-reveal-order';
+  V070_SUPPORTED_REVEAL_EFFECT_IDS,
+  v070BattleEffectHandler,
+} from './battle-effects';
+import { viewV070GameForPlayer } from './views';
 
-function startBattle(): V070GameState {
+function startBattle(existingOverlayCardId?: string): {
+  state: V070GameState;
+  existingOverlayInstanceId?: string;
+} {
   let state = createV070StarterGame({
     gameId: 'counterworks-battle',
     seed: 'counterworks-battle-seed',
@@ -60,6 +67,24 @@ function startBattle(): V070GameState {
   state.board[3].occupant = 'B';
   state.board[3].controller = 'B';
 
+  let existingOverlayInstanceId: string | undefined;
+  if (existingOverlayCardId) {
+    existingOverlayInstanceId = injectCard(
+      state,
+      'B',
+      existingOverlayCardId,
+      'existing-overlay',
+    );
+    state.overlays.push({
+      instanceId: existingOverlayInstanceId,
+      owner: 'B',
+      territoryInstanceId: state.board[3].territoryInstanceId,
+      placedTurn: state.turnNumber,
+      sequence: state.nextOverlaySequence,
+    });
+    state.nextOverlaySequence += 1;
+  }
+
   state = reduceV070TurnAction(state, {
     type: 'resolve_capture', playerId: 'A',
   });
@@ -72,9 +97,10 @@ function startBattle(): V070GameState {
   state = reduceV070TurnAction(state, {
     type: 'choose_movement', playerId: 'A', choice: 'advance',
   });
-  return reduceV070BattleAction(state, {
+  state = reduceV070BattleAction(state, {
     type: 'proceed_from_onset', playerId: 'A',
   });
+  return { state, existingOverlayInstanceId };
 }
 
 function injectCard(
@@ -88,302 +114,224 @@ function injectCard(
   return instanceId;
 }
 
-function setGambits(
+function revealCounterworks(
   state: V070GameState,
-  a?: string,
-  b?: string,
-): V070GameState {
-  if (a) state.players.A.zones.hand.push(a);
-  if (b) state.players.B.zones.hand.push(b);
-  state = reduceV070BattleAction(state, {
-    type: 'set_gambit', playerId: 'A', cardInstanceId: a,
-  });
-  return reduceV070BattleAction(state, {
-    type: 'set_gambit', playerId: 'B', cardInstanceId: b,
-  });
-}
+  opposingGambitId?: string,
+): { state: V070GameState; source: string; opposing?: string } {
+  const source = injectCard(
+    state,
+    'A',
+    V070_COUNTERWORKS_ID,
+    'source',
+  );
+  state.players.A.zones.hand.push(source);
+  let opposing: string | undefined;
+  if (opposingGambitId) {
+    opposing = injectCard(state, 'B', opposingGambitId, 'opposing-gambit');
+    state.players.B.zones.hand.push(opposing);
+  }
 
-function revealGambits(state: V070GameState): V070GameState {
-  return reduceV070BattleAction(state, {
+  state = reduceV070BattleAction(state, {
+    type: 'set_gambit', playerId: 'A', cardInstanceId: source,
+  });
+  state = reduceV070BattleAction(state, {
+    type: 'set_gambit', playerId: 'B', cardInstanceId: opposing,
+  });
+  state = reduceV070BattleAction(state, {
     type: 'reveal_gambits', playerId: 'A',
   });
+  return { state, source, opposing };
 }
 
-describe('v0.7.0 Counterworks pre-normal reveal', () => {
-  test('reveals an opposing Gambit early and lets Deep Cover observe the provenance', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'basic-source',
-    );
-    const deepCover = injectCard(
-      state, 'B', 'intelligence-deep-cover', 'basic-target',
-    );
-    state = setGambits(state, counterworks, deepCover);
-    state.battleRuntime!.participants.A.reserve = [];
+function finishBattle(state: V070GameState): V070GameState {
+  state = reduceV070BattleAction(state, {
+    type: 'choose_tactic', playerId: 'A',
+  });
+  state = reduceV070BattleAction(state, {
+    type: 'choose_tactic', playerId: 'B',
+  });
+  state = reduceV070BattleAction(state, {
+    type: 'reveal_tactics', playerId: 'A',
+  });
+  state = reduceV070BattleAction(state, {
+    type: 'submit_battle_dice', playerId: 'A', values: [6],
+  });
+  state = reduceV070BattleAction(state, {
+    type: 'submit_battle_dice', playerId: 'B', values: [1],
+  });
+  return reduceV070BattleAction(state, {
+    type: 'complete_aftermath', playerId: 'A',
+  });
+}
 
-    state = revealGambits(state);
-
-    const records = v070BattleEarlyRevealRecords(state);
-    expect(records).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        instanceId: counterworks,
-        sourceController: 'A',
-      }),
-      expect.objectContaining({
-        instanceId: deepCover,
-        sourceController: 'A',
-        sourceInstanceId: counterworks,
-        sourceId: 'neutral-counterworks',
-      }),
-    ]));
-    expect(state.battleRuntime?.participants.B.advantage).toBe(1);
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
-    expect(hasV070BattleCardEffectApplied(state, counterworks)).toBe(true);
+describe('v0.7.0 Counterworks battle effect', () => {
+  test('locks the handler to the released Overlay text', () => {
+    const card = v070CanonicalContent.cardsById.get(V070_COUNTERWORKS_ID);
+    expect(card?.effects.find(effect => effect.label === 'Gambit/Tactic')?.text)
+      .toBe(V070_COUNTERWORKS_BATTLE_TEXT);
+    expect(v070BattleEffectHandler(V070_COUNTERWORKS_ID)?.expectedText)
+      .toBe(V070_COUNTERWORKS_BATTLE_TEXT);
+    expect(V070_SUPPORTED_REVEAL_EFFECT_IDS).toContain(V070_COUNTERWORKS_ID);
   });
 
-  test('replacement is optional, face up, and its normal reveal effect still applies', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'replacement-source',
-    );
-    const target = injectCard(
-      state, 'B', 'neutral-forced-march', 'replacement-target',
-    );
-    state = setGambits(state, counterworks, target);
-    const replacement = injectCard(
-      state, 'A', 'neutral-rallying-cry', 'replacement-card',
-    );
-    state.battleRuntime!.participants.A.reserve = [replacement];
+  test('opens at the normal reveal stage and exposes the two released modes', () => {
+    let { state } = startBattle('diplomats-demilitarized-zone');
+    ({ state } = revealCounterworks(state));
 
-    state = revealGambits(state);
-    expect(pendingV070CounterworksPreRevealChoice(state)).toEqual(
-      expect.objectContaining({
-        kind: 'counterworks_replacement',
-        playerId: 'A',
-        sourceInstanceId: counterworks,
-        candidateInstanceIds: [replacement],
-      }),
-    );
-
-    state = reduceV070BattleAction(state, {
-      type: 'resolve_counterworks_replacement',
-      playerId: 'A',
-      replacementInstanceId: replacement,
-    });
-
-    expect(state.players.A.zones.graveyard).toContain(counterworks);
-    expect(state.battleRuntime?.participants.A.gambit).toEqual(
-      expect.objectContaining({
-        instanceId: replacement,
-        owner: 'A',
-        role: 'gambit',
-        faceUp: true,
-      }),
-    );
-    expect(state.battleRuntime?.participants.A.battleModifier).toBe(1);
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
-  });
-
-  test('a banked Counterintelligence prevents the entire revealing effect, including replacement', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'asset-block-source',
-    );
-    const deepCover = injectCard(
-      state, 'B', 'intelligence-deep-cover', 'asset-block-target',
-    );
-    state = setGambits(state, counterworks, deepCover);
-    const replacement = injectCard(
-      state, 'A', 'neutral-rallying-cry', 'asset-block-replacement',
-    );
-    state.battleRuntime!.participants.A.reserve = [replacement];
-    const asset = injectCard(
-      state, 'B', 'neutral-counterintelligence', 'banked-asset',
-    );
-    state.players.B.zones.assetBank.push(asset);
-
-    state = revealGambits(state);
-
-    expect(pendingV070CounterworksPreRevealChoice(state)).toBeNull();
-    expect(state.battleRuntime?.participants.A.gambit?.instanceId)
-      .toBe(counterworks);
-    expect(state.battleRuntime?.participants.A.reserve).toContain(replacement);
-    expect(v070BattleEarlyRevealRecords(state).some(record =>
-      record.instanceId === deepCover && record.sourceController === 'A'
-    )).toBe(false);
-    expect(state.battleRuntime?.participants.B.advantage).toBe(0);
-    expect(state.events.some(event =>
-      event.type === 'counterworks_battle_effect_prevented'
-    )).toBe(true);
-  });
-
-  test('a face-down Counterintelligence reveals itself, gains +1, and prevents Counterworks', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'battle-block-source',
-    );
-    const counterintelligence = injectCard(
-      state, 'B', 'neutral-counterintelligence', 'battle-block-response',
-    );
-    state = setGambits(state, counterworks, counterintelligence);
-    state.battleRuntime!.participants.A.reserve = [];
-
-    state = revealGambits(state);
-
-    expect(state.battleRuntime?.participants.B.battleModifier).toBe(1);
-    expect(hasV070BattleCardEffectApplied(state, counterintelligence)).toBe(true);
-    expect(v070BattleEarlyRevealRecords(state)).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        instanceId: counterintelligence,
-        sourceController: 'B',
-        sourceId: 'neutral-counterintelligence',
-      }),
-    ]));
-    expect(v070BattleEarlyRevealRecords(state).some(record =>
-      record.instanceId === counterintelligence && record.sourceController === 'A'
-    )).toBe(false);
-    expect(state.events.some(event =>
-      event.type === 'counterintelligence_battle_effect_prevented'
-    )).toBe(true);
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
-  });
-
-  test('multiple opposing face-down cards open a private target choice before normal reveal', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'target-choice-source',
-    );
-    const deepCover = injectCard(
-      state, 'B', 'intelligence-deep-cover', 'target-choice-deep-cover',
-    );
-    state = setGambits(state, counterworks, deepCover);
-    const second = injectCard(
-      state, 'B', 'neutral-rallying-cry', 'target-choice-second',
-    );
-    state.battleRuntime!.participants.B.additionalGambits.push({
-      instanceId: second,
-      owner: 'B',
-      role: 'gambit',
-      faceUp: false,
-    });
-    state.battleRuntime!.participants.A.reserve = [];
-
-    state = revealGambits(state);
     expect(state.battleRuntime?.stage).toBe('reveal_gambits');
-    expect(pendingV070CounterworksPreRevealChoice(state)).toEqual(
+    expect(pendingV070CounterworksBattleChoice(state)).toEqual(
       expect.objectContaining({
-        kind: 'counterworks_target',
-        playerId: 'A',
-        sourceInstanceId: counterworks,
-        candidateInstanceIds: expect.arrayContaining([deepCover, second]),
+        owner: 'A',
+        territoryPosition: 3,
+        candidateOverlayInstanceIds: expect.any(Array),
       }),
     );
-    expect(state.events.some(event =>
-      event.type === 'counterworks_target_options'
-      && event.visibility === 'A'
+    expect(viewV070GameForPlayer(state, 'A').pendingCounterworksBattle)
+      .toEqual(expect.objectContaining({
+        playerId: 'A',
+        canSuppressOverlay: true,
+        canPreventNextOpposingOverlay: true,
+      }));
+  });
+
+  test('makes one existing Overlay inactive without uncovering or removing it', () => {
+    let { state, existingOverlayInstanceId } = startBattle(
+      'diplomats-demilitarized-zone',
+    );
+    ({ state } = revealCounterworks(state));
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_counterworks_battle',
+      playerId: 'A',
+      mode: 'suppress_overlay',
+      overlayInstanceId: existingOverlayInstanceId!,
+    });
+
+    expect(v070CounterworksOverlayInactiveDuringBattle(
+      state,
+      existingOverlayInstanceId!,
+    )).toBe(true);
+    expect(activeV070Overlay(state, 3)?.instanceId)
+      .toBe(existingOverlayInstanceId);
+    expect(state.overlays.some(overlay =>
+      overlay.instanceId === existingOverlayInstanceId
     )).toBe(true);
 
-    state = reduceV070BattleAction(state, {
-      type: 'choose_counterworks_target',
-      playerId: 'A',
-      targetInstanceId: deepCover,
-    });
-
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
-    expect(state.battleRuntime?.participants.B.advantage).toBe(0);
-    expect(pendingV070BattleRevealEffectOrderChoice(state)).toEqual(
-      expect.objectContaining({
-        playerId: 'B',
-        candidateInstanceIds: expect.arrayContaining([deepCover, second]),
-      }),
-    );
-
-    state = reduceV070BattleAction(state, {
-      type: 'resolve_battle_reveal_effect_order',
-      playerId: 'B',
-      sourceInstanceId: deepCover,
-    });
-
-    expect(state.battleRuntime?.participants.B.advantage).toBe(1);
+    state = finishBattle(state);
+    expect(state.overlays.some(overlay =>
+      overlay.instanceId === existingOverlayInstanceId
+    )).toBe(true);
   });
 
-  test('multiple Counterintelligence responses let the protected player choose which copy reacts', () => {
-    let state = startBattle();
-    const counterworks = injectCard(
-      state, 'A', 'neutral-counterworks', 'multi-ci-source',
-    );
-    const target = injectCard(
-      state, 'B', 'intelligence-deep-cover', 'multi-ci-target',
-    );
-    state = setGambits(state, counterworks, target);
-    const ciOne = injectCard(
-      state, 'B', 'neutral-counterintelligence', 'multi-ci-one',
-    );
-    const ciTwo = injectCard(
-      state, 'B', 'neutral-counterintelligence', 'multi-ci-two',
-    );
-    state.battleRuntime!.participants.B.additionalGambits.push(
-      { instanceId: ciOne, owner: 'B', role: 'gambit', faceUp: false },
-      { instanceId: ciTwo, owner: 'B', role: 'gambit', faceUp: false },
-    );
-    state.battleRuntime!.participants.A.reserve = [];
+  test('can arm prevention even when no Overlay is currently on the Territory', () => {
+    let { state } = startBattle();
+    ({ state } = revealCounterworks(state));
+    const pending = pendingV070CounterworksBattleChoice(state);
+    expect(pending?.candidateOverlayInstanceIds).toEqual([]);
 
-    state = revealGambits(state);
-    expect(pendingV070CounterworksPreRevealChoice(state)?.kind)
-      .toBe('counterworks_target');
     state = reduceV070BattleAction(state, {
-      type: 'choose_counterworks_target',
+      type: 'resolve_counterworks_battle',
       playerId: 'A',
-      targetInstanceId: target,
+      mode: 'prevent_next_opposing_overlay',
     });
-
-    expect(pendingV070CounterworksPreRevealChoice(state)).toEqual(
-      expect.objectContaining({
-        kind: 'counterintelligence_pre_reveal',
-        playerId: 'B',
-        candidateInstanceIds: expect.arrayContaining([ciOne, ciTwo]),
-      }),
-    );
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_counterintelligence_pre_reveal',
-      playerId: 'B',
-      counterintelligenceInstanceId: ciTwo,
-    });
-
-    expect(state.battleRuntime?.participants.B.battleModifier).toBe(1);
-    expect(hasV070BattleCardEffectApplied(state, ciTwo)).toBe(true);
-    expect(hasV070BattleCardEffectApplied(state, ciOne)).toBe(true);
-    expect(state.battleRuntime?.participants.B.advantage).toBe(0);
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.counterworksOverlayPlacementPreventions)
+      .toHaveLength(1);
   });
 
-  test('a Counterworks replacement can itself be Counterworks and resolves before normal reveal', () => {
-    let state = startBattle();
-    const first = injectCard(
-      state, 'A', 'neutral-counterworks', 'chain-first',
-    );
-    const target = injectCard(
-      state, 'B', 'neutral-rallying-cry', 'chain-target',
-    );
-    state = setGambits(state, first, target);
-    const second = injectCard(
-      state, 'A', 'neutral-counterworks', 'chain-second',
-    );
-    state.battleRuntime!.participants.A.reserve = [second];
-
-    state = revealGambits(state);
+  test('prevents and discards the next opposing Overlay that would be placed there', () => {
+    let { state } = startBattle();
+    ({ state } = revealCounterworks(state));
     state = reduceV070BattleAction(state, {
-      type: 'resolve_counterworks_replacement',
+      type: 'resolve_counterworks_battle',
       playerId: 'A',
-      replacementInstanceId: second,
+      mode: 'prevent_next_opposing_overlay',
     });
 
-    expect(state.players.A.zones.graveyard).toContain(first);
-    expect(state.battleRuntime?.participants.A.gambit?.instanceId).toBe(second);
-    expect(hasV070BattleCardEffectApplied(state, first)).toBe(true);
-    expect(hasV070BattleCardEffectApplied(state, second)).toBe(true);
-    expect(pendingV070CounterworksPreRevealChoice(state)).toBeNull();
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    const circle = injectCard(
+      state,
+      'B',
+      'mystics-circle-of-bones',
+      'prevented-circle',
+    );
+    const placed = placeV070OverlayFromBattle(
+      state,
+      'B',
+      circle,
+      3,
+      'Counterworks regression',
+    );
+
+    expect(placed).toBeNull();
+    expect(state.overlays.some(overlay => overlay.instanceId === circle))
+      .toBe(false);
+    expect(state.players.B.zones.discardPile).toContain(circle);
+    expect(state.battleRuntime?.counterworksOverlayPlacementPreventions)
+      .toEqual([]);
+  });
+
+  test('does not consume prevention on a friendly Overlay and only stops one opposing placement', () => {
+    let { state } = startBattle();
+    ({ state } = revealCounterworks(state));
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_counterworks_battle',
+      playerId: 'A',
+      mode: 'prevent_next_opposing_overlay',
+    });
+
+    const friendly = injectCard(
+      state,
+      'A',
+      'mystics-circle-of-bones',
+      'friendly-circle',
+    );
+    expect(placeV070OverlayFromBattle(
+      state,
+      'A',
+      friendly,
+      3,
+      'friendly Overlay',
+    )?.instanceId).toBe(friendly);
+    expect(state.battleRuntime?.counterworksOverlayPlacementPreventions)
+      .toHaveLength(1);
+
+    const firstOpposing = injectCard(
+      state,
+      'B',
+      'mystics-spirit-hollow',
+      'first-opposing',
+    );
+    expect(placeV070OverlayFromBattle(
+      state,
+      'B',
+      firstOpposing,
+      3,
+      'first opposing Overlay',
+    )).toBeNull();
+
+    const secondOpposing = injectCard(
+      state,
+      'B',
+      'mystics-circle-of-bones',
+      'second-opposing',
+    );
+    expect(placeV070OverlayFromBattle(
+      state,
+      'B',
+      secondOpposing,
+      3,
+      'second opposing Overlay',
+    )?.instanceId).toBe(secondOpposing);
+  });
+
+  test('rejects suppression mode when there was no existing Overlay to choose', () => {
+    let { state } = startBattle();
+    ({ state } = revealCounterworks(state));
+
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_counterworks_battle',
+      playerId: 'A',
+      mode: 'suppress_overlay',
+      overlayInstanceId: 'not-an-overlay',
+    })).toThrow(/Overlay/i);
   });
 });
