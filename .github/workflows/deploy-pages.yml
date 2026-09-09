@@ -18,13 +18,13 @@ on:
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'card-reference/**'
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
       - 'legacy/public-versions/v0.7.0/**'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
-      - 'scripts/tts-current-catalog.mjs'
       - 'scripts/current-game-authority.mjs'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
@@ -228,7 +228,9 @@ jobs:
           release_dir="$RUNNER_TEMP/gauntlet-tts-release"
           rm -rf "$release_dir"
           mkdir -p "$release_dir"
-          gh release download "$TTS_RELEASE_TAG"             --repo "$GITHUB_REPOSITORY"             --dir "$release_dir"
+          gh release download "$TTS_RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$release_dir"
 
           test -s "$release_dir/$TTS_PREVIEW_SAVE"
           count="$(find "$release_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
@@ -246,7 +248,11 @@ jobs:
 
           find "$TTS_RELEASE_DIR" -maxdepth 1 -type f ! -name "$TTS_PREVIEW_SAVE" -exec cp '{}' "$asset_root/" ';'
 
-          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE"           TARGET="$public_root/$TTS_PUBLIC_SAVE"           APPROVED_PREFIX="$TTS_APPROVED_PREFIX"           PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX"           node <<'NODE'
+          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE" \
+          TARGET="$public_root/$TTS_PUBLIC_SAVE" \
+          APPROVED_PREFIX="$TTS_APPROVED_PREFIX" \
+          PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" \
+          node <<'NODE'
           const fs = require('fs');
 
           const source = fs.readFileSync(process.env.SOURCE, 'utf8');
@@ -317,7 +323,9 @@ jobs:
 
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
-          test "$bytes" -lt 950000000
+          # Keep a bounded guard below the 1 GB Pages target while allowing the approved
+          # production Chief Justice assets to ship with the site.
+          test "$bytes" -lt 970000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           test -s "$SITE_DIR/playtest/index.html"
