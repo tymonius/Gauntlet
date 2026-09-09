@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: fix/vitest-ci-bootstrap
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -28,41 +28,20 @@ jobs:
       - name: Generate lockfile
         run: npm install --package-lock-only --no-audit --no-fund
 
-      - name: Standardize CI installs
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          replacements = {
-              Path('.github/workflows/full-regression.yml'): [
-                  ('          npm install\n', '          npm ci\n'),
-              ],
-              Path('.github/workflows/card-authority.yml'): [
-                  ('        run: npm install --no-audit --no-fund\n', '        run: npm ci --no-audit --no-fund\n'),
-              ],
-          }
-
-          for path, changes in replacements.items():
-              text = path.read_text()
-              original = text
-              for old, new in changes:
-                  text = text.replace(old, new)
-              if text == original:
-                  raise SystemExit(f'Expected install command not found in {path}')
-              path.write_text(text)
-          PY
-
       - name: Verify clean install
         run: npm ci --no-audit --no-fund
 
       - name: Verify Vitest config resolution
         run: npx vitest run tests/current-game-authority.test.ts
 
-      - name: Commit bootstrap fix
+      - name: Commit lockfile
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm .github/workflows/tmp-fix-vitest-ci-bootstrap.yml
-          git add package-lock.json .github/workflows/full-regression.yml .github/workflows/card-authority.yml
-          git commit -m 'Fix deterministic Vitest CI bootstrap'
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Lockfile already current.'
+            exit 0
+          fi
+          git commit -m 'Add deterministic Node dependency lockfile'
           git push origin HEAD:fix/vitest-ci-bootstrap
