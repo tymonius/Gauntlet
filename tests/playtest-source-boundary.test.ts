@@ -18,8 +18,9 @@ describe("Playtest source/deployment boundary", () => {
 
   it("stages the app at the stable /playtest public path without exposing /apps", () => {
     const pages = read(".github/workflows/deploy-pages.yml");
-    expect(pages).toContain('source="apps/playtest"');
-    expect(pages).toContain('target="$site/playtest"');
+    expect(pages).toContain('for surface in start playtest; do');
+    expect(pages).toContain('source="apps/$surface"');
+    expect(pages).toContain('target="$site/$surface"');
     expect(pages).toContain(".github apps artifacts docs governance legacy media");
     expect(pages).toContain('test -s "$site/playtest/index.html"');
 
@@ -42,7 +43,7 @@ describe("Playtest source/deployment boundary", () => {
   });
 
   it("preserves player-facing /playtest navigation contracts", () => {
-    const start = read("start/app.js");
+    const start = read("apps/start/app.js");
     expect(start).toContain('new URL("../playtest/tracked/"');
   });
 });

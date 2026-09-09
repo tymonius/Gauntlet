@@ -22,7 +22,7 @@ jobs:
             /vitest.config.ts
             /tests/standalone-new-player-onboarding.test.ts
             /index.html
-            /start/
+            /apps/start/
             /deckbuilder/
             /game-data/current-game.json
             /rulebook/player-facing/current-rulebook.md

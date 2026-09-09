@@ -53,8 +53,7 @@ jobs:
             /404.html
             /robots.txt
             /sitemap.xml
-            /start/index.html
-            /start/styles.css
+            /apps/start/**
             /rulebook/index.html
             /card-reference/index.html
             /factions/index.html
@@ -74,6 +73,10 @@ jobs:
           if [ -d apps/playtest ]; then
             mkdir -p playtest
             cp -a apps/playtest/. playtest/
+          fi
+          if [ -d apps/start ]; then
+            mkdir -p start
+            cp -a apps/start/. start/
           fi
           node scripts/materialize-public-route-compatibility.mjs
 

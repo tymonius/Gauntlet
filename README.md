@@ -90,7 +90,7 @@ The repository's current/historical/generated path classifications and cleanup t
 
 ### apps/
 
-Maintained application source that has been separated from deployed URL layout. `apps/playtest/` is the first migrated application and is staged by GitHub Pages at the unchanged public `/playtest/` route.
+Maintained application source that has been separated from deployed URL layout. `apps/start/` and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/start/` and `/playtest/` routes.
 
 ### game-data/
 
@@ -116,7 +116,7 @@ Current faction-era Deckbuilder and complete-package print/export surface.
 
 Historical Deckbuilder surfaces retained for versioned compatibility.
 
-### card-reference/, factions/, and start/
+### card-reference/ and factions/
 
 Current public discovery/reference surfaces generated from current authority.
 
@@ -124,9 +124,9 @@ Current public discovery/reference surfaces generated from current authority.
 
 Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
 
-### apps/playtest/ and workers/playtest-sessions/
+### apps/start/, apps/playtest/, and workers/playtest-sessions/
 
-Canonical Playtest browser source and its session service. GitHub Pages stages the browser source at the stable public `/playtest/` path; do not recreate a maintained root `playtest/` source alias.
+Canonical Start and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/start/` and `/playtest/` paths; do not recreate maintained root `start/` or `playtest/` source aliases.
 
 ### tts/
 
@@ -167,7 +167,7 @@ http://localhost:8000/deckbuilder/
 http://localhost:8000/card-reference/
 ~~~
 
-Playtest is source/deployment separated. Its canonical source is `apps/playtest/`, while production serves it at `/playtest/`. Browser/render CI stages that public layout explicitly; tests and tooling that inspect source should use `apps/playtest/`, while public links should continue to use `/playtest/`.
+Start and Playtest are source/deployment separated. Their canonical sources are `apps/start/` and `apps/playtest/`, while production serves them at `/start/` and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes.
 
 For the rules-aware digital-engine codebase:
 

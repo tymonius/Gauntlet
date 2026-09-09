@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("start/app.js", "utf8");
+const source = readFileSync("apps/start/app.js", "utf8");
 
 describe("Start leader selection focus", () => {
   it("captures a focused Leader before any render rebuilds the radio group", () => {

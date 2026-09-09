@@ -12,7 +12,7 @@ const LIVE_SOURCE_DIRS = Object.freeze([
   'rulebook',
   'rules-arbiter',
   'scripts',
-  'start',
+  'apps/start',
   'tts',
   'workers',
 ]);

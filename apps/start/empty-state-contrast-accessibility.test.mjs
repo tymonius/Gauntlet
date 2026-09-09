@@ -17,7 +17,7 @@ function contrastRatio(foreground, background) {
 
 describe("Start starter-preview empty-state contrast", () => {
   it("uses the shared muted ink at normal-text contrast", () => {
-    const startStyles = readFileSync("start/styles.css", "utf8");
+    const startStyles = readFileSync("apps/start/styles.css", "utf8");
     const polish = readFileSync("site-polish.css", "utf8");
 
     expect(startStyles).toContain(".starter-preview.empty-state{color:#69716f}");

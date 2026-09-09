@@ -10,14 +10,14 @@ const governingCombined = readCombined([
 ]);
 
 const websiteCombined = readCombined([
-  "start/index.html",
-  "playtest/onboarding/index.html",
-  "playtest/player-mat/index.html",
+  "apps/start/index.html",
+  "apps/playtest/onboarding/index.html",
+  "apps/playtest/player-mat/index.html",
   "factions/inquisition/index.html",
   "factions/intelligence/index.html",
   "factions/financiers/index.html",
   "factions/mystics/index.html",
-  "start/app.js",
+  "apps/start/app.js",
   "deckbuilder/app.js",
   "deckbuilder/faction-components.js",
   "deckbuilder/print.js",

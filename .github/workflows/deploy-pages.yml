@@ -13,6 +13,7 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
+      - 'apps/start/**'
       - 'apps/playtest/**'
       - 'rulebook/**'
       - 'tts/renderer/**'
@@ -84,7 +85,6 @@ jobs:
             rulebook
             rules-arbiter
             rules-assistant
-            start
             tts
             v0.7.1
           )
@@ -104,14 +104,16 @@ jobs:
             | tar -xf - -C "$site"
 
           # Maintained application source may live independently from its stable public URL.
-          # Playtest is the first source/deployment-separated app: repository source lives in
-          # apps/playtest/, while the deployed compatibility contract remains /playtest/.
-          source="apps/playtest"
-          target="$site/playtest"
-          test -d "$source"
-          rm -rf "$target"
-          mkdir -p "$target"
-          cp -a "$source/." "$target/"
+          # Start and Playtest are source/deployment-separated apps under apps/, while their
+          # deployed compatibility contracts remain /start/ and /playtest/ respectively.
+          for surface in start playtest; do
+            source="apps/$surface"
+            target="$site/$surface"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
 
           # Keep historical source under legacy/ while materializing real files at the stable
           # public version URLs without exposing the legacy source boundary itself.
@@ -181,6 +183,7 @@ jobs:
           done
 
           test -s "$site/index.html"
+          test -s "$site/start/index.html"
           test -s "$site/playtest/index.html"
           test -s "$site/CNAME"
           test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
@@ -315,6 +318,7 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/start/index.html"
           test -s "$SITE_DIR/playtest/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
