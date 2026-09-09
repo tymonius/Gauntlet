@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T13:04:10.161Z",
+  "updatedAt": "2026-09-09T13:24:14.801Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -672,6 +672,23 @@
       "resolvedAt": "2026-09-09T13:04:10.161Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260909-3"
+      }
+    },
+    {
+      "id": "fates-toll-valor-multi-effect-order-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "58fb3cca-3fcd-41d6-9fbf-ee56f59a7575"
+      ],
+      "caseIds": [
+        "fates-toll-valor-consecutive-rerolls"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Questions that explicitly ask whether multiple controlled effects resolve one after another or at the same timing now retrieve the v0.7.1 Shared timing rule alongside the specific effect authorities. For the reviewed Fate’s Toll + Valor case, both cards remain primary sources while Shared timing directly supplies the missing ordering premise that each player chooses the order of effects they control; each effect still must satisfy its own printed condition when it resolves.",
+      "resolvedAt": "2026-09-09T13:24:14.801Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-7"
       }
     }
   ]
