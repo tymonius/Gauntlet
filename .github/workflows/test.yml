@@ -216,6 +216,7 @@ jobs:
           RELATED_SOURCES: ${{ steps.scope.outputs.related_sources }}
         run: |
           set -euo pipefail
+          exec > >(tee vitest-output.log) 2>&1
           if [[ "${{ steps.scope.outputs.full_tests }}" == "true" ]]; then
             npx vitest run
             exit 0
@@ -238,6 +239,15 @@ jobs:
               --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
               "${related_sources[@]}"
           fi
+
+      - name: Upload Vitest failure diagnostics
+        if: failure() && steps.scope.outputs.code == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-failure-log
+          path: vitest-output.log
+          if-no-files-found: warn
+          retention-days: 3
 
       - name: Run public static accessibility contract when HTML changes
         if: steps.scope.outputs.accessibility == 'true'
