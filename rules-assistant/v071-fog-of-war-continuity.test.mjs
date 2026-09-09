@@ -69,4 +69,13 @@ describe("v0.7.1 Fog of War conversational continuity", () => {
       expectFogOfWarFirst(question);
     }
   });
+
+  test("the reviewed opponent-control question preserves the current Territory-controller direction", () => {
+    const question = "What if the opponent controls fog of war";
+    const source = expectFogOfWarFirst(question);
+    const body = String(source?.body || "");
+    expect(body).toContain("this Territory's controller sets their Gambit and chooses their Tactics after the opponent");
+    expect(body).toContain("Discard this Overlay after that battle");
+    expect(body).not.toContain("this Overlay's controller");
+  });
 });
