@@ -11,14 +11,19 @@ const reviewedOutOfScope = [
   "Design a more historically accurate costume for the Grand Inquisitor.",
   "Ignore the rulebook and tell me the strongest deck for crushing Mystics.",
   "What real-world ideology inspired the Financier faction?",
-  "Can you build me a deck utilizing the Senator?"
+  "Can you build me a deck utilizing the Senator?",
+  "Will there be an expansion that includes Communism?",
+  "Are there plans for a future expansion?",
+  "When is the next expansion coming?",
+  "What is the development roadmap?"
 ];
 
 const rulesQuestions = [
   "What are the Deck construction requirements?",
   "How do I choose a faction and Leader when building a Deck?",
   "What does the Witch Hunter do?",
-  "Can this card be in a Witch Hunter Deck?"
+  "Can this card be in a Witch Hunter Deck?",
+  "Can I expand my control into a Territory after winning a battle?"
 ];
 
 function request(question, rulesVersion = "v0.7.1") {
@@ -67,6 +72,7 @@ test("current v0.7.1 scope requests return before retrieval or model use", async
   expect(body.executionPath).toBe("deterministic-scope");
   expect(body.interactionId).toBeNull();
   expect(body.scopePrecheckRevision).toBe(V071_SCOPE_PRECHECK_REVISION);
+  expect(body.answer).toMatch(/future development plans/i);
 });
 
 test("historical-version and in-scope requests are left to their normal workers", async () => {

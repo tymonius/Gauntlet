@@ -131,6 +131,22 @@ function validateTrackerPresentation(authority) {
   }
 }
 
+function validateBattleCommitmentOrder(authority) {
+  const order = authority.gameplay?.battle?.commitment_order;
+  const expected = ['attacker', 'defender'];
+  const gambits = requireCurrentArray(order?.gambits, 'normal Gambit commitment order');
+  const tactics = requireCurrentArray(order?.tactics, 'normal Tactic commitment order');
+  if (JSON.stringify(gambits) !== JSON.stringify(expected)) {
+    throw new Error('Normal Gambit commitment order must be attacker then defender.');
+  }
+  if (JSON.stringify(tactics) !== JSON.stringify(expected)) {
+    throw new Error('Normal Tactic commitment order must be attacker then defender.');
+  }
+  if (!String(order?.face_state || '').trim() || !String(order?.text || '').trim()) {
+    throw new Error('Battle commitment order must define normal face state and explanatory text.');
+  }
+}
+
 export function validateCurrentGameAuthority(authority) {
   if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
     throw new Error('Invalid complete current-game authority.');
@@ -155,6 +171,7 @@ export function validateCurrentGameAuthority(authority) {
   validateMysticsStarterRites(authority);
   validateFactionFeatures(authority);
   validateTrackerPresentation(authority);
+  validateBattleCommitmentOrder(authority);
   authority.leaders.forEach(validateLeader);
 
   const ids = new Set();

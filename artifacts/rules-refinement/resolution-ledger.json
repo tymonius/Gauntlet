@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T04:07:05.322Z",
+  "updatedAt": "2026-09-09T06:50:24.116Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -148,7 +148,8 @@
         "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
         "6372e467-23a7-420e-8717-4685d50226e5",
         "487240d8-48e2-4936-b840-06307d498211",
-        "4506c963-531c-46c5-880f-7b7027824878"
+        "4506c963-531c-46c5-880f-7b7027824878",
+        "cdbf21bb-83b7-479c-bca4-e303a0c25b1e"
       ],
       "caseIds": [
         "scope-strategy-lore-costume-version-history"
@@ -182,7 +183,8 @@
         "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
         "ab92804c-691b-4857-aee8-539c7efccfd3",
         "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
-        "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+        "cec1260e-3e06-4a88-a8da-3a6bff726bc7",
+        "d90e20fe-14c2-404d-951e-0b877c18adfc"
       ],
       "caseIds": [
         "reviewed-correct-should-be-explicit"
@@ -500,6 +502,125 @@
       "resolvedAt": "2026-09-09T04:07:05.322Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-5"
+      }
+    },
+    {
+      "id": "rite-of-crossing-completion-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4"
+      ],
+      "caseIds": [
+        "rite-of-crossing-completion"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Current v0.7.1 retrieval returns the complete Rite of Crossing authority first for the reviewed completion question. The written rules directly state the next-turn completion condition, interruption/reset behavior, no same-turn completion rule, and paid-cost handling, so the answer is explicit rather than provisional.",
+      "resolvedAt": "2026-09-09T04:19:58.968Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-5"
+      }
+    },
+    {
+      "id": "fieldcraft-territory-state-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "fcd97287-272d-4a8c-8c1c-5eaa8727cbff"
+      ],
+      "caseIds": [
+        "fieldcraft-territory-state-limits"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the detailed current v0.7.1 Ranger/Fieldcraft authority when Fieldcraft questions concern Territory control, Occupation, Capture, Defensive Edge, Last Stand bonuses, or Territory-derived limits. This supplies the explicit limitation that Fieldcraft does not alter those game states instead of leaving the Arbiter to infer from abbreviated ability text.",
+      "resolvedAt": "2026-09-09T04:58:13.295Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "safe-conduct-political-capital-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "b2bde472-270d-4b6e-82c2-7ab6b92b58f3"
+      ],
+      "caseIds": [
+        "safe-conduct-political-capital"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Current v0.7.1 retrieval directly supplies Safe Conduct and Political Capital for the reviewed interaction. Safe Conduct replaces the qualifying battle loss with withdrawal, while Political Capital is expressly conditioned on losing following refused Terms; the ruling is therefore explicit rather than provisional. No runtime change is required.",
+      "resolvedAt": "2026-09-09T05:07:34.858Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "shock-and-awe-completeness-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "332e9263-826f-448b-8ab3-4fcaa1edd90c"
+      ],
+      "caseIds": [
+        "shock-and-awe-broad-explanation"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The reviewed broad Shock and Awe explanation had sufficient authority but omitted material conditions. Current v0.7.1 retrieval returns the complete Shock and Awe card first and the conflicting-victory rule alongside it, while the current whole-procedure prompt requires the Arbiter to preserve the complete sequence and its prerequisites, branches, restrictions, and destinations. The exact reviewed question is regression-covered; no new runtime change is required.",
+      "resolvedAt": "2026-09-09T06:15:13.090Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deed-contiguity-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "eb878722-a732-492f-814e-df3c5ccded9a"
+      ],
+      "caseIds": [
+        "deed-purchase-contiguity"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed no-contiguity ruling was correct and correctly classified as inferred, but its selected authority was too weak. Current v0.7.1 retrieval supplies the Front Line definition, Deed ownership-independence rule, and the specific purchase table together; those rules compel the no-contiguity result, while the current classification boundary correctly treats absence of a contiguity restriction as inference rather than explicit authority. No runtime change is required.",
+      "resolvedAt": "2026-09-09T06:21:55.504Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deed-remote-purchase-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "54962556-f04e-428b-89c5-2c193d47cf0f"
+      ],
+      "caseIds": [
+        "deed-remote-purchase"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed remote-purchase ruling was correct and explicit, but the final selected source was weaker than the specific purchase authority. Current v0.7.1 retrieval returns Buying and buying out Deeds first; its purchase table expressly prices the case where the buyer neither controls nor occupies the Territory, with the Deeds rule also confirming ownership independence from position and control. No runtime change is required.",
+      "resolvedAt": "2026-09-09T06:21:55.504Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deterministic-out-of-scope-roadmap-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d"
+      ],
+      "caseIds": [
+        "scope-future-expansion-roadmap"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Future expansion and development-roadmap requests now use the deterministic current-v0.7.1 out-of-scope precheck before corpus retrieval or model-budget reservation. The exact reviewed Communism-expansion question is regression-covered, while gameplay uses of expand remain in scope.",
+      "resolvedAt": "2026-09-09T06:42:38.026Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260909-2"
       }
     }
   ]

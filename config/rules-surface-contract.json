@@ -153,6 +153,19 @@
       ]
     },
     {
+      "id": "core.battle.commitment-order",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "commitment_order"
+          ]
+        }
+      ]
+    },
+    {
       "id": "core.battle.onset",
       "scope": "core",
       "sources": [
@@ -570,6 +583,7 @@
           "dependsOn": [
             "core.battle",
             "core.battle.sequence",
+            "core.battle.commitment-order",
             "core.battle.gambit-count",
             "core.battle.tactic-count",
             "core.battle.reserve-size",

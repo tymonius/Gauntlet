@@ -1,4 +1,4 @@
-name: v0.7.1 Rules Arbiter live answer QA
+name: Current Rules Arbiter live answer QA
 
 on:
   workflow_dispatch:
@@ -40,56 +40,39 @@ jobs:
         with:
           node-version: 22
 
+      - name: Resolve lifecycle-selected live publication
+        id: plan
+        run: node scripts/resolve-current-live-publication.mjs
+
       - name: Configure paid QA scope
         run: |
           if [ "${{ inputs.scope }}" = "full" ]; then
             echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
-            echo "Running the full paid Rules Arbiter benchmark."
+            echo "Running the full paid Rules Arbiter benchmark for ${{ steps.plan.outputs.version }}."
           else
             echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
-            echo "Running a 10-case representative paid Rules Arbiter smoke test."
+            echo "Running a 10-case representative paid Rules Arbiter smoke test for ${{ steps.plan.outputs.version }}."
           fi
 
-      - name: Verify frozen v0.7.1 corpus matches current authority
+      - name: Install release validation dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate lifecycle-selected published corpus
         run: |
           set -euo pipefail
-          node scripts/build-v071-release-source.mjs
-          corpus_files=(
-            releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md
-            releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json
-            releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json
-            releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json
-          )
-          if ! git diff --exit-code -- "${corpus_files[@]}"; then
-            echo "::error::The tracked v0.7.1 published corpus is stale. Merge the generated release refresh before spending on live Rules Arbiter QA."
-            exit 1
-          fi
-          node <<'NODE'
-          const { appendFileSync, readFileSync } = await import("node:fs");
-          const manifest = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json", "utf8"));
-          const provenance = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json", "utf8"));
-          const expected = String(provenance.authority_set_id || "").trim();
-          if (!expected || manifest.authority_set_id !== expected) {
-            console.error("The v0.7.1 manifest and source provenance do not identify the same authority set.");
-            process.exit(1);
-          }
-          appendFileSync(process.env.GITHUB_ENV, `EXPECTED_RULES_AUTHORITY_SET=${expected}\n`);
-          console.log(`Expected Rules Arbiter authority set: ${expected}`);
-          NODE
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-github-release-contract.mjs
+          echo "Expected Rules Arbiter authority set: ${{ steps.plan.outputs.authority_set_id }}"
 
       - name: Wait for deployed Rules Arbiter revision
         env:
-          RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
+          RULES_HEALTH_ENDPOINT: ${{ steps.plan.outputs.health_url }}
+          EXPECTED_BEHAVIOR_REVISION: ${{ steps.plan.outputs.behavior_revision }}
         run: |
           node <<'NODE'
-          const { readFileSync } = await import("node:fs");
-          const workerSource = readFileSync("rules-assistant/worker-v071.js", "utf8");
-          const revisionMatch = workerSource.match(/export const BEHAVIOR_REVISION = "([^"]+)"/);
-          if (!revisionMatch) {
-            console.error("Could not resolve BEHAVIOR_REVISION from rules-assistant/worker-v071.js.");
-            process.exit(1);
-          }
-          const expected = revisionMatch[1];
+          const expected = process.env.EXPECTED_BEHAVIOR_REVISION;
           const endpoint = process.env.RULES_HEALTH_ENDPOINT;
           const attempts = 40;
           const delayMs = 15000;
@@ -113,8 +96,9 @@ jobs:
 
       - name: Verify published corpus and refresh Worker cache
         env:
-          RULES_PUBLIC_MANIFEST: https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json
-          RULES_CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health
+          EXPECTED_RULES_AUTHORITY_SET: ${{ steps.plan.outputs.authority_set_id }}
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/${{ steps.plan.outputs.manifest_path }}
+          RULES_CORPUS_HEALTH_ENDPOINT: ${{ steps.plan.outputs.corpus_health_url }}
         run: |
           node <<'NODE'
           const expected = process.env.EXPECTED_RULES_AUTHORITY_SET;
@@ -166,18 +150,20 @@ jobs:
         id: qa
         continue-on-error: true
         env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ steps.plan.outputs.qa_report_path }}
           GAUNTLET_RULES_QA_CONCURRENCY: '1'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
           GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
-        run: node scripts/run-v071-live-rules-qa.mjs
+        run: node "${{ steps.plan.outputs.qa_runner }}"
 
       - name: Upload live QA report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v071-rules-arbiter-live-qa
-          path: artifacts/rules-qa/v071-live-answer-run.json
+          name: current-rules-arbiter-live-qa-${{ steps.plan.outputs.version }}
+          path: ${{ steps.plan.outputs.qa_report_path }}
           if-no-files-found: error
           retention-days: 14
 

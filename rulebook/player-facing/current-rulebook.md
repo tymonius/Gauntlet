@@ -495,15 +495,15 @@ Use **Onset** as the formal stage name. In ordinary prose, use constructions suc
 Conduct an active battle in this order:
 
 1. **Onset**
-2. Set Gambits.
+2. Set Gambits: the attacker sets a Gambit or passes first, then the defender sets a Gambit or passes.
 3. Set Hands aside and form Reserves.
 4. Reveal Gambits.
-5. Choose Tactics.
+5. Choose Tactics: the attacker chooses a Tactic or passes first, then the defender chooses a Tactic or passes.
 6. Reveal Tactics.
 7. Determine the Outcome.
 8. Proceed to the **Aftermath**.
 
-Terms, when applicable, resolve during Onset before other pre-Gambit effects.
+Terms, when applicable, resolve during Onset before other pre-Gambit effects. Gambits and Tactics are normally committed face down. The defender knows whether the attacker committed or passed before making the corresponding choice. A specific rule or effect may change the commitment order or face state.
 
 ### Determine the Outcome
 

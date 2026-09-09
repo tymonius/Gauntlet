@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { CURRENT_VISUAL_AUTHORITY_URL, normalizePublishedGame, rulesetModeFromUrl } from '../game-data/ruleset.mjs';
+import { CURRENT_VISUAL_AUTHORITY_URL, PUBLISHED_VERSION, normalizePublishedGame, rulesetModeFromUrl } from '../game-data/ruleset.mjs';
 
 const published = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
 const starters = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json', 'utf8'));
@@ -38,8 +38,11 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(game.artDirectionFor('financiers-banker')).toEqual(current.artDirection['financiers-banker']);
   });
 
-  it('keeps the current authority synchronized to the released source', () => {
-    expect(current.version).toBe('v0.7.1');
+  it('keeps the current candidate authority complete and separate from the immutable released source', () => {
+    expect(current.authority).toBe('current-game');
+    expect(current.status).toBe('active-development');
+    expect(current.version).toBe(current.displayVersion);
+    expect(current.version).not.toBe(PUBLISHED_VERSION);
     expect(current.mystics.rites).toHaveLength(6);
     expect(current.mystics.selectionPolicy.selectedCount).toBe(3);
   });

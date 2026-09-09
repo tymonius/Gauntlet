@@ -11,6 +11,7 @@ const rulebookMarkdown = readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url),
   "utf8"
 );
+const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 
 const corpus = buildRulesCorpus({
   canonicalData,
@@ -20,13 +21,38 @@ const corpus = buildRulesCorpus({
   canonicalDataUrl: "https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json"
 });
 
-function augmentedIds(question, history = []) {
+function augmentedSources(question, history = []) {
   const retrievalQuery = contextualQuery(question, history);
   const raw = retrieveRules(corpus, retrievalQuery, { limit: 10, excerptLength: 1300 });
-  return augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
+  return augmentRetrievalForContext(corpus, question, history, raw);
+}
+
+function augmentedIds(question, history = []) {
+  return augmentedSources(question, history).map((source) => source.canonicalId);
 }
 
 describe("v0.7.1 Shock and Awe authority retrieval", () => {
+  test("retrieves complete current authority for the exact reviewed broad question", () => {
+    const sources = augmentedSources("What does shock and awe do?");
+    expect(sources[0]?.canonicalId).toBe("card:military-shock-and-awe");
+    expect(sources.slice(0, 3).map((source) => source.canonicalId)).toContain("rulebook:conflicting-victory-benefits");
+
+    const body = sources[0]?.body ?? "";
+    expect(body).toContain("Unique Rule: Maximum one copy per Deck");
+    expect(body).toContain("Asset: During Onset");
+    expect(body).toContain("apply its Gambit/Tactic effect after Tactics are revealed");
+    expect(body).toContain("When attacking on an enemy-controlled Territory");
+    expect(body).toContain("+1 Tactic from Hand");
+    expect(body).toContain("Lose — Retreat +1");
+    expect(body).toContain("Breakthrough — Opponent: Retreat +1, if able; then you advance one Position");
+    expect(body).toContain("Consolidate — Advance Front Line 1, if able; Command = 2");
+    expect(body).toContain("Afterward, you cannot move, advance your Front Line, or use an Order as a result of this victory");
+    expect(body).toContain("In the Aftermath, put both cards in your Graveyard");
+
+    expect(workerSource).toContain("For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering");
+    expect(workerSource).toContain("Preserve prerequisites, separate costs, timing windows, destinations");
+  });
+
   test("retrieves the card and conflicting-victory rule for the same-victory restriction", () => {
     const ids = augmentedIds("If Shock and Awe applies to this victory, can I move, capture, or use an Order afterward?");
     expect(ids).toContain("card:military-shock-and-awe");

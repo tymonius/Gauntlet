@@ -4,7 +4,8 @@ import { describe, expect, test } from "vitest";
 const worker = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const liveQa = readFileSync(new URL("../.github/workflows/v071-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 const publication = readFileSync(new URL("../.github/workflows/verify-current-live-publication.yml", import.meta.url), "utf8");
-const materializeWorkflow = readFileSync(new URL("../.github/workflows/materialize-v071-release-package.yml", import.meta.url), "utf8");
+const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));
+const materializeWorkflow = readFileSync(new URL("../.github/workflows/materialize-current-release-package.yml", import.meta.url), "utf8");
 const materializer = readFileSync(new URL("../scripts/build-v071-release-source.mjs", import.meta.url), "utf8");
 
 describe("v0.7.1 Rules Arbiter corpus synchronization guard", () => {
@@ -12,8 +13,8 @@ describe("v0.7.1 Rules Arbiter corpus synchronization guard", () => {
     expect(materializer).not.toContain("const PUBLIC_DIR");
     expect(materializer).not.toContain("writeText(join(PUBLIC_DIR, 'index.html')");
     expect(materializer).not.toContain("const landing = `<!doctype html>");
-    expect(materializeWorkflow).not.toContain("            v0.7.1/index.html");
-    expect(materializeWorkflow).toContain("assert(fs.existsSync('v0.7.1/index.html'), 'Missing v0.7.1 release landing page')");
+    expect(materializeWorkflow).not.toContain("v0.7.1/index.html");
+    expect(materializeWorkflow).toContain("node scripts/materialize-public-route-compatibility.mjs");
   });
 
   test("Worker exposes a free exact corpus identity and cannot cache it indefinitely", () => {
@@ -40,7 +41,9 @@ describe("v0.7.1 Rules Arbiter corpus synchronization guard", () => {
   test("publication verification refreshes the Worker only after the public site converges", () => {
     expect(publication).toContain("Verify deployed site against the current-publication contract");
     expect(publication).toContain("Refresh current Rules Arbiter corpus against published authority");
-    expect(publication).toContain("/api/v071/corpus-health");
+    expect(publication).toContain("scripts/resolve-current-live-publication.mjs");
+    expect(publication).not.toContain("/api/v071/corpus-health");
+    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.corpus_health_path).toBe('/api/v071/corpus-health');
     expect(publication.indexOf("Verify deployed site against the current-publication contract")).toBeLessThan(publication.indexOf("Refresh current Rules Arbiter corpus against published authority"));
   });
 });
