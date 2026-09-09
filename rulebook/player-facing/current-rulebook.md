@@ -10,7 +10,7 @@
 
 Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the **Gauntlet**.
 
-Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either capturing the Territory at the opponent's end or forcing that opponent to make a Last Stand and winning the resulting battle.
+Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either extending your Front Line across the entire battlefield or forcing that opponent to make a Last Stand and winning the resulting battle.
 
 # How to Use This Rulebook
 
@@ -35,7 +35,7 @@ Winning an attack does not normally capture a Territory immediately. Your contro
 
 The normal shared victory is to **run the Gauntlet**. You win immediately when you either:
 
-1. capture the Territory at your opponent's end of the Gauntlet; or
+1. extend your Front Line across the entire Gauntlet by capturing all opposing Territories in order; or
 2. force your opponent to make a Last Stand and win the resulting battle.
 
 These are independent routes. A Last Stand does not require control of the final Territory first, but it does require a separate legal movement sequence after the battle that forced the opponent beyond the Gauntlet.
@@ -679,9 +679,9 @@ Unless the effect expressly advances the Front Line more than once, interpret or
 > Advance that player's Front Line one Territory.
 
 
-### Final Territory and Last Stand
+### Completing the Front Line and Last Stand
 
-Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins. Control of that Territory is not required to force the opponent to make a Last Stand. After the opponent is forced beyond their end, an attacker on the final Territory may force the opponent to make a Last Stand only through a **new legal movement sequence** that Advances beyond the Gauntlet. Unused movement from the sequence that created the preceding battle cannot carry into a Last Stand battle.
+When a legal capture adds the final opposing Territory to a player's Front Line, that Front Line spans the entire Gauntlet and the player immediately wins. Control of the opponent's final Territory is not required to force the opponent to make a Last Stand. After the opponent is forced beyond their end, an attacker on the final Territory may force the opponent to make a Last Stand only through a **new legal movement sequence** that Advances beyond the Gauntlet. Unused movement from the sequence that created the preceding battle cannot carry into a Last Stand battle.
 
 ### Occupation
 
@@ -699,28 +699,28 @@ A **Counterattack** is a battle initiated by the controller of a Territory again
 
 There are two normal ways to run the Gauntlet:
 
-- capture the Territory at your opponent's end; or
+- extend your Front Line across the entire Gauntlet by capturing all opposing Territories; or
 - force the opponent to make a Last Stand and win the resulting battle.
 
 Either result wins the game immediately.
 
 ## Complete rules
 
-> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent's end of the Gauntlet or forces the opponent to make a Last Stand and wins the resulting battle.
+> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player's Front Line spans the entire Gauntlet or that player forces the opponent to make a Last Stand and wins the resulting battle.
 
-Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.
+Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **territorial-control route** from the **Last Stand battle route**, but both are running the Gauntlet.
 
 Faction-specific alternate victories remain separate victory conditions unless their rules expressly describe them otherwise.
 
-## Final-Territory Capture Victory
+## Territorial-Control Victory
 
 ### How it works
 
-If your Front Line reaches and captures the Territory at your opponent's end of the Gauntlet, you immediately run the Gauntlet and win.
+Capture opposing Territories in order until your Front Line spans all six Territories. The capture that adds the final opposing Territory completes the Gauntlet and wins the game immediately.
 
 ### Complete rules
 
-When a player captures the Territory at the opponent's end of the Gauntlet, that player immediately runs the Gauntlet and wins the game.
+When a legal capture or Front Line advance causes a player's Front Line to span the entire Gauntlet, that player immediately runs the Gauntlet and wins the game.
 
 This victory check occurs as part of resolving the legal capture. It does not wait for a later phase, step, turn, or additional battle.
 
@@ -733,7 +733,7 @@ The capture may occur through:
 - a Territory effect; or
 - any other rule that legally captures that Territory or advances the player's Front Line to include it.
 
-A capture effect is not suspended, delayed, or treated differently merely because the captured Territory is the opponent's final Territory.
+The capture that completes the Front Line is resolved under the normal capture rules; it is not suspended, delayed, or treated differently merely because it completes the Gauntlet.
 
 If multiple consequences occur from the same capture, resolve the capture and its required control, orientation, Front Line, and immediate capture consequences. The player then wins before proceeding to a later phase or voluntary procedure unless a specific simultaneous-resolution rule requires another order.
 
@@ -766,7 +766,7 @@ Conduct the resulting battle under the inherited Last Stand battle rules. The de
 
 If the attacker wins this battle, the attacker immediately runs the Gauntlet and wins the game.
 
-If the attacker does not force the opponent to make a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later captures the final Territory, the attacker wins through the capture route.
+If the attacker does not force the opponent to make a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later completes their Front Line across the entire Gauntlet, the attacker wins through the territorial-control route.
 
 # Part II — Complete Shared Rules
 
