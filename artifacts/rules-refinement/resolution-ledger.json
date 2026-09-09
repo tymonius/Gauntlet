@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T22:34:00.000Z",
+  "updatedAt": "2026-09-08T22:37:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -464,6 +464,23 @@
       "resolutionSurface": "arbiter_retrieval_prompt",
       "summary": "Current v0.7.1 retrieval returns the complete Purification rule first for the reviewed failed-Reserve question. That rule directly states that Purification checks the opponent's normal start-of-turn draw and that a failed Reserve draw or effect-generated draw does not trigger it. The existing explicit-classification prompt contract therefore covers the reviewed question; regression coverage locks the distinction without a new runtime change.",
       "resolvedAt": "2026-09-08T22:34:00.000Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "deed-cost-clarity-followup-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "999db05a-01a7-4d4d-85fc-babf8f75d5a5"
+      ],
+      "caseIds": [
+        "deed-cost-clarity-followup"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Production session chronology confirms that 'can you explain that more clearly' immediately followed the Deed-cost formula, while the historical answer incorrectly jumped backward to the earlier Front Line/Deed-ownership topic. Current v0.7.1 contextual retrieval and prompt prioritization preserve the immediate Deed-cost referent and retrieve the complete Deed-cost rule first, so regression coverage closes the reviewed failure without a new runtime change.",
+      "resolvedAt": "2026-09-08T22:37:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
       }
