@@ -1,0 +1,81 @@
+name: Fix Run the Gauntlet governance once
+
+on:
+  push:
+    branches:
+      - rules/clarify-run-the-gauntlet-victory
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[run-gauntlet-governance-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules/clarify-run-the-gauntlet-victory
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Register battlefield count fact and mark rulebook claim
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          facts_path = Path('rulebook/player-facing/rule-facts.js')
+          facts = facts_path.read_text(encoding='utf-8')
+
+          old = "export const RULE_FACT_MARKER_COUNTS = Object.freeze({\n  'diplomats.peace_treaty_threshold': 2,"
+          new = "export const RULE_FACT_MARKER_COUNTS = Object.freeze({\n  'battlefield.territory_count': 1,\n  'diplomats.peace_treaty_threshold': 2,"
+          if facts.count(old) != 1:
+              raise SystemExit('Could not locate RULE_FACT_MARKER_COUNTS insertion point')
+          facts = facts.replace(old, new)
+
+          old = "  const facts = {\n    'diplomats.peace_treaty_threshold': Number("
+          new = "  const facts = {\n    'battlefield.territory_count': Number(authority?.gameplay?.deck_construction?.territories_per_player) * 2,\n    'diplomats.peace_treaty_threshold': Number("
+          if facts.count(old) != 1:
+              raise SystemExit('Could not locate deriveRuleFacts insertion point')
+          facts = facts.replace(old, new)
+          facts_path.write_text(facts, encoding='utf-8')
+
+          rulebook_path = Path('rulebook/player-facing/current-rulebook.md')
+          rulebook = rulebook_path.read_text(encoding='utf-8')
+
+          old = 'Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans.'
+          new = 'Players advance toward each other, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans.'
+          if rulebook.count(old) != 1:
+              raise SystemExit('Could not locate false-positive "one another" prose')
+          rulebook = rulebook.replace(old, new)
+
+          old = 'Capture opposing Territories in order until your Front Line spans all six Territories. The capture that adds the final opposing Territory completes the Gauntlet and wins the game immediately.'
+          new = 'Capture opposing Territories in order until your Front Line spans all six<!-- RULE-FACT:battlefield.territory_count:word --> Territories. The capture that adds the final opposing Territory completes the Gauntlet and wins the game immediately.'
+          if rulebook.count(old) != 1:
+              raise SystemExit('Could not locate territorial-control numeric claim')
+          rulebook = rulebook.replace(old, new)
+          rulebook_path.write_text(rulebook, encoding='utf-8')
+          PY
+
+      - name: Validate governance and publication contracts
+        shell: bash
+        run: |
+          BASE_SHA="$(git merge-base HEAD origin/main)"
+          RULES_AUTHORITY_BASE_SHA="$BASE_SHA" node scripts/validate-rules-authority-practices.mjs
+          node scripts/card-authority/validate-current-game.mjs
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+
+      - name: Commit fix and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/fix-run-gauntlet-governance-once.yml
+          git config user.name 'Gauntlet governance materializer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rulebook/player-facing/rule-facts.js rulebook/player-facing/current-rulebook.md .github/workflows/fix-run-gauntlet-governance-once.yml
+          git commit -m 'Track territorial victory rulebook fact [run-gauntlet-governance-fixed]'
+          git push origin HEAD:rules/clarify-run-the-gauntlet-victory
