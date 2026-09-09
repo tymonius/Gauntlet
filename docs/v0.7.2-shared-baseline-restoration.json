@@ -32,6 +32,7 @@
       "Counterattack"
     ],
     "cardRules": [
+      "shared golden rules and partial-resolution defaults",
       "shared simultaneous-effect timing",
       "revealing cards and zones",
       "negation",
@@ -44,5 +45,36 @@
     "location": "game-data/current-game-validation.mjs",
     "requirement": "Loading current-game authority must fail when a required shared baseline rule is absent or when live canonical vocabulary depends on an undeclared shared rule.",
     "purpose": "Prevent future consolidation or materialization work from silently dropping semantics that canonical objects depend on."
-  }
+  },
+  "semanticRuleIds": {
+    "battle": [
+      "core.battle.battle-total",
+      "core.battle.advantage-disadvantage",
+      "core.battle.normal-result",
+      "core.battle.aftermath"
+    ],
+    "turn": [
+      "core.turn.draw",
+      "core.turn.actions",
+      "core.turn.cleanup"
+    ],
+    "battlefield": [
+      "core.battlefield.position",
+      "core.battlefield.movement",
+      "core.battlefield.occupation",
+      "core.battlefield.counterattack"
+    ],
+    "cardRules": [
+      "core.cards.golden-rules",
+      "core.cards.shared-timing",
+      "core.cards.reveal",
+      "core.cards.negation",
+      "core.cards.replacement",
+      "core.cards.revising-choice",
+      "core.cards.overlay"
+    ]
+  },
+  "supportingPublicationRuleIds": [
+    "core.turn.sequence"
+  ]
 }
