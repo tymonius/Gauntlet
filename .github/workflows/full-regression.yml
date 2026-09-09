@@ -27,8 +27,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
           npm install --no-save --package-lock=false pdf-lib
 
-      - name: Run full regression suite
+      - name: Validate maintained Vitest classification
+        run: node scripts/validate-vitest-classification.mjs
+
+      - name: Run maintained full regression suite
         run: npm run test:full

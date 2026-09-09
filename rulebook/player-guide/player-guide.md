@@ -12,7 +12,7 @@ Gauntlet is a two-player game about crossing a battlefield while stopping your o
 
 You begin at opposite ends of a line of six Territories. On your turn, you can play cards, move toward or away from your opponent, and fight when you meet. Winning battles pushes your opponent back. Hold enemy ground long enough and you capture it.
 
-Keep advancing until you **run the Gauntlet**: take control of the entire battlefield by capturing all of your opponent's Territories, or push your opponent beyond the battlefield and defeat their Last Stand.
+Keep advancing until you **run the Gauntlet**: take control of the entire battlefield by capturing all of your opponent's Territories, or push your opponent beyond the battlefield, force them to make a **Last Stand**, and win the resulting battle.
 
 That is the shared game. Your faction adds one more layer—its own resource, tools, style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.
 
@@ -38,7 +38,7 @@ Every faction can win the same way: **run the Gauntlet**.
 You win immediately if you do either of these:
 
 1. **Control the entire Gauntlet** by capturing your opponent's Territories in order until your Front Line spans the whole battlefield.
-2. **Win your opponent's Last Stand** after pushing them beyond their end of the battlefield.
+2. **Force your opponent to make a Last Stand and win the resulting battle** after pushing them beyond their end of the battlefield.
 
 Some factions also have an additional way to win. You will learn those in the faction overviews and in your own Faction Guide.
 
@@ -321,7 +321,7 @@ When your Front Line spans all six Territories, you control the entire Gauntlet 
 
 This is the straightforward territorial route: attack, occupy, survive until Capture, and repeat.
 
-### Route 2: Win a Last Stand
+### Route 2: Force your opponent to make a Last Stand
 
 You can also win before controlling the entire Gauntlet.
 
@@ -329,16 +329,16 @@ If your opponent loses a battle while defending the Territory at their own end, 
 
 To attack them again beyond the end, you need a **new legal movement sequence**. The movement that started the previous battle ended when that battle began, so unused movement cannot simply carry through it.
 
-If a later rule or effect lets you Advance beyond the opponent's end while they are there, you force a **Last Stand**.
+If a later rule or effect lets you Advance beyond the opponent's end while they are there, you force your opponent to make a **Last Stand**.
 
 A Last Stand is resolved as a battle, with two important advantages for the defender:
 
 - the defender normally has **Defensive Edge**; and
 - the defender separately adds **+1 to their battle total**.
 
-If the attacker wins the Last Stand, the attacker immediately runs the Gauntlet and wins the game.
+If the attacker wins that battle, the attacker immediately runs the Gauntlet and wins the game.
 
-You do **not** have to control the entire Gauntlet—or even control or capture the opponent's final Territory—before forcing a Last Stand. The territorial route and Last Stand route are two independent ways to finish the same shared objective.
+You do **not** have to control the entire Gauntlet—or even control or capture the opponent's final Territory—before forcing your opponent to make a Last Stand. The territorial route and Last Stand route are two independent ways to finish the same shared objective.
 
 <!-- RULES-SECTION:factions -->
 ## 9. The Six Factions

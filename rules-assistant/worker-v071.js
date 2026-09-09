@@ -8,13 +8,16 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260909-7";
+export const BEHAVIOR_REVISION = "v071-qa-20260909-8";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
   "rulebook:gambit-area",
   "rulebook:tactic-area",
   "rulebook:clearing-battle-cards"
+];
+const BATTLE_CARD_REPLACEMENT_AUTHORITY_IDS = [
+  "rulebook:replacing-a-gambit-or-tactic"
 ];
 const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
   "rulebook:gambit-surveillance",
@@ -539,6 +542,24 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const destinationFocus = /\bdestinations?\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
   const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
+  const battleCardReplacementFocus = /\b(?:replace|replaces|replaced|replacing|replacement|replacements)\b/.test(current)
+    && /\b(?:gambits?|tactics?|battle cards?)\b/.test(combined);
+  const battleCardReplacementDestinationFocus = battleCardReplacementFocus
+    && /\b(?:where|go|goes|destination|destinations|clear|cleared|clearing|both cards|what happens)\b/.test(current);
+  const namedReplacementCardSource = battleCardReplacementFocus
+    ? retrieval.find((source) => {
+        if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+        const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+        return title.length >= 3 && current.includes(title);
+      })
+    : null;
+  const battleCardReplacementAuthorityIds = battleCardReplacementFocus
+    ? [
+        ...(namedReplacementCardSource ? [namedReplacementCardSource.canonicalId] : []),
+        ...BATTLE_CARD_REPLACEMENT_AUTHORITY_IDS,
+        ...(battleCardReplacementDestinationFocus ? ["rulebook:clearing-battle-cards"] : [])
+      ]
+    : [];
   const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
@@ -613,9 +634,11 @@ const preferredAuthorityIds = fieldcraftFocus
       ? shockAndAweAuthorityIds
       : intelligenceInterferenceFocus
         ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
-        : destinationFocus && battleCardFocus
-          ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-          : [];
+        : battleCardReplacementFocus
+          ? battleCardReplacementAuthorityIds
+          : destinationFocus && battleCardFocus
+            ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+            : [];
   if (!preferredAuthorityIds.length) return retrieval;
 
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];

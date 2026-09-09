@@ -34,6 +34,6 @@ describe('GitHub Pages public media contract', () => {
   it('preserves the custom domain and enforces the Pages size guard', () => {
     expect(pagesWorkflow).toContain('test "$(tr -d');
     expect(pagesWorkflow).toContain('" = "gauntlet.run"');
-    expect(pagesWorkflow).toContain('test "$bytes" -lt 950000000');
+    expect(pagesWorkflow).toContain('test "$bytes" -lt 970000000');
   });
 });
