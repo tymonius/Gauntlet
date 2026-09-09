@@ -1,7 +1,7 @@
 import baseWorker from "./index.js";
+import { CURRENT_RULES_VERSION, GAME_SERIAL_PREFIX } from "./release-identity.js";
 
 const DEFAULT_ORIGIN = "https://gauntlet.run";
-const CURRENT_RULES_VERSION = "v0.7.1";
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{24,96}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CREATION_LIMIT_PER_DAY = 12;
@@ -840,7 +840,7 @@ async function enforceCreationLimit(request, env) {
 
 async function uniqueSerial(db) {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const serial = `G071-${randomCode(8)}`;
+    const serial = `${GAME_SERIAL_PREFIX}-${randomCode(8)}`;
     const existing = await db.prepare("SELECT 1 AS found FROM playtest_sessions WHERE sheet_serial = ?")
       .bind(serial).first();
     if (!existing) return serial;
