@@ -72,6 +72,7 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(notes).toContain('100-page half-letter booklet');
     expect(notes).toContain('50 Letter-landscape sides on 25 physical sheets');
   });
+
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
     expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
@@ -137,14 +138,13 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(finalizerWorkflow).toContain('git push origin HEAD:release/v0.7.0-cutover');
   });
 
-  it('promotes the existing v0.7.0 hosting prerelease only after live verification', () => {
-    expect(releasePublisher).toContain("current.tag === 'v0.7.0' && hadCurrentReleaseAtStart");
-    expect(releasePublisher).toContain('verifyLive()');
-    expect(releasePublisher).toContain("'release', 'edit', current.tag");
-    expect(releasePublisher).toContain("'--notes-file', current.notes_file");
-    expect(releasePublisher).toContain('the immutable tag target is unchanged');
+  it('keeps closed v0.7.0 cutover behavior out of the current release publisher', () => {
+    expect(releasePublisher).not.toMatch(/current\.tag === ['"]v0\.7\.0/);
+    expect(releasePublisher).not.toContain('validate-v070-tts-manual-qa.mjs');
+    expect(releasePublisher).not.toContain('Promoting the existing v0.7.0 TTS-hosting prerelease');
+    expect(releasePublisher).toContain('const current = contract.current_release');
+    expect(releasePublisher).toContain('current.live_verification_script');
   });
-
 
   it('pins the published v0.7.0 Rules Arbiter to immutable release artifacts', () => {
     expect(v070Corpus).toContain("V070_RULEBOOK_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md'");
@@ -172,13 +172,12 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(homepage).toContain('Current canonical playtest edition · v0.7.1');
     expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
     expect(homepage).toContain('<h3>v0.7.1 Release</h3>');
-    expect(startPage).toContain('canonical v0.7.1');
-    expect(cardReferencePage).toContain('Current v0.7.1 production card reference.');
-    expect(cardReferencePage).toContain('v0.7.1 Release');
-    expect(deckbuilderPage).toContain('Gauntlet v0.7.1 Deckbuilder');
-    expect(deckbuilderPage).toContain('canonical v0.7.1');
-    expect(arbiterIndex).toContain('Gauntlet v0.7.1 Rules Arbiter');
-    expect(arbiterIndex).toContain('Rules support · v0.7.1');
+    expect(startPage).toContain('aria-label="Current playtest edition v0.7.1"');
+    expect(cardReferencePage).toContain('<title>Gauntlet v0.7.1 Card Reference</title>');
+    expect(cardReferencePage).toContain('aria-label="Current playtest edition v0.7.1"');
+    expect(deckbuilderPage).toContain('<title>Gauntlet v0.7.1 Deckbuilder</title>');
+    expect(deckbuilderPage).toContain('aria-label="Current playtest edition v0.7.1"');
+    expect(arbiterIndex).toContain('<p class="eyebrow">Gauntlet Rules Arbiter · v0.7.1</p>');
+    expect(arbiterIndex).toContain('aria-label="Current playtest edition v0.7.1"');
   });
-
 });
