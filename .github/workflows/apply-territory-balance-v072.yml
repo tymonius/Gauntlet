@@ -19,7 +19,7 @@ jobs:
           ref: balance/territory-pass-v072
           fetch-depth: 0
 
-      - name: Update Territory authority
+      - name: Update Territory authority and starter choices
         run: |
           node <<'NODE'
           const fs = require('fs');
@@ -49,17 +49,57 @@ jobs:
             "Once per turn during Opening or Denouement, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile they control this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded."
           );
 
+          function findStarterPackage(node) {
+            if (!node || typeof node !== 'object') return null;
+            if (
+              Array.isArray(node.decks) &&
+              node.decks.some((deck) => deck && deck.id === 'military-general-forward-doctrine') &&
+              node.optimizationPolicy
+            ) return node;
+            for (const value of Object.values(node)) {
+              const found = findStarterPackage(value);
+              if (found) return found;
+            }
+            return null;
+          }
+
+          const starters = findStarterPackage(game);
+          if (!starters) throw new Error('Current starter package not found');
+
+          const territoryChoices = {
+            'military-general-forward-doctrine': ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+            'military-commandant-holdfast': ['Garrison', 'Training Grounds', 'High Ground'],
+            'diplomats-ambassador-open-channels': ['Supply Depot', 'Command Tent', 'Arena: Spoils of War'],
+            'diplomats-senator-procedure-endures': ['Garrison', 'Field Hospital', 'Fortified Pass'],
+            'financiers-banker-sound-investment': ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'],
+            'financiers-executive-hostile-expansion': ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+            'intelligence-ranger-field-operations': ['Watchtower', 'Difficult Terrain', 'Poisonous Gas'],
+            'intelligence-spymaster-mission-network': ["Smuggler's Run", 'Ruined Storehouse', 'Field Hospital'],
+            'mystics-alchemist-first-principles': ['Poisonous Gas', 'Old Battlefield', 'Field Hospital'],
+            'mystics-spirit-walker-unbroken-circle': ['Garrison', 'Field Hospital', 'High Ground'],
+            'inquisition-grand-inquisitor-final-judgment': ['Poisonous Gas', 'Toll Bridge', 'Arena: No Quarter'],
+            'inquisition-witch-hunter-relentless-pursuit': ['Garrison', 'Exposed Flank', 'High Ground']
+          };
+
+          for (const deck of starters.decks) {
+            const choices = territoryChoices[deck.id];
+            if (!choices) throw new Error(`No Territory re-evaluation result for starter deck ${deck.id}`);
+            deck.territories = choices;
+          }
+
+          starters.optimizationPolicy.status = 'active-for-v0.7.2-candidate';
+
           fs.writeFileSync(path, JSON.stringify(game, null, 2) + '\n');
           NODE
 
       - name: Validate current authority
         run: node --test tests/current-game-authority.test.ts
 
-      - name: Commit Territory changes
+      - name: Commit Territory and starter changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add game-data/current-game.json
           git diff --cached --exit-code && exit 0
-          git commit -m "Balance Supply Depot and Smuggler's Run"
+          git commit -m "Rebalance Territories and starter choices"
           git push origin HEAD:balance/territory-pass-v072
