@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260909-8";
+export const BEHAVIOR_REVISION = "v071-qa-20260909-9";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -106,6 +106,7 @@ Requirements:
 10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
 11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.
 12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.
+13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -234,8 +235,11 @@ export default {
         excerptLength: 1300
       });
       retrieval = augmentRetrievalForContext(corpus, question, history, retrieval);
+      const clarification = buildAmbiguousReferentClarification(question, history, retrieval);
       const diagnostics = {
-        questionPlan: null,
+        questionPlan: clarification
+          ? { contextDependent: true, clarificationReason: clarification.reason }
+          : null,
         retrievalQueries: [retrievalQuery],
         candidateSources: retrieval.map(toDiagnosticSource),
         reasoningEffort: env.OPENAI_REASONING_EFFORT || "low",
@@ -244,6 +248,33 @@ export default {
         gameState: null,
         corpusHash: corpus.authoritySetId || ""
       };
+
+      if (clarification) {
+        failureStage = "persistence";
+        const result = {
+          answer: clarification.answer,
+          rulingStatus: clarification.rulingStatus,
+          confidence: clarification.confidence,
+          responseType: clarification.responseType,
+          sources: [],
+          executionPath: clarification.executionPath
+        };
+        result.interactionId = await persistSmartInteraction(env, {
+          sessionId,
+          playtestSessionId,
+          sheetSerial,
+          question,
+          answer: clarification.answer,
+          gameVersion: RULES_VERSION,
+          rulingStatus: clarification.rulingStatus,
+          confidence: clarification.confidence,
+          mode: "clarification",
+          model: null,
+          sources: [],
+          diagnostics
+        });
+        return answerResponse(result, origin);
+      }
 
       const modelBudget = env.OPENAI_API_KEY
         ? await reserveModelRequest(request, env)
@@ -532,6 +563,64 @@ export function contextualQuery(question, history = []) {
   }
   const prior = history.slice(-2).map((item) => String(item?.content || "").trim()).filter(Boolean).join(" ").slice(-1200);
   return prior ? `${prior} ${current}` : current;
+}
+
+function normalizeReferentSubject(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[’']s\b/g, "")
+    .replace(/^(?:card|leader|faction|rulebook):\s*/i, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function recentSpecificSubjects(history = [], retrieval = []) {
+  const recent = normalizeReferentSubject(
+    history.slice(-2).map((item) => String(item?.content || "")).join(" ")
+  );
+  if (!recent) return [];
+
+  const generic = new Set([
+    "battle", "battle sequence", "complete rules", "rules", "timing", "action",
+    "movement", "territory", "advantage", "after phase", "aftermath"
+  ]);
+  const subjects = [];
+  const seen = new Set();
+  for (const source of retrieval.slice(0, 8)) {
+    const subject = normalizeReferentSubject(source?.heading || source?.title || "");
+    if (!subject || subject.length < 4 || generic.has(subject) || seen.has(subject)) continue;
+    if (!recent.includes(subject)) continue;
+    seen.add(subject);
+    subjects.push(subject);
+  }
+  return subjects;
+}
+
+export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
+  const current = String(question || "").trim();
+  const match = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
+  if (!match) return null;
+
+  const noun = String(match[1] || "ability").toLowerCase();
+  const recentText = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
+  const familyCue = noun === "effect"
+    ? /\beffects?\b/i
+    : noun === "feature"
+      ? /\bfeatures?\b/i
+      : /\babilit(?:y|ies)\b/i;
+  const subjects = familyCue.test(recentText)
+    ? recentSpecificSubjects(history, retrieval)
+    : [];
+  if (subjects.length === 1) return null;
+
+  return {
+    answer: `Which ${noun} do you mean? Give me its name or the card, Leader, or Faction feature it comes from, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.`,
+    rulingStatus: "unresolved",
+    confidence: "low",
+    responseType: "clarification",
+    executionPath: "deterministic-clarification",
+    reason: "unidentified_followup_referent"
+  };
 }
 
 export function augmentRetrievalForContext(corpus, question, history = [], retrieval = []) {
