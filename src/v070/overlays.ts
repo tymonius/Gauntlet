@@ -38,6 +38,7 @@ export const V070_BOMBARDMENT_ID = 'neutral-bombardment' as const;
 const V070_DEFERRED_BATTLE_AFTERMATH_IDS = new Set([
   'inquisition-accusation',
   'inquisition-act-of-faith',
+  'inquisition-burning-at-the-stake',
 ]);
 
 /**
