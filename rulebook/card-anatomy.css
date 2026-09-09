@@ -19,7 +19,8 @@
   text-transform: uppercase;
 }
 
-.card-anatomy-intro h2 {
+.card-anatomy-intro h2,
+.card-anatomy-intro h3 {
   margin: 0 0 0.55rem;
   font: 500 clamp(1.7rem, 3vw, 2.35rem)/1 var(--serif);
   letter-spacing: -0.025em;

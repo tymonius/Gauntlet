@@ -18,7 +18,7 @@ function cardFigureMarkup() {
     <div class="card-anatomy-card-wrap">
       <iframe
         class="card-anatomy-card"
-        src="../card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
+        src="/card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
         title="Current production render of Unbroken Ranks"
         loading="lazy"
         tabindex="-1"
@@ -44,7 +44,7 @@ function arcaneCropMarkup() {
   crop.innerHTML = `
     <iframe
       class="card-anatomy-arcane-card"
-      src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
+      src="/card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
       title="Cropped current production render of the Witchcraft card header"
       loading="lazy"
       tabindex="-1"
@@ -124,9 +124,9 @@ function transformKey(list) {
 }
 
 function wrapAuthoredAnatomy() {
-  const content = document.querySelector('[data-rulebook-content]');
+  const content = document.querySelector('[data-rulebook-content], [data-review-content]');
   const heading = content?.querySelector('#card-anatomy');
-  const nextHeading = content?.querySelector('#printed-card-effects');
+  const nextHeading = content?.querySelector('#printed-card-effects, #effect-headings');
   if (!content || !heading || !nextHeading || heading.compareDocumentPosition(nextHeading) & Node.DOCUMENT_POSITION_PRECEDING) return null;
 
   const section = document.createElement('section');
@@ -189,7 +189,7 @@ function wrapAuthoredAnatomy() {
 function removeEnhancement() {
   const section = document.querySelector('[data-card-anatomy]');
   if (!section) return;
-  const content = document.querySelector('[data-rulebook-content]');
+  const content = document.querySelector('[data-rulebook-content], [data-review-content]');
   while (section.firstChild) content.insertBefore(section.firstChild, section);
   section.remove();
 }
