@@ -56,7 +56,7 @@
       "gauntlet": "Six Territory Cards arranged in one column.",
       "starting_position": "Each Player Token begins on the Territory at that player's own end of the Gauntlet. Setup placement is not movement and does not count as entering.",
       "capture": "During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line, add that Territory to your Front Line. Normal Capture advances the Front Line by at most one Territory per turn. When Capture adds the final opposing Territory to your Front Line, your Front Line spans the entire Gauntlet; you immediately run the Gauntlet and win.",
-      "victory": "Run the Gauntlet and win immediately by either controlling the entire Gauntlet—extending your Front Line across all six Territories—or winning the opponent's Last Stand.",
+      "victory": "Run the Gauntlet and win immediately by either controlling the entire Gauntlet—extending your Front Line across all six Territories—or forcing the opponent to make a Last Stand and winning the resulting battle.",
       "last_stand": {
         "defensive_edge": true,
         "defender_bonus": 1,
