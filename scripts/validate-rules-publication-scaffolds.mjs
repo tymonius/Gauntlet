@@ -65,6 +65,37 @@ if (!sources.editorialPolicy) {
   if (!policy.includes('## Prefer player actions over abstract noun phrases')) {
     errors.push('Rules publication editorial policy must preserve action-oriented player language.');
   }
+  if (!policy.includes('## Prefer low cognitive density over low word count')) {
+    errors.push('Rules publication editorial policy must optimize teaching material for cognitive load rather than word count.');
+  }
+  if (!policy.includes('## Use visuals to teach, not merely decorate')) {
+    errors.push('Rules publication editorial policy must define the instructional-visual standard.');
+  }
+  if (!policy.includes('## Standard callout roles')) {
+    errors.push('Rules publication editorial policy must define the standard callout vocabulary.');
+  }
+}
+
+if (!sources.playerGuidePedagogy) {
+  errors.push('Rules publication source manifest must declare a playerGuidePedagogy source.');
+} else {
+  const pedagogy = await requireSource(errors, sources.playerGuidePedagogy, "Player's Guide visual pedagogy map");
+  for (const required of [
+    '# Player\'s Guide Visual Pedagogy Map',
+    '## Existing instructional asset inventory',
+    '### Card anatomy renderer — REUSE',
+    '### Arcane trait-mark example — REUSE',
+    '## 6. Battles',
+    '### Mandatory commitment-order treatment',
+    'attacker first, defender second',
+    '## 7. Taking and Holding Ground',
+    '## 8. Running the Gauntlet',
+    '## Publication review checklist',
+  ]) {
+    if (!pedagogy.includes(required)) {
+      errors.push(`Player's Guide visual pedagogy map is missing required publication guidance: ${required}.`);
+    }
+  }
 }
 
 const authorityMarker = `AUTHORITY:${contract.authoritySource}`;
@@ -174,5 +205,5 @@ if (errors.length) {
 }
 
 console.log(
-  `Rules publication scaffolds passed: editorial policy, Player Guide, Comprehensive Rules, faction template, and ${factionContracts.length} faction guides match the authority-derived publication contract.`,
+  `Rules publication scaffolds passed: editorial policy, Player's Guide pedagogy, Player Guide, Comprehensive Rules, faction template, and ${factionContracts.length} faction guides match the authority-derived publication contract.`,
 );
