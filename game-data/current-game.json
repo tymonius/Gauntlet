@@ -4009,12 +4009,12 @@
         "number": 13,
         "name": "Supply Depot",
         "arena": false,
-        "text": "If Supply Depot's controller starts their turn here, +1 Card.",
+        "text": "If Supply Depot's controller starts their turn here, they may draw 1 card, then discard 1 card.",
         "type": "Territory",
         "effects": [
           {
             "label": "Text",
-            "text": "If Supply Depot's controller starts their turn here, +1 Card."
+            "text": "If Supply Depot's controller starts their turn here, they may draw 1 card, then discard 1 card."
           }
         ]
       },
@@ -4121,12 +4121,12 @@
         "number": 21,
         "name": "Smuggler's Run",
         "arena": false,
-        "text": "During Opening or Denouement, as an Action, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile here and controlling this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded.",
+        "text": "Once per turn during Opening or Denouement, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile they control this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded.",
         "type": "Territory",
         "effects": [
           {
             "label": "Text",
-            "text": "During Opening or Denouement, as an Action, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile here and controlling this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded."
+            "text": "Once per turn during Opening or Denouement, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile they control this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded."
           }
         ]
       },
@@ -5763,8 +5763,8 @@
     }
   },
   "starterDecks": {
-    "version": "v0.7.1",
-    "status": "Active v0.7.1 starter set",
+    "version": "v0.7.2-candidate",
+    "status": "Active v0.7.2-candidate starter set",
     "purpose": "Recommended v0.7.1 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
@@ -5779,7 +5779,7 @@
       "tiebreaker": "title-diversity-and-starter-pool-coverage",
       "mysticsRiteOfEchoesPairException": false,
       "cardPoolCoverageQuota": false,
-      "status": "active-for-v0.7.1",
+      "status": "active-for-v0.7.2-candidate",
       "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
       "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
       "cardAdditions": "docs/v0.6.4-card-additions.json",
@@ -5801,7 +5801,7 @@
           "Battlefield Promotion"
         ],
         "territories": [
-          "Supply Depot",
+          "Smuggler's Run",
           "King's Road",
           "Arena: No Quarter"
         ],
@@ -6341,7 +6341,7 @@
           "Speculation"
         ],
         "territories": [
-          "Supply Depot",
+          "Smuggler's Run",
           "King's Road",
           "Arena: No Quarter"
         ],
@@ -6545,7 +6545,7 @@
           "Extraordinary Rendition"
         ],
         "territories": [
-          "Supply Depot",
+          "Smuggler's Run",
           "Ruined Storehouse",
           "Field Hospital"
         ],
@@ -6645,7 +6645,7 @@
           "Witchcraft"
         ],
         "territories": [
-          "Supply Depot",
+          "Poisonous Gas",
           "Old Battlefield",
           "Field Hospital"
         ],
@@ -6869,7 +6869,7 @@
           "Martyrdom"
         ],
         "territories": [
-          "Supply Depot",
+          "Poisonous Gas",
           "Toll Bridge",
           "Arena: No Quarter"
         ],
@@ -7064,7 +7064,7 @@
       }
     ],
     "approval": {
-      "status": "approved-for-v0.7.1",
+      "status": "approved-for-v0.7.2-candidate",
       "predecessor_pr": 573,
       "peace_treaty_pr": 736,
       "card_additions_pr": 765
