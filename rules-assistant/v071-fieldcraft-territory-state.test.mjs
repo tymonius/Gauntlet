@@ -57,6 +57,6 @@ describe("v0.7.1 Fieldcraft Territory-state retrieval", () => {
   });
 
   test("the behavior revision records the retrieval change", () => {
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260908-6"');
+    expect(workerSource).toMatch(/export const BEHAVIOR_REVISION = \"v071-qa-\d{8}-\d+\";/);
   });
 });

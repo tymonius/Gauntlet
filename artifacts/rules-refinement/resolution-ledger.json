@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:50:24.116Z",
+  "updatedAt": "2026-09-09T12:44:06.668Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -621,6 +621,23 @@
       "resolvedAt": "2026-09-09T06:42:38.026Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260909-2"
+      }
+    },
+    {
+      "id": "margin-loan-win-followup-counterfactual-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "8fadc98d-e870-4ee5-b35f-a45422b02729"
+      ],
+      "caseIds": [
+        "margin-loan-win-followup-counterfactual"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Short counterfactual follow-ups such as the reviewed “What if I win instead?” now inherit the immediately preceding exchange before retrieval. This keeps the question on Margin Loan’s Gambit/Tactic battle branch, whose current v0.7.1 text directly returns collateral after a win, instead of drifting to unrelated generic victory authority or conflating the separate Action/banked loan branch.",
+      "resolvedAt": "2026-09-09T12:44:06.668Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-7"
       }
     }
   ]
