@@ -1,0 +1,41 @@
+name: Rules Arbiter reviewed backlog refresh
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-reviewed-backlog-refresh-20260909
+    paths:
+      - '.github/workflows/rules-arbiter-reviewed-backlog-refresh.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read production refinement data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/reviewed-backlog
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, COALESCE(ruling_status_v2, ruling_status) AS ruling_status, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' ORDER BY created_at" > .tmp/reviewed-backlog/interactions.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits ORDER BY reviewed_at DESC LIMIT 10000" > .tmp/reviewed-backlog/audits.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics ORDER BY created_at DESC LIMIT 10000" > .tmp/reviewed-backlog/diagnostics.json
+      - name: Rank unresolved reviewed backlog
+        run: node scripts/rules-arbiter-reviewed-backlog-refresh.mjs
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-reviewed-backlog-refresh
+          path: .tmp/reviewed-backlog/report.json
+          retention-days: 1
