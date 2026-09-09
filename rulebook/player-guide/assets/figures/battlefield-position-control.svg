@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 560" role="img" aria-labelledby="title desc">
+  <title id="title">Starting Gauntlet battlefield, position, and control</title>
+  <desc id="desc">Six Territories form one column. The opponent controls the top three and begins on the Territory at their own end. You control the bottom three and begin on the Territory at your own end. Each player's forward direction points toward the other player's end. Player Tokens show position while Territory orientation shows control.</desc>
+
+  <defs>
+    <marker id="arrow-up" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 10 L 5 0 L 10 10 z" fill="#8f1f25" />
+    </marker>
+    <marker id="arrow-down" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 5 10 L 10 0 z" fill="#244b8f" />
+    </marker>
+    <style>
+      .ui { font-family: Inter, Arial, sans-serif; fill: #171514; }
+      .serif { font-family: Georgia, 'Times New Roman', serif; fill: #171514; }
+      .small { font-size: 13px; }
+      .label { font-size: 14px; font-weight: 700; letter-spacing: .04em; }
+      .end { font-size: 16px; font-weight: 800; letter-spacing: .08em; }
+      .territory { font-size: 16px; font-weight: 700; }
+      .hint { font-size: 12px; fill: #5f5a53; }
+    </style>
+  </defs>
+
+  <rect x="1" y="1" width="758" height="558" rx="12" fill="#fbf7ee" stroke="#b9b2a7" stroke-width="2" />
+
+  <text x="380" y="34" text-anchor="middle" class="ui end">OPPONENT'S END</text>
+  <text x="380" y="442" text-anchor="middle" class="ui end">YOUR END</text>
+
+  <!-- Opponent direction -->
+  <text x="86" y="76" text-anchor="middle" class="ui label" fill="#244b8f">OPPONENT</text>
+  <line x1="86" y1="108" x2="86" y2="374" stroke="#244b8f" stroke-width="4" marker-end="url(#arrow-down)" />
+  <text x="106" y="217" class="ui small" fill="#244b8f">Forward</text>
+  <text x="106" y="239" class="ui hint">Backward is up</text>
+
+  <!-- Your direction -->
+  <text x="674" y="398" text-anchor="middle" class="ui label" fill="#8f1f25">YOU</text>
+  <line x1="674" y1="374" x2="674" y2="108" stroke="#8f1f25" stroke-width="4" marker-end="url(#arrow-up)" />
+  <text x="654" y="217" text-anchor="end" class="ui small" fill="#8f1f25">Forward</text>
+  <text x="654" y="239" text-anchor="end" class="ui hint">Backward is down</text>
+
+  <!-- Opponent-controlled Territories -->
+  <g>
+    <rect x="238" y="58" width="284" height="48" rx="7" fill="#e4e9ef" stroke="#244b8f" stroke-width="2" />
+    <path d="M 368 68 L 380 60 L 392 68" fill="none" stroke="#244b8f" stroke-width="2.5" />
+    <text x="380" y="88" text-anchor="middle" class="serif territory">Territory</text>
+    <circle cx="488" cy="82" r="15" fill="#244b8f" />
+    <text x="488" y="87" text-anchor="middle" class="ui small" font-weight="800" fill="#ffffff">O</text>
+    <text x="535" y="87" class="ui hint">Opponent token</text>
+
+    <rect x="238" y="114" width="284" height="48" rx="7" fill="#e4e9ef" stroke="#244b8f" stroke-width="2" />
+    <path d="M 368 124 L 380 116 L 392 124" fill="none" stroke="#244b8f" stroke-width="2.5" />
+    <text x="380" y="144" text-anchor="middle" class="serif territory">Territory</text>
+
+    <rect x="238" y="170" width="284" height="48" rx="7" fill="#e4e9ef" stroke="#244b8f" stroke-width="2" />
+    <path d="M 368 180 L 380 172 L 392 180" fill="none" stroke="#244b8f" stroke-width="2.5" />
+    <text x="380" y="200" text-anchor="middle" class="serif territory">Territory</text>
+  </g>
+
+  <!-- Starting control boundary -->
+  <line x1="204" y1="230" x2="556" y2="230" stroke="#69645d" stroke-width="2" stroke-dasharray="7 6" />
+  <rect x="297" y="219" width="166" height="22" fill="#fbf7ee" />
+  <text x="380" y="235" text-anchor="middle" class="ui hint" font-weight="700">STARTING CONTROL BOUNDARY</text>
+
+  <!-- Your controlled Territories -->
+  <g>
+    <rect x="238" y="244" width="284" height="48" rx="7" fill="#f2e3df" stroke="#8f1f25" stroke-width="2" />
+    <path d="M 368 282 L 380 290 L 392 282" fill="none" stroke="#8f1f25" stroke-width="2.5" />
+    <text x="380" y="274" text-anchor="middle" class="serif territory">Territory</text>
+
+    <rect x="238" y="300" width="284" height="48" rx="7" fill="#f2e3df" stroke="#8f1f25" stroke-width="2" />
+    <path d="M 368 338 L 380 346 L 392 338" fill="none" stroke="#8f1f25" stroke-width="2.5" />
+    <text x="380" y="330" text-anchor="middle" class="serif territory">Territory</text>
+
+    <rect x="238" y="356" width="284" height="48" rx="7" fill="#f2e3df" stroke="#8f1f25" stroke-width="2" />
+    <path d="M 368 394 L 380 402 L 392 394" fill="none" stroke="#8f1f25" stroke-width="2.5" />
+    <text x="380" y="386" text-anchor="middle" class="serif territory">Territory</text>
+    <circle cx="488" cy="380" r="15" fill="#8f1f25" />
+    <text x="488" y="385" text-anchor="middle" class="ui small" font-weight="800" fill="#ffffff">Y</text>
+    <text x="535" y="385" class="ui hint">Your token</text>
+  </g>
+
+  <!-- Control brackets -->
+  <path d="M 214 58 H 196 V 218 H 214" fill="none" stroke="#244b8f" stroke-width="2" />
+  <text x="184" y="138" text-anchor="middle" class="ui small" fill="#244b8f" transform="rotate(-90 184 138)">Opponent controls these three</text>
+
+  <path d="M 546 244 H 564 V 404 H 546" fill="none" stroke="#8f1f25" stroke-width="2" />
+  <text x="576" y="324" text-anchor="middle" class="ui small" fill="#8f1f25" transform="rotate(90 576 324)">You control these three</text>
+
+  <!-- Position vs control legend -->
+  <rect x="116" y="468" width="528" height="68" rx="8" fill="#eee7d9" stroke="#b9b2a7" />
+  <circle cx="150" cy="492" r="12" fill="#69645d" />
+  <text x="174" y="497" class="ui small"><tspan font-weight="800">Player Token = position.</tspan> It shows where that player is.</text>
+  <path d="M 141 516 L 150 522 L 159 516" fill="none" stroke="#69645d" stroke-width="2.5" />
+  <text x="174" y="523" class="ui small"><tspan font-weight="800">Territory orientation = control.</tspan> A Territory faces its controller.</text>
+</svg>
