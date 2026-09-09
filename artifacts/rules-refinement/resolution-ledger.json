@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:21:55.504Z",
+  "updatedAt": "2026-09-09T06:42:38.027Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -603,6 +603,23 @@
       "resolvedAt": "2026-09-09T06:21:55.504Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deterministic-out-of-scope-roadmap-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d"
+      ],
+      "caseIds": [
+        "scope-future-expansion-roadmap"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Future expansion and development-roadmap requests now use the deterministic current-v0.7.1 out-of-scope precheck before corpus retrieval or model-budget reservation. The exact reviewed Communism-expansion question is regression-covered, while gameplay uses of expand remain in scope.",
+      "resolvedAt": "2026-09-09T06:42:38.026Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260909-2"
       }
     }
   ]
