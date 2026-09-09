@@ -1,4 +1,4 @@
-name: Rules Arbiter backlog schema
+name: Rules Arbiter reviewed backlog refresh
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  scan:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -19,9 +19,51 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect production Rules Arbiter schema
+      - name: Export production refinement inputs
         shell: bash
         run: |
           set -euo pipefail
-          echo '=== RULES TABLE SCHEMA ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name LIKE 'rules_%' ORDER BY name"
+          mkdir -p .tmp/backlog-refresh
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interactions ORDER BY session_id, sequence_index, created_at" > .tmp/backlog-refresh/interactions.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics ORDER BY created_at" > .tmp/backlog-refresh/diagnostics.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits ORDER BY reviewed_at" > .tmp/backlog-refresh/audits.json
+      - name: Run current reviewed-backlog pipeline
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { refinementTriage } from './rules-assistant/refinement-triage.js';
+          import { applyRefinementResolutionLedger, refinementResolutionLedger } from './rules-assistant/refinement-resolution-ledger.js';
+          import { applyCurrentValidityToRefinementReport } from './rules-assistant/refinement-current-validity.js';
+
+          const unwrap = (path) => {
+            const payload = JSON.parse(readFileSync(path, 'utf8'));
+            return Array.isArray(payload) && Array.isArray(payload[0]?.results) ? payload[0].results : [];
+          };
+          const interactions = unwrap('.tmp/backlog-refresh/interactions.json');
+          const diagnostics = unwrap('.tmp/backlog-refresh/diagnostics.json');
+          const audits = unwrap('.tmp/backlog-refresh/audits.json');
+          const raw = refinementTriage.triageInteractions(interactions, { diagnostics, audits }, { scope: 'reviewed_backlog' });
+          const unresolved = applyRefinementResolutionLedger(raw, refinementResolutionLedger);
+          const report = applyCurrentValidityToRefinementReport(unresolved, audits);
+          const byId = new Map(interactions.map((row) => [row.id, row]));
+          const top = (report.interactions || []).slice(0, 30).map((item, index) => {
+            const row = byId.get(item.interactionId) || {};
+            return {
+              rank: index + 1,
+              interactionId: item.interactionId,
+              sessionId: row.session_id || null,
+              score: item.score,
+              priority: item.priority,
+              rootCause: item.rootCause,
+              question: row.question || item.question || '',
+              reviewStatus: row.review_status || null,
+              rulingStatus: row.ruling_status_v2 || row.ruling_status || null,
+              signalCodes: item.signalCodes || []
+            };
+          });
+          console.log('=== REVIEWED BACKLOG STATS ===');
+          console.log(JSON.stringify(report.stats || {}, null, 2));
+          console.log('=== TOP UNRESOLVED REVIEWED BACKLOG ===');
+          console.log(JSON.stringify(top, null, 2));
+          NODE
