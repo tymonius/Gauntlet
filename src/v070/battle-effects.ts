@@ -20,6 +20,11 @@ import {
   registerV070ActOfFaithBattleEffect,
 } from './act-of-faith-battle';
 import {
+  V070_BOMBARDMENT_BATTLE_TEXT,
+  V070_BOMBARDMENT_ID,
+  applyV070BombardmentBattleEffect,
+} from './bombardment-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -64,10 +69,24 @@ const actOfFaithHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const bombardmentHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_BOMBARDMENT_ID,
+  expectedText: V070_BOMBARDMENT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    applyV070BombardmentBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_ACCUSATION_ID,
   V070_ACT_OF_FAITH_ID,
+  V070_BOMBARDMENT_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -75,13 +94,16 @@ export function v070BattleEffectHandler(
 ): previous.V070BattleEffectHandler | undefined {
   if (cardId === V070_ACCUSATION_ID) return accusationHandler;
   if (cardId === V070_ACT_OF_FAITH_ID) return actOfFaithHandler;
+  if (cardId === V070_BOMBARDMENT_ID) return bombardmentHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
-  if (cardId === V070_ACCUSATION_ID || cardId === V070_ACT_OF_FAITH_ID) {
+  if (cardId === V070_ACCUSATION_ID
+    || cardId === V070_ACT_OF_FAITH_ID
+    || cardId === V070_BOMBARDMENT_ID) {
     return 'ordinary';
   }
   return previous.v070BattleRevealEffectClass(cardId);
@@ -137,6 +159,41 @@ export function resolveV070SupportedRevealEffects(
             handler: actOfFaithHandler,
           }
         : null;
+
+    if (cardId === V070_BOMBARDMENT_ID) {
+      if (isV070BattleCardEffectNegated(state, commitment.instanceId)) {
+        appendV070Event(state, {
+          type: 'battle_card_effect_skipped_negated',
+          actor: commitment.owner,
+          visibility: 'public',
+          payload: {
+            instanceId: commitment.instanceId,
+            cardId,
+            role: commitment.role,
+          },
+        });
+      } else {
+        bombardmentHandler.apply({
+          state,
+          owner: commitment.owner,
+          opponent: commitment.owner === 'A' ? 'B' : 'A',
+          commitment,
+        });
+        appendV070Event(state, {
+          type: 'battle_card_effect_applied',
+          actor: commitment.owner,
+          visibility: 'public',
+          payload: {
+            instanceId: commitment.instanceId,
+            cardId,
+            role: commitment.role,
+            timing: 'reveal',
+            revealClass: 'ordinary',
+          },
+        });
+      }
+      continue;
+    }
 
     if (!deferred) {
       forwarded.push(commitment);
