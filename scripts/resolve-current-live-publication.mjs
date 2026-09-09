@@ -23,6 +23,14 @@ function repositoryPath(label, value, expression) {
   return normalized;
 }
 
+function repositoryOutputPath(label, value, expression) {
+  const normalized = String(value || '').replace(/\\/g, '/').replace(/^\.\//, '');
+  if (!expression.test(normalized) || normalized.includes('..')) {
+    throw new Error(`${version} has an invalid ${label}: ${JSON.stringify(value)}.`);
+  }
+  return normalized;
+}
+
 function endpointPath(label, value) {
   const normalized = String(value || '');
   if (!/^\/api\/[a-z0-9/_-]+$/i.test(normalized) || normalized.includes('//') || normalized.includes('..')) {
@@ -41,6 +49,12 @@ if (!arbiter || typeof arbiter !== 'object' || Array.isArray(arbiter)) {
   throw new Error(`${version} does not define a Rules Arbiter publication adapter.`);
 }
 const workerSource = repositoryPath('Rules Arbiter worker source', arbiter.worker_source, /^rules-assistant\/[a-z0-9][a-z0-9.-]*\.js$/i);
+const qaRunner = repositoryPath('Rules Arbiter QA runner', arbiter.qa_runner, /^scripts\/[a-z0-9][a-z0-9.-]*\.mjs$/i);
+const qaReportPath = repositoryOutputPath(
+  'Rules Arbiter QA report path',
+  arbiter.qa_report_path,
+  /^artifacts\/rules-qa\/[a-z0-9][a-z0-9._-]*\.json$/i,
+);
 let serviceBase;
 try {
   serviceBase = new URL(String(arbiter.service_base_url || ''));
@@ -51,8 +65,10 @@ if (serviceBase.protocol !== 'https:' || serviceBase.username || serviceBase.pas
   throw new Error(`${version} has an invalid Rules Arbiter service base URL.`);
 }
 const serviceBaseUrl = serviceBase.href.replace(/\/$/, '');
+const rulesPath = endpointPath('Rules Arbiter rules path', arbiter.rules_path);
 const healthPath = endpointPath('Rules Arbiter health path', arbiter.health_path);
 const corpusHealthPath = endpointPath('Rules Arbiter corpus-health path', arbiter.corpus_health_path);
+const rulesUrl = new URL(rulesPath, `${serviceBaseUrl}/`).href;
 const healthUrl = new URL(healthPath, `${serviceBaseUrl}/`).href;
 const corpusHealthUrl = new URL(corpusHealthPath, `${serviceBaseUrl}/`).href;
 
@@ -73,11 +89,14 @@ const plan = {
   version,
   workerSource,
   serviceBaseUrl,
+  rulesUrl,
   healthUrl,
   corpusHealthUrl,
   behaviorRevision: revisionMatch[1],
   manifestPath,
   authoritySetId: manifest.authority_set_id,
+  qaRunner,
+  qaReportPath,
 };
 
 if (process.argv.includes('--plan')) {
@@ -90,11 +109,14 @@ if (process.env.GITHUB_OUTPUT) {
     `version=${plan.version}`,
     `worker_source=${plan.workerSource}`,
     `service_base_url=${plan.serviceBaseUrl}`,
+    `rules_url=${plan.rulesUrl}`,
     `health_url=${plan.healthUrl}`,
     `corpus_health_url=${plan.corpusHealthUrl}`,
     `behavior_revision=${plan.behaviorRevision}`,
     `manifest_path=${plan.manifestPath}`,
     `authority_set_id=${plan.authoritySetId}`,
+    `qa_runner=${plan.qaRunner}`,
+    `qa_report_path=${plan.qaReportPath}`,
     '',
   ].join('\n'));
 }
