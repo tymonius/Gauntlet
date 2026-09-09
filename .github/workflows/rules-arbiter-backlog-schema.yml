@@ -1,4 +1,4 @@
-name: Rules Arbiter Fog opponent-control audit and probe
+name: Rules Arbiter General inspiration audit
 
 on:
   push:
@@ -19,33 +19,29 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect production Fog conversation
+      - name: Inspect production General conversation
         shell: bash
         run: |
           set -euo pipefail
           echo '=== SESSION ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = '857c7adf-adfb-468e-b75a-7031db22e9d5' ORDER BY sequence_index, created_at"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = 'a3bb8f2a-cf7f-4f56-80a2-e97ce2c089ed' ORDER BY sequence_index, created_at"
           echo '=== AUDIT ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f'"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '5990af8d-4276-41a0-bebf-d4b1ff762e09'"
           echo '=== AUDIT HISTORY ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f' ORDER BY reviewed_at"
-          echo '=== SOURCES ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f' ORDER BY ordinal"
-      - name: Probe current v0.7.1 direct and contextual retrieval
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = '5990af8d-4276-41a0-bebf-d4b1ff762e09' ORDER BY reviewed_at"
+      - name: Probe deterministic current scope classifier
         shell: bash
         run: |
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
-          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
-          const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
-          const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
-          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
-          const direct = 'What if the opponent controls fog of war';
-          const contextual = 'Explain fog of war. Fog of War is a Territory Overlay. In the next battle there, the Territory’s controller sets their Gambit and chooses their Tactics after the opponent. What if the opponent controls fog of war';
-          for (const [label, query] of [['DIRECT', direct], ['CONTEXTUAL', contextual]]) {
-            const results = retrieveRules(corpus, query, { limit: 8, excerptLength: 1200 });
-            console.log(`=== CURRENT ${label} RETRIEVAL ===`);
-            console.log(JSON.stringify(results.map(({ canonicalId, score, title, body }) => ({ canonicalId, score, title, body })), null, 2));
+          import { classifyV071ScopePrecheck } from './rules-assistant/v071-scope-precheck.js';
+          const questions = [
+            'Who is the General designed after?',
+            'Who was the General designed after?',
+            'Who is the General based on?',
+            'What historical figure inspired the General?',
+            'What does the General do?'
+          ];
+          for (const question of questions) {
+            console.log(JSON.stringify({ question, result: classifyV071ScopePrecheck(question) }, null, 2));
           }
           NODE
