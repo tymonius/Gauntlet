@@ -10,7 +10,6 @@ import {
 import {
   resumeV070SupportedRevealEffects,
   v070BattleRevealEffectsPending,
-  v070BattleRoleSupportsPreReveal,
 } from './battle-effects';
 import { pendingV070BattleRevealEffectOrderChoice } from './battle-reveal-order';
 import {
@@ -39,20 +38,16 @@ import { openV070SpeculationBattleChoice } from './speculation-battle';
 import { openV070TariffsBattleChoice } from './tariffs-battle';
 import { v070MysticInvocationPendingPlayers } from './mystics';
 import {
-  advanceV070CounterworksPreReveal,
-  beginV070CounterworksPreReveal,
-  finishV070CounterworksPreReveal,
-  hasV070CounterworksPreRevealSource,
-  pendingV070CounterworksPreRevealChoice,
-  resolveV070CounterworksPreRevealAction,
-  type V070CounterworksPreRevealAction,
+  openV070CounterworksBattleChoice,
+  resolveV070CounterworksBattleChoice,
+  type V070CounterworksBattleAction,
 } from './counterworks-battle';
 
 export * from './battle-engine-reveal-order';
 
 export type V070BattleAction =
   | V070RevealOrderBattleAction
-  | V070CounterworksPreRevealAction
+  | V070CounterworksBattleAction
   | {
       type: 'resolve_disruption_battle';
       playerId: PlayerId;
@@ -63,43 +58,20 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  const counterworksPending = pendingV070CounterworksPreRevealChoice(state);
-  if (counterworksPending) {
-    if (!isCounterworksPreRevealAction(action)) {
+  const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'counterworks' && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_counterworks_battle') {
       throw new V070GameActionError(
-        'Resolve the pending Counterworks pre-reveal choice before continuing the battle.',
+        'Resolve the pending Counterworks Overlay choice before continuing the battle.',
       );
     }
-    const staged = structuredClone(state) as V070GameState;
-    resolveV070CounterworksPreRevealAction(staged, action);
-    advanceV070CounterworksPreReveal(staged);
-    if (pendingV070CounterworksPreRevealChoice(staged)) {
-      finalizeOuterBattleTransition(state, staged);
-      return staged;
-    }
-
-    const role = finishV070CounterworksPreReveal(staged);
-    const battle = staged.battle;
-    if (!battle) {
-      throw new V070GameActionError(
-        'Counterworks pre-reveal resolution lost the active battle.',
-      );
-    }
-    const next = reduceV070BattleActionRevealOrder(staged, {
-      type: role === 'gambit' ? 'reveal_gambits' : 'reveal_tactics',
-      playerId: battle.attacker,
-    });
+    const next = structuredClone(state) as V070GameState;
+    resolveV070CounterworksBattleChoice(next, action);
+    continueV070BattleRevealProcedure(next);
     finalizeOuterBattleTransition(state, next);
     return next;
   }
 
-  if (isCounterworksPreRevealAction(action)) {
-    throw new V070GameActionError(
-      'There is no open Counterworks pre-reveal choice.',
-    );
-  }
-
-  const pending = pendingV070BattleRevealChoice(state);
   if (pending?.kind === 'disruption' && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_disruption_battle') {
       throw new V070GameActionError(
@@ -117,6 +89,11 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_counterworks_battle') {
+    throw new V070GameActionError(
+      'There is no open Counterworks battle choice.',
+    );
+  }
   if (action.type === 'resolve_disruption_battle') {
     throw new V070GameActionError('There is no open Disruption battle choice.');
   }
@@ -125,49 +102,12 @@ export function reduceV070BattleAction(
     assertV070DisruptionBattleCardMayBeChosen(state, action.cardInstanceId);
   }
 
-  const revealRole = action.type === 'reveal_gambits'
-    ? 'gambit'
-    : action.type === 'reveal_tactics'
-      ? 'tactic'
-      : null;
-  if (revealRole
-    && hasV070CounterworksPreRevealSource(state, revealRole)
-    && v070BattleRoleSupportsPreReveal(state, revealRole)) {
-    const staged = structuredClone(state) as V070GameState;
-    beginV070CounterworksPreReveal(
-      staged,
-      action.playerId,
-      revealRole,
-    );
-    advanceV070CounterworksPreReveal(staged);
-    if (pendingV070CounterworksPreRevealChoice(staged)) {
-      finalizeOuterBattleTransition(state, staged);
-      return staged;
-    }
-    finishV070CounterworksPreReveal(staged);
-    const next = reduceV070BattleActionRevealOrder(
-      staged,
-      action as V070RevealOrderBattleAction,
-    );
-    finalizeOuterBattleTransition(state, next);
-    return next;
-  }
-
   const next = reduceV070BattleActionRevealOrder(
     state,
     action as V070RevealOrderBattleAction,
   );
   finalizeOuterBattleTransition(state, next);
   return next;
-}
-
-function isCounterworksPreRevealAction(
-  action: V070BattleAction,
-): action is V070CounterworksPreRevealAction {
-  return action.type === 'choose_counterworks_source'
-    || action.type === 'choose_counterworks_target'
-    || action.type === 'choose_counterintelligence_pre_reveal'
-    || action.type === 'resolve_counterworks_replacement';
 }
 
 function finalizeOuterBattleTransition(
@@ -241,6 +181,9 @@ function continueV070BattleRevealProcedure(state: V070GameState): boolean {
           break;
         case 'disruption':
           opened = openV070DisruptionBattleChoice(state);
+          break;
+        case 'counterworks':
+          opened = openV070CounterworksBattleChoice(state);
           break;
       }
       if (opened) return true;
