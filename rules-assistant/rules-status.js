@@ -61,6 +61,8 @@ const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(lore|backstory|fictional history|historical inspiration|real[- ]world (?:analogue|ideology|inspiration)|ideology inspired)\b/i,
   /\b(costume|visual design|art|illustration|aesthetic|appearance|what does .* look like)\b/i,
   /\b(design intent|why was .* designed|balance suggestion|buffed|nerfed)\b/i,
+  /\bwho (?:is|was) .{1,80} (?:designed after|based on|modeled after|modelled after|inspired by)\b/i,
+  /\bwhat (?:historical |real[- ]world )?(?:person|figure|individual) (?:inspired|influenced) .{1,80}\b/i,
   /\b(best|strongest|strong|optimal|most powerful)\b[\s\S]*\b(strategy|deck|build|faction|leader)\b/i,
   /\b(?:build|make|give|recommend) me\b[\s\S]{0,100}\bdeck\b/i,
   /\b(strategy|deck|build) recommendation\b/i,

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "version": "v0.7.2-candidate",
+  "changeType": "semantic-authority-completeness-restoration",
+  "gameplayBehaviorChanged": false,
+  "status": "approved-current-rule-restoration",
+  "summary": "Restore foundational shared gameplay semantics that are already active in the maintained v0.7.2 rules and current canonical objects but were omitted from the consolidated structured current-game authority.",
+  "authorityPrinciple": "game-data/current-game.json remains the complete current gameplay authority. Historical v0.6 material may corroborate a rule but does not control this restoration.",
+  "currentEvidence": [
+    "rulebook/player-facing/current-rulebook.md",
+    "game-data/current-game.json canonical playable-card text",
+    "game-data/current-game.json canonical Territory text",
+    "game-data/current-game.json canonical Leader text"
+  ],
+  "restoredConcepts": {
+    "battle": [
+      "ordinary battle roll and battle-total calculation",
+      "Advantage and Disadvantage stacking, cancellation, and die selection",
+      "normal battle-result movement and Occupation",
+      "ordered Aftermath procedure and battle-card clearing"
+    ],
+    "turn": [
+      "Draw Pile and Discard Pile recycling",
+      "normal Action and additional-Action limits",
+      "Cleanup and Hand-limit resolution"
+    ],
+    "battlefield": [
+      "Position",
+      "movement boundaries and token-crossing constraints",
+      "movement-sequence termination when battle begins",
+      "Occupation",
+      "Counterattack"
+    ],
+    "cardRules": [
+      "shared golden rules and partial-resolution defaults",
+      "shared simultaneous-effect timing",
+      "revealing cards and zones",
+      "negation",
+      "Gambit and Tactic replacement",
+      "revising a choice",
+      "Overlay defaults"
+    ]
+  },
+  "regressionPolicy": {
+    "location": "game-data/current-game-validation.mjs",
+    "requirement": "Loading current-game authority must fail when a required shared baseline rule is absent or when live canonical vocabulary depends on an undeclared shared rule.",
+    "purpose": "Prevent future consolidation or materialization work from silently dropping semantics that canonical objects depend on."
+  },
+  "publicationDependencyPolicy": "Register restored shared mechanics at granular semantic IDs so teaching and technical surfaces can depend on the exact authority they express; retain broad core roots for coarse grouping and compatibility rather than as the default dependency when a narrower ID exists.",
+  "semanticRuleIds": {
+    "battle": [
+      "core.battle.battle-total",
+      "core.battle.advantage-disadvantage",
+      "core.battle.normal-result",
+      "core.battle.aftermath"
+    ],
+    "turn": [
+      "core.turn.draw",
+      "core.turn.actions",
+      "core.turn.cleanup"
+    ],
+    "battlefield": [
+      "core.battlefield.position",
+      "core.battlefield.movement",
+      "core.battlefield.occupation",
+      "core.battlefield.counterattack"
+    ],
+    "cardRules": [
+      "core.cards.golden-rules",
+      "core.cards.shared-timing",
+      "core.cards.reveal",
+      "core.cards.negation",
+      "core.cards.replacement",
+      "core.cards.revising-choice",
+      "core.cards.overlay"
+    ]
+  },
+  "supportingPublicationRuleIds": [
+    "core.turn.sequence"
+  ]
+}

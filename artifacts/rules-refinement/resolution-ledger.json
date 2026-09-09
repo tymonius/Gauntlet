@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:50:24.116Z",
+  "updatedAt": "2026-09-09T13:04:10.161Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -621,6 +621,57 @@
       "resolvedAt": "2026-09-09T06:42:38.026Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260909-2"
+      }
+    },
+    {
+      "id": "margin-loan-win-followup-counterfactual-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "8fadc98d-e870-4ee5-b35f-a45422b02729"
+      ],
+      "caseIds": [
+        "margin-loan-win-followup-counterfactual"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Short counterfactual follow-ups such as the reviewed “What if I win instead?” now inherit the immediately preceding exchange before retrieval. This keeps the question on Margin Loan’s Gambit/Tactic battle branch, whose current v0.7.1 text directly returns collateral after a win, instead of drifting to unrelated generic victory authority or conflating the separate Action/banked loan branch.",
+      "resolvedAt": "2026-09-09T12:44:06.668Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-7"
+      }
+    },
+    {
+      "id": "fog-of-war-opponent-control-current-authority-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "254cb085-3f0e-4a5d-853e-036568dedd1f"
+      ],
+      "caseIds": [
+        "fog-of-war-opponent-territory-control-direction"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The exact reviewed opponent-control wording now retrieves Fog of War as primary v0.7.1 authority. Current card text keys the ordering to the contested Territory’s controller and explicitly makes that player set their Gambit and choose their Tactics after the opponent. This closes the historical reversed-order answer without importing the retired v0.6.0 notion that control of the Overlay itself determines the order.",
+      "resolvedAt": "2026-09-09T12:51:13.825Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-7"
+      }
+    },
+    {
+      "id": "general-design-inspiration-scope-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "5990af8d-4276-41a0-bebf-d4b1ff762e09"
+      ],
+      "caseIds": [
+        "scope-design-inspiration"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Historical or design-inspiration questions phrased as who a game element was designed after, based on, modeled after, inspired by, or what historical or real-world figure inspired it now use the deterministic current-v0.7.1 out-of-scope precheck before corpus retrieval or model-budget reservation. Gameplay questions about the same Leader, such as what the General does, remain in scope.",
+      "resolvedAt": "2026-09-09T13:04:10.161Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260909-3"
       }
     }
   ]

@@ -324,6 +324,253 @@
       ]
     },
     {
+      "id": "core.turn.sequence",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "turn",
+            "sequence"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.turn.draw",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "turn",
+            "draw"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.turn.actions",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "turn",
+            "actions"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.turn.cleanup",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "turn",
+            "cleanup"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.position",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "position"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.movement",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "movement_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.occupation",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "occupation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battlefield.counterattack",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battlefield",
+            "counterattack"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.battle-total",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "battle_total"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.advantage-disadvantage",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "advantage_disadvantage"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.normal-result",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "normal_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.aftermath",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "aftermath"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.golden-rules",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "golden_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.shared-timing",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "shared_timing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.reveal",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "reveal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.negation",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "negation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.replacement",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "replacement"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.revising-choice",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "revising_choice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.overlay",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "overlay"
+          ]
+        }
+      ]
+    },
+    {
       "id": "faction.military.definition",
       "scope": "faction:military",
       "sources": [
@@ -566,7 +813,10 @@
           "id": "turn",
           "title": "Your Turn",
           "dependsOn": [
-            "core.turn"
+            "core.turn.sequence",
+            "core.turn.draw",
+            "core.turn.actions",
+            "core.turn.cleanup"
           ]
         },
         {
@@ -574,6 +824,8 @@
           "title": "Movement",
           "dependsOn": [
             "core.turn",
+            "core.battlefield.position",
+            "core.battlefield.movement",
             "core.battle.movement-initiation"
           ]
         },
@@ -581,13 +833,18 @@
           "id": "battles",
           "title": "Battles",
           "dependsOn": [
-            "core.battle",
             "core.battle.sequence",
+            "core.battle.onset",
             "core.battle.commitment-order",
             "core.battle.gambit-count",
             "core.battle.tactic-count",
             "core.battle.reserve-size",
-            "core.battle.defensive-edge"
+            "core.battle.battle-total",
+            "core.battle.advantage-disadvantage",
+            "core.battle.defensive-edge",
+            "core.battle.tiebreak",
+            "core.battle.normal-result",
+            "core.battle.aftermath"
           ]
         },
         {
@@ -595,7 +852,8 @@
           "title": "Taking and Holding Ground",
           "dependsOn": [
             "core.battlefield.capture",
-            "core.battlefield.front-line"
+            "core.battlefield.front-line",
+            "core.battlefield.occupation"
           ]
         },
         {
@@ -707,7 +965,11 @@
           "id": "turn-structure",
           "title": "Turn Structure",
           "covers": [
-            "core.turn"
+            "core.turn",
+            "core.turn.sequence",
+            "core.turn.draw",
+            "core.turn.actions",
+            "core.turn.cleanup"
           ]
         },
         {
@@ -715,6 +977,10 @@
           "title": "Movement and Battlefield State",
           "covers": [
             "core.battlefield",
+            "core.battlefield.position",
+            "core.battlefield.movement",
+            "core.battlefield.occupation",
+            "core.battlefield.counterattack",
             "core.battle.movement-initiation"
           ]
         },
@@ -722,7 +988,11 @@
           "id": "battles",
           "title": "Battles",
           "covers": [
-            "core.battle"
+            "core.battle",
+            "core.battle.battle-total",
+            "core.battle.advantage-disadvantage",
+            "core.battle.normal-result",
+            "core.battle.aftermath"
           ]
         },
         {
@@ -739,14 +1009,20 @@
           "id": "cards-zones",
           "title": "Cards and Zones",
           "covers": [
-            "core.cards"
+            "core.cards",
+            "core.cards.reveal"
           ]
         },
         {
           "id": "effects-timing",
           "title": "Effects and Timing",
           "covers": [
-            "core.cards",
+            "core.cards.golden-rules",
+            "core.cards.shared-timing",
+            "core.cards.reveal",
+            "core.cards.negation",
+            "core.cards.replacement",
+            "core.cards.revising-choice",
             "core.battle"
           ]
         },
@@ -754,7 +1030,7 @@
           "id": "persistent-shared",
           "title": "Persistent and Special Shared Rules",
           "covers": [
-            "core.cards"
+            "core.cards.overlay"
           ]
         },
         {

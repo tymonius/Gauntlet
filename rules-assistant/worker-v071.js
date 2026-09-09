@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260908-6";
+export const BEHAVIOR_REVISION = "v071-qa-20260909-7";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -517,8 +517,9 @@ function isContextDependentQuestion(question) {
 
   const referentCue = /\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\b/.test(current);
   const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(current);
+  const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\b/.test(current);
   const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\b/.test(current);
-  return referentCue || continuationCue || bareQuestionCue;
+  return referentCue || continuationCue || shortCounterfactualCue || bareQuestionCue;
 }
 
 export function contextualQuery(question, history = []) {

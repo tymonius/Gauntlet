@@ -15,7 +15,11 @@ const reviewedOutOfScope = [
   "Will there be an expansion that includes Communism?",
   "Are there plans for a future expansion?",
   "When is the next expansion coming?",
-  "What is the development roadmap?"
+  "What is the development roadmap?",
+  "Who is the General designed after?",
+  "Who was the General designed after?",
+  "Who is the General based on?",
+  "What historical figure inspired the General?"
 ];
 
 const rulesQuestions = [
@@ -23,7 +27,8 @@ const rulesQuestions = [
   "How do I choose a faction and Leader when building a Deck?",
   "What does the Witch Hunter do?",
   "Can this card be in a Witch Hunter Deck?",
-  "Can I expand my control into a Territory after winning a battle?"
+  "Can I expand my control into a Territory after winning a battle?",
+  "What does the General do?"
 ];
 
 function request(question, rulesVersion = "v0.7.1") {

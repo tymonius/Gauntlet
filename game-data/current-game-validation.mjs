@@ -7,6 +7,20 @@ export function requireCurrentArray(value, label) {
   return value;
 }
 
+function requireCurrentObject(value, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`Current-game authority expected ${label} to be an object.`);
+  }
+  return value;
+}
+
+function requireCurrentText(value, label) {
+  if (!String(value || '').trim()) {
+    throw new Error(`Current-game authority expected ${label} to contain rule text.`);
+  }
+  return value;
+}
+
 function validateLeader(leader) {
   if (!leader?.id || !leader?.faction || !leader?.name) {
     throw new Error('A current Leader definition is incomplete.');
@@ -147,6 +161,156 @@ function validateBattleCommitmentOrder(authority) {
   }
 }
 
+function validateSharedGameplayBaseline(authority) {
+  const gameplay = requireCurrentObject(authority.gameplay, 'gameplay');
+  const battle = requireCurrentObject(gameplay.battle, 'shared battle rules');
+  const battlefield = requireCurrentObject(gameplay.battlefield, 'shared battlefield rules');
+  const turn = requireCurrentObject(gameplay.turn, 'shared turn rules');
+  const cardRules = requireCurrentObject(gameplay.card_rules, 'shared card rules');
+
+  const battleTotal = requireCurrentObject(battle.battle_total, 'ordinary battle-total rules');
+  if (battleTotal.ordinary_die_count !== 1) {
+    throw new Error('Ordinary battle-total rules must define one normal battle die before modifiers or dice-selection rules.');
+  }
+  requireCurrentText(battleTotal.calculation, 'battle-total calculation');
+  requireCurrentText(battleTotal.winner, 'battle-total winner rule');
+
+  const advantage = requireCurrentObject(battle.advantage_disadvantage, 'Advantage and Disadvantage rules');
+  if (advantage.instances_stack !== true || advantage.fixed_stacking_cap !== null) {
+    throw new Error('Advantage and Disadvantage must remain additive instances with no fixed stacking cap.');
+  }
+  for (const key of ['cancellation', 'advantage_roll', 'disadvantage_roll', 'neutral_roll']) {
+    requireCurrentText(advantage[key], `Advantage/Disadvantage ${key}`);
+  }
+
+  const normalResult = requireCurrentObject(battle.normal_result, 'normal battle result');
+  for (const key of ['losing_attacker', 'losing_defender', 'winning_attacker', 'winning_defender', 'additional_retreat']) {
+    requireCurrentText(normalResult[key], `normal battle result ${key}`);
+  }
+
+  const aftermath = requireCurrentObject(battle.aftermath, 'Aftermath rules');
+  const expectedAftermath = [
+    'determine_result',
+    'replace_loss_with_withdrawal',
+    'immediate_result_triggers',
+    'normal_retreat_and_occupation',
+    'additional_position_effects',
+    'other_pre_clear_aftermath_effects',
+    'clear_battle_cards',
+    'card_movement_triggers',
+    'end_of_aftermath',
+  ];
+  const aftermathSequence = requireCurrentArray(aftermath.sequence, 'Aftermath sequence');
+  if (JSON.stringify(aftermathSequence) !== JSON.stringify(expectedAftermath)) {
+    throw new Error('Current Aftermath sequence is incomplete or out of order.');
+  }
+  const aftermathSteps = requireCurrentObject(aftermath.steps, 'Aftermath step rules');
+  for (const step of expectedAftermath) requireCurrentText(aftermathSteps[step], `Aftermath step ${step}`);
+  const battleCardClear = requireCurrentObject(aftermath.battle_card_clear, 'battle-card clearing rules');
+  for (const key of ['gambits', 'tactics', 'remaining_reserve', 'specific_destination_override', 'source_return']) {
+    requireCurrentText(battleCardClear[key], `battle-card clearing rule ${key}`);
+  }
+
+  const draw = requireCurrentObject(turn.draw, 'Draw rules');
+  if (draw.normal_cards !== 1 || draw.graveyard_recycles !== false) {
+    throw new Error('Current Draw rules must preserve one normal Draw and keep the Graveyard outside normal recycling.');
+  }
+  for (const key of ['recycle', 'partial_resolution', 'normal_draw_failure']) {
+    requireCurrentText(draw[key], `Draw rule ${key}`);
+  }
+
+  const actions = requireCurrentObject(turn.actions, 'Action rules');
+  if (actions.normal_total !== turn.normal_actions || actions.maximum_per_phase !== turn.maximum_actions_per_phase) {
+    throw new Error('Structured Action rules disagree with the current turn limits.');
+  }
+  for (const key of ['normal_timing', 'additional_actions', 'same_phase_permission', 'direct_permission']) {
+    requireCurrentText(actions[key], `Action rule ${key}`);
+  }
+
+  const cleanup = requireCurrentObject(turn.cleanup, 'Cleanup rules');
+  for (const key of ['hand_limit', 'procedure', 'expiration']) {
+    requireCurrentText(cleanup[key], `Cleanup rule ${key}`);
+  }
+
+  requireCurrentText(battlefield.position, 'Position rule');
+  const movementRules = requireCurrentObject(battlefield.movement_rules, 'battlefield movement rules');
+  for (const key of ['voluntary_fall_back_boundary', 'tokens_cannot_pass', 'additional_movement', 'battle_ends_sequence', 'new_sequence_after_battle']) {
+    requireCurrentText(movementRules[key], `movement rule ${key}`);
+  }
+  requireCurrentText(battlefield.occupation, 'Occupation rule');
+  requireCurrentText(battlefield.counterattack, 'Counterattack rule');
+
+  const goldenRules = requireCurrentObject(cardRules.golden_rules, 'shared golden rules');
+  for (const key of ['specificity', 'may', 'must', 'instruction_order', 'partial_resolution']) {
+    requireCurrentText(goldenRules[key], `golden rule ${key}`);
+  }
+
+  const sharedTiming = requireCurrentObject(cardRules.shared_timing, 'shared timing rules');
+  for (const key of ['alternation', 'controller_order', 'simultaneous_reveal']) {
+    requireCurrentText(sharedTiming[key], `shared timing rule ${key}`);
+  }
+
+  const reveal = requireCurrentObject(cardRules.reveal, 'reveal rules');
+  for (const key of ['card', 'zone']) requireCurrentText(reveal[key], `reveal rule ${key}`);
+
+  const negation = requireCurrentObject(cardRules.negation, 'negation rules');
+  for (const key of ['effect', 'gambit_destination', 'tactic_destination', 'too_late']) {
+    requireCurrentText(negation[key], `negation rule ${key}`);
+  }
+
+  const replacement = requireCurrentObject(cardRules.replacement, 'replacement rules');
+  for (const key of ['same_role', 'eligibility', 'face_state', 'no_reopen', 'remaining_timing']) {
+    requireCurrentText(replacement[key], `replacement rule ${key}`);
+  }
+
+  const revisingChoice = requireCurrentObject(cardRules.revising_choice, 'revised-choice rules');
+  for (const key of ['procedure', 'no_implicit_window']) {
+    requireCurrentText(revisingChoice[key], `revised-choice rule ${key}`);
+  }
+
+  const overlay = requireCurrentObject(cardRules.overlay, 'Overlay rules');
+  if (overlay.is_asset !== false || overlay.control_follows_territory !== true || overlay.ownership_changes !== false) {
+    throw new Error('Current Overlay identity, control, or ownership defaults are incomplete.');
+  }
+  for (const key of [
+    'active_layer',
+    'covered_layer',
+    'dormant_timer',
+    'dormant_removal_conditions',
+    'orientation',
+    'default_removal_destination',
+    'you_reference',
+  ]) {
+    requireCurrentText(overlay[key], `Overlay rule ${key}`);
+  }
+
+  const restoration = authority.provenance?.currentDevelopmentInputs?.v072SharedBaselineRestoration;
+  if (restoration !== '/docs/v0.7.2-shared-baseline-restoration.json') {
+    throw new Error('Current-game authority is missing shared-baseline restoration provenance.');
+  }
+
+  const liveObjectText = JSON.stringify({
+    cards: gameplay.cards,
+    territories: gameplay.territories,
+    leaders: authority.leaders,
+    proposals: authority.proposals,
+    mystics: authority.mystics,
+  });
+  const liveDependencies = [
+    [/\bAdvantage\b|\bDisadvantage\b/u, battle.advantage_disadvantage, 'Advantage/Disadvantage'],
+    [/\bnegat(?:e|ed|es|ing|ion)\b/iu, cardRules.negation, 'negation'],
+    [/\bCounterattack\b/u, battlefield.counterattack, 'Counterattack'],
+    [/\bOverlay\b/u, cardRules.overlay, 'Overlay'],
+    [/\breplac(?:e|ed|es|ing|ement)\b/iu, cardRules.replacement, 'replacement'],
+    [/\brevis(?:e|ed|es|ing)\b/iu, cardRules.revising_choice, 'revised-choice'],
+  ];
+  for (const [pattern, rule, label] of liveDependencies) {
+    if (pattern.test(liveObjectText) && !rule) {
+      throw new Error(`Live canonical objects use ${label} semantics without a shared authority rule.`);
+    }
+  }
+}
+
 export function validateCurrentGameAuthority(authority) {
   if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
     throw new Error('Invalid complete current-game authority.');
@@ -172,6 +336,7 @@ export function validateCurrentGameAuthority(authority) {
   validateFactionFeatures(authority);
   validateTrackerPresentation(authority);
   validateBattleCommitmentOrder(authority);
+  validateSharedGameplayBaseline(authority);
   authority.leaders.forEach(validateLeader);
 
   const ids = new Set();
