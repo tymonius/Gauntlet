@@ -17,6 +17,12 @@ import {
   resolveV070ActOfFaithGraveyardChoice,
   resolveV070ActOfFaithRevealCount,
 } from './act-of-faith-battle';
+import {
+  V070_BROTHERS_IN_ARMS_ID,
+  openV070BrothersInArmsAdditionalTacticChoice,
+  pendingV070BrothersInArmsAdditionalTactic,
+  resolveV070BrothersInArmsAdditionalTacticChoice,
+} from './brothers-in-arms-battle';
 import { V070DeferredBattleAftermathPause } from './battle-aftermath';
 
 export * from './battle-engine-pre-accusation';
@@ -42,12 +48,33 @@ export type V070BattleAction =
       type: 'resolve_act_of_faith_graveyard';
       playerId: PlayerId;
       graveyardInstanceId: string;
+    }
+  | {
+      type: 'resolve_brothers_in_arms_additional_tactic';
+      playerId: PlayerId;
+      cardInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const brothersInArms = pendingV070BrothersInArmsAdditionalTactic(state);
+  if (brothersInArms) {
+    if (action.type !== 'resolve_brothers_in_arms_additional_tactic') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Brothers in Arms additional Tactic before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070BrothersInArmsAdditionalTacticChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+    return next;
+  }
+
   const accusation = pendingV070AccusationAftermath(state);
   if (accusation) {
     if (accusation.stage === 'target') {
@@ -132,11 +159,29 @@ export function reduceV070BattleAction(
       'There is no pending Act of Faith Graveyard choice.',
     );
   }
+  if (action.type === 'resolve_brothers_in_arms_additional_tactic') {
+    throw new V070GameActionError(
+      'There is no pending Brothers in Arms additional Tactic choice.',
+    );
+  }
 
-  return reduceBaseWithDeferredPause(
+  const next = reduceBaseWithDeferredPause(
     state,
     action as V070BaseBattleAction,
   );
+
+  if (action.type === 'choose_tactic'
+    && action.cardInstanceId
+    && next.cardInstances[action.cardInstanceId]?.cardId ===
+      V070_BROTHERS_IN_ARMS_ID) {
+    openV070BrothersInArmsAdditionalTacticChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+  }
+
+  return next;
 }
 
 function reduceBaseWithDeferredPause(
