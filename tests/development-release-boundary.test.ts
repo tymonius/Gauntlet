@@ -14,6 +14,12 @@ const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
 const cardAuthorityModel = readFileSync('scripts/card-authority/model.mjs', 'utf8');
 const renderedFaceValidator = readFileSync('scripts/card-authority/validate-rendered-faces.mjs', 'utf8');
 const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf8');
+const playtestValidator = readFileSync('scripts/validate_current_playtest_sessions.py', 'utf8');
+const playtestWorkflow = readFileSync('.github/workflows/deploy-playtest-sessions.yml', 'utf8');
+const playtestSheetWorkflow = readFileSync('.github/workflows/render-playtest-sheet.yml', 'utf8');
+const playtestCurrentRelease = readFileSync('apps/playtest/current-release.js', 'utf8');
+const playtestHost = readFileSync('apps/playtest/host/create-event.js', 'utf8');
+const playtestBatch = readFileSync('apps/playtest/batch/app.js', 'utf8');
 
 describe('development and published-release boundary', () => {
   it('keeps the published release frozen while active development may advance independently', () => {
@@ -67,5 +73,34 @@ describe('development and published-release boundary', () => {
     expect(renderedFaceValidator).toContain('resolveAllFaceSpecs(runtimeGameFromAuthority(authority))');
     expect(renderedFaceValidator).not.toContain('EXPECTED_RITES');
     expect(renderedFaceValidator).not.toContain('EXPECTED_CATALOG_COUNT');
+  });
+
+  it('validates the deployed playtest service against the lifecycle-selected current release', () => {
+    expect(playtestValidator).toContain('CURRENT_VERSION = str(LIFECYCLE.get("current_release", ""))');
+    expect(playtestValidator).not.toContain('current v0.7.1 playtest workflow');
+    expect(playtestWorkflow).toContain('scripts/validate_current_playtest_sessions.py');
+    expect(playtestWorkflow).toContain('config/release-lifecycle.json');
+    expect(playtestWorkflow).toContain("expected_version = str(lifecycle.get('current_release', ''))");
+    expect(playtestWorkflow).not.toContain('validate_v071_playtest_sessions.py');
+  });
+
+  it('names printable playtest-sheet outputs from the lifecycle-selected release', () => {
+    expect(playtestSheetWorkflow).toContain('config/release-lifecycle.json');
+    expect(playtestSheetWorkflow).toContain('apps/playtest/Gauntlet_${version}_Playtest_Sheet.pdf');
+    expect(playtestSheetWorkflow).toContain('steps.release.outputs.pdf');
+    expect(playtestSheetWorkflow).toContain('gauntlet-current-playtest-sheet-${{ steps.release.outputs.version }}');
+    expect(playtestSheetWorkflow).not.toContain('Gauntlet_v0.7.1_Playtest_Sheet');
+    expect(playtestSheetWorkflow).not.toContain('gauntlet-v071-playtest-sheet');
+  });
+
+  it('keeps maintained playtest clients on one current-release resolver', () => {
+    expect(packageJson.scripts['test:playtest-sessions']).toContain('apps/playtest/current-release.test.mjs');
+    expect(playtestCurrentRelease).toContain('DEFAULT_LIFECYCLE_URL = "/config/release-lifecycle.json"');
+    expect(playtestCurrentRelease).toContain('health.version !== version');
+    for (const caller of [playtestHost, playtestBatch]) {
+      expect(caller).toContain('resolveCurrentPlaytestRelease');
+      expect(caller).not.toContain('v0.7.1');
+    }
+    expect(playtestBatch).toContain('gauntlet-${batchMetadata.rulesVersion}-playtest-batch-${label}.json');
   });
 });
