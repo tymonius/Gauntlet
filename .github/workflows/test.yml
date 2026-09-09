@@ -120,11 +120,16 @@ jobs:
             const changedTests = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && testPattern.test(file));
             const relatedSources = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
+            const dependencyLockChanged = exact('package-lock.json');
             const retiredSources = retiredSourceNames.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
 
-            const fullTests = uncertain || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
-            const code = fullTests || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
-            const types = uncertain || exact('package.json') || exact('package-lock.json') || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
+            // The repository still contains intentionally retained historical test corpora
+            // that are not part of the maintained current-game gate. A lockfile-only
+            // dependency change therefore gets a real Vitest smoke test rather than
+            // accidentally executing every archived/stale suite in the repository.
+            const fullTests = uncertain || packageRuntimeChanged || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
+            const code = fullTests || dependencyLockChanged || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
+            const types = uncertain || exact('package.json') || dependencyLockChanged || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
@@ -135,6 +140,7 @@ jobs:
             core.setOutput('code', String(code));
             core.setOutput('types', String(types));
             core.setOutput('full_tests', String(fullTests));
+            core.setOutput('dependency_lock_changed', String(dependencyLockChanged));
             core.setOutput('analytics', String(analytics));
             core.setOutput('tts', String(tts));
             core.setOutput('media', String(media));
@@ -148,8 +154,9 @@ jobs:
                 [{data: 'Check', header: true}, {data: 'Run?', header: true}],
                 ['Release-path normalization', 'true'],
                 ['Vitest', String(code)],
+                ['Dependency lock smoke', String(dependencyLockChanged)],
                 ['Retired source references', retiredSources.length ? 'scan' : 'none'],
-                ['Full Vitest suite', String(fullTests)],
+                ['Full maintained Vitest suite', String(fullTests)],
                 ['TypeScript', String(types)],
                 ['Analytics', String(analytics)],
                 ['TTS', String(tts)],
@@ -216,9 +223,14 @@ jobs:
           RELATED_SOURCES: ${{ steps.scope.outputs.related_sources }}
         run: |
           set -euo pipefail
+          exec > >(tee vitest-output.log) 2>&1
           if [[ "${{ steps.scope.outputs.full_tests }}" == "true" ]]; then
             npx vitest run
             exit 0
+          fi
+
+          if [[ "${{ steps.scope.outputs.dependency_lock_changed }}" == "true" ]]; then
+            npx vitest run tests/arcane-card-symbol.test.ts
           fi
 
           mapfile -t changed_tests < <(node -e "for (const file of JSON.parse(process.env.CHANGED_TESTS || '[]')) console.log(file)")
@@ -238,6 +250,15 @@ jobs:
               --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
               "${related_sources[@]}"
           fi
+
+      - name: Upload Vitest failure diagnostics
+        if: failure() && steps.scope.outputs.code == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-failure-log
+          path: vitest-output.log
+          if-no-files-found: warn
+          retention-days: 3
 
       - name: Run public static accessibility contract when HTML changes
         if: steps.scope.outputs.accessibility == 'true'
