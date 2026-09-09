@@ -5765,7 +5765,7 @@
   "starterDecks": {
     "version": "v0.7.2-candidate",
     "status": "Active v0.7.2-candidate starter set",
-    "purpose": "Recommended v0.7.1 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
+    "purpose": "Recommended v0.7.2-candidate starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
       "maximumDeckbuildingValue": 60,

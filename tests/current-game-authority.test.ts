@@ -60,7 +60,7 @@ describe('complete current-game authority', () => {
     expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
     expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');
 
-    // Historical source paths remain provenance; active release identity must not.
+    // Historical source paths remain provenance; active starter identity must not be stale.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
     expect(authority.starterDecks.optimizationPolicy.cardAdditions).toContain('v0.6.4-card-additions.json');
     expect(JSON.stringify({
@@ -69,7 +69,7 @@ describe('complete current-game authority', () => {
       purpose: authority.starterDecks.purpose,
       optimizationStatus: authority.starterDecks.optimizationPolicy.status,
       approvalStatus: authority.starterDecks.approval.status,
-    })).not.toMatch(/v0\.6\.4|v0\.6\.3/i);
+    })).not.toMatch(/v0\.7\.1|v0\.6\.4|v0\.6\.3/i);
   });
 
   it('contains the entire resolved gameplay and component state in one document', () => {
