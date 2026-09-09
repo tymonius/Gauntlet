@@ -1,4 +1,4 @@
-name: Rules Arbiter Communism expansion audit
+name: Rules Arbiter Margin Loan audit and probe
 
 on:
   push:
@@ -19,19 +19,30 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect reviewed interaction and session
+      - name: Inspect production review context
         shell: bash
         run: |
           set -euo pipefail
           echo '=== SESSION ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, answer_mode, answer_mode_v2, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = 'ea678554-19fe-4e6a-b6a8-bab486e85ad9' ORDER BY sequence_index, created_at"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = '92755b84-2bf3-4016-9c75-9eac894ec30f' ORDER BY sequence_index, created_at"
           echo '=== AUDIT ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d'"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc'"
           echo '=== AUDIT HISTORY ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = '45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d' ORDER BY reviewed_at"
-          echo '=== DIAGNOSTICS ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id = '45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d'"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc' ORDER BY reviewed_at"
           echo '=== SOURCES ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id = '45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d' ORDER BY ordinal"
-          echo '=== REVIEWS ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id = '45f0d3a8-aa0f-4adc-8e3c-9a7d2f32a86d' ORDER BY created_at"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc' ORDER BY ordinal"
+      - name: Probe current v0.7.1 retrieval
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
+          const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
+          const question = "I use Margin Loan's Battle effect, place a card beneath it as collateral, and then withdraw from the battle. What happens to Margin Loan and the collateral?";
+          const results = retrieveRules(corpus, question, { limit: 8, excerptLength: 1200 });
+          console.log('=== CURRENT RETRIEVAL ===');
+          console.log(JSON.stringify(results.map(({ id, canonicalId, score, title, body }) => ({ id, canonicalId, score, title, body })), null, 2));
+          NODE
