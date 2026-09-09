@@ -34,6 +34,11 @@ import {
   registerV070BurningAtTheStakeBattleEffect,
 } from './burning-at-the-stake-battle';
 import {
+  V070_CAPITAL_GAINS_BATTLE_TEXT,
+  V070_CAPITAL_GAINS_ID,
+  applyV070CapitalGainsBattleEffect,
+} from './capital-gains-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -121,6 +126,19 @@ const burningAtTheStakeHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const capitalGainsHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_CAPITAL_GAINS_ID,
+  expectedText: V070_CAPITAL_GAINS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    applyV070CapitalGainsBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_ACCUSATION_ID,
@@ -128,6 +146,7 @@ export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   V070_BOMBARDMENT_ID,
   V070_BROTHERS_IN_ARMS_ID,
   V070_BURNING_AT_THE_STAKE_ID,
+  V070_CAPITAL_GAINS_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -140,6 +159,7 @@ export function v070BattleEffectHandler(
   if (cardId === V070_BURNING_AT_THE_STAKE_ID) {
     return burningAtTheStakeHandler;
   }
+  if (cardId === V070_CAPITAL_GAINS_ID) return capitalGainsHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -150,7 +170,8 @@ export function v070BattleRevealEffectClass(
     || cardId === V070_ACT_OF_FAITH_ID
     || cardId === V070_BOMBARDMENT_ID
     || cardId === V070_BROTHERS_IN_ARMS_ID
-    || cardId === V070_BURNING_AT_THE_STAKE_ID) {
+    || cardId === V070_BURNING_AT_THE_STAKE_ID
+    || cardId === V070_CAPITAL_GAINS_ID) {
     return 'ordinary';
   }
   return previous.v070BattleRevealEffectClass(cardId);
@@ -215,10 +236,13 @@ export function resolveV070SupportedRevealEffects(
           : null;
 
     if (cardId === V070_BOMBARDMENT_ID
-      || cardId === V070_BROTHERS_IN_ARMS_ID) {
+      || cardId === V070_BROTHERS_IN_ARMS_ID
+      || cardId === V070_CAPITAL_GAINS_ID) {
       const handler = cardId === V070_BOMBARDMENT_ID
         ? bombardmentHandler
-        : brothersInArmsHandler;
+        : cardId === V070_BROTHERS_IN_ARMS_ID
+          ? brothersInArmsHandler
+          : capitalGainsHandler;
       if (isV070BattleCardEffectNegated(state, commitment.instanceId)) {
         appendV070Event(state, {
           type: 'battle_card_effect_skipped_negated',
