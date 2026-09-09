@@ -1,4 +1,4 @@
-name: Rules Arbiter Margin Loan audit and probe
+name: Rules Arbiter Fog opponent-control audit and probe
 
 on:
   push:
@@ -19,19 +19,19 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect production review context
+      - name: Inspect production Fog conversation
         shell: bash
         run: |
           set -euo pipefail
           echo '=== SESSION ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = '92755b84-2bf3-4016-9c75-9eac894ec30f' ORDER BY sequence_index, created_at"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, previous_interaction_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, feedback_rating, review_status, issue_types_json, reviewer_notes, resolution FROM rules_interactions WHERE session_id = '857c7adf-adfb-468e-b75a-7031db22e9d5' ORDER BY sequence_index, created_at"
           echo '=== AUDIT ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc'"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f'"
           echo '=== AUDIT HISTORY ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc' ORDER BY reviewed_at"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f' ORDER BY reviewed_at"
           echo '=== SOURCES ==='
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id = 'd90e20fe-14c2-404d-951e-0b877c18adfc' ORDER BY ordinal"
-      - name: Probe current v0.7.1 retrieval
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id = '254cb085-3f0e-4a5d-853e-036568dedd1f' ORDER BY ordinal"
+      - name: Probe current v0.7.1 direct and contextual retrieval
         shell: bash
         run: |
           node --input-type=module <<'NODE'
@@ -41,8 +41,11 @@ jobs:
           const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
           const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
           const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
-          const question = "I use Margin Loan's Battle effect, place a card beneath it as collateral, and then withdraw from the battle. What happens to Margin Loan and the collateral?";
-          const results = retrieveRules(corpus, question, { limit: 8, excerptLength: 1200 });
-          console.log('=== CURRENT RETRIEVAL ===');
-          console.log(JSON.stringify(results.map(({ id, canonicalId, score, title, body }) => ({ id, canonicalId, score, title, body })), null, 2));
+          const direct = 'What if the opponent controls fog of war';
+          const contextual = 'Explain fog of war. Fog of War is a Territory Overlay. In the next battle there, the Territory’s controller sets their Gambit and chooses their Tactics after the opponent. What if the opponent controls fog of war';
+          for (const [label, query] of [['DIRECT', direct], ['CONTEXTUAL', contextual]]) {
+            const results = retrieveRules(corpus, query, { limit: 8, excerptLength: 1200 });
+            console.log(`=== CURRENT ${label} RETRIEVAL ===`);
+            console.log(JSON.stringify(results.map(({ canonicalId, score, title, body }) => ({ canonicalId, score, title, body })), null, 2));
+          }
           NODE
