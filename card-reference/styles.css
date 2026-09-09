@@ -9,9 +9,13 @@
   min-height: 390px;
   padding: 72px 0 62px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
   gap: 56px;
   align-items: end;
+}
+
+.reference-hero > * {
+  min-width: 0;
 }
 
 .reference-hero h1 {
@@ -29,7 +33,9 @@
 }
 
 .source-status {
-  min-width: 245px;
+  width: 100%;
+  min-width: 0;
+  max-width: 380px;
   padding: 20px 22px;
   border: 1px solid var(--line);
   border-top: 4px solid var(--crimson);
@@ -53,6 +59,8 @@
   margin-top: 7px;
   font-family: var(--sans);
   font-size: 1.05rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .reference-app {
@@ -416,7 +424,7 @@
 
 @media (max-width: 920px) {
   .reference-hero { grid-template-columns: 1fr; align-items: start; }
-  .source-status { width: 100%; }
+  .source-status { width: 100%; max-width: none; }
   .reference-app { grid-template-columns: 1fr; }
   .filter-panel { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-heading, .search-field, .reference-metrics { grid-column: 1 / -1; }
