@@ -13,6 +13,11 @@ import {
   pendingV070ActOfFaithAftermath,
   unresolvedV070ActOfFaithSourcesForPlayer,
 } from './act-of-faith-battle';
+import {
+  openV070BurningAtTheStakeAftermathForSource,
+  pendingV070BurningAtTheStakeAftermath,
+  unresolvedV070BurningAtTheStakeSourcesForPlayer,
+} from './burning-at-the-stake-battle';
 
 export interface V070DeferredBattleAftermathEffectRef {
   owner: PlayerId;
@@ -61,6 +66,10 @@ export function v070DeferredBattleAftermathEffectRefs(
       unresolvedV070ActOfFaithSourcesForPlayer(state, owner)) {
       refs.push({ owner, sourceInstanceId });
     }
+    for (const sourceInstanceId of
+      unresolvedV070BurningAtTheStakeSourcesForPlayer(state, owner)) {
+      refs.push({ owner, sourceInstanceId });
+    }
   }
   return refs;
 }
@@ -78,6 +87,12 @@ export function openV070DeferredBattleAftermathEffect(
   }
   if (cardId === 'inquisition-act-of-faith') {
     return openV070ActOfFaithAftermathForSource(
+      state,
+      sourceInstanceId,
+    );
+  }
+  if (cardId === 'inquisition-burning-at-the-stake') {
+    return openV070BurningAtTheStakeAftermathForSource(
       state,
       sourceInstanceId,
     );
@@ -114,6 +129,7 @@ export function v070DeferredBattleAftermathEffectPending(
 ): boolean {
   return Boolean(
     pendingV070AccusationAftermath(state)
-    || pendingV070ActOfFaithAftermath(state),
+    || pendingV070ActOfFaithAftermath(state)
+    || pendingV070BurningAtTheStakeAftermath(state),
   );
 }
