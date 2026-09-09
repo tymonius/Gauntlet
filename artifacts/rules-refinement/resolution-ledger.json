@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:50:24.116Z",
+  "updatedAt": "2026-09-09T06:57:12.990Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -621,6 +621,23 @@
       "resolvedAt": "2026-09-09T06:42:38.026Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260909-2"
+      }
+    },
+    {
+      "id": "fog-of-war-controller-object-resolution-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "254cb085-3f0e-4a5d-853e-036568dedd1f"
+      ],
+      "caseIds": [
+        "fog-of-war-controller-object-resolution"
+      ],
+      "resolutionSurface": "arbiter_prompt",
+      "summary": "The reviewed Fog of War answer inverted the acting order by attaching control to the wrong object. Current v0.7.1 authority makes the Territory controller, not the Overlay owner/controller, choose Gambit and Tactics after the opponent. The Arbiter now keeps ownership/control bound to the specific object named by authority instead of transferring that status across cards, Overlays, and Territories.",
+      "resolvedAt": "2026-09-09T06:57:12.990Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-1"
       }
     }
   ]

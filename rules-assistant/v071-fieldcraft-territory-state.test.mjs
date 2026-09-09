@@ -56,7 +56,7 @@ describe("v0.7.1 Fieldcraft Territory-state retrieval", () => {
     expect(sources[0]?.canonicalId).not.toBe("rulebook:ranger");
   });
 
-  test("the behavior revision records the retrieval change", () => {
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260908-6"');
+  test("the behavior revision remains versioned without freezing a historical revision", () => {
+    expect(workerSource).toMatch(/export const BEHAVIOR_REVISION = "v071-qa-\d{8}-\d+";/);
   });
 });

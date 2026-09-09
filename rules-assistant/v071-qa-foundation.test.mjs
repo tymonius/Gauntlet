@@ -45,6 +45,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
     expect(workerV071).toContain("Track referents through each instruction in written order");
+    expect(workerV071).toContain("When authority assigns ownership or control to a named object, keep that status attached to that object");
     expect(workerV071).toContain("Silence is not explicit authority");
     expect(workerV071).toContain("A negative answer may be explicit when the rules expressly confine an action");
     expect(workerV071).toContain("could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge");
