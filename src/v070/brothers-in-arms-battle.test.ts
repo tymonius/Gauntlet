@@ -105,9 +105,7 @@ function injectCard(
   return instanceId;
 }
 
-function prepareTacticChoice(
-  aGambitCardId?: string,
-): V070GameState {
+function prepareTacticChoice(aGambitCardId?: string): V070GameState {
   let state = startBattle();
   let aGambit: string | undefined;
   if (aGambitCardId) {
@@ -128,8 +126,12 @@ function prepareTacticChoice(
     type: 'reveal_gambits',
     playerId: 'A',
   });
-
   expect(state.battleRuntime?.stage).toBe('choose_tactics');
+
+  // Starter-Hand contents are not part of these card-specific fixtures.
+  // Isolate each case so it injects exactly the Hand Tactics it exercises.
+  state.players.A.zones.removed.push(...state.players.A.zones.hand);
+  state.players.A.zones.hand = [];
   return state;
 }
 
@@ -147,6 +149,22 @@ function addHandTactic(
   const card = injectCard(state, 'A', cardId, suffix);
   state.players.A.zones.hand.push(card);
   return card;
+}
+
+function chooseBrothersWithDeepCover(): {
+  state: V070GameState;
+  source: string;
+  candidate: string;
+} {
+  let state = prepareTacticChoice();
+  const source = addBrothersToReserve(state, 'source');
+  const candidate = addHandTactic(state, V070_DEEP_COVER_ID, 'candidate');
+  state = reduceV070BattleAction(state, {
+    type: 'choose_tactic',
+    playerId: 'A',
+    cardInstanceId: source,
+  });
+  return { state, source, candidate };
 }
 
 function resolveTacticRevealOrder(state: V070GameState): V070GameState {
@@ -174,15 +192,7 @@ describe('v0.7.0 Brothers in Arms battle effect', () => {
   });
 
   test('choosing Brothers with no Gambit opens an optional private Hand-Tactic choice', () => {
-    let state = prepareTacticChoice();
-    const source = addBrothersToReserve(state, 'source');
-    const candidate = addHandTactic(state, V070_DEEP_COVER_ID, 'candidate');
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'A',
-      cardInstanceId: source,
-    });
+    const { state, source, candidate } = chooseBrothersWithDeepCover();
 
     expect(pendingV070BrothersInArmsAdditionalTactic(state)).toEqual({
       playerId: 'A',
@@ -207,15 +217,7 @@ describe('v0.7.0 Brothers in Arms battle effect', () => {
   });
 
   test('the additional Tactic permission may be declined', () => {
-    let state = prepareTacticChoice();
-    const source = addBrothersToReserve(state, 'decline-source');
-    const candidate = addHandTactic(state, V070_DEEP_COVER_ID, 'decline-candidate');
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'A',
-      cardInstanceId: source,
-    });
+    let { state, candidate } = chooseBrothersWithDeepCover();
     state = reduceV070BattleAction(state, {
       type: 'resolve_brothers_in_arms_additional_tactic',
       playerId: 'A',
@@ -243,16 +245,8 @@ describe('v0.7.0 Brothers in Arms battle effect', () => {
     )).toBe(true);
   });
 
-  test('a chosen Hand Tactic joins the battle face down and receives the printed Graveyard destination', () => {
-    let state = prepareTacticChoice();
-    const source = addBrothersToReserve(state, 'add-source');
-    const candidate = addHandTactic(state, V070_DEEP_COVER_ID, 'add-candidate');
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'A',
-      cardInstanceId: source,
-    });
+  test('a chosen Hand Tactic joins the battle face down with a Graveyard override', () => {
+    let { state, candidate } = chooseBrothersWithDeepCover();
     state = reduceV070BattleAction(state, {
       type: 'resolve_brothers_in_arms_additional_tactic',
       playerId: 'A',
@@ -309,20 +303,8 @@ describe('v0.7.0 Brothers in Arms battle effect', () => {
     });
   });
 
-  test('the added Tactic resolves normally and enters the Graveyard in Aftermath while Brothers itself discards', () => {
-    let state = prepareTacticChoice();
-    const source = addBrothersToReserve(state, 'aftermath-source');
-    const candidate = addHandTactic(
-      state,
-      V070_DEEP_COVER_ID,
-      'aftermath-candidate',
-    );
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'A',
-      cardInstanceId: source,
-    });
+  test('the added Tactic resolves normally and enters the Graveyard in Aftermath', () => {
+    let { state, source, candidate } = chooseBrothersWithDeepCover();
     state = reduceV070BattleAction(state, {
       type: 'resolve_brothers_in_arms_additional_tactic',
       playerId: 'A',
