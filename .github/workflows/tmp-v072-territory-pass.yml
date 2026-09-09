@@ -20,8 +20,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
       - name: Finalize Territory authority and regression coverage
         run: |
           node <<'NODE'
@@ -82,7 +80,7 @@ jobs:
           }
           NODE
       - name: Run current-game authority suite
-        run: npx vitest run tests/current-game-authority.test.ts
+        run: npx --yes vitest@3.2.4 run tests/current-game-authority.test.ts
       - name: Commit final Territory authority pass
         run: |
           git config user.name 'github-actions[bot]'
