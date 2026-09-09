@@ -7,45 +7,26 @@ import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
 } from './battle-types';
-import * as previous from './battle-effects-pre-accusation';
+import * as previous from './battle-effects-pre-capital-gains';
 import { isV070BattleCardEffectNegated } from './battle-effect-status';
 import {
-  V070_ACCUSATION_BATTLE_TEXT,
-  V070_ACCUSATION_ID,
-  registerV070AccusationBattleEffect,
-} from './accusation-battle';
-import {
-  V070_ACT_OF_FAITH_BATTLE_TEXT,
-  V070_ACT_OF_FAITH_ID,
-  registerV070ActOfFaithBattleEffect,
-} from './act-of-faith-battle';
-import {
-  V070_BOMBARDMENT_BATTLE_TEXT,
-  V070_BOMBARDMENT_ID,
-  applyV070BombardmentBattleEffect,
-} from './bombardment-battle';
-import {
-  V070_BROTHERS_IN_ARMS_BATTLE_TEXT,
-  V070_BROTHERS_IN_ARMS_ID,
-} from './brothers-in-arms-battle';
-import {
-  V070_BURNING_AT_THE_STAKE_BATTLE_TEXT,
-  V070_BURNING_AT_THE_STAKE_ID,
-  registerV070BurningAtTheStakeBattleEffect,
-} from './burning-at-the-stake-battle';
+  V070_CAPITAL_GAINS_BATTLE_TEXT,
+  V070_CAPITAL_GAINS_ID,
+  registerV070CapitalGainsBattleEffect,
+} from './capital-gains-battle';
 import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
-export * from './battle-effects-pre-accusation';
+export * from './battle-effects-pre-capital-gains';
 
-const accusationHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_ACCUSATION_ID,
-  expectedText: V070_ACCUSATION_BATTLE_TEXT,
+const capitalGainsHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_CAPITAL_GAINS_ID,
+  expectedText: V070_CAPITAL_GAINS_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070AccusationBattleEffect(
+    registerV070CapitalGainsBattleEffect(
       state,
       owner,
       commitment.instanceId,
@@ -54,105 +35,28 @@ const accusationHandler: previous.V070BattleEffectHandler = {
       state,
       owner,
       commitment.instanceId,
-      V070_ACCUSATION_ID,
-    );
-  },
-};
-
-const actOfFaithHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_ACT_OF_FAITH_ID,
-  expectedText: V070_ACT_OF_FAITH_BATTLE_TEXT,
-  timing: 'reveal',
-  apply: ({ state, owner, commitment }) => {
-    registerV070ActOfFaithBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
-    registerV070DeferredBattleAftermathCarrier(
-      state,
-      owner,
-      commitment.instanceId,
-      V070_ACT_OF_FAITH_ID,
-    );
-  },
-};
-
-const bombardmentHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_BOMBARDMENT_ID,
-  expectedText: V070_BOMBARDMENT_BATTLE_TEXT,
-  timing: 'reveal',
-  apply: ({ state, owner, commitment }) => {
-    applyV070BombardmentBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
-  },
-};
-
-// Brothers in Arms begins resolving when it is chosen as a Tactic. Its
-// optional additional-Tactic permission and destination override are therefore
-// already installed before the normal reveal stage. The reveal handler is an
-// authority marker/no-op so normal unsupported-effect preflight does not halt.
-const brothersInArmsHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_BROTHERS_IN_ARMS_ID,
-  expectedText: V070_BROTHERS_IN_ARMS_BATTLE_TEXT,
-  timing: 'reveal',
-  apply: () => {},
-};
-
-const burningAtTheStakeHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_BURNING_AT_THE_STAKE_ID,
-  expectedText: V070_BURNING_AT_THE_STAKE_BATTLE_TEXT,
-  timing: 'reveal',
-  apply: ({ state, owner, commitment }) => {
-    registerV070BurningAtTheStakeBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
-    registerV070DeferredBattleAftermathCarrier(
-      state,
-      owner,
-      commitment.instanceId,
-      V070_BURNING_AT_THE_STAKE_ID,
+      V070_CAPITAL_GAINS_ID,
+      'owner_win',
     );
   },
 };
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  V070_ACCUSATION_ID,
-  V070_ACT_OF_FAITH_ID,
-  V070_BOMBARDMENT_ID,
-  V070_BROTHERS_IN_ARMS_ID,
-  V070_BURNING_AT_THE_STAKE_ID,
+  V070_CAPITAL_GAINS_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
-  if (cardId === V070_ACCUSATION_ID) return accusationHandler;
-  if (cardId === V070_ACT_OF_FAITH_ID) return actOfFaithHandler;
-  if (cardId === V070_BOMBARDMENT_ID) return bombardmentHandler;
-  if (cardId === V070_BROTHERS_IN_ARMS_ID) return brothersInArmsHandler;
-  if (cardId === V070_BURNING_AT_THE_STAKE_ID) {
-    return burningAtTheStakeHandler;
-  }
+  if (cardId === V070_CAPITAL_GAINS_ID) return capitalGainsHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
-  if (cardId === V070_ACCUSATION_ID
-    || cardId === V070_ACT_OF_FAITH_ID
-    || cardId === V070_BOMBARDMENT_ID
-    || cardId === V070_BROTHERS_IN_ARMS_ID
-    || cardId === V070_BURNING_AT_THE_STAKE_ID) {
-    return 'ordinary';
-  }
+  if (cardId === V070_CAPITAL_GAINS_ID) return 'ordinary';
   return previous.v070BattleRevealEffectClass(cardId);
 }
 
@@ -193,69 +97,7 @@ export function resolveV070SupportedRevealEffects(
   const forwarded: V070BattleCardCommitment[] = [];
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    const deferred = cardId === V070_ACCUSATION_ID
-      ? {
-          registered: state.battleRuntime?.accusationBattleSourceInstanceIds
-            ?.includes(commitment.instanceId) ?? false,
-          handler: accusationHandler,
-        }
-      : cardId === V070_ACT_OF_FAITH_ID
-        ? {
-            registered: state.battleRuntime?.actOfFaithBattleSourceInstanceIds
-              ?.includes(commitment.instanceId) ?? false,
-            handler: actOfFaithHandler,
-          }
-        : cardId === V070_BURNING_AT_THE_STAKE_ID
-          ? {
-              registered: state.battleRuntime
-                ?.burningAtTheStakeBattleSourceInstanceIds
-                ?.includes(commitment.instanceId) ?? false,
-              handler: burningAtTheStakeHandler,
-            }
-          : null;
-
-    if (cardId === V070_BOMBARDMENT_ID
-      || cardId === V070_BROTHERS_IN_ARMS_ID) {
-      const handler = cardId === V070_BOMBARDMENT_ID
-        ? bombardmentHandler
-        : brothersInArmsHandler;
-      if (isV070BattleCardEffectNegated(state, commitment.instanceId)) {
-        appendV070Event(state, {
-          type: 'battle_card_effect_skipped_negated',
-          actor: commitment.owner,
-          visibility: 'public',
-          payload: {
-            instanceId: commitment.instanceId,
-            cardId,
-            role: commitment.role,
-          },
-        });
-      } else {
-        handler.apply({
-          state,
-          owner: commitment.owner,
-          opponent: commitment.owner === 'A' ? 'B' : 'A',
-          commitment,
-        });
-        appendV070Event(state, {
-          type: 'battle_card_effect_applied',
-          actor: commitment.owner,
-          visibility: 'public',
-          payload: {
-            instanceId: commitment.instanceId,
-            cardId,
-            role: commitment.role,
-            timing: cardId === V070_BROTHERS_IN_ARMS_ID
-              ? 'choice_then_reveal'
-              : 'reveal',
-            revealClass: 'ordinary',
-          },
-        });
-      }
-      continue;
-    }
-
-    if (!deferred) {
+    if (cardId !== V070_CAPITAL_GAINS_ID) {
       forwarded.push(commitment);
       continue;
     }
@@ -274,8 +116,10 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    if (!deferred.registered) {
-      deferred.handler.apply({
+    const registered = state.battleRuntime?.capitalGainsBattleSourceInstanceIds
+      ?.includes(commitment.instanceId) ?? false;
+    if (!registered) {
+      capitalGainsHandler.apply({
         state,
         owner: commitment.owner,
         opponent: commitment.owner === 'A' ? 'B' : 'A',
