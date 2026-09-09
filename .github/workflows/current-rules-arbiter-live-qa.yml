@@ -1,0 +1,172 @@
+name: Current Rules Arbiter live answer QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Paid API test scope
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+      confirm_paid_api:
+        description: I understand this workflow makes paid OpenAI API calls
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  live-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Require paid-API confirmation
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Paid API confirmation was not provided."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Resolve lifecycle-selected live publication
+        id: plan
+        run: node scripts/resolve-current-live-publication.mjs
+
+      - name: Configure paid QA scope
+        run: |
+          if [ "${{ inputs.scope }}" = "full" ]; then
+            echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+            echo "Running the full paid Rules Arbiter benchmark for ${{ steps.plan.outputs.version }}."
+          else
+            echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
+            echo "Running a 10-case representative paid Rules Arbiter smoke test for ${{ steps.plan.outputs.version }}."
+          fi
+
+      - name: Install release validation dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate lifecycle-selected published corpus
+        run: |
+          set -euo pipefail
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-github-release-contract.mjs
+          echo "Expected Rules Arbiter authority set: ${{ steps.plan.outputs.authority_set_id }}"
+
+      - name: Wait for deployed Rules Arbiter revision
+        env:
+          RULES_HEALTH_ENDPOINT: ${{ steps.plan.outputs.health_url }}
+          EXPECTED_BEHAVIOR_REVISION: ${{ steps.plan.outputs.behavior_revision }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_BEHAVIOR_REVISION;
+          const endpoint = process.env.RULES_HEALTH_ENDPOINT;
+          const attempts = 40;
+          const delayMs = 15000;
+
+          for (let attempt = 1; attempt <= attempts; attempt += 1) {
+            try {
+              const response = await fetch(endpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.behaviorRevision || "missing";
+              console.log(`Deploy check ${attempt}/${attempts}: ${actual}`);
+              if (response.ok && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Deploy check ${attempt}/${attempts}: ${error.message}`);
+            }
+            if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, delayMs));
+          }
+
+          console.error(`Production Rules Arbiter never reported behavior revision ${expected}.`);
+          process.exit(1);
+          NODE
+
+      - name: Verify published corpus and refresh Worker cache
+        env:
+          EXPECTED_RULES_AUTHORITY_SET: ${{ steps.plan.outputs.authority_set_id }}
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/${{ steps.plan.outputs.manifest_path }}
+          RULES_CORPUS_HEALTH_ENDPOINT: ${{ steps.plan.outputs.corpus_health_url }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_RULES_AUTHORITY_SET;
+          const manifestEndpoint = process.env.RULES_PUBLIC_MANIFEST;
+          const corpusEndpoint = process.env.RULES_CORPUS_HEALTH_ENDPOINT;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          let published = false;
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const url = `${manifestEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authority_set_id || "missing";
+              console.log(`Published corpus check ${attempt}/120: ${actual}`);
+              if (response.ok && actual === expected) {
+                published = true;
+                break;
+              }
+            } catch (error) {
+              console.log(`Published corpus check ${attempt}/120: ${error.message}`);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          if (!published) {
+            console.error(`gauntlet.run never published Rules Arbiter authority set ${expected}. No paid QA calls were made.`);
+            process.exit(1);
+          }
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const url = `${corpusEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authoritySetId || "missing";
+              console.log(`Worker corpus check ${attempt}/20: ${actual}`);
+              if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+
+          console.error(`Production Rules Arbiter did not load authority set ${expected}. No paid QA calls were made.`);
+          process.exit(1);
+          NODE
+
+      - name: Run live Rules Arbiter QA
+        id: qa
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ steps.plan.outputs.qa_report_path }}
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+        run: node "${{ steps.plan.outputs.qa_runner }}"
+
+      - name: Upload live QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-rules-arbiter-live-qa-${{ steps.plan.outputs.version }}
+          path: ${{ steps.plan.outputs.qa_report_path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce live QA result
+        if: steps.qa.outcome != 'success'
+        run: exit 1
