@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T04:51:34.345Z",
+  "updatedAt": "2026-09-09T04:58:13.295Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -518,6 +518,23 @@
       "resolvedAt": "2026-09-09T04:19:58.968Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-5"
+      }
+    },
+    {
+      "id": "fieldcraft-territory-state-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "fcd97287-272d-4a8c-8c1c-5eaa8727cbff"
+      ],
+      "caseIds": [
+        "fieldcraft-territory-state-limits"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the detailed current v0.7.1 Ranger/Fieldcraft authority when Fieldcraft questions concern Territory control, Occupation, Capture, Defensive Edge, Last Stand bonuses, or Territory-derived limits. This supplies the explicit limitation that Fieldcraft does not alter those game states instead of leaving the Arbiter to infer from abbreviated ability text.",
+      "resolvedAt": "2026-09-09T04:58:13.295Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
       }
     }
   ]
