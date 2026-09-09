@@ -12,7 +12,7 @@ Gauntlet is a two-player game about crossing a battlefield while stopping your o
 
 You begin at opposite ends of a line of six Territories. On your turn, you can play cards, move toward or away from your opponent, and fight when you meet. Winning battles pushes your opponent back. Hold enemy ground long enough and you capture it.
 
-Keep advancing until you **run the Gauntlet**: capture the Territory at your opponent's end, or push your opponent beyond the battlefield and defeat their Last Stand.
+Keep advancing until you **run the Gauntlet**: take control of the entire battlefield by capturing all of your opponent's Territories, or push your opponent beyond the battlefield and defeat their Last Stand.
 
 That is the shared game. Your faction adds one more layer—its own resource, tools, style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.
 
@@ -37,7 +37,7 @@ Every faction can win the same way: **run the Gauntlet**.
 
 You win immediately if you do either of these:
 
-1. **Capture the Territory at your opponent's end.**
+1. **Control the entire Gauntlet** by capturing your opponent's Territories in order until your Front Line spans the whole battlefield.
 2. **Win your opponent's Last Stand** after pushing them beyond their end of the battlefield.
 
 Some factions also have an additional way to win. You will learn those in the faction overviews and in your own Faction Guide.
@@ -306,24 +306,24 @@ This creates the basic rhythm of territorial progress:
 
 > **Win the position now. Hold it. Capture the ground on a later turn.**
 
-If the Territory you capture is the Territory at your opponent's end, you immediately run the Gauntlet and win.
+When you capture the last opposing Territory still outside your Front Line, your Front Line now spans the entire Gauntlet. You immediately run the Gauntlet and win.
 
 <!-- RULES-SECTION:run-the-gauntlet -->
 ## 8. Running the Gauntlet
 
 There are two shared ways to finish the game. Both count as **running the Gauntlet**.
 
-### Route 1: Capture the final Territory
+### Route 1: Control the entire Gauntlet
 
-Keep advancing your Front Line until you capture the Territory at your opponent's end.
+Keep advancing your Front Line by capturing your opponent's Territories in order. Because your Front Line must remain unbroken, you cannot skip ahead and win by capturing only the far-end Territory.
 
-The moment you capture that Territory, you win.
+When your Front Line spans all six Territories, you control the entire Gauntlet and win immediately.
 
 This is the straightforward territorial route: attack, occupy, survive until Capture, and repeat.
 
 ### Route 2: Win a Last Stand
 
-You can also win before capturing the final Territory.
+You can also win before controlling the entire Gauntlet.
 
 If your opponent loses a battle while defending the Territory at their own end, they retreat **beyond the Gauntlet**. You remain on their final Territory, occupying it if they still control it.
 
@@ -338,7 +338,7 @@ A Last Stand is resolved as a battle, with two important advantages for the defe
 
 If the attacker wins the Last Stand, the attacker immediately runs the Gauntlet and wins the game.
 
-You do **not** have to control or capture the final Territory before forcing a Last Stand. The capture route and Last Stand route are two independent ways to finish the same shared objective.
+You do **not** have to control the entire Gauntlet—or even control or capture the opponent's final Territory—before forcing a Last Stand. The territorial route and Last Stand route are two independent ways to finish the same shared objective.
 
 <!-- RULES-SECTION:factions -->
 ## 9. The Six Factions
