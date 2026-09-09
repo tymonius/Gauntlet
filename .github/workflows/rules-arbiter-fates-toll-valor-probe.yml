@@ -46,16 +46,15 @@ jobs:
           const questions = [
             "I am losing after the initial battle roll and have both Fate's Toll and Valor available as Battle effects. May I reroll with both effects one after the other?",
             "Can I use Fate's Toll and then Valor to reroll twice in the same battle?",
-            "Can multiple Battle effects reroll the same battle one after another?"
+            "Can multiple Battle effects reroll the same battle one after another?",
+            "When two of my effects can resolve after the same roll, in what order do I resolve them?",
+            "How are multiple effects at the same timing resolved?"
           ];
           for (const question of questions) {
             const query = contextualQuery(question, []);
-            const raw = retrieveRules(corpus, query, { limit: 10, excerptLength: 1800 });
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2000 });
             const results = augmentRetrievalForContext(corpus, question, [], raw);
             console.log('\n=== QUESTION ===\n' + question);
-            console.log(JSON.stringify(results.slice(0, 10).map((r, i) => ({ rank: i + 1, id: r.canonicalId, title: r.title, body: r.body })), null, 2));
+            console.log(JSON.stringify(results.slice(0, 12).map((r, i) => ({ rank: i + 1, id: r.canonicalId, title: r.title, body: r.body })), null, 2));
           }
-
-          console.log('\n=== FATE / VALOR CORPUS SOURCES ===');
-          console.log(JSON.stringify(corpus.filter((r) => /fate.?s toll|valor/i.test(`${r.canonicalId} ${r.title} ${r.body}`)).map((r) => ({ id: r.canonicalId, title: r.title, body: r.body })), null, 2));
           NODE
