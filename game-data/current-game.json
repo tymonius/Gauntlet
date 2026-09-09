@@ -3841,12 +3841,12 @@
         "number": 1,
         "name": "Quicksand",
         "arena": false,
-        "text": "A player who begins their Movement here cannot Advance or Fall Back more than one Position or use an effect to increase their movement that turn. Retreat is unaffected.",
+        "text": "When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.",
         "type": "Territory",
         "effects": [
           {
             "label": "Text",
-            "text": "A player who begins their Movement here cannot Advance or Fall Back more than one Position or use an effect to increase their movement that turn. Retreat is unaffected."
+            "text": "When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected."
           }
         ]
       },
@@ -6021,9 +6021,9 @@
           "Sanctions: Censure"
         ],
         "territories": [
+          "Refuge",
           "Supply Depot",
-          "Command Tent",
-          "Arena: Spoils of War"
+          "Command Tent"
         ],
         "cards": [
           {
@@ -6133,8 +6133,8 @@
           "Neutral Observers"
         ],
         "territories": [
+          "Refuge",
           "Garrison",
-          "Field Hospital",
           "Fortified Pass"
         ],
         "cards": [
@@ -6441,7 +6441,7 @@
           "Subversion"
         ],
         "territories": [
-          "Watchtower",
+          "Quicksand",
           "Difficult Terrain",
           "Poisonous Gas"
         ],
@@ -6545,7 +6545,7 @@
           "Extraordinary Rendition"
         ],
         "territories": [
-          "Smuggler's Run",
+          "Refuge",
           "Ruined Storehouse",
           "Field Hospital"
         ],
@@ -6647,7 +6647,7 @@
         "territories": [
           "Poisonous Gas",
           "Old Battlefield",
-          "Field Hospital"
+          "Ruined Storehouse"
         ],
         "cards": [
           {
@@ -6760,7 +6760,7 @@
         ],
         "territories": [
           "Garrison",
-          "Field Hospital",
+          "Training Grounds",
           "High Ground"
         ],
         "cards": [
@@ -6871,7 +6871,7 @@
         "territories": [
           "Poisonous Gas",
           "Toll Bridge",
-          "Arena: No Quarter"
+          "Arena: Grand Melee"
         ],
         "cards": [
           {
@@ -6970,7 +6970,7 @@
         ],
         "territories": [
           "Garrison",
-          "Exposed Flank",
+          "Training Grounds",
           "High Ground"
         ],
         "cards": [
