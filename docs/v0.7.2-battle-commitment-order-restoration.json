@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "status": "approved-restoration",
+  "appliesTo": "v0.7.2-candidate",
+  "authoritySource": "game-data/current-game.json",
+  "summary": "Restore the established normal battle commitment order that was omitted from the shared battle definition during rules consolidation.",
+  "restoredRule": {
+    "gambits": [
+      "attacker",
+      "defender"
+    ],
+    "tactics": [
+      "attacker",
+      "defender"
+    ],
+    "normalFaceState": "face down",
+    "overridePolicy": "A specific rule or effect may change commitment order or face state."
+  },
+  "survivingEvidence": [
+    "Watchtower requires the attacker to set their Gambit first, face up.",
+    "Fog of War changes which player sets their Gambit and chooses their Tactic after the opponent.",
+    "Neutral Observers explicitly overrides other Gambit-order effects and does not change Tactic order.",
+    "Intelligence Surveillance has timing after an opposing Gambit or Tactic choice."
+  ],
+  "classification": "Restoration of existing intended behavior; not a new gameplay change."
+}

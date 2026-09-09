@@ -30,10 +30,10 @@ When movement enters the opponent's Position, it initiates a battle and immediat
 ### Battle Sequence
 
 1. **Onset**
-2. Set **Gambits**.
+2. **Attacker**, then defender: set **Gambit** or pass.
 3. Set Hands aside and form **3-card Reserves**.
 4. Reveal Gambits.
-5. Choose **Tactics**.
+5. **Attacker**, then defender: choose **Tactic** or pass.
 6. Reveal Tactics.
 7. Determine the **Outcome**.
 8. Resolve the **Aftermath**.
