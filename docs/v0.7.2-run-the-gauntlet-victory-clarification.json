@@ -8,6 +8,10 @@
   "existingMechanic": "Front Line control is contiguous from a player's own end, and Capture can add only the next opposing Territory immediately beyond that Front Line. Therefore the opponent-end Territory cannot be captured as an isolated shortcut; it is necessarily the final opposing Territory required to complete battlefield control.",
   "clarifiedFraming": "The territorial shared victory is to control the entire Gauntlet. Capturing the final opposing Territory is the completion trigger because it makes the Front Line span all six Territories. Last Stand remains an independent shared victory route and does not require controlling or capturing that final Territory.",
   "publicationPolicy": "Player-facing surfaces should describe the territorial route as controlling the entire Gauntlet or extending the Front Line across it. The opponent-end Territory may be identified as the final capture or completion trigger, but not as an independently capturable victory objective.",
+  "governanceTracking": {
+    "ruleFact": "battlefield.territory_count",
+    "derivation": "Twice gameplay.deck_construction.territories_per_player; this tracks the displayed six-Territory battlefield total without duplicating it as an independent authority value."
+  },
   "semanticRuleIds": [
     "core.battlefield.capture",
     "core.battlefield.front-line",
@@ -18,6 +22,7 @@
     "game-data/current-game.json",
     "rulebook/player-guide/player-guide.md",
     "rulebook/player-facing/current-rulebook.md",
+    "rulebook/player-facing/rule-facts.js",
     "start/index.html"
   ]
 }
