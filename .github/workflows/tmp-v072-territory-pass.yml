@@ -79,8 +79,13 @@ jobs:
             fs.writeFileSync(testPath, test);
           }
           NODE
+      - name: Install deterministic test dependencies
+        run: |
+          git fetch origin main
+          git show origin/main:package-lock.json > package-lock.json
+          npm ci
       - name: Run current-game authority suite
-        run: npx --yes vitest@3.2.4 run tests/current-game-authority.test.ts
+        run: npx vitest run tests/current-game-authority.test.ts
       - name: Commit final Territory authority pass
         run: |
           git config user.name 'github-actions[bot]'
