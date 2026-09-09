@@ -343,14 +343,133 @@ You do **not** have to control or capture the final Territory before forcing a L
 <!-- RULES-SECTION:factions -->
 ## 9. The Six Factions
 
-<!-- Next drafting pass: opponent-literacy only. What each faction is trying to do, what extra system it adds, alternate victory, and what to watch for. Do not teach faction operation here. -->
+Every faction plays the shared game you have just learned. Each adds its own resource or progression system, its own tools, and its own Leaders. Five factions also add another way to win.
+
+You only need to learn how to **operate** the faction you are playing. You should, however, know what your opponent's faction is trying to accomplish so its public components and major decisions make sense.
+
+### Military — Win the battlefield
+
+The Military is the faction closest to the shared game. It builds **Command** through battle success and spends it on the Orders supplied by its Leader. Its tools emphasize movement, combat, pressure, defense, and territorial control.
+
+The Military has no separate alternate victory: it wins by running the Gauntlet better than its opponent.
+
+**What to watch for:** A Military player can turn one battle win into momentum. Do not assume a battle ending means their movement or positional pressure is finished.
+
+- **General** — movement and attack.
+- **Commandant** — defense and control.
+
+### Diplomats — Make every battle a negotiation
+
+Diplomats build and stake **Influence**, present **Proposals**, and can offer Terms before a battle fully develops. Agreements can move them toward a **Peace Treaty**, while refusing them can create other consequences.
+
+Their alternate victory is to ratify enough different Proposals to complete the Peace Treaty.
+
+**What to watch for:** A battle against the Diplomats may become a choice before it becomes a fight. Consider not only whether you can win the battle, but what accepting or refusing their offer gives each side.
+
+- **Ambassador** — agreement and card flow.
+- **Senator** — risk management and resilience.
+
+### Financiers — Turn wealth into control
+
+Financiers build **Capital**, develop a **Treasury**, and acquire **Deeds** to Territories. As their holdings grow, their economy gives them more ways to spend for battlefield and strategic advantage.
+
+Their alternate victory, **Controlling Interest**, is achieved by owning the Deeds to every Territory currently in the Gauntlet.
+
+Owning a Deed is not the same as controlling its Territory; the Financiers are playing an economic map alongside the territorial one.
+
+**What to watch for:** Their position can improve even when the Front Line does not. Keep an eye on their Capital, Treasury, and Deed ownership rather than judging the game only by who controls more Territories.
+
+- **Banker** — collateral and flexible financing.
+- **Executive** — aggressive acquisition and control.
+
+### Intelligence — Build toward a hidden operation
+
+Intelligence works through **Missions**. Completing ordinary Missions builds **Operation Progress** and earns **Intel**, while surveillance and interference tools help it learn about and disrupt the opponent's plans.
+
+Its alternate victory is to prepare and complete a **Special Operation** once its operation has progressed far enough.
+
+**What to watch for:** Not all of an Intelligence player's progress is obvious from battlefield position. A seemingly ordinary sequence of plays may be satisfying a Mission or preparing a later Special Operation.
+
+- **Ranger** — Territory effects and field operations.
+- **Spymaster** — Mission tempo and coordination.
+
+### Mystics — Complete Rites and protect the Ritual
+
+Mystics build toward a sequence of **Rites**, using Arcane cards and effects that manipulate sacrifice, recovery, conversion, and the Graveyard. Their progression becomes more powerful as Rites are completed.
+
+After completing all three selected Rites, the Mystics can attempt the **Ritual of Ascension**. Completing that Ritual wins the game.
+
+**What to watch for:** Their important progress is visible in their Rites, not just in their Hand or battlefield position. Pressure at the right moment can matter as much as simply gaining ground.
+
+- **Alchemist** — sacrifice sequencing and conversion.
+- **Spirit Walker** — Ritual endurance and protection.
+
+### Inquisition — Win by permanent attrition
+
+The Inquisition wants opposing cards to leave normal circulation. It builds **Conviction**, sends cards to the **Graveyard**, and spends Conviction on **Purges** that strip away the opponent's resources.
+
+Its alternate victory, **Purification**, occurs when the opponent can no longer make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty.
+
+**What to watch for:** Against the Inquisition, the Graveyard matters more than usual. Cards lost there are not part of the normal recycle loop, so repeated attrition can become a direct threat to the game itself.
+
+- **Grand Inquisitor** — judgment and efficient Purges.
+- **Witch Hunter** — defense, retaliation, and pursuit.
+
+Before playing a faction for the first time, read that faction's guide. It teaches how these systems actually work without requiring your opponent to learn them too.
 
 <!-- RULES-SECTION:deckbuilding -->
 ## 10. Building a Deck
 
-<!-- Next drafting pass: practical deckbuilding rules and connection to the Deckbuilder. -->
+Recommended starter Decks are the easiest way to learn Gauntlet. Once you are comfortable with the game, you can build your own.
+
+### Choose your faction and Leader
+
+A game package uses exactly **one faction** and **one Leader** from that faction.
+
+Your Leader is not part of your Deck. It is a separate component that changes how your faction plays.
+
+### Build your Deck
+
+Your Deck must have:
+
+- at least **30 cards**;
+- no more than **60 total card value**; and
+- only **Neutral cards** and cards from your chosen faction.
+
+Add the card values printed on every card in the Deck to find its total value.
+
+Unless a card is marked **Unique**, you may include as many copies as the available card pool permits. A Unique card is limited to **one copy** in your Deck.
+
+A legal Deck can contain more than 30 cards as long as its total card value remains 60 or less. More cards are therefore not automatically better: they change how often you are likely to draw particular tools.
+
+### Choose your Territories
+
+Choose exactly **three different Territory cards**.
+
+No more than one of them may be an **Arena**.
+
+Territories are not part of your Deck and do not count toward either the 30-card minimum or the 60-value maximum. Both players may choose the same Territory titles.
+
+### Add your faction components
+
+Include the trackers, reference cards, supplemental cards, and other components required by your faction and Leader. Your Faction Guide identifies what you need and how to prepare it.
+
+The online **Deckbuilder** is the easiest way to construct and validate a custom game package. It can also start from a recommended Deck and let you modify it once you understand what you want to change.
 
 <!-- RULES-SECTION:next -->
 ## Where to Go From Here
 
-<!-- Next drafting pass: Faction Guide, Reference Card, Rules Arbiter, and Comprehensive Rules. -->
+You now know the shared game. You do not need another general rules lesson before playing.
+
+Use the rest of Gauntlet's rules system according to what you are trying to do:
+
+- **Your Faction Guide** — read this before your first game with that faction. It teaches the extra layer your side adds to Gauntlet in normal player language.
+- **Reference Cards** — keep these at the table. They summarize the turn, battle, and recurring faction procedures you need during play.
+- **Rules Arbiter** — ask it when a card interaction or timing question actually comes up. It resolves from the complete technical rules but explains the answer in player-friendly language.
+- **Comprehensive Gauntlet Rules** — use this when you want the exact technical rule, timing, definition, or interaction. It is the complete rules reference for both the shared game and all six factions.
+
+For a first game, the recommended path is simple:
+
+> **Player's Guide → your Faction Guide → Reference Cards at the table → Rules Arbiter only when needed.**
+
+Then start playing.
