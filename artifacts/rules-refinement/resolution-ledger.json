@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T05:07:34.858Z",
+  "updatedAt": "2026-09-09T06:15:13.090Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -550,6 +550,23 @@
       "resolutionSurface": "arbiter_retrieval",
       "summary": "Current v0.7.1 retrieval directly supplies Safe Conduct and Political Capital for the reviewed interaction. Safe Conduct replaces the qualifying battle loss with withdrawal, while Political Capital is expressly conditioned on losing following refused Terms; the ruling is therefore explicit rather than provisional. No runtime change is required.",
       "resolvedAt": "2026-09-09T05:07:34.858Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "shock-and-awe-completeness-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "332e9263-826f-448b-8ab3-4fcaa1edd90c"
+      ],
+      "caseIds": [
+        "shock-and-awe-broad-explanation"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The reviewed broad Shock and Awe explanation had sufficient authority but omitted material conditions. Current v0.7.1 retrieval returns the complete Shock and Awe card first and the conflicting-victory rule alongside it, while the current whole-procedure prompt requires the Arbiter to preserve the complete sequence and its prerequisites, branches, restrictions, and destinations. The exact reviewed question is regression-covered; no new runtime change is required.",
+      "resolvedAt": "2026-09-09T06:15:13.090Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-6"
       }
