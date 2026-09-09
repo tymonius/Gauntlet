@@ -1,0 +1,61 @@
+.player-guide-review .review-hero {
+  border-bottom: 1px solid rgba(143, 31, 37, 0.22);
+}
+
+.player-guide-review .review-warning {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 48rem;
+  margin-top: 1.15rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(143, 31, 37, 0.3);
+  border-left-width: 4px;
+  border-radius: 0.45rem;
+  background: rgba(143, 31, 37, 0.06);
+}
+
+.player-guide-review .review-warning strong {
+  color: #6f171c;
+}
+
+.player-guide-review .review-warning span {
+  line-height: 1.45;
+}
+
+.player-guide-review .review-source-note {
+  gap: 0.4rem;
+}
+
+.player-guide-review .review-source-title {
+  display: none;
+}
+
+.player-guide-review .rulebook-content > h2 {
+  margin-top: 3.75rem;
+}
+
+.player-guide-review .rulebook-content > h2:first-of-type {
+  margin-top: 0;
+}
+
+.player-guide-review .rulebook-content h3 {
+  margin-top: 2rem;
+}
+
+.player-guide-review .rulebook-content blockquote {
+  font-size: 1.08rem;
+}
+
+.player-guide-review mark[data-review-match] {
+  padding: 0.05em 0.12em;
+}
+
+.player-guide-review .error-card {
+  border-color: rgba(143, 31, 37, 0.35);
+}
+
+@media (max-width: 700px) {
+  .player-guide-review .review-warning {
+    margin-top: 0.8rem;
+  }
+}
