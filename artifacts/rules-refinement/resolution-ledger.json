@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:42:38.027Z",
+  "updatedAt": "2026-09-09T06:50:24.116Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -183,7 +183,8 @@
         "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
         "ab92804c-691b-4857-aee8-539c7efccfd3",
         "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
-        "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+        "cec1260e-3e06-4a88-a8da-3a6bff726bc7",
+        "d90e20fe-14c2-404d-951e-0b877c18adfc"
       ],
       "caseIds": [
         "reviewed-correct-should-be-explicit"
