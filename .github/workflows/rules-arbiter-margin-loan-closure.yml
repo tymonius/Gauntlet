@@ -1,0 +1,133 @@
+name: Validate Rules Arbiter Margin Loan closure
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-margin-loan-one-shot
+    paths:
+      - '.github/workflows/rules-arbiter-margin-loan-closure.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Add reviewed Margin Loan closure regression and ledger entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > rules-assistant/v071-margin-loan-review.test.mjs <<'TEST'
+          import fs from 'node:fs';
+          import { expect, test } from 'vitest';
+          import { buildRulesCorpus, retrieveRules } from './local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './worker-v071.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './v071-public-corpus.js';
+
+          const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
+
+          const openingQuestion = "I use Margin Loan's Battle effect, place a card beneath it as collateral, and then withdraw from the battle. What happens to Margin Loan and the collateral?";
+
+          function currentRetrieval(question, history = []) {
+            const query = contextualQuery(question, history);
+            const initial = retrieveRules(corpus, query, { limit: 10, excerptLength: 1300 });
+            return augmentRetrievalForContext(corpus, question, history, initial);
+          }
+
+          test('reviewed Margin Loan withdrawal is directly resolved by current battle-use authority', () => {
+            const results = currentRetrieval(openingQuestion);
+            expect(results[0]?.canonicalId).toBe('card:financiers-margin-loan');
+            expect(results.slice(0, 3).map(result => result.canonicalId)).toContain('rulebook:collateral');
+
+            const marginLoan = results.find(result => result.canonicalId === 'card:financiers-margin-loan');
+            expect(marginLoan?.body).toContain('Gambit/Tactic: Before dice are rolled');
+            expect(marginLoan?.body).toContain('In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.');
+            expect(marginLoan?.body).toContain('Default — Put both cards in your Graveyard.');
+          });
+
+          test('the terse win follow-up remains on Margin Loan battle use rather than the separate banked Action use', () => {
+            const history = [
+              { role: 'user', content: openingQuestion },
+              {
+                role: 'assistant',
+                content: 'If you withdraw, Margin Loan and its collateral go to your Graveyard in the Aftermath because you did not win.',
+                rulingStatus: 'explicit'
+              }
+            ];
+            const query = contextualQuery('What if I win instead?', history);
+            expect(query).toContain(openingQuestion);
+            expect(query).toContain('What if I win instead?');
+
+            const results = currentRetrieval('What if I win instead?', history);
+            expect(results[0]?.canonicalId).toBe('card:financiers-margin-loan');
+            const marginLoan = results[0];
+            expect(marginLoan.body).toContain('Action: Bank this card');
+            expect(marginLoan.body).toContain('Gambit/Tactic: Before dice are rolled');
+            expect(marginLoan.body).toContain('In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.');
+
+            const workerSource = fs.readFileSync(new URL('./worker-v071.js', import.meta.url), 'utf8');
+            expect(workerSource).toContain('Resolve follow-up referents against the immediately preceding exchange first.');
+            expect(workerSource).toContain('For a multi-step procedure, reconstruct the whole applicable sequence');
+            expect(workerSource).toContain('Before returning provisional, check the retrieved clean authority for a direct answer');
+          });
+          TEST
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path = 'artifacts/rules-refinement/resolution-ledger.json';
+          const ledger = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const ids = new Set(ledger.entries.map(entry => entry.id));
+          const entries = [
+            {
+              id: 'margin-loan-withdrawal-classification-review-closure-v071',
+              status: 'resolved',
+              rootCause: 'classification',
+              interactionIds: ['d90e20fe-14c2-404d-951e-0b877c18adfc'],
+              caseIds: ['margin-loan-withdrawal-outcome'],
+              resolutionSurface: 'arbiter_retrieval_prompt',
+              summary: 'Current v0.7.1 retrieval places Margin Loan first and Collateral in the top three. The Battle-use text directly states that a non-win Defaults in the Aftermath, while Default puts Margin Loan and its collateral in the Graveyard; current classification discipline therefore supports an explicit ruling rather than the historical provisional label.',
+              resolvedAt: new Date().toISOString(),
+              binding: { behaviorRevision: 'v071-qa-20260908-6' }
+            },
+            {
+              id: 'margin-loan-win-followup-battle-role-closure-v071',
+              status: 'resolved',
+              rootCause: 'answer_completeness',
+              interactionIds: ['8fadc98d-e870-4ee5-b35f-a45422b02729'],
+              caseIds: ['margin-loan-win-followup-battle-role'],
+              resolutionSurface: 'arbiter_retrieval_prompt',
+              summary: 'Current v0.7.1 conversation retrieval keeps the terse win follow-up on Margin Loan and exposes both its separate Action/banked and Gambit/Tactic battle branches. The battle branch directly says a win returns the collateral in the Aftermath; the source does not convert a battle-use Margin Loan into a banked Action loan, and current whole-procedure/follow-up prompt rules require preserving that distinction.',
+              resolvedAt: new Date().toISOString(),
+              binding: { behaviorRevision: 'v071-qa-20260908-6' }
+            }
+          ];
+          for (const entry of entries) if (!ids.has(entry.id)) ledger.entries.push(entry);
+          ledger.updatedAt = new Date().toISOString();
+          fs.writeFileSync(path, JSON.stringify(ledger, null, 2) + '\n');
+          NODE
+
+          printf '%s\n' '["rules-assistant/v071-margin-loan-review.test.mjs","artifacts/rules-refinement/resolution-ledger.json"]' > /tmp/changed-files.json
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Run targeted closure validation
+        run: |
+          npx vitest run rules-assistant/v071-margin-loan-review.test.mjs
+          node scripts/validate-rules-refinement-source-first.mjs --changed-files /tmp/changed-files.json
+      - name: Commit retained closure and remove validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Tymon Scott'
+          git config user.email '54303549+tymonius@users.noreply.github.com'
+          git rm .github/workflows/rules-arbiter-margin-loan-closure.yml
+          git add rules-assistant/v071-margin-loan-review.test.mjs artifacts/rules-refinement/resolution-ledger.json
+          git commit -m 'Close Margin Loan reviewed regressions'
+          git push origin HEAD:ops/rules-arbiter-margin-loan-one-shot
