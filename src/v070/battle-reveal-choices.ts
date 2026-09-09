@@ -87,6 +87,13 @@ export type V070BattleRevealChoice =
       role: 'gambit' | 'tactic';
       /** Opposing cards at this reveal stage whose effects had not taken effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'counterworks';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      territoryPosition: number;
+      candidateOverlayInstanceIds: string[];
     };
 
 declare module './battle-types' {
