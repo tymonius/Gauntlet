@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-08T22:37:00.000Z",
+  "updatedAt": "2026-09-09T04:07:05.322Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -483,6 +483,23 @@
       "resolvedAt": "2026-09-08T22:37:00.000Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-4"
+      }
+    },
+    {
+      "id": "battle-tiebreak-reroll-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "cbcae027-954f-4620-a2fc-0cd7164f9762"
+      ],
+      "caseIds": [
+        "battle-tiebreak-reroll-modifiers"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote current v0.7.1 Tiebreak Roll authority when battle-tie questions describe the procedure as a reroll rather than naming it. The current rule treats the Tiebreak Roll as a separate sudden-death roll: advantage, disadvantage, card effects, numerical modifiers, and previous battle totals do not apply unless a rule expressly modifies a Tiebreak Roll. Setup first-player tie rerolls remain on setup authority.",
+      "resolvedAt": "2026-09-09T04:07:05.322Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-5"
       }
     }
   ]

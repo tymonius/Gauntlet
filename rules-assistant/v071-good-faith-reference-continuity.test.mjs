@@ -70,6 +70,6 @@ describe("v0.7.1 Good Faith reference resolution and conversational continuity",
     expect(workerSource).toContain("Track referents through each instruction in written order");
     expect(workerSource).toContain("the most recent compatible game object introduced by the text");
     expect(workerSource).toContain("Do not switch the referent back to the source card merely because it is the card being read");
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260908-4"');
+    expect(workerSource).toMatch(/export const BEHAVIOR_REVISION = "v071-qa-\d{8}-\d+"/);
   });
 });
