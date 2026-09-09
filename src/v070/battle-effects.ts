@@ -25,6 +25,10 @@ import {
   applyV070BombardmentBattleEffect,
 } from './bombardment-battle';
 import {
+  V070_BROTHERS_IN_ARMS_BATTLE_TEXT,
+  V070_BROTHERS_IN_ARMS_ID,
+} from './brothers-in-arms-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -82,11 +86,23 @@ const bombardmentHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+// Brothers in Arms begins resolving when it is chosen as a Tactic. Its
+// optional additional-Tactic permission and destination override are therefore
+// already installed before the normal reveal stage. The reveal handler is an
+// authority marker/no-op so normal unsupported-effect preflight does not halt.
+const brothersInArmsHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_BROTHERS_IN_ARMS_ID,
+  expectedText: V070_BROTHERS_IN_ARMS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: () => {},
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_ACCUSATION_ID,
   V070_ACT_OF_FAITH_ID,
   V070_BOMBARDMENT_ID,
+  V070_BROTHERS_IN_ARMS_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -95,6 +111,7 @@ export function v070BattleEffectHandler(
   if (cardId === V070_ACCUSATION_ID) return accusationHandler;
   if (cardId === V070_ACT_OF_FAITH_ID) return actOfFaithHandler;
   if (cardId === V070_BOMBARDMENT_ID) return bombardmentHandler;
+  if (cardId === V070_BROTHERS_IN_ARMS_ID) return brothersInArmsHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -103,7 +120,8 @@ export function v070BattleRevealEffectClass(
 ): previous.V070RevealEffectClass {
   if (cardId === V070_ACCUSATION_ID
     || cardId === V070_ACT_OF_FAITH_ID
-    || cardId === V070_BOMBARDMENT_ID) {
+    || cardId === V070_BOMBARDMENT_ID
+    || cardId === V070_BROTHERS_IN_ARMS_ID) {
     return 'ordinary';
   }
   return previous.v070BattleRevealEffectClass(cardId);
@@ -160,7 +178,11 @@ export function resolveV070SupportedRevealEffects(
           }
         : null;
 
-    if (cardId === V070_BOMBARDMENT_ID) {
+    if (cardId === V070_BOMBARDMENT_ID
+      || cardId === V070_BROTHERS_IN_ARMS_ID) {
+      const handler = cardId === V070_BOMBARDMENT_ID
+        ? bombardmentHandler
+        : brothersInArmsHandler;
       if (isV070BattleCardEffectNegated(state, commitment.instanceId)) {
         appendV070Event(state, {
           type: 'battle_card_effect_skipped_negated',
@@ -173,7 +195,7 @@ export function resolveV070SupportedRevealEffects(
           },
         });
       } else {
-        bombardmentHandler.apply({
+        handler.apply({
           state,
           owner: commitment.owner,
           opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -187,7 +209,9 @@ export function resolveV070SupportedRevealEffects(
             instanceId: commitment.instanceId,
             cardId,
             role: commitment.role,
-            timing: 'reveal',
+            timing: cardId === V070_BROTHERS_IN_ARMS_ID
+              ? 'choice_then_reveal'
+              : 'reveal',
             revealClass: 'ordinary',
           },
         });
