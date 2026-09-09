@@ -1,0 +1,27 @@
+name: Rules Arbiter backlog schema
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-backlog-schema-20260909
+    paths:
+      - '.github/workflows/rules-arbiter-backlog-schema.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect production Rules Arbiter schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '=== RULES TABLE SCHEMA ==='
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name LIKE 'rules_%' ORDER BY name"
