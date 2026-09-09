@@ -9,6 +9,9 @@ import type { PlayerId } from './rules';
 import * as previous from './overlays-pre-deferred';
 import { pauseV070DeferredBattleAftermathCarrier } from './battle-aftermath';
 import {
+  preventV070OverlayPlacementWithCounterworks,
+} from './counterworks-battle';
+import {
   isV070RuinsOverlay,
   turnV070OverlayIntoRuins,
 } from './overlay-ruins';
@@ -65,10 +68,20 @@ export function placeV070OverlayFromBattle(
   instanceId: string,
   territoryPosition: number,
   source: string,
-): V070OverlayAttachment {
+): V070OverlayAttachment | null {
   const cardId = state.cardInstances[instanceId]?.cardId;
   if (cardId && V070_DEFERRED_BATTLE_AFTERMATH_IDS.has(cardId)) {
     pauseV070DeferredBattleAftermathCarrier(state, instanceId);
+  }
+
+  if (preventV070OverlayPlacementWithCounterworks(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    source,
+  )) {
+    return null;
   }
 
   const territory = state.board.find(item => item.position === territoryPosition);
