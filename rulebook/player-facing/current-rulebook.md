@@ -10,7 +10,7 @@
 
 Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the **Gauntlet**.
 
-Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either extending your Front Line across the entire battlefield or forcing that opponent to make a Last Stand and winning the resulting battle.
+Players advance toward each other, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either extending your Front Line across the entire battlefield or forcing that opponent to make a Last Stand and winning the resulting battle.
 
 # How to Use This Rulebook
 
@@ -716,7 +716,7 @@ Faction-specific alternate victories remain separate victory conditions unless t
 
 ### How it works
 
-Capture opposing Territories in order until your Front Line spans all six Territories. The capture that adds the final opposing Territory completes the Gauntlet and wins the game immediately.
+Capture opposing Territories in order until your Front Line spans all six<!-- RULE-FACT:battlefield.territory_count:word --> Territories. The capture that adds the final opposing Territory completes the Gauntlet and wins the game immediately.
 
 ### Complete rules
 

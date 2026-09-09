@@ -14,6 +14,7 @@ const FACTIONS = Object.freeze([
 ]);
 
 export const RULE_FACT_MARKER_COUNTS = Object.freeze({
+  'battlefield.territory_count': 1,
   'diplomats.peace_treaty_threshold': 2,
   'cards.military.count': 1,
   'cards.diplomats.count': 1,
@@ -76,6 +77,7 @@ export function deriveRuleFacts(authority) {
 
   const mysticsCards = (authority.gameplay.cards || []).filter(card => card?.allegiance === 'Mystics');
   const facts = {
+    'battlefield.territory_count': Number(authority?.gameplay?.deck_construction?.territories_per_player) * 2,
     'diplomats.peace_treaty_threshold': Number(
       faction(authority, 'diplomats')?.factionRules?.peace_treaty_threshold
     ),
