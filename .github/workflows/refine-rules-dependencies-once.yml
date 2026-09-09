@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Register granular semantic rules and narrow teaching dependencies
+      - name: Register granular semantic rules and narrow publication dependencies
         shell: bash
         run: |
           node --input-type=module <<'NODE'
@@ -30,8 +30,10 @@ jobs:
 
           const contractPath = 'config/rules-surface-contract.json';
           const restorationPath = 'docs/v0.7.2-shared-baseline-restoration.json';
+          const comprehensivePath = 'rulebook/comprehensive/comprehensive-rules.md';
           const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
           const restoration = JSON.parse(fs.readFileSync(restorationPath, 'utf8'));
+          let comprehensive = fs.readFileSync(comprehensivePath, 'utf8');
 
           const rule = (id, path) => ({
             id,
@@ -157,6 +159,49 @@ jobs:
             'core.cards.overlay',
           ];
 
+          const replaceExact = (oldText, newText, label) => {
+            if (!comprehensive.includes(oldText)) {
+              throw new Error(`Comprehensive Rules scaffold block not found for ${label}.`);
+            }
+            comprehensive = comprehensive.replace(oldText, newText);
+          };
+
+          replaceExact(
+            `<!-- RULES-PART:turn-structure -->\n## Part III — Turn Structure\n<!-- RULES-COVER:core.turn -->`,
+            `<!-- RULES-PART:turn-structure -->\n## Part III — Turn Structure\n<!-- RULES-COVER:core.turn -->\n<!-- RULES-COVER:core.turn.sequence -->\n<!-- RULES-COVER:core.turn.draw -->\n<!-- RULES-COVER:core.turn.actions -->\n<!-- RULES-COVER:core.turn.cleanup -->`,
+            'turn-structure',
+          );
+
+          replaceExact(
+            `<!-- RULES-PART:movement-battlefield -->\n## Part IV — Movement and Battlefield State\n<!-- RULES-COVER:core.battlefield -->\n<!-- RULES-COVER:core.battle.movement-initiation -->`,
+            `<!-- RULES-PART:movement-battlefield -->\n## Part IV — Movement and Battlefield State\n<!-- RULES-COVER:core.battlefield -->\n<!-- RULES-COVER:core.battlefield.position -->\n<!-- RULES-COVER:core.battlefield.movement -->\n<!-- RULES-COVER:core.battlefield.occupation -->\n<!-- RULES-COVER:core.battlefield.counterattack -->\n<!-- RULES-COVER:core.battle.movement-initiation -->`,
+            'movement-battlefield',
+          );
+
+          replaceExact(
+            `<!-- RULES-PART:battles -->\n## Part V — Battles\n<!-- RULES-COVER:core.battle -->`,
+            `<!-- RULES-PART:battles -->\n## Part V — Battles\n<!-- RULES-COVER:core.battle -->\n<!-- RULES-COVER:core.battle.battle-total -->\n<!-- RULES-COVER:core.battle.advantage-disadvantage -->\n<!-- RULES-COVER:core.battle.normal-result -->\n<!-- RULES-COVER:core.battle.aftermath -->`,
+            'battles',
+          );
+
+          replaceExact(
+            `<!-- RULES-PART:cards-zones -->\n## Part VII — Cards and Zones\n<!-- RULES-COVER:core.cards -->`,
+            `<!-- RULES-PART:cards-zones -->\n## Part VII — Cards and Zones\n<!-- RULES-COVER:core.cards -->\n<!-- RULES-COVER:core.cards.reveal -->`,
+            'cards-zones',
+          );
+
+          replaceExact(
+            `<!-- RULES-PART:effects-timing -->\n## Part VIII — Effects and Timing\n<!-- RULES-COVER:core.cards -->\n<!-- RULES-COVER:core.battle -->`,
+            `<!-- RULES-PART:effects-timing -->\n## Part VIII — Effects and Timing\n<!-- RULES-COVER:core.cards.golden-rules -->\n<!-- RULES-COVER:core.cards.shared-timing -->\n<!-- RULES-COVER:core.cards.reveal -->\n<!-- RULES-COVER:core.cards.negation -->\n<!-- RULES-COVER:core.cards.replacement -->\n<!-- RULES-COVER:core.cards.revising-choice -->\n<!-- RULES-COVER:core.battle -->`,
+            'effects-timing',
+          );
+
+          replaceExact(
+            `<!-- RULES-PART:persistent-shared -->\n## Part IX — Persistent and Special Shared Rules\n<!-- RULES-COVER:core.cards -->`,
+            `<!-- RULES-PART:persistent-shared -->\n## Part IX — Persistent and Special Shared Rules\n<!-- RULES-COVER:core.cards.overlay -->`,
+            'persistent-shared',
+          );
+
           restoration.semanticRuleIds = {
             battle: [
               'core.battle.battle-total',
@@ -195,6 +240,7 @@ jobs:
 
           fs.writeFileSync(contractPath, `${JSON.stringify(contract, null, 2)}\n`);
           fs.writeFileSync(restorationPath, `${JSON.stringify(restoration, null, 2)}\n`);
+          fs.writeFileSync(comprehensivePath, comprehensive);
           NODE
 
       - name: Validate authority and publication contracts
@@ -209,6 +255,6 @@ jobs:
           rm .github/workflows/refine-rules-dependencies-once.yml
           git config user.name 'Gauntlet rules materializer'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add config/rules-surface-contract.json docs/v0.7.2-shared-baseline-restoration.json .github/workflows/refine-rules-dependencies-once.yml
+          git add config/rules-surface-contract.json docs/v0.7.2-shared-baseline-restoration.json rulebook/comprehensive/comprehensive-rules.md .github/workflows/refine-rules-dependencies-once.yml
           git commit -m 'Register granular shared rule dependencies [rules-dependencies-refined]'
           git push origin HEAD:rules/restore-shared-baseline
