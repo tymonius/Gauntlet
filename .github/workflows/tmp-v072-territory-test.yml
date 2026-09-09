@@ -1,0 +1,51 @@
+name: Temporary v0.7.2 Territory regression update
+
+on:
+  push:
+    branches:
+      - balance/territory-pass-v072-final
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: balance/territory-pass-v072-final
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Add Territory regression coverage
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'tests/current-game-authority.test.ts';
+          let test = fs.readFileSync(path, 'utf8');
+          const name = 'locks the v0.7.2 Territory text and all 12 starter Territory packages';
+          if (!test.includes(name)) {
+            const marker = "  it('contains the entire resolved gameplay and component state in one document', () => {";
+            const block = `  it('${name}', () => {\n    const byName = new Map(authority.gameplay.territories.map((territory: any) => [territory.name, territory]));\n    const quicksand = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';\n    expect(byName.get('Quicksand')?.text).toBe(quicksand);\n    expect(byName.get('Quicksand')?.effects).toEqual([{ label: 'Text', text: quicksand }]);\n    expect(byName.get('Refuge')?.text).toBe('After a player Falls Back or withdraws to this Territory: +1 Card.');\n\n    const expected: Record<string, string[]> = {\n      general: [\"Smuggler's Run\", \"King's Road\", 'Arena: No Quarter'],\n      commandant: ['Garrison', 'Training Grounds', 'High Ground'],\n      ambassador: ['Refuge', 'Supply Depot', 'Command Tent'],\n      senator: ['Refuge', 'Garrison', 'Fortified Pass'],\n      banker: ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'],\n      executive: [\"Smuggler's Run\", \"King's Road\", 'Arena: No Quarter'],\n      'spirit-walker': ['Garrison', 'Training Grounds', 'High Ground'],\n      alchemist: ['Poisonous Gas', 'Old Battlefield', 'Ruined Storehouse'],\n      'grand-inquisitor': ['Poisonous Gas', 'Toll Bridge', 'Arena: Grand Melee'],\n      'witch-hunter': ['Garrison', 'Training Grounds', 'High Ground'],\n      spymaster: ['Refuge', 'Ruined Storehouse', 'Field Hospital'],\n      ranger: ['Quicksand', 'Difficult Terrain', 'Poisonous Gas'],\n    };\n    expect(Object.fromEntries(authority.starterDecks.decks.map((deck: any) => [deck.leaderId, deck.territories]))).toEqual(expected);\n\n    const counts = authority.starterDecks.decks.flatMap((deck: any) => deck.territories)\n      .reduce((result: Record<string, number>, territory: string) => {\n        result[territory] = (result[territory] || 0) + 1;\n        return result;\n      }, {});\n    expect(Object.keys(counts)).toHaveLength(19);\n    expect(counts).toMatchObject({\n      Garrison: 4, 'Training Grounds': 3, 'High Ground': 3, Refuge: 3,\n      'Ruined Storehouse': 3, 'Poisonous Gas': 3, 'Field Hospital': 1, Quicksand: 1,\n    });\n    expect(authority.gameplay.territories.map((territory: any) => territory.name)\n      .filter((name: string) => !counts[name]).sort()).toEqual([\n        'Arena: Single Combat', 'Disrupted Supply Lines', 'Exposed Flank',\n        'Insurgency', 'Monastery', 'Watchtower',\n      ]);\n  });\n\n`;
+            if (!test.includes(marker)) throw new Error('Regression insertion marker not found');
+            test = test.replace(marker, block + marker);
+            fs.writeFileSync(path, test);
+          }
+          NODE
+      - name: Install deterministic test dependencies
+        run: |
+          git fetch origin main --depth=1
+          git show origin/main:package-lock.json > package-lock.json
+          npm ci
+      - name: Run authority test
+        run: npx vitest run tests/current-game-authority.test.ts
+      - name: Commit regression coverage
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/tmp-v072-territory-test.yml
+          git add tests/current-game-authority.test.ts
+          git commit -m 'Lock v0.7.2 Territory starter packages'
+          git push origin HEAD:balance/territory-pass-v072-final
