@@ -211,9 +211,9 @@ Establish who is attacking, who is defending, and which position is contested. S
 
 ### 2. Set Gambits
 
-Each player may choose **one eligible card from their Hand** and set it face down as a **Gambit**.
+The **attacker commits first**: set one eligible card from your Hand face down as a **Gambit**, or pass. Then the defender sets one eligible card from their Hand face down, or passes.
 
-A Gambit is optional. Setting one means risking a card you already had available before the battle.
+A Gambit is optional. The defender therefore knows whether the attacker committed a Gambit before deciding, but does not know which face-down card it is unless an effect reveals it.
 
 ### 3. Form Reserves
 
@@ -227,9 +227,9 @@ Reveal the Gambits and resolve their effects.
 
 ### 5. Choose Tactics
 
-Each player may choose **one eligible card from their Reserve** and set it face down as a **Tactic**.
+Again, the **attacker commits first**: choose one eligible card from your Reserve and set it face down as a **Tactic**, or pass. Then the defender chooses one eligible Reserve card face down, or passes.
 
-Like a Gambit, a Tactic is optional.
+Like a Gambit, a Tactic is optional. The defender can respond to whether the attacker committed before making their own choice.
 
 ### 6. Reveal Tactics
 

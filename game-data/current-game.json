@@ -21,7 +21,8 @@
     },
     "currentDevelopmentInputs": {
       "mysticsRites": "/docs/v0.7.1-mystics-rites.json",
-      "v072TimingAndCaptureCleanup": "/docs/v0.7.2-timing-and-capture-cleanup.json"
+      "v072TimingAndCaptureCleanup": "/docs/v0.7.2-timing-and-capture-cleanup.json",
+      "v072BattleCommitmentOrderRestoration": "/docs/v0.7.2-battle-commitment-order-restoration.json"
     }
   },
   "visualPolicy": {
@@ -82,6 +83,18 @@
         "outcome",
         "aftermath"
       ],
+      "commitment_order": {
+        "gambits": [
+          "attacker",
+          "defender"
+        ],
+        "tactics": [
+          "attacker",
+          "defender"
+        ],
+        "face_state": "Commitments are face down unless a rule or effect says otherwise.",
+        "text": "During the normal battle sequence, the attacker sets a Gambit or passes first, then the defender sets a Gambit or passes. After Reserves are formed, the attacker chooses a Tactic or passes first, then the defender chooses a Tactic or passes. A specific rule or effect may change this order or face state."
+      },
       "defensive_edge": "When the defender has Defensive Edge, the defender wins tied battle totals. The defender normally has it while controlling the contested Territory or making a Last Stand, unless an effect removes it.",
       "tiebreak_roll": "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or previous battle totals. Higher roll wins; reroll further ties.",
       "withdrawal": "Withdrawal during Onset ends the battle sequence without a winner or battle result. No Gambits are set and no Aftermath occurs. After Onset has completed and the battle has proceeded to Gambits, a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally.",
