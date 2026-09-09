@@ -41,7 +41,7 @@ export function placeV070OverlayFromBattle(
   instanceId: string,
   territoryPosition: number,
   source: string,
-): V070OverlayAttachment {
+): V070OverlayAttachment | null {
   const cardId = state.cardInstances[instanceId]?.cardId;
   if (cardId && V070_DEFERRED_BATTLE_AFTERMATH_IDS.has(cardId)) {
     pauseV070DeferredBattleAftermathCarrier(state, instanceId);
