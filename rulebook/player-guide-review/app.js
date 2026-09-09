@@ -138,6 +138,7 @@ async function renderGuide() {
     content.setAttribute('aria-busy', 'false');
     buildToc(rendered.headings);
     decorateHeadings();
+    document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', { detail: { surface: 'player-guide-review' } }));
 
     const version = currentGame.displayVersion || currentGame.version || 'current development';
     versionBadges.forEach((badge) => { badge.textContent = version; });

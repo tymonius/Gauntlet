@@ -63,9 +63,23 @@ Keep these areas separate:
 
 Battles temporarily create three more areas: your **Gambit**, your **Reserve**, and your **Tactic**. Chapter 6 explains them.
 
-### Reading a card
+### Card anatomy
 
-The most important parts of an ordinary card are its **name**, **card value**, and its printed **effects**.
+Most ordinary playable cards use the same frame. These are the parts you will refer to most often:
+
+1. **Card name** — The card's title.
+2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
+3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
+4. **Artwork** — The card's illustration.
+5. **Effect heading** — Names the effect's role or timing.
+6. **Effect text** — Resolve only the printed effect being used unless a rule says otherwise.
+7. **Metadata footer** — Shows faction at left, **Unique** in the center when applicable, and the rules version at right.
+
+#### Arcane trait mark
+
+Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the **Arcane** trait; its color follows the card's faction identity.
+
+### Effect headings
 
 An effect heading tells you how that part of the card is used. The shared headings you will see most often are:
 
