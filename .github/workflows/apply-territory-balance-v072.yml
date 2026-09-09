@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: balance/territory-pass-v072
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Update Territory authority and starter choices
         run: |
@@ -26,8 +26,23 @@ jobs:
           const path = 'game-data/current-game.json';
           const game = JSON.parse(fs.readFileSync(path, 'utf8'));
 
-          const territories = game.territories;
-          if (!Array.isArray(territories)) throw new Error('current-game.json territories array not found');
+          function findObject(node, predicate) {
+            if (!node || typeof node !== 'object') return null;
+            if (predicate(node)) return node;
+            for (const value of Object.values(node)) {
+              const found = findObject(value, predicate);
+              if (found) return found;
+            }
+            return null;
+          }
+
+          const territoryOwner = findObject(game, (node) =>
+            Array.isArray(node.territories) &&
+            node.territories.some((entry) => entry && entry.name === 'Supply Depot') &&
+            node.territories.some((entry) => entry && entry.name === "Smuggler's Run")
+          );
+          if (!territoryOwner) throw new Error('Current Territory authority not found');
+          const territories = territoryOwner.territories;
 
           function updateTerritory(name, text) {
             const territory = territories.find((entry) => entry.name === name);
@@ -49,21 +64,11 @@ jobs:
             "Once per turn during Opening or Denouement, this Territory's controller, while here, may stash 1 card from Hand face down beneath it.\nWhile they control this Territory, they may play the stashed card for its Action effect or set it as a Gambit.\nAt the start of their turn, if they control this Territory, they may return the stashed card to Hand. If they lose control, it is discarded."
           );
 
-          function findStarterPackage(node) {
-            if (!node || typeof node !== 'object') return null;
-            if (
-              Array.isArray(node.decks) &&
-              node.decks.some((deck) => deck && deck.id === 'military-general-forward-doctrine') &&
-              node.optimizationPolicy
-            ) return node;
-            for (const value of Object.values(node)) {
-              const found = findStarterPackage(value);
-              if (found) return found;
-            }
-            return null;
-          }
-
-          const starters = findStarterPackage(game);
+          const starters = findObject(game, (node) =>
+            Array.isArray(node.decks) &&
+            node.decks.some((deck) => deck && deck.id === 'military-general-forward-doctrine') &&
+            node.optimizationPolicy
+          );
           if (!starters) throw new Error('Current starter package not found');
 
           const territoryChoices = {
@@ -88,7 +93,6 @@ jobs:
           }
 
           starters.optimizationPolicy.status = 'active-for-v0.7.2-candidate';
-
           fs.writeFileSync(path, JSON.stringify(game, null, 2) + '\n');
           NODE
 
