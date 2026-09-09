@@ -1,256 +1,45 @@
 import type { PlayerId } from './rules';
 import type { V070GameState } from './engine';
-import {
-  viewV070GameForPlayer as viewV070GameForPlayerPostDraw,
-  type V070GameView as V070PostDrawGameView,
-} from './views-postdraw';
-import { pendingV070WarBondsChoice } from './war-bonds';
-import {
-  viewV070ReembodimentRecoveryForPlayer,
-} from './reembodiment';
-import { pendingV070LandslideAftermath } from './landslide';
-import { pendingV070CounterworksPreRevealChoice } from './counterworks-battle';
-import { pendingV070AccusationAftermath } from './accusation-battle';
-import { pendingV070ActOfFaithAftermath } from './act-of-faith-battle';
-import {
-  pendingV070BrothersInArmsAdditionalTactic,
-} from './brothers-in-arms-battle';
-import {
-  pendingV070BurningAtTheStakeAftermath,
-} from './burning-at-the-stake-battle';
+import * as previous from './views-pre-capital-gains';
+import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
 
-export * from './views-postdraw';
+export * from './views-pre-capital-gains';
 
-export interface V070WarBondsView {
-  playerId: PlayerId;
-  assetInstanceId: string;
-  handCount: number;
-  candidateHandInstanceIds?: string[];
-}
-
-export interface V070ReembodimentRecoveryView {
-  playerId: PlayerId;
-  assetInstanceId: string;
-  sourceLabel: string;
-  triggerValue: number;
-  candidateCount: number;
-  duringBattle: boolean;
-  candidateInstanceIds?: string[];
-}
-
-export interface V070LandslideAftermathView {
-  playerId: PlayerId;
-  territoryInstanceId: string;
-  candidateCount: number;
-  candidateInstanceIds?: string[];
-}
-
-export interface V070CounterworksPreRevealView {
-  kind:
-    | 'counterworks_source_order'
-    | 'counterworks_target'
-    | 'counterintelligence_pre_reveal'
-    | 'counterworks_replacement';
-  playerId: PlayerId;
-  role: 'gambit' | 'tactic';
-  candidateCount: number;
-  optional: boolean;
-  candidateInstanceIds?: string[];
-}
-
-export interface V070AccusationAftermathView {
-  stage: 'target' | 'destination';
+export interface V070CapitalGainsAftermathView {
   playerId: PlayerId;
   owner: PlayerId;
-  opponent: PlayerId;
   sourceInstanceId: string;
-  candidateCount: number;
-  targetInstanceId?: string;
-  candidateInstanceIds?: string[];
-}
-
-export interface V070ActOfFaithAftermathView {
-  stage: 'reveal_count' | 'graveyard';
-  playerId: PlayerId;
-  owner: PlayerId;
-  opponent: PlayerId;
-  sourceInstanceId: string;
-  maximumRevealCount: number;
   candidateCount: number;
   candidateInstanceIds?: string[];
 }
 
-export interface V070BrothersInArmsAdditionalTacticView {
-  playerId: PlayerId;
-  sourceInstanceId: string;
-  candidateCount: number;
-  optional: true;
-  candidateInstanceIds?: string[];
-}
-
-export interface V070BurningAtTheStakeAftermathView {
-  playerId: PlayerId;
-  owner: PlayerId;
-  opponent: PlayerId;
-  sourceInstanceId: string;
-  highestCardValue: number;
-  candidateCount: number;
-  revealedHandInstanceIds: string[];
-  candidateInstanceIds: string[];
-}
-
-export type V070GameView = V070PostDrawGameView & {
-  pendingWarBondsChoice: V070WarBondsView | null;
-  pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
-  pendingLandslideAftermath: V070LandslideAftermathView | null;
-  pendingCounterworksPreReveal: V070CounterworksPreRevealView | null;
-  pendingAccusationAftermath: V070AccusationAftermathView | null;
-  pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null;
-  pendingBrothersInArmsAdditionalTactic:
-    V070BrothersInArmsAdditionalTacticView | null;
-  pendingBurningAtTheStakeAftermath:
-    V070BurningAtTheStakeAftermathView | null;
+export type V070GameView = previous.V070GameView & {
+  pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
   state: V070GameState,
   viewer: PlayerId,
 ): V070GameView {
-  const core = viewV070GameForPlayerPostDraw(state, viewer);
-  const pending = pendingV070WarBondsChoice(state);
-  const pendingWarBondsChoice: V070WarBondsView | null = pending
-    ? {
-        playerId: pending.playerId,
-        assetInstanceId: pending.assetInstanceId,
-        handCount: state.players[pending.playerId].zones.hand.length,
-        ...(viewer === pending.playerId
-          ? {
-              candidateHandInstanceIds: [
-                ...state.players[pending.playerId].zones.hand,
-              ],
-            }
-          : {}),
-      }
-    : null;
-  const pendingReembodimentRecovery =
-    viewV070ReembodimentRecoveryForPlayer(state, viewer);
-  const landslide = pendingV070LandslideAftermath(state);
-  const pendingLandslideAftermath: V070LandslideAftermathView | null = landslide
-    ? {
-        playerId: landslide.playerId,
-        territoryInstanceId: landslide.territoryInstanceId,
-        candidateCount: landslide.candidateInstanceIds.length,
-        ...(viewer === landslide.playerId
-          ? {
-              candidateInstanceIds: [...landslide.candidateInstanceIds],
-            }
-          : {}),
-      }
-    : null;
-  const preReveal = pendingV070CounterworksPreRevealChoice(state);
-  const pendingCounterworksPreReveal: V070CounterworksPreRevealView | null =
-    preReveal
+  const core = previous.viewV070GameForPlayer(state, viewer);
+  const pending = pendingV070CapitalGainsAftermath(state);
+  const pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null =
+    pending
       ? {
-          kind: preReveal.kind,
-          playerId: preReveal.playerId,
-          role: preReveal.role,
-          candidateCount: preReveal.candidateInstanceIds.length,
-          optional: preReveal.kind === 'counterworks_replacement',
-          ...(viewer === preReveal.playerId
+          playerId: pending.playerId,
+          owner: pending.owner,
+          sourceInstanceId: pending.sourceInstanceId,
+          candidateCount: pending.candidateInstanceIds.length,
+          ...(viewer === pending.playerId
             ? {
-                candidateInstanceIds: [...preReveal.candidateInstanceIds],
+                candidateInstanceIds: [...pending.candidateInstanceIds],
               }
             : {}),
-        }
-      : null;
-  const accusation = pendingV070AccusationAftermath(state);
-  const pendingAccusationAftermath: V070AccusationAftermathView | null =
-    accusation
-      ? {
-          stage: accusation.stage,
-          playerId: accusation.playerId,
-          owner: accusation.owner,
-          opponent: accusation.opponent,
-          sourceInstanceId: accusation.sourceInstanceId,
-          candidateCount: accusation.candidateInstanceIds.length,
-          ...(accusation.targetInstanceId
-            ? { targetInstanceId: accusation.targetInstanceId }
-            : {}),
-          ...(viewer === accusation.playerId
-            ? {
-                candidateInstanceIds: [
-                  ...accusation.candidateInstanceIds,
-                ],
-              }
-            : {}),
-        }
-      : null;
-  const actOfFaith = pendingV070ActOfFaithAftermath(state);
-  const pendingActOfFaithAftermath: V070ActOfFaithAftermathView | null =
-    actOfFaith
-      ? {
-          stage: actOfFaith.stage,
-          playerId: actOfFaith.playerId,
-          owner: actOfFaith.owner,
-          opponent: actOfFaith.opponent,
-          sourceInstanceId: actOfFaith.sourceInstanceId,
-          maximumRevealCount: actOfFaith.maximumRevealCount,
-          candidateCount: actOfFaith.candidateInstanceIds.length,
-          ...(actOfFaith.stage === 'graveyard'
-            ? {
-                // These cards have now been explicitly revealed by the effect.
-                candidateInstanceIds: [...actOfFaith.candidateInstanceIds],
-              }
-            : {}),
-        }
-      : null;
-  const brothersInArms = pendingV070BrothersInArmsAdditionalTactic(state);
-  const pendingBrothersInArmsAdditionalTactic:
-    V070BrothersInArmsAdditionalTacticView | null = brothersInArms
-      ? {
-          playerId: brothersInArms.playerId,
-          sourceInstanceId: brothersInArms.sourceInstanceId,
-          candidateCount: brothersInArms.candidateInstanceIds.length,
-          optional: true,
-          ...(viewer === brothersInArms.playerId
-            ? {
-                candidateInstanceIds: [
-                  ...brothersInArms.candidateInstanceIds,
-                ],
-              }
-            : {}),
-        }
-      : null;
-  const burningAtTheStake = pendingV070BurningAtTheStakeAftermath(state);
-  const pendingBurningAtTheStakeAftermath:
-    V070BurningAtTheStakeAftermathView | null = burningAtTheStake
-      ? {
-          playerId: burningAtTheStake.playerId,
-          owner: burningAtTheStake.owner,
-          opponent: burningAtTheStake.opponent,
-          sourceInstanceId: burningAtTheStake.sourceInstanceId,
-          highestCardValue: burningAtTheStake.highestCardValue,
-          candidateCount: burningAtTheStake.candidateInstanceIds.length,
-          // The effect has explicitly revealed the entire Hand, so these
-          // identities and the tied-highest candidates are public to both players.
-          revealedHandInstanceIds: [
-            ...burningAtTheStake.revealedHandInstanceIds,
-          ],
-          candidateInstanceIds: [
-            ...burningAtTheStake.candidateInstanceIds,
-          ],
         }
       : null;
 
   return {
     ...core,
-    pendingWarBondsChoice,
-    pendingReembodimentRecovery,
-    pendingLandslideAftermath,
-    pendingCounterworksPreReveal,
-    pendingAccusationAftermath,
-    pendingActOfFaithAftermath,
-    pendingBrothersInArmsAdditionalTactic,
-    pendingBurningAtTheStakeAftermath,
+    pendingCapitalGainsAftermath,
   };
 }
