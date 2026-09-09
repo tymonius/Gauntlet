@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T06:15:13.090Z",
+  "updatedAt": "2026-09-09T06:21:55.504Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -567,6 +567,40 @@
       "resolutionSurface": "arbiter_retrieval_prompt",
       "summary": "The reviewed broad Shock and Awe explanation had sufficient authority but omitted material conditions. Current v0.7.1 retrieval returns the complete Shock and Awe card first and the conflicting-victory rule alongside it, while the current whole-procedure prompt requires the Arbiter to preserve the complete sequence and its prerequisites, branches, restrictions, and destinations. The exact reviewed question is regression-covered; no new runtime change is required.",
       "resolvedAt": "2026-09-09T06:15:13.090Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deed-contiguity-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "eb878722-a732-492f-814e-df3c5ccded9a"
+      ],
+      "caseIds": [
+        "deed-purchase-contiguity"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed no-contiguity ruling was correct and correctly classified as inferred, but its selected authority was too weak. Current v0.7.1 retrieval supplies the Front Line definition, Deed ownership-independence rule, and the specific purchase table together; those rules compel the no-contiguity result, while the current classification boundary correctly treats absence of a contiguity restriction as inference rather than explicit authority. No runtime change is required.",
+      "resolvedAt": "2026-09-09T06:21:55.504Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260908-6"
+      }
+    },
+    {
+      "id": "deed-remote-purchase-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "54962556-f04e-428b-89c5-2c193d47cf0f"
+      ],
+      "caseIds": [
+        "deed-remote-purchase"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed remote-purchase ruling was correct and explicit, but the final selected source was weaker than the specific purchase authority. Current v0.7.1 retrieval returns Buying and buying out Deeds first; its purchase table expressly prices the case where the buyer neither controls nor occupies the Territory, with the Deeds rule also confirming ownership independence from position and control. No runtime change is required.",
+      "resolvedAt": "2026-09-09T06:21:55.504Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260908-6"
       }
