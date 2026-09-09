@@ -1,0 +1,23 @@
+name: Rules Arbiter Fieldcraft Safe Conduct probe
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-reviewed-backlog-refresh-20260909
+    paths:
+      - '.github/workflows/rules-arbiter-fieldcraft-safe-conduct-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: node scripts/rules-arbiter-fieldcraft-safe-conduct-probe.mjs
