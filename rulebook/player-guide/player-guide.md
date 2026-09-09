@@ -27,7 +27,9 @@ The battlefield is called the **Gauntlet**. It is a single line of six Territory
 
 Each player begins on the Territory at their own end. From your point of view, **forward** is always toward your opponent's end and **backward** is always toward your own.
 
-Your Player Token shows where you are. A Territory's orientation shows who controls it: a Territory faces the player who controls it.
+![Starting Gauntlet showing the six Territories, each player's starting position, forward direction, and starting control.](/rulebook/player-guide/assets/figures/battlefield-position-control.svg)
+
+> **Remember — Position is not control.** Your Player Token shows where you are. Territory orientation shows who controls that ground: a Territory faces the player who controls it.
 
 At the beginning of the game, you control your three Territories and your opponent controls theirs. As the game progresses, battles move the Player Tokens back and forth while captured Territories move the boundary between the two sides.
 

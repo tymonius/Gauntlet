@@ -404,6 +404,15 @@ footer {
   mask-image: linear-gradient(to bottom, #000 0 82%, transparent 100%);
 }
 
+.rulebook-content img[src^="/rulebook/player-guide/assets/figures/"] {
+  display: block;
+  width: 100%;
+  max-height: none;
+  margin: 1.5rem auto;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
 .rulebook-content table {
   border-top: 3px solid var(--chapter-accent, var(--rulebook-crimson));
   background: #fffdf8;
