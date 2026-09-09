@@ -105,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: digital-behavior-audit
-          path: artifacts/card-authority/digital-behavior-audit.json
+          path: artifacts/card-authority/digital-behavior-*.json
           if-no-files-found: warn
 
   render:
