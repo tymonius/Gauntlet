@@ -15,6 +15,7 @@ export function registerV070DeferredBattleAftermathCarrier(
   owner: PlayerId,
   sourceInstanceId: string,
   sourceCardId: string,
+  condition: 'always' | 'owner_win' = 'always',
 ): void {
   const battle = state.battle;
   const runtime = state.battleRuntime;
@@ -42,6 +43,6 @@ export function registerV070DeferredBattleAftermathCarrier(
     sourceCardId,
     owner,
     territoryInstanceId: territory.territoryInstanceId,
-    condition: 'always',
+    condition,
   });
 }
