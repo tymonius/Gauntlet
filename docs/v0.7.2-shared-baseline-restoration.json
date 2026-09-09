@@ -46,6 +46,7 @@
     "requirement": "Loading current-game authority must fail when a required shared baseline rule is absent or when live canonical vocabulary depends on an undeclared shared rule.",
     "purpose": "Prevent future consolidation or materialization work from silently dropping semantics that canonical objects depend on."
   },
+  "publicationDependencyPolicy": "Register restored shared mechanics at granular semantic IDs so teaching and technical surfaces can depend on the exact authority they express; retain broad core roots for coarse grouping and compatibility rather than as the default dependency when a narrower ID exists.",
   "semanticRuleIds": {
     "battle": [
       "core.battle.battle-total",
