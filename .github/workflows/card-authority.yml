@@ -43,7 +43,7 @@ jobs:
                 under('game-data/')
                 || under('card-design/')
                 || under('images/artwork/')
-                || under('card-reference/')
+                || under('apps/card-reference/')
                 || under('deckbuilder/')
                 || under('scripts/card-authority/')
                 || under('tests/card-authority/')
