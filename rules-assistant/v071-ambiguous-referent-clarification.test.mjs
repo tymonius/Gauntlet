@@ -60,6 +60,7 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
     expect(result?.rulingStatus).toBe("unresolved");
     expect(result?.responseType).toBe("clarification");
     expect(result?.executionPath).toBe("deterministic-clarification");
+    expect(result?.reason).toBe("unidentified_followup_referent");
     expect(result?.answer).toContain("Which card do you mean?");
     expect(result?.answer).toContain("name or exact text");
   });
