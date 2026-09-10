@@ -3,12 +3,16 @@ import path from 'node:path';
 
 const root = process.cwd();
 const historicalRoot = path.join(root, 'legacy', 'public-versions');
-const playtestSource = path.join(root, 'apps', 'playtest');
-const playtestDestination = path.join(root, 'playtest');
 
-if (fs.existsSync(playtestSource)) {
-  fs.mkdirSync(playtestDestination, { recursive: true });
-  fs.cpSync(playtestSource, playtestDestination, { recursive: true });
+const relocatedPublicApps = ['start', 'playtest', 'card-reference'];
+const materializedApps = [];
+for (const route of relocatedPublicApps) {
+  const source = path.join(root, 'apps', route);
+  if (!fs.existsSync(source)) continue;
+  const destination = path.join(root, route);
+  fs.mkdirSync(destination, { recursive: true });
+  fs.cpSync(source, destination, { recursive: true });
+  materializedApps.push(route);
 }
 
 if (!fs.existsSync(historicalRoot)) {
@@ -30,8 +34,5 @@ for (const version of versions) {
   fs.copyFileSync(source, path.join(destinationDir, 'index.html'));
 }
 
-const materialized = [
-  ...(fs.existsSync(playtestSource) ? ['playtest'] : []),
-  ...versions,
-];
+const materialized = [...materializedApps, ...versions];
 console.log(`Materialized ${materialized.length} public route compatibility target(s): ${materialized.join(', ')}.`);
