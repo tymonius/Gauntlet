@@ -15,6 +15,7 @@ on:
       - 'images/rules-arbiter/**'
       - 'images/sketches/*.png'
       - 'apps/card-reference/**'
+      - 'apps/factions/**'
       - 'apps/start/**'
       - 'apps/playtest/**'
       - 'rulebook/**'
@@ -76,7 +77,6 @@ jobs:
             config
             contact
             deckbuilder
-            factions
             faq
             game-data
             images
@@ -105,9 +105,9 @@ jobs:
             | tar -xf - -C "$site"
 
           # Maintained application source may live independently from its stable public URL.
-          # Card Reference, Start, and Playtest are source/deployment-separated apps under apps/,
-          # while their deployed compatibility contracts remain at their stable public routes.
-          for surface in card-reference start playtest; do
+          # Card Reference, Factions, Start, and Playtest are source/deployment-separated apps
+          # under apps/, while their deployed compatibility contracts remain at stable public routes.
+          for surface in card-reference factions start playtest; do
             source="apps/$surface"
             target="$site/$surface"
             test -d "$source"
@@ -189,6 +189,7 @@ jobs:
 
           test -s "$site/index.html"
           test -s "$site/card-reference/index.html"
+          test -s "$site/factions/index.html"
           test -s "$site/start/index.html"
           test -s "$site/playtest/index.html"
           test -s "$site/CNAME"
@@ -333,6 +334,7 @@ jobs:
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           test -s "$SITE_DIR/card-reference/index.html"
+          test -s "$SITE_DIR/factions/index.html"
           test -s "$SITE_DIR/start/index.html"
           test -s "$SITE_DIR/playtest/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
