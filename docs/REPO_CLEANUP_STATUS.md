@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-09-08
+Last updated: 2026-09-10
 
 ## Governing objective
 
@@ -32,28 +32,28 @@ This re-landed the top-level architecture guard cleanly on current `main` instea
 
 [#1562 — Separate Playtest source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1562) is merged. It established the Phase 3 source/deployment-separation pattern by moving canonical Playtest source to `apps/playtest/` while preserving the stable public `/playtest/` route through explicit Pages staging.
 
+[#1571 — Separate Start source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1571) is merged. It applied the same boundary to Start, moving canonical source to `apps/start/` while preserving `/start/`.
+
 The earlier cleanup stack from #1456 through #1539 remains useful review/history evidence, but current `main` advanced substantially while it was open. Do not merge that old stack wholesale over newer digital-engine, Rules Arbiter, onboarding, card-pipeline, or release work. Re-land still-valid cleanup decisions deliberately against current `main`.
 
-## Current tranche: Start source/deployment separation
+## Current tranche: Card Reference source/deployment separation
 
-[#1571 — Separate Start source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1571), following merged #1562.
+Card Reference is the third concrete Phase 3 application migration:
 
-Start is the second concrete Phase 3 application migration:
-
-- canonical repository source moves byte-for-byte from `start/` to `apps/start/`;
-- the public compatibility contract remains `/start/`;
-- GitHub Pages explicitly stages `apps/start/` into the deployed `/start/` tree;
+- canonical repository source moves from `card-reference/` to `apps/card-reference/`;
+- the public compatibility contract remains `/card-reference/`;
+- GitHub Pages explicitly stages `apps/card-reference/` into the deployed `/card-reference/` tree;
 - `/apps/` itself remains source-only and must never be published;
-- repository-source tests, validators, accessibility coverage, Card Authority discovery, and CI use `apps/start/`;
-- browser/public links continue to use `/start/` or equivalent relative routes;
-- publication validation materializes `/start/` from canonical source before checking the player-facing contract.
+- repository-source tests, validators, accessibility coverage, Card Authority discovery, and CI use `apps/card-reference/`;
+- browser/public links continue to use `/card-reference/` or equivalent relative routes;
+- publication validation materializes `/card-reference/` from canonical source before checking the player-facing contract.
 
-No intentional gameplay, onboarding behavior, product behavior, frozen-release content, or public-URL change belongs in this tranche.
+No intentional gameplay, card-data, product behavior, frozen-release content, or public-URL change belongs in this tranche.
 
 ## Architectural decisions now established
 
 - **Source paths and public URLs are independent.** A stable deployed URL does not require a matching root source directory.
-- **`apps/` is a first-class maintained-source boundary.** Current Start and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
+- **`apps/` is a first-class maintained-source boundary.** Current Card Reference, Start, and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
 - **Pages is an explicit deployment artifact.** It materializes stable routes from canonical source boundaries and must not mirror the repository wholesale.
 - **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned public compatibility sources are not current authority.
 - **Behavior-preserving architecture cleanup stays separate from gameplay/product changes.**
@@ -61,10 +61,10 @@ No intentional gameplay, onboarding behavior, product behavior, frozen-release c
 
 ## Next top-down queue
 
-After the Start migration is green and merged:
+After the Card Reference migration is green and merged:
 
-1. Inspect `card-reference/` as the next low-coupling current application candidate for source/deployment separation; verify its actual dependency breadth before moving it.
-2. Continue migrating current application source toward `apps/` while preserving deployed URLs through Pages staging. `factions/` is another likely cohesive tranche after Card Reference.
+1. Inspect `factions/` as the next cohesive current application candidate for source/deployment separation; verify its shared styling/data dependencies before moving it.
+2. Continue migrating current application source toward `apps/` while preserving deployed URLs through Pages staging.
 3. Then address shared package boundaries (`game-data`, Rulebook authority, shared rendering/UI) where current roots mix authority, app, and production roles.
 4. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
 5. Audit asset/generated-output lifecycle after source ownership is stable.
@@ -74,7 +74,7 @@ After the Start migration is green and merged:
 
 1. Read this file.
 2. Read [#1430](https://github.com/tymonius/Gauntlet/issues/1430).
-3. Inspect merged #1562 and current [#1571](https://github.com/tymonius/Gauntlet/pull/1571), including CI and review comments.
+3. Inspect merged #1562 and #1571 plus the current structural PR, including CI and review comments.
 4. Reconcile against current `main` before carrying forward any older cleanup branch.
 5. Continue the highest-level unresolved architectural work before descending into local file cleanup.
 6. Update this file when the current tranche, architectural decisions, or next-step queue materially changes.
