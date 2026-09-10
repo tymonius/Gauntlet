@@ -1,0 +1,43 @@
+name: Rules Arbiter targeted review 5b7455c0
+
+on:
+  push:
+    branches: [rules-arbiter-review-5b7455c0]
+    paths:
+      - '.github/workflows/rules-arbiter-targeted-review-5b7455c0.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      OUT: .tmp/rules-arbiter-review-5b7455c0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read target interaction and review data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interactions WHERE id = '5b7455c0-0d7b-49db-b526-2793fdc6dd27'" > "$OUT/target.json"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id = (SELECT session_id FROM rules_interactions WHERE id = '5b7455c0-0d7b-49db-b526-2793fdc6dd27') ORDER BY sequence_index, created_at" > "$OUT/session.json"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id = '5b7455c0-0d7b-49db-b526-2793fdc6dd27' ORDER BY created_at" > "$OUT/diagnostics.json"
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id = '5b7455c0-0d7b-49db-b526-2793fdc6dd27' ORDER BY reviewed_at" > "$OUT/audits.json"
+      - name: Upload targeted review
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-targeted-review-5b7455c0
+          path: .tmp/rules-arbiter-review-5b7455c0
+          if-no-files-found: error
+          retention-days: 1
