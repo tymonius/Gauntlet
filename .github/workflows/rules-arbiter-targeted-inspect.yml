@@ -38,13 +38,28 @@ jobs:
               --json \
               --command "$command" > "$OUT/$file"
           }
-
           d1 "SELECT * FROM rules_interactions WHERE id = '$TARGET'" interaction.json
-          d1 "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id = (SELECT session_id FROM rules_interactions WHERE id = '$TARGET') ORDER BY sequence_index, created_at" session.json
           d1 "SELECT * FROM rules_interaction_sources WHERE interaction_id = '$TARGET' ORDER BY ordinal" sources.json
-          d1 "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id = '$TARGET' ORDER BY created_at" diagnostics.json
-          d1 "SELECT * FROM rules_interaction_reviews WHERE interaction_id = '$TARGET' ORDER BY created_at" reviews.json
           d1 "SELECT * FROM rules_interaction_audits WHERE interaction_id = '$TARGET' ORDER BY reviewed_at" audits.json
+
+      - name: Inspect current v0.7.1 retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' > "$OUT/retrieval.json"
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
+
+          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
+          const question = "If I have Fortifications active, may I choose one Tactic, see my opponent’s choice, then choose my second Tactic?";
+          const raw = retrieveRules(corpus, contextualQuery(question, []), { limit: 12, excerptLength: 2200 });
+          const sources = augmentRetrievalForContext(corpus, question, [], raw);
+          console.log(JSON.stringify(sources.map(({ canonicalId, title, heading, score, body }) => ({ canonicalId, title, heading, score, body })), null, 2));
+          NODE
 
       - name: Upload targeted inspection
         uses: actions/upload-artifact@v4
