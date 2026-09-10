@@ -20,6 +20,7 @@ jobs:
             /package.json
             /package-lock.json
             /vitest.config.ts
+            /tests/vitest-quarantine.json
             /tests/standalone-new-player-onboarding.test.ts
             /index.html
             /apps/start/
