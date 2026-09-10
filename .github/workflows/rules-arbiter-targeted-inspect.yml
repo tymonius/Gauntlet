@@ -35,29 +35,23 @@ jobs:
           import json
           from datetime import datetime, timezone
 
-          def replace_once(path, old, new):
-              p = Path(path)
-              text = p.read_text()
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"Expected exactly one match in {path}, found {count}: {old[:100]!r}")
-              p.write_text(text.replace(old, new, 1))
-
           local_search = Path('rules-assistant/local-search.js')
-          anchor = '''  {
-            pattern: /(?=[\\s\\S]*\\b(?:both|two|multiple|several)\\b)(?=[\\s\\S]*\\beffects?\\b)(?=[\\s\\S]*\\b(?:one after (?:the )?other|same (?:time|timing)|in what order|sequentially)\\b)/i,
-            aliases: ["Shared timing", "multiple controlled effects would apply at the same time", "each player chooses the order of effects they control", "continue alternating until no effects remain at that timing"]
-          },
-          '''
+          text = local_search.read_text()
           addition = '''  {
             pattern: /(?=[\\s\\S]*\\btactics?\\b)(?=[\\s\\S]*\\b(?:two|2|second|additional|multiple|several)\\b)(?=[\\s\\S]*\\b(?:choose|chooses|chosen|choosing|choice|select|selection)\\b)/i,
             aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
           },
           '''
-          if addition not in local_search.read_text():
-              if anchor not in local_search.read_text():
-                  raise SystemExit('Could not find local-search shared-timing alias anchor')
-              local_search.write_text(local_search.read_text().replace(anchor, anchor + addition, 1))
+          if addition not in text:
+              marker = 'aliases: ["Shared timing", "multiple controlled effects would apply at the same time", "each player chooses the order of effects they control", "continue alternating until no effects remain at that timing"]'
+              marker_pos = text.find(marker)
+              if marker_pos < 0:
+                  raise SystemExit('Could not find local-search shared-timing alias marker')
+              block_end = text.find('  },', marker_pos)
+              if block_end < 0:
+                  raise SystemExit('Could not find end of shared-timing alias block')
+              insert_at = block_end + len('  },\n')
+              local_search.write_text(text[:insert_at] + addition + text[insert_at:])
 
           worker = Path('rules-assistant/worker-v071.js')
           text = worker.read_text()
