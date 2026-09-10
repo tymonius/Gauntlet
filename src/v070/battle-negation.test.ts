@@ -25,7 +25,7 @@ function startBattle(): V070GameState {
     gameId: 'battle-negation',
     seed: 'battle-negation-seed',
     players: {
-      A: { name: 'Alpha', starterDeckId: 'inquisition-grand-inquisitor-zealot' },
+      A: { name: 'Alpha', starterDeckId: 'financiers-banker-sound-investment' },
       B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
     },
   });
