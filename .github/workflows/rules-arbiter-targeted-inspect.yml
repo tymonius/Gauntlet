@@ -27,18 +27,23 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           p = Path('rules-assistant/local-search.js')
-          text = p.read_text()
-          old = '''  {
-          pattern: /(?=[\\s\\S]*\\btactics?\\b)(?=[\\s\\S]*\\b(?:two|2|second|additional|multiple|several)\\b)(?=[\\s\\S]*\\b(?:choose|chooses|chosen|choosing|choice|select|selection)\\b)/i,
-          aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
-        },'''
-          new = '''  {
-            pattern: /(?=[\\s\\S]*\\btactics?\\b)(?=[\\s\\S]*\\b(?:two|2|second|additional|multiple|several)\\b)(?=[\\s\\S]*\\b(?:choose|chooses|chosen|choosing|choice|select|selection)\\b)/i,
-            aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
-          },'''
-          if old not in text:
-              raise SystemExit('Expected alias block not found')
-          p.write_text(text.replace(old, new, 1))
+          lines = p.read_text().splitlines()
+          target = 'pattern: /(?=[\\s\\S]*\\btactics?\\b)'
+          found = False
+          for i, line in enumerate(lines):
+              if target in line:
+                  found = True
+                  lines[i] = '    ' + line.lstrip()
+                  if i + 1 >= len(lines) or not lines[i + 1].lstrip().startswith('aliases: ["Multiple Gambits or Tactics"'):
+                      raise SystemExit('Expected alias line not found')
+                  lines[i + 1] = '    ' + lines[i + 1].lstrip()
+                  if i + 2 >= len(lines) or lines[i + 2].strip() != '},':
+                      raise SystemExit('Expected alias block terminator not found')
+                  lines[i + 2] = '  },'
+                  break
+          if not found:
+              raise SystemExit('Expected multiple-Tactic alias block not found')
+          p.write_text('\n'.join(lines) + '\n')
           PY
 
       - name: Remove probe and commit
