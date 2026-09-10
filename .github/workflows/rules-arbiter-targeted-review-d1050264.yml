@@ -1,4 +1,4 @@
-name: Rules Arbiter retrieval probe d1050264
+name: Rules Arbiter copied-effect refinement d1050264
 
 on:
   push:
@@ -7,75 +7,178 @@ on:
       - '.github/workflows/rules-arbiter-targeted-review-d1050264.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  probe:
+  refine:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-review-d1050264
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Apply candidate copied-effect alias locally
+      - name: Install dependencies
+        run: npm install
+      - name: Apply copied-effect retrieval refinement
+        shell: bash
         run: |
+          set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          p = Path('rules-assistant/local-search.js')
-          s = p.read_text(encoding='utf-8')
+          import json
+          from datetime import datetime, timezone
+
+          search_path = Path('rules-assistant/local-search.js')
+          search = search_path.read_text(encoding='utf-8')
+          alias_marker = 'aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application"'
+          if alias_marker in search:
+              raise SystemExit('Copied-effect retrieval alias already exists')
           needle = 'aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]'
-          start = s.find(needle)
+          start = search.find(needle)
           if start < 0:
               raise SystemExit('Could not find multiple-Tactic alias line')
-          end = s.find('\n  },', start)
+          end = search.find('\n  },', start)
           if end < 0:
               raise SystemExit('Could not find alias block end')
           end += len('\n  },')
-          addition = '''
-          
-          {
-            pattern: /(?=[\\s\\S]*\\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\\b)(?=[\\s\\S]*\\b(?:effects?|opponent(?:['’]s)|another\\s+(?:player|card)(?:['’]s)?|other\\s+player(?:['’]s)?|source\\s+card|as\\s+though|as\\s+if)\\b)/i,
-            aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
-          },'''
-          p.write_text(s[:end] + addition + s[end:], encoding='utf-8')
+          alias_lines = [
+              '  {',
+              r"    pattern: /(?=[\s\S]*\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\b)(?=[\s\S]*\b(?:effects?|opponent(?:['’]s)|another\s+(?:player|card)(?:['’]s)?|other\s+player(?:['’]s)?|source\s+card|as\s+though|as\s+if)\b)/i,",
+              '    aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]',
+              '  },'
+          ]
+          search_path.write_text(search[:end] + '\n' + '\n'.join(alias_lines) + search[end:], encoding='utf-8')
+
+          old_revision = 'v071-qa-20260910-1'
+          new_revision = 'v071-qa-20260910-2'
+          worker_path = Path('rules-assistant/worker-v071.js')
+          worker = worker_path.read_text(encoding='utf-8')
+          old_worker_line = f'export const BEHAVIOR_REVISION = "{old_revision}";'
+          new_worker_line = f'export const BEHAVIOR_REVISION = "{new_revision}";'
+          if old_worker_line not in worker:
+              raise SystemExit('Unexpected Rules Arbiter behavior revision')
+          worker_path.write_text(worker.replace(old_worker_line, new_worker_line, 1), encoding='utf-8')
+
+          changed_revision_tests = []
+          for test_path in sorted(Path('rules-assistant').glob('*.test.mjs')):
+              text = test_path.read_text(encoding='utf-8')
+              if old_revision not in text:
+                  continue
+              test_path.write_text(text.replace(old_revision, new_revision), encoding='utf-8')
+              changed_revision_tests.append(str(test_path))
+          print('Updated revision assertions:', *changed_revision_tests, sep='\n- ')
+
+          ledger_path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          ledger = json.loads(ledger_path.read_text(encoding='utf-8'))
+          entry_id = 'copied-effect-control-source-card-retrieval-v071'
+          if any(entry.get('id') == entry_id for entry in ledger.get('entries', [])):
+              raise SystemExit('Copied-effect refinement ledger entry already exists')
+          now = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+          ledger['entries'].append({
+              'id': entry_id,
+              'status': 'resolved',
+              'rootCause': 'retrieval',
+              'interactionIds': ['d1050264-5c22-4d19-a04a-824498bc1330'],
+              'caseIds': ['heresy-rend-the-veil-copied-effect-retrieval'],
+              'resolutionSurface': 'arbiter_retrieval',
+              'summary': 'The reviewed Heresy/Rend the Veil ruling was correct, but its cited support omitted the shared copied-effect rule needed to establish who controls the copied application and that the source card remains in its current zone. Current retrieval now promotes that shared authority for copied or repeated effects involving another player or source card.',
+              'resolvedAt': now,
+              'binding': {'behaviorRevision': new_revision}
+          })
+          ledger['updatedAt'] = now
+          ledger_path.write_text(json.dumps(ledger, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
           PY
-      - name: Run v0.7.1 retrieval probe
-        run: |
-          mkdir -p .tmp/d1050264
-          node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
-          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
-          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
-          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
-          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
-          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
-          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
-          const questions = [
-            "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?",
-            "If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?",
-            "When I apply another player's card effect, who controls choices using 'your', and does the source card move?",
-            "Rend the Veil applies another card's Tactic effect. Who controls that application and does the source card leave the Graveyard?",
-            "Can I apply an opponent's card from their Graveyard without moving that source card?"
-          ];
-          const sourcesFor = (question) => {
+
+          cat > rules-assistant/v071-copied-effect-retrieval-review.test.mjs <<'EOF'
+          import { readFileSync } from "node:fs";
+          import { describe, expect, test } from "vitest";
+          import { buildRulesCorpus, retrieveRules } from "./local-search.js";
+          import { BEHAVIOR_REVISION, augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from "./v071-public-corpus.js";
+
+          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, "utf8"));
+          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, "utf8");
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: "https://gauntlet.run" });
+
+          function sourcesFor(question) {
             const query = contextualQuery(question, []);
-            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 900 });
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2200 });
             return augmentRetrievalForContext(corpus, question, [], raw);
-          };
-          const output = { questions: questions.map((question) => ({
-            question,
-            hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title }))
-          })) };
-          writeFileSync('.tmp/d1050264/candidate-alias-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
-          console.log(JSON.stringify(output, null, 2));
-          NODE
-      - name: Upload retrieval probe
-        uses: actions/upload-artifact@v4
-        with:
-          name: rules-arbiter-candidate-alias-probe-d1050264
-          path: .tmp/d1050264/candidate-alias-probe.json
-          if-no-files-found: error
-          retention-days: 1
+          }
+
+          const reviewedQuestion = "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?";
+
+          describe("v0.7.1 copied-effect retrieval review", () => {
+            test("the reviewed Heresy/Rend the Veil question retrieves the shared copied-effect authority", () => {
+              const sources = sourcesFor(reviewedQuestion);
+              const ids = sources.slice(0, 4).map((source) => source.canonicalId);
+              expect(ids).toContain("card:inquisition-heresy");
+              expect(ids).toContain("card:mystics-rend-the-veil");
+              expect(ids).toContain("rulebook:applying-and-repeating-another-effect");
+
+              const rule = sources.find((source) => source.canonicalId === "rulebook:applying-and-repeating-another-effect");
+              const body = String(rule?.body || "");
+              expect(body).toContain("The player instructed to apply or repeat the effect controls that application.");
+              expect(body).toContain("Make all choices again and pay all costs again for each new application.");
+              expect(body).toContain("Applying another card's effect does not play, set, choose, or otherwise move the source card unless the instruction expressly says so. The source card remains in its current zone.");
+            });
+
+            test("card-name-heavy copied-effect phrasing still retrieves the shared rule", () => {
+              const sources = sourcesFor("If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?");
+              expect(sources.slice(0, 4).map((source) => source.canonicalId)).toContain("rulebook:applying-and-repeating-another-effect");
+            });
+
+            test("generic source-card movement questions promote the copied-effect rule", () => {
+              const sources = sourcesFor("Can I apply an opponent's card from their Graveyard without moving that source card?");
+              expect(sources[0]?.canonicalId).toBe("rulebook:applying-and-repeating-another-effect");
+            });
+
+            test("the behavior revision records the retrieval change", () => {
+              expect(BEHAVIOR_REVISION).toBe("v071-qa-20260910-2");
+            });
+          });
+          EOF
+          sed -i 's/^          //' rules-assistant/v071-copied-effect-retrieval-review.test.mjs
+
+      - name: Run changed Rules Arbiter regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t tests < <(git diff --name-only -- rules-assistant | grep -E '\.test\.mjs$' || true)
+          printf 'Changed Rules Arbiter tests:\n%s\n' "${tests[*]}"
+          test "${#tests[@]}" -gt 0
+          npx vitest run "${tests[@]}"
+
+      - name: Validate refinement contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python - <<'PY'
+          import json, subprocess
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          changed = [p for p in changed if not p.startswith('.github/workflows/')]
+          with open('changed-files.json', 'w', encoding='utf-8') as fh:
+              json.dump(changed, fh)
+          print('Refinement files:', *changed, sep='\n- ')
+          PY
+          node scripts/validate-rules-refinement-source-first.mjs --changed-files changed-files.json
+          rm changed-files.json
+
+      - name: Commit refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tymon Scott"
+          git config user.email "54303549+tymonius@users.noreply.github.com"
+          git add artifacts/rules-refinement/resolution-ledger.json rules-assistant
+          git diff --cached --check
+          git status --short
+          git commit -m "Promote copied-effect authority in Rules Arbiter retrieval"
+          git push origin HEAD:rules-arbiter-review-d1050264
