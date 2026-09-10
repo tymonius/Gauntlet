@@ -4,12 +4,12 @@
   "cardCount": 142,
   "effectSurfaceCount": 290,
   "authorityDigest": "21f8911e5d1aa645afd7b63192f3549a240156af6c83384eb8ca1445f1dee4ca",
-  "classificationDigest": "cd0dc818f2e4fe76fcc296008b9e16ed63563c95d9cd8aa552a485315ab3cd52",
+  "classificationDigest": "6104c9dc7e1364773f70cc3372935f85458e1c213e616767f5d30440345968d7",
   "summary": {
-    "dynamic_canonical_text_only": 157,
-    "literal_authority_locked": 54,
+    "dynamic_canonical_text_only": 156,
+    "literal_authority_locked": 55,
     "literal_without_regression": 11,
     "unverified": 68
   },
-  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Tyranny/Sabotage reveal-interference tranche. The 2026-09-10 review verified that the authority digest and 290-surface inventory are unchanged; Tyranny and Sabotage battle surfaces are now literal-authority-locked with regression evidence, while Tyranny's unrelated Asset surface moved from unverified to dynamic-canonical-text-only solely because the new reachable battle module names the card and reads canonical data. That collateral heuristic classification is not an Asset implementation claim. Other changes among fourteen affected surfaces are test/source evidence only. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
+  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Excommunication battle tranche. The 2026-09-10 review verified that the authority digest and 290-surface inventory are unchanged. Excommunication's Gambit/Tactic surface moved from dynamic-canonical-text-only to literal-authority-locked with exact frozen released text and runnable regression evidence. Excommunication's separate Action surface remains dynamic-canonical-text-only; its added source/test evidence is collateral to the reachable battle module and is not an Action implementation claim. The three Assassins surfaces affected by this tranche only gained regression-test evidence because Assassins is used as a negation fixture; their classifications and semantics did not change. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
 }
