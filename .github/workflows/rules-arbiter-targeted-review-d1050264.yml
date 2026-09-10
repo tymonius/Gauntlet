@@ -20,39 +20,46 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run retrieval probe
+      - name: Run v0.7.1 retrieval probe
         run: |
           mkdir -p .tmp/d1050264
           node --input-type=module <<'NODE'
           import { readFileSync, writeFileSync } from 'node:fs';
           import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
 
-          const canonicalData = JSON.parse(readFileSync('releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json', 'utf8'));
-          const rulebookMarkdown = readFileSync('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md', 'utf8');
-          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown });
+          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
           const queries = [
             "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?",
             "If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?",
             "When I apply another player's card effect, who controls choices using 'your', and does the source card move?"
           ];
+          const sourcesFor = (question) => {
+            const query = contextualQuery(question, []);
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 900 });
+            return augmentRetrievalForContext(corpus, question, [], raw);
+          };
           const output = {
             generatedAt: new Date().toISOString(),
             corpusVersion: corpus.version,
             applyingRule: corpus.documents.find((d) => d.id === 'rulebook:applying-and-repeating-another-effect') || null,
-            heresy: corpus.documents.find((d) => d.canonicalId === 'card:inquisition-heresy' || d.id === 'card:inquisition-heresy' || d.heading === 'Heresy') || null,
-            rendTheVeil: corpus.documents.find((d) => d.canonicalId === 'card:mystics-rend-the-veil' || d.id === 'card:mystics-rend-the-veil' || d.heading === 'Rend the Veil') || null,
-            results: queries.map((query) => ({
-              query,
-              hits: retrieveRules(corpus, query, { limit: 12, excerptLength: 700 }).map(({ canonicalId, score, title, heading, excerpt }) => ({ canonicalId, score, title, heading, excerpt }))
+            heresy: corpus.documents.find((d) => d.id === 'card:inquisition-heresy') || null,
+            rendTheVeil: corpus.documents.find((d) => d.id === 'card:mystics-rend-the-veil') || null,
+            results: queries.map((question) => ({
+              question,
+              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title, heading, excerpt }) => ({ canonicalId, score, title, heading, excerpt }))
             }))
           };
-          writeFileSync('.tmp/d1050264/retrieval-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+          writeFileSync('.tmp/d1050264/retrieval-probe-v071.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
           console.log(JSON.stringify(output, null, 2));
           NODE
       - name: Upload retrieval probe
         uses: actions/upload-artifact@v4
         with:
-          name: rules-arbiter-retrieval-probe-d1050264
-          path: .tmp/d1050264/retrieval-probe.json
+          name: rules-arbiter-retrieval-probe-v071-d1050264
+          path: .tmp/d1050264/retrieval-probe-v071.json
           if-no-files-found: error
           retention-days: 1
