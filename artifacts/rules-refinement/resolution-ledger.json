@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T22:14:17.397Z",
+  "updatedAt": "2026-09-10T06:16:45.596Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -757,6 +757,23 @@
       "resolvedAt": "2026-09-09T22:14:17.397Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-9"
+      }
+    },
+    {
+      "id": "fortifications-tactic-choice-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "58c9c1c6-a588-4b18-8e7c-516e1907dd06"
+      ],
+      "caseIds": [
+        "fortifications-two-tactics-timing-classification"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The reviewed Fortifications ruling was substantively correct but over-classified as provisional. Current v0.7.1 authority directly states both that Fortifications permits up to two Tactics while defending and that several Tactics chosen as part of the same choice are chosen simultaneously. Multiple-Tactic sequencing questions now promote that timing authority, while the existing classification discipline reserves provisional status for genuine gaps or ambiguity.",
+      "resolvedAt": "2026-09-10T06:16:45.596Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-1"
       }
     }
   ]

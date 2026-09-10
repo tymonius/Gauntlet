@@ -63,6 +63,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["Shared timing", "multiple controlled effects would apply at the same time", "each player chooses the order of effects they control", "continue alternating until no effects remain at that timing"]
   },
   {
+  pattern: /(?=[\s\S]*\btactics?\b)(?=[\s\S]*\b(?:two|2|second|additional|multiple|several)\b)(?=[\s\S]*\b(?:choose|chooses|chosen|choosing|choice|select|selection)\b)/i,
+  aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
+},
+  {
     pattern: /^(?![\s\S]*\b(?:gambits?|tactics?|reserve|aftermath)\b)(?=[\s\S]*\b(?:play|plays|played|playing)\b)(?=[\s\S]*\b(?:discard|discarded|discarding|discard pile)\b)[\s\S]*$/i,
     aliases: ["playing a card for its action effect", "resolve the action effect", "put the card in the discard pile", "unless it becomes an asset becomes an overlay another destination"]
   },
