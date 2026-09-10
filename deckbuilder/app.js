@@ -156,7 +156,7 @@ function constructionRules() {
 
   return Object.freeze({
     minimumCards: positiveInteger(source.minimum_cards ?? source.minimumCards, "minimum cards"),
-    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum Deckbuilding value"),
+    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum total card value"),
     territoriesPerPlayer: positiveInteger(source.territories_per_player ?? source.territoriesPerPlayer, "Territories per player"),
     maximumArenas: nonNegativeInteger(source.maximum_arenas ?? source.maximumArenas, "maximum Arenas"),
   });
@@ -202,8 +202,8 @@ const deckbuilderApi = Object.freeze({
     return readCurrentGame();
   },
   setSourceLoader(callback) {
-    if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
-    if (typeof callback !== "function") throw new TypeError("Deckbuilder source loader must be a function.");
+    if (sourceLoader && sourceLoader !== callback) throw new Error("Current Deckbuilder card loader is unavailable.");
+    if (typeof callback !== "function") throw new TypeError("Current Deckbuilder card loader must be a function.");
     sourceLoader = callback;
   },
   loadSource(entry) {
