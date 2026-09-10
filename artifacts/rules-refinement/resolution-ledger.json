@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T06:16:45.596Z",
+  "updatedAt": "2026-09-10T10:57:15.691Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -774,6 +774,46 @@
       "resolvedAt": "2026-09-10T06:16:45.596Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260910-1"
+      }
+    },
+    {
+      "id": "assistant-meta-general-scope-precheck-v071",
+      "status": "resolved",
+      "rootCause": "provisional_overuse",
+      "interactionIds": [
+        "7cd4bce0-f8f2-4293-a162-1e6b003971c4",
+        "324fad3a-2cd1-4145-9328-9915983a2de0",
+        "0a73dcb5-410b-4bd1-91a3-100f25da650c",
+        "6a0d051b-cd65-4002-b6fa-33afe83d5ba4"
+      ],
+      "caseIds": [
+        "assistant-implementation-meta",
+        "real-person-card-speculation",
+        "general-knowledge-person-query",
+        "assistant-identity-instruction-override"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Extended the deterministic v0.7.1 scope precheck so assistant-meta, obvious general-knowledge, and speculative real-person requests return direct source-free out_of_scope responses instead of being treated as unresolved game rules with irrelevant authority.",
+      "resolvedAt": "2026-09-10T10:57:15.691Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260910-1"
+      }
+    },
+    {
+      "id": "assistant-purpose-scope-answer-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "b33a092e-efc3-4c69-8d20-6c6e441a490b"
+      ],
+      "caseIds": [
+        "assistant-purpose-scope"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Assistant purpose and identity questions now receive a direct description of the Gauntlet Rules Arbiter role rather than an answer about the objective of the game.",
+      "resolvedAt": "2026-09-10T10:57:15.691Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260910-1"
       }
     }
   ]
