@@ -484,3 +484,42 @@ footer {
   }
   .rulebook-content .chapter-heading { --chapter-accent: #222 !important; }
 }
+
+
+/* At-the-table QR tool grid */
+.rulebook-content table:has(img[src*="/rulebook/assets/qr/"]) {
+  table-layout: fixed;
+}
+.rulebook-content table:has(img[src*="/rulebook/assets/qr/"]) thead {
+  display: none;
+}
+.rulebook-content td:has(> img[src*="/rulebook/assets/qr/"]) {
+  padding: 18px;
+  text-align: center;
+}
+.rulebook-content td:has(> img[src*="/rulebook/assets/qr/"]) > img {
+  width: 30mm;
+  height: 30mm;
+  max-width: 100%;
+  margin: 0 auto 10px;
+  filter: none;
+  mix-blend-mode: normal;
+}
+.rulebook-content td:has(> img[src*="/rulebook/assets/qr/"]) > strong {
+  display: block;
+  margin-top: 3px;
+}
+.rulebook-content td:has(> img[src*="/rulebook/assets/qr/"]) > strong:nth-of-type(2) {
+  color: var(--rulebook-muted);
+  font-family: var(--rulebook-ui);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+.rulebook-content td:has(> img[src*="/rulebook/assets/qr/"]) > strong:nth-of-type(3) {
+  margin-top: 10px;
+  color: var(--rulebook-crimson);
+  font-family: var(--rulebook-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
