@@ -14,12 +14,12 @@ on:
       - 'images/artwork/card-backgrounds/**'
       - 'images/rules-arbiter/**'
       - 'images/sketches/*.png'
+      - 'apps/card-reference/**'
       - 'apps/start/**'
       - 'apps/playtest/**'
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
-      - 'card-reference/**'
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
@@ -72,7 +72,6 @@ jobs:
             accessibility
             assets
             card-design
-            card-reference
             changelog
             config
             contact
@@ -106,9 +105,9 @@ jobs:
             | tar -xf - -C "$site"
 
           # Maintained application source may live independently from its stable public URL.
-          # Start and Playtest are source/deployment-separated apps under apps/, while their
-          # deployed compatibility contracts remain /start/ and /playtest/ respectively.
-          for surface in start playtest; do
+          # Card Reference, Start, and Playtest are source/deployment-separated apps under apps/,
+          # while their deployed compatibility contracts remain at their stable public routes.
+          for surface in card-reference start playtest; do
             source="apps/$surface"
             target="$site/$surface"
             test -d "$source"
@@ -189,6 +188,7 @@ jobs:
           done
 
           test -s "$site/index.html"
+          test -s "$site/card-reference/index.html"
           test -s "$site/start/index.html"
           test -s "$site/playtest/index.html"
           test -s "$site/CNAME"
@@ -332,6 +332,7 @@ jobs:
           test "$bytes" -lt 970000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/card-reference/index.html"
           test -s "$SITE_DIR/start/index.html"
           test -s "$SITE_DIR/playtest/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.5/index.html"

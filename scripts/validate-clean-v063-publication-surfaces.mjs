@@ -50,7 +50,7 @@ assert(deckbuilderIndex.includes('id="cardPreview"'), 'Restored Deckbuilder lost
 assert(deckbuilderIndex.includes('id="territoryPreview"'), 'Restored Deckbuilder lost Territory previews.');
 
 const cardReferenceIndex = read('card-reference/index.html');
-const cardReferenceApp = read('card-reference/app.js');
+const cardReferenceApp = read('apps/card-reference/app.js');
 assert(cardReferenceIndex.includes('Quick rules lookup · v0.6.3'));
 assert(cardReferenceIndex.includes('128 playable cards and 25 Territories'));
 assert(!cardReferenceIndex.includes('../browser-rulebook/'));

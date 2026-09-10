@@ -14,7 +14,7 @@ describe('canonical physical-face consumers', () => {
     expect(summary.routes).toBeGreaterThanOrEqual(summary.consumers);
     expect(summary.paths).toContain('homepage-card-showcase.js');
     expect(summary.paths).toContain('deckbuilder/production-print.js');
-    expect(summary.paths).toContain('card-reference/app.js');
+    expect(summary.paths).toContain('apps/card-reference/app.js');
   });
 
   it('rejects caller-selected renderer behavior', () => {

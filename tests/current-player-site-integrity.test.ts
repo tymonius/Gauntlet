@@ -125,7 +125,7 @@ describe("v0.7.1 player-site release", () => {
 
   it("keeps the Card Reference on current-game authority with v0.7.1 publication identity", () => {
     const html = read("card-reference/index.html");
-    const app = read("card-reference/app.js");
+    const app = read("apps/card-reference/app.js");
 
     expect(html).toContain("<title>Gauntlet v0.7.1 Card Reference</title>");
     expect(html).toContain("Quick rules lookup · v0.7.1 production");

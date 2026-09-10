@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("card-reference/app.js", "utf8");
+const source = readFileSync("apps/card-reference/app.js", "utf8");
 
 describe("card reference selection accessibility", () => {
   it("restores focus to the replacement row after selection rerenders the list", () => {

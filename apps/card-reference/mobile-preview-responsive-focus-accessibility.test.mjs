@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("card-reference/mobile-card-preview.js", "utf8");
+const source = readFileSync("apps/card-reference/mobile-card-preview.js", "utf8");
 
 describe("Card Reference responsive preview focus", () => {
   it("restores result focus for explicit modal closes", () => {
