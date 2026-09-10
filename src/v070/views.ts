@@ -3,6 +3,7 @@ import type { V070GameState } from './engine';
 import * as previous from './views-pre-capital-gains';
 import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
 import { pendingV070ExcommunicationAftermath } from './excommunication-battle';
+import { pendingV070SuppliesAftermath } from './supplies-battle';
 
 export * from './views-pre-capital-gains';
 
@@ -24,9 +25,18 @@ export interface V070ExcommunicationAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070SuppliesAftermathView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = previous.V070GameView & {
   pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
   pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
+  pendingSuppliesAftermath: V070SuppliesAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -70,9 +80,25 @@ export function viewV070GameForPlayer(
         }
       : null;
 
+  const supplies = pendingV070SuppliesAftermath(state);
+  const pendingSuppliesAftermath: V070SuppliesAftermathView | null = supplies
+    ? {
+        playerId: supplies.playerId,
+        owner: supplies.owner,
+        sourceInstanceId: supplies.sourceInstanceId,
+        candidateCount: supplies.candidateInstanceIds.length,
+        ...(viewer === supplies.playerId
+          ? {
+              candidateInstanceIds: [...supplies.candidateInstanceIds],
+            }
+          : {}),
+      }
+    : null;
+
   return {
     ...core,
     pendingCapitalGainsAftermath,
     pendingExcommunicationAftermath,
+    pendingSuppliesAftermath,
   };
 }
