@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T20:00:31.854Z",
+  "updatedAt": "2026-09-10T21:55:20.107Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -831,6 +831,23 @@
       "resolvedAt": "2026-09-10T20:00:31.854Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260910-2"
+      }
+    },
+    {
+      "id": "unidentified-stored-card-clarification-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "5b7455c0-0d7b-49db-b526-2793fdc6dd27"
+      ],
+      "caseIds": [
+        "unidentified-stored-card-clarification"
+      ],
+      "resolutionSurface": "arbiter_clarification",
+      "summary": "The reviewed v0.6.1 answer was already correct: the question did not identify the stored card, so the Arbiter appropriately asked for the missing card or ability. Current v0.7.1 now preserves that behavior deterministically for unidentified stored, saved, held, or set-aside card descriptions while still allowing a single clearly named recent card to resolve from conversation context.",
+      "resolvedAt": "2026-09-10T21:55:20.107Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-3"
       }
     }
   ]

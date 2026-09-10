@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260910-2";
+export const BEHAVIOR_REVISION = "v071-qa-20260910-3";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -598,23 +598,29 @@ function recentSpecificSubjects(history = [], retrieval = []) {
 
 export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
   const current = String(question || "").trim();
-  const match = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
+  const genericRuleMatch = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
+  const describedCardMatch = current.match(/\b(?:the|this|that|a)\s+(?:stored|saved|held|set[ -]?aside)\s+card\b/i);
+  const match = genericRuleMatch || describedCardMatch;
   if (!match) return null;
 
-  const noun = String(match[1] || "ability").toLowerCase();
+  const noun = describedCardMatch ? "card" : String(match[1] || "ability").toLowerCase();
   const recentText = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
   const familyCue = noun === "effect"
     ? /\beffects?\b/i
     : noun === "feature"
       ? /\bfeatures?\b/i
       : /\babilit(?:y|ies)\b/i;
-  const subjects = familyCue.test(recentText)
+  const subjects = noun === "card"
     ? recentSpecificSubjects(history, retrieval)
-    : [];
+    : familyCue.test(recentText)
+      ? recentSpecificSubjects(history, retrieval)
+      : [];
   if (subjects.length === 1) return null;
 
   return {
-    answer: `Which ${noun} do you mean? Give me its name or the card, Leader, or Faction feature it comes from, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.`,
+    answer: noun === "card"
+      ? "Which card do you mean? Give me its name or exact text, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation."
+      : `Which ${noun} do you mean? Give me its name or the card, Leader, or Faction feature it comes from, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.`,
     rulingStatus: "unresolved",
     confidence: "low",
     responseType: "clarification",
