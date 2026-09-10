@@ -37,7 +37,7 @@ jobs:
           addition = '''
           
           {
-            pattern: /(?=[\\s\\S]*\\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\\b)(?=[\\s\\S]*\\beffects?\\b)(?=[\\s\\S]*\\b(?:opponent(?:['’]s)?|another\\s+(?:player|card)(?:['’]s)?|other\\s+player(?:['’]s)?|source\\s+card|as\\s+though|as\\s+if)\\b)/i,
+            pattern: /(?=[\\s\\S]*\\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\\b)(?=[\\s\\S]*\\b(?:effects?|opponent(?:['’]s)|another\\s+(?:player|card)(?:['’]s)?|other\\s+player(?:['’]s)?|source\\s+card|as\\s+though|as\\s+if)\\b)/i,
             aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
           },'''
           p.write_text(s[:end] + addition + s[end:], encoding='utf-8')
@@ -57,19 +57,18 @@ jobs:
             "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?",
             "If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?",
             "When I apply another player's card effect, who controls choices using 'your', and does the source card move?",
-            "Rend the Veil applies another card's Tactic effect. Who controls that application and does the source card leave the Graveyard?"
+            "Rend the Veil applies another card's Tactic effect. Who controls that application and does the source card leave the Graveyard?",
+            "Can I apply an opponent's card from their Graveyard without moving that source card?"
           ];
           const sourcesFor = (question) => {
             const query = contextualQuery(question, []);
             const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 900 });
             return augmentRetrievalForContext(corpus, question, [], raw);
           };
-          const output = {
-            questions: questions.map((question) => ({
-              question,
-              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title}))
-            }))
-          };
+          const output = { questions: questions.map((question) => ({
+            question,
+            hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title }))
+          })) };
           writeFileSync('.tmp/d1050264/candidate-alias-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
           console.log(JSON.stringify(output, null, 2));
           NODE
