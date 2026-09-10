@@ -57,6 +57,24 @@ export function buildScopeRecoveryRuling(question) {
   return "Treat an option that cannot be completed as unavailable and resolve a legal option instead. The written rules do not expressly decide this interaction, so this is a provisional table ruling.";
 }
 
+const ASSISTANT_IDENTITY_SCOPE_PATTERNS = [
+  /\b(?:what(?:'s| is)|tell me|state)\s+your\s+(?:name|purpose|role)\b/i,
+  /\b(?:who|what)\s+are\s+you\b/i,
+  /\btell me of your purpose\b/i
+];
+
+const ASSISTANT_IMPLEMENTATION_SCOPE_PATTERNS = [
+  /\bmachine behind (?:the )?mechanics\b/i,
+  /\b(?:underlying|internal)\s+(?:assistant|system|model|implementation|prompt|instructions?)\b/i,
+  /\b(?:system|model|prompt|implementation|instructions?)\s+(?:behind|underlying|inside)\s+(?:you|the rules arbiter|this)\b/i,
+  /\bhow (?:are you|is the rules arbiter) (?:built|implemented|programmed)\b/i
+];
+
+const GENERAL_NON_GAMEPLAY_PATTERNS = [
+  /\bdo you know who\s+(?!the\s+(?:attacker|defender|active player)\b|(?:my|your)\b).+?\s+(?:is|was)\b/i,
+  /\bwhat would .{1,80}(?:'s|’s)\s+(?:favorite|favourite|preferred)\s+(?:cards?|faction|leader|deck)\s+(?:be|include)\b/i
+];
+
 const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(morally|moral(?:ity)?|ethical(?:ly)?|ethics|justified|right or wrong|good or evil)\b/i,
   /\b(lore|backstory|fictional history|historical inspiration|real[- ]world (?:analogue|ideology|inspiration)|ideology inspired)\b/i,
@@ -75,15 +93,30 @@ const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(?:expansions?|development|release) roadmap\b/i
 ];
 
-export function isClearlyOutOfScopeQuestion(question) {
+function outOfScopeKind(question) {
   const text = String(question || "").trim();
-  return Boolean(text) && CLEAR_NON_GAMEPLAY_PATTERNS.some((pattern) => pattern.test(text));
+  if (!text) return null;
+  if (ASSISTANT_IDENTITY_SCOPE_PATTERNS.some((pattern) => pattern.test(text))) return "assistant_identity";
+  if (ASSISTANT_IMPLEMENTATION_SCOPE_PATTERNS.some((pattern) => pattern.test(text))) return "assistant_implementation";
+  if (GENERAL_NON_GAMEPLAY_PATTERNS.some((pattern) => pattern.test(text))) return "general_or_speculative";
+  if (CLEAR_NON_GAMEPLAY_PATTERNS.some((pattern) => pattern.test(text))) return "non_gameplay";
+  return null;
 }
 
-export function buildOutOfScopeRuling() {
+export function isClearlyOutOfScopeQuestion(question) {
+  return Boolean(outOfScopeKind(question));
+}
+
+export function buildOutOfScopeRuling(question = "") {
+  const kind = outOfScopeKind(question);
+  const answer = kind === "assistant_identity"
+    ? "I am the Gauntlet Rules Arbiter. My purpose is to answer questions about the current canonical Gauntlet gameplay rules and provide source-grounded table rulings."
+    : kind === "assistant_implementation"
+      ? "I am the Gauntlet Rules Arbiter. I can describe my role at a high level: I answer current canonical Gauntlet gameplay-rules questions and provide source-grounded table rulings. The implementation behind the Arbiter is outside that rules-only role."
+      : "That is outside the Rules Arbiter's scope. I answer questions about the current canonical Gauntlet gameplay rules and table rulings; I do not answer general-knowledge or speculative questions, determine lore or historical interpretation, make strategy or game-design judgments, or discuss future development plans.";
   return {
     id: "out-of-scope-precheck",
-    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, game-design judgments, or future development plans.",
+    answer,
     rulingStatus: "out_of_scope",
     sourceIds: [],
     subject: null,
