@@ -52,15 +52,15 @@ describe('complete current-game authority', () => {
     }
   });
 
-  it('publishes the v0.7.1 starter Deck authority with the Mystics packages', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.1');
-    expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');
+  it('publishes the v0.7.2 candidate starter Deck authority with the Mystics packages', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.2-candidate');
+    expect(authority.starterDecks.status).toBe('Active v0.7.2-candidate starter set');
     expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2-candidate');
     expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
-    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');
 
-    // Historical source paths remain provenance; active release identity must not.
+    // Historical source paths remain provenance; active starter identity must not be stale.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
     expect(authority.starterDecks.optimizationPolicy.cardAdditions).toContain('v0.6.4-card-additions.json');
     expect(JSON.stringify({
@@ -69,7 +69,47 @@ describe('complete current-game authority', () => {
       purpose: authority.starterDecks.purpose,
       optimizationStatus: authority.starterDecks.optimizationPolicy.status,
       approvalStatus: authority.starterDecks.approval.status,
-    })).not.toMatch(/v0\.6\.4|v0\.6\.3/i);
+    })).not.toMatch(/v0\.7\.1|v0\.6\.4|v0\.6\.3/i);
+  });
+
+  it('locks the v0.7.2 Territory text and all 12 starter Territory packages', () => {
+    const byName = new Map(authority.gameplay.territories.map((territory: any) => [territory.name, territory]));
+    const quicksand = 'When a player enters this Territory, their movement ends. A player who begins their Movement here cannot Advance or Fall Back more than 1 Position or use an effect to increase their movement that turn. Retreat is unaffected.';
+    expect(byName.get('Quicksand')?.text).toBe(quicksand);
+    expect(byName.get('Quicksand')?.effects).toEqual([{ label: 'Text', text: quicksand }]);
+    expect(byName.get('Refuge')?.text).toBe('After a player Falls Back or withdraws to this Territory: +1 Card.');
+
+    const expected: Record<string, string[]> = {
+      general: ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+      commandant: ['Garrison', 'Training Grounds', 'High Ground'],
+      ambassador: ['Refuge', 'Supply Depot', 'Command Tent'],
+      senator: ['Refuge', 'Garrison', 'Fortified Pass'],
+      banker: ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'],
+      executive: ["Smuggler's Run", "King's Road", 'Arena: No Quarter'],
+      'spirit-walker': ['Garrison', 'Training Grounds', 'High Ground'],
+      alchemist: ['Poisonous Gas', 'Old Battlefield', 'Ruined Storehouse'],
+      'grand-inquisitor': ['Poisonous Gas', 'Toll Bridge', 'Arena: Grand Melee'],
+      'witch-hunter': ['Garrison', 'Training Grounds', 'High Ground'],
+      spymaster: ['Refuge', 'Ruined Storehouse', 'Field Hospital'],
+      ranger: ['Quicksand', 'Difficult Terrain', 'Poisonous Gas'],
+    };
+    expect(Object.fromEntries(authority.starterDecks.decks.map((deck: any) => [deck.leaderId, deck.territories]))).toEqual(expected);
+
+    const counts = authority.starterDecks.decks.flatMap((deck: any) => deck.territories)
+      .reduce((result: Record<string, number>, territory: string) => {
+        result[territory] = (result[territory] || 0) + 1;
+        return result;
+      }, {});
+    expect(Object.keys(counts)).toHaveLength(19);
+    expect(counts).toMatchObject({
+      Garrison: 4, 'Training Grounds': 3, 'High Ground': 3, Refuge: 3,
+      'Ruined Storehouse': 3, 'Poisonous Gas': 3, 'Field Hospital': 1, Quicksand: 1,
+    });
+    expect(authority.gameplay.territories.map((territory: any) => territory.name)
+      .filter((name: string) => !counts[name]).sort()).toEqual([
+        'Arena: Single Combat', 'Disrupted Supply Lines', 'Exposed Flank',
+        'Insurgency', 'Monastery', 'Watchtower',
+      ]);
   });
 
   it('contains the entire resolved gameplay and component state in one document', () => {
