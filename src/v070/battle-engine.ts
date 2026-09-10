@@ -8,6 +8,10 @@ import {
   pendingV070CapitalGainsAftermath,
   resolveV070CapitalGainsAftermathChoice,
 } from './capital-gains-battle';
+import {
+  pendingV070ExcommunicationAftermath,
+  resolveV070ExcommunicationAftermathChoice,
+} from './excommunication-battle';
 
 export * from './battle-engine-pre-capital-gains';
 
@@ -17,14 +21,19 @@ export type V070BattleAction =
       type: 'resolve_capital_gains_aftermath';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_excommunication_aftermath';
+      playerId: PlayerId;
+      targetInstanceIds: readonly string[];
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  const pending = pendingV070CapitalGainsAftermath(state);
-  if (pending) {
+  const capitalGains = pendingV070CapitalGainsAftermath(state);
+  if (capitalGains) {
     if (action.type !== 'resolve_capital_gains_aftermath') {
       throw new V070GameActionError(
         'Choose the card Capital Gains places in Treasury before continuing the Aftermath.',
@@ -36,7 +45,23 @@ export function reduceV070BattleAction(
       action.playerId,
       action.targetInstanceId,
     );
-    return resumeAfterCapitalGains(next, resolvedOwner);
+    return resumeAfterDeferredAftermath(next, resolvedOwner);
+  }
+
+  const excommunication = pendingV070ExcommunicationAftermath(state);
+  if (excommunication) {
+    if (action.type !== 'resolve_excommunication_aftermath') {
+      throw new V070GameActionError(
+        'Resolve the pending Excommunication Discard Pile choice before continuing the Aftermath.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const resolvedOwner = resolveV070ExcommunicationAftermathChoice(
+      next,
+      action.playerId,
+      action.targetInstanceIds,
+    );
+    return resumeAfterDeferredAftermath(next, resolvedOwner);
   }
 
   if (action.type === 'resolve_capital_gains_aftermath') {
@@ -44,11 +69,16 @@ export function reduceV070BattleAction(
       'There is no pending Capital Gains Aftermath choice.',
     );
   }
+  if (action.type === 'resolve_excommunication_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Excommunication Aftermath choice.',
+    );
+  }
 
   return previous.reduceV070BattleAction(state, action);
 }
 
-function resumeAfterCapitalGains(
+function resumeAfterDeferredAftermath(
   state: V070GameState,
   resolvedOwner: PlayerId,
 ): V070GameState {
