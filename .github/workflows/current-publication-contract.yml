@@ -53,9 +53,9 @@ jobs:
             /404.html
             /robots.txt
             /sitemap.xml
+            /apps/card-reference/**
             /apps/start/**
             /rulebook/index.html
-            /card-reference/index.html
             /factions/index.html
             /factions/*/index.html
             /deckbuilder/index.html
@@ -70,6 +70,10 @@ jobs:
 
       - name: Materialize relocated public routes
         run: |
+          if [ -d apps/card-reference ]; then
+            mkdir -p card-reference
+            cp -a apps/card-reference/. card-reference/
+          fi
           if [ -d apps/playtest ]; then
             mkdir -p playtest
             cp -a apps/playtest/. playtest/
