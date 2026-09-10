@@ -54,10 +54,9 @@ jobs:
             /robots.txt
             /sitemap.xml
             /apps/card-reference/**
+            /apps/factions/**
             /apps/start/**
             /rulebook/index.html
-            /factions/index.html
-            /factions/*/index.html
             /deckbuilder/index.html
             /rules-arbiter/index.html
             /apps/playtest/**/index.html
@@ -73,6 +72,10 @@ jobs:
           if [ -d apps/card-reference ]; then
             mkdir -p card-reference
             cp -a apps/card-reference/. card-reference/
+          fi
+          if [ -d apps/factions ]; then
+            mkdir -p factions
+            cp -a apps/factions/. factions/
           fi
           if [ -d apps/playtest ]; then
             mkdir -p playtest
