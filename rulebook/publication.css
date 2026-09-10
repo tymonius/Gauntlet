@@ -523,3 +523,25 @@ footer {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+
+/* Player Guide instructional diagrams */
+.rulebook-content img[src*="/rulebook/assets/diagrams/"] {
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  margin: 24px auto 32px;
+  border: 1px solid var(--rulebook-line);
+  background: var(--rulebook-paper);
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+@media print {
+  .rulebook-content img[src*="/rulebook/assets/diagrams/"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 14px auto 18px;
+    border-color: #999;
+  }
+}

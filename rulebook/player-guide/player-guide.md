@@ -154,6 +154,8 @@ So after Capture and Draw, the middle of most turns is simply:
 
 > **Act, then move — or move, then act.**
 
+![Normal turn flow showing one Action shared between Opening and Denouement](/rulebook/assets/diagrams/turn-flow.svg)
+
 ### Capture
 
 First, capture enemy ground if you are eligible. Chapter 7 explains when that happens.
@@ -218,6 +220,8 @@ Movement can therefore be a commitment. Advancing may take ground, but it may al
 Battles happen when movement carries one player into the other's position.
 
 The normal battle is a short contest of hidden information: you may risk a card already in your Hand, then each player receives three temporary cards and may choose one more card for the fight.
+
+![Normal battle sequence from Onset through clearing battle cards](/rulebook/assets/diagrams/battle-flow.svg)
 
 ### 1. Onset
 
@@ -307,6 +311,8 @@ When your token is on an opposing Territory that you do not control, you are **o
 Suppose you attack onto the first enemy Territory and win. Your opponent retreats and you remain there. You occupy that Territory, but it still belongs to your opponent for now.
 
 That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.
+
+![Occupation and Capture diagram showing that position and control are different](/rulebook/assets/diagrams/front-line-capture.svg)
 
 ### Capture
 
