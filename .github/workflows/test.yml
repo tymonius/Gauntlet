@@ -130,7 +130,7 @@ jobs:
             const fullTests = uncertain || packageRuntimeChanged || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
             const code = fullTests || dependencyLockChanged || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
             const types = uncertain || exact('package.json') || dependencyLockChanged || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
-            const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:apps\/start|apps\/card-reference|rulebook|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^apps\/factions\/(?:[^/]+\/)?[^/]*\.html$/);
+            const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:apps\/start|apps\/card-reference|apps\/deckbuilder|rulebook|rules-arbiter)\/[^/]*\.html$/) || matches(/^apps\/factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
             const accessibility = uncertain || matches(/\.html$/) || exact('tests/public-static-accessibility.test.ts');
