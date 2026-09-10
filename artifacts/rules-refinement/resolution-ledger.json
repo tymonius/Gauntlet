@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T14:09:40.857Z",
+  "updatedAt": "2026-09-09T22:14:17.397Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -740,6 +740,23 @@
       "resolvedAt": "2026-09-09T14:09:40.857Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-8"
+      }
+    },
+    {
+      "id": "ambiguous-followup-referent-clarification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "04b09828-aadf-467e-82a8-32ce71f1bfe0"
+      ],
+      "caseIds": [
+        "unidentified-ability-followup-clarification"
+      ],
+      "resolutionSurface": "arbiter_context_clarification",
+      "summary": "A terse follow-up such as ‘Can I use this ability right now?’ now stops before model use when the immediate exchange does not identify one matching ability/effect/feature referent. The Arbiter asks for the missing ability and relevant timing state instead of speculating about unrelated factions or mechanics. A single clearly bridged named referent still flows through normal contextual retrieval.",
+      "resolvedAt": "2026-09-09T22:14:17.397Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-9"
       }
     }
   ]

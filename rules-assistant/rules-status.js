@@ -12,7 +12,8 @@ const CURRENT_ANSWER_MODES = new Set([
   "ai_verified",
   "local_fallback",
   "retrieval_only",
-  "source_lookup"
+  "source_lookup",
+  "clarification"
 ]);
 
 export function normalizeCurrentRulingStatus(status, fallback = "provisional") {
