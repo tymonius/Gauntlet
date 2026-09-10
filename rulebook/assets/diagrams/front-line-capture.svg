@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 570" role="img" aria-labelledby="title desc">
+  <title id="title">Occupation, Front Line, and Capture</title>
+  <desc id="desc">Two panels show a player occupying the next opposing Territory without controlling it, then capturing that Territory at a later Capture step so the Front Line advances by exactly one Territory.</desc>
+  <defs>
+    <pattern id="opp" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#eee7d9"/><line x1="0" y1="0" x2="0" y2="10" stroke="#b9b2a7" stroke-width="4"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8f1f25"/></marker>
+  </defs>
+  <rect width="1000" height="570" fill="#fbf7ee"/>
+  <text x="500" y="38" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="700" fill="#171514">Position Is Not Control</text>
+  <text x="500" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#5f5a53">Winning onto enemy ground creates Occupation. Capture advances your Front Line later.</text>
+
+  <g font-family="Arial, sans-serif">
+    <text x="55" y="112" font-size="20" font-weight="800" fill="#8f1f25">NOW — AFTER YOU WIN THE POSITION</text>
+    <text x="55" y="142" font-size="16" fill="#5f5a53">You stand on Territory 4, but it is still controlled by your opponent.</text>
+    <g stroke="#69645d" stroke-width="2">
+      <rect x="55" y="170" width="140" height="95" fill="#fffdf8"/><rect x="195" y="170" width="140" height="95" fill="#fffdf8"/><rect x="335" y="170" width="140" height="95" fill="#fffdf8"/>
+      <rect x="475" y="170" width="140" height="95" fill="url(#opp)"/><rect x="615" y="170" width="140" height="95" fill="url(#opp)"/><rect x="755" y="170" width="140" height="95" fill="url(#opp)"/>
+    </g>
+    <g text-anchor="middle" fill="#171514" font-size="18" font-weight="700">
+      <text x="125" y="216">Territory 1</text><text x="265" y="216">Territory 2</text><text x="405" y="216">Territory 3</text><text x="545" y="216">Territory 4</text><text x="685" y="216">Territory 5</text><text x="825" y="216">Territory 6</text>
+    </g>
+    <g text-anchor="middle" fill="#5f5a53" font-size="14">
+      <text x="125" y="243">YOU CONTROL</text><text x="265" y="243">YOU CONTROL</text><text x="405" y="243">YOU CONTROL</text><text x="545" y="243">OPPONENT CONTROLS</text><text x="685" y="243">OPPONENT CONTROLS</text><text x="825" y="243">OPPONENT CONTROLS</text>
+    </g>
+    <line x1="475" y1="158" x2="475" y2="278" stroke="#8f1f25" stroke-width="5"/>
+    <text x="463" y="292" text-anchor="end" font-size="15" font-weight="700" fill="#8f1f25">YOUR FRONT LINE</text>
+    <circle cx="545" cy="188" r="22" fill="#8f1f25"/>
+    <text x="545" y="194" text-anchor="middle" font-size="13" font-weight="800" fill="#fffaf0">YOU</text>
+    <text x="545" y="302" text-anchor="middle" font-family="Georgia, serif" font-size="19" font-weight="700" fill="#171514">Occupied, not captured</text>
+
+    <path d="M500 330V365" fill="none" stroke="#8f1f25" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="520" y="353" font-size="15" font-weight="700" fill="#8f1f25">your later Capture step</text>
+
+    <text x="55" y="402" font-size="20" font-weight="800" fill="#8f1f25">THEN — IF YOU STILL HOLD DEEP ENOUGH</text>
+    <text x="55" y="430" font-size="16" fill="#5f5a53">Capture the next opposing Territory in order. Normal Capture advances only one Territory per turn.</text>
+    <g stroke="#69645d" stroke-width="2">
+      <rect x="55" y="452" width="140" height="75" fill="#fffdf8"/><rect x="195" y="452" width="140" height="75" fill="#fffdf8"/><rect x="335" y="452" width="140" height="75" fill="#fffdf8"/><rect x="475" y="452" width="140" height="75" fill="#fffdf8"/>
+      <rect x="615" y="452" width="140" height="75" fill="url(#opp)"/><rect x="755" y="452" width="140" height="75" fill="url(#opp)"/>
+    </g>
+    <g text-anchor="middle" fill="#171514" font-size="17" font-weight="700">
+      <text x="125" y="487">1</text><text x="265" y="487">2</text><text x="405" y="487">3</text><text x="545" y="487">4</text><text x="685" y="487">5</text><text x="825" y="487">6</text>
+    </g>
+    <g text-anchor="middle" fill="#5f5a53" font-size="13">
+      <text x="125" y="510">YOUR CONTROL</text><text x="265" y="510">YOUR CONTROL</text><text x="405" y="510">YOUR CONTROL</text><text x="545" y="510">NOW CAPTURED</text><text x="685" y="510">OPPONENT</text><text x="825" y="510">OPPONENT</text>
+    </g>
+    <line x1="615" y1="442" x2="615" y2="538" stroke="#8f1f25" stroke-width="5"/>
+    <text x="603" y="557" text-anchor="end" font-size="15" font-weight="700" fill="#8f1f25">FRONT LINE ADVANCES</text>
+    <circle cx="545" cy="463" r="19" fill="#8f1f25"/>
+    <text x="545" y="468" text-anchor="middle" font-size="11" font-weight="800" fill="#fffaf0">YOU</text>
+  </g>
+</svg>
