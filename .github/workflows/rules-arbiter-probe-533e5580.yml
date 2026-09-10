@@ -1,0 +1,68 @@
+name: Rules Arbiter retrieval probe 533e5580
+
+on:
+  push:
+    branches: [rules-arbiter-review-533e5580]
+    paths:
+      - '.github/workflows/rules-arbiter-probe-533e5580.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Probe current v0.7.1 retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/rules-arbiter-probe
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          import { contextualQuery, augmentRetrievalForContext } from './rules-assistant/worker-v071.js';
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
+
+          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
+          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
+          const questions = [
+            'Can a player replace an asset in their bank with one in their hand',
+            'Can I replace one of my banked Assets with an Asset from my Hand?',
+            'I am at my Asset limit. Can I discard an Asset to make room and bank a new one from Hand?'
+          ];
+          const results = questions.map((question) => {
+            const query = contextualQuery(question, []);
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2200 });
+            const sources = augmentRetrievalForContext(corpus, question, [], raw);
+            return {
+              question,
+              top: sources.slice(0, 8).map((source) => ({
+                canonicalId: source.canonicalId,
+                title: source.title,
+                score: source.score,
+                body: source.body
+              }))
+            };
+          });
+          writeFileSync('.tmp/rules-arbiter-probe/probe.json', JSON.stringify(results, null, 2) + '\n');
+          console.log(JSON.stringify(results.map((r) => ({question:r.question, top:r.top.map((s)=>[s.canonicalId,s.score])})), null, 2));
+          NODE
+
+      - name: Upload retrieval probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-retrieval-probe-533e5580
+          path: .tmp/rules-arbiter-probe/probe.json
+          if-no-files-found: error
+          retention-days: 2
