@@ -1,0 +1,91 @@
+name: Materialize Player Guide core diagrams once
+
+'on':
+  push:
+    branches:
+      - docs/player-guide-core-diagrams
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: "!contains(github.event.head_commit.message, '[core-diagrams-materialized]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/player-guide-core-diagrams
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Insert diagrams and publication styling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          guide_path = Path('rulebook/player-guide/player-guide.md')
+          guide = guide_path.read_text()
+
+          replacements = [
+              (
+                  '> **Act, then move — or move, then act.**\n',
+                  '> **Act, then move — or move, then act.**\n\n![Normal turn flow showing one Action shared between Opening and Denouement](/rulebook/assets/diagrams/turn-flow.svg)\n'
+              ),
+              (
+                  'The normal battle is a short contest of hidden information: you may risk a card already in your Hand, then each player receives three temporary cards and may choose one more card for the fight.\n',
+                  'The normal battle is a short contest of hidden information: you may risk a card already in your Hand, then each player receives three temporary cards and may choose one more card for the fight.\n\n![Normal battle sequence from Onset through clearing battle cards](/rulebook/assets/diagrams/battle-flow.svg)\n'
+              ),
+              (
+                  'That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.\n\n### Capture\n',
+                  'That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.\n\n![Occupation and Capture diagram showing that position and control are different](/rulebook/assets/diagrams/front-line-capture.svg)\n\n### Capture\n'
+              ),
+          ]
+
+          for old, new in replacements:
+              if guide.count(old) != 1:
+                  raise SystemExit(f'Expected exactly one guide anchor, found {guide.count(old)}: {old[:70]!r}')
+              guide = guide.replace(old, new, 1)
+
+          guide_path.write_text(guide)
+
+          css_path = Path('rulebook/publication.css')
+          css = css_path.read_text()
+          marker = '/* Player Guide instructional diagrams */'
+          if marker in css:
+              raise SystemExit('Diagram styling already exists.')
+          css += '''\n\n/* Player Guide instructional diagrams */\n.rulebook-content img[src*="/rulebook/assets/diagrams/"] {\n  width: 100%;\n  max-width: 100%;\n  max-height: none;\n  margin: 24px auto 32px;\n  border: 1px solid var(--rulebook-line);\n  background: var(--rulebook-paper);\n  filter: none;\n  mix-blend-mode: normal;\n}\n\n@media print {\n  .rulebook-content img[src*="/rulebook/assets/diagrams/"] {\n    break-inside: avoid;\n    page-break-inside: avoid;\n    margin: 14px auto 18px;\n    border-color: #999;\n  }\n}\n'''
+          css_path.write_text(css)
+          PY
+
+      - name: Validate publication integration
+        run: |
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { renderMarkdown } from './rulebook/markdown.js';
+          const source = fs.readFileSync('rulebook/player-guide/player-guide.md', 'utf8');
+          const rendered = renderMarkdown(source).html;
+          const diagrams = [...rendered.matchAll(/<img src="([^"]*\/rulebook\/assets\/diagrams\/[^"]+)"/g)].map((m) => m[1]);
+          if (diagrams.length !== 3) throw new Error(`Expected 3 rendered instructional diagrams, found ${diagrams.length}.`);
+          for (const expected of ['turn-flow.svg', 'battle-flow.svg', 'front-line-capture.svg']) {
+            if (!diagrams.some((src) => src.endsWith(expected))) throw new Error(`Missing rendered diagram: ${expected}`);
+          }
+          NODE
+          for file in rulebook/assets/diagrams/turn-flow.svg rulebook/assets/diagrams/battle-flow.svg rulebook/assets/diagrams/front-line-capture.svg; do
+            grep -q '<title' "$file"
+            grep -q '<desc' "$file"
+          done
+
+      - name: Commit and remove one-shot workflow
+        run: |
+          rm .github/workflows/materialize-player-guide-core-diagrams-once.yml
+          git config user.name 'Gauntlet publication materializer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rulebook/player-guide/player-guide.md rulebook/publication.css rulebook/assets/diagrams .github/workflows/materialize-player-guide-core-diagrams-once.yml
+          git commit -m 'Integrate core Player Guide diagrams [core-diagrams-materialized]'
+          git push origin HEAD:docs/player-guide-core-diagrams
