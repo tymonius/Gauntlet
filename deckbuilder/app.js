@@ -202,8 +202,8 @@ const deckbuilderApi = Object.freeze({
     return readCurrentGame();
   },
   setSourceLoader(callback) {
-    if (sourceLoader && sourceLoader !== callback) throw new Error("Current Deckbuilder card loader is unavailable.");
-    if (typeof callback !== "function") throw new TypeError("Current Deckbuilder card loader must be a function.");
+    if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder source loader must be a function.");
     sourceLoader = callback;
   },
   loadSource(entry) {
