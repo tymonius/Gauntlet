@@ -146,11 +146,11 @@ Every normal turn follows the same six-part rhythm:
 
 > **Capture → Draw → Opening → Movement → Denouement → Cleanup**
 
-Most of the time, you can think of it even more simply:
+The names **Opening** and **Denouement** are just the two places where you can normally spend your Action: before Movement or after it. You get **one Action for the entire turn**.
 
-> **Capture. Draw. Act. Move.**
+So after Capture and Draw, the middle of most turns is simply:
 
-You normally get **one Action for the entire turn**. You may spend it before moving, during **Opening**, or save it until after moving, during **Denouement**.
+> **Act, then move — or move, then act.**
 
 ### Capture
 
