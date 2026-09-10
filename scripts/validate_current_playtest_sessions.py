@@ -20,6 +20,7 @@ REQUIRED = [
     "rules-assistant/migrations/0010_playtest_decision_experience.sql",
     "workers/playtest-sessions/wrangler.toml",
     "workers/playtest-sessions/src/index.js",
+    "workers/playtest-sessions/src/release-identity.js",
     "workers/playtest-sessions/src/tracked.js",
     "workers/playtest-sessions/src/analysis.js",
     ".github/workflows/deploy-playtest-sessions.yml",
@@ -70,17 +71,18 @@ def main() -> int:
         return fail(errors)
 
     require("workers/playtest-sessions/src/index.js", [
-        f'const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
-        'const GAME_SERIAL_PREFIX = "G071"',
-        'const EVENT_SERIAL_PREFIX = "EV071"',
-        'const SERIAL_PATTERN = /^G071-',
+        'from "./release-identity.js"',
+        "CURRENT_RULES_VERSION",
+        "GAME_SERIAL_PREFIX",
+        "EVENT_SERIAL_PREFIX",
+        "SERIAL_PATTERN",
         "SESSION_ADMIN_TOKEN",
         "eventGamesSupported",
         "playerAttributionSupported",
     ], errors)
     require("workers/playtest-sessions/src/tracked.js", [
-        f'const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
-        'const serial = `G071-${randomCode(8)}`',
+        'import { CURRENT_RULES_VERSION, GAME_SERIAL_PREFIX } from "./release-identity.js"',
+        'const serial = `${GAME_SERIAL_PREFIX}-${randomCode(8)}`',
         'const MYSTICS_STARTER_RITES = Object.freeze({',
         'playMode',
         '"diagnostic_flag"',
@@ -90,6 +92,14 @@ def main() -> int:
         'agency_after_decided',
         'decisive_cause',
         'CREATION_LIMIT_PER_DAY',
+    ], errors)
+    require("workers/playtest-sessions/src/release-identity.js", [
+        f'export const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
+        "serialVersionToken",
+        "sessionSerialPrefixes",
+        "GAME_SERIAL_PREFIX = currentPrefixes.game",
+        "EVENT_SERIAL_PREFIX = currentPrefixes.event",
+        "SERIAL_PATTERN",
     ], errors)
     require(f"{PLAYTEST_SOURCE}/current-release.js", [
         'const DEFAULT_LIFECYCLE_URL = "/config/release-lifecycle.json"',
@@ -209,7 +219,7 @@ def main() -> int:
 
     if errors:
         return fail(errors)
-    print(f"Validated current {CURRENT_VERSION} location-aware self-serve playtests, physical/TTS/facilitated compatibility, G071/EV071 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print(f"Validated current {CURRENT_VERSION} location-aware self-serve playtests, version-derived session identifiers, physical/TTS/facilitated compatibility, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
 
