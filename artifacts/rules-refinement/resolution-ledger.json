@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T10:57:15.691Z",
+  "updatedAt": "2026-09-10T20:00:31.854Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -814,6 +814,23 @@
       "resolvedAt": "2026-09-10T10:57:15.691Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260910-1"
+      }
+    },
+    {
+      "id": "copied-effect-control-source-card-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "d1050264-5c22-4d19-a04a-824498bc1330"
+      ],
+      "caseIds": [
+        "heresy-rend-the-veil-copied-effect-retrieval"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed Heresy/Rend the Veil ruling was correct, but its cited support omitted the shared copied-effect rule needed to establish who controls the copied application and that the source card remains in its current zone. Current retrieval now promotes that shared authority for copied or repeated effects involving another player or source card.",
+      "resolvedAt": "2026-09-10T20:00:31.854Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-2"
       }
     }
   ]
