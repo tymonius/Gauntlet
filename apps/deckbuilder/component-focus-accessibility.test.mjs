@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const territories = readFileSync("deckbuilder/territories.js", "utf8");
-const rites = readFileSync("deckbuilder/mystics-rites.js", "utf8");
+const territories = readFileSync("apps/deckbuilder/territories.js", "utf8");
+const rites = readFileSync("apps/deckbuilder/mystics-rites.js", "utf8");
 
 describe("Deckbuilder supplemental component focus", () => {
   it("restores focus after Territory choose/remove rerenders", () => {
