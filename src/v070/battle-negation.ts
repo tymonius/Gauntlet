@@ -109,6 +109,7 @@ export function openV070BattleNegationChoice(
     eligibleV070BattleNegationTargets(
       state,
       pending.owner,
+      pending.sourceCardId,
       pending.role,
     ).includes(instanceId)
   );
@@ -190,10 +191,14 @@ export function resolveV070BattleNegationChoice(
     );
   }
   if (!pending.candidateInstanceIds.includes(targetInstanceId)
-    || !eligibleV070BattleNegationTargets(state, playerId, pending.role)
-      .includes(targetInstanceId)) {
+    || !eligibleV070BattleNegationTargets(
+      state,
+      playerId,
+      pending.sourceCardId,
+      pending.role,
+    ).includes(targetInstanceId)) {
     throw new V070GameActionError(
-      'Tyranny or Sabotage must choose an opposing card at this reveal stage whose effect has not taken effect.',
+      'Tyranny or Sabotage must choose an eligible opposing Gambit or Tactic whose effect has not taken effect.',
     );
   }
 
@@ -209,29 +214,36 @@ export function resolveV070BattleNegationChoice(
   );
 }
 
+/**
+ * Sabotage explicitly says "at that stage", so it may target only the current
+ * reveal role. Tyranny omits that restriction: once Tactics reveal, an earlier
+ * Gambit whose deferred effect has not yet taken effect remains a legal target.
+ */
 export function eligibleV070BattleNegationTargets(
   state: V070GameState,
   owner: PlayerId,
-  role: 'gambit' | 'tactic',
+  sourceCardId: V070BattleNegationSourceCardId,
+  sourceRole: 'gambit' | 'tactic',
 ): string[] {
   const runtime = state.battleRuntime;
   if (!runtime) return [];
   const opponent: PlayerId = owner === 'A' ? 'B' : 'A';
   const participant = runtime.participants[opponent];
-  const commitments = role === 'gambit'
-    ? [
-        ...(participant.gambit ? [participant.gambit] : []),
-        ...participant.additionalGambits,
-      ]
-    : [
-        ...(participant.tactic ? [participant.tactic] : []),
-        ...participant.additionalTactics,
-      ];
+  const gambits = [
+    ...(participant.gambit ? [participant.gambit] : []),
+    ...participant.additionalGambits,
+  ];
+  const tactics = [
+    ...(participant.tactic ? [participant.tactic] : []),
+    ...participant.additionalTactics,
+  ];
+  const commitments = sourceCardId === V070_SABOTAGE_ID
+    ? (sourceRole === 'gambit' ? gambits : tactics)
+    : [...gambits, ...tactics];
 
   const eligible = commitments
     .filter(commitment =>
-      commitment.role === role
-      && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+      !isV070BattleCardEffectNegated(state, commitment.instanceId)
       && !hasV070BattleCardEffectApplied(state, commitment.instanceId)
     )
     .map(commitment => commitment.instanceId);
@@ -259,7 +271,12 @@ function registerBattleNegation(
   }
 
   const opponent: PlayerId = owner === 'A' ? 'B' : 'A';
-  const eligible = eligibleV070BattleNegationTargets(state, owner, role);
+  const eligible = eligibleV070BattleNegationTargets(
+    state,
+    owner,
+    sourceCardId,
+    role,
+  );
   if (eligible.length === 0) {
     markV070BattleCardEffectApplied(state, sourceInstanceId);
     appendV070Event(state, {
@@ -311,9 +328,12 @@ function resolveBattleNegationTarget(
   targetInstanceId: string,
 ): void {
   const target = v070BattleCommitment(state, targetInstanceId);
-  if (!target || target.role !== role) {
+  if (!target
+    || (sourceCardId === V070_SABOTAGE_ID && target.role !== role)) {
     throw new V070GameActionError(
-      'The Tyranny or Sabotage target is no longer a battle card at this reveal stage.',
+      sourceCardId === V070_SABOTAGE_ID
+        ? 'The Sabotage target is no longer a battle card at this reveal stage.'
+        : 'The Tyranny target is no longer an eligible opposing battle card.',
     );
   }
 
@@ -340,7 +360,7 @@ function resolveBattleNegationTarget(
       targetInstanceId,
       targetCardId: state.cardInstances[targetInstanceId]?.cardId ?? null,
       targetOwner: target.owner,
-      targetRole: role,
+      targetRole: target.role,
       destination: discardTargetImmediately ? 'discard' : 'battle',
     },
   });
