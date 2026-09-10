@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const index = readFileSync("deckbuilder/index.html", "utf8");
-const script = readFileSync("deckbuilder/print-request.js", "utf8");
-const runtime = readFileSync("deckbuilder/current-runtime.js", "utf8");
-const app = readFileSync("deckbuilder/app.js", "utf8");
+const index = readFileSync("apps/deckbuilder/index.html", "utf8");
+const script = readFileSync("apps/deckbuilder/print-request.js", "utf8");
+const runtime = readFileSync("apps/deckbuilder/current-runtime.js", "utf8");
+const app = readFileSync("apps/deckbuilder/app.js", "utf8");
 
 describe("Deckbuilder host printing requests", () => {
   it("is available directly in the main Deckbuilder", () => {
