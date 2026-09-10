@@ -14,6 +14,11 @@ import {
   pendingV070ExcommunicationAftermath,
   unresolvedV070ExcommunicationSourcesForPlayer,
 } from './excommunication-battle';
+import {
+  openV070SuppliesAftermathForSource,
+  pendingV070SuppliesAftermath,
+  unresolvedV070SuppliesSourcesForPlayer,
+} from './supplies-battle';
 
 export * from './battle-aftermath-pre-capital-gains';
 
@@ -37,6 +42,10 @@ export function v070DeferredBattleAftermathEffectRefs(
       unresolvedV070ExcommunicationSourcesForPlayer(state, owner)) {
       refs.push({ owner, sourceInstanceId });
     }
+    for (const sourceInstanceId of
+      unresolvedV070SuppliesSourcesForPlayer(state, owner)) {
+      refs.push({ owner, sourceInstanceId });
+    }
   }
   return refs;
 }
@@ -54,6 +63,12 @@ export function openV070DeferredBattleAftermathEffect(
   }
   if (cardId === 'inquisition-excommunication') {
     return openV070ExcommunicationAftermathForSource(
+      state,
+      sourceInstanceId,
+    );
+  }
+  if (cardId === 'neutral-supplies') {
+    return openV070SuppliesAftermathForSource(
       state,
       sourceInstanceId,
     );
@@ -92,6 +107,7 @@ export function v070DeferredBattleAftermathEffectPending(
   return Boolean(
     previous.v070DeferredBattleAftermathEffectPending(state)
     || pendingV070CapitalGainsAftermath(state)
-    || pendingV070ExcommunicationAftermath(state),
+    || pendingV070ExcommunicationAftermath(state)
+    || pendingV070SuppliesAftermath(state),
   );
 }
