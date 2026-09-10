@@ -313,7 +313,7 @@ function optionalCardValue(
 ): number | null {
   const cardId = state.cardInstances[instanceId]?.cardId;
   if (!cardId) return null;
-  return v070CanonicalContent.cardsById.get(cardId)?.value ?? null;
+  return v070CanonicalContent.cardsById.get(cardId)?.cost ?? null;
 }
 
 function cardValue(
