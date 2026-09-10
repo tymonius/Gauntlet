@@ -20,6 +20,7 @@ const reviewedOutOfScope = [
   "Who was the General designed after?",
   "Who is the General based on?",
   "What historical figure inspired the General?",
+  "Which Leader is the most overpowered?",
   "Hello there. Tell me of your purpose?",
   "But I did not ask about the game, I asked you. I want to know about the machine behind the mechanics",
   "What would Karl Marx's favorite cards be?",
@@ -88,6 +89,28 @@ test("current v0.7.1 scope requests return before retrieval or model use", async
   expect(body.answer).toMatch(/future development plans/i);
 });
 
+test("the reviewed overpowered-Leader question is a deterministic scope answer", async () => {
+  const ruling = classifyV071ScopePrecheck("Which Leader is the most overpowered?");
+  expect(ruling?.rulingStatus).toBe("out_of_scope");
+  expect(ruling?.confidence).toBe("high");
+  expect(ruling?.sourceIds).toEqual([]);
+  expect(ruling?.answer).toMatch(/strategy or game-design judgments/i);
+
+  const response = await handleV071ScopePrecheck(
+    request("Which Leader is the most overpowered?"),
+    {
+      OPENAI_API_KEY: "must-not-be-used",
+      ALLOWED_ORIGINS: "https://gauntlet.run"
+    }
+  );
+  expect(response).toBeTruthy();
+  const body = await response.json();
+  expect(body.rulingStatus).toBe("out_of_scope");
+  expect(body.sources).toEqual([]);
+  expect(body.executionPath).toBe("deterministic-scope");
+  expect(body.scopePrecheckRevision).toBe("v071-scope-20260910-2");
+});
+
 test("reviewed assistant identity and implementation requests get direct scope answers", () => {
   const purpose = classifyV071ScopePrecheck("Hello there. Tell me of your purpose?");
   expect(purpose?.answer).toMatch(/I am the Gauntlet Rules Arbiter/i);
@@ -113,7 +136,7 @@ test("reviewed prompt-override identity request exits before retrieval or model 
   expect(body.sources).toEqual([]);
   expect(body.executionPath).toBe("deterministic-scope");
   expect(body.answer).toMatch(/I am the Gauntlet Rules Arbiter/i);
-  expect(body.scopePrecheckRevision).toBe("v071-scope-20260910-1");
+  expect(body.scopePrecheckRevision).toBe("v071-scope-20260910-2");
 });
 
 test("historical-version and in-scope requests are left to their normal workers", async () => {
