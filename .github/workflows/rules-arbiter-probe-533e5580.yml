@@ -1,4 +1,4 @@
-name: Rules Arbiter retrieval probe 533e5580
+name: Rules Arbiter finalize 533e5580
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
       - '.github/workflows/rules-arbiter-probe-533e5580.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  probe:
+  finalize:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,17 +22,139 @@ jobs:
         with:
           node-version: 22
 
-      - name: Probe current v0.7.1 retrieval
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Implement Asset replacement retrieval refinement
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .tmp/rules-arbiter-probe
+          python3 <<'PY'
+          from pathlib import Path
+          path = Path('rules-assistant/local-search.js')
+          text = path.read_text()
+          needle = '''    aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
+          },
+          '''
+          insertion = '''  {
+              pattern: /(?=[\\s\\S]*\\bassets?\\b)(?=[\\s\\S]*\\b(?:replace|replaces|replaced|replacing|swap|swaps|swapped|swapping|exchange|exchanges|exchanged|exchanging|make room)\\b)(?=[\\s\\S]*\\b(?:bank|banked|banking|hand|limit|room|new)\\b)/i,
+              aliases: ["Replacing an Asset", "banking an Asset at the Asset limit", "discard one Asset to make room", "bank the new Asset as part of the same effect", "replacement is not a separate Action"]
+            },
+          '''
+          if '"Replacing an Asset", "banking an Asset at the Asset limit"' in text:
+              raise SystemExit('Asset replacement alias already exists')
+          if needle not in text:
+              raise SystemExit('Copied-effect alias insertion point not found')
+          path.write_text(text.replace(needle, needle + insertion, 1))
+          PY
+
+          grep -RIl --include='*.js' --include='*.mjs' 'v071-qa-20260910-3' rules-assistant \
+            | xargs -r sed -i 's/v071-qa-20260910-3/v071-qa-20260910-4/g'
+
+          cat > rules-assistant/v071-asset-replacement-review.test.mjs <<'EOF'
+          import { readFileSync } from "node:fs";
+          import { describe, expect, test } from "vitest";
+          import { buildRulesCorpus, retrieveRules } from "./local-search.js";
+          import { BEHAVIOR_REVISION, augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
+          import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from "./v071-public-corpus.js";
+
+          const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, "utf8"));
+          const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, "utf8");
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: "https://gauntlet.run" });
+
+          function sourcesFor(question) {
+            const query = contextualQuery(question, []);
+            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2200 });
+            return augmentRetrievalForContext(corpus, question, [], raw);
+          }
+
+          const reviewedQuestion = "Can a player replace an asset in their bank with one in their hand";
+
+          describe("v0.7.1 Asset replacement review", () => {
+            test("the reviewed simple replacement wording promotes the direct current authority", () => {
+              const sources = sourcesFor(reviewedQuestion);
+              expect(sources.slice(0, 4).map((source) => source.canonicalId)).toContain("rulebook:replacing-an-asset");
+
+              const rule = sources.find((source) => source.canonicalId === "rulebook:replacing-an-asset");
+              const body = String(rule?.body || "");
+              expect(body).toContain("When banking an Asset at the Asset limit, the player may discard one Asset they control to make room and bank the new Asset as part of the same effect.");
+              expect(body).toContain("This replacement is not a separate Action.");
+            });
+
+            test("banked-Asset and make-room paraphrases promote the replacement rule", () => {
+              for (const question of [
+                "Can I replace one of my banked Assets with an Asset from my Hand?",
+                "I am at my Asset limit. Can I discard an Asset to make room and bank a new one from Hand?"
+              ]) {
+                expect(sourcesFor(question).slice(0, 4).map((source) => source.canonicalId), question)
+                  .toContain("rulebook:replacing-an-asset");
+              }
+            });
+
+            test("unrelated card replacement language does not promote the Asset replacement rule", () => {
+              const ids = sourcesFor("Can I replace a Tactic with another card during battle?")
+                .slice(0, 4)
+                .map((source) => source.canonicalId);
+              expect(ids).not.toContain("rulebook:replacing-an-asset");
+            });
+
+            test("the behavior revision records the retrieval change", () => {
+              expect(BEHAVIOR_REVISION).toBe("v071-qa-20260910-4");
+            });
+          });
+          EOF
+
+      - name: Record reviewed interaction in refinement ledger
+        shell: bash
+        run: |
+          set -euo pipefail
           node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
+          import fs from 'node:fs';
+          const path = 'artifacts/rules-refinement/resolution-ledger.json';
+          const ledger = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const interactionId = '533e5580-29ee-47f9-ade6-ff03546b88ed';
+          const entryId = 'asset-replacement-current-authority-retrieval-v071';
+          if ((ledger.entries || []).some((entry) => entry.id === entryId)) throw new Error('Ledger entry already exists');
+          if ((ledger.entries || []).some((entry) => (entry.interactionIds || []).includes(interactionId))) throw new Error('Interaction already resolved');
+          const now = new Date().toISOString();
+          ledger.updatedAt = now;
+          ledger.entries.push({
+            id: entryId,
+            status: 'resolved',
+            rootCause: 'provisional_overuse',
+            interactionIds: [interactionId],
+            caseIds: ['asset-replacement-current-authority-retrieval'],
+            resolutionSurface: 'arbiter_retrieval',
+            summary: 'The reviewed v0.6.0 ruling correctly treated a one-step Asset replacement as unsupported under the historical rules. Current v0.7.1 now expressly permits a player who is banking an Asset at the Asset limit to discard one controlled Asset to make room and bank the new Asset as part of the same effect, without a separate Action. Retrieval now promotes that direct current authority for simple replace, swap, exchange, and make-room Asset questions instead of carrying historical uncertainty forward.',
+            resolvedAt: now,
+            binding: { behaviorRevision: 'v071-qa-20260910-4' }
+          });
+          fs.writeFileSync(path, JSON.stringify(ledger, null, 2) + '\n');
+          NODE
+
+      - name: Run focused Rules Arbiter regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx vitest run \
+            rules-assistant/v071-asset-replacement-review.test.mjs \
+            rules-assistant/v071-ambiguous-referent-clarification.test.mjs \
+            rules-assistant/v071-battle-card-replacement-retrieval.test.mjs \
+            rules-assistant/v071-copied-effect-retrieval-review.test.mjs \
+            rules-assistant/v071-fortifications-tactic-choice-review.test.mjs \
+            rules-assistant/v071-short-counterfactual-continuity.test.mjs \
+            rules-assistant/v071-strategic-withdrawal-review.test.mjs \
+            rules-assistant/v071-unidentified-stored-card-clarification.test.mjs
+
+      - name: Verify Asset replacement retrieval ranking
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
           import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
           import { contextualQuery, augmentRetrievalForContext } from './rules-assistant/worker-v071.js';
           import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
-
           const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
           const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
           const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
@@ -41,28 +163,37 @@ jobs:
             'Can I replace one of my banked Assets with an Asset from my Hand?',
             'I am at my Asset limit. Can I discard an Asset to make room and bank a new one from Hand?'
           ];
-          const results = questions.map((question) => {
-            const query = contextualQuery(question, []);
-            const raw = retrieveRules(corpus, query, { limit: 12, excerptLength: 2200 });
+          for (const question of questions) {
+            const raw = retrieveRules(corpus, contextualQuery(question, []), { limit: 12, excerptLength: 2200 });
             const sources = augmentRetrievalForContext(corpus, question, [], raw);
-            return {
-              question,
-              top: sources.slice(0, 8).map((source) => ({
-                canonicalId: source.canonicalId,
-                title: source.title,
-                score: source.score,
-                body: source.body
-              }))
-            };
-          });
-          writeFileSync('.tmp/rules-arbiter-probe/probe.json', JSON.stringify(results, null, 2) + '\n');
-          console.log(JSON.stringify(results.map((r) => ({question:r.question, top:r.top.map((s)=>[s.canonicalId,s.score])})), null, 2));
+            const top4 = sources.slice(0, 4).map((source) => source.canonicalId);
+            console.log(JSON.stringify({ question, top4 }));
+            if (!top4.includes('rulebook:replacing-an-asset')) throw new Error(`Replacement authority missed top 4 for: ${question}`);
+          }
           NODE
 
-      - name: Upload retrieval probe
-        uses: actions/upload-artifact@v4
-        with:
-          name: rules-arbiter-retrieval-probe-533e5580
-          path: .tmp/rules-arbiter-probe/probe.json
-          if-no-files-found: error
-          retention-days: 2
+      - name: Validate refinement contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const names = execFileSync('git', ['diff', '--name-only'], { encoding: 'utf8' })
+            .split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+          writeFileSync('/tmp/changed-files.json', JSON.stringify(names));
+          console.log(JSON.stringify(names, null, 2));
+          NODE
+          node scripts/validate-rules-refinement-source-first.mjs --changed-files /tmp/changed-files.json
+          git diff --check
+
+      - name: Commit refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tymon Scott"
+          git config user.email "54303549+tymonius@users.noreply.github.com"
+          git add artifacts/rules-refinement/resolution-ledger.json rules-assistant
+          git diff --cached --check
+          git commit -m "Promote current Asset replacement authority"
+          git push origin HEAD:rules-arbiter-review-533e5580
