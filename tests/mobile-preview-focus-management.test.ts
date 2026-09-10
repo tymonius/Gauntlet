@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const previewScripts = [
-  "card-reference/mobile-card-preview.js",
+  "apps/card-reference/mobile-card-preview.js",
   "deckbuilder/mobile-card-preview.js",
 ];
 
