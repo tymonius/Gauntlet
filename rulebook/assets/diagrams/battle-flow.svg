@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="title desc">
+  <title id="title">Gauntlet normal battle sequence</title>
+  <desc id="desc">Nine steps: Onset; set Gambits attacker first; form three-card Reserves; reveal Gambits; choose Tactics attacker first; reveal Tactics; roll and compare battle totals; resolve the result; clear battle cards.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#69645d"/></marker>
+  </defs>
+  <rect width="1000" height="620" fill="#fbf7ee"/>
+  <text x="500" y="38" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="700" fill="#171514">A Normal Battle</text>
+  <text x="500" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#5f5a53">Follow the sequence; cards and faction rules modify individual steps when they say so.</text>
+  <g font-family="Arial, sans-serif">
+    <g fill="#fffdf8" stroke="#69645d" stroke-width="2">
+      <rect x="55" y="105" width="270" height="120"/><rect x="365" y="105" width="270" height="120" stroke="#8f1f25" stroke-width="3"/><rect x="675" y="105" width="270" height="120"/>
+      <rect x="55" y="270" width="270" height="120"/><rect x="365" y="270" width="270" height="120" stroke="#8f1f25" stroke-width="3"/><rect x="675" y="270" width="270" height="120"/>
+      <rect x="55" y="435" width="270" height="120"/><rect x="365" y="435" width="270" height="120"/><rect x="675" y="435" width="270" height="120"/>
+    </g>
+    <g fill="#8f1f25" font-size="18" font-weight="800">
+      <text x="75" y="132">1</text><text x="385" y="132">2</text><text x="695" y="132">3</text><text x="75" y="297">4</text><text x="385" y="297">5</text><text x="695" y="297">6</text><text x="75" y="462">7</text><text x="385" y="462">8</text><text x="695" y="462">9</text>
+    </g>
+    <g fill="#171514" font-size="23" font-weight="700">
+      <text x="190" y="153" text-anchor="middle">Onset</text><text x="500" y="153" text-anchor="middle">Set Gambits</text><text x="810" y="153" text-anchor="middle">Form Reserves</text>
+      <text x="190" y="318" text-anchor="middle">Reveal Gambits</text><text x="500" y="318" text-anchor="middle">Choose Tactics</text><text x="810" y="318" text-anchor="middle">Reveal Tactics</text>
+      <text x="190" y="483" text-anchor="middle">Roll</text><text x="500" y="483" text-anchor="middle">Resolve Result</text><text x="810" y="483" text-anchor="middle">Clear Cards</text>
+    </g>
+    <g fill="#5f5a53" font-size="16" text-anchor="middle">
+      <text x="190" y="184">establish attacker, defender,</text><text x="190" y="205">contested position</text>
+      <text x="500" y="181">attacker first, then defender</text><text x="500" y="204">one from Hand or pass</text>
+      <text x="810" y="181">draw 3 temporary cards</text><text x="810" y="204">Hand stays separate</text>
+      <text x="190" y="346">turn face up</text><text x="190" y="369">resolve applicable effects</text>
+      <text x="500" y="346">attacker first, then defender</text><text x="500" y="369">one from Reserve or pass</text>
+      <text x="810" y="346">turn face up</text><text x="810" y="369">resolve applicable effects</text>
+      <text x="190" y="511">roll and apply modifiers</text><text x="190" y="534">higher battle total wins</text>
+      <text x="500" y="511">loser moves normally;</text><text x="500" y="534">winner holds or takes position</text>
+      <text x="810" y="511">Gambit → Graveyard</text><text x="810" y="534">Tactic + Reserve → Discard</text>
+    </g>
+  </g>
+  <g fill="none" stroke="#69645d" stroke-width="3" marker-end="url(#arrow)">
+    <path d="M325 165H355"/><path d="M635 165H665"/><path d="M810 225V248H190V260"/><path d="M325 330H355"/><path d="M635 330H665"/><path d="M810 390V413H190V425"/><path d="M325 495H355"/><path d="M635 495H665"/>
+  </g>
+  <text x="500" y="592" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#8f1f25">Gambit and Tactic commitments are optional — but the attacker decides first.</text>
+</svg>
