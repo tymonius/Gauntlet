@@ -168,14 +168,14 @@ function replaceOpponentDiscard(
 
 function cardIdWithValue(value: number): string {
   for (const card of v070CanonicalContent.cardsById.values()) {
-    if (card.value === value) return card.id;
+    if (card.cost === value) return card.id;
   }
   throw new Error(`No canonical v0.7.0 card has value ${value}.`);
 }
 
 function cardIdAboveValue(value: number): string {
   for (const card of v070CanonicalContent.cardsById.values()) {
-    if (card.value > value) return card.id;
+    if (card.cost > value) return card.id;
   }
   throw new Error(`No canonical v0.7.0 card has value above ${value}.`);
 }
