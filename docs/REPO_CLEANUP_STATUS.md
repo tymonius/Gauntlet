@@ -34,26 +34,30 @@ This re-landed the top-level architecture guard cleanly on current `main` instea
 
 [#1571 — Separate Start source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1571) is merged. It applied the same boundary to Start, moving canonical source to `apps/start/` while preserving `/start/`.
 
+[#1626 — Separate Card Reference source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1626) is merged. It moved canonical Card Reference source to `apps/card-reference/` while preserving `/card-reference/` and hardened source-path retirement checks.
+
 The earlier cleanup stack from #1456 through #1539 remains useful review/history evidence, but current `main` advanced substantially while it was open. Do not merge that old stack wholesale over newer digital-engine, Rules Arbiter, onboarding, card-pipeline, or release work. Re-land still-valid cleanup decisions deliberately against current `main`.
 
-## Current tranche: Card Reference source/deployment separation
+## Current tranche: Factions source/deployment separation
 
-Card Reference is the third concrete Phase 3 application migration:
+Factions is the fourth concrete Phase 3 application migration:
 
-- canonical repository source moves from `card-reference/` to `apps/card-reference/`;
-- the public compatibility contract remains `/card-reference/`;
-- GitHub Pages explicitly stages `apps/card-reference/` into the deployed `/card-reference/` tree;
+- canonical Factions application source moves from `factions/` to `apps/factions/`;
+- the public compatibility contract remains `/factions/` and `/factions/<faction>/`;
+- GitHub Pages explicitly stages `apps/factions/` into the deployed `/factions/` tree;
 - `/apps/` itself remains source-only and must never be published;
-- repository-source tests, validators, accessibility coverage, Card Authority discovery, and CI use `apps/card-reference/`;
-- browser/public links continue to use `/card-reference/` or equivalent relative routes;
-- publication validation materializes `/card-reference/` from canonical source before checking the player-facing contract.
+- publication validation materializes `/factions/` from canonical source before checking the player-facing contract;
+- source-aware tests, accessibility coverage, publishing metadata, analytics routing, and live-publication triggers use `apps/factions/`;
+- `factions/homepage.css` was identified as root-homepage presentation rather than Factions application source and is reclassified as `assets/homepage-factions.css`;
+- browser/public links continue to use `/factions/` or equivalent relative routes.
 
-No intentional gameplay, card-data, product behavior, frozen-release content, or public-URL change belongs in this tranche.
+No intentional gameplay, faction behavior, current authority, frozen-release content, or public-URL change belongs in this tranche.
 
 ## Architectural decisions now established
 
 - **Source paths and public URLs are independent.** A stable deployed URL does not require a matching root source directory.
-- **`apps/` is a first-class maintained-source boundary.** Current Card Reference, Start, and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
+- **`apps/` is a first-class maintained-source boundary.** Current Card Reference, Factions, Start, and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
+- **Cross-application assets should be classified by actual ownership, not historical directory placement.** Homepage-only Factions presentation belongs with shared/public assets rather than inside the Factions application.
 - **Pages is an explicit deployment artifact.** It materializes stable routes from canonical source boundaries and must not mirror the repository wholesale.
 - **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned public compatibility sources are not current authority.
 - **Behavior-preserving architecture cleanup stays separate from gameplay/product changes.**
@@ -61,10 +65,10 @@ No intentional gameplay, card-data, product behavior, frozen-release content, or
 
 ## Next top-down queue
 
-After the Card Reference migration is green and merged:
+After the Factions migration is green and merged:
 
-1. Inspect `factions/` as the next cohesive current application candidate for source/deployment separation; verify its shared styling/data dependencies before moving it.
-2. Continue migrating current application source toward `apps/` while preserving deployed URLs through Pages staging.
+1. Inspect `deckbuilder/` as the next major current application candidate; classify its renderer/print/tooling dependencies before deciding whether it can move cleanly to `apps/deckbuilder/` or needs an application/tooling split first.
+2. Continue migrating clear current application source toward `apps/` while preserving deployed URLs through Pages staging.
 3. Then address shared package boundaries (`game-data`, Rulebook authority, shared rendering/UI) where current roots mix authority, app, and production roles.
 4. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
 5. Audit asset/generated-output lifecycle after source ownership is stable.
@@ -74,7 +78,7 @@ After the Card Reference migration is green and merged:
 
 1. Read this file.
 2. Read [#1430](https://github.com/tymonius/Gauntlet/issues/1430).
-3. Inspect merged #1562 and #1571 plus the current structural PR, including CI and review comments.
+3. Inspect merged #1562, #1571, and #1626 plus the current structural PR, including CI and review comments.
 4. Reconcile against current `main` before carrying forward any older cleanup branch.
 5. Continue the highest-level unresolved architectural work before descending into local file cleanup.
 6. Update this file when the current tranche, architectural decisions, or next-step queue materially changes.
