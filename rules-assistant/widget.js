@@ -608,7 +608,8 @@ function formatCompletionStatus(answer) {
     provisional: "Provisional ruling issued",
     out_of_scope: "Question outside gameplay rules",
     explicit: "Explicit rule found",
-    inferred: "Rules interpretation complete"
+    inferred: "Rules interpretation complete",
+    unresolved: "Clarification needed"
   }[answer?.rulingStatus] || "AI ruling complete";
 }
 
@@ -618,7 +619,7 @@ function formatStatus(status) {
     inferred: "Rules interpretation",
     provisional: "Provisional Arbiter Ruling",
     out_of_scope: "Out of scope",
-    unresolved: "Unresolved source lookup",
+    unresolved: "Clarification needed",
     source_lookup: "Direct source lookup"
   }[status] || status;
 }

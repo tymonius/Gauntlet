@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Validate the current v0.7.1 playtest workflow and location-aware self-serve playtest contract."""
+"""Validate the current playtest workflow and location-aware self-serve playtest contract."""
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYTEST_SOURCE = "apps/playtest"
+LIFECYCLE = json.loads((ROOT / "config/release-lifecycle.json").read_text(encoding="utf-8"))
+CURRENT_VERSION = str(LIFECYCLE.get("current_release", ""))
 
 REQUIRED = [
     "rules-assistant/migrations/0003_playtest_sessions.sql",
@@ -17,8 +20,11 @@ REQUIRED = [
     "rules-assistant/migrations/0010_playtest_decision_experience.sql",
     "workers/playtest-sessions/wrangler.toml",
     "workers/playtest-sessions/src/index.js",
+    "workers/playtest-sessions/src/release-identity.js",
     "workers/playtest-sessions/src/tracked.js",
     "workers/playtest-sessions/src/analysis.js",
+    ".github/workflows/deploy-playtest-sessions.yml",
+    f"{PLAYTEST_SOURCE}/current-release.js",
     f"{PLAYTEST_SOURCE}/index.html",
     f"{PLAYTEST_SOURCE}/portal.css",
     f"{PLAYTEST_SOURCE}/sheet/index.html",
@@ -29,14 +35,18 @@ REQUIRED = [
     f"{PLAYTEST_SOURCE}/onboarding/index.html",
     f"{PLAYTEST_SOURCE}/guide/index.html",
     f"{PLAYTEST_SOURCE}/player-mat/index.html",
+    f"{PLAYTEST_SOURCE}/host/create-event.js",
+    f"{PLAYTEST_SOURCE}/batch/app.js",
     "start/index.html",
     "start/app.js",
     "scripts/test_v063_formal_session_e2e.mjs",
     "scripts/test_tracked_playtest_e2e.mjs",
 ]
 
+
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
+
 
 def require(path: str, markers: list[str], errors: list[str]) -> None:
     text = read(path)
@@ -44,8 +54,15 @@ def require(path: str, markers: list[str], errors: list[str]) -> None:
         if marker not in text:
             errors.append(f"{path}: missing marker {marker!r}")
 
+
 def main() -> int:
     errors: list[str] = []
+    release = LIFECYCLE.get("releases", {}).get(CURRENT_VERSION)
+    if not CURRENT_VERSION or not isinstance(release, dict):
+        errors.append("Release lifecycle does not define a current release")
+    elif release.get("status") != "current" or release.get("public_cutover") is not True:
+        errors.append(f"{CURRENT_VERSION} is not the approved current public release")
+
     for rel in REQUIRED:
         p = ROOT / rel
         if not p.is_file() or p.stat().st_size == 0:
@@ -54,17 +71,18 @@ def main() -> int:
         return fail(errors)
 
     require("workers/playtest-sessions/src/index.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.1"',
-        'const GAME_SERIAL_PREFIX = "G071"',
-        'const EVENT_SERIAL_PREFIX = "EV071"',
-        'const SERIAL_PATTERN = /^G071-',
+        'from "./release-identity.js"',
+        "CURRENT_RULES_VERSION",
+        "GAME_SERIAL_PREFIX",
+        "EVENT_SERIAL_PREFIX",
+        "SERIAL_PATTERN",
         "SESSION_ADMIN_TOKEN",
         "eventGamesSupported",
         "playerAttributionSupported",
     ], errors)
     require("workers/playtest-sessions/src/tracked.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.1"',
-        'const serial = `G071-${randomCode(8)}`',
+        'import { CURRENT_RULES_VERSION, GAME_SERIAL_PREFIX } from "./release-identity.js"',
+        'const serial = `${GAME_SERIAL_PREFIX}-${randomCode(8)}`',
         'const MYSTICS_STARTER_RITES = Object.freeze({',
         'playMode',
         '"diagnostic_flag"',
@@ -75,6 +93,39 @@ def main() -> int:
         'decisive_cause',
         'CREATION_LIMIT_PER_DAY',
     ], errors)
+    require("workers/playtest-sessions/src/release-identity.js", [
+        f'export const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
+        "serialVersionToken",
+        "sessionSerialPrefixes",
+        "GAME_SERIAL_PREFIX = currentPrefixes.game",
+        "EVENT_SERIAL_PREFIX = currentPrefixes.event",
+        "SERIAL_PATTERN",
+    ], errors)
+    require(f"{PLAYTEST_SOURCE}/current-release.js", [
+        'const DEFAULT_LIFECYCLE_URL = "/config/release-lifecycle.json"',
+        "currentPlaytestVersion",
+        "matchCurrentPlaytestRelease",
+        "resolveCurrentPlaytestRelease",
+        "health.version !== version",
+    ], errors)
+    require(f"{PLAYTEST_SOURCE}/host/create-event.js", [
+        'import { resolveCurrentPlaytestRelease } from "../current-release.js"',
+        "resolveCurrentPlaytestRelease(API_ORIGIN)",
+        "createSession(adminToken, eventLabel, release.version)",
+        "rulesVersion,",
+    ], errors)
+    require(f"{PLAYTEST_SOURCE}/batch/app.js", [
+        'import { resolveCurrentPlaytestRelease } from "../current-release.js"',
+        "resolveCurrentPlaytestRelease(API_ORIGIN)",
+        "rulesVersion: release.version",
+        "batchMetadata.rulesVersion",
+    ], errors)
+    require(".github/workflows/deploy-playtest-sessions.yml", [
+        "config/release-lifecycle.json",
+        "scripts/validate_current_playtest_sessions.py",
+        "expected_version = str(lifecycle.get('current_release', ''))",
+        "sessions.get('version') != expected_version",
+    ], errors)
     require("rules-assistant/migrations/0010_playtest_decision_experience.sql", [
         "felt_decided_when",
         "agency_after_decided",
@@ -82,7 +133,7 @@ def main() -> int:
         "selection_reason",
     ], errors)
     require(f"{PLAYTEST_SOURCE}/index.html", [
-        "Self-serve playtesting · canonical v0.7.1",
+        f"Self-serve playtesting · canonical {CURRENT_VERSION}",
         "Start a self-serve playtest",
         "Together in person",
         "Playing remotely",
@@ -104,7 +155,7 @@ def main() -> int:
         'id="feltDecidedWhen"',
         'id="agencyAfterDecided"',
         "3790840635",
-        "v0.7.1",
+        CURRENT_VERSION,
     ], errors)
     require(f"{PLAYTEST_SOURCE}/tracked/app.js", [
         "requestedPlayMode",
@@ -158,16 +209,26 @@ def main() -> int:
     if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must remain a Worker secret")
 
+    for rel in [
+        f"{PLAYTEST_SOURCE}/host/create-event.js",
+        f"{PLAYTEST_SOURCE}/batch/app.js",
+        ".github/workflows/deploy-playtest-sessions.yml",
+    ]:
+        if 'v0.7.1' in read(rel):
+            errors.append(f"{rel}: maintained playtest orchestration still embeds the current version")
+
     if errors:
         return fail(errors)
-    print("Validated v0.7.1 location-aware self-serve playtests, physical/TTS/facilitated compatibility, G071/EV071 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print(f"Validated current {CURRENT_VERSION} location-aware self-serve playtests, version-derived session identifiers, physical/TTS/facilitated compatibility, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
+
 def fail(errors: list[str]) -> int:
-    print("Gauntlet v0.7.1 playtest validation failed:", file=sys.stderr)
+    print(f"Gauntlet current {CURRENT_VERSION or 'unknown'} playtest validation failed:", file=sys.stderr)
     for error in errors:
         print(f"- {error}", file=sys.stderr)
     return 1
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

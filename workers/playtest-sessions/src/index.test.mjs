@@ -67,10 +67,11 @@ test("rejects an incorrect facilitator creation secret before touching D1", asyn
   expect(response.status).toBe(401);
 });
 
-test("normalizes and validates v0.7.1 sheet serials", () => {
+test("normalizes current and historical versioned playtest serials", () => {
   expect(cleanSerial("g071-abcd23")).toBe("G071-ABCD23");
-  expect(() => cleanSerial("G061-ABCD23")).toThrow("Invalid v0.7.1 sheet serial");
-  expect(() => cleanSerial("G071-I")).toThrow("Invalid v0.7.1 sheet serial");
+  expect(cleanSerial("G061-ABCD23")).toBe("G061-ABCD23");
+  expect(cleanSerial("ev070-abcd23")).toBe("EV070-ABCD23");
+  expect(() => cleanSerial("G071-I")).toThrow("Invalid versioned playtest serial");
 });
 
 test("limits session metadata to safe scalar values", () => {

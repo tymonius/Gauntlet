@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-09T13:39:04.224Z",
+  "updatedAt": "2026-09-09T22:14:17.397Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -706,6 +706,57 @@
       "resolvedAt": "2026-09-09T13:39:04.224Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-7"
+      }
+    },
+    {
+      "id": "operational-reassessment-battle-card-replacement-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "38159cff-e509-4df1-923b-5912f16670e9"
+      ],
+      "caseIds": [
+        "operational-reassessment-replacement-destinations"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Battle-card replacement questions now deterministically promote the v0.7.1 Replacing a Gambit or Tactic authority. When a named battle card is already the strongest source it remains first, and destination-focused replacement questions also promote battle-card clearing. Operational Reassessment therefore supplies its own Graveyard destination, the shared replacement rule preserves the Gambit role and passed-timing constraint, and normal Gambit clearing supplies the replacement card’s destination.",
+      "resolvedAt": "2026-09-09T14:09:40.857Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-8"
+      }
+    },
+    {
+      "id": "operational-reassessment-passed-timing-review-closure-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "9a19ecbf-fb28-4644-a530-25b3f97042a3"
+      ],
+      "caseIds": [
+        "operational-reassessment-replacement-timing"
+      ],
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "The reviewed follow-up asks whether a replacement can apply a Gambit effect whose reveal timing has already passed. Deterministic retrieval now promotes the replacement rule first; that rule explicitly says replacement does not reopen an earlier timing window and only still-available, unapplied effects may apply. Existing explicit-classification discipline therefore closes the historical inferred label.",
+      "resolvedAt": "2026-09-09T14:09:40.857Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-8"
+      }
+    },
+    {
+      "id": "ambiguous-followup-referent-clarification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "04b09828-aadf-467e-82a8-32ce71f1bfe0"
+      ],
+      "caseIds": [
+        "unidentified-ability-followup-clarification"
+      ],
+      "resolutionSurface": "arbiter_context_clarification",
+      "summary": "A terse follow-up such as ‘Can I use this ability right now?’ now stops before model use when the immediate exchange does not identify one matching ability/effect/feature referent. The Arbiter asks for the missing ability and relevant timing state instead of speculating about unrelated factions or mechanics. A single clearly bridged named referent still flows through normal contextual retrieval.",
+      "resolvedAt": "2026-09-09T22:14:17.397Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260909-9"
       }
     }
   ]
