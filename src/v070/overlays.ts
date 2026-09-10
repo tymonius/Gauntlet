@@ -4,6 +4,7 @@ import * as previous from './overlays-pre-capital-gains';
 import { pauseV070DeferredBattleAftermathCarrier } from './battle-aftermath';
 import { V070_CAPITAL_GAINS_ID } from './capital-gains-battle';
 import { V070_EXCOMMUNICATION_ID } from './excommunication-battle';
+import { V070_SUPPLIES_ID } from './supplies-battle';
 
 export * from './overlays-pre-capital-gains';
 
@@ -16,7 +17,8 @@ export function placeV070OverlayFromBattle(
 ): ReturnType<typeof previous.placeV070OverlayFromBattle> {
   const cardId = state.cardInstances[instanceId]?.cardId;
   if (cardId === V070_CAPITAL_GAINS_ID
-    || cardId === V070_EXCOMMUNICATION_ID) {
+    || cardId === V070_EXCOMMUNICATION_ID
+    || cardId === V070_SUPPLIES_ID) {
     pauseV070DeferredBattleAftermathCarrier(state, instanceId);
   }
   return previous.placeV070OverlayFromBattle(
