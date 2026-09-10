@@ -26,19 +26,21 @@ jobs:
           from pathlib import Path
           p = Path('rules-assistant/local-search.js')
           s = p.read_text(encoding='utf-8')
-          anchor = '''  {
-            pattern: /(?=[\\s\\S]*\\btactics?\\b)(?=[\\s\\S]*\\b(?:two|2|second|additional|multiple|several)\\b)(?=[\\s\\S]*\\b(?:choose|chooses|chosen|choosing|choice|select|selection)\\b)/i,
-            aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
-          },
-          '''
-          addition = '''  {
+          needle = 'aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]'
+          start = s.find(needle)
+          if start < 0:
+              raise SystemExit('Could not find multiple-Tactic alias line')
+          end = s.find('\n  },', start)
+          if end < 0:
+              raise SystemExit('Could not find alias block end')
+          end += len('\n  },')
+          addition = '''
+          
+          {
             pattern: /(?=[\\s\\S]*\\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\\b)(?=[\\s\\S]*\\beffects?\\b)(?=[\\s\\S]*\\b(?:opponent(?:['’]s)?|another\\s+(?:player|card)(?:['’]s)?|other\\s+player(?:['’]s)?|source\\s+card|as\\s+though|as\\s+if)\\b)/i,
             aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
-          },
-          '''
-          if anchor not in s:
-              raise SystemExit('Could not find multiple-Tactic alias anchor')
-          p.write_text(s.replace(anchor, anchor + addition, 1), encoding='utf-8')
+          },'''
+          p.write_text(s[:end] + addition + s[end:], encoding='utf-8')
           PY
       - name: Run v0.7.1 retrieval probe
         run: |
@@ -65,7 +67,7 @@ jobs:
           const output = {
             questions: questions.map((question) => ({
               question,
-              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title }))
+              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title}))
             }))
           };
           writeFileSync('.tmp/d1050264/candidate-alias-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
