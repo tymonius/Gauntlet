@@ -1,0 +1,102 @@
+name: Rules Arbiter targeted review 6a0d051b
+
+on:
+  push:
+    branches: [rules-arbiter-review-6a0d051b]
+    paths:
+      - '.github/workflows/rules-arbiter-targeted-review-6a0d051b.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_ID: 6a0d051b-cd65-4002-b6fa-33afe83d5ba4
+      OUT_DIR: .tmp/rules-arbiter-targeted-review
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify production D1 credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Read targeted production review bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          DB='gauntlet-rules-assistant'
+          CFG='rules-assistant/wrangler.toml'
+          SID="(SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID')"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interactions WHERE session_id = $SID ORDER BY sequence_index" \
+            > "$OUT_DIR/interactions.json"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY interaction_id, ordinal" \
+            > "$OUT_DIR/sources.json"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" \
+            > "$OUT_DIR/diagnostics.json"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" \
+            > "$OUT_DIR/audits.json"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" \
+            > "$OUT_DIR/reviews.json"
+
+          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json \
+            --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" \
+            > "$OUT_DIR/audit-history.json"
+
+      - name: Assemble targeted review bundle
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const dir = process.env.OUT_DIR;
+          const rows = (name) => {
+            const parsed = JSON.parse(readFileSync(`${dir}/${name}.json`, 'utf8'));
+            return (Array.isArray(parsed) ? parsed : [parsed]).flatMap((block) => Array.isArray(block?.results) ? block.results : []);
+          };
+          const bundle = {
+            schema: 'gauntlet.rules-arbiter-targeted-review.v1',
+            targetInteractionId: process.env.TARGET_ID,
+            generatedAt: new Date().toISOString(),
+            interactions: rows('interactions'),
+            sources: rows('sources'),
+            diagnostics: rows('diagnostics'),
+            audits: rows('audits'),
+            reviews: rows('reviews'),
+            auditHistory: rows('audit-history')
+          };
+          if (!bundle.interactions.some((item) => item.id === process.env.TARGET_ID)) {
+            throw new Error(`Target interaction ${process.env.TARGET_ID} was not found.`);
+          }
+          writeFileSync(`${dir}/review-bundle.json`, `${JSON.stringify(bundle, null, 2)}\n`, 'utf8');
+          console.log(`Targeted review bundle assembled: ${bundle.interactions.length} conversation turns, ${bundle.sources.length} source rows, ${bundle.diagnostics.length} diagnostics rows, ${bundle.audits.length} audit rows.`);
+          NODE
+
+      - name: Upload targeted review bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-targeted-review-6a0d051b
+          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
+          if-no-files-found: error
+          retention-days: 1
