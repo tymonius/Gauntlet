@@ -15,6 +15,11 @@ import {
   registerV070CapitalGainsBattleEffect,
 } from './capital-gains-battle';
 import {
+  V070_EXCOMMUNICATION_BATTLE_TEXT,
+  V070_EXCOMMUNICATION_ID,
+  registerV070ExcommunicationBattleEffect,
+} from './excommunication-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -41,22 +46,46 @@ const capitalGainsHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const excommunicationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_EXCOMMUNICATION_ID,
+  expectedText: V070_EXCOMMUNICATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ExcommunicationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_EXCOMMUNICATION_ID,
+      'always',
+    );
+  },
+};
+
+const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
+  [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
+  [V070_EXCOMMUNICATION_ID, excommunicationHandler],
+]);
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  V070_CAPITAL_GAINS_ID,
+  ...deferredHandlers.keys(),
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
-  if (cardId === V070_CAPITAL_GAINS_ID) return capitalGainsHandler;
-  return previous.v070BattleEffectHandler(cardId);
+  return deferredHandlers.get(cardId) ?? previous.v070BattleEffectHandler(cardId);
 }
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
-  if (cardId === V070_CAPITAL_GAINS_ID) return 'ordinary';
+  if (deferredHandlers.has(cardId)) return 'ordinary';
   return previous.v070BattleRevealEffectClass(cardId);
 }
 
@@ -97,7 +126,8 @@ export function resolveV070SupportedRevealEffects(
   const forwarded: V070BattleCardCommitment[] = [];
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    if (cardId !== V070_CAPITAL_GAINS_ID) {
+    const handler = deferredHandlers.get(cardId);
+    if (!handler) {
       forwarded.push(commitment);
       continue;
     }
@@ -116,10 +146,8 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    const registered = state.battleRuntime?.capitalGainsBattleSourceInstanceIds
-      ?.includes(commitment.instanceId) ?? false;
-    if (!registered) {
-      capitalGainsHandler.apply({
+    if (!deferredRegistrationExists(state, cardId, commitment.instanceId)) {
+      handler.apply({
         state,
         owner: commitment.owner,
         opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -147,6 +175,22 @@ export function resolveV070SupportedRevealEffects(
     forwarded,
     encounteredAt,
   );
+}
+
+function deferredRegistrationExists(
+  state: V070GameState,
+  cardId: string,
+  sourceInstanceId: string,
+): boolean {
+  if (cardId === V070_CAPITAL_GAINS_ID) {
+    return state.battleRuntime?.capitalGainsBattleSourceInstanceIds
+      ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_EXCOMMUNICATION_ID) {
+    return state.battleRuntime?.excommunicationBattleSourceInstanceIds
+      ?.includes(sourceInstanceId) ?? false;
+  }
+  return false;
 }
 
 function unsupportedRevealEffect(
