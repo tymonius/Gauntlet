@@ -4,12 +4,12 @@
   "cardCount": 142,
   "effectSurfaceCount": 290,
   "authorityDigest": "21f8911e5d1aa645afd7b63192f3549a240156af6c83384eb8ca1445f1dee4ca",
-  "classificationDigest": "ee919dbf9cb7664ed1176a37fc72704f842f02cb9b20927b43d4acbfbc450f73",
+  "classificationDigest": "bd91f5452dc3141608bd6892a401c182c08233c17137efb88040a52145bdcf03",
   "summary": {
     "dynamic_canonical_text_only": 157,
     "literal_authority_locked": 52,
     "literal_without_regression": 11,
     "unverified": 70
   },
-  "note": "Initial exhaustive v0.7.0 digital-behavior audit baseline. This locks the reviewed inventory and proof classification; unverified and dynamic-canonical surfaces are audit debt, not claims of implementation correctness. Any authority or classification drift requires explicit review before this baseline is updated."
+  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the copied-effect regression-evidence update. The 2026-09-10 review changed test-file evidence on nine surfaces but changed no surface status, source evidence, authority digest, or classification counts. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
 }
