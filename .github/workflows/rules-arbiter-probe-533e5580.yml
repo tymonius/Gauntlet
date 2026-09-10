@@ -33,19 +33,23 @@ jobs:
           from pathlib import Path
           path = Path('rules-assistant/local-search.js')
           text = path.read_text()
-          needle = '''    aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
-          },
-          '''
-          insertion = '''  {
-              pattern: /(?=[\\s\\S]*\\bassets?\\b)(?=[\\s\\S]*\\b(?:replace|replaces|replaced|replacing|swap|swaps|swapped|swapping|exchange|exchanges|exchanged|exchanging|make room)\\b)(?=[\\s\\S]*\\b(?:bank|banked|banking|hand|limit|room|new)\\b)/i,
-              aliases: ["Replacing an Asset", "banking an Asset at the Asset limit", "discard one Asset to make room", "bank the new Asset as part of the same effect", "replacement is not a separate Action"]
-            },
-          '''
+          anchor = '    aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]'
+          insertion = "\n".join([
+              '  {',
+              '    pattern: /(?=[\\s\\S]*\\bassets?\\b)(?=[\\s\\S]*\\b(?:replace|replaces|replaced|replacing|swap|swaps|swapped|swapping|exchange|exchanges|exchanged|exchanging|make room)\\b)(?=[\\s\\S]*\\b(?:bank|banked|banking|hand|limit|room|new)\\b)/i,',
+              '    aliases: ["Replacing an Asset", "banking an Asset at the Asset limit", "discard one Asset to make room", "bank the new Asset as part of the same effect", "replacement is not a separate Action"]',
+              '  },'
+          ])
           if '"Replacing an Asset", "banking an Asset at the Asset limit"' in text:
               raise SystemExit('Asset replacement alias already exists')
-          if needle not in text:
-              raise SystemExit('Copied-effect alias insertion point not found')
-          path.write_text(text.replace(needle, needle + insertion, 1))
+          start = text.find(anchor)
+          if start < 0:
+              raise SystemExit('Copied-effect alias anchor not found')
+          close = text.find('\n  },', start + len(anchor))
+          if close < 0:
+              raise SystemExit('Copied-effect alias closing block not found')
+          close += len('\n  },')
+          path.write_text(text[:close] + '\n' + insertion + text[close:])
           PY
 
           grep -RIl --include='*.js' --include='*.mjs' 'v071-qa-20260910-3' rules-assistant \
