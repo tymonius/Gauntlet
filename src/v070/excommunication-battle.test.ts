@@ -287,6 +287,11 @@ describe('v0.7.0 Excommunication battle effect', () => {
     expect(state.players.B.zones.discardPile).not.toContain(target);
     expect(state.players.B.zones.graveyard).toContain(target);
     expect(state.players.A.inquisition?.conviction).toBe(convictionBefore + 1);
+    expect(state.battleRuntime?.finalJudgmentWindowOpen).toBe(true);
+
+    state = reduceV070BattleAction(state, {
+      type: 'pass_grand_inquisitor_final_judgment', playerId: 'A',
+    });
     expect(state.battleRuntime).toBeNull();
   });
 
