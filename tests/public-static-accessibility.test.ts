@@ -8,7 +8,7 @@ const PUBLIC_ROOTS = [
   "index.html",
   "about",
   "accessibility",
-  "card-reference",
+  "apps/card-reference",
   "contact",
   "deckbuilder",
   "faq",
