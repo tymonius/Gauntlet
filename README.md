@@ -90,7 +90,7 @@ The repository's current/historical/generated path classifications and cleanup t
 
 ### apps/
 
-Maintained application source that has been separated from deployed URL layout. `apps/start/` and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/start/` and `/playtest/` routes.
+Maintained application source that has been separated from deployed URL layout. `apps/card-reference/`, `apps/start/`, and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/card-reference/`, `/start/`, and `/playtest/` routes.
 
 ### game-data/
 
@@ -116,17 +116,17 @@ Current faction-era Deckbuilder and complete-package print/export surface.
 
 Historical Deckbuilder surfaces retained for versioned compatibility.
 
-### card-reference/ and factions/
+### factions/
 
-Current public discovery/reference surfaces generated from current authority.
+Current public faction discovery/reference surface generated from current authority.
 
 ### rules-assistant/
 
 Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
 
-### apps/start/, apps/playtest/, and workers/playtest-sessions/
+### apps/card-reference/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 
-Canonical Start and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/start/` and `/playtest/` paths; do not recreate maintained root `start/` or `playtest/` source aliases.
+Canonical Card Reference, Start, and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/card-reference/`, `/start/`, and `/playtest/` paths; do not recreate maintained root `card-reference/`, `start/`, or `playtest/` source aliases.
 
 ### tts/
 
@@ -164,10 +164,9 @@ Then open, for example:
 http://localhost:8000/
 http://localhost:8000/rulebook/
 http://localhost:8000/deckbuilder/
-http://localhost:8000/card-reference/
 ~~~
 
-Start and Playtest are source/deployment separated. Their canonical sources are `apps/start/` and `apps/playtest/`, while production serves them at `/start/` and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes.
+Card Reference, Start, and Playtest are source/deployment separated. Their canonical sources are `apps/card-reference/`, `apps/start/`, and `apps/playtest/`, while production serves them at `/card-reference/`, `/start/`, and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes.
 
 For the rules-aware digital-engine codebase:
 
