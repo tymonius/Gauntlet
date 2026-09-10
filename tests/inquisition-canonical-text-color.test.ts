@@ -6,10 +6,10 @@ const CANONICAL_INQUISITION = "#a67a27";
 describe("Inquisition canonical faction color", () => {
   it("keeps canonical ochre across public Inquisition identity surfaces", () => {
     const polish = readFileSync("site-polish.css", "utf8");
-    const factionStyles = readFileSync("factions/factions.css", "utf8");
-    const referenceStyles = readFileSync("card-reference/styles.css", "utf8");
-    const referenceFactionColors = readFileSync("card-reference/faction-colors.css", "utf8");
-    const trackedStyles = readFileSync("playtest/tracked/styles.css", "utf8");
+    const factionStyles = readFileSync("apps/factions/factions.css", "utf8");
+    const referenceStyles = readFileSync("apps/card-reference/styles.css", "utf8");
+    const referenceFactionColors = readFileSync("apps/card-reference/faction-colors.css", "utf8");
+    const trackedStyles = readFileSync("apps/playtest/tracked/styles.css", "utf8");
     const rulebookApp = readFileSync("rulebook/app.js", "utf8");
 
     expect(factionStyles).toContain(`.faction-inquisition { --faction: ${CANONICAL_INQUISITION}; --faction-dark: ${CANONICAL_INQUISITION};`);
