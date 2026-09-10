@@ -6,7 +6,7 @@ import { ROOT } from '../current-game-authority.mjs';
 const LIVE_SOURCE_DIRS = Object.freeze([
   'card-design',
   'apps/card-reference',
-  'deckbuilder',
+  'apps/deckbuilder',
   'apps/factions',
   'apps/playtest',
   'rulebook',
