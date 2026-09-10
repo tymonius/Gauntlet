@@ -2,6 +2,7 @@ import type { PlayerId } from './rules';
 import type { V070GameState } from './engine';
 import * as previous from './views-pre-capital-gains';
 import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
+import { pendingV070ExcommunicationAftermath } from './excommunication-battle';
 
 export * from './views-pre-capital-gains';
 
@@ -13,8 +14,19 @@ export interface V070CapitalGainsAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070ExcommunicationAftermathView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  maximumCombinedValue: 3;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = previous.V070GameView & {
   pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
+  pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -22,17 +34,37 @@ export function viewV070GameForPlayer(
   viewer: PlayerId,
 ): V070GameView {
   const core = previous.viewV070GameForPlayer(state, viewer);
-  const pending = pendingV070CapitalGainsAftermath(state);
+  const capitalGains = pendingV070CapitalGainsAftermath(state);
   const pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null =
-    pending
+    capitalGains
       ? {
-          playerId: pending.playerId,
-          owner: pending.owner,
-          sourceInstanceId: pending.sourceInstanceId,
-          candidateCount: pending.candidateInstanceIds.length,
-          ...(viewer === pending.playerId
+          playerId: capitalGains.playerId,
+          owner: capitalGains.owner,
+          sourceInstanceId: capitalGains.sourceInstanceId,
+          candidateCount: capitalGains.candidateInstanceIds.length,
+          ...(viewer === capitalGains.playerId
             ? {
-                candidateInstanceIds: [...pending.candidateInstanceIds],
+                candidateInstanceIds: [...capitalGains.candidateInstanceIds],
+              }
+            : {}),
+        }
+      : null;
+
+  const excommunication = pendingV070ExcommunicationAftermath(state);
+  const pendingExcommunicationAftermath:
+    V070ExcommunicationAftermathView | null = excommunication
+      ? {
+          playerId: excommunication.playerId,
+          owner: excommunication.owner,
+          opponent: excommunication.opponent,
+          sourceInstanceId: excommunication.sourceInstanceId,
+          candidateCount: excommunication.candidateInstanceIds.length,
+          maximumCombinedValue: excommunication.maximumCombinedValue,
+          ...(viewer === excommunication.playerId
+            ? {
+                candidateInstanceIds: [
+                  ...excommunication.candidateInstanceIds,
+                ],
               }
             : {}),
         }
@@ -41,5 +73,6 @@ export function viewV070GameForPlayer(
   return {
     ...core,
     pendingCapitalGainsAftermath,
+    pendingExcommunicationAftermath,
   };
 }
