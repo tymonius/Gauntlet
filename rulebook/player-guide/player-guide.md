@@ -88,8 +88,10 @@ An effect heading tells you how that part of the card is used. The shared headin
 - **Gambit** — risk the card from your Hand during a battle.
 - **Tactic** — use the card from your temporary Reserve during a battle.
 - **Gambit/Tactic** — the card may be used in either of those battle roles.
+- **Reaction** — play the card when the trigger or timing printed in its Reaction effect occurs. A Reaction does not spend your normal Action unless it specifically says that it does.
+- **Overlay** — attach the card to a Territory as instructed. While exposed, its Overlay effect temporarily replaces the effect immediately beneath it.
 
-Some cards have other headings, such as **Reaction** or **Overlay**, and factions introduce some headings of their own. Follow the card and the relevant Faction Guide when one appears; you do not need those systems to understand the shared game.
+Factions also introduce some headings of their own. Follow the card and the relevant Faction Guide when one appears; you do not need to learn those faction systems to understand the shared game.
 
 Only the effect you are using applies. A card used as a Gambit does not also perform its Action or Asset effect just because those effects are printed on the same card.
 
