@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYTEST_SOURCE = "apps/playtest"
+START_SOURCE = "apps/start"
 LIFECYCLE = json.loads((ROOT / "config/release-lifecycle.json").read_text(encoding="utf-8"))
 CURRENT_VERSION = str(LIFECYCLE.get("current_release", ""))
 
@@ -37,8 +38,8 @@ REQUIRED = [
     f"{PLAYTEST_SOURCE}/player-mat/index.html",
     f"{PLAYTEST_SOURCE}/host/create-event.js",
     f"{PLAYTEST_SOURCE}/batch/app.js",
-    "start/index.html",
-    "start/app.js",
+    f"{START_SOURCE}/index.html",
+    f"{START_SOURCE}/app.js",
     "scripts/test_v063_formal_session_e2e.mjs",
     "scripts/test_tracked_playtest_e2e.mjs",
 ]
@@ -167,16 +168,16 @@ def main() -> int:
         "decisiveCause",
         "selectionReason",
     ], errors)
-    require("start/app.js", [
+    require(f"{START_SOURCE}/app.js", [
         'new URL("../playtest/tracked/"',
         'url.searchParams.set("mode"',
         'if (mode === "physical" || mode === "tts")',
     ], errors)
-    require("start/index.html", [
+    require(f"{START_SOURCE}/index.html", [
         "Tabletop Simulator",
         "Capture. Draw. Act. Move.",
     ], errors)
-    require("start/app.js", [
+    require(f"{START_SOURCE}/app.js", [
         "Create tracked playtest",
     ], errors)
 
@@ -191,7 +192,7 @@ def main() -> int:
         visible = re.sub(r"<[^>]+>", " ", read(rel))
         if re.search(r"(?:current|canonical|formal|game-night|play aid)[^\n]{0,60}v0\.6\.[13]", visible, re.I):
             errors.append(f"{rel}: still advertises a v0.6.x identity as current")
-    if "pending battle" in read("start/index.html").lower():
+    if "pending battle" in read(f"{START_SOURCE}/index.html").lower():
         errors.append("start/index.html: still teaches Pending Battle")
     if "Faction Action" in read(f"{PLAYTEST_SOURCE}/onboarding/index.html"):
         errors.append(f"{PLAYTEST_SOURCE}/onboarding/index.html: still teaches retired Faction Action terminology")
