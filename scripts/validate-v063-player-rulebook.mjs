@@ -135,11 +135,11 @@ for (const requiredRoute of [
 
 // Faction guides are player-facing overviews, not duplicate rulebook chapters.
 // Preserve the strategic meaning here while the exact procedures remain enforced above in the Rulebook.
-const financierPage = read('factions/financiers/index.html');
+const financierPage = read('apps/factions/financiers/index.html');
 if (!financierPage.includes('A successful attack can advance both your territorial position and your property portfolio. The Executive rewards attacking ground you are prepared to buy.')) {
   fail('Financiers public faction page no longer explains that Hostile Takeover can turn an attack into both territorial and ownership progress.');
 }
-const inquisitionPage = read('factions/inquisition/index.html');
+const inquisitionPage = read('apps/factions/inquisition/index.html');
 const inquisitionExplainsPurification =
   inquisitionPage.includes('both their Draw Pile and Discard Pile are empty') &&
   inquisitionPage.includes('nothing left to draw');
