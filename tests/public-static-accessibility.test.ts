@@ -12,7 +12,7 @@ const PUBLIC_ROOTS = [
   "contact",
   "deckbuilder",
   "faq",
-  "factions",
+  "apps/factions",
   "apps/playtest",
   "apps/start",
   "privacy",

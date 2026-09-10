@@ -24,7 +24,7 @@ describe("faction guide link purpose", () => {
 
   for (const [id, name, anchor] of guides) {
     it(`${name} stays a playstyle guide and hands exact rules to its rulebook chapter`, () => {
-      const html = readFileSync(`factions/${id}/index.html`, "utf8");
+      const html = readFileSync(`apps/factions/${id}/index.html`, "utf8");
       expect(html).toContain("What makes the faction different.");
       expect(html.match(/<strong>Why it matters<\/strong>/g)).toHaveLength(2);
       expect(html).not.toContain("<strong>Leader ability</strong>");
@@ -33,7 +33,7 @@ describe("faction guide link purpose", () => {
   }
 
   it("keeps the Diplomats Peace Treaty threshold at six ratified Proposals", () => {
-    const html = readFileSync("factions/diplomats/index.html", "utf8");
+    const html = readFileSync("apps/factions/diplomats/index.html", "utf8");
     expect(html).toContain("Six different ratified Proposals complete the Peace Treaty.");
     expect(html).not.toContain("Five different Articles");
   });

@@ -5,7 +5,7 @@ on:
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
-      - "factions/**/index.html"
+      - "apps/factions/**/index.html"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
@@ -20,7 +20,7 @@ on:
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
-      - "factions/**/index.html"
+      - "apps/factions/**/index.html"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
@@ -66,9 +66,9 @@ jobs:
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md
             index.html
             apps/start/index.html
-            factions/military/index.html
-            factions/financiers/index.html
-            factions/inquisition/index.html
+            apps/factions/military/index.html
+            apps/factions/financiers/index.html
+            apps/factions/inquisition/index.html
             releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
             releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json
             artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json

@@ -6,12 +6,12 @@ const lifecycle = JSON.parse(read('config/release-lifecycle.json'));
 const currentGame = JSON.parse(read('game-data/current-game.json'));
 const stagedVersion = String(currentGame.displayVersion || currentGame.version || '');
 const factionPaths = [
-  'factions/military/index.html',
-  'factions/diplomats/index.html',
-  'factions/financiers/index.html',
-  'factions/intelligence/index.html',
-  'factions/mystics/index.html',
-  'factions/inquisition/index.html',
+  'apps/factions/military/index.html',
+  'apps/factions/diplomats/index.html',
+  'apps/factions/financiers/index.html',
+  'apps/factions/intelligence/index.html',
+  'apps/factions/mystics/index.html',
+  'apps/factions/inquisition/index.html',
 ];
 
 describe('current public faction overviews', () => {
@@ -25,7 +25,7 @@ describe('current public faction overviews', () => {
   });
 
   test('keeps Military Leader Orders visibly assigned to the correct Leader', () => {
-    const html = read('factions/military/index.html');
+    const html = read('apps/factions/military/index.html');
     const general = html.slice(html.indexOf('id="general"'), html.indexOf('id="commandant"'));
     const commandant = html.slice(html.indexOf('id="commandant"'));
 

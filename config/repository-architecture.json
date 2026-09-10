@@ -44,7 +44,7 @@
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Start, and Playtest."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Factions, Start, and Playtest."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -93,12 +93,6 @@
       "target_groups": ["docs"],
       "transitional": false,
       "note": "Maintained documentation and explicitly archived development records."
-    },
-    "factions": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current faction discovery/reference surface."
     },
     "faq": {
       "role": "active_application",

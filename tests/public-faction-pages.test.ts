@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const mysticsPage = readFileSync("factions/mystics/index.html", "utf8");
+const mysticsPage = readFileSync("apps/factions/mystics/index.html", "utf8");
 
 describe("published faction pages", () => {
   it("describes the v0.6.1 Mystics Ritual victory rather than the obsolete third-Rite win", () => {
