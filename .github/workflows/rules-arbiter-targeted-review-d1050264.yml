@@ -20,6 +20,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Apply candidate copied-effect alias locally
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('rules-assistant/local-search.js')
+          s = p.read_text(encoding='utf-8')
+          anchor = '''  {
+            pattern: /(?=[\\s\\S]*\\btactics?\\b)(?=[\\s\\S]*\\b(?:two|2|second|additional|multiple|several)\\b)(?=[\\s\\S]*\\b(?:choose|chooses|chosen|choosing|choice|select|selection)\\b)/i,
+            aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
+          },
+          '''
+          addition = '''  {
+            pattern: /(?=[\\s\\S]*\\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\\b)(?=[\\s\\S]*\\beffects?\\b)(?=[\\s\\S]*\\b(?:opponent(?:['’]s)?|another\\s+(?:player|card)(?:['’]s)?|other\\s+player(?:['’]s)?|source\\s+card|as\\s+though|as\\s+if)\\b)/i,
+            aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
+          },
+          '''
+          if anchor not in s:
+              raise SystemExit('Could not find multiple-Tactic alias anchor')
+          p.write_text(s.replace(anchor, anchor + addition, 1), encoding='utf-8')
+          PY
       - name: Run v0.7.1 retrieval probe
         run: |
           mkdir -p .tmp/d1050264
@@ -28,14 +48,14 @@ jobs:
           import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
           import { augmentRetrievalForContext, contextualQuery } from './rules-assistant/worker-v071.js';
           import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './rules-assistant/v071-public-corpus.js';
-
           const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
           const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');
           const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: 'https://gauntlet.run' });
-          const queries = [
+          const questions = [
             "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?",
             "If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?",
-            "When I apply another player's card effect, who controls choices using 'your', and does the source card move?"
+            "When I apply another player's card effect, who controls choices using 'your', and does the source card move?",
+            "Rend the Veil applies another card's Tactic effect. Who controls that application and does the source card leave the Graveyard?"
           ];
           const sourcesFor = (question) => {
             const query = contextualQuery(question, []);
@@ -43,23 +63,18 @@ jobs:
             return augmentRetrievalForContext(corpus, question, [], raw);
           };
           const output = {
-            generatedAt: new Date().toISOString(),
-            corpusVersion: corpus.version,
-            applyingRule: corpus.documents.find((d) => d.id === 'rulebook:applying-and-repeating-another-effect') || null,
-            heresy: corpus.documents.find((d) => d.id === 'card:inquisition-heresy') || null,
-            rendTheVeil: corpus.documents.find((d) => d.id === 'card:mystics-rend-the-veil') || null,
-            results: queries.map((question) => ({
+            questions: questions.map((question) => ({
               question,
-              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title, heading, excerpt }) => ({ canonicalId, score, title, heading, excerpt }))
+              hits: sourcesFor(question).slice(0, 12).map(({ canonicalId, score, title }) => ({ canonicalId, score, title }))
             }))
           };
-          writeFileSync('.tmp/d1050264/retrieval-probe-v071.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+          writeFileSync('.tmp/d1050264/candidate-alias-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
           console.log(JSON.stringify(output, null, 2));
           NODE
       - name: Upload retrieval probe
         uses: actions/upload-artifact@v4
         with:
-          name: rules-arbiter-retrieval-probe-v071-d1050264
-          path: .tmp/d1050264/retrieval-probe-v071.json
+          name: rules-arbiter-candidate-alias-probe-d1050264
+          path: .tmp/d1050264/candidate-alias-probe.json
           if-no-files-found: error
           retention-days: 1
