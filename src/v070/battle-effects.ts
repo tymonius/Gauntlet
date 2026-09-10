@@ -20,6 +20,11 @@ import {
   registerV070ExcommunicationBattleEffect,
 } from './excommunication-battle';
 import {
+  V070_SUPPLIES_BATTLE_TEXT,
+  V070_SUPPLIES_ID,
+  registerV070SuppliesBattleEffect,
+} from './supplies-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -66,9 +71,30 @@ const excommunicationHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const suppliesHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SUPPLIES_ID,
+  expectedText: V070_SUPPLIES_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070SuppliesBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_SUPPLIES_ID,
+      'always',
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
+  [V070_SUPPLIES_ID, suppliesHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
@@ -188,6 +214,10 @@ function deferredRegistrationExists(
   }
   if (cardId === V070_EXCOMMUNICATION_ID) {
     return state.battleRuntime?.excommunicationBattleSourceInstanceIds
+      ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_SUPPLIES_ID) {
+    return state.battleRuntime?.suppliesBattleSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
   }
   return false;
