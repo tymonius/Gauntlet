@@ -13,14 +13,14 @@ const websiteCombined = readCombined([
   "apps/start/index.html",
   "apps/playtest/onboarding/index.html",
   "apps/playtest/player-mat/index.html",
-  "factions/inquisition/index.html",
-  "factions/intelligence/index.html",
-  "factions/financiers/index.html",
-  "factions/mystics/index.html",
+  "apps/factions/inquisition/index.html",
+  "apps/factions/intelligence/index.html",
+  "apps/factions/financiers/index.html",
+  "apps/factions/mystics/index.html",
   "apps/start/app.js",
-  "deckbuilder/app.js",
-  "deckbuilder/faction-components.js",
-  "deckbuilder/print.js",
+  "apps/deckbuilder/app.js",
+  "apps/deckbuilder/faction-components.js",
+  "apps/deckbuilder/print.js",
 ]);
 
 const printableReferenceCombined = readCombined([
