@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = process.cwd();
 const historicalRoot = path.join(root, 'legacy', 'public-versions');
 
-const relocatedPublicApps = ['start', 'playtest', 'card-reference'];
+const relocatedPublicApps = ['start', 'playtest', 'card-reference', 'factions'];
 const materializedApps = [];
 for (const route of relocatedPublicApps) {
   const source = path.join(root, 'apps', route);
