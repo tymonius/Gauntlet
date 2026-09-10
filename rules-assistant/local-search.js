@@ -67,7 +67,7 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["Multiple Gambits or Tactics", "several Tactics chosen as part of the same choice", "choose them simultaneously", "Choose Tactics", "Reveal Tactics"]
   },
   {
-    pattern: /(?=[\s\S]*\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\b)(?=[\s\S]*\b(?:effects?|opponent(?:['’]s)|another\s+(?:player|card)(?:['’]s)?|other\s+player(?:['’]s)?|source\s+card|as\s+though|as\s+if)\b)/i,
+    pattern: /(?=[\s\S]*\b(?:apply|applies|applied|applying|repeat|repeats|repeated|repeating)\b)(?=[\s\S]*\b(?:opponent(?:['’]s)|another\s+(?:player|card)(?:['’]s)?|other\s+player(?:['’]s)?|source\s+card|as\s+though|as\s+if)\b)/i,
     aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
   },
   {
