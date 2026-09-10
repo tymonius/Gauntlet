@@ -17,6 +17,7 @@ export interface V070PendingSuppliesAftermath {
   owner: PlayerId;
   sourceInstanceId: string;
   candidateInstanceIds: string[];
+  drawnCount: number;
 }
 
 declare module './battle-types' {
@@ -173,6 +174,7 @@ export function openV070SuppliesAftermathForSource(
     owner,
     sourceInstanceId,
     candidateInstanceIds: candidates,
+    drawnCount: draw.drawn.length,
   };
   appendV070Event(state, {
     type: 'supplies_battle_discard_choice_pending',
@@ -221,7 +223,7 @@ export function resolveV070SuppliesAftermathChoice(
     pending.owner,
     pending.sourceInstanceId,
     targetInstanceId,
-    null,
+    pending.drawnCount,
   );
   const owner = pending.owner;
   runtime.pendingSuppliesAftermath = null;
@@ -253,7 +255,7 @@ function discardSuppliesCard(
   owner: PlayerId,
   sourceInstanceId: string,
   targetInstanceId: string,
-  drawnCount: number | null,
+  drawnCount: number,
 ): void {
   const zones = state.players[owner].zones;
   const index = zones.hand.indexOf(targetInstanceId);
