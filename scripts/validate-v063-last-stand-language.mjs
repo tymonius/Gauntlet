@@ -19,7 +19,7 @@ const targets = [
   'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
   'index.html',
   'apps/start/index.html',
-  'factions/military/index.html',
+  'apps/factions/military/index.html',
   'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
   'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
   'rules-assistant/rules-deterministic-v063.js',
