@@ -89,6 +89,17 @@ export type V070BattleRevealChoice =
       candidateInstanceIds: string[];
     }
   | {
+      kind: 'battle_negation';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      sourceCardId: 'inquisition-tyranny' | 'neutral-sabotage';
+      role: 'gambit' | 'tactic';
+      discardTargetImmediately: boolean;
+      /** Opposing cards at this reveal stage whose effects had not taken effect. */
+      candidateInstanceIds: string[];
+    }
+  | {
       kind: 'counterworks';
       owner: PlayerId;
       sourceInstanceId: string;
