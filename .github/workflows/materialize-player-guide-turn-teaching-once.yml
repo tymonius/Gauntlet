@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   patch:
-    if: "${{ ! contains(github.event.head_commit.message, '[player-guide-turn-teaching]') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,5 +66,5 @@ So after Capture and Draw, the middle of most turns is simply:
           git config user.name 'Gauntlet publication materializer'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add rulebook/player-guide/player-guide.md .github/workflows/materialize-player-guide-turn-teaching-once.yml
-          git commit -m 'Clarify Player Guide turn teaching [player-guide-turn-teaching]'
+          git commit -m 'Clarify Player Guide turn teaching'
           git push origin HEAD:docs/player-guide-turn-teaching
