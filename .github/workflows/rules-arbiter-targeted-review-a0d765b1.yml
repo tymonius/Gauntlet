@@ -46,23 +46,23 @@ jobs:
             > "$REVIEW_DIR/interactions.json"
 
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN ($INTERACTION_SUBQUERY) ORDER BY interaction_id" \
+            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
             > "$REVIEW_DIR/sources.json"
 
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($INTERACTION_SUBQUERY) ORDER BY created_at" \
+            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
             > "$REVIEW_DIR/diagnostics.json"
 
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($INTERACTION_SUBQUERY) ORDER BY reviewed_at" \
+            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
             > "$REVIEW_DIR/audits.json"
 
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id IN ($INTERACTION_SUBQUERY) ORDER BY reviewed_at" \
+            --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
             > "$REVIEW_DIR/reviews.json"
 
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id IN ($INTERACTION_SUBQUERY) ORDER BY reviewed_at" \
+            --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
             > "$REVIEW_DIR/audit-history.json"
 
       - name: Assemble review bundle
