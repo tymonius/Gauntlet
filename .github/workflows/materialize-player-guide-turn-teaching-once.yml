@@ -29,26 +29,30 @@ jobs:
 
           path = Path('rulebook/player-guide/player-guide.md')
           text = path.read_text()
-          old = '''Every normal turn follows the same six-part rhythm:
-
-> **Capture → Draw → Opening → Movement → Denouement → Cleanup**
-
-Most of the time, you can think of it even more simply:
-
-> **Capture. Draw. Act. Move.**
-
-You normally get **one Action for the entire turn**. You may spend it before moving, during **Opening**, or save it until after moving, during **Denouement**.
-'''
-          new = '''Every normal turn follows the same six-part rhythm:
-
-> **Capture → Draw → Opening → Movement → Denouement → Cleanup**
-
-The names **Opening** and **Denouement** are just the two places where you can normally spend your Action: before Movement or after it. You get **one Action for the entire turn**.
-
-So after Capture and Draw, the middle of most turns is simply:
-
-> **Act, then move — or move, then act.**
-'''
+          old = "\n".join([
+              "Every normal turn follows the same six-part rhythm:",
+              "",
+              "> **Capture → Draw → Opening → Movement → Denouement → Cleanup**",
+              "",
+              "Most of the time, you can think of it even more simply:",
+              "",
+              "> **Capture. Draw. Act. Move.**",
+              "",
+              "You normally get **one Action for the entire turn**. You may spend it before moving, during **Opening**, or save it until after moving, during **Denouement**.",
+              "",
+          ])
+          new = "\n".join([
+              "Every normal turn follows the same six-part rhythm:",
+              "",
+              "> **Capture → Draw → Opening → Movement → Denouement → Cleanup**",
+              "",
+              "The names **Opening** and **Denouement** are just the two places where you can normally spend your Action: before Movement or after it. You get **one Action for the entire turn**.",
+              "",
+              "So after Capture and Draw, the middle of most turns is simply:",
+              "",
+              "> **Act, then move — or move, then act.**",
+              "",
+          ])
           if text.count(old) != 1:
               raise SystemExit(f'Expected exactly one turn-teaching passage; found {text.count(old)}.')
           path.write_text(text.replace(old, new))
