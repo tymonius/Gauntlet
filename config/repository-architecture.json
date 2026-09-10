@@ -44,7 +44,7 @@
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Start and Playtest."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Start, and Playtest."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -63,12 +63,6 @@
       "target_groups": ["packages", "tools"],
       "transitional": true,
       "note": "Rendering/authoring system; target split between shared rendering package and production tools."
-    },
-    "card-reference": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current card and Territory reference."
     },
     "changelog": {
       "role": "active_application",
