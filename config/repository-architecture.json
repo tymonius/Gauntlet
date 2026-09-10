@@ -44,7 +44,7 @@
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Factions, Start, and Playtest."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Deckbuilder, Factions, Start, and Playtest."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -81,12 +81,6 @@
       "target_groups": ["apps"],
       "transitional": true,
       "note": "Public contact surface."
-    },
-    "deckbuilder": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current Deckbuilder."
     },
     "docs": {
       "role": "documentation",
