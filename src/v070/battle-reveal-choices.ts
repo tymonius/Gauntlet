@@ -127,10 +127,10 @@ export function queueV070BattleRevealChoice(
   runtime.battleRevealChoices ??= [];
   runtime.battleRevealChoices.push(choice);
 
-  // Disruption returns its target out of the battle immediately. No other
-  // reveal effect can alter its candidate set once the scheduler pauses, so
-  // open this choice at registration. This also lets the outer battle facade
-  // own its resolution without teaching older stacked facades a new choice.
+  // These effects alter the exact set of battle cards at the current reveal
+  // stage. Once they register, the scheduler pauses before another reveal
+  // effect can change their candidate set, so the outer battle facade may own
+  // their resolution without teaching older stacked facades new actions.
   if (choice.kind === 'disruption') {
     runtime.battleRevealChoiceOpen = true;
     appendV070Event(state, {
@@ -152,6 +152,35 @@ export function queueV070BattleRevealChoice(
       visibility: choice.owner,
       payload: {
         sourceInstanceId: choice.sourceInstanceId,
+        revealRole: choice.role,
+        targetInstanceIds: [...choice.candidateInstanceIds],
+      },
+    });
+    return;
+  }
+
+  if (choice.kind === 'battle_negation') {
+    runtime.battleRevealChoiceOpen = true;
+    appendV070Event(state, {
+      type: 'battle_negation_choice_pending',
+      actor: choice.owner,
+      visibility: 'public',
+      payload: {
+        playerId: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        revealRole: choice.role,
+        candidateCount: choice.candidateInstanceIds.length,
+        mandatory: true,
+      },
+    });
+    appendV070Event(state, {
+      type: 'battle_negation_choice_options',
+      actor: choice.owner,
+      visibility: choice.owner,
+      payload: {
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
         revealRole: choice.role,
         targetInstanceIds: [...choice.candidateInstanceIds],
       },
