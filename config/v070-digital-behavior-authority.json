@@ -4,12 +4,12 @@
   "cardCount": 142,
   "effectSurfaceCount": 290,
   "authorityDigest": "21f8911e5d1aa645afd7b63192f3549a240156af6c83384eb8ca1445f1dee4ca",
-  "classificationDigest": "d51f9c1e01d5d5d6cf22bc236a60a072842b4e89817ffaa1ba36673e8686c4f3",
+  "classificationDigest": "cd0dc818f2e4fe76fcc296008b9e16ed63563c95d9cd8aa552a485315ab3cd52",
   "summary": {
     "dynamic_canonical_text_only": 157,
-    "literal_authority_locked": 52,
+    "literal_authority_locked": 54,
     "literal_without_regression": 11,
-    "unverified": 70
+    "unverified": 68
   },
-  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the copied-effect regression-evidence tranche. The 2026-09-10 review changed test-file evidence on fourteen surfaces but changed no surface status, source evidence, authority digest, or classification counts. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
+  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Tyranny/Sabotage reveal-interference tranche. The 2026-09-10 review verified that the authority digest and 290-surface inventory are unchanged; Tyranny and Sabotage battle surfaces are now literal-authority-locked with regression evidence, while Tyranny's unrelated Asset surface moved from unverified to dynamic-canonical-text-only solely because the new reachable battle module names the card and reads canonical data. That collateral heuristic classification is not an Asset implementation claim. Other changes among fourteen affected surfaces are test/source evidence only. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
 }
