@@ -1,0 +1,63 @@
+name: Materialize Player Guide Onset clarity once
+
+on:
+  push:
+    branches:
+      - docs/player-guide-onset-clarity
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/player-guide-onset-clarity
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Clarify Onset teaching
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('rulebook/player-guide/player-guide.md')
+          text = path.read_text()
+          old = '''### 1. Onset
+
+The moment the battle begins is called **Onset**.
+
+Establish who is attacking, who is defending, and which position is contested. Some cards and faction rules can act during Onset, before anyone commits a Gambit. If nothing changes or prevents the battle, continue normally.
+'''
+          new = '''### 1. Onset
+
+The moment the battle begins is called **Onset**. Think of it as the battle's **pre-Gambit checkpoint**, not another Action window.
+
+First establish who is attacking, who is defending, and which position is contested. Then resolve anything that specifically says it happens during Onset or before Gambits are set. You normally do not make any other choice here unless a card, Leader, faction rule, or other instruction tells you to.
+
+If something prevents the battle or a player withdraws during Onset, the battle ends before Gambits are set and there is no battle result. Otherwise, continue to Gambits.
+'''
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one Onset teaching block, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+
+      - name: Validate publication
+        run: |
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          git diff --check
+
+      - name: Commit and remove one-shot workflow
+        run: |
+          rm .github/workflows/materialize-player-guide-onset-clarity-once.yml
+          git config user.name 'Gauntlet publication materializer'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rulebook/player-guide/player-guide.md .github/workflows/materialize-player-guide-onset-clarity-once.yml
+          git commit -m 'Clarify Onset teaching [onset-clarity-materialized]'
+          git push origin HEAD:docs/player-guide-onset-clarity
