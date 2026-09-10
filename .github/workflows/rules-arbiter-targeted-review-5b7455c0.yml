@@ -36,7 +36,13 @@ jobs:
           rules-assistant/v071-strategic-withdrawal-review.test.mjs
       - name: Validate refinement contract
         run: |
-          node scripts/validate-rules-refinement-source-first.mjs
+          python - <<'PY'
+          import json, subprocess
+          files = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          with open('/tmp/changed-files.json', 'w', encoding='utf-8') as handle:
+              json.dump(files, handle)
+          PY
+          node scripts/validate-rules-refinement-source-first.mjs --changed-files /tmp/changed-files.json
           git diff --check
       - name: Commit refinement
         run: |
