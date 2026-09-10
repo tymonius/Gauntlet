@@ -141,6 +141,32 @@ describe('v0.7.0 Tyranny reveal interference', () => {
     expect(state.players.B.zones.discardPile).not.toContain(target);
   });
 
+  test('as a Tactic, may negate an earlier Gambit whose deferred effect has not taken effect', () => {
+    let state = startBattle();
+    const deferredGambit = injectCard(state, 'B', 'mystics-accursed-wager', 'deferred-gambit');
+    state = revealGambits(setGambits(state, undefined, deferredGambit));
+    expect(state.battleRuntime?.battleAccursedWagerInstanceIds).toContain(deferredGambit);
+    expect(hasV070BattleCardEffectApplied(state, deferredGambit)).toBe(false);
+
+    const tyranny = injectCard(state, 'A', V070_TYRANNY_ID, 'tactic-cross-stage');
+    state.battleRuntime!.participants.A.reserve.push(tyranny);
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A', cardInstanceId: tyranny,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+
+    expect(isV070BattleCardEffectNegated(state, deferredGambit)).toBe(true);
+    expect(hasV070BattleCardEffectApplied(state, tyranny)).toBe(true);
+    expect(v070BattleCommitment(state, deferredGambit)?.role).toBe('gambit');
+    expect(state.battleRuntime?.battleAccursedWagerInstanceIds).not.toContain(deferredGambit);
+    expect(state.battleRuntime?.stage).toBe('outcome');
+  });
+
   test('multiple eligible opposing cards pause for the owner and block unrelated progress', () => {
     let state = startBattle();
     const tyranny = injectCard(state, 'A', V070_TYRANNY_ID, 'choice');
