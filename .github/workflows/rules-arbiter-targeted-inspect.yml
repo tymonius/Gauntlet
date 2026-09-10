@@ -1,0 +1,55 @@
+name: Rules Arbiter targeted inspect
+
+on:
+  push:
+    branches:
+      - rules-arbiter-review-58c9c1c6
+    paths:
+      - '.github/workflows/rules-arbiter-targeted-inspect.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      OUT: .tmp/rules-arbiter-targeted-inspect
+      TARGET: 58c9c1c6-a588-4b18-8e7c-516e1907dd06
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read target production context
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          d1() {
+            local command="$1"
+            local file="$2"
+            npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+              --remote \
+              --config rules-assistant/wrangler.toml \
+              --json \
+              --command "$command" > "$OUT/$file"
+          }
+
+          d1 "SELECT * FROM rules_interactions WHERE id = '$TARGET'" interaction.json
+          d1 "SELECT id, session_id, sequence_index, created_at, question, answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id = (SELECT session_id FROM rules_interactions WHERE id = '$TARGET') ORDER BY sequence_index, created_at" session.json
+          d1 "SELECT * FROM rules_interaction_sources WHERE interaction_id = '$TARGET' ORDER BY ordinal" sources.json
+          d1 "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id = '$TARGET' ORDER BY created_at" diagnostics.json
+          d1 "SELECT * FROM rules_interaction_reviews WHERE interaction_id = '$TARGET' ORDER BY created_at" reviews.json
+          d1 "SELECT * FROM rules_interaction_audits WHERE interaction_id = '$TARGET' ORDER BY reviewed_at" audits.json
+
+      - name: Upload targeted inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-targeted-inspect-58c9c1c6
+          path: .tmp/rules-arbiter-targeted-inspect
+          if-no-files-found: error
+          retention-days: 1
