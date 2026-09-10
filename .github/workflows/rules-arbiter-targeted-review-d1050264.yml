@@ -1,4 +1,4 @@
-name: Rules Arbiter targeted review d1050264
+name: Rules Arbiter retrieval probe d1050264
 
 on:
   push:
@@ -10,15 +10,9 @@ permissions:
   contents: read
 
 jobs:
-  review:
+  probe:
     runs-on: ubuntu-latest
-    environment: production
     timeout-minutes: 10
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      TARGET_ID: d1050264-5c22-4d19-a04a-824498bc1330
-      OUT_DIR: .tmp/rules-arbiter-targeted-review
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,52 +20,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Verify production D1 credentials
+      - name: Run retrieval probe
         run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
-      - name: Read targeted production review bundle
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          DB='gauntlet-rules-assistant'
-          CFG='rules-assistant/wrangler.toml'
-          SID="(SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID')"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interactions WHERE session_id = $SID ORDER BY sequence_index" > "$OUT_DIR/interactions.json"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY interaction_id, ordinal" > "$OUT_DIR/sources.json"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" > "$OUT_DIR/diagnostics.json"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" > "$OUT_DIR/audits.json"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interaction_reviews WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY created_at" > "$OUT_DIR/reviews.json"
-          npx --yes wrangler@4 d1 execute "$DB" --remote --config "$CFG" --json --command "SELECT * FROM rules_interaction_audit_history WHERE interaction_id IN (SELECT id FROM rules_interactions WHERE session_id = $SID) ORDER BY reviewed_at" > "$OUT_DIR/audit-history.json"
-      - name: Assemble targeted review bundle
-        run: |
+          mkdir -p .tmp/d1050264
           node --input-type=module <<'NODE'
           import { readFileSync, writeFileSync } from 'node:fs';
-          const dir = process.env.OUT_DIR;
-          const rows = (name) => {
-            const parsed = JSON.parse(readFileSync(`${dir}/${name}.json`, 'utf8'));
-            return (Array.isArray(parsed) ? parsed : [parsed]).flatMap((block) => Array.isArray(block?.results) ? block.results : []);
-          };
-          const bundle = {
-            schema: 'gauntlet.rules-arbiter-targeted-review.v1',
-            targetInteractionId: process.env.TARGET_ID,
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+
+          const canonicalData = JSON.parse(readFileSync('releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json', 'utf8'));
+          const rulebookMarkdown = readFileSync('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md', 'utf8');
+          const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown });
+          const queries = [
+            "I reveal Heresy as a Tactic and spend 4 Conviction to apply the Tactic effect of an opponent's Rend the Veil in their Graveyard. Rend the Veil says to choose a card in your Graveyard. Whose Graveyard supplies that second card, and does the opponent's Rend the Veil card move?",
+            "If I use Heresy to apply an opponent's Rend the Veil from their Graveyard, whose Graveyard does 'your Graveyard' mean, and does Rend the Veil move?",
+            "When I apply another player's card effect, who controls choices using 'your', and does the source card move?"
+          ];
+          const output = {
             generatedAt: new Date().toISOString(),
-            interactions: rows('interactions'),
-            sources: rows('sources'),
-            diagnostics: rows('diagnostics'),
-            audits: rows('audits'),
-            reviews: rows('reviews'),
-            auditHistory: rows('audit-history')
+            corpusVersion: corpus.version,
+            applyingRule: corpus.documents.find((d) => d.id === 'rulebook:applying-and-repeating-another-effect') || null,
+            heresy: corpus.documents.find((d) => d.canonicalId === 'card:inquisition-heresy' || d.id === 'card:inquisition-heresy' || d.heading === 'Heresy') || null,
+            rendTheVeil: corpus.documents.find((d) => d.canonicalId === 'card:mystics-rend-the-veil' || d.id === 'card:mystics-rend-the-veil' || d.heading === 'Rend the Veil') || null,
+            results: queries.map((query) => ({
+              query,
+              hits: retrieveRules(corpus, query, { limit: 12, excerptLength: 700 }).map(({ canonicalId, score, title, heading, excerpt }) => ({ canonicalId, score, title, heading, excerpt }))
+            }))
           };
-          if (!bundle.interactions.some((item) => item.id === process.env.TARGET_ID)) throw new Error(`Target interaction ${process.env.TARGET_ID} was not found.`);
-          writeFileSync(`${dir}/review-bundle.json`, `${JSON.stringify(bundle, null, 2)}\n`, 'utf8');
-          console.log(`Targeted review bundle assembled: ${bundle.interactions.length} conversation turns, ${bundle.sources.length} source rows, ${bundle.diagnostics.length} diagnostics rows, ${bundle.audits.length} audit rows.`);
+          writeFileSync('.tmp/d1050264/retrieval-probe.json', `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+          console.log(JSON.stringify(output, null, 2));
           NODE
-      - name: Upload targeted review bundle
+      - name: Upload retrieval probe
         uses: actions/upload-artifact@v4
         with:
-          name: rules-arbiter-targeted-review-d1050264
-          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
+          name: rules-arbiter-retrieval-probe-d1050264
+          path: .tmp/d1050264/retrieval-probe.json
           if-no-files-found: error
           retention-days: 1
