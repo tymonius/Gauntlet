@@ -14,10 +14,10 @@ const PUBLIC_ROOTS = [
   "faq",
   "factions",
   "apps/playtest",
+  "apps/start",
   "privacy",
   "rulebook",
   "rules-arbiter",
-  "start",
 ];
 
 const ID_REFERENCE_ATTRIBUTES = [

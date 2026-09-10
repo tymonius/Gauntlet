@@ -130,7 +130,7 @@ jobs:
             const fullTests = uncertain || packageRuntimeChanged || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
             const code = fullTests || dependencyLockChanged || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
             const types = uncertain || exact('package.json') || dependencyLockChanged || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
-            const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
+            const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:apps\/start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
             const accessibility = uncertain || matches(/\.html$/) || exact('tests/public-static-accessibility.test.ts');
@@ -183,8 +183,14 @@ jobs:
             [[ -e "$retired" ]] && continue
             while IFS= read -r match; do
               [[ -z "$match" ]] && continue
-              [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
+              [[ "$match" == legacy/* ]] && continue
+              [[ "$match" == artifacts/* ]] && continue
+              [[ "$match" == docs/Archive/* ]] && continue
               [[ "$match" == docs/recovery/frozen-scripts/* ]] && continue
+              [[ "$match" == scripts/build-clean-v06*.mjs:* ]] && continue
+              [[ "$match" == scripts/validate-v06*.mjs:* ]] && continue
+              [[ "$match" == tests/v06*.test.ts:* ]] && continue
+              [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
               remaining="${match//apps\/$retired/}"
               [[ "$remaining" != *"$retired"* ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2

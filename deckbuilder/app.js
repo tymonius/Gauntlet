@@ -156,7 +156,7 @@ function constructionRules() {
 
   return Object.freeze({
     minimumCards: positiveInteger(source.minimum_cards ?? source.minimumCards, "minimum cards"),
-    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum Deckbuilding value"),
+    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum total card value"),
     territoriesPerPlayer: positiveInteger(source.territories_per_player ?? source.territoriesPerPlayer, "Territories per player"),
     maximumArenas: nonNegativeInteger(source.maximum_arenas ?? source.maximumArenas, "maximum Arenas"),
   });

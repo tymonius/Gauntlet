@@ -28,30 +28,32 @@ GitHub/repository state is authoritative. This file is only the compact handoff.
 
 [#1559 — Make repository architecture machine-readable on current main](https://github.com/tymonius/Gauntlet/pull/1559)
 
-This re-lands the top-level architecture guard cleanly on current `main` instead of force-merging the old stacked cleanup branches. Every root directory has an explicit lifecycle role, target architectural group, and transition status; Governance Integrity checks the machine contract, actual root tree, and human architecture document together.
+This re-landed the top-level architecture guard cleanly on current `main` instead of force-merging the old stacked cleanup branches. Every root directory has an explicit lifecycle role, target architectural group, and transition status; Governance Integrity checks the machine contract, actual root tree, and human architecture document together.
 
-The earlier cleanup stack from #1456 through #1539 remains useful review/history evidence, but current `main` advanced substantially while it was open. Do not merge that old stack wholesale over newer digital-engine, Rules Arbiter, onboarding, or card-pipeline work. Re-land still-valid cleanup decisions deliberately against current `main`.
+[#1562 — Separate Playtest source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1562) is merged. It established the Phase 3 source/deployment-separation pattern by moving canonical Playtest source to `apps/playtest/` while preserving the stable public `/playtest/` route through explicit Pages staging.
 
-## Current tranche: application source/deployment separation
+The earlier cleanup stack from #1456 through #1539 remains useful review/history evidence, but current `main` advanced substantially while it was open. Do not merge that old stack wholesale over newer digital-engine, Rules Arbiter, onboarding, card-pipeline, or release work. Re-land still-valid cleanup decisions deliberately against current `main`.
 
-[#1562 — Separate Playtest source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1562), stacked on #1559.
+## Current tranche: Start source/deployment separation
 
-Playtest is the first concrete Phase 3 application migration:
+[#1571 — Separate Start source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1571), following merged #1562.
 
-- canonical repository source moves byte-for-byte from `playtest/` to `apps/playtest/`;
-- the public compatibility contract remains `/playtest/`;
-- GitHub Pages explicitly stages `apps/playtest/` into the deployed `/playtest/` tree;
-- `/apps/` itself is source-only and must never be published;
-- repository-source tests, validators, generation, and CI use `apps/playtest/`;
-- browser/public links continue to use `/playtest/` or equivalent relative routes;
-- generated Playtest PDFs/images remain co-located for this tranche so the source move is not mixed with generated-artifact lifecycle work.
+Start is the second concrete Phase 3 application migration:
 
-No intentional gameplay, session-service, product behavior, or public-URL change belongs in this tranche.
+- canonical repository source moves byte-for-byte from `start/` to `apps/start/`;
+- the public compatibility contract remains `/start/`;
+- GitHub Pages explicitly stages `apps/start/` into the deployed `/start/` tree;
+- `/apps/` itself remains source-only and must never be published;
+- repository-source tests, validators, accessibility coverage, Card Authority discovery, and CI use `apps/start/`;
+- browser/public links continue to use `/start/` or equivalent relative routes;
+- publication validation materializes `/start/` from canonical source before checking the player-facing contract.
+
+No intentional gameplay, onboarding behavior, product behavior, frozen-release content, or public-URL change belongs in this tranche.
 
 ## Architectural decisions now established
 
 - **Source paths and public URLs are independent.** A stable deployed URL does not require a matching root source directory.
-- **`apps/` is a first-class maintained-source boundary.** New current application migrations should use it rather than create compatibility aliases at repository root.
+- **`apps/` is a first-class maintained-source boundary.** Current Start and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
 - **Pages is an explicit deployment artifact.** It materializes stable routes from canonical source boundaries and must not mirror the repository wholesale.
 - **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned public compatibility sources are not current authority.
 - **Behavior-preserving architecture cleanup stays separate from gameplay/product changes.**
@@ -59,10 +61,10 @@ No intentional gameplay, session-service, product behavior, or public-URL change
 
 ## Next top-down queue
 
-After the Playtest migration is green and merged:
+After the Start migration is green and merged:
 
-1. Select the next cohesive current application root for source/deployment separation, favoring a low-coupling player-facing surface that can validate the `apps/` pattern without a broad functional refactor. `start/` and `card-reference/` are the leading candidates; inspect actual dependency breadth before choosing.
-2. Continue migrating current application source toward `apps/` while preserving deployed URLs through Pages staging.
+1. Inspect `card-reference/` as the next low-coupling current application candidate for source/deployment separation; verify its actual dependency breadth before moving it.
+2. Continue migrating current application source toward `apps/` while preserving deployed URLs through Pages staging. `factions/` is another likely cohesive tranche after Card Reference.
 3. Then address shared package boundaries (`game-data`, Rulebook authority, shared rendering/UI) where current roots mix authority, app, and production roles.
 4. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
 5. Audit asset/generated-output lifecycle after source ownership is stable.
@@ -72,7 +74,7 @@ After the Playtest migration is green and merged:
 
 1. Read this file.
 2. Read [#1430](https://github.com/tymonius/Gauntlet/issues/1430).
-3. Inspect #1559 and the current structural PR named above, including CI and review comments.
+3. Inspect merged #1562 and current [#1571](https://github.com/tymonius/Gauntlet/pull/1571), including CI and review comments.
 4. Reconcile against current `main` before carrying forward any older cleanup branch.
 5. Continue the highest-level unresolved architectural work before descending into local file cleanup.
 6. Update this file when the current tranche, architectural decisions, or next-step queue materially changes.

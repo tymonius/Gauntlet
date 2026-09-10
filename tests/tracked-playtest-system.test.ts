@@ -5,7 +5,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 const page = read("apps/playtest/tracked/index.html");
 const app = read("apps/playtest/tracked/app.js");
 const styles = read("apps/playtest/tracked/styles.css");
-const start = read("start/app.js");
+const start = read("apps/start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const analysisWorker = read("workers/playtest-sessions/src/analysis.js");
 const integrityWorker = read("workers/playtest-sessions/src/integrity.js");

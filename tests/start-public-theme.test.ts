@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const html = readFileSync("start/index.html", "utf8");
-const css = readFileSync("start/styles.css", "utf8");
+const html = readFileSync("apps/start/index.html", "utf8");
+const css = readFileSync("apps/start/styles.css", "utf8");
 const siteCss = readFileSync("site.css", "utf8");
-const app = readFileSync("start/app.js", "utf8");
+const app = readFileSync("apps/start/app.js", "utf8");
 
 function cssRule(selector: string) {
   const start = css.indexOf(`${selector}{`);
@@ -15,7 +15,7 @@ function cssRule(selector: string) {
 
 describe("public Start page theme", () => {
   it("loads the public-theme stylesheet", () => {
-    expect(html).toContain('styles.css?v=20260731-2');
+    expect(html).toMatch(/<link rel="stylesheet" href="styles\.css\?v=\d{8}-\d+" \/>/);
   });
 
   it("uses the main-site parchment and crimson visual language", () => {

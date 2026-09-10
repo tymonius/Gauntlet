@@ -14,7 +14,7 @@ on:
       - 'changelog/**'
       - 'release-surface.css'
       - 'index.html'
-      - 'start/**'
+      - 'apps/start/**'
       - 'apps/playtest/**'
       - 'rulebook/**'
       - 'card-reference/**'

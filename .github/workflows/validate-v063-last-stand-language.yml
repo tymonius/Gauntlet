@@ -13,7 +13,7 @@ on:
       - "rules-assistant/**"
       - "scripts/*v063*"
       - "scripts/publication-utils.mjs"
-      - "start/index.html"
+      - "apps/start/index.html"
   push:
     branches:
       - main
@@ -28,7 +28,7 @@ on:
       - "rules-assistant/**"
       - "scripts/*v063*"
       - "scripts/publication-utils.mjs"
-      - "start/index.html"
+      - "apps/start/index.html"
 
 permissions:
   contents: read
@@ -65,7 +65,7 @@ jobs:
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md
             index.html
-            start/index.html
+            apps/start/index.html
             factions/military/index.html
             factions/financiers/index.html
             factions/inquisition/index.html

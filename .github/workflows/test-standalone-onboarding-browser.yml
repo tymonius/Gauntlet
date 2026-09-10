@@ -20,9 +20,10 @@ jobs:
             /package.json
             /package-lock.json
             /vitest.config.ts
+            /tests/vitest-quarantine.json
             /tests/standalone-new-player-onboarding.test.ts
             /index.html
-            /start/
+            /apps/start/
             /deckbuilder/
             /game-data/current-game.json
             /rulebook/player-facing/current-rulebook.md

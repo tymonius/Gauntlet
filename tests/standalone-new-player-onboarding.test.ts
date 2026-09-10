@@ -29,8 +29,8 @@ const FACTION_RULEBOOK_CHAPTERS = [
 
 describe("standalone new-player onboarding", () => {
   it("provides a public five-step path with no event-session dependency", () => {
-    const html = read("start/index.html");
-    const app = read("start/app.js");
+    const html = read("apps/start/index.html");
+    const app = read("apps/start/app.js");
 
     expect(html).toContain("Your first game");
     expect(html).toContain("Step 1 · Know the goal");
@@ -49,7 +49,7 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("offers every canonical faction and Leader starter pair", () => {
-    const app = read("start/app.js");
+    const app = read("apps/start/app.js");
     const authority = JSON.parse(read("game-data/current-game.json"));
     const available = new Set(authority.starterDecks.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`));
 
@@ -65,7 +65,7 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("keeps starter Deck selection simple and provides Leader-specific first-game guidance", () => {
-    const app = read("start/app.js");
+    const app = read("apps/start/app.js");
 
     expect(app).not.toContain("starter-first-game-tips.json");
     expect(app).toContain("Gauntlet players can build their own Decks from a large pool of cards.");
@@ -79,9 +79,9 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("keeps faction lessons conceptual and distinguishes Run the Gauntlet from faction victories", () => {
-    const html = read("start/index.html");
-    const app = read("start/app.js");
-    const css = read("start/styles.css");
+    const html = read("apps/start/index.html");
+    const app = read("apps/start/app.js");
+    const css = read("apps/start/styles.css");
 
     expect(html).toContain("How it fits into Gauntlet");
     expect(html).toContain("Your ways to win");
@@ -98,8 +98,8 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("uses faction guides for exploration and exact rulebook chapters after the lesson", () => {
-    const html = read("start/index.html");
-    const app = read("start/app.js");
+    const html = read("apps/start/index.html");
+    const app = read("apps/start/app.js");
     const rulebook = read("rulebook/player-facing/current-rulebook.md");
 
     expect(app).toContain('el.factionGuideLink.href = `../rulebook/#${RULEBOOK_FACTION_ANCHORS[state.factionId]}`');
@@ -131,7 +131,7 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("hands the exact choice to guided Deckbuilder print mode", () => {
-    const app = read("start/app.js");
+    const app = read("apps/start/app.js");
     const handoff = read("deckbuilder/starter-handoff.js");
     const starter = read("deckbuilder/starter-decks.js");
     const deckbuilder = read("deckbuilder/index.html");
@@ -164,7 +164,7 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("keeps the choice resumable without storing credentials or identity", () => {
-    const app = read("start/app.js");
+    const app = read("apps/start/app.js");
     expect(app).toContain("gauntlet_standalone_onboarding_v1");
     expect(app).toContain("localStorage.setItem");
     expect(app).not.toContain("password");
