@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" role="img" aria-labelledby="title desc">
+  <title id="title">Gauntlet normal turn flow</title>
+  <desc id="desc">Six phases run from Capture through Cleanup. The player has one normal Action total and may spend it during Opening or, if unused, during Denouement.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#5f5a53"/></marker>
+  </defs>
+  <rect width="1000" height="250" fill="#fbf7ee"/>
+  <text x="500" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1.5" fill="#8f1f25">ONE NORMAL ACTION TOTAL — USE IT IN OPENING OR DENOUEMENT</text>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g fill="#fffdf8" stroke="#69645d" stroke-width="2">
+      <rect x="30" y="75" width="135" height="82"/>
+      <rect x="190" y="75" width="135" height="82"/>
+      <rect x="350" y="75" width="135" height="82" stroke="#8f1f25" stroke-width="3"/>
+      <rect x="510" y="75" width="135" height="82"/>
+      <rect x="670" y="75" width="135" height="82" stroke="#8f1f25" stroke-width="3"/>
+      <rect x="830" y="75" width="135" height="82"/>
+    </g>
+    <g fill="#171514" font-size="22" font-weight="700">
+      <text x="97.5" y="112">Capture</text><text x="257.5" y="112">Draw</text><text x="417.5" y="112">Opening</text><text x="577.5" y="112">Movement</text><text x="737.5" y="112">Denouement</text><text x="897.5" y="112">Cleanup</text>
+    </g>
+    <g fill="#5f5a53" font-size="15">
+      <text x="97.5" y="137">take ground</text><text x="257.5" y="137">draw 1</text><text x="417.5" y="137">act before move</text><text x="577.5" y="137">advance / hold / fall back</text><text x="737.5" y="137">act after move</text><text x="897.5" y="137">hand limit 3</text>
+    </g>
+  </g>
+  <g stroke="#5f5a53" stroke-width="2.5" marker-end="url(#arrow)">
+    <path d="M165 116H185"/><path d="M325 116H345"/><path d="M485 116H505"/><path d="M645 116H665"/><path d="M805 116H825"/>
+  </g>
+  <path d="M417.5 172V205H737.5V172" fill="none" stroke="#8f1f25" stroke-width="3"/>
+  <text x="577.5" y="229" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#332f2a">Act, then move — or move, then act.</text>
+</svg>
