@@ -12,6 +12,10 @@ import {
   pendingV070ExcommunicationAftermath,
   resolveV070ExcommunicationAftermathChoice,
 } from './excommunication-battle';
+import {
+  pendingV070SuppliesAftermath,
+  resolveV070SuppliesAftermathChoice,
+} from './supplies-battle';
 
 export * from './battle-engine-pre-capital-gains';
 
@@ -26,6 +30,11 @@ export type V070BattleAction =
       type: 'resolve_excommunication_aftermath';
       playerId: PlayerId;
       targetInstanceIds: readonly string[];
+    }
+  | {
+      type: 'resolve_supplies_aftermath';
+      playerId: PlayerId;
+      targetInstanceId: string;
     };
 
 export function reduceV070BattleAction(
@@ -64,6 +73,22 @@ export function reduceV070BattleAction(
     return resumeAfterDeferredAftermath(next, resolvedOwner);
   }
 
+  const supplies = pendingV070SuppliesAftermath(state);
+  if (supplies) {
+    if (action.type !== 'resolve_supplies_aftermath') {
+      throw new V070GameActionError(
+        'Choose the card Supplies discards before continuing the Aftermath.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const resolvedOwner = resolveV070SuppliesAftermathChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+    );
+    return resumeAfterDeferredAftermath(next, resolvedOwner);
+  }
+
   if (action.type === 'resolve_capital_gains_aftermath') {
     throw new V070GameActionError(
       'There is no pending Capital Gains Aftermath choice.',
@@ -72,6 +97,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_excommunication_aftermath') {
     throw new V070GameActionError(
       'There is no pending Excommunication Aftermath choice.',
+    );
+  }
+  if (action.type === 'resolve_supplies_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Supplies Aftermath choice.',
     );
   }
 
