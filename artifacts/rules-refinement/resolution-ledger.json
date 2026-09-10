@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T21:55:20.107Z",
+  "updatedAt": "2026-09-10T22:11:35.041Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -848,6 +848,23 @@
       "resolvedAt": "2026-09-10T21:55:20.107Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260910-3"
+      }
+    },
+    {
+      "id": "overpowered-leader-scope-classification-v071",
+      "status": "resolved",
+      "rootCause": "provisional_overuse",
+      "interactionIds": [
+        "a0d765b1-6a04-42ef-8a8c-6c664f9b92b0"
+      ],
+      "caseIds": [
+        "overpowered-leader-evaluative-scope"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "The reviewed v0.6.0 answer correctly declined to identify a most overpowered Leader because the rules provide no objective comparison standard, but the legacy unresolved status kept the interaction in the provisional-overuse queue. Current v0.7.1 now classifies this evaluative balance/strategy question deterministically as out of scope, with high confidence and no irrelevant rules citations.",
+      "resolvedAt": "2026-09-10T22:11:35.041Z",
+      "binding": {
+        "behaviorRevision": "v071-scope-20260910-2"
       }
     }
   ]
