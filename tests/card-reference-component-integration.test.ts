@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const app = readFileSync('card-reference/app.js', 'utf8');
-const styles = readFileSync('card-reference/styles.css', 'utf8');
+const app = readFileSync('apps/card-reference/app.js', 'utf8');
+const styles = readFileSync('apps/card-reference/styles.css', 'utf8');
 
 describe('card reference production component integration', () => {
   it('passes the canonical Leader specimen id to the shared component renderer', () => {
