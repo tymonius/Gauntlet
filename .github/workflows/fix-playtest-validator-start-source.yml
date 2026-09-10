@@ -1,0 +1,56 @@
+name: Fix playtest validator Start source path
+
+on:
+  push:
+    branches:
+      - fix/playtest-validator-start-source
+    paths:
+      - '.github/workflows/fix-playtest-validator-start-source.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update validator source paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/validate_current_playtest_sessions.py')
+          text = path.read_text()
+          anchor = 'PLAYTEST_SOURCE = "apps/playtest"\n'
+          addition = 'START_SOURCE = "apps/start"\n'
+          if addition not in text:
+              if anchor not in text:
+                  raise SystemExit('PLAYTEST_SOURCE anchor not found')
+              text = text.replace(anchor, anchor + addition, 1)
+          text = text.replace('"start/index.html"', 'f"{START_SOURCE}/index.html"')
+          text = text.replace('"start/app.js"', 'f"{START_SOURCE}/app.js"')
+          path.write_text(text)
+          PY
+
+      - name: Validate current playtest contract
+        run: python scripts/validate_current_playtest_sessions.py
+
+      - name: Remove probe and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/fix-playtest-validator-start-source.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/validate_current_playtest_sessions.py .github/workflows/fix-playtest-validator-start-source.yml
+          git diff --cached --check
+          git commit -m "Fix playtest validator Start source path"
+          git push origin HEAD:fix/playtest-validator-start-source
