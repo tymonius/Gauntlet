@@ -226,36 +226,15 @@ jobs:
 
           mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
           if (( ${#related_sources[@]} )); then
-            # Diagnose central-source dependency hangs without letting one Vitest process
-            # consume the runner for hours. Keep every source slice independently visible.
-            related_failures=0
-            for related_source in "${related_sources[@]}"; do
-              echo "::group::Vitest related: ${related_source}"
-              set +e
-              timeout --kill-after=15s 180s npx vitest related --run --passWithNoTests \
-                --reporter=verbose \
-                --exclude 'tests/arcane-card-symbol.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
-                "$related_source"
-              status=$?
-              set -e
-              echo "::endgroup::"
-
-              if (( status != 0 )); then
-                if (( status == 124 || status == 137 )); then
-                  echo "::error::Vitest related timed out for ${related_source} (exit ${status})."
-                else
-                  echo "::error::Vitest related failed for ${related_source} (exit ${status})."
-                fi
-                related_failures=1
-              fi
-            done
-
-            if (( related_failures )); then
-              exit 1
-            fi
+            # These historical v0.6.4 suites still reference retired draft JSON fixtures.
+            # Keep them runnable when changed directly, but do not let unrelated current
+            # source changes pull them into scoped dependency testing.
+            npx vitest related --run --passWithNoTests \
+              --exclude 'tests/arcane-card-symbol.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+              "${related_sources[@]}"
           fi
 
       - name: Run public static accessibility contract when HTML changes
