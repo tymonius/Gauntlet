@@ -4,6 +4,15 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import {
+  openV070ReembodimentRecovery,
+  pendingV070ReembodimentRecovery,
+  recordV070ReembodimentQualifyingTransition,
+} from './reembodiment';
+import {
+  openV070SubversionAssetBattleWindow,
+} from './subversion-asset';
+import type { V070SubversionAssetBattleContinuation } from './battle-types';
 
 export const V070_SPIRIT_HOLLOW_ID = 'mystics-spirit-hollow';
 
@@ -58,6 +67,14 @@ export function openV070SpiritHollowAftermathChoice(
   const runtime = state.battleRuntime;
   if (!battle || !runtime || runtime.stage !== 'aftermath') return false;
   if (runtime.pendingSpiritHollowAftermath) return true;
+
+  // Reembodiment resolves after the current Spirit Hollow effect but before the
+  // next Spirit Hollow player or later Aftermath windows continue.
+  if (pendingV070ReembodimentRecovery(state)) return true;
+  const deferred = runtime.pendingSubversionAssetBattle?.deferredAction as
+    | { type?: string }
+    | undefined;
+  if (deferred?.type === 'apply_reembodiment_recovery') return true;
 
   const active = activeSpiritHollowAtContestedTerritory(state);
   if (runtime.spiritHollowAftermathPlayers === null) {
@@ -227,6 +244,31 @@ export function resolveV070SpiritHollowAftermathChoice(
   });
 
   finishChoice(runtime, playerId);
+
+  // The Overlay's owner controls its effect. The other player may use Spirit
+  // Hollow, but that sacrifice is not part of an effect they control and cannot
+  // trigger their Reembodiment.
+  if (state.cardInstances[pending.overlayInstanceId]?.owner !== playerId) return;
+
+  const continuation = recordV070ReembodimentQualifyingTransition(
+    state,
+    playerId,
+    [handInstanceId],
+    'Spirit Hollow',
+    true,
+  );
+  if (!continuation) return;
+
+  if (openV070SubversionAssetBattleWindow(
+    state,
+    continuation.playerId,
+    continuation.assetInstanceId,
+    'Reembodiment',
+    continuation as unknown as V070SubversionAssetBattleContinuation,
+  )) {
+    return;
+  }
+  openV070ReembodimentRecovery(state, continuation);
 }
 
 function finishChoice(

@@ -1,3 +1,4 @@
+import { v070CanonicalContent } from '../content/v070';
 import {
   V070GameActionError,
   type V070GameState,
@@ -22,6 +23,13 @@ import {
   v070CurrentTurnHasCompletedBattle,
   type V070WarBondsContinuation,
 } from './war-bonds';
+import {
+  openV070ReembodimentRecovery,
+  pendingV070ReembodimentRecovery,
+  recordV070ReembodimentQualifyingTransition,
+  resolveV070ReembodimentRecovery,
+  type V070ReembodimentContinuation,
+} from './reembodiment';
 
 export * from './turn-engine-postdraw';
 
@@ -32,13 +40,71 @@ export type V070TurnAction =
       playerId: PlayerId;
       choice: 'pass' | 'use';
       handInstanceId?: string;
+    }
+  | {
+      type: 'resolve_reembodiment_recovery';
+      playerId: PlayerId;
+      targetInstanceId?: string;
     };
 
 export function reduceV070TurnAction(
   state: V070GameState,
   action: V070TurnAction,
 ): V070GameState {
+  const pendingReembodiment = pendingV070ReembodimentRecovery(state);
+  if (pendingReembodiment) {
+    if (action.type !== 'resolve_reembodiment_recovery') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Reembodiment recovery before continuing the turn.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ReembodimentRecovery(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+    );
+    return next;
+  }
+  if (action.type === 'resolve_reembodiment_recovery') {
+    throw new V070GameActionError(
+      'There is no pending Reembodiment recovery.',
+    );
+  }
+
   const pendingSubversion = pendingV070SubversionTurnAsset(state);
+  const reembodimentSubversion = pendingSubversion
+    && isReembodimentContinuation(
+      pendingSubversion.deferredAction as unknown,
+    )
+    ? pendingSubversion
+    : null;
+
+  if (reembodimentSubversion) {
+    if (action.type !== 'resolve_subversion_asset') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Subversion response to Reembodiment before continuing.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const resolved = resolveV070SubversionTurnAssetChoice(
+      next,
+      action.playerId,
+      action.choice,
+      action.subversionInstanceId,
+    );
+    const continuation = resolved.pending.deferredAction as unknown;
+    if (!isReembodimentContinuation(continuation)) {
+      throw new V070GameActionError(
+        'The pending Subversion continuation no longer matches Reembodiment.',
+      );
+    }
+    if (!resolved.used) {
+      openV070ReembodimentRecovery(next, continuation);
+    }
+    return next;
+  }
+
   const warBondsSubversion = pendingSubversion
     && isWarBondsContinuation(
       pendingSubversion.deferredAction as unknown,
@@ -118,16 +184,115 @@ export function reduceV070TurnAction(
     && v070CurrentTurnHasCompletedBattle(state)) {
     const next = structuredClone(state) as V070GameState;
     if (openV070WarBondsAfterFirstBattle(next)) return next;
-    return reduceV070TurnActionPostDraw(
+    return reducePostDrawAndObserveReembodiment(
       next,
       action as V070PostDrawTurnAction,
     );
   }
 
-  return reduceV070TurnActionPostDraw(
+  return reducePostDrawAndObserveReembodiment(
     state,
     action as V070PostDrawTurnAction,
   );
+}
+
+function reducePostDrawAndObserveReembodiment(
+  state: V070GameState,
+  action: V070PostDrawTurnAction,
+): V070GameState {
+  const controlled = reembodimentControlledTurnEffect(state, action);
+  const beforeHand = controlled
+    ? [...state.players[controlled.playerId].zones.hand]
+    : [];
+  const next = reduceV070TurnActionPostDraw(state, action);
+  if (!controlled) return next;
+
+  const moved = beforeHand.filter(instanceId =>
+    instanceId !== controlled.excludeInstanceId
+    && !next.players[controlled.playerId].zones.hand.includes(instanceId)
+    && next.players[controlled.playerId].zones.graveyard.includes(instanceId)
+  );
+  const continuation = recordV070ReembodimentQualifyingTransition(
+    next,
+    controlled.playerId,
+    moved,
+    controlled.sourceLabel,
+    false,
+  );
+  if (!continuation) return next;
+
+  if (openV070SubversionTurnAssetWindow(
+    next,
+    continuation.playerId,
+    continuation.assetInstanceId,
+    'Reembodiment',
+    continuation as unknown as V070SubversionTurnContinuation,
+  )) {
+    return next;
+  }
+  openV070ReembodimentRecovery(next, continuation);
+  return next;
+}
+
+function reembodimentControlledTurnEffect(
+  state: V070GameState,
+  action: V070PostDrawTurnAction,
+): {
+  playerId: PlayerId;
+  sourceLabel: string;
+  excludeInstanceId?: string;
+} | null {
+  switch (action.type) {
+    case 'mystics_begin_rite':
+      return {
+        playerId: action.playerId,
+        sourceLabel: action.riteId === 'blood'
+          ? 'Rite of Blood'
+          : action.riteId === 'crossing'
+            ? 'Rite of Crossing'
+            : 'Rite of Echoes',
+      };
+    case 'choose_soul_for_soul_targets':
+      return { playerId: action.playerId, sourceLabel: 'Soul for Soul' };
+    case 'choose_dark_omens_graveyard_target':
+      return { playerId: action.playerId, sourceLabel: 'Dark Omens' };
+    case 'choose_fates_toll_cost':
+      return { playerId: action.playerId, sourceLabel: "Fate's Toll" };
+    case 'resolve_necromancy_action':
+      return { playerId: action.playerId, sourceLabel: 'Necromancy' };
+    case 'resolve_manifest_destiny_sacrifice':
+      return { playerId: action.playerId, sourceLabel: 'Manifest Destiny' };
+    case 'play_action_card': {
+      const cardId = state.cardInstances[action.cardInstanceId]?.cardId;
+      const name = cardId
+        ? v070CanonicalContent.cardsById.get(cardId)?.name
+        : undefined;
+      return {
+        playerId: action.playerId,
+        sourceLabel: name ?? 'Action effect',
+        excludeInstanceId: action.cardInstanceId,
+      };
+    }
+    case 'resolve_sleeper_network_bound_action':
+      return {
+        playerId: action.playerId,
+        sourceLabel: 'Sleeper Network bound Action',
+      };
+    case 'play_smugglers_run_stash_action':
+      return {
+        playerId: action.playerId,
+        sourceLabel: "Smuggler's Run stashed Action",
+      };
+    default:
+      return null;
+  }
+}
+
+function isReembodimentContinuation(
+  value: unknown,
+): value is V070ReembodimentContinuation {
+  if (!value || typeof value !== 'object') return false;
+  return (value as { type?: unknown }).type === 'apply_reembodiment_recovery';
 }
 
 function isWarBondsContinuation(
