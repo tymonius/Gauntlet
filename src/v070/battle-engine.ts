@@ -32,6 +32,11 @@ import {
   pendingV070LandslideAftermath,
   resolveV070LandslideAftermathChoice,
 } from './landslide';
+import {
+  openV070DivineMercyBattleChoice,
+  pendingV070DivineMercyBattleChoice,
+  resolveV070DivineMercyBattleChoice,
+} from './divine-mercy-battle';
 
 export * from './battle-engine-prewar-bonds';
 
@@ -46,12 +51,39 @@ export type V070BattleAction =
       type: 'resolve_landslide_aftermath';
       playerId: PlayerId;
       sourceInstanceId?: string;
+    }
+  | {
+      type: 'resolve_divine_mercy_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const pendingDivineMercy = pendingV070DivineMercyBattleChoice(state);
+  if (pendingDivineMercy) {
+    if (action.type !== 'resolve_divine_mercy_battle') {
+      throw new V070GameActionError(
+        'Resolve the pending Divine Mercy Graveyard choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070DivineMercyBattleChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+    );
+    openV070DivineMercyBattleChoice(next);
+    return next;
+  }
+  if (action.type === 'resolve_divine_mercy_battle') {
+    throw new V070GameActionError(
+      'There is no pending Divine Mercy battle choice.',
+    );
+  }
+
   const pendingRecovery = pendingV070ReembodimentRecovery(state);
   if (pendingRecovery) {
     if (action.type !== 'resolve_reembodiment_recovery') {
@@ -167,6 +199,8 @@ export function reduceV070BattleAction(
     previousPositions,
     battleOrPlayerPositions(next),
   );
+
+  if (openV070DivineMercyBattleChoice(next)) return next;
 
   if (controlled) {
     const moved = beforeHand.filter(instanceId =>

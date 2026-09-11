@@ -6,6 +6,11 @@ import type {
 } from './battle-types';
 import * as core from './battle-effects-core';
 import {
+  V070_DIVINE_MERCY_BATTLE_TEXT,
+  V070_DIVINE_MERCY_ID,
+  registerV070DivineMercyBattleEffect,
+} from './divine-mercy-battle';
+import {
   V070_LANDSLIDE_BATTLE_TEXT,
   registerV070LandslideBattleEffect,
 } from './landslide';
@@ -34,17 +39,34 @@ const landslideHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const divineMercyHandler: core.V070BattleEffectHandler = {
+  cardId: V070_DIVINE_MERCY_ID,
+  expectedText: V070_DIVINE_MERCY_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070DivineMercyBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
+  [landslideHandler.cardId, landslideHandler],
+  [divineMercyHandler.cardId, divineMercyHandler],
+]);
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...core.V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  'neutral-landslide',
+  ...specializedHandlers.keys(),
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): core.V070BattleEffectHandler | undefined {
-  return cardId === 'neutral-landslide'
-    ? landslideHandler
-    : core.v070BattleEffectHandler(cardId);
+  return specializedHandlers.get(cardId)
+    ?? core.v070BattleEffectHandler(cardId);
 }
 
 export function resolveV070SupportedRevealEffects(
@@ -52,16 +74,20 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const landslides = commitments.filter(commitment =>
-    state.cardInstances[commitment.instanceId]?.cardId === 'neutral-landslide'
+  const specialized = commitments.filter(commitment =>
+    specializedHandlers.has(
+      state.cardInstances[commitment.instanceId]?.cardId ?? '',
+    )
   );
   const remaining = commitments.filter(commitment =>
-    state.cardInstances[commitment.instanceId]?.cardId !== 'neutral-landslide'
+    !specializedHandlers.has(
+      state.cardInstances[commitment.instanceId]?.cardId ?? '',
+    )
   );
 
+  // Preserve the registry's all-or-nothing reveal guarantee. Validate every
+  // core and specialized effect before any current state is mutated.
   if (remaining.length > 0) {
-    // Probe on a clone first so an unrelated unsupported reveal still preserves
-    // the registry's existing all-or-nothing application guarantee.
     const probe = structuredClone(state) as V070GameState;
     const unsupported = core.resolveV070SupportedRevealEffects(
       probe,
@@ -69,26 +95,23 @@ export function resolveV070SupportedRevealEffects(
       encounteredAt,
     );
     if (unsupported.length > 0) return unsupported;
-
-    core.resolveV070SupportedRevealEffects(
-      state,
-      remaining,
-      encounteredAt,
-    );
   }
 
-  for (const commitment of landslides) {
-    const card = v070CanonicalContent.cardsById.get('neutral-landslide');
+  for (const commitment of specialized) {
+    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+    const handler = specializedHandlers.get(cardId);
+    const card = v070CanonicalContent.cardsById.get(cardId);
     const relevant = card?.effects.filter(effect =>
       effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
       || effect.label === 'Gambit/Tactic'
     ) ?? [];
-    if (relevant.length !== 1
-      || relevant[0]?.text !== V070_LANDSLIDE_BATTLE_TEXT) {
+    if (!handler
+      || relevant.length !== 1
+      || relevant[0]?.text !== handler.expectedText) {
       return [{
         owner: commitment.owner,
         instanceId: commitment.instanceId,
-        cardId: 'neutral-landslide',
+        cardId,
         role: commitment.role,
         label: relevant[0]?.label ?? 'Gambit/Tactic',
         text: relevant[0]?.text ?? '',
@@ -97,8 +120,18 @@ export function resolveV070SupportedRevealEffects(
     }
   }
 
-  for (const commitment of landslides) {
-    landslideHandler.apply({
+  if (remaining.length > 0) {
+    core.resolveV070SupportedRevealEffects(
+      state,
+      remaining,
+      encounteredAt,
+    );
+  }
+
+  for (const commitment of orderedSpecializedCommitments(state, specialized)) {
+    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+    const handler = specializedHandlers.get(cardId)!;
+    handler.apply({
       state,
       owner: commitment.owner,
       opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -110,14 +143,25 @@ export function resolveV070SupportedRevealEffects(
       visibility: 'public',
       payload: {
         instanceId: commitment.instanceId,
-        cardId: 'neutral-landslide',
+        cardId,
         role: commitment.role,
-        timing: 'reveal',
+        timing: handler.timing,
       },
     });
   }
 
   return [];
+}
+
+function orderedSpecializedCommitments(
+  state: V070GameState,
+  commitments: readonly V070BattleCardCommitment[],
+): V070BattleCardCommitment[] {
+  const battle = state.battle;
+  if (!battle) return [...commitments];
+  return [battle.attacker, battle.defender].flatMap(owner =>
+    commitments.filter(commitment => commitment.owner === owner)
+  );
 }
 
 export function applyV070BattleCardAdditionalRetreats(
