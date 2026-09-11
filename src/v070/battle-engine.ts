@@ -7,6 +7,10 @@ import {
   reduceV070BattleAction as reduceV070BattleActionPreWarBonds,
   type V070BattleAction as V070PreWarBondsBattleAction,
 } from './battle-engine-prewar-bonds';
+import {
+  resumeV070SupportedRevealEffects,
+  v070BattleRevealEffectsPending,
+} from './battle-effects';
 import { openV070WarBondsAfterFirstBattle } from './war-bonds';
 import {
   openV070ReembodimentRecovery,
@@ -116,7 +120,7 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
-      openNextV070BattleRevealChoice(next);
+      continueV070BattleRevealProcedure(next);
       return next;
     }
 
@@ -141,8 +145,7 @@ export function reduceV070BattleAction(
         )) {
         return next;
       }
-      if (v070MysticInvocationPendingPlayers(next).length > 0) return next;
-      openNextV070BattleRevealChoice(next);
+      continueV070BattleRevealProcedure(next);
       return next;
     }
 
@@ -158,7 +161,7 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
-      openNextV070BattleRevealChoice(next);
+      continueV070BattleRevealProcedure(next);
       return next;
     }
 
@@ -174,7 +177,7 @@ export function reduceV070BattleAction(
         action.playerId,
         action.assetInstanceId,
       );
-      openNextV070BattleRevealChoice(next);
+      continueV070BattleRevealProcedure(next);
       return next;
     }
 
@@ -190,7 +193,7 @@ export function reduceV070BattleAction(
         action.playerId,
         action.cardInstanceId,
       );
-      openNextV070BattleRevealChoice(next);
+      continueV070BattleRevealProcedure(next);
       return next;
     }
   }
@@ -351,11 +354,7 @@ export function reduceV070BattleAction(
     }
   }
 
-  if (v070MysticInvocationPendingPlayers(next).length === 0
-    && !pendingV070ReembodimentRecovery(next)
-    && !isReembodimentSubversionPending(next)) {
-    if (openNextV070BattleRevealChoice(next)) return next;
-  }
+  if (continueV070BattleRevealProcedure(next)) return next;
 
   if (!next.battle) {
     openV070WarBondsAfterFirstBattle(
@@ -366,41 +365,54 @@ export function reduceV070BattleAction(
   return next;
 }
 
-function openNextV070BattleRevealChoice(
+/**
+ * Continue one simultaneous reveal in exact alternating effect order. A card
+ * choice or Mystic Invocation pauses before any later reveal effect applies.
+ */
+function continueV070BattleRevealProcedure(
   state: V070GameState,
 ): boolean {
-  if (v070MysticInvocationPendingPlayers(state).length > 0
-    || pendingV070ReembodimentRecovery(state)
-    || isReembodimentSubversionPending(state)) {
-    return false;
-  }
-
   while (true) {
-    const pending = pendingV070BattleRevealChoice(state);
-    if (!pending) return false;
-    if (isV070BattleRevealChoiceOpen(state)) return true;
-
-    let opened = false;
-    switch (pending.kind) {
-      case 'divine_mercy':
-        opened = openV070DivineMercyBattleChoice(state);
-        break;
-      case 'dark_omens':
-        opened = openV070DarkOmensBattleChoice(state);
-        break;
-      case 'sedition':
-        opened = openV070SeditionBattleChoice(state);
-        break;
-      case 'requisition':
-        opened = openV070RequisitionBattleChoice(state);
-        break;
-      case 'tariffs':
-        opened = openV070TariffsBattleChoice(state);
-        break;
+    if (v070MysticInvocationPendingPlayers(state).length > 0
+      || pendingV070ReembodimentRecovery(state)
+      || isReembodimentSubversionPending(state)) {
+      return true;
     }
-    if (opened) return true;
-    // An unavailable choice resolves itself. Continue to the next queued
-    // shared-timing choice, if any.
+
+    const pending = pendingV070BattleRevealChoice(state);
+    if (pending) {
+      if (isV070BattleRevealChoiceOpen(state)) return true;
+
+      let opened = false;
+      switch (pending.kind) {
+        case 'divine_mercy':
+          opened = openV070DivineMercyBattleChoice(state);
+          break;
+        case 'dark_omens':
+          opened = openV070DarkOmensBattleChoice(state);
+          break;
+        case 'sedition':
+          opened = openV070SeditionBattleChoice(state);
+          break;
+        case 'requisition':
+          opened = openV070RequisitionBattleChoice(state);
+          break;
+        case 'tariffs':
+          opened = openV070TariffsBattleChoice(state);
+          break;
+      }
+      if (opened) return true;
+      // Unavailable choices remove themselves. Before any later effect applies,
+      // honor a reaction they may have opened (notably Mystic Invocation).
+      continue;
+    }
+
+    if (v070BattleRevealEffectsPending(state)) {
+      resumeV070SupportedRevealEffects(state);
+      continue;
+    }
+
+    return false;
   }
 }
 
@@ -475,9 +487,7 @@ function resumeAfterReembodimentBattlePause(
     });
   }
 
-  if (v070MysticInvocationPendingPlayers(state).length === 0) {
-    openNextV070BattleRevealChoice(state);
-  }
+  continueV070BattleRevealProcedure(state);
   return state;
 }
 
