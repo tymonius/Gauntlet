@@ -3,12 +3,14 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import type { V070CopyableEffectLabel } from './copied-effects';
 import * as previous from './battle-engine-reveal-order-pre-witchcraft';
 import {
   isV070BattleRevealChoiceOpen,
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
 import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
+import { resolveV070ArcaneKnowledgeBattleChoice } from './arcane-knowledge-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -18,6 +20,12 @@ export type V070BattleAction =
       type: 'resolve_witchcraft_battle';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_arcane_knowledge_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
+      targetEffectLabel: V070CopyableEffectLabel;
     };
 
 export function reduceV070BattleAction(
@@ -25,6 +33,23 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'arcane_knowledge'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_arcane_knowledge_battle') {
+      throw new V070GameActionError(
+        'Choose the Graveyard effect Arcane Knowledge applies before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ArcaneKnowledgeBattleChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+      action.targetEffectLabel,
+    );
+    return next;
+  }
+
   if (pending?.kind === 'witchcraft' && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_witchcraft_battle') {
       throw new V070GameActionError(
@@ -37,14 +62,14 @@ export function reduceV070BattleAction(
       action.playerId,
       action.targetInstanceId,
     );
-
-    // This facade owns only Witchcraft's custom chooser. The enclosing battle
-    // facade resumes the shared reveal scheduler and opens any downstream
-    // choice produced by the repeated effect, preserving the mature base
-    // continuation path for Reembodiment, Subversion, and other pauses.
     return next;
   }
 
+  if (action.type === 'resolve_arcane_knowledge_battle') {
+    throw new V070GameActionError(
+      'There is no open Arcane Knowledge battle-effect choice.',
+    );
+  }
   if (action.type === 'resolve_witchcraft_battle') {
     throw new V070GameActionError('There is no open Witchcraft battle-effect choice.');
   }
