@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T22:11:35.041Z",
+  "updatedAt": "2026-09-10T22:51:22.331Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -865,6 +865,23 @@
       "resolvedAt": "2026-09-10T22:11:35.041Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260910-2"
+      }
+    },
+    {
+      "id": "asset-replacement-current-authority-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "provisional_overuse",
+      "interactionIds": [
+        "533e5580-29ee-47f9-ade6-ff03546b88ed"
+      ],
+      "caseIds": [
+        "asset-replacement-current-authority-retrieval"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed v0.6.0 ruling correctly treated a one-step Asset replacement as unsupported under the historical rules. Current v0.7.1 now expressly permits a player who is banking an Asset at the Asset limit to discard one controlled Asset to make room and bank the new Asset as part of the same effect, without a separate Action. Retrieval now promotes that direct current authority for simple replace, swap, exchange, and make-room Asset questions instead of carrying historical uncertainty forward.",
+      "resolvedAt": "2026-09-10T22:51:22.331Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-4"
       }
     }
   ]
