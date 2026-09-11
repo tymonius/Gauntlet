@@ -64,17 +64,30 @@ export {
   resolveV070UnbrokenRanksCommand,
 } from './battle-effects-core';
 
+export type V070RevealEffectClass = 'interference' | 'ordinary';
 type V070RevealEncounteredAt = 'reveal_gambits' | 'reveal_tactics';
+
+interface V070SpecializedBattleEffectHandler
+  extends core.V070BattleEffectHandler {
+  /**
+   * Interference resolves before every ordinary effect at the same reveal
+   * stage. Existing handlers default to ordinary until explicitly promoted.
+   */
+  revealClass?: V070RevealEffectClass;
+}
 
 declare module './battle-types' {
   interface V070BattleRuntime {
-    /** Remaining effects from one simultaneous reveal, already authority-validated. */
+    /** Remaining effects in the reveal class currently being resolved. */
     pendingRevealEffectCommitments?: V070BattleCardCommitment[];
+    /** Ordinary effects held back until reveal-stage interference is complete. */
+    pendingRevealDeferredOrdinaryCommitments?: V070BattleCardCommitment[];
+    pendingRevealEffectClass?: V070RevealEffectClass | null;
     pendingRevealEffectEncounteredAt?: V070RevealEncounteredAt | null;
   }
 }
 
-const landslideHandler: core.V070BattleEffectHandler = {
+const landslideHandler: V070SpecializedBattleEffectHandler = {
   cardId: 'neutral-landslide',
   expectedText: V070_LANDSLIDE_BATTLE_TEXT,
   timing: 'reveal',
@@ -87,7 +100,7 @@ const landslideHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const divineMercyHandler: core.V070BattleEffectHandler = {
+const divineMercyHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_DIVINE_MERCY_ID,
   expectedText: V070_DIVINE_MERCY_BATTLE_TEXT,
   timing: 'reveal',
@@ -100,7 +113,7 @@ const divineMercyHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const darkOmensHandler: core.V070BattleEffectHandler = {
+const darkOmensHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_DARK_OMENS_ID,
   expectedText: V070_DARK_OMENS_BATTLE_TEXT,
   timing: 'reveal',
@@ -113,7 +126,7 @@ const darkOmensHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const seditionHandler: core.V070BattleEffectHandler = {
+const seditionHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_SEDITION_ID,
   expectedText: V070_SEDITION_BATTLE_TEXT,
   timing: 'reveal',
@@ -126,7 +139,7 @@ const seditionHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const requisitionHandler: core.V070BattleEffectHandler = {
+const requisitionHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_REQUISITION_ID,
   expectedText: V070_REQUISITION_BATTLE_TEXT,
   timing: 'reveal',
@@ -139,7 +152,7 @@ const requisitionHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const tariffsHandler: core.V070BattleEffectHandler = {
+const tariffsHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_TARIFFS_ID,
   expectedText: V070_TARIFFS_BATTLE_TEXT,
   timing: 'reveal',
@@ -152,7 +165,7 @@ const tariffsHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const penanceHandler: core.V070BattleEffectHandler = {
+const penanceHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_PENANCE_ID,
   expectedText: V070_PENANCE_BATTLE_TEXT,
   timing: 'reveal',
@@ -165,7 +178,7 @@ const penanceHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const propertyDuesHandler: core.V070BattleEffectHandler = {
+const propertyDuesHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_PROPERTY_DUES_ID,
   expectedText: V070_PROPERTY_DUES_BATTLE_TEXT,
   timing: 'reveal',
@@ -178,7 +191,7 @@ const propertyDuesHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const speculationHandler: core.V070BattleEffectHandler = {
+const speculationHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_SPECULATION_ID,
   expectedText: V070_SPECULATION_BATTLE_TEXT,
   timing: 'reveal',
@@ -191,7 +204,10 @@ const speculationHandler: core.V070BattleEffectHandler = {
   },
 };
 
-const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
+const specializedHandlers = new Map<
+  string,
+  V070SpecializedBattleEffectHandler
+>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
@@ -215,13 +231,23 @@ export function v070BattleEffectHandler(
     ?? core.v070BattleEffectHandler(cardId);
 }
 
+/**
+ * Current core handlers are ordinary effects. Specialized handlers opt into
+ * interference explicitly so adding one cannot accidentally change the timing
+ * of unrelated battle cards.
+ */
+export function v070BattleRevealEffectClass(
+  cardId: string,
+): V070RevealEffectClass {
+  return specializedHandlers.get(cardId)?.revealClass ?? 'ordinary';
+}
+
 export function resolveV070SupportedRevealEffects(
   state: V070GameState,
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: V070RevealEncounteredAt,
 ): V070UnsupportedBattleEffect[] {
-  // Validate the complete simultaneous reveal before mutating live state. Once
-  // validated, effects may pause between alternating applications for choices.
+  // Validate the complete simultaneous reveal before mutating live state.
   const unsupported = commitments.flatMap(commitment =>
     unsupportedRevealEffect(state, commitment, encounteredAt)
   );
@@ -229,25 +255,43 @@ export function resolveV070SupportedRevealEffects(
 
   const runtime = state.battleRuntime;
   if (!runtime) throw new Error('Battle effect resolution requires an active runtime.');
-  if ((runtime.pendingRevealEffectCommitments?.length ?? 0) > 0) {
+  if (v070BattleRevealEffectsPending(state)) {
     throw new Error('Cannot start a new reveal effect sequence while another is paused.');
   }
 
-  applyRevealCommitmentsUntilPause(
-    state,
-    orderedRevealCommitments(state, commitments),
-    encounteredAt,
+  const ordered = orderedRevealCommitments(state, commitments);
+  const interference = ordered.filter(commitment =>
+    revealClassForCommitment(state, commitment) === 'interference'
   );
+  const ordinary = ordered.filter(commitment =>
+    revealClassForCommitment(state, commitment) === 'ordinary'
+  );
+
+  runtime.pendingRevealEffectEncounteredAt = encounteredAt;
+  if (interference.length > 0) {
+    runtime.pendingRevealEffectClass = 'interference';
+    runtime.pendingRevealEffectCommitments = interference;
+    runtime.pendingRevealDeferredOrdinaryCommitments = ordinary;
+  } else {
+    runtime.pendingRevealEffectClass = 'ordinary';
+    runtime.pendingRevealEffectCommitments = ordinary;
+    runtime.pendingRevealDeferredOrdinaryCommitments = [];
+  }
+
+  resumeV070SupportedRevealEffects(state);
   return [];
 }
 
 export function v070BattleRevealEffectsPending(
   state: V070GameState,
 ): boolean {
-  return (state.battleRuntime?.pendingRevealEffectCommitments?.length ?? 0) > 0;
+  return Boolean(state.battleRuntime?.pendingRevealEffectEncounteredAt);
 }
 
-/** Continue an already validated reveal sequence after its interrupt resolves. */
+/**
+ * Continue an already validated reveal sequence after its interrupt resolves.
+ * Interference is exhausted before the deferred ordinary queue can begin.
+ */
 export function resumeV070SupportedRevealEffects(
   state: V070GameState,
 ): void {
@@ -255,42 +299,37 @@ export function resumeV070SupportedRevealEffects(
   if (!runtime) {
     throw new Error('Battle effect resumption requires an active runtime.');
   }
-  const remaining = runtime.pendingRevealEffectCommitments ?? [];
   const encounteredAt = runtime.pendingRevealEffectEncounteredAt;
-  if (remaining.length === 0 || !encounteredAt) return;
+  if (!encounteredAt) return;
 
-  runtime.pendingRevealEffectCommitments = [];
-  runtime.pendingRevealEffectEncounteredAt = null;
-  applyRevealCommitmentsUntilPause(
-    state,
-    remaining,
-    encounteredAt,
-  );
-}
+  while (!revealEffectInterruptPending(state)) {
+    const current = runtime.pendingRevealEffectCommitments ?? [];
+    if (current.length === 0) {
+      if (runtime.pendingRevealEffectClass === 'interference'
+        && (runtime.pendingRevealDeferredOrdinaryCommitments?.length ?? 0) > 0) {
+        runtime.pendingRevealEffectClass = 'ordinary';
+        runtime.pendingRevealEffectCommitments = [
+          ...runtime.pendingRevealDeferredOrdinaryCommitments!,
+        ];
+        runtime.pendingRevealDeferredOrdinaryCommitments = [];
+        continue;
+      }
 
-function applyRevealCommitmentsUntilPause(
-  state: V070GameState,
-  commitments: readonly V070BattleCardCommitment[],
-  encounteredAt: V070RevealEncounteredAt,
-): void {
-  const runtime = state.battleRuntime;
-  if (!runtime) throw new Error('Battle effect resolution requires an active runtime.');
-
-  for (let index = 0; index < commitments.length; index += 1) {
-    const commitment = commitments[index];
-    applyValidatedRevealCommitment(state, commitment, encounteredAt);
-
-    if (revealEffectInterruptPending(state)) {
-      runtime.pendingRevealEffectCommitments = commitments.slice(index + 1);
-      runtime.pendingRevealEffectEncounteredAt =
-        runtime.pendingRevealEffectCommitments.length > 0
-          ? encounteredAt
-          : null;
+      clearPendingRevealProcedure(state);
       return;
     }
-  }
 
+    const commitment = current.shift()!;
+    applyValidatedRevealCommitment(state, commitment, encounteredAt);
+  }
+}
+
+function clearPendingRevealProcedure(state: V070GameState): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
   runtime.pendingRevealEffectCommitments = [];
+  runtime.pendingRevealDeferredOrdinaryCommitments = [];
+  runtime.pendingRevealEffectClass = null;
   runtime.pendingRevealEffectEncounteredAt = null;
 }
 
@@ -299,6 +338,14 @@ function revealEffectInterruptPending(state: V070GameState): boolean {
     pendingV070BattleRevealChoice(state)
     || v070MysticInvocationPendingPlayers(state).length > 0,
   );
+}
+
+function revealClassForCommitment(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): V070RevealEffectClass {
+  const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  return v070BattleRevealEffectClass(cardId);
 }
 
 function applyValidatedRevealCommitment(
@@ -356,6 +403,7 @@ function applyValidatedRevealCommitment(
       cardId,
       role: commitment.role,
       timing: specialized.timing,
+      revealClass: specialized.revealClass ?? 'ordinary',
     },
   });
 }
