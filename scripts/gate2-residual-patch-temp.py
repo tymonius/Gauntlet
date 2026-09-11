@@ -1,0 +1,74 @@
+from pathlib import Path
+import json
+
+worker = Path('rules-assistant/worker-v071.js')
+s = worker.read_text()
+assert s.count('export const BEHAVIOR_REVISION = "v071-qa-20260911-3";') == 1
+s = s.replace('export const BEHAVIOR_REVISION = "v071-qa-20260911-3";', 'export const BEHAVIOR_REVISION = "v071-qa-20260911-4";', 1)
+
+anchor = '- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.\n'
+addition = anchor + '- When clean authority expressly confines an Action, Faction Feature, effect, or permission to a named phase or timing, a question asking whether it is legal outside that timing is an explicit negative unless supplied authority expressly changes that timing. A generic additional-Action permission does not make that direct timing restriction inferred.\n'
+assert s.count(anchor) == 1
+s = s.replace(anchor, addition, 1)
+
+old_named = '- For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.\n'
+new_named = old_named + '- When a supplied named-card rule conflicts with a supplied rulebook passage about that same card and the Golden Rules resolve the conflict, classify the resolution inferred and cite the printed card, the conflicting rulebook authority, and the Golden Rules. Do not present the winning component text as conflict-free explicit authority.\n'
+assert s.count(old_named) == 1
+s = s.replace(old_named, new_named, 1)
+
+old_req = '14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.\n'
+new_req = old_req + '15. Do not infer that a requirement for at least one of several Actions to be a phase-limited Feature moves that Feature into an otherwise illegal phase. Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.\n16. When a direct phase restriction itself answers a legality question, keep the ruling explicit even if another supplied rule explains why the player has an additional Action at that time. Cite the timing restriction and the additional-Action rule when both are material to the explanation.\n'
+assert s.count(old_req) == 1
+s = s.replace(old_req, new_req, 1)
+s = s.replace('15. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage.', '17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage.', 1)
+
+old_ids = 'const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus\n  ? [namedCardSource.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]\n  : [];'
+new_ids = 'const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus\n  ? [namedCardSource.canonicalId, namedCardRuleReference.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]\n  : [];'
+assert s.count(old_ids) == 1
+s = s.replace(old_ids, new_ids, 1)
+worker.write_text(s)
+
+for p in Path('rules-assistant').glob('*.test.mjs'):
+    t = p.read_text()
+    if 'v071-qa-20260911-3' in t:
+        p.write_text(t.replace('v071-qa-20260911-3', 'v071-qa-20260911-4'))
+
+corrections_path = Path('rules-assistant/evals/rules-arbiter-evals.v071-corrections.json')
+corrections = json.loads(corrections_path.read_text())
+cases = corrections['cases']
+by_id = {c['id']: c for c in cases}
+capacity = by_id.get('financiers-capacity')
+patch = {
+    'id': 'financiers-capacity',
+    'expectedClassification': 'explicit',
+    'expectedSourcePatterns': ['Financial Capacity'],
+    'expectedAnswerPatterns': ['Denouement'],
+    'forbiddenAnswerPatterns': [
+        'use one in Opening',
+        'use a Financier Faction Feature in Opening',
+        'lets one be used in Opening',
+        'Feature in Opening'
+    ]
+}
+if capacity is None:
+    index = next(i for i,c in enumerate(cases) if c['id'] == 'financiers-capacity-opening')
+    cases.insert(index, patch)
+else:
+    capacity.update(patch)
+corrections_path.write_text(json.dumps(corrections, indent=2) + '\n')
+
+test_path = Path('rules-assistant/v071-gate2-live-regressions.test.mjs')
+t = test_path.read_text()
+old = '    expect(workerSource).toContain("state the baseline restriction that the exception changes as well as the exception itself");\n'
+new = old + '    expect(workerSource).toContain("A generic additional-Action permission does not make that direct timing restriction inferred.");\n    expect(workerSource).toContain("Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.");\n'
+assert t.count(old) == 1
+t = t.replace(old, new, 1)
+old_slice = '    expect(augmented.slice(0, 2).map((source) => source.canonicalId)).toEqual([\n      "card:test-buyout",\n      "rulebook:golden-rules"\n    ]);'
+new_slice = '    expect(augmented.slice(0, 3).map((source) => source.canonicalId)).toEqual([\n      "card:test-buyout",\n      "rulebook:collateral",\n      "rulebook:golden-rules"\n    ]);\n    expect(workerSource).toContain("cite the printed card, the conflicting rulebook authority, and the Golden Rules");'
+assert t.count(old_slice) == 1
+t = t.replace(old_slice, new_slice, 1)
+marker = '    const correction = corrections.cases.find((item) => item.id === "card-leveraged-buyout");\n'
+insert = '    const capacityCorrection = corrections.cases.find((item) => item.id === "financiers-capacity");\n    expect(capacityCorrection.expectedAnswerPatterns).toEqual(["Denouement"]);\n    expect(capacityCorrection.forbiddenAnswerPatterns).toContain("Feature in Opening");\n\n' + marker
+assert t.count(marker) == 1
+t = t.replace(marker, insert, 1)
+test_path.write_text(t)
