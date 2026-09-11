@@ -23,6 +23,22 @@
       ]
     },
     {
+      "id": "financiers-capacity",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Financial Capacity"
+      ],
+      "expectedAnswerPatterns": [
+        "Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "use one in Opening",
+        "use a Financier Faction Feature in Opening",
+        "lets one be used in Opening",
+        "Feature in Opening"
+      ]
+    },
+    {
       "id": "financiers-capacity-opening",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",

@@ -40,5 +40,5 @@ test('longer self-contained what-if questions do not automatically inherit unrel
 });
 
 test('short counterfactual continuity is part of the current behavior revision', () => {
-  expect(BEHAVIOR_REVISION).toBe('v071-qa-20260911-3');
+  expect(BEHAVIOR_REVISION).toBe('v071-qa-20260911-4');
 });
