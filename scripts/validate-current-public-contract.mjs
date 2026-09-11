@@ -9,6 +9,7 @@ const root = process.cwd();
 const remoteBase = process.env.GAUNTLET_PUBLIC_BASE_URL?.replace(/\/+$/, '') || null;
 const cacheBust = process.env.GAUNTLET_CONTRACT_BUST || '';
 const factions = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
+const deployedAppRoots = new Set(['card-reference', 'deckbuilder', 'factions', 'rules', 'start', 'playtest']);
 
 function publicPath(value) {
   if (!value) return null;
@@ -39,10 +40,12 @@ function repositoryPathExists(relative) {
 function localPath(urlPath) {
   const clean = decodeURIComponent(urlPath.split(/[?#]/, 1)[0]).replace(/^\//, '');
   if (!clean) return 'index.html';
-  const candidate = path.join(root, clean);
-  const directory = (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) || gitEntry(clean) === 'tree';
-  if (urlPath.endsWith('/') || directory) return path.join(clean, 'index.html');
-  return clean;
+  const [publicRoot] = clean.split('/');
+  const sourcePath = deployedAppRoots.has(publicRoot) ? path.join('apps', clean) : clean;
+  const candidate = path.join(root, sourcePath);
+  const directory = (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) || gitEntry(sourcePath) === 'tree';
+  if (urlPath.endsWith('/') || directory) return path.join(sourcePath, 'index.html');
+  return sourcePath;
 }
 
 function remoteUrl(urlPath) {
