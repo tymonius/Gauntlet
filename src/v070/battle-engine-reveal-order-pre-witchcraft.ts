@@ -451,6 +451,10 @@ function continueV070BattleRevealProcedure(
         case 'palisade_wall': opened = openV070PalisadeWallBattleChoice(state); break;
         case 'assassins': opened = openV070AssassinsBattleChoice(state); break;
         case 'capital_punishment': opened = openV070CapitalPunishmentBattleChoice(state); break;
+        default:
+          // A later stacked battle facade may own this reveal choice. Yield
+          // instead of spinning here so that outer facade can open it.
+          return true;
       }
       if (opened) return true;
       continue;

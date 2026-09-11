@@ -226,21 +226,15 @@ jobs:
 
           mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
           if (( ${#related_sources[@]} )); then
-            # Vitest 2.1.9 can finish every dependency-selected test yet retain
-            # the large combined `related` invocation indefinitely. The exact
-            # same selection was verified to terminate cleanly when partitioned
-            # into 16 shards, so keep dependency-scoped coverage and bound each
-            # partition independently rather than broadening to unrelated suites.
-            for shard in $(seq 1 16); do
-              echo "Running related-test shard ${shard}/16"
-              timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
-                --shard="${shard}/16" \
-                --exclude 'tests/arcane-card-symbol.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-                --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
-                "${related_sources[@]}"
-            done
+            # These historical v0.6.4 suites still reference retired draft JSON fixtures.
+            # Keep them runnable when changed directly, but do not let unrelated current
+            # source changes pull them into scoped dependency testing.
+            npx vitest related --run --passWithNoTests \
+              --exclude 'tests/arcane-card-symbol.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+              "${related_sources[@]}"
           fi
 
       - name: Run public static accessibility contract when HTML changes
