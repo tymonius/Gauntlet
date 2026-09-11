@@ -154,6 +154,7 @@ export function registerV070ArcaneKnowledgeBattleEffect(
     kind: 'arcane_knowledge',
     owner,
     sourceInstanceId,
+    encounteredAt,
     candidates: choices.map(choice => ({
       sourceInstanceId: choice.sourceInstanceId,
       effectLabel: choice.label,
@@ -185,14 +186,10 @@ export function resolveV070ArcaneKnowledgeBattleChoice(
     );
   }
 
-  const sourceRole = currentRevealTiming(state, 'gambit') === 'reveal_gambits'
-    ? 'gambit'
-    : 'tactic';
-  const encounteredAt = currentRevealTiming(state, sourceRole);
   const choices = liveArcaneKnowledgeChoices(
     state,
     playerId,
-    encounteredAt,
+    pending.encounteredAt,
     pending.parentApplication ?? null,
   );
   const target = choices.find(choice =>
@@ -211,7 +208,7 @@ export function resolveV070ArcaneKnowledgeBattleChoice(
     playerId,
     pending.sourceInstanceId,
     target,
-    encounteredAt,
+    pending.encounteredAt,
     pending.parentApplication ?? null,
   );
 }
@@ -244,6 +241,7 @@ function applyArcaneKnowledgeChoice(
     instanceId: target.sourceInstanceId,
     owner,
     role: copiedCommitmentRole(target.label, encounteredAt),
+    faceUp: true,
   };
   withV070CopiedEffectApplication(state, application, () => {
     handler.apply({
@@ -337,6 +335,7 @@ function simulateCopiedApplication(
     instanceId: effect.sourceInstanceId,
     owner,
     role: copiedCommitmentRole(effect.label, encounteredAt),
+    faceUp: true,
   };
   try {
     withV070CopiedEffectApplication(clone, application, () => {
