@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const loader = readFileSync("deckbuilder/mobile-card-preview.js", "utf8");
-const ui = readFileSync("deckbuilder/metadata-ui.js", "utf8");
-const css = readFileSync("deckbuilder/metadata-ui.css", "utf8");
+const loader = readFileSync("apps/deckbuilder/mobile-card-preview.js", "utf8");
+const ui = readFileSync("apps/deckbuilder/metadata-ui.js", "utf8");
+const css = readFileSync("apps/deckbuilder/metadata-ui.css", "utf8");
 
 describe("Deckbuilder metadata hierarchy", () => {
   it("loads the shared metadata cleanup alongside the rendered card preview", () => {
