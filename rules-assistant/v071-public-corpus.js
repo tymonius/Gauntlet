@@ -58,17 +58,23 @@ const V071_LEGACY_CARD_FACE_FIELDS = new Set([
 ]);
 
 export function sanitizeV071CanonicalDataForRules(canonicalData) {
-  const rulesData = typeof structuredClone === 'function'
-    ? structuredClone(canonicalData)
-    : JSON.parse(JSON.stringify(canonicalData));
-  const cards = rulesData?.gameplay?.cards;
-  if (!Array.isArray(cards)) return rulesData;
+  const cards = canonicalData?.gameplay?.cards;
+  if (!Array.isArray(cards)) return canonicalData;
 
-  for (const card of cards) {
-    if (!card || !Array.isArray(card.effects) || !card.effects.length) continue;
-    for (const key of V071_LEGACY_CARD_FACE_FIELDS) delete card[key];
-  }
-  return rulesData;
+  const normalizedCards = cards.map((card) => {
+    if (!card || !Array.isArray(card.effects) || !card.effects.length) return card;
+    const normalized = { ...card };
+    for (const key of V071_LEGACY_CARD_FACE_FIELDS) delete normalized[key];
+    return normalized;
+  });
+
+  return {
+    ...canonicalData,
+    gameplay: {
+      ...canonicalData.gameplay,
+      cards: normalizedCards,
+    },
+  };
 }
 
 export function validateV071PublishedData({ canonicalData, manifest, provenance, rulebookMarkdown } = {}) {
