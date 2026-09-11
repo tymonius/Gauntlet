@@ -229,7 +229,7 @@ jobs:
             # These historical v0.6.4 suites still reference retired draft JSON fixtures.
             # Keep them runnable when changed directly, but do not let unrelated current
             # source changes pull them into scoped dependency testing.
-            npx vitest related --run --passWithNoTests \
+            timeout --kill-after=10s 180s npx vitest related --run --passWithNoTests \
               --exclude 'tests/arcane-card-symbol.test.ts' \
               --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
               --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
