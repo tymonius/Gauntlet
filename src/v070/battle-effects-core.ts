@@ -21,8 +21,12 @@ const witchcraftHandler: previous.V070BattleEffectHandler = {
   expectedText: V070_WITCHCRAFT_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
+    // The core battle reducer advances from reveal_gambits to choose_tactics
+    // before the shared reveal-effect scheduler finishes applying Gambit
+    // effects. Therefore the runtime stage, not the commitment role alone,
+    // tells us whether the post-Tactics Witchcraft window has actually opened.
     if (commitment.role === 'gambit'
-      && state.battleRuntime?.stage === 'reveal_gambits') {
+      && state.battleRuntime?.stage !== 'reveal_tactics') {
       deferWitchcraftGambit(state, commitment);
       return;
     }
