@@ -34,9 +34,17 @@ import {
 } from './landslide';
 import {
   openV070DivineMercyBattleChoice,
-  pendingV070DivineMercyBattleChoice,
   resolveV070DivineMercyBattleChoice,
 } from './divine-mercy-battle';
+import {
+  openV070DarkOmensBattleChoice,
+  resolveV070DarkOmensBattleChoice,
+} from './dark-omens-battle';
+import {
+  isV070BattleRevealChoiceOpen,
+  pendingV070BattleRevealChoice,
+} from './battle-reveal-choices';
+import { v070MysticInvocationPendingPlayers } from './mystics';
 
 export * from './battle-engine-prewar-bonds';
 
@@ -56,31 +64,69 @@ export type V070BattleAction =
       type: 'resolve_divine_mercy_battle';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_dark_omens_battle';
+      playerId: PlayerId;
+      use: boolean;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  const pendingDivineMercy = pendingV070DivineMercyBattleChoice(state);
-  if (pendingDivineMercy) {
-    if (action.type !== 'resolve_divine_mercy_battle') {
-      throw new V070GameActionError(
-        'Resolve the pending Divine Mercy Graveyard choice before continuing the battle.',
+  const pendingRevealChoice = pendingV070BattleRevealChoice(state);
+  if (pendingRevealChoice && isV070BattleRevealChoiceOpen(state)) {
+    if (pendingRevealChoice.kind === 'divine_mercy') {
+      if (action.type !== 'resolve_divine_mercy_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Divine Mercy Graveyard choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070DivineMercyBattleChoice(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
+      openNextV070BattleRevealChoice(next);
+      return next;
     }
-    const next = structuredClone(state) as V070GameState;
-    resolveV070DivineMercyBattleChoice(
-      next,
-      action.playerId,
-      action.targetInstanceId,
-    );
-    openV070DivineMercyBattleChoice(next);
-    return next;
+
+    if (pendingRevealChoice.kind === 'dark_omens') {
+      if (action.type !== 'resolve_dark_omens_battle') {
+        throw new V070GameActionError(
+          'Resolve or decline the pending Dark Omens battle choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      const result = resolveV070DarkOmensBattleChoice(
+        next,
+        action.playerId,
+        action.use,
+      );
+      if (result.graveyardedInstanceId
+        && openReembodimentAfterBattleEffect(
+          next,
+          result.playerId,
+          [result.graveyardedInstanceId],
+          'Dark Omens',
+        )) {
+        return next;
+      }
+      if (v070MysticInvocationPendingPlayers(next).length > 0) return next;
+      openNextV070BattleRevealChoice(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
-      'There is no pending Divine Mercy battle choice.',
+      'There is no open Divine Mercy battle choice.',
+    );
+  }
+  if (action.type === 'resolve_dark_omens_battle') {
+    throw new V070GameActionError(
+      'There is no open Dark Omens battle choice.',
     );
   }
 
@@ -200,32 +246,25 @@ export function reduceV070BattleAction(
     battleOrPlayerPositions(next),
   );
 
-  if (openV070DivineMercyBattleChoice(next)) return next;
-
   if (controlled) {
     const moved = beforeHand.filter(instanceId =>
       !next.players[controlled.playerId].zones.hand.includes(instanceId)
       && next.players[controlled.playerId].zones.graveyard.includes(instanceId)
     );
-    const continuation = recordV070ReembodimentQualifyingTransition(
+    if (openReembodimentAfterBattleEffect(
       next,
       controlled.playerId,
       moved,
       controlled.sourceLabel,
-      true,
-    );
-    if (continuation) {
-      if (openV070SubversionAssetBattleWindow(
-        next,
-        continuation.playerId,
-        continuation.assetInstanceId,
-        'Reembodiment',
-        continuation as unknown as V070SubversionAssetBattleContinuation,
-      )) {
-        return next;
-      }
-      if (openV070ReembodimentRecovery(next, continuation)) return next;
+    )) {
+      return next;
     }
+  }
+
+  if (v070MysticInvocationPendingPlayers(next).length === 0
+    && !pendingV070ReembodimentRecovery(next)
+    && !isReembodimentSubversionPending(next)) {
+    if (openNextV070BattleRevealChoice(next)) return next;
   }
 
   if (!next.battle) {
@@ -235,6 +274,56 @@ export function reduceV070BattleAction(
     );
   }
   return next;
+}
+
+function openNextV070BattleRevealChoice(
+  state: V070GameState,
+): boolean {
+  if (v070MysticInvocationPendingPlayers(state).length > 0
+    || pendingV070ReembodimentRecovery(state)
+    || isReembodimentSubversionPending(state)) {
+    return false;
+  }
+
+  while (true) {
+    const pending = pendingV070BattleRevealChoice(state);
+    if (!pending) return false;
+    if (isV070BattleRevealChoiceOpen(state)) return true;
+
+    const opened = pending.kind === 'divine_mercy'
+      ? openV070DivineMercyBattleChoice(state)
+      : openV070DarkOmensBattleChoice(state);
+    if (opened) return true;
+    // An unavailable choice resolves itself. Continue to the next queued
+    // shared-timing choice, if any.
+  }
+}
+
+function openReembodimentAfterBattleEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  movedHandInstanceIds: readonly string[],
+  sourceLabel: string,
+): boolean {
+  const continuation = recordV070ReembodimentQualifyingTransition(
+    state,
+    playerId,
+    movedHandInstanceIds,
+    sourceLabel,
+    true,
+  );
+  if (!continuation) return false;
+
+  if (openV070SubversionAssetBattleWindow(
+    state,
+    continuation.playerId,
+    continuation.assetInstanceId,
+    'Reembodiment',
+    continuation as unknown as V070SubversionAssetBattleContinuation,
+  )) {
+    return true;
+  }
+  return openV070ReembodimentRecovery(state, continuation);
 }
 
 function battleOrPlayerPositions(
@@ -271,14 +360,32 @@ function resumeAfterReembodimentBattlePause(
   state: V070GameState,
   sourceLabel: string,
 ): V070GameState {
-  if (sourceLabel !== 'Spirit Hollow') return state;
-  if (openV070SpiritHollowAftermathChoice(state)) return state;
-  const battle = state.battle;
-  if (!battle) return state;
-  return reduceV070BattleActionPreWarBonds(state, {
-    type: 'complete_aftermath',
-    playerId: battle.attacker,
-  });
+  if (sourceLabel === 'Spirit Hollow') {
+    if (openV070SpiritHollowAftermathChoice(state)) return state;
+    const battle = state.battle;
+    if (!battle) return state;
+    return reduceV070BattleActionPreWarBonds(state, {
+      type: 'complete_aftermath',
+      playerId: battle.attacker,
+    });
+  }
+
+  if (v070MysticInvocationPendingPlayers(state).length === 0) {
+    openNextV070BattleRevealChoice(state);
+  }
+  return state;
+}
+
+function isReembodimentSubversionPending(
+  state: V070GameState,
+): boolean {
+  const pending = state.battleRuntime?.pendingSubversionAssetBattle;
+  return Boolean(
+    pending
+    && isReembodimentContinuation(
+      pending.deferredAction as unknown,
+    ),
+  );
 }
 
 function isReembodimentContinuation(

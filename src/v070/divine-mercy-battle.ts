@@ -6,6 +6,13 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { assertV070GraveyardExitAllowed } from './territories';
+import {
+  completeV070BattleRevealChoice,
+  isV070BattleRevealChoiceOpen,
+  markV070BattleRevealChoiceOpen,
+  pendingV070BattleRevealChoice,
+  queueV070BattleRevealChoice,
+} from './battle-reveal-choices';
 
 export const V070_DIVINE_MERCY_ID = 'inquisition-divine-mercy' as const;
 export const V070_DIVINE_MERCY_BATTLE_TEXT =
@@ -15,13 +22,6 @@ export interface V070DivineMercyBattleEffectRuntime {
   owner: PlayerId;
   opponent: PlayerId;
   sourceInstanceId: string;
-}
-
-declare module './battle-types' {
-  interface V070BattleRuntime {
-    divineMercyBattleQueue?: V070DivineMercyBattleEffectRuntime[];
-    divineMercyBattleChoiceOpen?: boolean;
-  }
 }
 
 function validateV070DivineMercyAuthority(): void {
@@ -67,85 +67,87 @@ export function registerV070DivineMercyBattleEffect(
     },
   });
 
-  runtime.divineMercyBattleQueue ??= [];
-  if (!runtime.divineMercyBattleQueue.some(effect =>
-    effect.sourceInstanceId === sourceInstanceId
-  )) {
-    runtime.divineMercyBattleQueue.push({
-      owner,
-      opponent,
-      sourceInstanceId,
+  if (state.players[opponent].zones.graveyard.length === 0) {
+    appendV070Event(state, {
+      type: 'divine_mercy_battle_recycle_unavailable',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId,
+        sourceCardId: V070_DIVINE_MERCY_ID,
+        opponent,
+        reason: 'opponent_graveyard_empty',
+      },
     });
+    return;
   }
+
+  queueV070BattleRevealChoice(state, {
+    kind: 'divine_mercy',
+    owner,
+    opponent,
+    sourceInstanceId,
+  });
 }
 
 export function pendingV070DivineMercyBattleChoice(
   state: V070GameState,
 ): V070DivineMercyBattleEffectRuntime | null {
-  return state.battleRuntime?.divineMercyBattleQueue?.[0] ?? null;
+  const pending = pendingV070BattleRevealChoice(state);
+  return pending?.kind === 'divine_mercy'
+    ? pending
+    : null;
 }
 
-/**
- * Open the next Divine Mercy recycle choice. Effects whose opponent no longer
- * has a Graveyard card resolve as far as able and leave the +2 Battle Total in
- * place. The queue preserves reveal shared-timing order.
- */
 export function openV070DivineMercyBattleChoice(
   state: V070GameState,
 ): boolean {
-  const runtime = state.battleRuntime;
-  if (!runtime) return false;
-  runtime.divineMercyBattleQueue ??= [];
+  const pending = pendingV070DivineMercyBattleChoice(state);
+  if (!pending) return false;
+  if (isV070BattleRevealChoiceOpen(state)) return true;
 
-  while (runtime.divineMercyBattleQueue.length > 0) {
-    const pending = runtime.divineMercyBattleQueue[0];
-    const candidates = state.players[pending.opponent].zones.graveyard;
-    if (candidates.length === 0) {
-      runtime.divineMercyBattleQueue.shift();
-      runtime.divineMercyBattleChoiceOpen = false;
-      appendV070Event(state, {
-        type: 'divine_mercy_battle_recycle_unavailable',
-        actor: pending.owner,
-        visibility: 'public',
-        payload: {
-          sourceInstanceId: pending.sourceInstanceId,
-          sourceCardId: V070_DIVINE_MERCY_ID,
-          opponent: pending.opponent,
-          reason: 'opponent_graveyard_empty',
-        },
-      });
-      continue;
-    }
-
-    if (!runtime.divineMercyBattleChoiceOpen) {
-      runtime.divineMercyBattleChoiceOpen = true;
-      appendV070Event(state, {
-        type: 'divine_mercy_battle_choice_pending',
-        actor: pending.owner,
-        visibility: 'public',
-        payload: {
-          playerId: pending.owner,
-          opponent: pending.opponent,
-          sourceInstanceId: pending.sourceInstanceId,
-          candidateCount: candidates.length,
-          mandatory: true,
-        },
-      });
-      appendV070Event(state, {
-        type: 'divine_mercy_battle_choice_options',
-        actor: pending.owner,
-        visibility: pending.owner,
-        payload: {
-          sourceInstanceId: pending.sourceInstanceId,
-          targetInstanceIds: [...candidates],
-        },
-      });
-    }
-    return true;
+  markV070BattleRevealChoiceOpen(state);
+  const candidates = state.players[pending.opponent].zones.graveyard;
+  if (candidates.length === 0) {
+    // A prior shared-timing effect may have removed the last candidate after
+    // Divine Mercy was queued. Resolve this instruction as far as able.
+    completeV070BattleRevealChoice(state, 'divine_mercy');
+    appendV070Event(state, {
+      type: 'divine_mercy_battle_recycle_unavailable',
+      actor: pending.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: pending.sourceInstanceId,
+        sourceCardId: V070_DIVINE_MERCY_ID,
+        opponent: pending.opponent,
+        reason: 'opponent_graveyard_became_empty',
+      },
+    });
+    return false;
   }
 
-  runtime.divineMercyBattleChoiceOpen = false;
-  return false;
+  appendV070Event(state, {
+    type: 'divine_mercy_battle_choice_pending',
+    actor: pending.owner,
+    visibility: 'public',
+    payload: {
+      playerId: pending.owner,
+      opponent: pending.opponent,
+      sourceInstanceId: pending.sourceInstanceId,
+      candidateCount: candidates.length,
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'divine_mercy_battle_choice_options',
+    actor: pending.owner,
+    visibility: pending.owner,
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      targetInstanceIds: [...candidates],
+    },
+  });
+  return true;
 }
 
 export function resolveV070DivineMercyBattleChoice(
@@ -153,9 +155,8 @@ export function resolveV070DivineMercyBattleChoice(
   playerId: PlayerId,
   targetInstanceId: string,
 ): void {
-  const runtime = state.battleRuntime;
   const pending = pendingV070DivineMercyBattleChoice(state);
-  if (!runtime || !pending || !runtime.divineMercyBattleChoiceOpen) {
+  if (!pending || !isV070BattleRevealChoiceOpen(state)) {
     throw new V070GameActionError(
       'No Divine Mercy battle choice is pending.',
     );
@@ -177,8 +178,7 @@ export function resolveV070DivineMercyBattleChoice(
   assertV070GraveyardExitAllowed(state, 'Divine Mercy');
   graveyard.splice(index, 1);
   state.players[pending.opponent].zones.discardPile.push(targetInstanceId);
-  runtime.divineMercyBattleQueue!.shift();
-  runtime.divineMercyBattleChoiceOpen = false;
+  completeV070BattleRevealChoice(state, 'divine_mercy');
 
   appendV070Event(state, {
     type: 'divine_mercy_battle_recycled',
