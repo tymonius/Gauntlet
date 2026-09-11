@@ -1,4 +1,4 @@
-name: List Vitest shard 7
+name: Isolate Vitest shard 7
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  list:
+  isolate:
     if: github.event.pull_request.number == 1625
     runs-on: ubuntu-latest
     steps:
@@ -16,13 +16,22 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: List related shard 7 files
+      - name: Run shard 7 without known-good files
         run: |
-          npx vitest related --list --filesOnly --passWithNoTests --shard=7/16 \
+          timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
+            --reporter=verbose --shard=7/16 \
             --exclude 'tests/arcane-card-symbol.test.ts' \
             --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
             --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
             --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+            --exclude 'src/v070/brothers-in-arms-battle.test.ts' \
+            --exclude 'src/v070/mystics-leaders.test.ts' \
+            --exclude 'src/v070/battle-effects-core-modifiers.test.ts' \
+            --exclude 'src/v070/spirit-hollow.test.ts' \
+            --exclude 'src/v070/tariffs-battle.test.ts' \
+            --exclude 'src/v070/intelligence-leaders.test.ts' \
+            --exclude 'src/v070/territory-monastery.test.ts' \
+            --exclude 'src/v070/encampment-overlay.test.ts' \
             src/v070/battle-effects-pre-counterworks.ts \
             src/v070/battle-engine-pre-accusation.ts \
             src/v070/battle-negation.ts \
