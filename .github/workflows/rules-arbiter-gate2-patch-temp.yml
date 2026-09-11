@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   patch:
-    if: github.event.head_commit.message == 'Run Gate 2 repair patch'
+    if: github.event.head_commit.message == 'Retry Gate 2 repair patch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,9 +24,7 @@ jobs:
 
           p = Path('rules-assistant/worker-v071.js')
           s = p.read_text()
-          assert 'export const BEHAVIOR_REVISION = "v071-qa-20260911-2";' in s
           s = s.replace('export const BEHAVIOR_REVISION = "v071-qa-20260911-2";', 'export const BEHAVIOR_REVISION = "v071-qa-20260911-3";', 1)
-
           a = '- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.\n'
           assert a in s
           s = s.replace(a, a
@@ -34,24 +32,13 @@ jobs:
             + '- Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.\n'
             + '- A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.\n'
             + '- For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.\n', 1)
-
           a = '13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.\n'
           assert a in s
           s = s.replace(a, a
             + '14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.\n'
             + '15. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.\n', 1)
-
-          a = '''  const namedReplacementCardSource = battleCardReplacementFocus
-            ? retrieval.find((source) => {
-                if (!String(source?.canonicalId || "").startsWith("card:")) return false;
-                const title = String(source?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase();
-                return title.length >= 3 && current.includes(title);
-              })
-            : null;
-          '''
-          # Source indentation is two spaces, not heredoc indentation.
-          a = '\n'.join(line[8:] if line.startswith('        ') else line for line in a.splitlines()) + '\n'
-          assert a in s
+          marker = '  const intelligenceTopic = '
+          i = s.index(marker)
           addition = '''  const namedCardSource = retrieval.find((source) => {
             if (!String(source?.canonicalId || "").startsWith("card:")) return false;
             const title = String(source?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase();
@@ -74,9 +61,8 @@ jobs:
             ? [namedCardSource.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
             : [];
           '''
-          addition = '\n'.join(line[8:] if line.startswith('        ') else line for line in addition.splitlines()) + '\n'
-          s = s.replace(a, a + addition, 1)
-
+          addition = '\n'.join(line[10:] if line.startswith('          ') else line for line in addition.splitlines()) + '\n'
+          s = s[:i] + addition + s[i:]
           a = 'const preferredAuthorityIds = fieldcraftFocus\n  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS\n  : specificRulePrecedenceFocus\n    ? specificRulePrecedenceAuthorityIds\n'
           assert a in s
           s = s.replace(a, 'const preferredAuthorityIds = fieldcraftFocus\n  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS\n  : namedCardSpecificityFocus\n    ? namedCardSpecificityAuthorityIds\n  : specificRulePrecedenceFocus\n    ? specificRulePrecedenceAuthorityIds\n', 1)
@@ -84,27 +70,13 @@ jobs:
 
           p = Path('scripts/v071-live-rules-qa-support.mjs')
           s = p.read_text()
-          assert 'export function classifyTransportInfrastructure' not in s
-          s += '''\n\nexport function classifyTransportInfrastructure(status, responseText = "", payload = null) {
-            const httpStatus = Number(status);
-            if (!Number.isInteger(httpStatus) || httpStatus < 500) return null;
-            const plainText = String(responseText || "").replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();
-            const cloudflareCode = plainText.match(/Error\\s*code:\\s*(\\d{4})/i)?.[1] || null;
-            const workerCode = String(payload?.errorCode || "").trim();
-            const details = [cloudflareCode ? `Cloudflare error ${cloudflareCode}` : "", workerCode].filter(Boolean);
-            return `infrastructure: production endpoint HTTP ${httpStatus}${details.length ? ` (${details.join(", ")})` : ""}`;
-          }
-          '''
-          s = '\n'.join(line[10:] if line.startswith('          ') and i >= len(s.splitlines()) else line for i, line in enumerate(s.splitlines())) if False else s
-          # Normalize only the function just appended.
-          marker = '\n\nexport function classifyTransportInfrastructure'
-          before, tail = s.split(marker, 1)
-          tail = 'export function classifyTransportInfrastructure' + tail
-          tail = '\n'.join(line[10:] if line.startswith('          ') else line for line in tail.splitlines())
-          p.write_text(before + '\n\n' + tail + '\n')
+          assert 'classifyTransportInfrastructure' not in s
+          s += '\n\nexport function classifyTransportInfrastructure(status, responseText = "", payload = null) {\n  const httpStatus = Number(status);\n  if (!Number.isInteger(httpStatus) || httpStatus < 500) return null;\n  const plainText = String(responseText || "").replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();\n  const cloudflareCode = plainText.match(/Error\\s*code:\\s*(\\d{4})/i)?.[1] || null;\n  const workerCode = String(payload?.errorCode || "").trim();\n  const details = [cloudflareCode ? `Cloudflare error ${cloudflareCode}` : "", workerCode].filter(Boolean);\n  return `infrastructure: production endpoint HTTP ${httpStatus}${details.length ? ` (${details.join(", ")})` : ""}`;\n}\n'
+          p.write_text(s)
 
           p = Path('scripts/run-v071-live-rules-qa.mjs')
           s = p.read_text()
+          assert '  classifyTransportInfrastructure,\n' not in s
           s = s.replace('  applyBenchmarkCorrections,\n', '  applyBenchmarkCorrections,\n  classifyTransportInfrastructure,\n', 1)
           assert '      const delayMs = 1200 * attempts;\n' in s
           s = s.replace('      const delayMs = 1200 * attempts;\n', '      const delayMs = status != null && status >= 500 ? 3000 * attempts : 1200 * attempts;\n', 1)
