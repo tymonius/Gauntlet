@@ -137,6 +137,7 @@ export function reduceV070BattleAction(
     state,
     action as V070RevealOrderBattleAction,
   );
+  continueV070BattleRevealProcedure(next);
   finalizeOuterBattleTransition(state, next);
   return next;
 }

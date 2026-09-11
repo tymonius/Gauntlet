@@ -178,7 +178,7 @@ describe('v0.7.0 Counterworks battle effect', () => {
     let { state } = startBattle('diplomats-demilitarized-zone');
     ({ state } = revealCounterworks(state));
 
-    expect(state.battleRuntime?.stage).toBe('reveal_gambits');
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
     expect(pendingV070CounterworksBattleChoice(state)).toEqual(
       expect.objectContaining({
         owner: 'A',
