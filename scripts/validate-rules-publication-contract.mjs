@@ -11,6 +11,7 @@ import {
 } from '../rulebook/publication/rule-dependencies.mjs';
 
 const CONTRACT_PATH = 'config/rules-surface-contract.json';
+const CURRENT_GAME_PUBLIC_SOURCE = 'game-data/current-game.json';
 const RULE_ID = /^(?:core|faction\.[a-z0-9-]+)(?:\.[a-z0-9-]+)+$/;
 
 function fail(errors, message) {
@@ -58,10 +59,10 @@ const authority = await loadCurrentGameAuthority();
 const errors = [];
 
 if (contract.schemaVersion !== 1) fail(errors, 'Rules surface contract must use schemaVersion 1.');
-if (contract.authoritySource !== CURRENT_GAME_AUTHORITY_SOURCE) {
+if (![CURRENT_GAME_AUTHORITY_SOURCE, CURRENT_GAME_PUBLIC_SOURCE].includes(contract.authoritySource)) {
   fail(
     errors,
-    `Rules surface contract points to ${contract.authoritySource}; expected ${CURRENT_GAME_AUTHORITY_SOURCE}.`,
+    `Rules surface contract points to ${contract.authoritySource}; expected repository source ${CURRENT_GAME_AUTHORITY_SOURCE} or stable publication identity ${CURRENT_GAME_PUBLIC_SOURCE}.`,
   );
 }
 
