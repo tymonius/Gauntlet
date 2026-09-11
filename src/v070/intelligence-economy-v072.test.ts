@@ -69,9 +69,13 @@ function missionInstance(state: V070GameState): string {
   return instanceWithEffect(state, 'A', 'Mission');
 }
 
-function ordinaryActionInstance(state: V070GameState): string {
+function ordinaryActionInstance(
+  state: V070GameState,
+  excludedInstanceIds: readonly string[] = [],
+): string {
+  const excluded = new Set(excludedInstanceIds);
   const candidates = Object.values(state.cardInstances).filter(card => {
-    if (card.owner !== 'A') return false;
+    if (card.owner !== 'A' || excluded.has(card.instanceId)) return false;
     const canonical = v070CanonicalContent.cardsById.get(card.cardId);
     return canonical?.effects.some(effect => effect.label === 'Action') ?? false;
   });
@@ -228,7 +232,7 @@ describe('v0.7.2 Intelligence economy and Operational Capacity', () => {
   test('Operational Capacity still allows at most one Action in Denouement', () => {
     let state = readyGame('A');
     const mission = missionInstance(state);
-    const actionCard = ordinaryActionInstance(state);
+    const actionCard = ordinaryActionInstance(state, [mission]);
     moveToHand(state, 'A', mission);
     moveToHand(state, 'A', actionCard);
     denouementAfterOpeningAction(state);
