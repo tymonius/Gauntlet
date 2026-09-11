@@ -22,14 +22,12 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Face-up opposing Assets that existed when Sedition took effect. */
       candidateInstanceIds: string[];
     }
   | {
       kind: 'requisition';
       owner: PlayerId;
       sourceInstanceId: string;
-      /** Voluntarily discardable Assets that existed when Requisition took effect. */
       candidateInstanceIds: string[];
     }
   | {
@@ -37,7 +35,6 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Opposing Hand cards that existed when Tariffs took effect. */
       candidateInstanceIds: string[];
     }
   | {
@@ -45,7 +42,6 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Opposing Hand cards that existed when Penance took effect. */
       candidateInstanceIds: string[];
     }
   | {
@@ -53,7 +49,6 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Opposing Hand cards that existed when Property Dues took effect. */
       candidateInstanceIds: string[];
     }
   | {
@@ -66,7 +61,6 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Opposing Gambits that had not taken effect when Palisade Wall applied. */
       candidateInstanceIds: string[];
     }
   | {
@@ -74,13 +68,19 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       opponent: PlayerId;
       sourceInstanceId: string;
-      /** Opposing Gambits that had not taken effect when Assassins applied. */
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'capital_punishment';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Gambits/Tactics whose effects had not taken effect. */
       candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
   interface V070BattleRuntime {
-    /** Shared reveal-timing choices in exact effect-application order. */
     battleRevealChoices?: V070BattleRevealChoice[];
     battleRevealChoiceOpen?: boolean;
   }

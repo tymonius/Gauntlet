@@ -11,6 +11,11 @@ import {
   registerV070AssassinsBattleEffect,
 } from './assassins-battle';
 import {
+  V070_CAPITAL_PUNISHMENT_BATTLE_TEXT,
+  V070_CAPITAL_PUNISHMENT_ID,
+  registerV070CapitalPunishmentBattleEffect,
+} from './capital-punishment-battle';
+import {
   V070_DARK_OMENS_BATTLE_TEXT,
   V070_DARK_OMENS_ID,
   registerV070DarkOmensBattleEffect,
@@ -83,20 +88,13 @@ type V070RevealEncounteredAt = 'reveal_gambits' | 'reveal_tactics';
 
 interface V070SpecializedBattleEffectHandler
   extends core.V070BattleEffectHandler {
-  /** Interference resolves before every ordinary effect at this reveal stage. */
   revealClass?: V070RevealEffectClass;
-  /**
-   * False when the specialized module decides exactly when its effect has
-   * taken effect (for example, an interference effect with a target choice).
-   */
   markAppliedAtRegistration?: boolean;
 }
 
 declare module './battle-types' {
   interface V070BattleRuntime {
-    /** Remaining effects in the reveal class currently being resolved. */
     pendingRevealEffectCommitments?: V070BattleCardCommitment[];
-    /** Ordinary effects held back until reveal-stage interference is complete. */
     pendingRevealDeferredOrdinaryCommitments?: V070BattleCardCommitment[];
     pendingRevealEffectClass?: V070RevealEffectClass | null;
     pendingRevealEffectEncounteredAt?: V070RevealEncounteredAt | null;
@@ -206,6 +204,21 @@ const assassinsHandler: V070SpecializedBattleEffectHandler = {
   },
 };
 
+const capitalPunishmentHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_CAPITAL_PUNISHMENT_ID,
+  expectedText: V070_CAPITAL_PUNISHMENT_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070CapitalPunishmentBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
@@ -218,6 +231,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [speculationHandler.cardId, speculationHandler],
   [palisadeWallHandler.cardId, palisadeWallHandler],
   [assassinsHandler.cardId, assassinsHandler],
+  [capitalPunishmentHandler.cardId, capitalPunishmentHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
