@@ -11,6 +11,9 @@ import {
   replaceV070CaptureWithOverlay,
   resolveV070OverlayCaptureEffects,
 } from './overlays';
+import {
+  preventV070CaptureWithProtractedSiege,
+} from './protracted-siege';
 import { expireV070BlockadesForControlLoss } from './sanctions';
 import { discardV070SmugglersRunStashForControlLoss } from './smugglers-run';
 
@@ -48,6 +51,15 @@ export function advanceV070FrontLine(
   for (let step = 0; step < amount; step += 1) {
     const target = nextV070FrontLineTarget(state, playerId);
     if (!target) break;
+
+    if (preventV070CaptureWithProtractedSiege(
+      state,
+      target.position,
+      playerId,
+      source,
+    )) {
+      break;
+    }
 
     if (replaceV070CaptureWithOverlay(state, target.position, playerId, source)) {
       continue;
