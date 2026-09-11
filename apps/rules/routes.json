@@ -31,7 +31,7 @@
     "inquisition": {
       "publicPath": "/rules/factions/inquisition/",
       "source": "rulebook/faction-guides/inquisition.md",
-      "status": "planned"
+      "status": "draft"
     }
   }
 }

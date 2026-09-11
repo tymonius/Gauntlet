@@ -33,6 +33,10 @@ body.faction-guide-mystics {
   --guide-accent: #5d347e;
 }
 
+body.faction-guide-inquisition {
+  --guide-accent: #a67a27;
+}
+
 .guide-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
