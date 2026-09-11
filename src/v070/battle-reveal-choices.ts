@@ -16,6 +16,14 @@ export type V070BattleRevealChoice =
       owner: PlayerId;
       sourceInstanceId: string;
       drawnInstanceId: string;
+    }
+  | {
+      kind: 'sedition';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Face-up opposing Assets that existed when Sedition took effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
