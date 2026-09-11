@@ -11,6 +11,10 @@ import {
   resumeV070SupportedRevealEffects,
   v070BattleRevealEffectsPending,
 } from './battle-effects';
+import {
+  pendingV070BattleRevealEffectOrderChoice,
+  resolveV070BattleRevealEffectOrderChoice,
+} from './battle-reveal-order';
 import { openV070WarBondsAfterFirstBattle } from './war-bonds';
 import {
   openV070ReembodimentRecovery,
@@ -157,12 +161,37 @@ export type V070BattleAction =
       type: 'resolve_capital_punishment_battle';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_reveal_effect_order';
+      playerId: PlayerId;
+      sourceInstanceId: string;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const pendingRevealOrder = pendingV070BattleRevealEffectOrderChoice(state);
+  if (pendingRevealOrder) {
+    if (action.type !== 'resolve_battle_reveal_effect_order') {
+      throw new V070GameActionError(
+        'Choose which of your pending reveal effects applies next before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070BattleRevealEffectOrderChoice(
+      next,
+      action.playerId,
+      action.sourceInstanceId,
+    );
+    continueV070BattleRevealProcedure(next);
+    return next;
+  }
+  if (action.type === 'resolve_battle_reveal_effect_order') {
+    throw new V070GameActionError('There is no pending reveal effect order choice.');
+  }
+
   const pendingRevealChoice = pendingV070BattleRevealChoice(state);
   if (pendingRevealChoice && isV070BattleRevealChoiceOpen(state)) {
     if (pendingRevealChoice.kind === 'divine_mercy') {
@@ -402,6 +431,8 @@ function continueV070BattleRevealProcedure(
       || isReembodimentSubversionPending(state)) {
       return true;
     }
+
+    if (pendingV070BattleRevealEffectOrderChoice(state)) return true;
 
     const pending = pendingV070BattleRevealChoice(state);
     if (pending) {

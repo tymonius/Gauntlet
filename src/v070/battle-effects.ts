@@ -68,10 +68,15 @@ import {
   isV070BattleCardEffectNegated,
   markV070BattleCardEffectApplied,
 } from './battle-effect-status';
+import {
+  openV070BattleRevealEffectOrderChoice,
+  pendingV070BattleRevealEffectOrderChoice,
+} from './battle-reveal-order';
 import { applyV070BattleRetreatStep } from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 import { v070MysticInvocationPendingPlayers } from './mystics';
 import { pendingV070BattleRevealChoice } from './battle-reveal-choices';
+import type { PlayerId } from './rules';
 
 export type {
   V070BattleEffectContext,
@@ -109,7 +114,6 @@ const landslideHandler: V070SpecializedBattleEffectHandler = {
     registerV070LandslideBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const divineMercyHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_DIVINE_MERCY_ID,
   expectedText: V070_DIVINE_MERCY_BATTLE_TEXT,
@@ -118,7 +122,6 @@ const divineMercyHandler: V070SpecializedBattleEffectHandler = {
     registerV070DivineMercyBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const darkOmensHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_DARK_OMENS_ID,
   expectedText: V070_DARK_OMENS_BATTLE_TEXT,
@@ -127,7 +130,6 @@ const darkOmensHandler: V070SpecializedBattleEffectHandler = {
     registerV070DarkOmensBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const seditionHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_SEDITION_ID,
   expectedText: V070_SEDITION_BATTLE_TEXT,
@@ -136,7 +138,6 @@ const seditionHandler: V070SpecializedBattleEffectHandler = {
     registerV070SeditionBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const requisitionHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_REQUISITION_ID,
   expectedText: V070_REQUISITION_BATTLE_TEXT,
@@ -145,7 +146,6 @@ const requisitionHandler: V070SpecializedBattleEffectHandler = {
     registerV070RequisitionBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const tariffsHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_TARIFFS_ID,
   expectedText: V070_TARIFFS_BATTLE_TEXT,
@@ -154,7 +154,6 @@ const tariffsHandler: V070SpecializedBattleEffectHandler = {
     registerV070TariffsBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const penanceHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_PENANCE_ID,
   expectedText: V070_PENANCE_BATTLE_TEXT,
@@ -163,7 +162,6 @@ const penanceHandler: V070SpecializedBattleEffectHandler = {
     registerV070PenanceBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const propertyDuesHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_PROPERTY_DUES_ID,
   expectedText: V070_PROPERTY_DUES_BATTLE_TEXT,
@@ -172,7 +170,6 @@ const propertyDuesHandler: V070SpecializedBattleEffectHandler = {
     registerV070PropertyDuesBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const speculationHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_SPECULATION_ID,
   expectedText: V070_SPECULATION_BATTLE_TEXT,
@@ -181,7 +178,6 @@ const speculationHandler: V070SpecializedBattleEffectHandler = {
     registerV070SpeculationBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const palisadeWallHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_PALISADE_WALL_ID,
   expectedText: V070_PALISADE_WALL_BATTLE_TEXT,
@@ -192,7 +188,6 @@ const palisadeWallHandler: V070SpecializedBattleEffectHandler = {
     registerV070PalisadeWallBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const assassinsHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_ASSASSINS_ID,
   expectedText: V070_ASSASSINS_BATTLE_TEXT,
@@ -203,7 +198,6 @@ const assassinsHandler: V070SpecializedBattleEffectHandler = {
     registerV070AssassinsBattleEffect(state, owner, commitment.instanceId);
   },
 };
-
 const capitalPunishmentHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_CAPITAL_PUNISHMENT_ID,
   expectedText: V070_CAPITAL_PUNISHMENT_BATTLE_TEXT,
@@ -211,11 +205,7 @@ const capitalPunishmentHandler: V070SpecializedBattleEffectHandler = {
   revealClass: 'interference',
   markAppliedAtRegistration: false,
   apply: ({ state, owner, commitment }) => {
-    registerV070CapitalPunishmentBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070CapitalPunishmentBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -276,14 +266,12 @@ export function resolveV070SupportedRevealEffects(
   );
 
   runtime.pendingRevealEffectEncounteredAt = encounteredAt;
+  runtime.pendingRevealDeferredOrdinaryCommitments = ordinary;
   if (interference.length > 0) {
-    runtime.pendingRevealEffectClass = 'interference';
-    runtime.pendingRevealEffectCommitments = interference;
-    runtime.pendingRevealDeferredOrdinaryCommitments = ordinary;
+    beginRevealClass(state, 'interference', interference);
   } else {
-    runtime.pendingRevealEffectClass = 'ordinary';
-    runtime.pendingRevealEffectCommitments = ordinary;
     runtime.pendingRevealDeferredOrdinaryCommitments = [];
+    beginRevealClass(state, 'ordinary', ordinary);
   }
 
   resumeV070SupportedRevealEffects(state);
@@ -307,24 +295,152 @@ export function resumeV070SupportedRevealEffects(
   if (!encounteredAt) return;
 
   while (!revealEffectInterruptPending(state)) {
+    pruneNoEffectRevealCommitments(state, encounteredAt);
     const current = runtime.pendingRevealEffectCommitments ?? [];
     if (current.length === 0) {
       if (runtime.pendingRevealEffectClass === 'interference'
         && (runtime.pendingRevealDeferredOrdinaryCommitments?.length ?? 0) > 0) {
-        runtime.pendingRevealEffectClass = 'ordinary';
-        runtime.pendingRevealEffectCommitments = [
-          ...runtime.pendingRevealDeferredOrdinaryCommitments!,
-        ];
+        const ordinary = [...runtime.pendingRevealDeferredOrdinaryCommitments!];
         runtime.pendingRevealDeferredOrdinaryCommitments = [];
+        beginRevealClass(state, 'ordinary', ordinary);
         continue;
       }
       clearPendingRevealProcedure(state);
       return;
     }
 
-    const commitment = current.shift()!;
+    const nextPlayer = normalizeNextRevealEffectPlayer(state, current);
+    if (!nextPlayer) {
+      clearPendingRevealProcedure(state);
+      return;
+    }
+    const candidates = current.filter(
+      commitment => commitment.owner === nextPlayer,
+    );
+
+    let commitment: V070BattleCardCommitment | undefined;
+    const forcedInstanceId = runtime.pendingRevealForcedInstanceId;
+    if (forcedInstanceId) {
+      commitment = candidates.find(
+        candidate => candidate.instanceId === forcedInstanceId,
+      );
+      if (!commitment) {
+        throw new Error(
+          'Chosen reveal effect is no longer eligible for the current controller.',
+        );
+      }
+      runtime.pendingRevealForcedInstanceId = null;
+    } else if (candidates.length > 1) {
+      openV070BattleRevealEffectOrderChoice(
+        state,
+        nextPlayer,
+        candidates.map(candidate => candidate.instanceId),
+      );
+      return;
+    } else {
+      commitment = candidates[0];
+    }
+
+    if (!commitment) {
+      throw new Error('Reveal effect priority has no eligible commitment.');
+    }
+    runtime.pendingRevealEffectCommitments = current.filter(
+      candidate => candidate.instanceId !== commitment!.instanceId,
+    );
+    runtime.pendingRevealEffectNextPlayer = nextRevealEffectPlayerAfter(
+      state,
+      runtime.pendingRevealEffectCommitments,
+      nextPlayer,
+    );
     applyValidatedRevealCommitment(state, commitment, encounteredAt);
   }
+}
+
+function beginRevealClass(
+  state: V070GameState,
+  revealClass: V070RevealEffectClass,
+  commitments: readonly V070BattleCardCommitment[],
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.pendingRevealEffectClass = revealClass;
+  runtime.pendingRevealEffectCommitments = [...commitments];
+  runtime.pendingRevealEffectNextPlayer = firstRevealEffectPlayer(
+    state,
+    commitments,
+  );
+  runtime.pendingRevealForcedInstanceId = null;
+  runtime.pendingRevealEffectOrderChoice = null;
+}
+
+function pruneNoEffectRevealCommitments(
+  state: V070GameState,
+  encounteredAt: V070RevealEncounteredAt,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  const remaining: V070BattleCardCommitment[] = [];
+  for (const commitment of runtime.pendingRevealEffectCommitments ?? []) {
+    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+    const card = v070CanonicalContent.cardsById.get(cardId);
+    const suppressed = Boolean(
+      card
+      && card.trait === 'Arcane'
+      && v070MonasterySuppressesArcaneBattleEffects(state),
+    );
+    if (isV070BattleCardEffectNegated(state, commitment.instanceId)
+      || suppressed) {
+      applyValidatedRevealCommitment(state, commitment, encounteredAt);
+      continue;
+    }
+    remaining.push(commitment);
+  }
+  runtime.pendingRevealEffectCommitments = remaining;
+}
+
+function firstRevealEffectPlayer(
+  state: V070GameState,
+  commitments: readonly V070BattleCardCommitment[],
+): PlayerId | null {
+  const battle = state.battle;
+  if (!battle) return commitments[0]?.owner ?? null;
+  if (commitments.some(commitment => commitment.owner === battle.attacker)) {
+    return battle.attacker;
+  }
+  if (commitments.some(commitment => commitment.owner === battle.defender)) {
+    return battle.defender;
+  }
+  return null;
+}
+
+function normalizeNextRevealEffectPlayer(
+  state: V070GameState,
+  commitments: readonly V070BattleCardCommitment[],
+): PlayerId | null {
+  const runtime = state.battleRuntime;
+  const preferred = runtime?.pendingRevealEffectNextPlayer ?? null;
+  if (preferred
+    && commitments.some(commitment => commitment.owner === preferred)) {
+    return preferred;
+  }
+  return firstRevealEffectPlayer(state, commitments);
+}
+
+function nextRevealEffectPlayerAfter(
+  state: V070GameState,
+  remaining: readonly V070BattleCardCommitment[],
+  justApplied: PlayerId,
+): PlayerId | null {
+  const battle = state.battle;
+  if (!battle || remaining.length === 0) return remaining[0]?.owner ?? null;
+  const other = justApplied === battle.attacker
+    ? battle.defender
+    : battle.attacker;
+  if (remaining.some(commitment => commitment.owner === other)) return other;
+  if (remaining.some(commitment => commitment.owner === justApplied)) {
+    return justApplied;
+  }
+  return firstRevealEffectPlayer(state, remaining);
 }
 
 function clearPendingRevealProcedure(state: V070GameState): void {
@@ -334,11 +450,15 @@ function clearPendingRevealProcedure(state: V070GameState): void {
   runtime.pendingRevealDeferredOrdinaryCommitments = [];
   runtime.pendingRevealEffectClass = null;
   runtime.pendingRevealEffectEncounteredAt = null;
+  runtime.pendingRevealEffectNextPlayer = null;
+  runtime.pendingRevealForcedInstanceId = null;
+  runtime.pendingRevealEffectOrderChoice = null;
 }
 
 function revealEffectInterruptPending(state: V070GameState): boolean {
   return Boolean(
     pendingV070BattleRevealChoice(state)
+    || pendingV070BattleRevealEffectOrderChoice(state)
     || v070MysticInvocationPendingPlayers(state).length > 0,
   );
 }
@@ -365,11 +485,7 @@ function applyValidatedRevealCommitment(
       type: 'battle_card_effect_skipped_negated',
       actor: commitment.owner,
       visibility: 'public',
-      payload: {
-        instanceId: commitment.instanceId,
-        cardId,
-        role: commitment.role,
-      },
+      payload: { instanceId: commitment.instanceId, cardId, role: commitment.role },
     });
     return;
   }
@@ -448,9 +564,7 @@ function unsupportedRevealEffect(
   if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
 
   if (v070MonasterySuppressesArcaneBattleEffects(state)
-    && card.trait === 'Arcane') {
-    return [];
-  }
+    && card.trait === 'Arcane') return [];
 
   const relevant = card.effects.filter(effect =>
     effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
@@ -461,9 +575,7 @@ function unsupportedRevealEffect(
   const handler = v070BattleEffectHandler(cardId);
   if (handler
     && relevant.length === 1
-    && relevant[0]?.text === handler.expectedText) {
-    return [];
-  }
+    && relevant[0]?.text === handler.expectedText) return [];
 
   return relevant.map(effect => ({
     owner: commitment.owner,
@@ -482,21 +594,10 @@ function orderedRevealCommitments(
 ): V070BattleCardCommitment[] {
   const battle = state.battle;
   if (!battle) return [...commitments];
-
-  const attackerQueue = commitments.filter(
-    commitment => commitment.owner === battle.attacker,
-  );
-  const defenderQueue = commitments.filter(
-    commitment => commitment.owner === battle.defender,
-  );
-  const ordered: V070BattleCardCommitment[] = [];
-  while (attackerQueue.length > 0 || defenderQueue.length > 0) {
-    const attackerCommitment = attackerQueue.shift();
-    if (attackerCommitment) ordered.push(attackerCommitment);
-    const defenderCommitment = defenderQueue.shift();
-    if (defenderCommitment) ordered.push(defenderCommitment);
-  }
-  return ordered;
+  return [
+    ...commitments.filter(commitment => commitment.owner === battle.attacker),
+    ...commitments.filter(commitment => commitment.owner === battle.defender),
+  ];
 }
 
 export function applyV070BattleCardAdditionalRetreats(
@@ -521,7 +622,6 @@ export function applyV070BattleCardAdditionalRetreats(
         },
       );
       if (!result.moved) break;
-
       appendV070Event(state, {
         type: 'battle_card_aftermath_retreat',
         actor: loser,
