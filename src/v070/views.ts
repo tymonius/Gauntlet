@@ -1,82 +1,47 @@
 import type { PlayerId } from './rules';
 import type { V070GameState } from './engine';
 import {
-  viewV070GameForPlayer as viewV070GameForPlayerCore,
-  type V070GameView as V070CoreGameView,
-} from './views-core';
-import { pendingV070SubversionTurnAsset } from './subversion-turn';
-import { pendingV070CompoundInterestChoice } from './compound-interest';
+  viewV070GameForPlayer as viewV070GameForPlayerPostDraw,
+  type V070GameView as V070PostDrawGameView,
+} from './views-postdraw';
+import { pendingV070WarBondsChoice } from './war-bonds';
 
-export * from './views-core';
+export * from './views-postdraw';
 
-export interface V070SubversionTurnAssetView {
-  playerId: PlayerId;
-  targetOwner: PlayerId;
-  targetAssetInstanceId: string;
-  effectLabel: string;
-  candidateCount: number;
-  candidateSubversionInstanceIds?: string[];
-}
-
-export interface V070CompoundInterestView {
-  kind: 'use' | 'destination';
+export interface V070WarBondsView {
   playerId: PlayerId;
   assetInstanceId: string;
-  revealedInstanceId?: string;
-  revealedCardId?: string;
+  handCount: number;
+  candidateHandInstanceIds?: string[];
 }
 
-export type V070GameView = V070CoreGameView & {
-  pendingSubversionTurnAsset: V070SubversionTurnAssetView | null;
-  pendingCompoundInterestChoice: V070CompoundInterestView | null;
+export type V070GameView = V070PostDrawGameView & {
+  pendingWarBondsChoice: V070WarBondsView | null;
 };
 
 export function viewV070GameForPlayer(
   state: V070GameState,
   viewer: PlayerId,
 ): V070GameView {
-  const core = viewV070GameForPlayerCore(state, viewer);
-  const pending = pendingV070SubversionTurnAsset(state);
-  const pendingSubversionTurnAsset: V070SubversionTurnAssetView | null =
-    pending
-      ? {
-          playerId: pending.playerId,
-          targetOwner: pending.targetOwner,
-          targetAssetInstanceId: pending.targetAssetInstanceId,
-          effectLabel: pending.effectLabel,
-          candidateCount: pending.candidateSubversionInstanceIds.length,
-          ...(pending.playerId === viewer
-            ? {
-                candidateSubversionInstanceIds: [
-                  ...pending.candidateSubversionInstanceIds,
-                ],
-              }
-            : {}),
-        }
-      : null;
-
-  const compound = pendingV070CompoundInterestChoice(state);
-  const pendingCompoundInterestChoice: V070CompoundInterestView | null =
-    compound
-      ? compound.kind === 'destination'
-        ? {
-            kind: compound.kind,
-            playerId: compound.playerId,
-            assetInstanceId: compound.assetInstanceId,
-            revealedInstanceId: compound.revealedInstanceId,
-            revealedCardId:
-              state.cardInstances[compound.revealedInstanceId]?.cardId,
-          }
-        : {
-            kind: compound.kind,
-            playerId: compound.playerId,
-            assetInstanceId: compound.assetInstanceId,
-          }
-      : null;
+  const core = viewV070GameForPlayerPostDraw(state, viewer);
+  const pending = pendingV070WarBondsChoice(state);
+  const pendingWarBondsChoice: V070WarBondsView | null = pending
+    ? {
+        playerId: pending.playerId,
+        assetInstanceId: pending.assetInstanceId,
+        handCount: state.players[pending.playerId].zones.hand.length,
+        ...(viewer === pending.playerId
+          ? {
+              candidateHandInstanceIds: [
+                ...state.players[pending.playerId].zones.hand,
+              ],
+            }
+          : {}),
+      }
+    : null;
 
   return {
     ...core,
-    pendingSubversionTurnAsset,
-    pendingCompoundInterestChoice,
+    pendingWarBondsChoice,
   };
 }
