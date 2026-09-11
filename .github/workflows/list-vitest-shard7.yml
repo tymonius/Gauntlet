@@ -16,22 +16,24 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Run shard 7 without known-good files
+      - name: Print every file collected in shard 7
         run: |
+          cat > .vitest-shard-debug-reporter.mjs <<'EOF'
+          import { BaseReporter } from 'vitest/reporters';
+          export default class ShardDebugReporter extends BaseReporter {
+            onCollected() {
+              const files = this.ctx.state.getFiles(this.watchFilters);
+              for (const file of files) console.log(`[COLLECTED] ${file.name}`);
+            }
+          }
+          EOF
           timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
-            --reporter=verbose --shard=7/16 \
+            --reporter=./.vitest-shard-debug-reporter.mjs --reporter=verbose \
+            --shard=7/16 \
             --exclude 'tests/arcane-card-symbol.test.ts' \
             --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
             --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
             --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
-            --exclude 'src/v070/brothers-in-arms-battle.test.ts' \
-            --exclude 'src/v070/mystics-leaders.test.ts' \
-            --exclude 'src/v070/battle-effects-core-modifiers.test.ts' \
-            --exclude 'src/v070/spirit-hollow.test.ts' \
-            --exclude 'src/v070/tariffs-battle.test.ts' \
-            --exclude 'src/v070/intelligence-leaders.test.ts' \
-            --exclude 'src/v070/territory-monastery.test.ts' \
-            --exclude 'src/v070/encampment-overlay.test.ts' \
             src/v070/battle-effects-pre-counterworks.ts \
             src/v070/battle-engine-pre-accusation.ts \
             src/v070/battle-negation.ts \
