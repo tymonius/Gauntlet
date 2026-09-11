@@ -9,7 +9,7 @@ import {
 const normalizer = readFileSync('card-design/print-artwork-normalizer.js', 'utf8');
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
-const printTransform = readFileSync('deckbuilder/production-print.js', 'utf8');
+const printTransform = readFileSync('apps/deckbuilder/production-print.js', 'utf8');
 const deployPages = readFileSync('.github/workflows/deploy-pages.yml', 'utf8');
 
 describe('printer-friendly playable artwork normalization', () => {
