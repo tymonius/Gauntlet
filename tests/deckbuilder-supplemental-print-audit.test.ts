@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const contract = currentGame.componentContract;
-const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
-const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
-const deckPrint = readFileSync("deckbuilder/print.js", "utf8");
-const packageProjection = readFileSync("deckbuilder/faction-components.js", "utf8");
-const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
+const productionPrint = readFileSync("apps/deckbuilder/production-print.js", "utf8");
+const compatibilityPrint = readFileSync("apps/deckbuilder/print-capital-ledger.js", "utf8");
+const deckPrint = readFileSync("apps/deckbuilder/print.js", "utf8");
+const packageProjection = readFileSync("apps/deckbuilder/faction-components.js", "utf8");
+const deckbuilderHtml = readFileSync("apps/deckbuilder/index.html", "utf8");
 const faceRuntime = readFileSync("card-design/face-render.mjs", "utf8");
 const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 
