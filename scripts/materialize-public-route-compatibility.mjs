@@ -10,6 +10,7 @@ const relocatedPublicSources = [
   ['apps/card-reference', 'card-reference'],
   ['apps/factions', 'factions'],
   ['apps/deckbuilder', 'deckbuilder'],
+  ['apps/rules', 'rules'],
   ['packages/game-data', 'game-data'],
 ];
 const materializedSources = [];
