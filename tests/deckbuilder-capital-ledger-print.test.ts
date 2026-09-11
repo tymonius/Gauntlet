@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const printer = readFileSync('deckbuilder/print-capital-ledger.js', 'utf8');
-const deckPrint = readFileSync('deckbuilder/print.js', 'utf8');
-const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
+const printer = readFileSync('apps/deckbuilder/print-capital-ledger.js', 'utf8');
+const deckPrint = readFileSync('apps/deckbuilder/print.js', 'utf8');
+const productionPrint = readFileSync('apps/deckbuilder/production-print.js', 'utf8');
 
 describe('Deckbuilder Capital Ledger printing', () => {
   it('uses the canonical production renderer for bulk Ledger sheets', () => {

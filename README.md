@@ -90,7 +90,7 @@ The repository's current/historical/generated path classifications and cleanup t
 
 ### apps/
 
-Maintained application source that has been separated from deployed URL layout. `apps/card-reference/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` routes.
+Maintained application source that has been separated from deployed URL layout. `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` routes.
 
 ### game-data/
 
@@ -108,10 +108,6 @@ Frozen versioned release packages and historical release evidence. Published pac
 
 Production card compositor, renderers, artwork authoring tools, reference-card production, and shared print surfaces.
 
-### deckbuilder/
-
-Current faction-era Deckbuilder and complete-package print/export surface.
-
 ### deckbuilder-v0.5/ and deckbuilder-v0.6/
 
 Historical Deckbuilder surfaces retained for versioned compatibility.
@@ -120,9 +116,9 @@ Historical Deckbuilder surfaces retained for versioned compatibility.
 
 Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
 
-### apps/card-reference/, apps/factions/, apps/start/, apps/playtest/, and workers/playtest-sessions/
+### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 
-Canonical Card Reference, Factions, Start, and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` paths; do not recreate maintained root `card-reference/`, `factions/`, `start/`, or `playtest/` source aliases.
+Canonical Card Reference, Deckbuilder, Factions, Start, and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` paths; do not recreate maintained root `card-reference/`, `deckbuilder/`, `factions/`, `start/`, or `playtest/` source aliases.
 
 ### tts/
 
@@ -148,7 +144,7 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ## Running browser tools locally
 
-Most root-resident browser surfaces can still be served directly from the repository root:
+Root-resident browser surfaces can still be served directly from the repository root:
 
 ~~~bash
 python3 -m http.server 8000
@@ -159,10 +155,9 @@ Then open, for example:
 ~~~text
 http://localhost:8000/
 http://localhost:8000/rulebook/
-http://localhost:8000/deckbuilder/
 ~~~
 
-Card Reference, Factions, Start, and Playtest are source/deployment separated. Their canonical sources are `apps/card-reference/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, while production serves them at `/card-reference/`, `/factions/`, `/start/`, and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes.
+Card Reference, Deckbuilder, Factions, Start, and Playtest are source/deployment separated. Their canonical sources are `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, while production serves them at `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes. When testing Deckbuilder behavior locally, materialize `apps/deckbuilder/` at `/deckbuilder/` before serving so its public-route-relative dependencies resolve the same way they do in production.
 
 For the rules-aware digital-engine codebase:
 

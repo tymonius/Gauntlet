@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const territories = readFileSync("deckbuilder/territories.js", "utf8");
+const territories = readFileSync("apps/deckbuilder/territories.js", "utf8");
 
 describe("Deckbuilder Territory metadata", () => {
   it("does not expose the retired complexity concept", () => {

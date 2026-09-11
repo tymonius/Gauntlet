@@ -54,10 +54,10 @@ jobs:
             /robots.txt
             /sitemap.xml
             /apps/card-reference/**
+            /apps/deckbuilder/**
             /apps/factions/**
             /apps/start/**
             /rulebook/index.html
-            /deckbuilder/index.html
             /rules-arbiter/index.html
             /apps/playtest/**/index.html
             /site-footer.css
@@ -72,6 +72,10 @@ jobs:
           if [ -d apps/card-reference ]; then
             mkdir -p card-reference
             cp -a apps/card-reference/. card-reference/
+          fi
+          if [ -d apps/deckbuilder ]; then
+            mkdir -p deckbuilder
+            cp -a apps/deckbuilder/. deckbuilder/
           fi
           if [ -d apps/factions ]; then
             mkdir -p factions

@@ -44,7 +44,7 @@ jobs:
                 || under('card-design/')
                 || under('images/artwork/')
                 || under('apps/card-reference/')
-                || under('deckbuilder/')
+                || under('apps/deckbuilder/')
                 || under('scripts/card-authority/')
                 || under('tests/card-authority/')
                 || exact('design-tokens.css')

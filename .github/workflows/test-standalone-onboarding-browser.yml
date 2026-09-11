@@ -24,7 +24,7 @@ jobs:
             /tests/standalone-new-player-onboarding.test.ts
             /index.html
             /apps/start/
-            /deckbuilder/
+            /apps/deckbuilder/
             /game-data/current-game.json
             /rulebook/player-facing/current-rulebook.md
 

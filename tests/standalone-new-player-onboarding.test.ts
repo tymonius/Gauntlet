@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
+const RETIRED_PUBLIC_STARTER_FETCH = 'fetch("../' + ["deckbuilder", "starter-decks.json"].join("/") + '"';
 
 const EXPECTED_CHOICES = [
   ["military", "general"],
@@ -55,7 +56,7 @@ describe("standalone new-player onboarding", () => {
 
     expect(app).toContain('fetch("../game-data/current-game.json"');
     expect(app).toContain('currentAuthority?.starterDecks');
-    expect(app).not.toContain('fetch("../deckbuilder/starter-decks.json"');
+    expect(app).not.toContain(RETIRED_PUBLIC_STARTER_FETCH);
 
     for (const [faction, leader] of EXPECTED_CHOICES) {
       expect(app).toContain(`${faction}:`);
@@ -114,7 +115,7 @@ describe("standalone new-player onboarding", () => {
   });
 
   it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
-    const starter = read("deckbuilder/starter-decks.js");
+    const starter = read("apps/deckbuilder/starter-decks.js");
     const authority = JSON.parse(read("game-data/current-game.json"));
     const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === "mystics");
 
@@ -132,9 +133,9 @@ describe("standalone new-player onboarding", () => {
 
   it("hands the exact choice to guided Deckbuilder print mode", () => {
     const app = read("apps/start/app.js");
-    const handoff = read("deckbuilder/starter-handoff.js");
-    const starter = read("deckbuilder/starter-decks.js");
-    const deckbuilder = read("deckbuilder/index.html");
+    const handoff = read("apps/deckbuilder/starter-handoff.js");
+    const starter = read("apps/deckbuilder/starter-decks.js");
+    const deckbuilder = read("apps/deckbuilder/index.html");
 
     expect(app).toContain('url.searchParams.set("faction", state.factionId)');
     expect(app).toContain('url.searchParams.set("leader", state.leaderId)');

@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync("deckbuilder/starter-handoff.css", "utf8");
-const script = readFileSync("deckbuilder/starter-handoff.js", "utf8");
+const css = readFileSync("apps/deckbuilder/starter-handoff.css", "utf8");
+const script = readFileSync("apps/deckbuilder/starter-handoff.js", "utf8");
 
 describe("starter handoff faction accent", () => {
   it("renders the imported faction symbol as a Start-style panel accent", () => {

@@ -3,27 +3,27 @@ import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
 
-const app = read("deckbuilder/app.js");
-const runtime = read("deckbuilder/current-runtime.js");
+const app = read("apps/deckbuilder/app.js");
+const runtime = read("apps/deckbuilder/current-runtime.js");
 const extensions = [
-  "deckbuilder/mobile-card-preview.js",
-  "deckbuilder/territories.js",
-  "deckbuilder/mystics-rites.js",
-  "deckbuilder/starter-decks.js",
-  "deckbuilder/starter-handoff.js",
-  "deckbuilder/faction-components.js",
-  "deckbuilder/rendered-card-preview.js",
-  "deckbuilder/metadata-ui.js",
-  "deckbuilder/print.js",
-  "deckbuilder/production-print.js",
-  "deckbuilder/card-back-preview.js",
-  "deckbuilder/print-summary.js",
-  "deckbuilder/custom-print-loader.js",
-  "deckbuilder/print-capital-ledger.js",
-  "deckbuilder/print-request.js",
-  "deckbuilder/print-all-starters.js",
-  "deckbuilder/custom-print.mjs",
-  "deckbuilder/tts-export.mjs",
+  "apps/deckbuilder/mobile-card-preview.js",
+  "apps/deckbuilder/territories.js",
+  "apps/deckbuilder/mystics-rites.js",
+  "apps/deckbuilder/starter-decks.js",
+  "apps/deckbuilder/starter-handoff.js",
+  "apps/deckbuilder/faction-components.js",
+  "apps/deckbuilder/rendered-card-preview.js",
+  "apps/deckbuilder/metadata-ui.js",
+  "apps/deckbuilder/print.js",
+  "apps/deckbuilder/production-print.js",
+  "apps/deckbuilder/card-back-preview.js",
+  "apps/deckbuilder/print-summary.js",
+  "apps/deckbuilder/custom-print-loader.js",
+  "apps/deckbuilder/print-capital-ledger.js",
+  "apps/deckbuilder/print-request.js",
+  "apps/deckbuilder/print-all-starters.js",
+  "apps/deckbuilder/custom-print.mjs",
+  "apps/deckbuilder/tts-export.mjs",
 ].map(path => ({ path, source: read(path) }));
 
 describe("Deckbuilder extension architecture", () => {
@@ -48,7 +48,7 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("setCardPreviewRenderer(callback)");
     expect(app).toContain("registerPrintTransform,");
     expect(app).toContain("preparePrintDocument,");
-    expect(read("deckbuilder/print.js")).toContain('deckbuilder.registerFeature("printDeck"');
+    expect(read("apps/deckbuilder/print.js")).toContain('deckbuilder.registerFeature("printDeck"');
   });
 
   it("does not expose shared mutable core state to extensions", () => {
@@ -88,14 +88,14 @@ describe("Deckbuilder extension architecture", () => {
     }
 
     for (const path of [
-      "deckbuilder/faction-components.js",
-      "deckbuilder/starter-decks.js",
-      "deckbuilder/print-request.js",
-      "deckbuilder/print-all-starters.js",
-      "deckbuilder/custom-print.mjs",
-      "deckbuilder/production-print.js",
-      "deckbuilder/print.js",
-      "deckbuilder/territories.js",
+      "apps/deckbuilder/faction-components.js",
+      "apps/deckbuilder/starter-decks.js",
+      "apps/deckbuilder/print-request.js",
+      "apps/deckbuilder/print-all-starters.js",
+      "apps/deckbuilder/custom-print.mjs",
+      "apps/deckbuilder/production-print.js",
+      "apps/deckbuilder/print.js",
+      "apps/deckbuilder/territories.js",
     ]) {
       expect(read(path), `${path} bypasses the current-game API`).toContain("deckbuilder.currentGame()");
     }
@@ -109,8 +109,8 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps Territory and Rite state private to their owning feature modules", () => {
-    const territories = read("deckbuilder/territories.js");
-    const rites = read("deckbuilder/mystics-rites.js");
+    const territories = read("apps/deckbuilder/territories.js");
+    const rites = read("apps/deckbuilder/mystics-rites.js");
 
     expect(territories).not.toContain("deckbuilder.state");
     expect(territories).not.toContain("const { state }");
@@ -127,20 +127,20 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).not.toContain("state.territories");
     expect(app).not.toContain("state.territoryPool");
     expect(app).not.toContain("state.rites");
-    expect(read("deckbuilder/territories.js")).toContain("function territoryDeckListLines()");
-    expect(read("deckbuilder/mystics-rites.js")).toContain("function riteDeckListLines()");
+    expect(read("apps/deckbuilder/territories.js")).toContain("function territoryDeckListLines()");
+    expect(read("apps/deckbuilder/mystics-rites.js")).toContain("function riteDeckListLines()");
   });
 
   it("keeps core validation free of extension-specific placeholder warnings", () => {
     expect(app).not.toContain("Territory selection is not yet included");
-    expect(read("deckbuilder/territories.js")).not.toContain('startsWith("Territory selection")');
+    expect(read("apps/deckbuilder/territories.js")).not.toContain('startsWith("Territory selection")');
   });
 
   it("uses lifecycle hooks for Territory, Rite, starter, and component integrations", () => {
-    const territories = read("deckbuilder/territories.js");
-    const rites = read("deckbuilder/mystics-rites.js");
-    const starters = read("deckbuilder/starter-decks.js");
-    const components = read("deckbuilder/faction-components.js");
+    const territories = read("apps/deckbuilder/territories.js");
+    const rites = read("apps/deckbuilder/mystics-rites.js");
+    const starters = read("apps/deckbuilder/starter-decks.js");
+    const components = read("apps/deckbuilder/faction-components.js");
 
     for (const hook of [
       "registerRenderHook",
@@ -176,17 +176,17 @@ describe("Deckbuilder extension architecture", () => {
     expect(runtime).toContain("deckbuilder.setAuthorityBootstrap(currentGame)");
     expect(runtime).toContain("deckbuilder.setSourceLoader");
     expect(runtime).toContain("deckbuilder.setRuleset");
-    expect(read("deckbuilder/territories.js")).toContain('deckbuilder.registerFeature("territories"');
-    expect(read("deckbuilder/mystics-rites.js")).toContain('deckbuilder.registerFeature("mysticsRites"');
-    expect(read("deckbuilder/starter-decks.js")).toContain('deckbuilder.registerFeature("starterDecks"');
-    expect(read("deckbuilder/faction-components.js")).toContain('deckbuilder.registerFeature("supplementalPackages"');
+    expect(read("apps/deckbuilder/territories.js")).toContain('deckbuilder.registerFeature("territories"');
+    expect(read("apps/deckbuilder/mystics-rites.js")).toContain('deckbuilder.registerFeature("mysticsRites"');
+    expect(read("apps/deckbuilder/starter-decks.js")).toContain('deckbuilder.registerFeature("starterDecks"');
+    expect(read("apps/deckbuilder/faction-components.js")).toContain('deckbuilder.registerFeature("supplementalPackages"');
   });
 
   it("uses feature readiness instead of document-body readiness side channels", () => {
-    const rites = read("deckbuilder/mystics-rites.js");
-    const starters = read("deckbuilder/starter-decks.js");
-    const components = read("deckbuilder/faction-components.js");
-    const bulk = read("deckbuilder/print-all-starters.js");
+    const rites = read("apps/deckbuilder/mystics-rites.js");
+    const starters = read("apps/deckbuilder/starter-decks.js");
+    const components = read("apps/deckbuilder/faction-components.js");
+    const bulk = read("apps/deckbuilder/print-all-starters.js");
 
     expect(rites).toContain("isReady: () => ritesReady");
     expect(bulk).toContain("ritesApi()?.isReady?.() === true");
@@ -197,8 +197,8 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps starter workflows on extension feature APIs rather than extension-owned state", () => {
-    const starters = read("deckbuilder/starter-decks.js");
-    const bulk = read("deckbuilder/print-all-starters.js");
+    const starters = read("apps/deckbuilder/starter-decks.js");
+    const bulk = read("apps/deckbuilder/print-all-starters.js");
     for (const source of [starters, bulk]) {
       expect(source).toContain('deckbuilder.feature("territories")');
       expect(source).toContain('deckbuilder.feature("mysticsRites")');
@@ -213,8 +213,8 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps starter workflows behind the core Deck state API", () => {
-    const starters = read("deckbuilder/starter-decks.js");
-    const bulk = read("deckbuilder/print-all-starters.js");
+    const starters = read("apps/deckbuilder/starter-decks.js");
+    const bulk = read("apps/deckbuilder/print-all-starters.js");
 
     for (const source of [starters, bulk]) {
       expect(source).not.toMatch(/\bstate\./);
@@ -230,14 +230,14 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps print and faction-component consumers behind the core Deck state API", () => {
-    const print = read("deckbuilder/print.js");
-    const production = read("deckbuilder/production-print.js");
-    const components = read("deckbuilder/faction-components.js");
+    const print = read("apps/deckbuilder/print.js");
+    const production = read("apps/deckbuilder/production-print.js");
+    const components = read("apps/deckbuilder/faction-components.js");
 
     for (const [path, source] of [
-      ["deckbuilder/print.js", print],
-      ["deckbuilder/production-print.js", production],
-      ["deckbuilder/faction-components.js", components],
+      ["apps/deckbuilder/print.js", print],
+      ["apps/deckbuilder/production-print.js", production],
+      ["apps/deckbuilder/faction-components.js", components],
     ]) {
       expect(source, `${path} reads shared core state directly`).not.toMatch(/\bstate\./);
       expect(source, `${path} bypasses the core Deck snapshot API`).toContain("deckbuilder.deckState()");
@@ -249,8 +249,8 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps metadata and starter handoff behind the core Deck state API", () => {
-    const metadata = read("deckbuilder/metadata-ui.js");
-    const handoff = read("deckbuilder/starter-handoff.js");
+    const metadata = read("apps/deckbuilder/metadata-ui.js");
+    const handoff = read("apps/deckbuilder/starter-handoff.js");
 
     expect(metadata).not.toMatch(/\bstate\./);
     expect(metadata).toContain("deckbuilder.deckState()");
@@ -263,16 +263,16 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("keeps rendered card preview behind the core Deck state API", () => {
-    const preview = read("deckbuilder/rendered-card-preview.js");
+    const preview = read("apps/deckbuilder/rendered-card-preview.js");
 
     expect(preview).not.toMatch(/\bstate\./);
     expect(preview).toContain("deckbuilder.deckState()");
   });
 
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
-    const print = read("deckbuilder/print.js");
-    const bulk = read("deckbuilder/print-all-starters.js");
-    const components = read("deckbuilder/faction-components.js");
+    const print = read("apps/deckbuilder/print.js");
+    const bulk = read("apps/deckbuilder/print-all-starters.js");
+    const components = read("apps/deckbuilder/faction-components.js");
 
     expect(print).toContain("deckbuilder.registerRenderHook(syncPrintButton)");
     expect(bulk).toContain("deckbuilder.registerRenderHook(syncCurrentButton)");
@@ -282,14 +282,14 @@ describe("Deckbuilder extension architecture", () => {
   });
 
   it("routes custom and bulk tools through the selected Deckbuilder authority", () => {
-    expect(read("deckbuilder/custom-print.mjs")).toContain("await deckbuilder.bootstrap()");
-    expect(read("deckbuilder/print-all-starters.js")).toContain("await deckbuilder.bootstrap()");
-    expect(read("deckbuilder/print-all-starters.js")).toContain('deckbuilder.feature("printDeck")');
-    expect(read("deckbuilder/print-all-starters.js")).not.toContain("window.open =");
-    expect(read("deckbuilder/custom-print.mjs")).toContain('deckbuilder.feature("productionPrintRenderer")');
-    expect(read("deckbuilder/print-capital-ledger.js")).toContain('deckbuilder.feature("productionPrintRenderer")');
-    expect(read("deckbuilder/card-back-preview.js")).toContain('deckbuilder.feature("productionPrintRenderer")');
-    expect(read("deckbuilder/territories.js")).toContain("await deckbuilder.bootstrap()");
-    expect(read("deckbuilder/mystics-rites.js")).toContain("await deckbuilder.bootstrap()");
+    expect(read("apps/deckbuilder/custom-print.mjs")).toContain("await deckbuilder.bootstrap()");
+    expect(read("apps/deckbuilder/print-all-starters.js")).toContain("await deckbuilder.bootstrap()");
+    expect(read("apps/deckbuilder/print-all-starters.js")).toContain('deckbuilder.feature("printDeck")');
+    expect(read("apps/deckbuilder/print-all-starters.js")).not.toContain("window.open =");
+    expect(read("apps/deckbuilder/custom-print.mjs")).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(read("apps/deckbuilder/print-capital-ledger.js")).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(read("apps/deckbuilder/card-back-preview.js")).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(read("apps/deckbuilder/territories.js")).toContain("await deckbuilder.bootstrap()");
+    expect(read("apps/deckbuilder/mystics-rites.js")).toContain("await deckbuilder.bootstrap()");
   });
 });

@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const customPrint = readFileSync("deckbuilder/custom-print.mjs", "utf8");
-const customPrintCss = readFileSync("deckbuilder/custom-print.css", "utf8");
-const printBootstrap = readFileSync("deckbuilder/custom-print-loader.js", "utf8");
+const customPrint = readFileSync("apps/deckbuilder/custom-print.mjs", "utf8");
+const customPrintCss = readFileSync("apps/deckbuilder/custom-print.css", "utf8");
+const printBootstrap = readFileSync("apps/deckbuilder/custom-print-loader.js", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 

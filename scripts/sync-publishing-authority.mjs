@@ -10,7 +10,7 @@ const websiteFooterTargets = [
   'rulebook/index.html',
   'rules-arbiter/index.html',
   'apps/card-reference/index.html',
-  'deckbuilder/index.html',
+  'apps/deckbuilder/index.html',
   'changelog/index.html',
   'apps/factions/military/index.html',
   'apps/factions/diplomats/index.html',

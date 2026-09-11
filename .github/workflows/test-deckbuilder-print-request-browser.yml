@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "deckbuilder/**"
+      - "apps/deckbuilder/**"
       - "tests/deckbuilder-print-request.test.ts"
       - ".github/workflows/test-deckbuilder-print-request-browser.yml"
   workflow_dispatch:
@@ -27,6 +27,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Materialize public Deckbuilder route
+        run: |
+          rm -rf deckbuilder
+          mkdir -p deckbuilder
+          cp -a apps/deckbuilder/. deckbuilder/
 
       - name: Install matching Playwright package
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1
