@@ -2,12 +2,12 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const factionIds = ["military", "diplomats", "financiers", "intelligence", "mystics", "inquisition"];
-const handoff = readFileSync("deckbuilder/starter-handoff.js", "utf8");
+const handoff = readFileSync("apps/deckbuilder/starter-handoff.js", "utf8");
 
 describe("faction guide to Deckbuilder handoff", () => {
   it("passes the current faction through every Deckbuilder link on each faction guide", () => {
     for (const faction of factionIds) {
-      const html = readFileSync(`factions/${faction}/index.html`, "utf8");
+      const html = readFileSync(`apps/factions/${faction}/index.html`, "utf8");
       expect(html).toContain(`../../deckbuilder/?faction=${faction}`);
       expect(html).not.toContain('href="../../deckbuilder/"');
     }
