@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "rulesHub": "/rules/",
+  "factionGuideIndex": "/rules/factions/",
+  "factionGuides": {
+    "military": {
+      "publicPath": "/rules/factions/military/",
+      "source": "rulebook/faction-guides/military.md",
+      "status": "draft"
+    },
+    "diplomats": {
+      "publicPath": "/rules/factions/diplomats/",
+      "source": "rulebook/faction-guides/diplomats.md",
+      "status": "planned"
+    },
+    "financiers": {
+      "publicPath": "/rules/factions/financiers/",
+      "source": "rulebook/faction-guides/financiers.md",
+      "status": "planned"
+    },
+    "intelligence": {
+      "publicPath": "/rules/factions/intelligence/",
+      "source": "rulebook/faction-guides/intelligence.md",
+      "status": "planned"
+    },
+    "mystics": {
+      "publicPath": "/rules/factions/mystics/",
+      "source": "rulebook/faction-guides/mystics.md",
+      "status": "planned"
+    },
+    "inquisition": {
+      "publicPath": "/rules/factions/inquisition/",
+      "source": "rulebook/faction-guides/inquisition.md",
+      "status": "planned"
+    }
+  }
+}
