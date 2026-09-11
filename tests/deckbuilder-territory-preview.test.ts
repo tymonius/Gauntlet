@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const territorySource = readFileSync('deckbuilder/territories.js', 'utf8');
-const previewCss = readFileSync('deckbuilder/rendered-card-preview.css', 'utf8');
+const territorySource = readFileSync('apps/deckbuilder/territories.js', 'utf8');
+const previewCss = readFileSync('apps/deckbuilder/rendered-card-preview.css', 'utf8');
 
 describe('Deckbuilder Territory preview', () => {
   it('uses the production Territory renderer instead of rebuilding Territory text', () => {
