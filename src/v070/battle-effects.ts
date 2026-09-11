@@ -40,6 +40,11 @@ import {
   registerV070SeditionBattleEffect,
 } from './sedition-battle';
 import {
+  V070_SPECULATION_BATTLE_TEXT,
+  V070_SPECULATION_ID,
+  registerV070SpeculationBattleEffect,
+} from './speculation-battle';
+import {
   V070_TARIFFS_BATTLE_TEXT,
   V070_TARIFFS_ID,
   registerV070TariffsBattleEffect,
@@ -173,6 +178,19 @@ const propertyDuesHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const speculationHandler: core.V070BattleEffectHandler = {
+  cardId: V070_SPECULATION_ID,
+  expectedText: V070_SPECULATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070SpeculationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
@@ -182,6 +200,7 @@ const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [tariffsHandler.cardId, tariffsHandler],
   [penanceHandler.cardId, penanceHandler],
   [propertyDuesHandler.cardId, propertyDuesHandler],
+  [speculationHandler.cardId, speculationHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [

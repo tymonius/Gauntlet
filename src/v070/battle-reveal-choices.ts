@@ -55,6 +55,11 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Hand cards that existed when Property Dues took effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'speculation';
+      owner: PlayerId;
+      sourceInstanceId: string;
     };
 
 declare module './battle-types' {

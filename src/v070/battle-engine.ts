@@ -62,6 +62,11 @@ import {
   resolveV070SeditionBattleChoice,
 } from './sedition-battle';
 import {
+  applyV070SpeculationAftermathEffects,
+  openV070SpeculationBattleChoice,
+  resolveV070SpeculationBattleChoice,
+} from './speculation-battle';
+import {
   openV070TariffsBattleChoice,
   resolveV070TariffsBattleChoice,
 } from './tariffs-battle';
@@ -121,6 +126,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       choice: 'discard' | 'capital';
       cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_speculation_battle';
+      playerId: PlayerId;
+      use: boolean;
     };
 
 export function reduceV070BattleAction(
@@ -251,6 +261,22 @@ export function reduceV070BattleAction(
       continueV070BattleRevealProcedure(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'speculation') {
+      if (action.type !== 'resolve_speculation_battle') {
+        throw new V070GameActionError(
+          'Resolve or decline the pending Speculation Capital spend before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070SpeculationBattleChoice(
+        next,
+        action.playerId,
+        action.use,
+      );
+      continueV070BattleRevealProcedure(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -285,6 +311,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_property_dues_battle') {
     throw new V070GameActionError(
       'There is no open Property Dues battle choice.',
+    );
+  }
+  if (action.type === 'resolve_speculation_battle') {
+    throw new V070GameActionError(
+      'There is no open Speculation battle choice.',
     );
   }
 
@@ -399,6 +430,7 @@ export function reduceV070BattleAction(
     action as V070PreWarBondsBattleAction,
   );
   applyV070PropertyDuesAftermathEffects(next);
+  applyV070SpeculationAftermathEffects(next);
   resolveV070ProtractedSiegeDepartures(
     next,
     previousPositions,
@@ -471,6 +503,9 @@ function continueV070BattleRevealProcedure(
           break;
         case 'property_dues':
           opened = openV070PropertyDuesBattleChoice(state);
+          break;
+        case 'speculation':
+          opened = openV070SpeculationBattleChoice(state);
           break;
       }
       if (opened) return true;
