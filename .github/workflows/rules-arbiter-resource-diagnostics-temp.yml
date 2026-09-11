@@ -1,0 +1,43 @@
+name: Rules Arbiter resource diagnostics (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate2-resource-diagnostics-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    if: github.event.head_commit.message == 'Add temporary Rules Arbiter resource diagnostics'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Cloudflare Worker invocation analytics
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          cat > query.json <<'JSON'
+          {
+            "query": "query GetWorkersAnalytics($accountTag: string, $datetimeStart: string, $datetimeEnd: string, $scriptName: string) { viewer { accounts(filter: {accountTag: $accountTag}) { workersInvocationsAdaptive(limit: 1000, filter: {scriptName: $scriptName, datetime_geq: $datetimeStart, datetime_leq: $datetimeEnd}) { sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 memoryUsageBytesP50 memoryUsageBytesP99 } dimensions { datetime scriptName status } } } } }",
+            "variables": {
+              "accountTag": "ACCOUNT_PLACEHOLDER",
+              "datetimeStart": "2026-09-11T20:26:45.000Z",
+              "datetimeEnd": "2026-09-11T20:30:00.000Z",
+              "scriptName": "gauntlet-rules-assistant"
+            }
+          }
+          JSON
+          sed -i "s/ACCOUNT_PLACEHOLDER/$CLOUDFLARE_ACCOUNT_ID/" query.json
+          curl --fail-with-body --silent --show-error \
+            https://api.cloudflare.com/client/v4/graphql \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --data @query.json | tee response.json | jq .
+          echo '--- condensed status summary ---'
+          jq -r '.data.viewer.accounts[0].workersInvocationsAdaptive[]? | [.dimensions.datetime, .dimensions.status, (.sum.requests|tostring), (.sum.errors|tostring), (.quantiles.cpuTimeP50|tostring), (.quantiles.cpuTimeP99|tostring), (.quantiles.memoryUsageBytesP50|tostring), (.quantiles.memoryUsageBytesP99|tostring)] | @tsv' response.json | sort
