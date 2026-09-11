@@ -230,6 +230,7 @@ jobs:
             # Keep them runnable when changed directly, but do not let unrelated current
             # source changes pull them into scoped dependency testing.
             timeout --kill-after=10s 180s npx vitest related --run --passWithNoTests \
+              --pool=forks --poolOptions.forks.singleFork \
               --exclude 'tests/arcane-card-symbol.test.ts' \
               --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
               --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
