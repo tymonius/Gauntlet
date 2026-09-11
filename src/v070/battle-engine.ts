@@ -50,6 +50,14 @@ import {
   applyV070ResistanceAssetOnsetEffects,
   applyV070ResistanceAssetOnsetInstance,
 } from './resistance';
+import {
+  V070_FORTIFICATIONS_ASSET_TEXT,
+  applyV070FortificationsAssetTacticLimit,
+  markV070FortificationsAssetTacticLimitResolved,
+  openV070FortificationsRetreatChoice,
+  resolveV070FortificationsRetreatChoice,
+  v070FortificationsAssetEligibleInstanceIds,
+} from './fortifications';
 
 export {
   V070_NORMAL_BATTLE_DICE,
@@ -66,6 +74,11 @@ export type V070BattleAction =
       assetInstanceId: string;
     }
   | { type: 'pass_foothold_asset'; playerId: PlayerId }
+  | {
+      type: 'resolve_fortifications_retreat';
+      playerId: PlayerId;
+      use: boolean;
+    }
   | {
       type: 'resolve_spirit_hollow_aftermath';
       playerId: PlayerId;
@@ -122,6 +135,20 @@ function reduceV070BattleActionInternal(
       );
     }
 
+    if (resolved.pending.deferredAction.type ===
+      'apply_fortifications_tactic_limit_asset') {
+      if (!resolved.used) {
+        applyV070FortificationsAssetTacticLimit(
+          next,
+          resolved.pending.deferredAction.playerId,
+          resolved.pending.deferredAction.assetInstanceId,
+        );
+        return next;
+      }
+      resolveFortificationsAssetTacticLimit(next);
+      return next;
+    }
+
     if (!resolved.used) {
       return reduceV070BattleActionInternal(
         next,
@@ -138,6 +165,15 @@ function reduceV070BattleActionInternal(
     && action.type !== 'resolve_spirit_hollow_aftermath') {
     throw new V070GameActionError(
       'Resolve or decline the pending Spirit Hollow opportunity before continuing the Aftermath.',
+    );
+  }
+
+  const fortificationsRetreatPending =
+    state.battleRuntime?.pendingFortificationsRetreat ?? null;
+  if (fortificationsRetreatPending
+    && action.type !== 'resolve_fortifications_retreat') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Fortifications retreat before continuing the Aftermath.',
     );
   }
 
@@ -170,6 +206,20 @@ function reduceV070BattleActionInternal(
       assetEffect.playerId,
       assetEffect.assetInstanceId,
     );
+  }
+
+  if (action.type === 'resolve_fortifications_retreat') {
+    const next = structuredClone(state) as V070GameState;
+    const remainsOpen = resolveV070FortificationsRetreatChoice(
+      next,
+      action.playerId,
+      action.use,
+    );
+    if (remainsOpen) return next;
+    if (footholdWindowMayOpen(next)) {
+      openV070FootholdAssetAftermathWindow(next);
+    }
+    return next;
   }
 
   if (action.type === 'resolve_spirit_hollow_aftermath') {
@@ -234,10 +284,56 @@ function reduceV070BattleActionInternal(
       assetEffect.playerId,
     );
   }
+  if (action.type === 'reveal_gambits'
+    && next.battleRuntime?.stage === 'choose_tactics') {
+    if (resolveFortificationsAssetTacticLimit(next)) return next;
+  }
+  if (openV070FortificationsRetreatChoice(next)) return next;
   if (footholdWindowMayOpen(next)) {
     openV070FootholdAssetAftermathWindow(next);
   }
   return next;
+}
+
+function resolveFortificationsAssetTacticLimit(
+  state: V070GameState,
+): boolean {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle
+    || !runtime
+    || runtime.stage !== 'choose_tactics'
+    || runtime.fortificationsAssetTacticLimitResolved) {
+    return false;
+  }
+
+  const candidates = v070FortificationsAssetEligibleInstanceIds(state);
+  if (candidates.length === 0) {
+    markV070FortificationsAssetTacticLimitResolved(state);
+    return false;
+  }
+
+  const assetInstanceId = candidates[0];
+  if (openV070SubversionAssetBattleWindow(
+    state,
+    battle.defender,
+    assetInstanceId,
+    V070_FORTIFICATIONS_ASSET_TEXT,
+    {
+      type: 'apply_fortifications_tactic_limit_asset',
+      playerId: battle.defender,
+      assetInstanceId,
+    },
+  )) {
+    return true;
+  }
+
+  applyV070FortificationsAssetTacticLimit(
+    state,
+    battle.defender,
+    assetInstanceId,
+  );
+  return false;
 }
 
 function battleAssetEffectForAction(
@@ -365,9 +461,6 @@ function resumeV070ResistanceOnsetInitialization(
     return state;
   }
 
-  // If runtime initialization opened Terms, an attempted proceed-from-Onset is
-  // not yet legal. Preserve the initialized state and let the Terms procedure
-  // take priority instead of throwing away the resolved Subversion decision.
   if (resumeAction.type === 'proceed_from_onset'
     && state.battleRuntime?.terms.stage !== 'closed') {
     return state;
@@ -492,6 +585,7 @@ function footholdWindowMayOpen(state: V070GameState): boolean {
     || runtime.pendingPoisonousGasAftermath
     || runtime.pendingSpiritHollowAftermath
     || runtime.pendingSubversionAssetBattle
+    || runtime.pendingFortificationsRetreat
     || runtime.guardiansWindowOpen
     || runtime.finalJudgmentWindowOpen
     || runtime.relentlessPursuitWindowOpen

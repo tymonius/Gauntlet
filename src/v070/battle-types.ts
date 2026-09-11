@@ -181,6 +181,11 @@ export interface V070SpiritHollowAftermathRuntime {
   candidateGraveyardInstanceIds: string[];
 }
 
+export interface V070FortificationsRetreatRuntime {
+  playerId: PlayerId;
+  sourceInstanceId: string;
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -257,6 +262,11 @@ export type V070SubversionAssetBattleContinuation =
       type: 'apply_resistance_onset_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'apply_fortifications_tactic_limit_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
     };
 
 export interface V070SubversionAssetBattleRuntime {
@@ -295,6 +305,10 @@ export interface V070BattleRuntime {
   spiritHollowAftermathPlayers: PlayerId[] | null;
   pendingSubversionAssetBattle: V070SubversionAssetBattleRuntime | null;
   resistanceAssetOnsetProcessedInstanceIds: string[];
+  fortificationsAssetTacticLimitResolved: boolean;
+  fortificationsRetreatSourceInstanceIds: string[];
+  fortificationsRetreatResolvedSourceInstanceIds: string[];
+  pendingFortificationsRetreat: V070FortificationsRetreatRuntime | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -392,6 +406,10 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     spiritHollowAftermathPlayers: null,
     pendingSubversionAssetBattle: null,
     resistanceAssetOnsetProcessedInstanceIds: [],
+    fortificationsAssetTacticLimitResolved: false,
+    fortificationsRetreatSourceInstanceIds: [],
+    fortificationsRetreatResolvedSourceInstanceIds: [],
+    pendingFortificationsRetreat: null,
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,
