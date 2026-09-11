@@ -21,6 +21,10 @@ body.faction-guide-diplomats {
   --guide-accent: #264f91;
 }
 
+body.faction-guide-financiers {
+  --guide-accent: #227044;
+}
+
 .guide-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
