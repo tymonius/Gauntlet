@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
+const deckbuilderHtml = readFileSync("apps/deckbuilder/index.html", "utf8");
 const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
 const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
@@ -9,9 +9,9 @@ const territoryLegacyAlias = readFileSync("card-design/territory-print-render.ht
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const cardBackJs = readFileSync("card-design/card-back.js", "utf8");
 const cardBackPattern = readFileSync("card-design/card-back-pattern.svg", "utf8");
-const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
-const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
-const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
+const printTransform = readFileSync("apps/deckbuilder/production-print.js", "utf8");
+const supplementalPrintTransform = readFileSync("apps/deckbuilder/print-capital-ledger.js", "utf8");
+const cardBackPolicy = readFileSync("apps/deckbuilder/card-back-preview.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const currentGameLoader = readFileSync("game-data/current-game.mjs", "utf8");
 const rulesetLoader = readFileSync("game-data/ruleset.mjs", "utf8");
