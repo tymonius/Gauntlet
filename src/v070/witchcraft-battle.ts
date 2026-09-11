@@ -25,6 +25,10 @@ import {
 import {
   resolveV070WitchcraftBattleEffectHandler,
 } from './witchcraft-handler-resolver';
+import {
+  activeV070CopiedEffectApplication,
+  withV070CopiedEffectApplication,
+} from './copied-effect-runtime';
 import type {
   V070CopyableEffectLabel,
   V070EffectReference,
@@ -33,6 +37,7 @@ import type {
 export { V070_WITCHCRAFT_BATTLE_TEXT, V070_WITCHCRAFT_ID };
 
 const COPIED_APPLICATION_CALLERS = new Set<string>([
+  'neutral-arcane-knowledge',
   V070_HERESY_ID,
   V070_REND_THE_VEIL_ID,
   V070_WITCHCRAFT_ID,
@@ -62,7 +67,11 @@ export function registerV070WitchcraftBattleEffect(
     condition: 'always',
   });
 
-  const eligible = witchcraftChoices(state, owner, sourceInstanceId);
+  const parentApplication = activeV070CopiedEffectApplication(state);
+  const eligible = parentApplication
+    && !parentApplication.chainAllowsFurtherCopiedApplication
+    ? []
+    : witchcraftChoices(state, owner, sourceInstanceId);
   if (eligible.length === 0) {
     runtime.participants[owner].advantage += 1;
     appendV070Event(state, {
@@ -73,6 +82,7 @@ export function registerV070WitchcraftBattleEffect(
         sourceInstanceId,
         sourceCardId: V070_WITCHCRAFT_ID,
         advantageGained: 1,
+        copiedChainDepth: parentApplication?.chainDepth ?? 0,
       },
     });
     return;
@@ -83,6 +93,7 @@ export function registerV070WitchcraftBattleEffect(
     owner,
     sourceInstanceId,
     candidateInstanceIds: eligible.map(choice => choice.sourceInstanceId),
+    parentApplication: parentApplication ?? undefined,
   });
 }
 
@@ -115,6 +126,7 @@ export function resolveV070WitchcraftBattleChoice(
     canApplyNow: effectCanApplyAfterTactics,
     targetSourceInstanceId: target.sourceInstanceId,
     targetEffectLabel: target.label,
+    parentApplication: pending.parentApplication,
   });
   if (!application.application) {
     throw new V070GameActionError('Witchcraft unexpectedly lost its eligible repeated effect.');
@@ -132,11 +144,13 @@ export function resolveV070WitchcraftBattleChoice(
   }
 
   completeV070WitchcraftBattleRevealChoice(state);
-  handler.apply({
-    state,
-    owner: playerId,
-    opponent: playerId === 'A' ? 'B' : 'A',
-    commitment,
+  withV070CopiedEffectApplication(state, application.application, () => {
+    handler.apply({
+      state,
+      owner: playerId,
+      opponent: playerId === 'A' ? 'B' : 'A',
+      commitment,
+    });
   });
 
   appendV070Event(state, {
@@ -190,9 +204,6 @@ function witchcraftChoices(
 }
 
 function effectCanApplyAfterTactics(effect: V070EffectReference): boolean {
-  // Repeating an effect does not recreate a trigger that has already passed.
-  // These printed timings occur during Gambit reveal / Tactic selection, so
-  // they cannot newly apply in Witchcraft's post-Tactics window.
   if (/^When Gambits are revealed\b/.test(effect.text)) return false;
   if (/^After Gambits are revealed\b/.test(effect.text)) return false;
   if (/^When you (?:set|choose) this card\b/.test(effect.text)) return false;
@@ -240,10 +251,6 @@ function simulateApplication(
   }
 
   const clone = structuredClone(state) as V070GameState;
-  // Revalidation happens while Witchcraft's own chooser is open. The repeated
-  // effect replaces that chooser after selection, so simulate the state it
-  // will actually see rather than falsely rejecting handlers that open their
-  // own reveal-timing choice.
   if (clone.battleRuntime?.pendingWitchcraftBattleRevealChoice) {
     clone.battleRuntime.pendingWitchcraftBattleRevealChoice = null;
     clone.battleRuntime.witchcraftBattleRevealChoiceOpen = false;
