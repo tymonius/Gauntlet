@@ -156,7 +156,7 @@ for (const marker of [
   'maximum_arenas',
   "params.get('starter') === '1'",
 ]) assert(app.includes(marker), `Deckbuilder runtime missing clean-source guard: ${marker}`);
-for (const forbidden of ['releases/v0.6.3/', 'artifacts/v0.6.3/release-candidate', '../../../../deckbuilder/app.js', 'window.print(', 'localStorage']) {
+for (const forbidden of ['releases/v0.6.3/', 'artifacts/v0.6.3/release-candidate', '../../../../apps/deckbuilder/app.js', 'window.print(', 'localStorage']) {
   assert(!app.includes(forbidden), `Deckbuilder runtime retained forbidden content/output dependency: ${forbidden}`);
 }
 
