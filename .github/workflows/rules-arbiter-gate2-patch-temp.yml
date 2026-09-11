@@ -10,109 +10,29 @@ permissions:
 
 jobs:
   patch:
-    if: github.event.head_commit.message == 'Retry Gate 2 repair patch'
+    if: github.event.head_commit.message == 'Align candidate Leveraged Buyout rule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: rules-arbiter-gate2-live-failures-20260911
-      - name: Apply systemic repairs
+      - name: Align candidate authority
         run: |
           python3 <<'PY'
           from pathlib import Path
-          import json, re
-
-          p = Path('rules-assistant/worker-v071.js')
-          s = p.read_text()
-          s = s.replace('export const BEHAVIOR_REVISION = "v071-qa-20260911-2";', 'export const BEHAVIOR_REVISION = "v071-qa-20260911-3";', 1)
-          a = '- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.\n'
-          assert a in s
-          s = s.replace(a, a
-            + '- A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.\n'
-            + '- Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.\n'
-            + '- A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.\n'
-            + '- For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.\n', 1)
-          a = '13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.\n'
-          assert a in s
-          s = s.replace(a, a
-            + '14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.\n'
-            + '15. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.\n', 1)
-          marker = '  const intelligenceTopic = '
-          i = s.index(marker)
-          addition = '''  const namedCardSource = retrieval.find((source) => {
-            if (!String(source?.canonicalId || "").startsWith("card:")) return false;
-            const title = String(source?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase();
-            return title.length >= 3 && current.includes(title);
-          }) || null;
-          const namedCardTitle = namedCardSource
-            ? String(namedCardSource?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase()
-            : "";
-          const namedCardRuleReference = namedCardTitle
-            ? retrieval.find((source) => {
-                if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
-                const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
-                  .map((value) => String(value || "").toLowerCase())
-                  .join(" ");
-                return authorityText.includes(namedCardTitle);
-              })
-            : null;
-          const namedCardSpecificityFocus = Boolean(namedCardSource && namedCardRuleReference);
-          const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
-            ? [namedCardSource.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
-            : [];
-          '''
-          addition = '\n'.join(line[10:] if line.startswith('          ') else line for line in addition.splitlines()) + '\n'
-          s = s[:i] + addition + s[i:]
-          a = 'const preferredAuthorityIds = fieldcraftFocus\n  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS\n  : specificRulePrecedenceFocus\n    ? specificRulePrecedenceAuthorityIds\n'
-          assert a in s
-          s = s.replace(a, 'const preferredAuthorityIds = fieldcraftFocus\n  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS\n  : namedCardSpecificityFocus\n    ? namedCardSpecificityAuthorityIds\n  : specificRulePrecedenceFocus\n    ? specificRulePrecedenceAuthorityIds\n', 1)
-          p.write_text(s)
-
-          p = Path('scripts/v071-live-rules-qa-support.mjs')
-          s = p.read_text()
-          assert 'classifyTransportInfrastructure' not in s
-          s += '\n\nexport function classifyTransportInfrastructure(status, responseText = "", payload = null) {\n  const httpStatus = Number(status);\n  if (!Number.isInteger(httpStatus) || httpStatus < 500) return null;\n  const plainText = String(responseText || "").replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();\n  const cloudflareCode = plainText.match(/Error\\s*code:\\s*(\\d{4})/i)?.[1] || null;\n  const workerCode = String(payload?.errorCode || "").trim();\n  const details = [cloudflareCode ? `Cloudflare error ${cloudflareCode}` : "", workerCode].filter(Boolean);\n  return `infrastructure: production endpoint HTTP ${httpStatus}${details.length ? ` (${details.join(", ")})` : ""}`;\n}\n'
-          p.write_text(s)
-
-          p = Path('scripts/run-v071-live-rules-qa.mjs')
-          s = p.read_text()
-          assert '  classifyTransportInfrastructure,\n' not in s
-          s = s.replace('  applyBenchmarkCorrections,\n', '  applyBenchmarkCorrections,\n  classifyTransportInfrastructure,\n', 1)
-          assert '      const delayMs = 1200 * attempts;\n' in s
-          s = s.replace('      const delayMs = 1200 * attempts;\n', '      const delayMs = status != null && status >= 500 ? 3000 * attempts : 1200 * attempts;\n', 1)
-          a = '  }\n\n  const latencyMs = Math.round(performance.now() - begin);\n'
-          assert a in s
-          s = s.replace(a, '  }\n\n  const attemptsUsed = Math.min(attempts, maxAttempts);\n  const latencyMs = Math.round(performance.now() - begin);\n', 1)
-          a = '    const transportFailures = [];\n    if (!last.response.ok) transportFailures.push("http: " + last.response.status);\n    if (!last.payload) transportFailures.push("http: response was not JSON");\n    const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };\n'
-          assert a in s
-          s = s.replace(a, '    const transportFailures = [];\n    if (!last.response.ok) transportFailures.push("http: " + last.response.status);\n    if (!last.payload) transportFailures.push("http: response was not JSON");\n    const infrastructureFailure = classifyTransportInfrastructure(last.response.status, last.responseText, last.payload);\n    if (infrastructureFailure) transportFailures.push(infrastructureFailure);\n    const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };\n', 1)
-          s, n = re.subn(r'(?m)^(\s*)attempts,\n(\s*)httpStatus', r'\1attempts: attemptsUsed,\n\2httpStatus', s)
-          assert n == 2, n
-          a = '  if (["explicit", "inferred"].includes(rulingStatus) && /\\b(?:supplied passages|supplied text|supplied sources)\\b/i.test(answer)) {\n'
-          assert a in s
-          s = s.replace(a, '  if (["explicit", "inferred"].includes(rulingStatus) && /\\b(?:supplied passages|supplied text|supplied sources|available passages?|available sources?|retrieved passages?|retrieved sources?)\\b/i.test(answer)) {\n', 1)
-          p.write_text(s)
-
-          p = Path('rules-assistant/evals/rules-arbiter-evals.v071-corrections.json')
-          data = json.loads(p.read_text())
-          assert not any(x.get('id') == 'card-leveraged-buyout' for x in data['cases'])
-          data['cases'].append({'id':'card-leveraged-buyout','expectedClassification':'inferred','classificationBasis':'combined-authority','expectedSourcePatterns':['Leveraged Buyout','Golden Rules'],'expectedAnswerPatterns':['battle cards are cleared']})
-          p.write_text(json.dumps(data, indent=2) + '\n')
-
-          changed = 0
-          for p in Path('rules-assistant').glob('v071-*.test.mjs'):
-            s = p.read_text()
-            if 'v071-qa-20260911-2' in s:
-              p.write_text(s.replace('v071-qa-20260911-2', 'v071-qa-20260911-3'))
-              changed += 1
-          assert changed > 0
-          print(f'Updated {changed} revision assertions')
+          path = Path('rulebook/player-facing/current-rulebook.md')
+          text = path.read_text()
+          old = '- Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase.'
+          new = '- Leveraged Buyout collateral used from battle goes to the Graveyard when battle cards are cleared.'
+          count = text.count(old)
+          assert count == 1, count
+          path.write_text(text.replace(old, new, 1))
           PY
-      - name: Commit permanent repairs
+      - name: Commit candidate correction
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add rules-assistant scripts
-          git commit -m 'Repair Gate 2 live QA failures'
+          git add rulebook/player-facing/current-rulebook.md
+          git commit -m 'Align Leveraged Buyout collateral timing'
           git push origin HEAD:rules-arbiter-gate2-live-failures-20260911
