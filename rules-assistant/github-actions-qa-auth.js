@@ -30,7 +30,7 @@ function audienceMatches(audience) {
   return audience === QA_OIDC_AUDIENCE;
 }
 
-function claimsAreAuthorized(claims, nowSeconds) {
+export function claimsAreAuthorized(claims, nowSeconds) {
   if (claims?.iss !== GITHUB_ACTIONS_OIDC_ISSUER) return false;
   if (!audienceMatches(claims?.aud)) return false;
   if (claims?.repository !== QA_REPOSITORY) return false;
