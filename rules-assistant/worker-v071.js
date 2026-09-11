@@ -6,9 +6,10 @@ import {
   loadV071RulesCorpus
 } from "./v071-public-corpus.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
+import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-1";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-2";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -91,6 +92,7 @@ Every gameplay-rules question must receive one of four classifications:
 
 Classification boundary:
 - Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.
+- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
 - Use inferred when the answer depends on combining rules into a conclusion that no clean source itself states, or on the absence of a restriction, exception, adjacency, contiguity, or other requirement. Silence is not explicit authority.
 - Before returning explicit, test every material claim: could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge? If not, return inferred unless a genuine gap makes provisional necessary.
 
@@ -396,32 +398,7 @@ function positiveInteger(value, fallback) {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-async function reserveModelRequest(request, env) {
-  if (!env.DB) {
-    return { allowed: false, reason: "budget_store_unavailable" };
-  }
-
-  const now = new Date();
-  const timestamp = now.toISOString();
-  const safetyId = await makeSafetyIdentifier(request, env);
-  const counters = [
-    {
-      scope: "ip_hour",
-      bucket: `${timestamp.slice(0, 13)}:${safetyId}`,
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 12)
-    },
-    {
-      scope: "global_day",
-      bucket: timestamp.slice(0, 10),
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 50)
-    },
-    {
-      scope: "global_month",
-      bucket: timestamp.slice(0, 7),
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 200)
-    }
-  ];
-
+async function reserveBudgetCounters(env, counters, timestamp, failureLabel) {
   try {
     const statements = counters.map(({ scope, bucket, limit }) => env.DB.prepare(`
       INSERT INTO rules_model_usage_budget (scope, bucket, request_count, updated_at)
@@ -446,13 +423,72 @@ async function reserveModelRequest(request, env) {
 
     return {
       allowed: true,
-      reason: "reserved",
+      reason: failureLabel === "qa" ? "qa_reserved" : "reserved",
       limits: Object.fromEntries(counters.map(({ scope, limit }) => [scope, limit]))
     };
   } catch (error) {
-    console.error("Rules Arbiter model budget reservation failed closed", error);
-    return { allowed: false, reason: "budget_store_error" };
+    console.error(`Rules Arbiter ${failureLabel} model budget reservation failed closed`, error);
+    return { allowed: false, reason: `${failureLabel}_budget_store_error` };
   }
+}
+
+async function reserveQaModelRequest(env, authorization) {
+  const now = new Date();
+  const timestamp = now.toISOString();
+  const counters = [
+    {
+      scope: "qa_run",
+      bucket: `${authorization.runId}:${authorization.runAttempt}`,
+      limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_RUN, 150)
+    },
+    {
+      scope: "qa_global_day",
+      bucket: timestamp.slice(0, 10),
+      limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_DAY, 150)
+    },
+    {
+      scope: "qa_global_month",
+      bucket: timestamp.slice(0, 7),
+      limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_MONTH, 500)
+    }
+  ];
+  return reserveBudgetCounters(env, counters, timestamp, "qa");
+}
+
+async function reserveModelRequest(request, env) {
+  if (!env.DB) {
+    return { allowed: false, reason: "budget_store_unavailable" };
+  }
+
+  const qaAuthorization = await authorizeGitHubActionsQa(request);
+  if (qaAuthorization.authorized) {
+    return reserveQaModelRequest(env, qaAuthorization);
+  }
+  if (qaAuthorization.reason !== "qa_oidc_not_present") {
+    return { allowed: false, reason: qaAuthorization.reason };
+  }
+
+  const now = new Date();
+  const timestamp = now.toISOString();
+  const safetyId = await makeSafetyIdentifier(request, env);
+  const counters = [
+    {
+      scope: "ip_hour",
+      bucket: `${timestamp.slice(0, 13)}:${safetyId}`,
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 12)
+    },
+    {
+      scope: "global_day",
+      bucket: timestamp.slice(0, 10),
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 50)
+    },
+    {
+      scope: "global_month",
+      bucket: timestamp.slice(0, 7),
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 200)
+    }
+  ];
+  return reserveBudgetCounters(env, counters, timestamp, "public");
 }
 
 async function askOpenAI({ env, request, question, history, sources }) {
