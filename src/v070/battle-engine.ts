@@ -27,6 +27,11 @@ import {
   pruneV070ProtractedSiegeAftermathPlacements,
   resolveV070ProtractedSiegeDepartures,
 } from './protracted-siege';
+import {
+  openV070LandslideAftermathChoice,
+  pendingV070LandslideAftermath,
+  resolveV070LandslideAftermathChoice,
+} from './landslide';
 
 export * from './battle-engine-prewar-bonds';
 
@@ -36,6 +41,11 @@ export type V070BattleAction =
       type: 'resolve_reembodiment_recovery';
       playerId: PlayerId;
       targetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_landslide_aftermath';
+      playerId: PlayerId;
+      sourceInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
@@ -98,6 +108,39 @@ export function reduceV070BattleAction(
       next,
       continuation.sourceLabel,
     );
+  }
+
+  const pendingLandslide = pendingV070LandslideAftermath(state);
+  if (pendingLandslide) {
+    if (action.type !== 'resolve_landslide_aftermath') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Landslide placement before continuing the Aftermath.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070LandslideAftermathChoice(
+      next,
+      action.playerId,
+      action.sourceInstanceId,
+    );
+    const battle = next.battle;
+    if (!battle) return next;
+    return reduceV070BattleAction(next, {
+      type: 'complete_aftermath',
+      playerId: battle.attacker,
+    });
+  }
+  if (action.type === 'resolve_landslide_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Landslide Aftermath placement.',
+    );
+  }
+
+  if (action.type === 'complete_aftermath') {
+    const landslidePrepared = structuredClone(state) as V070GameState;
+    if (openV070LandslideAftermathChoice(landslidePrepared)) {
+      return landslidePrepared;
+    }
   }
 
   const prepared = action.type === 'complete_aftermath'
