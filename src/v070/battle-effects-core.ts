@@ -11,8 +11,8 @@ import * as previous from './battle-effects-core-pre-witchcraft';
 import {
   V070_WITCHCRAFT_BATTLE_TEXT,
   V070_WITCHCRAFT_ID,
-  registerV070WitchcraftBattleEffect,
-} from './witchcraft-battle';
+} from './copied-effect-callers';
+import { registerV070WitchcraftBattleEffect } from './witchcraft-battle';
 
 export * from './battle-effects-core-pre-witchcraft';
 
@@ -21,6 +21,11 @@ const witchcraftHandler: previous.V070BattleEffectHandler = {
   expectedText: V070_WITCHCRAFT_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
+    if (commitment.role === 'gambit'
+      && state.battleRuntime?.stage === 'reveal_gambits') {
+      deferWitchcraftGambit(state, commitment);
+      return;
+    }
     registerV070WitchcraftBattleEffect(state, owner, commitment.instanceId);
   },
 };
@@ -59,6 +64,22 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
+    if (encounteredAt === 'reveal_gambits' && commitment.role === 'gambit') {
+      deferWitchcraftGambit(state, commitment);
+      appendV070Event(state, {
+        type: 'witchcraft_battle_effect_deferred',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          cardId,
+          role: commitment.role,
+          until: 'after_tactics_revealed',
+        },
+      });
+      continue;
+    }
+
     witchcraftHandler.apply({
       state,
       owner: commitment.owner,
@@ -78,6 +99,19 @@ export function resolveV070SupportedRevealEffects(
     });
   }
   return [];
+}
+
+function deferWitchcraftGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredWitchcraftGambitCommitments ??= [];
+  if (runtime.deferredWitchcraftGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredWitchcraftGambitCommitments.push({ ...commitment });
 }
 
 function unsupportedWitchcraftCommitment(
