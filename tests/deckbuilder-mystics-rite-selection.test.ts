@@ -2,14 +2,14 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const authority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
-const html = readFileSync('deckbuilder/index.html', 'utf8');
-const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
-const riteCss = readFileSync('deckbuilder/mystics-rites.css', 'utf8');
-const starters = readFileSync('deckbuilder/starter-decks.js', 'utf8');
-const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
-const print = readFileSync('deckbuilder/print.js', 'utf8');
-const printRequest = readFileSync('deckbuilder/print-request.js', 'utf8');
-const bulkPrint = readFileSync('deckbuilder/print-all-starters.js', 'utf8');
+const html = readFileSync('apps/deckbuilder/index.html', 'utf8');
+const rites = readFileSync('apps/deckbuilder/mystics-rites.js', 'utf8');
+const riteCss = readFileSync('apps/deckbuilder/mystics-rites.css', 'utf8');
+const starters = readFileSync('apps/deckbuilder/starter-decks.js', 'utf8');
+const components = readFileSync('apps/deckbuilder/faction-components.js', 'utf8');
+const print = readFileSync('apps/deckbuilder/print.js', 'utf8');
+const printRequest = readFileSync('apps/deckbuilder/print-request.js', 'utf8');
+const bulkPrint = readFileSync('apps/deckbuilder/print-all-starters.js', 'utf8');
 
 describe('Deckbuilder Mystics Rite selection', () => {
   it('uses the six-Rite current authority and its exactly-three package rule', () => {
