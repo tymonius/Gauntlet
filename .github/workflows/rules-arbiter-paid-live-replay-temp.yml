@@ -1,0 +1,110 @@
+name: Rules Arbiter full paid live replay (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-paid-live-replay-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  live-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Record paid-API authorization
+        run: echo "Full paid Rules Arbiter replay explicitly approved by the user on 2026-09-11."
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Resolve lifecycle-selected live publication
+        id: plan
+        run: node scripts/resolve-current-live-publication.mjs
+
+      - name: Configure full paid QA scope
+        run: |
+          echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+          echo "Running the full paid Rules Arbiter benchmark for ${{ steps.plan.outputs.version }}."
+
+      - name: Install release validation dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate lifecycle-selected published corpus
+        run: |
+          set -euo pipefail
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-github-release-contract.mjs
+          echo "Expected Rules Arbiter authority set: ${{ steps.plan.outputs.authority_set_id }}"
+
+      - name: Verify deployed Rules Arbiter revision
+        env:
+          RULES_HEALTH_ENDPOINT: ${{ steps.plan.outputs.health_url }}
+          EXPECTED_BEHAVIOR_REVISION: ${{ steps.plan.outputs.behavior_revision }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_BEHAVIOR_REVISION;
+          const endpoint = process.env.RULES_HEALTH_ENDPOINT;
+          const response = await fetch(endpoint, { cache: "no-store" });
+          const payload = response.ok ? await response.json() : null;
+          const actual = payload?.behaviorRevision || "missing";
+          console.log(`Production behavior revision: ${actual}`);
+          if (!response.ok || actual !== expected) {
+            console.error(`Expected production behavior revision ${expected}.`);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Verify published corpus and Worker cache
+        env:
+          EXPECTED_RULES_AUTHORITY_SET: ${{ steps.plan.outputs.authority_set_id }}
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/${{ steps.plan.outputs.manifest_path }}
+          RULES_CORPUS_HEALTH_ENDPOINT: ${{ steps.plan.outputs.corpus_health_url }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_RULES_AUTHORITY_SET;
+          const manifestResponse = await fetch(process.env.RULES_PUBLIC_MANIFEST, { cache: "no-store" });
+          const manifest = manifestResponse.ok ? await manifestResponse.json() : null;
+          const published = manifest?.authority_set_id || "missing";
+          console.log(`Published authority set: ${published}`);
+          if (!manifestResponse.ok || published !== expected) process.exit(1);
+
+          const corpusResponse = await fetch(process.env.RULES_CORPUS_HEALTH_ENDPOINT, { cache: "no-store" });
+          const corpus = corpusResponse.ok ? await corpusResponse.json() : null;
+          const actual = corpus?.authoritySetId || "missing";
+          console.log(`Worker authority set: ${actual}`);
+          if (!corpusResponse.ok || corpus?.ok !== true || actual !== expected) process.exit(1);
+          NODE
+
+      - name: Run full live Rules Arbiter QA
+        id: qa
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ steps.plan.outputs.qa_report_path }}
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+        run: node "${{ steps.plan.outputs.qa_runner }}"
+
+      - name: Upload live QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-full-live-replay-${{ steps.plan.outputs.version }}
+          path: ${{ steps.plan.outputs.qa_report_path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce live QA result
+        if: steps.qa.outcome != 'success'
+        run: exit 1
