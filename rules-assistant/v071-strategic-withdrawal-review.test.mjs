@@ -36,6 +36,6 @@ describe("v0.7.1 Strategic Withdrawal reviewed case", () => {
   test("the current prompt requires explicit classification when authority directly states every material premise", () => {
     expect(workerSource).toContain("Use explicit only when clean authority directly states each material premise required by the answer");
     expect(workerSource).toContain("could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge");
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260911-3"');
+    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260911-4"');
   });
 });

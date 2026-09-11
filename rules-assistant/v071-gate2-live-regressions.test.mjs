@@ -9,10 +9,12 @@ const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals
 
 describe("v0.7.1 Gate 2 live replay regressions", () => {
   test("pins the refined classification boundary", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-3");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-4");
     expect(workerSource).toContain("Multiple citations alone do not make an answer inferred.");
     expect(workerSource).toContain("absence of adjacency, contiguity, restrictions, permissions, or requirements");
     expect(workerSource).toContain("state the baseline restriction that the exception changes as well as the exception itself");
+    expect(workerSource).toContain("A generic additional-Action permission does not make that direct timing restriction inferred.");
+    expect(workerSource).toContain("Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.");
   });
 
   test("adds specific-over-general authority for named-card conflicts", () => {
@@ -28,10 +30,16 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
       { id: "S2", canonicalId: "rulebook:collateral", title: "Collateral", heading: "Collateral", excerpt: "Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase." }
     ];
     const augmented = augmentRetrievalForContext(corpus, "How does Leveraged Buyout work?", [], retrieval);
-    expect(augmented.slice(0, 2).map((source) => source.canonicalId)).toEqual([
+    expect(augmented.slice(0, 3).map((source) => source.canonicalId)).toEqual([
       "card:test-buyout",
+      "rulebook:collateral",
       "rulebook:golden-rules"
     ]);
+    expect(workerSource).toContain("cite the printed card, the conflicting rulebook authority, and the Golden Rules");
+
+    const capacityCorrection = corrections.cases.find((item) => item.id === "financiers-capacity");
+    expect(capacityCorrection.expectedAnswerPatterns).toEqual(["Denouement"]);
+    expect(capacityCorrection.forbiddenAnswerPatterns).toContain("Feature in Opening");
 
     const correction = corrections.cases.find((item) => item.id === "card-leveraged-buyout");
     expect(correction).toMatchObject({
