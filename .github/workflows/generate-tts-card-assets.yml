@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
-      - 'game-data/**'
+      - 'packages/game-data/**'
       - 'docs/v0.6.4-*.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
@@ -89,7 +89,7 @@ jobs:
           sparse-checkout: |
             package.json
             design-tokens.css
-            game-data
+            packages/game-data
             docs/v0.6.4-card-additions.json
             docs/v0.6.4-rules.json
             docs/v0.6.4-territories.json
