@@ -45,7 +45,7 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
     expect(discardCorrection).toMatchObject({
       expectedClassification: "explicit",
       classificationBasis: "direct-authority",
-      expectedAnswerPatterns: []
+      expectedAnswerPatterns: ["Discard Pile"]
     });
 
     const capacityCorrection = corrections.cases.find((item) => item.id === "financiers-capacity");
