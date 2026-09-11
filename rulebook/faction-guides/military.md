@@ -22,7 +22,7 @@ The basic Military rhythm is:
 
 The Military adds very little extra machinery to the shared game:
 
-- you track **Command**, from 0 to 2;
+- you track **Command**, normally from 0 to 2;
 - the first battle you win during each turn gives you 1 Command; and
 - your Leader provides three **Orders** that spend Command at specific moments.
 
@@ -46,17 +46,17 @@ You begin the game with **0 Command**.
 <!-- RULES-SECTION:resource -->
 ## 3. Command
 
-You can have no more than **2 Command**.
+You can normally have no more than **2 Command**. An effect that explicitly raises your Command cap can let you exceed 2.
 
 The **first time each turn you win a battle**, gain 1 Command. This can happen on either player's turn. If you defend successfully during your opponent's turn, that victory can give you Command just as an attack on your own turn can.
 
 “Each turn” matters. You can gain Command from your first win on your turn and then gain Command again from your first win on your opponent's turn.
 
-If you are already at 2 Command when you score that first win, you remain at 2. That battle still counts as the first Military victory of the turn; another win later in the same turn does not generate Command instead.
+If you are already at your current Command cap when you score that first win, you remain at that cap. That battle still counts as the first Military victory of the turn; another win later in the same turn does not generate Command instead.
 
 After a battle has a winner, gain the normal Command before resolving later effects caused by that victory. This means Command you just earned can be available for an Order whose timing comes during the Aftermath.
 
-> **Remember:** Command rewards winning, but its maximum is only 2. It is a resource to turn into tempo and position, not a score to accumulate.
+> **Remember:** Command rewards winning, but its normal cap is only 2. It is a resource to turn into tempo and position, not a score to accumulate.
 
 <!-- RULES-SECTION:features -->
 ## 4. Orders and Military Features
@@ -148,7 +148,7 @@ For your first Military game, keep four ideas in mind:
 
 1. **Fight for useful wins.** Command comes from winning battles, so look for fights that also improve your position rather than battling only to generate the resource.
 2. **Watch both players' turns.** Your first win on the opponent's turn can generate Command too. A successful defense may fund an Order immediately or prepare your next turn.
-3. **Do not save Command automatically.** With a maximum of 2, holding Command has an opportunity cost. Spend it when an Order materially improves the battle or battlefield.
+3. **Do not save Command automatically.** With a normal cap of 2, holding Command has an opportunity cost. Spend it when an Order materially improves the battle or battlefield.
 4. **Orders do not spend your Action.** Your normal Action and your Orders are separate. A turn can include an Action card or Asset as well as any Orders whose timings you reach and can afford.
 
 ### Choosing your first Leader
