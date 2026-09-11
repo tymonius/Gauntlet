@@ -236,7 +236,7 @@ describe('v0.7.0 Monastery Territory', () => {
     )).toBe(true);
   });
 
-  test('without the printed Monastery effect, the same unsupported Arcane card still halts explicitly', () => {
+  test('when Monastery is blank, Arcane Knowledge applies its Graveyard effect normally', () => {
     let state = battleAtMonastery(true);
     const arcane = inject(
       state,
@@ -244,6 +244,13 @@ describe('v0.7.0 Monastery Territory', () => {
       'neutral-arcane-knowledge',
       'hand',
       'blank-battle',
+    );
+    const target = inject(
+      state,
+      'A',
+      'neutral-new-recruits',
+      'graveyard',
+      'blank-target',
     );
 
     state = reduceV070BattleAction(state, {
@@ -260,14 +267,17 @@ describe('v0.7.0 Monastery Territory', () => {
       playerId: 'A',
     });
 
-    expect(state.battleRuntime?.stage).toBe('halted');
-    expect(state.battleRuntime?.unsupportedEffects).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          cardId: 'neutral-arcane-knowledge',
-          role: 'gambit',
-        }),
-      ]),
-    );
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toHaveLength(0);
+    expect(state.battleRuntime?.participants.A.battleModifier).toBe(1);
+    expect(state.players.A.zones.graveyard).toContain(target);
+    expect(state.events.some(event =>
+      event.type === 'arcane_knowledge_battle_effect_applied'
+      && (event.payload as { targetInstanceId?: string })?.targetInstanceId === target
+    )).toBe(true);
+    expect(state.events.some(event =>
+      event.type === 'battle_card_effect_suppressed'
+      && (event.payload as { reason?: string })?.reason === 'Monastery'
+    )).toBe(false);
   });
 });

@@ -13,6 +13,11 @@ import {
   V070_WITCHCRAFT_ID,
 } from './copied-effect-callers';
 import { registerV070WitchcraftBattleEffect } from './witchcraft-battle';
+import {
+  V070_ARCANE_KNOWLEDGE_BATTLE_TEXT,
+  V070_ARCANE_KNOWLEDGE_ID,
+  registerV070ArcaneKnowledgeBattleEffect,
+} from './arcane-knowledge-battle';
 
 export * from './battle-effects-core-pre-witchcraft';
 
@@ -21,10 +26,6 @@ const witchcraftHandler: previous.V070BattleEffectHandler = {
   expectedText: V070_WITCHCRAFT_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    // Shared reveal resolution can outlive the reducer's public stage. Use the
-    // scheduler's persisted encounter context to distinguish the original
-    // Gambit reveal from the later post-Tactics queue that reintroduces a
-    // deferred Witchcraft Gambit.
     if (commitment.role === 'gambit'
       && state.battleRuntime?.pendingRevealEffectEncounteredAt !== 'reveal_tactics') {
       deferWitchcraftGambit(state, commitment);
@@ -34,15 +35,31 @@ const witchcraftHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const arcaneKnowledgeHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_ARCANE_KNOWLEDGE_ID,
+  expectedText: V070_ARCANE_KNOWLEDGE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ArcaneKnowledgeBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_WITCHCRAFT_ID,
+  V070_ARCANE_KNOWLEDGE_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
   if (cardId === V070_WITCHCRAFT_ID) return witchcraftHandler;
+  if (cardId === V070_ARCANE_KNOWLEDGE_ID) return arcaneKnowledgeHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -52,13 +69,14 @@ export function resolveV070SupportedRevealEffects(
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
   const unsupported = commitments.flatMap(commitment =>
-    unsupportedWitchcraftCommitment(state, commitment, encounteredAt)
+    unsupportedIntegratedCommitment(state, commitment, encounteredAt)
   );
   if (unsupported.length > 0) return unsupported;
 
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    if (cardId !== V070_WITCHCRAFT_ID) {
+    if (cardId !== V070_WITCHCRAFT_ID
+      && cardId !== V070_ARCANE_KNOWLEDGE_ID) {
       const forwarded = previous.resolveV070SupportedRevealEffects(
         state,
         [commitment],
@@ -68,7 +86,9 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    if (encounteredAt === 'reveal_gambits' && commitment.role === 'gambit') {
+    if (cardId === V070_WITCHCRAFT_ID
+      && encounteredAt === 'reveal_gambits'
+      && commitment.role === 'gambit') {
       deferWitchcraftGambit(state, commitment);
       appendV070Event(state, {
         type: 'witchcraft_battle_effect_deferred',
@@ -84,7 +104,10 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    witchcraftHandler.apply({
+    const handler = cardId === V070_WITCHCRAFT_ID
+      ? witchcraftHandler
+      : arcaneKnowledgeHandler;
+    handler.apply({
       state,
       owner: commitment.owner,
       opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -118,13 +141,19 @@ function deferWitchcraftGambit(
   runtime.deferredWitchcraftGambitCommitments.push({ ...commitment });
 }
 
-function unsupportedWitchcraftCommitment(
+function unsupportedIntegratedCommitment(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
   const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-  if (cardId !== V070_WITCHCRAFT_ID) return [];
+  const expectedText = cardId === V070_WITCHCRAFT_ID
+    ? V070_WITCHCRAFT_BATTLE_TEXT
+    : cardId === V070_ARCANE_KNOWLEDGE_ID
+      ? V070_ARCANE_KNOWLEDGE_BATTLE_TEXT
+      : null;
+  if (!expectedText) return [];
+
   const card = v070CanonicalContent.cardsById.get(cardId);
   if (!card) {
     return [{
@@ -141,8 +170,7 @@ function unsupportedWitchcraftCommitment(
     effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
     || effect.label === 'Gambit/Tactic'
   );
-  if (relevant.length === 1
-    && relevant[0]?.text === V070_WITCHCRAFT_BATTLE_TEXT) {
+  if (relevant.length === 1 && relevant[0]?.text === expectedText) {
     return [];
   }
   return relevant.map(effect => ({
