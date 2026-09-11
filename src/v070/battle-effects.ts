@@ -21,6 +21,11 @@ import {
   registerV070DarkOmensBattleEffect,
 } from './dark-omens-battle';
 import {
+  V070_DECOYS_BATTLE_TEXT,
+  V070_DECOYS_ID,
+  registerV070DecoysBattleEffect,
+} from './decoys-battle';
+import {
   V070_DIVINE_MERCY_BATTLE_TEXT,
   V070_DIVINE_MERCY_ID,
   registerV070DivineMercyBattleEffect,
@@ -228,6 +233,16 @@ const disruptionHandler: V070SpecializedBattleEffectHandler = {
     );
   },
 };
+const decoysHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_DECOYS_ID,
+  expectedText: V070_DECOYS_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070DecoysBattleEffect(state, owner, commitment.instanceId);
+  },
+};
 
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
@@ -243,6 +258,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [assassinsHandler.cardId, assassinsHandler],
   [capitalPunishmentHandler.cardId, capitalPunishmentHandler],
   [disruptionHandler.cardId, disruptionHandler],
+  [decoysHandler.cardId, decoysHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [

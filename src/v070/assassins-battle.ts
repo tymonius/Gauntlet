@@ -18,6 +18,7 @@ import {
   markV070BattleCardEffectApplied,
   negateV070BattleCardEffect,
 } from './battle-effect-status';
+import { restrictV070BattleTargetsByDecoys } from './decoys-battle';
 
 export const V070_ASSASSINS_ID = 'intelligence-assassins' as const;
 export const V070_ASSASSINS_BATTLE_TEXT =
@@ -233,10 +234,12 @@ export function eligibleV070AssassinsGambits(
   state: V070GameState,
   owner: PlayerId,
 ): string[] {
-  return opposingV070AssassinsGambits(state, owner).filter(instanceId =>
+  const opponent: PlayerId = owner === 'A' ? 'B' : 'A';
+  const eligible = opposingV070AssassinsGambits(state, owner).filter(instanceId =>
     !isV070BattleCardEffectNegated(state, instanceId)
     && !hasV070BattleCardEffectApplied(state, instanceId)
   );
+  return restrictV070BattleTargetsByDecoys(state, opponent, eligible);
 }
 
 function negateAssassinsTarget(
