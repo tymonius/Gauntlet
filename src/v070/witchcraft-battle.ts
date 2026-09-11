@@ -44,6 +44,11 @@ export function registerV070WitchcraftBattleEffect(
   sourceInstanceId: string,
 ): void {
   assertWitchcraftSource(state, owner, sourceInstanceId);
+  if (state.battleRuntime?.stage !== 'reveal_tactics') {
+    throw new V070GameActionError(
+      'Witchcraft battle effect can resolve only after Tactics are revealed.',
+    );
+  }
 
   registerV070DeferredBattleAftermathDestination(state, {
     sourceInstanceId,
@@ -106,7 +111,7 @@ export function resolveV070WitchcraftBattleChoice(
     controller: playerId,
     witchcraftSourceInstanceId: pending.sourceInstanceId,
     battleEffects: eligible,
-    canApplyNow: () => true,
+    canApplyNow: effectCanApplyAfterTactics,
     targetSourceInstanceId: target.sourceInstanceId,
     targetEffectLabel: target.label,
   });
@@ -169,7 +174,7 @@ function witchcraftChoices(
       ...described.effect,
       sourceInstanceId: commitment.instanceId,
       controller: owner,
-      active: simulation.canApply,
+      active: effectCanApplyAfterTactics(described.effect) && simulation.canApply,
       createsCopiedOrRepeatedApplication: COPIED_APPLICATION_CALLERS.has(described.effect.cardId),
       addsBattleCard: simulation.addsBattleCard,
     } satisfies V070ControlledBattleEffect];
@@ -179,8 +184,18 @@ function witchcraftChoices(
     controller: owner,
     witchcraftSourceInstanceId: sourceInstanceId,
     battleEffects: effects,
-    canApplyNow: () => true,
+    canApplyNow: effectCanApplyAfterTactics,
   });
+}
+
+function effectCanApplyAfterTactics(effect: V070EffectReference): boolean {
+  // Repeating an effect does not recreate a trigger that has already passed.
+  // These printed timings occur during Gambit reveal / Tactic selection, so
+  // they cannot newly apply in Witchcraft's post-Tactics window.
+  if (/^When Gambits are revealed\b/.test(effect.text)) return false;
+  if (/^After Gambits are revealed\b/.test(effect.text)) return false;
+  if (/^When you (?:set|choose) this card\b/.test(effect.text)) return false;
+  return true;
 }
 
 function describeCommitmentEffect(
@@ -224,6 +239,15 @@ function simulateApplication(
   }
 
   const clone = structuredClone(state) as V070GameState;
+  // Revalidation happens while Witchcraft's own chooser is open. The repeated
+  // effect replaces that chooser after selection, so simulate the state it
+  // will actually see rather than falsely rejecting handlers that open their
+  // own reveal-timing choice.
+  if (clone.battleRuntime?.pendingWitchcraftBattleRevealChoice) {
+    clone.battleRuntime.pendingWitchcraftBattleRevealChoice = null;
+    clone.battleRuntime.witchcraftBattleRevealChoiceOpen = false;
+  }
+
   const before = applicationFingerprint(clone);
   const beforeBattleCards = battleCardInstanceIds(clone);
   try {
