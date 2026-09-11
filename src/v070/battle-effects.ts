@@ -9,6 +9,7 @@ import {
   V070_LANDSLIDE_BATTLE_TEXT,
   registerV070LandslideBattleEffect,
 } from './landslide';
+import { applyV070BattleRetreatStep } from './retreat-step';
 
 export type {
   V070BattleEffectContext,
@@ -16,7 +17,6 @@ export type {
   V070BattleEffectTiming,
 } from './battle-effects-core';
 export {
-  applyV070BattleCardAdditionalRetreats,
   resolveV070AftermathDrawEffects,
   resolveV070UnbrokenRanksCommand,
 } from './battle-effects-core';
@@ -118,4 +118,44 @@ export function resolveV070SupportedRevealEffects(
   }
 
   return [];
+}
+
+export function applyV070BattleCardAdditionalRetreats(
+  state: V070GameState,
+): void {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || !battle.loser) return;
+
+  const loser = battle.loser;
+  for (const effect of runtime.additionalRetreatEffects) {
+    if (effect.targetPlayer !== loser) continue;
+    for (let step = 0; step < effect.steps; step += 1) {
+      const result = applyV070BattleRetreatStep(
+        state,
+        loser,
+        {
+          kind: 'battle_card',
+          label: effect.sourceCardId,
+          sourceInstanceId: effect.sourceInstanceId,
+          sourceCardId: effect.sourceCardId,
+        },
+      );
+      if (!result.moved) break;
+
+      appendV070Event(state, {
+        type: 'battle_card_aftermath_retreat',
+        actor: loser,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: effect.sourceInstanceId,
+          sourceCardId: effect.sourceCardId,
+          loser,
+          from: result.from,
+          to: result.to,
+          additionalRetreat: 1,
+        },
+      });
+    }
+  }
 }
