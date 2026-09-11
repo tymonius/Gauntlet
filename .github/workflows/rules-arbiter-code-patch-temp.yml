@@ -1,0 +1,326 @@
+name: Rules Arbiter code patch (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-paid-live-replay-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Add temporary Rules Arbiter code patcher'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-paid-live-replay-20260911
+      - name: Apply authenticated QA code changes
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          OLD_REV = 'v071-qa-20260911-1'
+          NEW_REV = 'v071-qa-20260911-2'
+
+          worker_path = Path('rules-assistant/worker-v071.js')
+          worker = worker_path.read_text()
+          worker = worker.replace(
+              'import { persistSmartInteraction } from "./rules-persistence.js";\n',
+              'import { persistSmartInteraction } from "./rules-persistence.js";\nimport { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";\n',
+              1,
+          )
+          worker = worker.replace(
+              f'export const BEHAVIOR_REVISION = "{OLD_REV}";',
+              f'export const BEHAVIOR_REVISION = "{NEW_REV}";',
+              1,
+          )
+          classification_anchor = '- Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.\n'
+          assert classification_anchor in worker
+          worker = worker.replace(
+              classification_anchor,
+              classification_anchor
+              + '- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.\n',
+              1,
+          )
+
+          budget_start = worker.index('async function reserveModelRequest(request, env) {')
+          budget_end = worker.index('\nasync function askOpenAI', budget_start)
+          budget_impl = r'''async function reserveBudgetCounters(env, counters, timestamp, failureLabel) {
+            try {
+              const statements = counters.map(({ scope, bucket, limit }) => env.DB.prepare(`
+                INSERT INTO rules_model_usage_budget (scope, bucket, request_count, updated_at)
+                VALUES (?, ?, 1, ?)
+                ON CONFLICT(scope, bucket) DO UPDATE SET
+                  request_count = request_count + 1,
+                  updated_at = excluded.updated_at
+                WHERE request_count < ?
+              `).bind(scope, bucket, timestamp, limit));
+
+              const results = await env.DB.batch(statements);
+              const blockedIndex = counters.findIndex((_, index) =>
+                Number(results?.[index]?.meta?.changes || 0) < 1
+              );
+              if (blockedIndex >= 0) {
+                return {
+                  allowed: false,
+                  reason: `${counters[blockedIndex].scope}_limit_reached`,
+                  limits: Object.fromEntries(counters.map(({ scope, limit }) => [scope, limit]))
+                };
+              }
+
+              return {
+                allowed: true,
+                reason: failureLabel === "qa" ? "qa_reserved" : "reserved",
+                limits: Object.fromEntries(counters.map(({ scope, limit }) => [scope, limit]))
+              };
+            } catch (error) {
+              console.error(`Rules Arbiter ${failureLabel} model budget reservation failed closed`, error);
+              return { allowed: false, reason: `${failureLabel}_budget_store_error` };
+            }
+          }
+
+          async function reserveQaModelRequest(env, authorization) {
+            const now = new Date();
+            const timestamp = now.toISOString();
+            const counters = [
+              {
+                scope: "qa_run",
+                bucket: `${authorization.runId}:${authorization.runAttempt}`,
+                limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_RUN, 150)
+              },
+              {
+                scope: "qa_global_day",
+                bucket: timestamp.slice(0, 10),
+                limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_DAY, 150)
+              },
+              {
+                scope: "qa_global_month",
+                bucket: timestamp.slice(0, 7),
+                limit: positiveInteger(env.RULES_QA_MODEL_REQUESTS_PER_MONTH, 500)
+              }
+            ];
+            return reserveBudgetCounters(env, counters, timestamp, "qa");
+          }
+
+          async function reserveModelRequest(request, env) {
+            if (!env.DB) {
+              return { allowed: false, reason: "budget_store_unavailable" };
+            }
+
+            const qaAuthorization = await authorizeGitHubActionsQa(request);
+            if (qaAuthorization.authorized) {
+              return reserveQaModelRequest(env, qaAuthorization);
+            }
+            if (qaAuthorization.reason !== "qa_oidc_not_present") {
+              return { allowed: false, reason: qaAuthorization.reason };
+            }
+
+            const now = new Date();
+            const timestamp = now.toISOString();
+            const safetyId = await makeSafetyIdentifier(request, env);
+            const counters = [
+              {
+                scope: "ip_hour",
+                bucket: `${timestamp.slice(0, 13)}:${safetyId}`,
+                limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 12)
+              },
+              {
+                scope: "global_day",
+                bucket: timestamp.slice(0, 10),
+                limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 50)
+              },
+              {
+                scope: "global_month",
+                bucket: timestamp.slice(0, 7),
+                limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 200)
+              }
+            ];
+            return reserveBudgetCounters(env, counters, timestamp, "public");
+          }
+          '''
+          worker = worker[:budget_start] + budget_impl + worker[budget_end:]
+          worker_path.write_text(worker)
+
+          runner_path = Path('scripts/run-v071-live-rules-qa.mjs')
+          runner = runner_path.read_text()
+          oidc_anchor = 'const retryableStatuses = new Set([429, 502, 503, 504]);\n'
+          oidc_impl = r'''const retryableStatuses = new Set([429, 502, 503, 504]);
+          const useGitHubActionsOidc = process.env.GAUNTLET_RULES_QA_USE_GITHUB_OIDC === "true";
+          const qaOidcAudience = "gauntlet-rules-assistant-live-qa";
+          let cachedQaOidcToken = null;
+          let cachedQaOidcExpiresAt = 0;
+
+          function jwtExpiryMs(token) {
+            try {
+              const payload = JSON.parse(Buffer.from(String(token).split(".")[1], "base64url").toString("utf8"));
+              return Number(payload?.exp || 0) * 1000;
+            } catch {
+              return 0;
+            }
+          }
+
+          async function getGitHubActionsQaOidcToken() {
+            if (!useGitHubActionsOidc) return null;
+            if (cachedQaOidcToken && cachedQaOidcExpiresAt > Date.now() + 60_000) return cachedQaOidcToken;
+
+            const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+            const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+            if (!requestUrl || !requestToken) {
+              throw new Error("GitHub Actions OIDC was requested but id-token credentials are unavailable.");
+            }
+
+            const url = new URL(requestUrl);
+            url.searchParams.set("audience", qaOidcAudience);
+            const response = await fetch(url, {
+              headers: { Authorization: `Bearer ${requestToken}` },
+              cache: "no-store"
+            });
+            if (!response.ok) {
+              throw new Error(`GitHub Actions OIDC token request failed with HTTP ${response.status}.`);
+            }
+            const payload = await response.json();
+            const token = String(payload?.value || "").trim();
+            const expiresAt = jwtExpiryMs(token);
+            if (!token || expiresAt <= Date.now() + 30_000) {
+              throw new Error("GitHub Actions returned an invalid or already-expiring QA OIDC token.");
+            }
+            cachedQaOidcToken = token;
+            cachedQaOidcExpiresAt = expiresAt;
+            return token;
+          }
+          '''
+          assert oidc_anchor in runner
+          runner = runner.replace(oidc_anchor, oidc_impl, 1)
+
+          request_old = r'''    const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Origin": "https://gauntlet.run",
+                  "User-Agent": "Gauntlet-v0.7.1-live-QA"
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal
+              });'''
+          request_new = r'''    const headers = {
+                "Content-Type": "application/json",
+                "Origin": "https://gauntlet.run",
+                "User-Agent": "Gauntlet-v0.7.1-live-QA"
+              };
+              const qaOidcToken = await getGitHubActionsQaOidcToken();
+              if (qaOidcToken) headers["X-Gauntlet-QA-OIDC"] = qaOidcToken;
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers,
+                body: JSON.stringify(body),
+                signal: controller.signal
+              });'''
+          assert request_old in runner
+          runner = runner.replace(request_old, request_new, 1)
+
+          inspect_anchor = '  const rulingStatus = String(payload?.rulingStatus || "");\n\n'
+          assert inspect_anchor in runner
+          runner = runner.replace(
+              inspect_anchor,
+              inspect_anchor
+              + '  if (["local-budget-fallback", "local-source-lookup"].includes(payload?.executionPath)) {\n'
+              + '    failures.push("infrastructure: production model path unavailable (" + payload.executionPath + ")");\n'
+              + '  }\n\n',
+              1,
+          )
+
+          preflight_old = r'''  if (result.httpStatus === 200 && result.payload) {
+              return { failure: null, result };
+            }'''
+          preflight_new = r'''  const modelPathFailure = result.failures.find((failure) => failure.startsWith("infrastructure:"));
+            if (result.httpStatus === 200 && result.payload && !modelPathFailure) {
+              return { failure: null, result };
+            }'''
+          assert preflight_old in runner
+          runner = runner.replace(preflight_old, preflight_new, 1)
+
+          classifications_anchor = r'''for (const item of results) {
+            const actual = item.payload?.rulingStatus || "no_response";
+            classifications[actual] = (classifications[actual] || 0) + 1;
+          }
+
+          const report = {'''
+          classifications_new = r'''for (const item of results) {
+            const actual = item.payload?.rulingStatus || "no_response";
+            classifications[actual] = (classifications[actual] || 0) + 1;
+          }
+          const benchmarkInfrastructureFailures = results.filter((item) =>
+            item.failures.some((failure) => failure.startsWith("infrastructure:"))
+          );
+          const benchmarkInfrastructureFailure = benchmarkInfrastructureFailures.length
+            ? {
+                affectedCases: benchmarkInfrastructureFailures.length,
+                firstCaseId: benchmarkInfrastructureFailures[0].id,
+                error: benchmarkInfrastructureFailures[0].failures.find((failure) => failure.startsWith("infrastructure:"))
+              }
+            : null;
+
+          const report = {'''
+          assert classifications_anchor in runner
+          runner = runner.replace(classifications_anchor, classifications_new, 1)
+          runner = runner.replace(
+              '  infrastructureFailure: null,\n  summary: {\n',
+              '  infrastructureFailure: benchmarkInfrastructureFailure,\n  summary: {\n    benchmarkStatus: benchmarkInfrastructureFailure ? "invalid_infrastructure" : (failed.length ? "failed" : "passed"),\n',
+              1,
+          )
+          runner_path.write_text(runner)
+
+          wrangler_path = Path('rules-assistant/wrangler.toml')
+          wrangler = wrangler_path.read_text()
+          wrangler_anchor = 'RULES_MODEL_REQUESTS_PER_MONTH = "200"\n'
+          assert wrangler_anchor in wrangler
+          wrangler = wrangler.replace(
+              wrangler_anchor,
+              wrangler_anchor
+              + 'RULES_QA_MODEL_REQUESTS_PER_RUN = "150"\n'
+              + 'RULES_QA_MODEL_REQUESTS_PER_DAY = "150"\n'
+              + 'RULES_QA_MODEL_REQUESTS_PER_MONTH = "500"\n',
+              1,
+          )
+          wrangler_path.write_text(wrangler)
+
+          current_revision_tests = [
+              'rules-assistant/v071-ambiguous-referent-clarification.test.mjs',
+              'rules-assistant/v071-asset-replacement-review.test.mjs',
+              'rules-assistant/v071-battle-card-replacement-retrieval.test.mjs',
+              'rules-assistant/v071-copied-effect-retrieval-review.test.mjs',
+              'rules-assistant/v071-fortifications-tactic-choice-review.test.mjs',
+              'rules-assistant/v071-printed-effect-labels.test.mjs',
+              'rules-assistant/v071-short-counterfactual-continuity.test.mjs',
+              'rules-assistant/v071-strategic-withdrawal-review.test.mjs',
+          ]
+          for filename in current_revision_tests:
+              path = Path(filename)
+              text = path.read_text()
+              assert OLD_REV in text, filename
+              path.write_text(text.replace(OLD_REV, NEW_REV))
+
+          print('Authenticated Rules Arbiter QA code patch applied.')
+          PY
+
+      - name: Commit changes
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            rules-assistant/worker-v071.js \
+            rules-assistant/wrangler.toml \
+            rules-assistant/v071-ambiguous-referent-clarification.test.mjs \
+            rules-assistant/v071-asset-replacement-review.test.mjs \
+            rules-assistant/v071-battle-card-replacement-retrieval.test.mjs \
+            rules-assistant/v071-copied-effect-retrieval-review.test.mjs \
+            rules-assistant/v071-fortifications-tactic-choice-review.test.mjs \
+            rules-assistant/v071-printed-effect-labels.test.mjs \
+            rules-assistant/v071-short-counterfactual-continuity.test.mjs \
+            rules-assistant/v071-strategic-withdrawal-review.test.mjs \
+            scripts/run-v071-live-rules-qa.mjs
+          git commit -m 'Add authenticated live QA allowance'
+          git push origin HEAD:rules-arbiter-paid-live-replay-20260911
