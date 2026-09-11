@@ -1701,7 +1701,7 @@ Collateral is not a separate zone. Place the collateral beneath the card or effe
 
 - Line of Credit collateral goes to the Discard Pile after purchase.
 - Margin Loan collateral returns only after repayment or a qualifying battle victory; default puts both cards in the Graveyard.
-- Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase.
+- Leveraged Buyout collateral used from battle goes to the Graveyard when battle cards are cleared.
 - Collateral contributes payment value but does not become Capital unless stated.
 - Unused collateral value is lost.
 
