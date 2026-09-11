@@ -7,7 +7,7 @@ import {
   isTtsDeckExportQaAvailable,
   TTS_DECK_CODE_PREFIX,
   TTS_DECK_EXPORT_MIN_VERSION,
-} from '../deckbuilder/tts-export.mjs';
+} from '../apps/deckbuilder/tts-export.mjs';
 
 describe('Deckbuilder TTS Deck Code', () => {
   const deck = {
