@@ -1,0 +1,37 @@
+name: Diagnose Vitest hang
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  shard:
+    if: github.event.pull_request.number == 1625
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: List shard files
+        run: |
+          npx vitest list --filesOnly --shard=${{ matrix.shard }}/16 \
+            --exclude 'tests/arcane-card-symbol.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-territories.test.ts'
+      - name: Run shard with hard bound
+        run: |
+          timeout --kill-after=10s 120s npx vitest run --shard=${{ matrix.shard }}/16 \
+            --exclude 'tests/arcane-card-symbol.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-territories.test.ts'
