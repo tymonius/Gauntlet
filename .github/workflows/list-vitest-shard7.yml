@@ -1,0 +1,29 @@
+name: List Vitest shard 7
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  list:
+    if: github.event.pull_request.number == 1625
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: List related shard 7 files
+        run: |
+          npx vitest related --list --filesOnly --passWithNoTests --shard=7/16 \
+            --exclude 'tests/arcane-card-symbol.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+            --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+            src/v070/battle-effects-pre-counterworks.ts \
+            src/v070/battle-engine-pre-accusation.ts \
+            src/v070/battle-negation.ts \
+            src/v070/battle-reveal-choices.ts
