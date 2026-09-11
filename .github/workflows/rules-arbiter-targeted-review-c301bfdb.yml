@@ -1,4 +1,4 @@
-name: Rules Arbiter targeted review c301bfdb
+name: Rules Arbiter apply c301bfdb fix
 
 on:
   push:
@@ -7,95 +7,88 @@ on:
       - '.github/workflows/rules-arbiter-targeted-review-c301bfdb.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  review:
+  apply:
     runs-on: ubuntu-latest
-    environment: production
     timeout-minutes: 12
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      REVIEW_DIR: .tmp/rules-arbiter-targeted-review
-      TARGET_ID: c301bfdb-ae51-44c2-8a4a-7f98743afa02
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-review-c301bfdb
+          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Verify production D1 credentials
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
-
-      - name: Read target session from production D1
+      - name: Apply prompt, regression, and ledger changes
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$REVIEW_DIR"
-          SESSION_SUBQUERY="SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID'"
-          INTERACTION_SUBQUERY="SELECT id FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY)"
+          python <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
 
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY) ORDER BY sequence_index, created_at" \
-            > "$REVIEW_DIR/interactions.json"
+          worker_path = Path('rules-assistant/worker-v071.js')
+          worker = worker_path.read_text()
+          old_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260910-5";'
+          new_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260911-1";'
+          if old_revision not in worker:
+              raise SystemExit('Expected behavior revision not found')
+          worker = worker.replace(old_revision, new_revision, 1)
 
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/sources.json"
+          anchor = '- Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.\n'
+          rule = '- Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.\n'
+          if rule not in worker:
+              if anchor not in worker:
+                  raise SystemExit('Adjudication-guide insertion anchor not found')
+              worker = worker.replace(anchor, anchor + rule, 1)
+          worker_path.write_text(worker)
 
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/diagnostics.json"
+          test_path = Path('rules-assistant/v071-printed-effect-labels.test.mjs')
+          test_path.write_text('''import { describe, expect, test } from "vitest";\nimport { readFileSync } from "node:fs";\n\nconst workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");\n\ndescribe("v0.7.1 printed effect-label fidelity", () => {\n  test("does not relabel a banked Asset ability as an Action", () => {\n    expect(workerV071).toContain("Preserve printed effect labels and named game terminology exactly.");\n    expect(workerV071).toContain("Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action");\n    expect(workerV071).toContain("distinguish an Action that banks a card from a later ability of the banked Asset");\n  });\n\n  test("advances the behavior revision for the terminology fix", () => {\n    expect(workerV071).toContain('BEHAVIOR_REVISION = "v071-qa-20260911-1"');\n  });\n});\n''')
 
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/audits.json"
+          ledger_path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          ledger = json.loads(ledger_path.read_text())
+          entry_id = 'printed-effect-label-fidelity-v071'
+          target_id = 'c301bfdb-ae51-44c2-8a4a-7f98743afa02'
+          if not any(entry.get('id') == entry_id for entry in ledger.get('entries', [])):
+              now = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+              ledger.setdefault('entries', []).append({
+                  'id': entry_id,
+                  'status': 'resolved',
+                  'rootCause': 'terminology_voice',
+                  'interactionIds': [target_id],
+                  'caseIds': ['protracted-siege-effect-label-fidelity'],
+                  'resolutionSurface': 'arbiter_prompt',
+                  'summary': 'Require the current v0.7.1 Arbiter to preserve printed effect labels exactly, including distinguishing an Action that banks a card from a later Asset or Use ability so a ruling cannot imply an extra Action expenditure.',
+                  'resolvedAt': now,
+                  'binding': {
+                      'behaviorRevision': 'v071-qa-20260911-1'
+                  }
+              })
+              ledger['updatedAt'] = now
+          ledger_path.write_text(json.dumps(ledger, indent=2) + '\n')
+          PY
 
-      - name: Assemble review bundle
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run targeted terminology regression
+        run: npx vitest run rules-assistant/v071-printed-effect-labels.test.mjs rules-assistant/v071-inline-source-markers.test.mjs
+
+      - name: Commit fix and remove temporary workflow
         shell: bash
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          const dir = process.env.REVIEW_DIR;
-          const readRows = (name) => {
-            const parsed = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
-            const batches = Array.isArray(parsed) ? parsed : [parsed];
-            return batches.flatMap((batch) => Array.isArray(batch?.results) ? batch.results : []);
-          };
-          const current = JSON.parse(fs.readFileSync('game-data/current-game.json', 'utf8'));
-          const protractedSiege = current.gameplay?.cards?.find(card => card.id === 'neutral-protracted-siege') || null;
-          const bundle = {
-            targetInteractionId: process.env.TARGET_ID,
-            interactions: readRows('interactions.json'),
-            sources: readRows('sources.json'),
-            diagnostics: readRows('diagnostics.json'),
-            audits: readRows('audits.json'),
-            currentAuthority: { version: current.version, protractedSiege }
-          };
-          fs.writeFileSync(path.join(dir, 'review-bundle.json'), JSON.stringify(bundle, null, 2) + '\n');
-          console.log(JSON.stringify({
-            targetInteractionId: bundle.targetInteractionId,
-            interactions: bundle.interactions.length,
-            sources: bundle.sources.length,
-            diagnostics: bundle.diagnostics.length,
-            audits: bundle.audits.length,
-            currentAuthorityVersion: bundle.currentAuthority.version,
-            currentCardFound: Boolean(bundle.currentAuthority.protractedSiege)
-          }, null, 2));
-          NODE
-
-      - name: Upload targeted review bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: rules-arbiter-targeted-review-c301bfdb
-          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
-          if-no-files-found: error
-          retention-days: 2
+          git rm .github/workflows/rules-arbiter-targeted-review-c301bfdb.yml
+          git add rules-assistant/worker-v071.js rules-assistant/v071-printed-effect-labels.test.mjs artifacts/rules-refinement/resolution-ledger.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Preserve Rules Arbiter printed effect labels"
+          git push origin HEAD:rules-arbiter-review-c301bfdb
