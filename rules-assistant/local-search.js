@@ -530,6 +530,9 @@ function objectToRuleText(value) {
 
   if (Array.isArray(value.effects)) {
     consumed.add("effects");
+    // Legacy Margin Loan metadata used a non-printed `loan` helper alongside the printed effects.
+    // Printed effects are the card authority; do not surface that stale helper as a competing rule.
+    consumed.add("loan");
     for (const effect of value.effects) {
       if (!effect || typeof effect !== "object") continue;
       appendValue(lines, effect.label || "Effect", effect.text);

@@ -2302,7 +2302,6 @@
           }
         ],
         "action": "Bank this card; bind 1 card from your Hand or Treasury to it face up as collateral. Gain Capital equal to its value +2. +1 Action.",
-        "loan": "At the start of your next turn, after the Capture step and income, choose one:\n\n- Repay: Pay Capital equal to the collateral card's value plus 3. Return the collateral to your Hand, then put this card in your Discard Pile.\n- Default: Put this card and its collateral in your Graveyard.",
         "asset": "After income, you may choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nWhile this remains banked, you may not draw at the start of your turn.\nIf this card is Removed, Default.",
         "gambit_tactic": "Before dice are rolled, you may bind 1 card from your Hand or Treasury to this card face up as collateral to gain Capital equal to its value; you may then Subsidize. In the Aftermath: Win — return collateral to your Hand. Otherwise — Default."
       },

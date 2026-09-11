@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-4";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-5";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -95,7 +95,9 @@ Classification boundary:
 - A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
 - When clean authority expressly confines an Action, Faction Feature, effect, or permission to a named phase or timing, a question asking whether it is legal outside that timing is an explicit negative unless supplied authority expressly changes that timing. A generic additional-Action permission does not make that direct timing restriction inferred.
 - A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.
+- A procedural summary also remains explicit when it merely assembles directly stated steps, timing, limits, and destinations from several clean passages into their stated sequence. Do not downgrade a directly documented procedure to inferred merely because more than one passage is needed to state it completely.
 - Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.
+- In particular, a statement such as "there is no X requirement", "does not require X", or "need not be X" is inferred when no clean source directly states that negative and the conclusion instead follows from other rules or from the absence of such a restriction.
 - A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.
 - For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.
 - When a supplied named-card rule conflicts with a supplied rulebook passage about that same card and the Golden Rules resolve the conflict, classify the resolution inferred and cite the printed card, the conflicting rulebook authority, and the Golden Rules. Do not present the winning component text as conflict-free explicit authority.
@@ -120,6 +122,7 @@ Requirements:
 15. Do not infer that a requirement for at least one of several Actions to be a phase-limited Feature moves that Feature into an otherwise illegal phase. Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.
 16. When a direct phase restriction itself answers a legality question, keep the ruling explicit even if another supplied rule explains why the player has an additional Action at that time. Cite the timing restriction and the additional-Action rule when both are material to the explanation.
 17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
+18. Preserve printed effect-label terminology in the answer itself when it identifies the role being discussed. If the authority says a card is played for its Action effect, call it an Action effect; do not replace that with an invented category such as "Action card".
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;

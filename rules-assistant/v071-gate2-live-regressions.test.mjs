@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { buildCanonicalDocuments } from "./local-search.js";
 import { augmentRetrievalForContext, BEHAVIOR_REVISION } from "./worker-v071.js";
 import { classifyTransportInfrastructure } from "../scripts/v071-live-rules-qa-support.mjs";
 
@@ -9,12 +10,15 @@ const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals
 
 describe("v0.7.1 Gate 2 live replay regressions", () => {
   test("pins the refined classification boundary", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-4");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-5");
     expect(workerSource).toContain("Multiple citations alone do not make an answer inferred.");
     expect(workerSource).toContain("absence of adjacency, contiguity, restrictions, permissions, or requirements");
     expect(workerSource).toContain("state the baseline restriction that the exception changes as well as the exception itself");
     expect(workerSource).toContain("A generic additional-Action permission does not make that direct timing restriction inferred.");
     expect(workerSource).toContain("Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.");
+    expect(workerSource).toContain("Do not downgrade a directly documented procedure to inferred merely because more than one passage is needed");
+    expect(workerSource).toContain("there is no X requirement");
+    expect(workerSource).toContain("call it an Action effect");
   });
 
   test("adds specific-over-general authority for named-card conflicts", () => {
@@ -48,6 +52,27 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
     });
     expect(correction.expectedSourcePatterns).toContain("Golden Rules");
     expect(correction.expectedAnswerPatterns).toContain("battle cards are cleared");
+  });
+
+  test("does not expose stale non-printed Margin Loan helper metadata as card authority", () => {
+    const canonicalData = {
+      gameplay: {
+        cards: [{
+          id: "financiers-margin-loan",
+          name: "Margin Loan",
+          effects: [
+            { label: "Action", text: "Bank this card." },
+            { label: "Asset", text: "After income, you may choose: Repay or Default." }
+          ],
+          asset: "After income, you may choose: Repay or Default.",
+          loan: "At the start of your next turn, after the Capture step and income, choose one."
+        }]
+      }
+    };
+    const documents = buildCanonicalDocuments(canonicalData, "https://example.test", "https://example.test/data.json");
+    const margin = documents.find((document) => document.id === "card:financiers-margin-loan");
+    expect(margin?.body).toContain("After income, you may choose: Repay or Default.");
+    expect(margin?.body).not.toContain("At the start of your next turn");
   });
 
   test("treats Worker 5xx failures as infrastructure and counts attempts correctly", () => {
