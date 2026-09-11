@@ -1,0 +1,145 @@
+name: Rules Arbiter close reviewed backlog
+
+on:
+  push:
+    branches: [rules-arbiter-review-c301bfdb]
+    paths:
+      - '.github/workflows/rules-arbiter-close-reviewed-backlog.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-review-c301bfdb
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bind audited interactions to existing resolutions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          ledger = json.loads(path.read_text())
+          entries = ledger.get('entries', [])
+          by_id = {entry.get('id'): entry for entry in entries}
+
+          assignments = {
+              'defender-advantage-defensive-edge-retrieval-v071': [
+                  'b8ee7052-69dd-41b1-82e9-49032f926d99',
+              ],
+              'intelligence-surveillance-interference-v071': [
+                  '4d3d5162-01a6-4f4b-a100-dff6cd4f0bed',
+                  '1a7ac447-03b3-4824-8083-7c61f153e97d',
+              ],
+              'onward-battle-movement-review-closure-v071': [
+                  'daae1140-89aa-463e-8546-7b19fa94fed1',
+              ],
+              'rite-of-crossing-completion-review-closure-v071': [
+                  '6a89266c-60cd-4275-b50e-4bfacb3de30f',
+                  '0ec2f926-7212-4937-867d-eac92a0a35c6',
+              ],
+              'deed-cost-clarity-followup-continuity-v071': [
+                  'b922bfa5-6fce-4567-84b0-8c35fbb4b40e',
+              ],
+          }
+
+          assigned_ids = {interaction_id for ids in assignments.values() for interaction_id in ids}
+          no_action_ids = {
+              '2a4c793d-21d2-4133-a45d-0a0df4a5ef07',
+              'ca25c695-26be-43c8-ba49-ddae85534fba',
+              'eedde1c1-b96f-47ac-a71e-bdf043d1fbdf',
+              'b2d55ffe-219a-496c-bc22-baac51533e88',
+          }
+          target_ids = assigned_ids | no_action_ids
+
+          existing = {}
+          for entry in entries:
+              if entry.get('status') != 'resolved':
+                  continue
+              for interaction_id in entry.get('interactionIds', []):
+                  if interaction_id in target_ids:
+                      existing[interaction_id] = entry.get('id')
+
+          unexpected = {
+              interaction_id: entry_id
+              for interaction_id, entry_id in existing.items()
+              if interaction_id not in assigned_ids or entry_id != next(
+                  key for key, ids in assignments.items() if interaction_id in ids
+              )
+          }
+          if unexpected:
+              raise SystemExit(f'Unexpected existing resolution binding(s): {unexpected}')
+
+          for entry_id, interaction_ids in assignments.items():
+              entry = by_id.get(entry_id)
+              if not entry:
+                  raise SystemExit(f'Missing expected resolution entry: {entry_id}')
+              current = entry.setdefault('interactionIds', [])
+              for interaction_id in interaction_ids:
+                  if interaction_id not in current:
+                      current.append(interaction_id)
+
+          closeout_id = 'reviewed-correct-other-attention-closeout-20260911-v071'
+          closeout = by_id.get(closeout_id)
+          if closeout is None:
+              now = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+              closeout = {
+                  'id': closeout_id,
+                  'status': 'resolved',
+                  'rootCause': 'other_attention',
+                  'interactionIds': sorted(no_action_ids),
+                  'caseIds': ['reviewed-correct-no-action'],
+                  'resolutionSurface': 'review_bookkeeping',
+                  'summary': 'Production review confirmed these residual other-attention interactions are substantively correct against current authority, have sufficient retrieval and correct classification, and require no runtime change. Bind the reviewed records so the refinement backlog reflects only actionable defects.',
+                  'resolvedAt': now,
+                  'binding': {'behaviorRevision': 'v071-qa-20260911-1'},
+              }
+              entries.append(closeout)
+          else:
+              current = closeout.setdefault('interactionIds', [])
+              for interaction_id in sorted(no_action_ids):
+                  if interaction_id not in current:
+                      current.append(interaction_id)
+
+          now = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+          ledger['updatedAt'] = now
+          path.write_text(json.dumps(ledger, indent=2, ensure_ascii=False) + '\n')
+          print(json.dumps({
+              'boundToExistingResolutions': len(assigned_ids),
+              'reviewedCorrectNoAction': len(no_action_ids),
+              'totalClosedHere': len(target_ids),
+          }, indent=2))
+          PY
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate resolution ledger
+        run: npx vitest run rules-assistant/refinement-resolution-ledger.test.mjs
+
+      - name: Commit ledger closure and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/rules-arbiter-close-reviewed-backlog.yml
+          git add artifacts/rules-refinement/resolution-ledger.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Bind audited Rules Arbiter backlog resolutions"
+          git push origin HEAD:rules-arbiter-review-c301bfdb
