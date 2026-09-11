@@ -1,6 +1,7 @@
 import type { V070GameState } from './engine';
 import * as previous from './battle-effect-status-pre-capital-gains';
 import { removeV070CapitalGainsBattleRegistration } from './capital-gains-battle';
+import { removeV070ExcommunicationBattleRegistration } from './excommunication-battle';
 
 export * from './battle-effect-status-pre-capital-gains';
 
@@ -17,4 +18,5 @@ export function negateV070BattleCardEffect(
     sourceCardId,
   );
   removeV070CapitalGainsBattleRegistration(state, targetInstanceId);
+  removeV070ExcommunicationBattleRegistration(state, targetInstanceId);
 }
