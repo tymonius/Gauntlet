@@ -21,7 +21,7 @@
     "intelligence": {
       "publicPath": "/rules/factions/intelligence/",
       "source": "rulebook/faction-guides/intelligence.md",
-      "status": "planned"
+      "status": "draft"
     },
     "mystics": {
       "publicPath": "/rules/factions/mystics/",
