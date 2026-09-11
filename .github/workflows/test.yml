@@ -191,6 +191,11 @@ jobs:
               [[ "$match" == scripts/validate-v06*.mjs:* ]] && continue
               [[ "$match" == tests/v06*.test.ts:* ]] && continue
               [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
+              # A versioned public/source path such as v0.6.3/<retired> is historical
+              # identity, not a dependency on the retired current root source path.
+              if [[ "$match" =~ v[0-9]+\.[0-9]+\.[0-9]+/ ]] && [[ "$match" == *"/$retired"* ]]; then
+                continue
+              fi
               remaining="${match//apps\/$retired/}"
               [[ "$remaining" != *"$retired"* ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2
