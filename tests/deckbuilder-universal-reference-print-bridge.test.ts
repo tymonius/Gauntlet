@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const factionComponents = readFileSync("deckbuilder/faction-components.js", "utf8");
-const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
+const factionComponents = readFileSync("apps/deckbuilder/faction-components.js", "utf8");
+const productionPrint = readFileSync("apps/deckbuilder/production-print.js", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 
