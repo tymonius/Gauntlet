@@ -1733,7 +1733,7 @@ Underwriting and Property Dues may be replaced normally. Replacing Margin Loan b
 
 ## How it works
 
-Intelligence pursues hidden **Missions**, earns **Intel**, and builds **Operation Progress**. Intel lets the faction reveal an opponent's hidden battle choice through **Surveillance** and remove it through **Interference**.
+Intelligence pursues hidden **Missions**, earns **Intel**, and builds **Operation Progress**. At the start of each of your turns, your accumulated Operation Progress generates that much Intel. Intel lets the faction reveal an opponent's hidden battle choice through **Surveillance** and remove it through **Interference**.
 
 Complete enough Missions to make a **Special Operation** ready, satisfy its hidden requirement, and pay its Intel cost to win.
 
@@ -1745,7 +1745,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Tracked values | Intel and Operation Progress; both begin at 0. |
 | Mission reward | 1 Operation Progress and Intel equal to the Mission card's value. |
 | Battle tools | Surveillance and Interference. |
-| Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
+| Faction Features | Missions and Special Operations — 1 Action · Denouement; Operational Capacity — Automatic; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
 | Faction pool | 15<!-- RULE-FACT:cards.intelligence.count:number --> Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
@@ -1754,6 +1754,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 
 - **Missions — 1 Action · Denouement · Abort cost: Intel equal to Mission value.** Spend an Action to start an eligible Mission, complete a satisfied Active Mission, or abort the Active Mission. Starting places the card face down; completing grants 1 Operation Progress and Intel equal to its value; aborting sends it to the Discard Pile after paying its Intel cost.<!-- RULE-FACT:faction-features.intelligence.missions -->
 - **Special Operations — 1 Action · Denouement · Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel.** When ready, spend an Action to start a Special Operation. On a later Denouement, if its requirement is satisfied and readiness remains valid, spend an Action, reveal it, pay the completion cost, and win immediately.<!-- RULE-FACT:faction-features.intelligence.special-operations -->
+- **Operational Capacity — Automatic.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
 - **Surveillance — No Action · After opposing Gambit or Tactic choice · 1 Intel per revealed card · Once per battle at each stage.** After the opponent sets a face-down Gambit, spend 1 Intel to reveal it. After the opponent chooses face-down Tactics, spend 1 Intel per Tactic you reveal. The Gambit and Tactic opportunities are separate.<!-- RULE-FACT:faction-features.intelligence.surveillance -->
 - **Interference — No Action · Immediately after reveal or face-up opposing choice · 2 Intel per removed card.** Immediately after revealing an opposing card through Surveillance, pay 2 additional Intel per card to return a Gambit to Hand or a Tactic to Reserve; its owner may replace it from the same source. If an opposing effect sets or chooses a card face up, you may use Interference directly at that response timing for 2 Intel.<!-- RULE-FACT:faction-features.intelligence.interference -->
 
@@ -1778,17 +1779,23 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 During Denouement, take an Action to place an eligible card face down as your Active Mission. Once you have satisfied its requirement on a later turn, spend 1 Action during another Denouement to reveal and complete it.
 
-A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
+A completed Mission gives 1 Operation Progress and Intel equal to the card's value. At the start of each of your turns, gain Intel equal to your current Operation Progress. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
 ### Complete rules
 
 #### Intel
 
-Intel begins at 0, cannot fall below 0, and has no maximum. Spend it for Surveillance, Interference, Fieldcraft, Mission abortion, Special Operation completion, and card effects.
+Intel begins at 0, cannot fall below 0, and has no maximum. At the start of your turn, gain Intel equal to your current Operation Progress. Spend Intel for Surveillance, Interference, Fieldcraft, Mission abortion, Special Operation completion, and card effects.
 
 #### Operation Progress
 
-Operation Progress begins at 0 and is not normally spent. Each completed normal Mission adds 1, regardless of card value.
+Operation Progress begins at 0 and is not normally spent. Each completed normal Mission adds 1, regardless of card value. It records how many normal Missions you have completed. A newly gained point of Operation Progress begins contributing to your recurring Intel at the start of your next turn; it does not create another immediate Intel payment when the Mission completes.
+
+#### Operational Capacity
+
+**Operational Capacity — Automatic.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to **Start or Complete a Mission or Special Operation**. You still cannot take more than one Action in either phase. **Abort Mission does not qualify.**
+
+Starting and completing Missions and Special Operations remain 1 Action Faction Features. Operational Capacity changes how that qualifying Denouement Action fits into the turn; it does not make those procedures No Action and cannot be converted into another ordinary Denouement Action.
 
 #### Starting a Mission
 
@@ -1813,7 +1820,7 @@ Satisfying the requirement does not complete it automatically.
 
 #### Aborting and failing
 
-During Denouement, take an Action, reveal the Active Mission, and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
+During Denouement, take an Action, reveal the Active Mission, and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure. Abort Mission does not qualify for Operational Capacity.
 
 A Mission fails only when a rule, effect, or continuing requirement causes failure. Reveal it and put it in the Graveyard.
 
