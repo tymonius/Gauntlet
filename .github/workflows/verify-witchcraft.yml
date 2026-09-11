@@ -1,0 +1,20 @@
+name: Verify Witchcraft tranche
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  witchcraft:
+    if: github.event.pull_request.number == 1647
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run typecheck
+      - run: npx vitest run src/v070/witchcraft-battle.test.ts
