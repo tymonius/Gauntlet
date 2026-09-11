@@ -90,3 +90,14 @@ export function validateClassificationExpectations(benchmark) {
 
   return failures;
 }
+
+
+export function classifyTransportInfrastructure(status, responseText = "", payload = null) {
+  const httpStatus = Number(status);
+  if (!Number.isInteger(httpStatus) || httpStatus < 500) return null;
+  const plainText = String(responseText || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const cloudflareCode = plainText.match(/Error\s*code:\s*(\d{4})/i)?.[1] || null;
+  const workerCode = String(payload?.errorCode || "").trim();
+  const details = [cloudflareCode ? `Cloudflare error ${cloudflareCode}` : "", workerCode].filter(Boolean);
+  return `infrastructure: production endpoint HTTP ${httpStatus}${details.length ? ` (${details.join(", ")})` : ""}`;
+}

@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-2";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-3";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -93,6 +93,10 @@ Every gameplay-rules question must receive one of four classifications:
 Classification boundary:
 - Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.
 - A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
+- A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.
+- Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.
+- A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.
+- For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.
 - Use inferred when the answer depends on combining rules into a conclusion that no clean source itself states, or on the absence of a restriction, exception, adjacency, contiguity, or other requirement. Silence is not explicit authority.
 - Before returning explicit, test every material claim: could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge? If not, return inferred unless a genuine gap makes provisional necessary.
 
@@ -110,6 +114,8 @@ Requirements:
 11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.
 12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.
 13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.
+14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.
+15. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -700,6 +706,27 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         ...(battleCardReplacementDestinationFocus ? ["rulebook:clearing-battle-cards"] : [])
       ]
     : [];
+  const namedCardSource = retrieval.find((source) => {
+  if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+  const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+  return title.length >= 3 && current.includes(title);
+}) || null;
+const namedCardTitle = namedCardSource
+  ? String(namedCardSource?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
+  : "";
+const namedCardRuleReference = namedCardTitle
+  ? retrieval.find((source) => {
+      if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
+      const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
+        .map((value) => String(value || "").toLowerCase())
+        .join(" ");
+      return authorityText.includes(namedCardTitle);
+    })
+  : null;
+const namedCardSpecificityFocus = Boolean(namedCardSource && namedCardRuleReference);
+const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
+  ? [namedCardSource.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
+  : [];
   const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
@@ -764,6 +791,8 @@ const fieldcraftFocus = (
 ) && fieldcraftTerritoryStateCue.test(combined);
 const preferredAuthorityIds = fieldcraftFocus
   ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+  : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !(destinationFocus && battleCardFocus)
+    ? namedCardSpecificityAuthorityIds
   : specificRulePrecedenceFocus
     ? specificRulePrecedenceAuthorityIds
   : mysticsTransmutationFocus
