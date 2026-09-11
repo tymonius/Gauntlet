@@ -1,0 +1,101 @@
+name: Rules Arbiter targeted review c301bfdb
+
+on:
+  push:
+    branches: [rules-arbiter-review-c301bfdb]
+    paths:
+      - '.github/workflows/rules-arbiter-targeted-review-c301bfdb.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 12
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      REVIEW_DIR: .tmp/rules-arbiter-targeted-review
+      TARGET_ID: c301bfdb-ae51-44c2-8a4a-7f98743afa02
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify production D1 credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Read target session from production D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$REVIEW_DIR"
+          SESSION_SUBQUERY="SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID'"
+          INTERACTION_SUBQUERY="SELECT id FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY)"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT * FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY) ORDER BY sequence_index, created_at" \
+            > "$REVIEW_DIR/interactions.json"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
+            > "$REVIEW_DIR/sources.json"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
+            > "$REVIEW_DIR/diagnostics.json"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
+            > "$REVIEW_DIR/audits.json"
+
+      - name: Assemble review bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const dir = process.env.REVIEW_DIR;
+          const readRows = (name) => {
+            const parsed = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+            const batches = Array.isArray(parsed) ? parsed : [parsed];
+            return batches.flatMap((batch) => Array.isArray(batch?.results) ? batch.results : []);
+          };
+          const current = JSON.parse(fs.readFileSync('game-data/current-game.json', 'utf8'));
+          const protractedSiege = current.gameplay?.cards?.find(card => card.id === 'neutral-protracted-siege') || null;
+          const bundle = {
+            targetInteractionId: process.env.TARGET_ID,
+            interactions: readRows('interactions.json'),
+            sources: readRows('sources.json'),
+            diagnostics: readRows('diagnostics.json'),
+            audits: readRows('audits.json'),
+            currentAuthority: { version: current.version, protractedSiege }
+          };
+          fs.writeFileSync(path.join(dir, 'review-bundle.json'), JSON.stringify(bundle, null, 2) + '\n');
+          console.log(JSON.stringify({
+            targetInteractionId: bundle.targetInteractionId,
+            interactions: bundle.interactions.length,
+            sources: bundle.sources.length,
+            diagnostics: bundle.diagnostics.length,
+            audits: bundle.audits.length,
+            currentAuthorityVersion: bundle.currentAuthority.version,
+            currentCardFound: Boolean(bundle.currentAuthority.protractedSiege)
+          }, null, 2));
+          NODE
+
+      - name: Upload targeted review bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-targeted-review-c301bfdb
+          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
+          if-no-files-found: error
+          retention-days: 2
