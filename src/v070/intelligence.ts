@@ -132,6 +132,25 @@ export function gainV070Intel(
   });
 }
 
+export function gainV070TurnStartIntel(
+  state: V070GameState,
+  playerId: PlayerId,
+): number {
+  const intelligence = state.players[playerId]?.intelligence;
+  if (!intelligence) return 0;
+
+  const amount = intelligence.operationProgress;
+  if (amount > 0) {
+    gainV070Intel(
+      state,
+      playerId,
+      amount,
+      'Operation Progress at start of turn',
+    );
+  }
+  return amount;
+}
+
 export function spendV070Intel(
   state: V070GameState,
   playerId: PlayerId,
