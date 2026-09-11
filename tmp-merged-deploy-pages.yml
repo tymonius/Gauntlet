@@ -1,0 +1,404 @@
+name: Build and deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'media/**'
+      - 'game-data/**'
+      - 'config/release-lifecycle.json'
+      - 'config/github-release-contract.json'
+      - 'images/artwork/cards/**'
+      - 'images/artwork/card-backgrounds/**'
+      - 'images/rules-arbiter/**'
+      - 'images/sketches/*.png'
+      - 'apps/card-reference/**'
+      - 'apps/deckbuilder/**'
+      - 'apps/factions/**'
+      - 'apps/rules/**'
+      - 'apps/start/**'
+      - 'apps/playtest/**'
+      - 'rulebook/**'
+      - 'tts/renderer/**'
+      - 'card-design/**'
+      - 'legacy/public-compatibility/**'
+      - 'legacy/public-versions/v0.6.2/**'
+      - 'legacy/public-versions/v0.6.3/**'
+      - 'legacy/public-versions/v0.7.0/**'
+      - 'scripts/generate-card-media-*.mjs'
+      - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
+      - 'scripts/current-game-authority.mjs'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  # PR previews may supersede themselves, but production must be allowed to finish.
+  # With cancel-in-progress disabled for main, GitHub keeps one active production deploy
+  # and at most one pending replacement, so rapid merges cannot starve the live site.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  TTS_RELEASE_TAG: tts-v0.7.0-qa-pr-917-68247f095969
+  TTS_PREVIEW_SAVE: Gauntlet_v0.7.0_TTS_PR917_Preview.json
+  TTS_PUBLIC_SAVE: Gauntlet_v0.7.0_TTS_Mod.json
+  TTS_APPROVED_PREFIX: https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-917-68247f095969/
+  TTS_PUBLIC_PREFIX: https://gauntlet.run/tts/v0.7.0/assets/917/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage explicit public website
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="$RUNNER_TEMP/gauntlet-pages"
+          rm -rf "$site"
+          mkdir -p "$site"
+
+          # GitHub Pages is a deployment artifact, not a mirror of the repository.
+          # Preserve stable public/application paths while excluding source-only,
+          # historical-authoring, CI, and repository-maintenance roots by default.
+          public_directories=(
+            about
+            accessibility
+            assets
+            card-design
+            changelog
+            config
+            contact
+            faq
+            game-data
+            images
+            press
+            privacy
+            releases
+            rulebook
+            rules-arbiter
+            rules-assistant
+            tts
+            v0.7.1
+          )
+
+          root_public_files=(404.html CNAME index.html)
+          while IFS= read -r -d '' file; do
+            root_public_files+=("${file#./}")
+          done < <(
+            find . -maxdepth 1 -type f \
+              \( -name '*.css' -o -name '*.js' -o -name '*.ico' -o -name '*.png' \
+                 -o -name '*.svg' -o -name '*.webp' -o -name '*.jpg' -o -name '*.jpeg' \
+                 -o -name '*.webmanifest' -o -name '*.xml' -o -name '*.txt' \) \
+              -print0
+          )
+
+          git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
+            | tar -xf - -C "$site"
+
+          # Maintained application source may live independently from its stable public URL.
+          # Card Reference, Deckbuilder, Factions, Rules, Start, and Playtest are source/deployment-separated apps
+          # under apps/, while their deployed compatibility contracts remain at stable public routes.
+          for surface in card-reference deckbuilder factions rules start playtest; do
+            source="apps/$surface"
+            target="$site/$surface"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Keep historical source under legacy/ while materializing real files at the stable
+          # public version URLs without exposing the legacy source boundary itself.
+          for version in v0.6.2 v0.6.3 v0.7.0; do
+            source="legacy/public-versions/$version"
+            target="$site/$version"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Retired browser applications also live under legacy/, but retain their historical
+          # public URL roots in the deployed Pages artifact.
+          for surface in deckbuilder-v0.5 deckbuilder-v0.6 faction-sheets; do
+            source="legacy/public-compatibility/$surface"
+            target="$site/$surface"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Keep large authoring/source subsets out of the deployed artifact while retaining
+          # the production asset namespaces that current public pages consume.
+          rm -rf \
+            "$site/images/3d" \
+            "$site/images/sketches" \
+            "$site/images/tools" \
+            "$site/images/artwork/reference" \
+            "$site/releases/v0.6.2-withdrawn" \
+            "$site/releases/v0.6.3-withdrawn" \
+            "$site/tts/v0.7.0"
+
+          # Keep source/alternate Chief Justice artwork in Git without publishing redundant
+          # copies. Preserve the three production WebP assets consumed by public surfaces.
+          rm -f \
+            "$site/images/rules-arbiter/chief-justice.png" \
+            "$site/images/rules-arbiter/gavel-crop.png" \
+            "$site/images/rules-arbiter/tight-crop-left.png" \
+            "$site/images/rules-arbiter/tight-crop.png"
+          rm -f \
+            "$site/images/chief justice.png" \
+            "$site/images/chief-justice-rules-arbiter-alt.webp" \
+            "$site/images/chief-justice.png" \
+            "$site/images/prosecutor.png" \
+            "$site/images/rules-arbiter.png" \
+            "$site/images/woodcuts/senator flipped.png"
+
+          # The Rulebook uses the top-level sketch PNGs as live hero/Leader artwork.
+          # Publish those files without carrying the much larger sketch-authoring subdirectories.
+          mkdir -p "$site/images/sketches"
+          find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
+
+          # Editable release-source documents are retained in Git but are not public-site assets.
+          find "$site/releases" -type f -name '*.docx' -delete
+
+          # v0.6.0 preserves multiple equivalent Rulebook export variants for archival/legal
+          # provenance. Keep the canonical booklet on Pages, but omit redundant large exports
+          # that are not referenced by any live public page.
+          rm -f \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf"
+
+          # Source-only repository roots must never re-enter Pages implicitly. Add a path to
+          # public_directories above only when it is intentionally part of the deployed site.
+          for excluded in \
+            .github apps artifacts docs governance legacy media rulebook-design rulebook-production \
+            scripts src tests workers; do
+            test ! -e "$site/$excluded"
+          done
+
+          test -s "$site/index.html"
+          test -s "$site/card-reference/index.html"
+          test -s "$site/deckbuilder/index.html"
+          test -s "$site/factions/index.html"
+          test -s "$site/rules/index.html"
+          test -s "$site/rules/factions/index.html"
+          test -s "$site/rules/factions/military/index.html"
+          test -s "$site/start/index.html"
+          test -s "$site/playtest/index.html"
+          test -s "$site/CNAME"
+          test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
+          touch "$site/.nojekyll"
+          echo "SITE_DIR=$site" >> "$GITHUB_ENV"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Render canonical website media
+        run: npm run media:build -- --profile=website --strict-art
+
+      - name: Stage canonical promotional spread
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='media/generated/v0.6.2/compositions/website/png/all-factions-promotional-showcase.png'
+          target="$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$source"
+          mkdir -p "$(dirname "$target")"
+          cp "$source" "$target"
+          file "$target" | grep -q 'PNG image data'
+          test "$(wc -c < "$target")" -gt 100000
+          sha256sum "$target"
+
+      - name: Download approved v0.7.0 TTS release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_dir="$RUNNER_TEMP/gauntlet-tts-release"
+          rm -rf "$release_dir"
+          mkdir -p "$release_dir"
+          gh release download "$TTS_RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$release_dir"
+
+          test -s "$release_dir/$TTS_PREVIEW_SAVE"
+          count="$(find "$release_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
+          test "$count" -eq 83
+          echo "TTS_RELEASE_DIR=$release_dir" >> "$GITHUB_ENV"
+
+      - name: Stage clean v0.7.0 TTS paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          public_root="$SITE_DIR/tts/v0.7.0"
+          asset_root="$public_root/assets/917"
+          rm -rf "$public_root"
+          mkdir -p "$asset_root"
+
+          find "$TTS_RELEASE_DIR" -maxdepth 1 -type f ! -name "$TTS_PREVIEW_SAVE" -exec cp '{}' "$asset_root/" ';'
+
+          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE" \
+          TARGET="$public_root/$TTS_PUBLIC_SAVE" \
+          APPROVED_PREFIX="$TTS_APPROVED_PREFIX" \
+          PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" \
+          node <<'NODE'
+          const fs = require('fs');
+
+          const source = fs.readFileSync(process.env.SOURCE, 'utf8');
+          if (!source.includes(process.env.APPROVED_PREFIX)) {
+            throw new Error('Approved TTS preview does not contain the expected immutable release prefix.');
+          }
+
+          const rewritten = source.split(process.env.APPROVED_PREFIX).join(process.env.PUBLIC_PREFIX);
+          const parsed = JSON.parse(rewritten);
+          if (!parsed || typeof parsed !== 'object') {
+            throw new Error('Rewritten public TTS save is not a JSON object.');
+          }
+          if (rewritten.includes(process.env.APPROVED_PREFIX)) {
+            throw new Error('Approved GitHub Release URLs remain after rewrite.');
+          }
+
+          fs.writeFileSync(process.env.TARGET, rewritten);
+          NODE
+
+          test -s "$public_root/$TTS_PUBLIC_SAVE"
+
+      - name: Validate staged public paths
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SITE="$SITE_DIR" PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" SAVE="$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE" node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const site = process.env.SITE;
+          const publicPrefix = process.env.PUBLIC_PREFIX;
+          const save = JSON.parse(fs.readFileSync(process.env.SAVE, 'utf8'));
+          const urls = new Set();
+
+          function visit(value) {
+            if (Array.isArray(value)) {
+              value.forEach(visit);
+              return;
+            }
+            if (!value || typeof value !== 'object') return;
+            for (const child of Object.values(value)) {
+              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
+              else visit(child);
+            }
+          }
+
+          visit(save);
+          const publicUrls = [...urls].filter((url) => url.startsWith(publicPrefix));
+          if (!publicUrls.length) throw new Error('Public TTS save contains no gauntlet.run TTS asset URLs.');
+
+          for (const url of publicUrls) {
+            const filename = decodeURIComponent(url.slice(publicPrefix.length));
+            if (!filename || filename.includes('/') || filename.includes('\\')) {
+              throw new Error(`Unexpected nested TTS asset URL: ${url}`);
+            }
+            const local = path.join(site, 'tts', 'v0.7.0', 'assets', '917', filename);
+            if (!fs.existsSync(local)) throw new Error(`Missing staged TTS asset: ${filename}`);
+          }
+
+          console.log(`Validated ${publicUrls.length} clean TTS URLs against staged Pages assets.`);
+          NODE
+
+          if find "$SITE_DIR" -type l -print -quit | grep -q .; then
+            echo "Pages artifact contains a symbolic link."
+            exit 1
+          fi
+
+          bytes="$(du -sb "$SITE_DIR" | cut -f1)"
+          echo "Staged Pages site size: $bytes bytes"
+          # Keep a bounded guard below the 1 GB Pages target while allowing the approved
+          # production Chief Justice assets to ship with the site.
+          test "$bytes" -lt 970000000
+
+          test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/card-reference/index.html"
+          test -s "$SITE_DIR/deckbuilder/index.html"
+          test -s "$SITE_DIR/factions/index.html"
+          test -s "$SITE_DIR/rules/index.html"
+          test -s "$SITE_DIR/rules/factions/index.html"
+          test -s "$SITE_DIR/rules/factions/military/index.html"
+          test -s "$SITE_DIR/start/index.html"
+          test -s "$SITE_DIR/playtest/index.html"
+          test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
+          test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
+          test -s "$SITE_DIR/faction-sheets/index.html"
+          test -s "$SITE_DIR/v0.6.2/index.html"
+          test -s "$SITE_DIR/v0.6.3/index.html"
+          test -s "$SITE_DIR/v0.7.0/index.html"
+          for image in \
+            "chief-justice-homepage.webp" \
+            "chief-justice-rules-arbiter-popup.webp" \
+            "chief-justice-rules-arbiter.webp"; do
+            test -s "$SITE_DIR/images/rules-arbiter/$image"
+          done
+          for image in \
+            "hero sketch.png" \
+            "general.png" \
+            "commandant.png" \
+            "ambassador.png" \
+            "senator.png" \
+            "banker.png" \
+            "executive.png" \
+            "ranger.png" \
+            "spymaster.png" \
+            "alchemist.png" \
+            "spirit walker.png" \
+            "grand inquisitor.png" \
+            "witch hunter.png"; do
+            test -s "$SITE_DIR/images/sketches/$image"
+          done
+
+          test -s "$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE"
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ env.SITE_DIR }}
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
