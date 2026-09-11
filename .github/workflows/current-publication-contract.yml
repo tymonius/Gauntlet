@@ -56,6 +56,7 @@ jobs:
             /apps/card-reference/**
             /apps/deckbuilder/**
             /apps/factions/**
+            /apps/rules/**
             /apps/start/**
             /rulebook/index.html
             /rules-arbiter/index.html
@@ -80,6 +81,10 @@ jobs:
           if [ -d apps/factions ]; then
             mkdir -p factions
             cp -a apps/factions/. factions/
+          fi
+          if [ -d apps/rules ]; then
+            mkdir -p rules
+            cp -a apps/rules/. rules/
           fi
           if [ -d apps/playtest ]; then
             mkdir -p playtest

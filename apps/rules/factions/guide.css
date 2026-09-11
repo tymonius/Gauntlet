@@ -17,6 +17,10 @@ body.faction-guide-military {
   --guide-accent: #9b2830;
 }
 
+body.faction-guide-diplomats {
+  --guide-accent: #264f91;
+}
+
 .guide-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
