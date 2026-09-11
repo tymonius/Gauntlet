@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { v070CanonicalContent } from '../content/v070';
 import {
   createV070StarterGame,
   reduceV070SetupAction,
@@ -45,12 +46,36 @@ function readyGame(firstPlayer: 'A' | 'B' = 'A'): V070GameState {
   return state;
 }
 
-function instanceForCard(state: V070GameState, playerId: 'A' | 'B', cardId: string): string {
-  const instance = Object.values(state.cardInstances).find(card =>
-    card.owner === playerId && card.cardId === cardId
-  );
-  if (!instance) throw new Error(`Missing ${cardId} for ${playerId}`);
+function instanceWithEffect(
+  state: V070GameState,
+  playerId: 'A' | 'B',
+  effectLabel: string,
+  predicate: (text: string) => boolean = () => true,
+): string {
+  const instance = Object.values(state.cardInstances).find(card => {
+    if (card.owner !== playerId) return false;
+    const canonical = v070CanonicalContent.cardsById.get(card.cardId);
+    return canonical?.effects.some(effect =>
+      effect.label === effectLabel && predicate(effect.text)
+    ) ?? false;
+  });
+  if (!instance) {
+    throw new Error(`Missing ${effectLabel} card for ${playerId}`);
+  }
   return instance.instanceId;
+}
+
+function missionInstance(state: V070GameState): string {
+  return instanceWithEffect(state, 'A', 'Mission');
+}
+
+function ordinaryActionInstance(state: V070GameState): string {
+  return instanceWithEffect(
+    state,
+    'A',
+    'Action',
+    text => text.includes('Draw'),
+  );
 }
 
 function moveToHand(state: V070GameState, playerId: 'A' | 'B', instanceId: string): void {
@@ -113,7 +138,7 @@ describe('v0.7.2 Intelligence economy and Operational Capacity', () => {
 
   test('Operational Capacity permits Start Mission after the normal Opening Action was used', () => {
     let state = readyGame('A');
-    const mission = instanceForCard(state, 'A', 'intelligence-disinformation');
+    const mission = missionInstance(state);
     moveToHand(state, 'A', mission);
     denouementAfterOpeningAction(state);
 
@@ -130,14 +155,14 @@ describe('v0.7.2 Intelligence economy and Operational Capacity', () => {
       actor: 'A',
       payload: expect.objectContaining({
         phase: 'denouement',
-        operation: 'intelligence_start_mission',
+        operation: 'Start Mission',
       }),
     }));
   });
 
   test('Operational Capacity permits Complete Mission after an Opening Action and preserves normal rewards', () => {
     let state = readyGame('A');
-    const mission = instanceForCard(state, 'A', 'intelligence-disinformation');
+    const mission = missionInstance(state);
     moveToHand(state, 'A', mission);
     state.players.A.zones.hand.splice(state.players.A.zones.hand.indexOf(mission), 1);
     state.players.A.intelligence!.activeMission = {
@@ -163,14 +188,14 @@ describe('v0.7.2 Intelligence economy and Operational Capacity', () => {
       type: 'operational_capacity_used',
       actor: 'A',
       payload: expect.objectContaining({
-        operation: 'intelligence_complete_mission',
+        operation: 'Complete Mission',
       }),
     }));
   });
 
   test('Operational Capacity cannot be converted into an ordinary Denouement card Action', () => {
     const state = readyGame('A');
-    const actionCard = instanceForCard(state, 'A', 'neutral-rallying-cry');
+    const actionCard = ordinaryActionInstance(state);
     moveToHand(state, 'A', actionCard);
     denouementAfterOpeningAction(state);
 
@@ -183,8 +208,8 @@ describe('v0.7.2 Intelligence economy and Operational Capacity', () => {
 
   test('Operational Capacity still allows at most one Action in Denouement', () => {
     let state = readyGame('A');
-    const mission = instanceForCard(state, 'A', 'intelligence-disinformation');
-    const actionCard = instanceForCard(state, 'A', 'neutral-rallying-cry');
+    const mission = missionInstance(state);
+    const actionCard = ordinaryActionInstance(state);
     moveToHand(state, 'A', mission);
     moveToHand(state, 'A', actionCard);
     denouementAfterOpeningAction(state);
