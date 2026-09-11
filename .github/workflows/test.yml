@@ -99,9 +99,7 @@ jobs:
                 };
 
                 const basePackage = await readPackage(baseRef);
-                const headPackage = context.eventName === 'pull_request'
-                  ? await readPackage(headRef)
-                  : await readPackage(headRef);
+                const headPackage = await readPackage(headRef);
                 const { scripts: baseScripts = {}, ...baseRuntime } = basePackage;
                 const { scripts: headScripts = {}, ...headRuntime } = headPackage;
                 const runtimeChanged = JSON.stringify(baseRuntime) !== JSON.stringify(headRuntime);
@@ -222,21 +220,27 @@ jobs:
           fi
 
           mapfile -t changed_tests < <(node -e "for (const file of JSON.parse(process.env.CHANGED_TESTS || '[]')) console.log(file)")
-          mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
-
-          if (( ${#related_sources[@]} )); then
-            # Vitest 2.1.9's dependency-scoped `related` runner can retain an
-            # open handle after every selected test has passed in this repo.
-            # Fall back to the ordinary suite for source changes: broader, but
-            # deterministic and fail-closed. Keep known historical v0.6.4
-            # suites excluded exactly as the previous related route did.
-            npx vitest run \
-              --exclude 'tests/arcane-card-symbol.test.ts' \
-              --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
-              --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-              --exclude 'tests/v064-rules-arbiter-territories.test.ts'
-          elif (( ${#changed_tests[@]} )); then
+          if (( ${#changed_tests[@]} )); then
             npx vitest run "${changed_tests[@]}"
+          fi
+
+          mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
+          if (( ${#related_sources[@]} )); then
+            # Vitest 2.1.9 can finish every dependency-selected test yet retain
+            # the large combined `related` invocation indefinitely. The exact
+            # same selection was verified to terminate cleanly when partitioned
+            # into 16 shards, so keep dependency-scoped coverage and bound each
+            # partition independently rather than broadening to unrelated suites.
+            for shard in $(seq 1 16); do
+              echo "Running related-test shard ${shard}/16"
+              timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
+                --shard="${shard}/16" \
+                --exclude 'tests/arcane-card-symbol.test.ts' \
+                --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+                --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+                --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+                "${related_sources[@]}"
+            done
           fi
 
       - name: Run public static accessibility contract when HTML changes
