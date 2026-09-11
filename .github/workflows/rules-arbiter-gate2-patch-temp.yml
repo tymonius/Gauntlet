@@ -1,0 +1,353 @@
+name: Rules Arbiter Gate 2 patch (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate2-live-failures-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Apply Gate 2 live replay repairs'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate2-live-failures-20260911
+
+      - name: Apply systemic Gate 2 repairs
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          worker_path = Path('rules-assistant/worker-v071.js')
+          worker = worker_path.read_text()
+          assert 'export const BEHAVIOR_REVISION = "v071-qa-20260911-2";' in worker
+          worker = worker.replace(
+              'export const BEHAVIOR_REVISION = "v071-qa-20260911-2";',
+              'export const BEHAVIOR_REVISION = "v071-qa-20260911-3";',
+              1,
+          )
+
+          classification_anchor = '- A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.\n'
+          assert classification_anchor in worker
+          classification_addition = classification_anchor + (
+              '- A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.\n'
+              '- Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.\n'
+              '- A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.\n'
+              '- For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.\n'
+          )
+          worker = worker.replace(classification_anchor, classification_addition, 1)
+
+          requirement_anchor = '13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.\n'
+          assert requirement_anchor in worker
+          worker = worker.replace(
+              requirement_anchor,
+              requirement_anchor
+              + '14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.\n'
+              + '15. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.\n',
+              1,
+          )
+
+          # Give named-card questions the Golden Rule whenever the retrieved rulebook also
+          # discusses that named card. This makes source precedence available generically,
+          # rather than hard-coding Leveraged Buyout.
+          named_anchor = '''  const namedReplacementCardSource = battleCardReplacementFocus
+    ? retrieval.find((source) => {
+        if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+        const title = String(source?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase();
+        return title.length >= 3 && current.includes(title);
+      })
+    : null;
+'''
+          assert named_anchor in worker
+          named_addition = named_anchor + '''  const namedCardSource = retrieval.find((source) => {
+    if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+    const title = String(source?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase();
+    return title.length >= 3 && current.includes(title);
+  }) || null;
+  const namedCardTitle = namedCardSource
+    ? String(namedCardSource?.title || "").replace(/^Card:\\s*/i, "").trim().toLowerCase()
+    : "";
+  const namedCardRuleReference = namedCardTitle
+    ? retrieval.find((source) => {
+        if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
+        const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
+          .map((value) => String(value || "").toLowerCase())
+          .join(" ");
+        return authorityText.includes(namedCardTitle);
+      })
+    : null;
+  const namedCardSpecificityFocus = Boolean(namedCardSource && namedCardRuleReference);
+  const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
+    ? [namedCardSource.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
+    : [];
+'''
+          worker = worker.replace(named_anchor, named_addition, 1)
+
+          preferred_anchor = '''const preferredAuthorityIds = fieldcraftFocus
+  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+  : specificRulePrecedenceFocus
+    ? specificRulePrecedenceAuthorityIds
+'''
+          assert preferred_anchor in worker
+          worker = worker.replace(
+              preferred_anchor,
+              '''const preferredAuthorityIds = fieldcraftFocus
+  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+  : namedCardSpecificityFocus
+    ? namedCardSpecificityAuthorityIds
+  : specificRulePrecedenceFocus
+    ? specificRulePrecedenceAuthorityIds
+''',
+              1,
+          )
+          worker_path.write_text(worker)
+
+          # Add a reusable transport classifier so endpoint 5xx failures cannot be scored
+          # as Chief Justice content failures.
+          support_path = Path('scripts/v071-live-rules-qa-support.mjs')
+          support = support_path.read_text()
+          assert 'export function classifyTransportInfrastructure' not in support
+          support += '''\n\nexport function classifyTransportInfrastructure(status, responseText = "", payload = null) {
+  const httpStatus = Number(status);
+  if (!Number.isInteger(httpStatus) || httpStatus < 500) return null;
+
+  const plainText = String(responseText || "").replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim();
+  const cloudflareCode = plainText.match(/Error\\s*code:\\s*(\\d{4})/i)?.[1] || null;
+  const workerCode = String(payload?.errorCode || "").trim();
+  const details = [
+    cloudflareCode ? `Cloudflare error ${cloudflareCode}` : "",
+    workerCode || ""
+  ].filter(Boolean);
+  return `infrastructure: production endpoint HTTP ${httpStatus}${details.length ? ` (${details.join(", ")})` : ""}`;
+}
+'''
+          support_path.write_text(support)
+
+          runner_path = Path('scripts/run-v071-live-rules-qa.mjs')
+          runner = runner_path.read_text()
+          assert '  classifyTransportInfrastructure,\n' not in runner
+          runner = runner.replace(
+              '  applyBenchmarkCorrections,\n',
+              '  applyBenchmarkCorrections,\n  classifyTransportInfrastructure,\n',
+              1,
+          )
+          old_delay = '      const delayMs = 1200 * attempts;\n'
+          assert old_delay in runner
+          runner = runner.replace(
+              old_delay,
+              '      const delayMs = status != null && status >= 500 ? 3000 * attempts : 1200 * attempts;\n',
+              1,
+          )
+          loop_end = '''  }
+
+  const latencyMs = Math.round(performance.now() - begin);
+'''
+          assert loop_end in runner
+          runner = runner.replace(
+              loop_end,
+              '''  }
+
+  const attemptsUsed = Math.min(attempts, maxAttempts);
+  const latencyMs = Math.round(performance.now() - begin);
+''',
+              1,
+          )
+          transport_anchor = '''    const transportFailures = [];
+    if (!last.response.ok) transportFailures.push("http: " + last.response.status);
+    if (!last.payload) transportFailures.push("http: response was not JSON");
+    const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };
+'''
+          assert transport_anchor in runner
+          runner = runner.replace(
+              transport_anchor,
+              '''    const transportFailures = [];
+    if (!last.response.ok) transportFailures.push("http: " + last.response.status);
+    if (!last.payload) transportFailures.push("http: response was not JSON");
+    const infrastructureFailure = classifyTransportInfrastructure(
+      last.response.status,
+      last.responseText,
+      last.payload
+    );
+    if (infrastructureFailure) transportFailures.push(infrastructureFailure);
+    const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };
+''',
+              1,
+          )
+          runner, replaced = re.subn(
+              r'(?m)^(\s*)attempts,\n(\s*)httpStatus',
+              r'\1attempts: attemptsUsed,\n\2httpStatus',
+              runner,
+          )
+          assert replaced == 2, replaced
+          presentation_old = '  if (["explicit", "inferred"].includes(rulingStatus) && /\\b(?:supplied passages|supplied text|supplied sources)\\b/i.test(answer)) {\n'
+          assert presentation_old in runner
+          runner = runner.replace(
+              presentation_old,
+              '  if (["explicit", "inferred"].includes(rulingStatus) && /\\b(?:supplied passages|supplied text|supplied sources|available passages?|available sources?|retrieved passages?|retrieved sources?)\\b/i.test(answer)) {\n',
+              1,
+          )
+          runner_path.write_text(runner)
+
+          corrections_path = Path('rules-assistant/evals/rules-arbiter-evals.v071-corrections.json')
+          corrections = json.loads(corrections_path.read_text())
+          cases = corrections['cases']
+          assert not any(case.get('id') == 'card-leveraged-buyout' for case in cases)
+          cases.append({
+              'id': 'card-leveraged-buyout',
+              'expectedClassification': 'inferred',
+              'classificationBasis': 'combined-authority',
+              'expectedSourcePatterns': ['Leveraged Buyout', 'Golden Rules'],
+              'expectedAnswerPatterns': ['battle cards are cleared'],
+          })
+          corrections_path.write_text(json.dumps(corrections, indent=2) + '\n')
+
+          # Current-revision tests follow the behavior revision; historical ledger bindings do not.
+          revision_files = []
+          for path in Path('rules-assistant').glob('v071-*.test.mjs'):
+              text = path.read_text()
+              if 'v071-qa-20260911-2' not in text:
+                  continue
+              path.write_text(text.replace('v071-qa-20260911-2', 'v071-qa-20260911-3'))
+              revision_files.append(str(path))
+          assert revision_files, 'No current-revision assertions were updated.'
+
+          test_path = Path('rules-assistant/v071-gate2-live-regressions.test.mjs')
+          test_path.write_text(r'''import { readFileSync } from "node:fs";
+import { describe, expect, test } from "vitest";
+import {
+  augmentRetrievalForContext,
+  BEHAVIOR_REVISION
+} from "./worker-v071.js";
+import { classifyTransportInfrastructure } from "../scripts/v071-live-rules-qa-support.mjs";
+
+const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const runnerSource = readFileSync(new URL("../scripts/run-v071-live-rules-qa.mjs", import.meta.url), "utf8");
+const corrections = JSON.parse(readFileSync(
+  new URL("./evals/rules-arbiter-evals.v071-corrections.json", import.meta.url),
+  "utf8"
+));
+
+describe("v0.7.1 Gate 2 live replay regressions", () => {
+  test("advances the current behavior revision", () => {
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-3");
+  });
+
+  test("keeps direct multi-source summaries explicit but derived relationships inferred", () => {
+    expect(workerSource).toContain("Multiple citations alone do not make an answer inferred.");
+    expect(workerSource).toContain("Use inferred when direct premises must be combined to reach a new conclusion");
+    expect(workerSource).toContain("absence of adjacency, contiguity, restrictions, permissions, or requirements");
+  });
+
+  test("preserves baseline timing when explaining exceptions", () => {
+    expect(workerSource).toContain("state the baseline restriction that the exception changes as well as the exception itself");
+    expect(workerSource).toContain("An additional Action does not erase the normal legal timing");
+  });
+
+  test("resolves named-card authority conflicts through specific-over-general authority", () => {
+    const corpus = {
+      documents: [
+        {
+          id: "card:test-leveraged-buyout",
+          title: "Card: Leveraged Buyout",
+          heading: "Leveraged Buyout",
+          kind: "card",
+          sourcePath: "cards.json",
+          sourceUrl: "https://example.test/cards",
+          body: "Battle collateral goes to the Graveyard when battle cards are cleared."
+        },
+        {
+          id: "rulebook:golden-rules",
+          title: "Golden Rules",
+          heading: "Golden Rules",
+          kind: "rulebook",
+          sourcePath: "rulebook.md",
+          sourceUrl: "https://example.test/rules",
+          body: "When two rules genuinely conflict, follow the more specific one."
+        },
+        {
+          id: "rulebook:collateral",
+          title: "Collateral",
+          heading: "Collateral",
+          kind: "rulebook",
+          sourcePath: "rulebook.md",
+          sourceUrl: "https://example.test/rules",
+          body: "Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase."
+        }
+      ]
+    };
+    const retrieval = [
+      {
+        id: "S1",
+        canonicalId: "card:test-leveraged-buyout",
+        title: "Card: Leveraged Buyout",
+        heading: "Leveraged Buyout",
+        excerpt: "Battle collateral goes to the Graveyard when battle cards are cleared."
+      },
+      {
+        id: "S2",
+        canonicalId: "rulebook:collateral",
+        title: "Collateral",
+        heading: "Collateral",
+        excerpt: "Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase."
+      }
+    ];
+
+    const augmented = augmentRetrievalForContext(
+      corpus,
+      "How does Leveraged Buyout work?",
+      [],
+      retrieval
+    );
+    expect(augmented.slice(0, 2).map((source) => source.canonicalId)).toEqual([
+      "card:test-leveraged-buyout",
+      "rulebook:golden-rules"
+    ]);
+
+    const correction = corrections.cases.find((item) => item.id === "card-leveraged-buyout");
+    expect(correction).toMatchObject({
+      expectedClassification: "inferred",
+      classificationBasis: "combined-authority"
+    });
+    expect(correction.expectedSourcePatterns).toContain("Golden Rules");
+  });
+
+  test("classifies Worker 5xx responses as infrastructure and reports actual attempts", () => {
+    const cloudflare = classifyTransportInfrastructure(
+      503,
+      "<html><body>Error code: 1102 Worker exceeded resource limits</body></html>",
+      null
+    );
+    expect(cloudflare).toContain("infrastructure: production endpoint HTTP 503");
+    expect(cloudflare).toContain("Cloudflare error 1102");
+    expect(classifyTransportInfrastructure(429, "rate limited", null)).toBeNull();
+    expect(runnerSource).toContain("const attemptsUsed = Math.min(attempts, maxAttempts);");
+    expect(runnerSource).toContain("attempts: attemptsUsed");
+    expect(runnerSource).toContain("status != null && status >= 500 ? 3000 * attempts");
+  });
+
+  test("does not expose retrieval-coverage language in written rulings", () => {
+    expect(workerSource).toContain("Do not say that an \"available passage\", \"available source\", or retrieved excerpt omits the rest of a procedure");
+    expect(runnerSource).toContain("available passages?");
+    expect(runnerSource).toContain("retrieved sources?");
+  });
+});
+''')
+
+          print('Updated revision assertions:', len(revision_files))
+          print('Gate 2 live replay repairs applied.')
+          PY
+
+      - name: Commit permanent repairs
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rules-assistant scripts
+          git commit -m 'Repair Gate 2 live QA failures'
+          git push origin HEAD:rules-arbiter-gate2-live-failures-20260911
