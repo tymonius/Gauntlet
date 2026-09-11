@@ -25,6 +25,10 @@ import {
   openV070DisruptionBattleChoice,
   resolveV070DisruptionBattleChoice,
 } from './disruption-battle';
+import {
+  openV070BattleNegationChoice,
+  resolveV070BattleNegationChoice,
+} from './battle-negation';
 import { openV070AssassinsBattleChoice } from './assassins-battle';
 import { openV070CapitalPunishmentBattleChoice } from './capital-punishment-battle';
 import { openV070DarkOmensBattleChoice } from './dark-omens-battle';
@@ -50,6 +54,11 @@ export type V070BattleAction =
   | V070CounterworksBattleAction
   | {
       type: 'resolve_disruption_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_negation';
       playerId: PlayerId;
       targetInstanceId: string;
     };
@@ -89,6 +98,23 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (pending?.kind === 'battle_negation' && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_battle_negation') {
+      throw new V070GameActionError(
+        'Resolve the pending Tyranny or Sabotage battle-card choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070BattleNegationChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+    );
+    continueV070BattleRevealProcedure(next);
+    finalizeOuterBattleTransition(state, next);
+    return next;
+  }
+
   if (action.type === 'resolve_counterworks_battle') {
     throw new V070GameActionError(
       'There is no open Counterworks battle choice.',
@@ -96,6 +122,11 @@ export function reduceV070BattleAction(
   }
   if (action.type === 'resolve_disruption_battle') {
     throw new V070GameActionError('There is no open Disruption battle choice.');
+  }
+  if (action.type === 'resolve_battle_negation') {
+    throw new V070GameActionError(
+      'There is no open Tyranny or Sabotage battle choice.',
+    );
   }
 
   if (action.type === 'set_gambit' || action.type === 'choose_tactic') {
@@ -182,6 +213,9 @@ function continueV070BattleRevealProcedure(state: V070GameState): boolean {
           break;
         case 'disruption':
           opened = openV070DisruptionBattleChoice(state);
+          break;
+        case 'battle_negation':
+          opened = openV070BattleNegationChoice(state);
           break;
         case 'counterworks':
           opened = openV070CounterworksBattleChoice(state);

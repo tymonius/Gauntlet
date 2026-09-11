@@ -46,6 +46,14 @@ import {
   registerV070DisruptionBattleEffect,
 } from './disruption-battle';
 import {
+  V070_SABOTAGE_BATTLE_TEXT,
+  V070_SABOTAGE_ID,
+  V070_TYRANNY_BATTLE_TEXT,
+  V070_TYRANNY_ID,
+  registerV070SabotageBattleEffect,
+  registerV070TyrannyBattleEffect,
+} from './battle-negation';
+import {
   V070_LANDSLIDE_BATTLE_TEXT,
   registerV070LandslideBattleEffect,
 } from './landslide';
@@ -251,6 +259,36 @@ const disruptionHandler: V070SpecializedBattleEffectHandler = {
     );
   },
 };
+const tyrannyHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_TYRANNY_ID,
+  expectedText: V070_TYRANNY_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070TyrannyBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
+const sabotageHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_SABOTAGE_ID,
+  expectedText: V070_SABOTAGE_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070SabotageBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
 const decoysHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_DECOYS_ID,
   expectedText: V070_DECOYS_BATTLE_TEXT,
@@ -287,6 +325,8 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [assassinsHandler.cardId, assassinsHandler],
   [capitalPunishmentHandler.cardId, capitalPunishmentHandler],
   [disruptionHandler.cardId, disruptionHandler],
+  [tyrannyHandler.cardId, tyrannyHandler],
+  [sabotageHandler.cardId, sabotageHandler],
   [decoysHandler.cardId, decoysHandler],
   [armisticeHandler.cardId, armisticeHandler],
 ]);
