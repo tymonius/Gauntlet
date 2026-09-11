@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260910-3";
+export const BEHAVIOR_REVISION = "v071-qa-20260910-5";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -98,7 +98,7 @@ Requirements:
 2. A specific supplied component rule overrides a general supplied rule.
 3. Treat prior provisional rulings from the same session as binding unless a supplied clean authority source contradicts them.
 4. For a provisional ruling, begin the answer with exactly "Provisional Arbiter Ruling:", clearly distinguish the judgment from written authority, explain the closest supplied analogy or adjudication principle, and state that it applies for the rest of the current game and is logged for designer review. Reserve that label for provisional rulings only.
-5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
+5. Put supporting source IDs only in the source_ids array. Never include internal source IDs such as [S1] or [S1, S2] in the player-facing answer. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
 6. Keep the answer direct and useful at the table. For explicit and inferred answers, do not discuss retrieval mechanics or say "the supplied passages/text/sources" unless the player specifically asks about source coverage.
 7. Write the answer as plain text only. The Rules Arbiter widget does not render Markdown. Do not use Markdown emphasis markers, backticks, headings, tables, or other formatting syntax. Write formulas directly, for example: Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium.
 8. Resolve follow-up referents against the immediately preceding exchange first. This includes pronouns and elliptical corrections or fragments such as "which is what", "which are", "where do they go", "no, their destinations", and similar terse follow-ups. Preserve the most recently contrasted property or noun phrase as the active referent; do not reset from that property to the broader objects being compared unless the player does so explicitly.
@@ -128,6 +128,13 @@ const OUTPUT_SCHEMA = {
   },
   required: ["answer", "ruling_status", "source_ids"]
 };
+
+export function stripInlineSourceMarkers(value) {
+  return String(value || "")
+    .replace(/\s*\[(?:S\d+\s*(?:,\s*S\d+\s*)*)\]/gi, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
 
 export default {
   async fetch(request, env = {}) {
@@ -313,9 +320,10 @@ export default {
       let sources = selectUsedSources(retrieval, modelResult.source_ids);
       const rulingStatus = normalizeRulingStatus(modelResult.ruling_status, sources.length);
       if (rulingStatus === "out_of_scope") sources = [];
+      const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer);
       const answer = rulingStatus === "provisional"
-        ? ensureProvisionalAnswer(modelResult.answer)
-        : String(modelResult.answer || "").trim();
+        ? ensureProvisionalAnswer(cleanModelAnswer)
+        : cleanModelAnswer;
       const confidence = deriveConfidence(rulingStatus, sources.length);
 
       const result = {

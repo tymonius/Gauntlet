@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-10T22:11:35.041Z",
+  "updatedAt": "2026-09-11T03:57:48.328Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -184,7 +184,14 @@
         "ab92804c-691b-4857-aee8-539c7efccfd3",
         "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
         "cec1260e-3e06-4a88-a8da-3a6bff726bc7",
-        "d90e20fe-14c2-404d-951e-0b877c18adfc"
+        "d90e20fe-14c2-404d-951e-0b877c18adfc",
+        "9681adbb-7183-4562-866b-9b6e23c1b94a",
+        "9393cf9e-57ec-46f6-9134-78d5fc724b73",
+        "84f90b9a-8fb9-4581-9bb3-5f3c5f635f22",
+        "69552fb5-7b50-4702-9eca-f2719877cf2d",
+        "f9ca5a9a-1871-4615-aab4-211cf78fe50f",
+        "180d2a82-3993-4659-8062-64704a3a8adb",
+        "41439b85-86d2-4800-945e-ca23cf8f16d4"
       ],
       "caseIds": [
         "reviewed-correct-should-be-explicit"
@@ -865,6 +872,40 @@
       "resolvedAt": "2026-09-10T22:11:35.041Z",
       "binding": {
         "behaviorRevision": "v071-scope-20260910-2"
+      }
+    },
+    {
+      "id": "asset-replacement-current-authority-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "provisional_overuse",
+      "interactionIds": [
+        "533e5580-29ee-47f9-ade6-ff03546b88ed"
+      ],
+      "caseIds": [
+        "asset-replacement-current-authority-retrieval"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The reviewed v0.6.0 ruling correctly treated a one-step Asset replacement as unsupported under the historical rules. Current v0.7.1 now expressly permits a player who is banking an Asset at the Asset limit to discard one controlled Asset to make room and bank the new Asset as part of the same effect, without a separate Action. Retrieval now promotes that direct current authority for simple replace, swap, exchange, and make-room Asset questions instead of carrying historical uncertainty forward.",
+      "resolvedAt": "2026-09-10T22:51:22.331Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-4"
+      }
+    },
+    {
+      "id": "inline-source-marker-sanitization-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "0e985f28-0763-4948-965d-667a3b30e616"
+      ],
+      "caseIds": [
+        "inline-source-marker-sanitization"
+      ],
+      "resolutionSurface": "arbiter_presentation",
+      "summary": "Prevent internal retrieval source IDs from leaking into player-facing Rules Arbiter prose by instructing the model to place citations only in structured source_ids metadata and defensively stripping bracketed S-number markers before persistence and response rendering.",
+      "resolvedAt": "2026-09-11T03:57:48.328Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-5"
       }
     }
   ]

@@ -71,6 +71,10 @@ const QUERY_PHRASE_ALIASES = [
     aliases: ["Applying and repeating another effect", "player instructed to apply or repeat the effect controls that application", "make all choices again", "source card remains in its current zone", "does not play set choose or otherwise move the source card"]
   },
   {
+    pattern: /(?=[\s\S]*\bassets?\b)(?=[\s\S]*\b(?:replace|replaces|replaced|replacing|swap|swaps|swapped|swapping|exchange|exchanges|exchanged|exchanging|make room)\b)(?=[\s\S]*\b(?:bank|banked|banking|hand|limit|room|new)\b)/i,
+    aliases: ["Replacing an Asset", "banking an Asset at the Asset limit", "discard one Asset to make room", "bank the new Asset as part of the same effect", "replacement is not a separate Action"]
+  },
+  {
     pattern: /^(?![\s\S]*\b(?:gambits?|tactics?|reserve|aftermath)\b)(?=[\s\S]*\b(?:play|plays|played|playing)\b)(?=[\s\S]*\b(?:discard|discarded|discarding|discard pile)\b)[\s\S]*$/i,
     aliases: ["playing a card for its action effect", "resolve the action effect", "put the card in the discard pile", "unless it becomes an asset becomes an overlay another destination"]
   },
