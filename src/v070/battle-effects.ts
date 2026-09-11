@@ -309,6 +309,14 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'intelligence-subversion',
+    expectedText: 'Opposing Assets cannot be used during this battle.',
+    timing: 'reveal',
+    apply: ({ state, opponent }) => {
+      prohibitBattleAssetUse(state, opponent);
+    },
+  },
+  {
     cardId: 'neutral-fealty',
     expectedText: 'Ignore one Disadvantage affecting you during this battle. If you have no Disadvantage, +1 Battle Total instead.',
     timing: 'reveal',
@@ -776,6 +784,17 @@ function suppressBattleAssets(
   if (!runtime) throw new Error('Battle effects require an active battle runtime.');
   if (!runtime.assetInactivePlayers.includes(playerId)) {
     runtime.assetInactivePlayers.push(playerId);
+  }
+}
+
+function prohibitBattleAssetUse(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  if (!runtime.assetUseProhibitedPlayers.includes(playerId)) {
+    runtime.assetUseProhibitedPlayers.push(playerId);
   }
 }
 

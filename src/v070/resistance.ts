@@ -11,6 +11,7 @@ import {
   resolveV070MarginLoanDefault,
 } from './assets';
 import { isV070AssetActive } from './asset-face-state';
+import { recordV070IntelligenceBattleAssetUseForMission } from './intelligence';
 
 export const V070_RESISTANCE_ID = 'neutral-resistance' as const;
 
@@ -42,6 +43,7 @@ export function applyV070ResistanceAssetOnsetEffects(
 
     const bonus = resistanceCount * 2;
     runtime.participants[playerId].reserveBonus += bonus;
+    recordV070IntelligenceBattleAssetUseForMission(state, playerId);
     appendV070Event(state, {
       type: 'resistance_asset_counterattack_reserve',
       actor: playerId,
