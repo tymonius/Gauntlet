@@ -221,6 +221,42 @@ export interface V070PoisonousGasAftermathRuntime {
   immediateWinner: PlayerId | null;
 }
 
+export type V070SubversionAssetBattleContinuation =
+  | {
+      type: 'use_plenipotentiary';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'use_good_faith';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'use_neutral_observers';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'use_safe_conduct';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'use_foothold_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    };
+
+export interface V070SubversionAssetBattleRuntime {
+  playerId: PlayerId;
+  targetOwner: PlayerId;
+  targetAssetInstanceId: string;
+  effectLabel: string;
+  candidateSubversionInstanceIds: string[];
+  deferredAction: V070SubversionAssetBattleContinuation;
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
@@ -245,6 +281,7 @@ export interface V070BattleRuntime {
   aftermathCardsCleared: boolean;
   pendingSpiritHollowAftermath: V070SpiritHollowAftermathRuntime | null;
   spiritHollowAftermathPlayers: PlayerId[] | null;
+  pendingSubversionAssetBattle: V070SubversionAssetBattleRuntime | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -340,6 +377,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     aftermathCardsCleared: false,
     pendingSpiritHollowAftermath: null,
     spiritHollowAftermathPlayers: null,
+    pendingSubversionAssetBattle: null,
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,
