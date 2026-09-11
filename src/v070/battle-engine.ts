@@ -41,6 +41,10 @@ import {
   resolveV070DarkOmensBattleChoice,
 } from './dark-omens-battle';
 import {
+  openV070RequisitionBattleChoice,
+  resolveV070RequisitionBattleChoice,
+} from './requisition-battle';
+import {
   openV070SeditionBattleChoice,
   resolveV070SeditionBattleChoice,
 } from './sedition-battle';
@@ -78,6 +82,11 @@ export type V070BattleAction =
       type: 'resolve_sedition_battle';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_requisition_battle';
+      playerId: PlayerId;
+      assetInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
@@ -143,6 +152,22 @@ export function reduceV070BattleAction(
       openNextV070BattleRevealChoice(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'requisition') {
+      if (action.type !== 'resolve_requisition_battle') {
+        throw new V070GameActionError(
+          'Resolve or decline the pending Requisition Asset choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070RequisitionBattleChoice(
+        next,
+        action.playerId,
+        action.assetInstanceId,
+      );
+      openNextV070BattleRevealChoice(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -157,6 +182,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_sedition_battle') {
     throw new V070GameActionError(
       'There is no open Sedition battle choice.',
+    );
+  }
+  if (action.type === 'resolve_requisition_battle') {
+    throw new V070GameActionError(
+      'There is no open Requisition battle choice.',
     );
   }
 
@@ -330,6 +360,9 @@ function openNextV070BattleRevealChoice(
         break;
       case 'sedition':
         opened = openV070SeditionBattleChoice(state);
+        break;
+      case 'requisition':
+        opened = openV070RequisitionBattleChoice(state);
         break;
     }
     if (opened) return true;
