@@ -4,12 +4,12 @@
   "cardCount": 142,
   "effectSurfaceCount": 290,
   "authorityDigest": "21f8911e5d1aa645afd7b63192f3549a240156af6c83384eb8ca1445f1dee4ca",
-  "classificationDigest": "6f1d76dc8dcdf105087c8cc7bbada23e85db4d7905429603a1ab1bd3ecef5c8e",
+  "classificationDigest": "48af51c0591e9e6c150ad49c198acdcc91e11136a1deb3a09c4fd5912c620ad2",
   "summary": {
     "dynamic_canonical_text_only": 157,
-    "literal_authority_locked": 56,
+    "literal_authority_locked": 61,
     "literal_without_regression": 11,
-    "unverified": 66
+    "unverified": 61
   },
-  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Supplies battle tranche. The 2026-09-10 review verified that the authority digest and 290-surface inventory are unchanged. Supplies' Gambit/Tactic surface moved from unverified to literal-authority-locked with exact frozen released text and runnable regression evidence. Supplies' separate Asset surface moved from unverified to dynamic-canonical-text-only solely because the new reachable battle module names the card and reads canonical data; that collateral heuristic classification is not an Asset implementation claim. Nine other affected surfaces (the three Assassins surfaces and the Action/battle surfaces of Forced March, New Recruits, and Rallying Cry) only gained regression-test evidence because those cards are fixtures in Supplies tests; their classifications and runtime source evidence did not change. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
+  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Witchcraft battle tranche. The 2026-09-11 review verified that the authority digest and 290-surface inventory are unchanged. Exactly five surfaces changed classification, all from unverified to literal-authority-locked because copied-effect-callers.ts became reachable from the battle runtime: Heresy Gambit/Tactic, Rend the Veil Asset, Rend the Veil Gambit/Tactic, Witchcraft Asset, and Witchcraft Gambit/Tactic. Only Witchcraft's Gambit/Tactic surface is an implementation claim in this tranche; the other four changes are collateral reachability of previously authored exact frozen-text caller semantics and must not be read as battle/Asset integration claims. The registration audit independently reports 63/113 battle surfaces registered, a one-surface increase over the Supplies stack. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
 }
