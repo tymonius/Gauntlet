@@ -29,6 +29,7 @@ export interface V070ArcaneKnowledgeBattleRevealChoice {
   kind: 'arcane_knowledge';
   owner: PlayerId;
   sourceInstanceId: string;
+  encounteredAt: 'reveal_gambits' | 'reveal_tactics';
   candidates: V070ArcaneKnowledgeBattleRevealCandidate[];
   parentApplication?: V070CopiedEffectApplication;
 }
@@ -125,6 +126,7 @@ export function queueV070ArcaneKnowledgeBattleRevealChoice(
       sourceInstanceId: choice.sourceInstanceId,
       sourceCardId: 'neutral-arcane-knowledge',
       candidateCount: choice.candidates.length,
+      encounteredAt: choice.encounteredAt,
       mandatory: true,
     },
   });
