@@ -25,6 +25,11 @@ import {
   registerV070PenanceBattleEffect,
 } from './penance-battle';
 import {
+  V070_PROPERTY_DUES_BATTLE_TEXT,
+  V070_PROPERTY_DUES_ID,
+  registerV070PropertyDuesBattleEffect,
+} from './property-dues-battle';
+import {
   V070_REQUISITION_BATTLE_TEXT,
   V070_REQUISITION_ID,
   registerV070RequisitionBattleEffect,
@@ -155,6 +160,19 @@ const penanceHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const propertyDuesHandler: core.V070BattleEffectHandler = {
+  cardId: V070_PROPERTY_DUES_ID,
+  expectedText: V070_PROPERTY_DUES_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PropertyDuesBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
@@ -163,6 +181,7 @@ const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [requisitionHandler.cardId, requisitionHandler],
   [tariffsHandler.cardId, tariffsHandler],
   [penanceHandler.cardId, penanceHandler],
+  [propertyDuesHandler.cardId, propertyDuesHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [

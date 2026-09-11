@@ -49,6 +49,11 @@ import {
   resolveV070PenanceBattleChoice,
 } from './penance-battle';
 import {
+  applyV070PropertyDuesAftermathEffects,
+  openV070PropertyDuesBattleChoice,
+  resolveV070PropertyDuesBattleChoice,
+} from './property-dues-battle';
+import {
   openV070RequisitionBattleChoice,
   resolveV070RequisitionBattleChoice,
 } from './requisition-battle';
@@ -109,6 +114,12 @@ export type V070BattleAction =
       type: 'resolve_penance_battle';
       playerId: PlayerId;
       choice: 'graveyard' | 'battle_total';
+      cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_property_dues_battle';
+      playerId: PlayerId;
+      choice: 'discard' | 'capital';
       cardInstanceId?: string;
     };
 
@@ -223,6 +234,23 @@ export function reduceV070BattleAction(
       continueV070BattleRevealProcedure(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'property_dues') {
+      if (action.type !== 'resolve_property_dues_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Property Dues choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070PropertyDuesBattleChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
+      );
+      continueV070BattleRevealProcedure(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -252,6 +280,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_penance_battle') {
     throw new V070GameActionError(
       'There is no open Penance battle choice.',
+    );
+  }
+  if (action.type === 'resolve_property_dues_battle') {
+    throw new V070GameActionError(
+      'There is no open Property Dues battle choice.',
     );
   }
 
@@ -365,6 +398,7 @@ export function reduceV070BattleAction(
     prepared,
     action as V070PreWarBondsBattleAction,
   );
+  applyV070PropertyDuesAftermathEffects(next);
   resolveV070ProtractedSiegeDepartures(
     next,
     previousPositions,
@@ -434,6 +468,9 @@ function continueV070BattleRevealProcedure(
           break;
         case 'penance':
           opened = openV070PenanceBattleChoice(state);
+          break;
+        case 'property_dues':
+          opened = openV070PropertyDuesBattleChoice(state);
           break;
       }
       if (opened) return true;
