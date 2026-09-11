@@ -5,7 +5,7 @@ const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8
 const faceAuthority = readFileSync("card-design/face-authority.mjs", "utf8");
 const leaderTemplate = readFileSync("card-design/face-templates/leader.mjs", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
-const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
+const printTransform = readFileSync("apps/deckbuilder/production-print.js", "utf8");
 
 describe("Deckbuilder current Leader printing", () => {
   it("derives all twelve Leader faces from current-game authority", () => {
