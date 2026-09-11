@@ -1,0 +1,20 @@
+name: Rules Arbiter branch inspection (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-paid-live-replay-20260911
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.event.head_commit.message == 'Add temporary Rules Arbiter branch inspection'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate current revision assertions
+        run: |
+          set -euo pipefail
+          git grep -n 'v071-qa-20260911-1' -- ':!rules-assistant/refinement-resolution-ledger.json' || true
