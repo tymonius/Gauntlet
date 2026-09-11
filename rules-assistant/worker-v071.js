@@ -791,7 +791,7 @@ const fieldcraftFocus = (
 ) && fieldcraftTerritoryStateCue.test(combined);
 const preferredAuthorityIds = fieldcraftFocus
   ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
-  : namedCardSpecificityFocus
+  : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !(destinationFocus && battleCardFocus)
     ? namedCardSpecificityAuthorityIds
   : specificRulePrecedenceFocus
     ? specificRulePrecedenceAuthorityIds
