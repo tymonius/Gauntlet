@@ -1,0 +1,33 @@
+name: Materialize clean v0.7.2 Intelligence changes
+
+on:
+  push:
+    branches:
+      - v072-intelligence-intel-generation
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v072-intelligence-intel-generation
+          fetch-depth: 1
+      - name: Apply approved changes
+        run: python scripts/apply-v072-intelligence-temp.py
+      - name: Sync generated rule facts
+        run: |
+          npm ci --ignore-scripts
+          npm run rules:facts:sync
+      - name: Commit and remove temporary materializer
+        run: |
+          rm .github/workflows/v072-intelligence-clean-materialize.yml
+          rm scripts/apply-v072-intelligence-temp.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game-data/current-game.json rulebook/player-facing/current-rulebook.md rulebook/player-facing/rule-facts.js src/v070/turn-engine-core.ts .github/workflows/v072-intelligence-clean-materialize.yml scripts/apply-v072-intelligence-temp.py
+          git commit -m "Implement v0.7.2 Intelligence economy on current main"
+          git push origin HEAD:v072-intelligence-intel-generation
