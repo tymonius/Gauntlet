@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 const read = (path: string) => readFileSync(path, "utf8");
 const current = JSON.parse(read("game-data/current-game.json"));
 const construction = current.gameplay.deck_construction;
-const app = read("deckbuilder/app.js");
-const territories = read("deckbuilder/territories.js");
-const print = read("deckbuilder/print.js");
-const printRequest = read("deckbuilder/print-request.js");
-const starters = read("deckbuilder/starter-decks.js");
-const html = read("deckbuilder/index.html");
+const app = read("apps/deckbuilder/app.js");
+const territories = read("apps/deckbuilder/territories.js");
+const print = read("apps/deckbuilder/print.js");
+const printRequest = read("apps/deckbuilder/print-request.js");
+const starters = read("apps/deckbuilder/starter-decks.js");
+const html = read("apps/deckbuilder/index.html");
 const currentRuntime = read("game-data/current-game.mjs");
 const ruleset = read("game-data/ruleset.mjs");
 

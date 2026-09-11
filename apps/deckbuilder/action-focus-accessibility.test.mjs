@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("deckbuilder/app.js", "utf8");
+const source = readFileSync("apps/deckbuilder/app.js", "utf8");
 
 describe("Deckbuilder card action focus", () => {
   it("marks rebuilt card rows so their replacement controls can be found", () => {

@@ -5,14 +5,14 @@ import { CURRENT_VISUAL_AUTHORITY_URL, PUBLISHED_VERSION, normalizePublishedGame
 const published = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
 const starters = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json', 'utf8'));
 const current = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
-const html = readFileSync('deckbuilder/index.html', 'utf8');
-const runtime = readFileSync('deckbuilder/current-runtime.js', 'utf8');
-const territories = readFileSync('deckbuilder/territories.js', 'utf8');
-const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
-const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
-const bulk = readFileSync('deckbuilder/print-all-starters.js', 'utf8');
-const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
-const customPrint = readFileSync('deckbuilder/custom-print.mjs', 'utf8');
+const html = readFileSync('apps/deckbuilder/index.html', 'utf8');
+const runtime = readFileSync('apps/deckbuilder/current-runtime.js', 'utf8');
+const territories = readFileSync('apps/deckbuilder/territories.js', 'utf8');
+const rites = readFileSync('apps/deckbuilder/mystics-rites.js', 'utf8');
+const components = readFileSync('apps/deckbuilder/faction-components.js', 'utf8');
+const bulk = readFileSync('apps/deckbuilder/print-all-starters.js', 'utf8');
+const productionPrint = readFileSync('apps/deckbuilder/production-print.js', 'utf8');
+const customPrint = readFileSync('apps/deckbuilder/custom-print.mjs', 'utf8');
 const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 
 describe('Deckbuilder released / release-candidate ruleset toggle', () => {

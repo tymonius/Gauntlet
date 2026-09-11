@@ -6,7 +6,7 @@ const readRepoFile = (path: string) =>
 
 describe("Mystics Ritual Deckbuilder component", () => {
   it("derives the Ritual of Ascension package entry from physical component authority", () => {
-    const source = readRepoFile("deckbuilder/faction-components.js");
+    const source = readRepoFile("apps/deckbuilder/faction-components.js");
     const currentGame = JSON.parse(readRepoFile("game-data/current-game.json"));
     const ritual = currentGame.componentContract.components.find((component: any) => component.id === "mystics-ritual-of-ascension");
 
@@ -25,7 +25,7 @@ describe("Mystics Ritual Deckbuilder component", () => {
   });
 
   it("derives Ritual print data from current authority before the print module runs", () => {
-    const html = readRepoFile("deckbuilder/index.html");
+    const html = readRepoFile("apps/deckbuilder/index.html");
     const componentsIndex = html.indexOf("faction-components.js");
     const printIndex = html.indexOf("print.js");
 
@@ -36,7 +36,7 @@ describe("Mystics Ritual Deckbuilder component", () => {
     expect(html).not.toContain("supplemental-data.js");
   });
   it("delegates Rite faces to the current production component authority", () => {
-    const print = readRepoFile("deckbuilder/print.js");
+    const print = readRepoFile("apps/deckbuilder/print.js");
 
     expect(print).toContain('productionPrint().component(rite.contractId, completed ? "reverse" : "front")');
     expect(print).not.toContain("Ritual of Ascendance");

@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
 const authority = JSON.parse(read("game-data/current-game.json"));
-const bulk = read("deckbuilder/print-all-starters.js");
-const html = read("deckbuilder/index.html");
+const bulk = read("apps/deckbuilder/print-all-starters.js");
+const html = read("apps/deckbuilder/index.html");
 
 describe("Deckbuilder starter count authority", () => {
   it("keeps the current starter set at one Deck per Leader", () => {

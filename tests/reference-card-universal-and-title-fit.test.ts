@@ -11,7 +11,7 @@ const titleWrapStyles = readFileSync('card-design/reference-title-wrap.css', 'ut
 const gauntletMark = readFileSync('images/Gauntlet.svg', 'utf8');
 const ttsRenderer = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
 const supplementalGenerator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
-const deckbuilderComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
+const deckbuilderComponents = readFileSync('apps/deckbuilder/faction-components.js', 'utf8');
 
 const universal = contract.sharedComponents.find((component: Record<string, any>) => component.id === 'universal-reference');
 

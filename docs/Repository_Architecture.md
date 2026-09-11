@@ -48,7 +48,7 @@ Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, 
 
 GitHub Pages is staged from an explicit public-root allowlist rather than from the entire repository tree. Source organization may therefore change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists.
 
-`apps/card-reference/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` use this separation deliberately: their canonical repository source lives under `apps/`, while Pages stages them at the unchanged `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` public paths. Future application moves should follow this model rather than recreating root source aliases.
+`apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` use this separation deliberately: their canonical repository source lives under `apps/`, while Pages stages them at the unchanged `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` public paths. Future application moves should follow this model rather than recreating root source aliases.
 
 ### 4. Frozen releases stay frozen
 
@@ -96,8 +96,7 @@ The machine-readable root inventory and transition target are defined by `config
 
 | Path | Role |
 |---|---|
-| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; currently contains `apps/card-reference/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, deployed at `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` |
-| `deckbuilder/` | Current Deckbuilder |
+| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; currently contains `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, deployed at `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` |
 | `rulebook/` | Current browser Rulebook plus maintained source |
 | `rules-assistant/` | Rules Arbiter implementation |
 | `workers/` | Deployed support services |
@@ -203,7 +202,7 @@ releases/
 legacy/
 ```
 
-This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged. `apps/card-reference/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are the first concrete application migrations toward this target.
+This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged. `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are the concrete application migrations toward this target so far.
 
 ## Cleanup sequence
 
@@ -226,7 +225,7 @@ This is a **conceptual dependency target, not an instruction to move every exist
 
 - Keep GitHub Pages staging explicit rather than mirroring the repository.
 - Preserve current public URLs while source directories are consolidated.
-- Use `apps/card-reference/` → `/card-reference/`, `apps/factions/` → `/factions/`, `apps/start/` → `/start/`, and `apps/playtest/` → `/playtest/` as the reference pattern for subsequent current application moves.
+- Use `apps/card-reference/` → `/card-reference/`, `apps/deckbuilder/` → `/deckbuilder/`, `apps/factions/` → `/factions/`, `apps/start/` → `/start/`, and `apps/playtest/` → `/playtest/` as the reference pattern for subsequent current application moves.
 - Move application source into clearer package boundaries only after verifying each deployed compatibility path.
 
 ### Phase 4 — Digital-engine boundary

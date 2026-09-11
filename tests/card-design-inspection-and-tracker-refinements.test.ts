@@ -6,7 +6,7 @@ const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
-const deckbuilderMobilePreview = readFileSync('deckbuilder/mobile-card-preview.js', 'utf8');
+const deckbuilderMobilePreview = readFileSync('apps/deckbuilder/mobile-card-preview.js', 'utf8');
 const sharedInspection = readFileSync('card-design/card-inspector.js', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 

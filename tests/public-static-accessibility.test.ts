@@ -10,7 +10,7 @@ const PUBLIC_ROOTS = [
   "accessibility",
   "apps/card-reference",
   "contact",
-  "deckbuilder",
+  "apps/deckbuilder",
   "faq",
   "apps/factions",
   "apps/playtest",

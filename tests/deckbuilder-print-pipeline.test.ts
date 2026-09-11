@@ -3,13 +3,13 @@ import { describe, expect, it } from "vitest";
 
 const read = (path: string) => readFileSync(path, "utf8");
 
-const app = read("deckbuilder/app.js");
-const print = read("deckbuilder/print.js");
+const app = read("apps/deckbuilder/app.js");
+const print = read("apps/deckbuilder/print.js");
 
 const transforms = [
-  ["deckbuilder/production-print.js", "production-rendering", 40],
-  ["deckbuilder/starter-decks.js", "starter-strategy", 65],
-  ["deckbuilder/print-summary.js", "print-summary", 70],
+  ["apps/deckbuilder/production-print.js", "production-rendering", 40],
+  ["apps/deckbuilder/starter-decks.js", "starter-strategy", 65],
+  ["apps/deckbuilder/print-summary.js", "print-summary", 70],
 ] as const;
 
 describe("Deckbuilder print pipeline", () => {
@@ -63,7 +63,7 @@ describe("Deckbuilder print pipeline", () => {
   });
 
   it("uses explicit print-document preflights instead of wrapping the base print handler", () => {
-    const production = read("deckbuilder/production-print.js");
+    const production = read("apps/deckbuilder/production-print.js");
     expect(print).toContain("window.__gauntletPrintPreflights=window.__gauntletPrintPreflights||[]");
     expect(print).toContain("for(const preflight of window.__gauntletPrintPreflights){await preflight();}");
     expect(production).toContain("const preflights = window.__gauntletPrintPreflights = window.__gauntletPrintPreflights || []");
@@ -73,14 +73,14 @@ describe("Deckbuilder print pipeline", () => {
   });
 
   it("runs the stale production-face guard as the final print transform", () => {
-    const source = read("deckbuilder/production-print.js");
+    const source = read("apps/deckbuilder/production-print.js");
     expect(source).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
     expect(source).toContain("Outdated print faces survived production rendering");
     expect(source).not.toContain("printWindow.document.close");
   });
 
   it("does not load the retired DOM-rewrite print layers", () => {
-    const index = read("deckbuilder/index.html");
+    const index = read("apps/deckbuilder/index.html");
     for (const retired of [
       "print-duplex.js",
       "print-intelligence-trackers.js",

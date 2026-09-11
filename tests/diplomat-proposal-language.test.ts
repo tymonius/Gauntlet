@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const componentRuntime = readFileSync("deckbuilder/faction-components.js", "utf8");
+const componentRuntime = readFileSync("apps/deckbuilder/faction-components.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 const renderContext = readFileSync("card-design/render-context.mjs", "utf8");

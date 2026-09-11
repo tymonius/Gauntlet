@@ -21,7 +21,7 @@ on:
       - 'card-design/**'
       - 'game-data/current-game.json'
       - 'apps/factions/**'
-      - 'deckbuilder/**'
+      - 'apps/deckbuilder/**'
       - 'rules-arbiter/**'
       - 'design-tokens.css'
       - 'images/faction-symbols/**'
