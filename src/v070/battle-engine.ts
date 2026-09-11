@@ -49,6 +49,10 @@ import {
   resolveV070SeditionBattleChoice,
 } from './sedition-battle';
 import {
+  openV070TariffsBattleChoice,
+  resolveV070TariffsBattleChoice,
+} from './tariffs-battle';
+import {
   isV070BattleRevealChoiceOpen,
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
@@ -87,6 +91,11 @@ export type V070BattleAction =
       type: 'resolve_requisition_battle';
       playerId: PlayerId;
       assetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_tariffs_battle';
+      playerId: PlayerId;
+      cardInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
@@ -168,6 +177,22 @@ export function reduceV070BattleAction(
       openNextV070BattleRevealChoice(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'tariffs') {
+      if (action.type !== 'resolve_tariffs_battle') {
+        throw new V070GameActionError(
+          'Resolve or decline the pending Tariffs Hand-discard choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070TariffsBattleChoice(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
+      openNextV070BattleRevealChoice(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -187,6 +212,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_requisition_battle') {
     throw new V070GameActionError(
       'There is no open Requisition battle choice.',
+    );
+  }
+  if (action.type === 'resolve_tariffs_battle') {
+    throw new V070GameActionError(
+      'There is no open Tariffs battle choice.',
     );
   }
 
@@ -363,6 +393,9 @@ function openNextV070BattleRevealChoice(
         break;
       case 'requisition':
         opened = openV070RequisitionBattleChoice(state);
+        break;
+      case 'tariffs':
+        opened = openV070TariffsBattleChoice(state);
         break;
     }
     if (opened) return true;

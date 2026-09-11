@@ -29,6 +29,11 @@ import {
   V070_SEDITION_ID,
   registerV070SeditionBattleEffect,
 } from './sedition-battle';
+import {
+  V070_TARIFFS_BATTLE_TEXT,
+  V070_TARIFFS_ID,
+  registerV070TariffsBattleEffect,
+} from './tariffs-battle';
 import { applyV070BattleRetreatStep } from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
@@ -107,12 +112,26 @@ const requisitionHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const tariffsHandler: core.V070BattleEffectHandler = {
+  cardId: V070_TARIFFS_ID,
+  expectedText: V070_TARIFFS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070TariffsBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
   [seditionHandler.cardId, seditionHandler],
   [requisitionHandler.cardId, requisitionHandler],
+  [tariffsHandler.cardId, tariffsHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
