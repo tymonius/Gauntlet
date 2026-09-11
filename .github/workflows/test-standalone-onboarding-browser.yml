@@ -25,7 +25,7 @@ jobs:
             /index.html
             /apps/start/
             /apps/deckbuilder/
-            /game-data/current-game.json
+            /packages/game-data/current-game.json
             /rulebook/player-facing/current-rulebook.md
 
       - name: Set up Node
