@@ -16,7 +16,7 @@
     "financiers": {
       "publicPath": "/rules/factions/financiers/",
       "source": "rulebook/faction-guides/financiers.md",
-      "status": "planned"
+      "status": "draft"
     },
     "intelligence": {
       "publicPath": "/rules/factions/intelligence/",
