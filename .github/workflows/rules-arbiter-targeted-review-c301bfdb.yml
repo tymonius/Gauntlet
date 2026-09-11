@@ -42,7 +42,7 @@ jobs:
             --command "SELECT * FROM rules_interactions WHERE id IN ($TARGET_IDS) ORDER BY created_at" \
             > "$REVIEW_DIR/interactions.json"
           npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($TARGET_IDS) ORDER BY created_at" \
+            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($TARGET_IDS)" \
             > "$REVIEW_DIR/audits.json"
 
       - name: Upload remaining-review bundle
