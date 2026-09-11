@@ -46,7 +46,7 @@ You need:
 
 Place your Leader and Reference Card face up where both players can see them. Put the Influence Tracker beside them and set it to **1 Influence**. Place all nine Proposal cards with their **Proposal** sides face up.
 
-Use the Influence Tracker throughout the game to record the Influence you currently possess. Move it up whenever you gain Influence and down whenever you spend or lose Influence. Staking Influence is different from spending it: a stake is temporarily committed to the Proposal, so it remains part of your current Influence but is unavailable until the Terms conclude. While a stake is committed, your **available Influence** is the amount on your tracker minus the stake. If the stake returns, the tracker does not change; if the stake is lost, move the tracker down by that amount.
+Use the Influence Tracker to show your **available Influence**. Move it up when you gain or recover Influence and down when you stake, spend, or lose Influence. A stake is not spent: moving the tracker down shows that the staked Influence is temporarily unavailable. Keep that amount committed to the Proposal while the Terms are unresolved. If the stake returns, move the tracker back up by that amount; if the stake is lost, leave the tracker where it is. Influence spent on Leverage is spent and does not return with the stake.
 
 Each Proposal shows three things that matter when you offer it:
 
@@ -184,17 +184,17 @@ The Senator can therefore take political risks that would be more dangerous for 
 
 Suppose you have **4 Influence** and offer **Ultimatum**, which has a Stake of 2.
 
-You lower your available Influence from 4 to **2** while the Stake is committed. Your Influence Tracker remains at 4 because the staked Influence is committed, not spent. Your opponent refuses, so Ultimatum gives you its Refused benefit and the battle continues.
+Move your Influence Tracker from 4 to **2** while the Stake is committed. Your opponent refuses, so Ultimatum gives you its Refused benefit and the battle continues.
 
-Before the dice are rolled, you decide to spend **1 Influence** on Leverage for **+1 to your battle total**. Move your Influence Tracker from 4 to **3**. You now have 1 available Influence, with 2 still staked.
+Before the dice are rolled, you decide to spend **1 Influence** on Leverage for **+1 to your battle total**. Move your Influence Tracker from 2 to **1**. You now have 1 available Influence, with 2 still staked.
 
 You win the battle.
 
-Your 2 staked Influence returns to availability, so the tracker remains at 3. If Ultimatum was not already ratified, you impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. Move the tracker to **5 Influence**. You finish with 5 Influence and one more Treaty Article than you had before the battle.
+Your 2 staked Influence returns, so move the tracker from 1 to **3**. If Ultimatum was not already ratified, you impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. Move the tracker to **5 Influence**. You finish with 5 Influence and one more Treaty Article than you had before the battle.
 
 The opponent's refusal did not merely cause a fight. It gave you a tactical bonus, access to Leverage, and a chance to turn the victory into Peace Treaty progress.
 
-If you had lost instead, the normal result would be to lose the 2 staked Influence and move the tracker from 3 to **1**. A Senator who had not already used Political Capital that turn could instead trade cards from Hand to recover some or all of that stake.
+If you had lost instead, the 2 staked Influence would be lost, so the tracker would remain at **1**. A Senator who had not already used Political Capital that turn could instead trade cards from Hand to recover some or all of that stake, moving the tracker up by 1 for each Influence recovered.
 
 <!-- RULES-SECTION:first-game -->
 ## 8. Your First Game
