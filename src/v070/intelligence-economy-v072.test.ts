@@ -70,7 +70,31 @@ function missionInstance(state: V070GameState): string {
 }
 
 function ordinaryActionInstance(state: V070GameState): string {
-  return instanceWithEffect(state, 'A', 'Action');
+  const candidates = Object.values(state.cardInstances).filter(card => {
+    if (card.owner !== 'A') return false;
+    const canonical = v070CanonicalContent.cardsById.get(card.cardId);
+    return canonical?.effects.some(effect => effect.label === 'Action') ?? false;
+  });
+
+  for (const candidate of candidates) {
+    const probe = structuredClone(state) as V070GameState;
+    moveToHand(probe, 'A', candidate.instanceId);
+    denouementAfterOpeningAction(probe);
+    try {
+      reduceV070TurnAction(probe, {
+        type: 'play_action_card',
+        playerId: 'A',
+        cardInstanceId: candidate.instanceId,
+      });
+    } catch (error) {
+      if (error instanceof Error
+        && error.message === 'No Actions remain this turn.') {
+        return candidate.instanceId;
+      }
+    }
+  }
+
+  throw new Error('Missing a Denouement-legal ordinary Action for A');
 }
 
 function moveToHand(state: V070GameState, playerId: 'A' | 'B', instanceId: string): void {
