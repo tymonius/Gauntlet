@@ -1,0 +1,44 @@
+name: Rules Arbiter refresh revision tests
+
+on:
+  push:
+    branches: [rules-arbiter-review-c301bfdb]
+    paths:
+      - '.github/workflows/rules-arbiter-refresh-revision-tests.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-review-c301bfdb
+          fetch-depth: 1
+
+      - name: Refresh exact behavior-revision assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(grep -rl --include='*.test.mjs' 'v071-qa-20260910-5' rules-assistant || true)
+          if (( ${#files[@]} == 0 )); then
+            echo 'No stale behavior-revision assertions found' >&2
+            exit 1
+          fi
+          printf 'Updating %s\n' "${files[@]}"
+          sed -i 's/v071-qa-20260910-5/v071-qa-20260911-1/g' "${files[@]}"
+
+      - name: Commit refresh and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/rules-arbiter-refresh-revision-tests.yml
+          git add rules-assistant/*.test.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh Rules Arbiter behavior revision assertions"
+          git push origin HEAD:rules-arbiter-review-c301bfdb
