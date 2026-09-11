@@ -221,9 +221,11 @@ The normal battle is a short contest of hidden information: you may risk a card 
 
 ### 1. Onset
 
-The moment the battle begins is called **Onset**.
+**Onset is when you determine whether the battle will actually proceed.**
 
-Establish who is attacking, who is defending, and which position is contested. Some cards and faction rules can act during Onset, before anyone commits a Gambit. If nothing changes or prevents the battle, continue normally.
+First establish who is attacking, who is defending, which position is contested, and the attacker's previous position. Then resolve anything that specifically happens during Onset or before Gambits are set, including Terms when applicable.
+
+If the battle is prevented or a player withdraws during Onset, it ends there: no Gambits are set and there is no battle result. If the battle still proceeds after Onset, continue to Gambits.
 
 ### 2. Set Gambits
 
