@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-11T03:57:48.328Z",
+  "updatedAt": "2026-09-11T04:17:49.581Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -641,7 +641,7 @@
         "margin-loan-win-followup-counterfactual"
       ],
       "resolutionSurface": "arbiter_retrieval_prompt",
-      "summary": "Short counterfactual follow-ups such as the reviewed “What if I win instead?” now inherit the immediately preceding exchange before retrieval. This keeps the question on Margin Loan’s Gambit/Tactic battle branch, whose current v0.7.1 text directly returns collateral after a win, instead of drifting to unrelated generic victory authority or conflating the separate Action/banked loan branch.",
+      "summary": "Short counterfactual follow-ups such as the reviewed \u201cWhat if I win instead?\u201d now inherit the immediately preceding exchange before retrieval. This keeps the question on Margin Loan\u2019s Gambit/Tactic battle branch, whose current v0.7.1 text directly returns collateral after a win, instead of drifting to unrelated generic victory authority or conflating the separate Action/banked loan branch.",
       "resolvedAt": "2026-09-09T12:44:06.668Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-7"
@@ -658,7 +658,7 @@
         "fog-of-war-opponent-territory-control-direction"
       ],
       "resolutionSurface": "arbiter_retrieval_prompt",
-      "summary": "The exact reviewed opponent-control wording now retrieves Fog of War as primary v0.7.1 authority. Current card text keys the ordering to the contested Territory’s controller and explicitly makes that player set their Gambit and choose their Tactics after the opponent. This closes the historical reversed-order answer without importing the retired v0.6.0 notion that control of the Overlay itself determines the order.",
+      "summary": "The exact reviewed opponent-control wording now retrieves Fog of War as primary v0.7.1 authority. Current card text keys the ordering to the contested Territory\u2019s controller and explicitly makes that player set their Gambit and choose their Tactics after the opponent. This closes the historical reversed-order answer without importing the retired v0.6.0 notion that control of the Overlay itself determines the order.",
       "resolvedAt": "2026-09-09T12:51:13.825Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-7"
@@ -692,7 +692,7 @@
         "fates-toll-valor-consecutive-rerolls"
       ],
       "resolutionSurface": "arbiter_retrieval",
-      "summary": "Questions that explicitly ask whether multiple controlled effects resolve one after another or at the same timing now retrieve the v0.7.1 Shared timing rule alongside the specific effect authorities. For the reviewed Fate’s Toll + Valor case, both cards remain primary sources while Shared timing directly supplies the missing ordering premise that each player chooses the order of effects they control; each effect still must satisfy its own printed condition when it resolves.",
+      "summary": "Questions that explicitly ask whether multiple controlled effects resolve one after another or at the same timing now retrieve the v0.7.1 Shared timing rule alongside the specific effect authorities. For the reviewed Fate\u2019s Toll + Valor case, both cards remain primary sources while Shared timing directly supplies the missing ordering premise that each player chooses the order of effects they control; each effect still must satisfy its own printed condition when it resolves.",
       "resolvedAt": "2026-09-09T13:24:14.801Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-7"
@@ -726,7 +726,7 @@
         "operational-reassessment-replacement-destinations"
       ],
       "resolutionSurface": "arbiter_retrieval",
-      "summary": "Battle-card replacement questions now deterministically promote the v0.7.1 Replacing a Gambit or Tactic authority. When a named battle card is already the strongest source it remains first, and destination-focused replacement questions also promote battle-card clearing. Operational Reassessment therefore supplies its own Graveyard destination, the shared replacement rule preserves the Gambit role and passed-timing constraint, and normal Gambit clearing supplies the replacement card’s destination.",
+      "summary": "Battle-card replacement questions now deterministically promote the v0.7.1 Replacing a Gambit or Tactic authority. When a named battle card is already the strongest source it remains first, and destination-focused replacement questions also promote battle-card clearing. Operational Reassessment therefore supplies its own Graveyard destination, the shared replacement rule preserves the Gambit role and passed-timing constraint, and normal Gambit clearing supplies the replacement card\u2019s destination.",
       "resolvedAt": "2026-09-09T14:09:40.857Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-8"
@@ -760,7 +760,7 @@
         "unidentified-ability-followup-clarification"
       ],
       "resolutionSurface": "arbiter_context_clarification",
-      "summary": "A terse follow-up such as ‘Can I use this ability right now?’ now stops before model use when the immediate exchange does not identify one matching ability/effect/feature referent. The Arbiter asks for the missing ability and relevant timing state instead of speculating about unrelated factions or mechanics. A single clearly bridged named referent still flows through normal contextual retrieval.",
+      "summary": "A terse follow-up such as \u2018Can I use this ability right now?\u2019 now stops before model use when the immediate exchange does not identify one matching ability/effect/feature referent. The Arbiter asks for the missing ability and relevant timing state instead of speculating about unrelated factions or mechanics. A single clearly bridged named referent still flows through normal contextual retrieval.",
       "resolvedAt": "2026-09-09T22:14:17.397Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260909-9"
@@ -906,6 +906,23 @@
       "resolvedAt": "2026-09-11T03:57:48.328Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260910-5"
+      }
+    },
+    {
+      "id": "printed-effect-label-fidelity-v071",
+      "status": "resolved",
+      "rootCause": "terminology_voice",
+      "interactionIds": [
+        "c301bfdb-ae51-44c2-8a4a-7f98743afa02"
+      ],
+      "caseIds": [
+        "protracted-siege-effect-label-fidelity"
+      ],
+      "resolutionSurface": "arbiter_prompt",
+      "summary": "Require the current v0.7.1 Arbiter to preserve printed effect labels exactly, including distinguishing an Action that banks a card from a later Asset or Use ability so a ruling cannot imply an extra Action expenditure.",
+      "resolvedAt": "2026-09-11T04:17:49.581Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260911-1"
       }
     }
   ]
