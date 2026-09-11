@@ -5,12 +5,11 @@ import {
 } from './engine';
 import {
   beginEffectGrantedV070Movement,
-  retreatV070Position,
   type PlayerId,
 } from './rules';
 import { advanceV070FrontLine } from './front-line';
-import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { v070QuicksandCapsMovement } from './territories';
+import { applyV070BattleRetreatStep } from './retreat-step';
 
 export const V070_MILITARY_COMMAND_MAX = 2 as const;
 
@@ -263,27 +262,20 @@ export function useV070CommandantRepel(
   spendV070MilitaryCommand(state, playerId, 1, 'Repel');
 
   const loser = battle.attacker;
-  const from = battle.positions[loser];
-  const to = retreatV070Position(
+  const result = applyV070BattleRetreatStep(
+    state,
     loser,
-    from,
-    battle.territoryCount,
+    {
+      kind: 'military_order',
+      label: 'Commandant Repel',
+    },
   );
-  battle.positions[loser] = to;
-  if (from !== to) {
-    openV070BlockadeChoicesForPositionChange(
-      state,
-      loser,
-      from,
-      to,
-    );
-  }
 
   appendOrderEvent(state, playerId, 'Repel', 1, {
     loser,
-    from,
-    to,
-    moved: from !== to,
+    from: result.from,
+    to: result.to,
+    moved: result.moved,
   });
 }
 

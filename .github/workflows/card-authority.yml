@@ -71,8 +71,8 @@ jobs:
             core.summary
               .addHeading('Card Authority CI')
               .addTable([
-                [{data: 'Contract', header: true}, {data: 'Run?', header: true}],
-                ['Current authority + face catalog + discovered consumers', 'true'],
+                [{data: 'Check', header: true}, {data: 'Run?', header: true}],
+                ['Current authority + face catalog + discovered consumers + digital behavior', 'true'],
                 ['Canonical rendered faces + homepage showcase', String(render)],
               ])
               .write();
@@ -99,6 +99,14 @@ jobs:
 
       - name: Validate semantic card authority
         run: npm run card-authority:check
+
+      - name: Upload digital behavior audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digital-behavior-audit
+          path: artifacts/card-authority/digital-*.json
+          if-no-files-found: warn
 
   render:
     name: Render canonical faces and consumer surfaces
@@ -161,7 +169,10 @@ jobs:
           RENDER: ${{ needs.render.result }}
         run: |
           set -euo pipefail
-          for entry in             "scope:$SCOPE"             "authority:$AUTHORITY"             "render:$RENDER"; do
+          for entry in \
+            "scope:$SCOPE" \
+            "authority:$AUTHORITY" \
+            "render:$RENDER"; do
             name="${entry%%:*}"
             result="${entry#*:}"
             case "$result" in

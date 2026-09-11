@@ -5,9 +5,15 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import {
+  activeV070Overlay,
+  cardIdForV070Overlay,
+  graveyardV070Overlay,
   replaceV070CaptureWithOverlay,
   resolveV070OverlayCaptureEffects,
 } from './overlays';
+import {
+  preventV070CaptureWithProtractedSiege,
+} from './protracted-siege';
 import { expireV070BlockadesForControlLoss } from './sanctions';
 import { discardV070SmugglersRunStashForControlLoss } from './smugglers-run';
 
@@ -46,12 +52,27 @@ export function advanceV070FrontLine(
     const target = nextV070FrontLineTarget(state, playerId);
     if (!target) break;
 
+    if (preventV070CaptureWithProtractedSiege(
+      state,
+      target.position,
+      playerId,
+      source,
+    )) {
+      break;
+    }
+
     if (replaceV070CaptureWithOverlay(state, target.position, playerId, source)) {
       continue;
     }
 
     const previousController = target.controller;
     target.controller = playerId;
+    resolveEncampmentControlLoss(
+      state,
+      target.position,
+      playerId,
+      source,
+    );
     discardV070SmugglersRunStashForControlLoss(
       state,
       target.territoryInstanceId,
@@ -96,6 +117,26 @@ export function advanceV070FrontLine(
     captures,
     reachedOpponentEnd: controlsEveryV070Territory(state, playerId),
   };
+}
+
+function resolveEncampmentControlLoss(
+  state: V070GameState,
+  territoryPosition: number,
+  newController: PlayerId,
+  source: string,
+): void {
+  const active = activeV070Overlay(state, territoryPosition);
+  if (!active
+    || active.owner === newController
+    || cardIdForV070Overlay(state, active) !== 'military-encampment') {
+    return;
+  }
+
+  graveyardV070Overlay(
+    state,
+    active.instanceId,
+    `military-encampment opposing control gain (${source})`,
+  );
 }
 
 export function nextV070FrontLineTarget(
