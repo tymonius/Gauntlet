@@ -19,10 +19,12 @@ jobs:
       - name: Print every file collected in shard 7
         run: |
           cat > .vitest-shard-debug-reporter.mjs <<'EOF'
-          import { BaseReporter } from 'vitest/reporters';
-          export default class ShardDebugReporter extends BaseReporter {
+          export default class ShardDebugReporter {
+            onInit(ctx) {
+              this.ctx = ctx;
+            }
             onCollected() {
-              const files = this.ctx.state.getFiles(this.watchFilters);
+              const files = this.ctx.state.getFiles();
               for (const file of files) console.log(`[COLLECTED] ${file.name}`);
             }
           }
