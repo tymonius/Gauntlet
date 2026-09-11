@@ -44,7 +44,9 @@ export function registerV070WitchcraftBattleEffect(
   sourceInstanceId: string,
 ): void {
   assertWitchcraftSource(state, owner, sourceInstanceId);
-  if (state.battleRuntime?.stage !== 'reveal_tactics') {
+  const runtime = state.battleRuntime!;
+  if (runtime.stage !== 'reveal_tactics'
+    && runtime.pendingRevealEffectEncounteredAt !== 'reveal_tactics') {
     throw new V070GameActionError(
       'Witchcraft battle effect can resolve only after Tactics are revealed.',
     );
@@ -62,7 +64,6 @@ export function registerV070WitchcraftBattleEffect(
 
   const eligible = witchcraftChoices(state, owner, sourceInstanceId);
   if (eligible.length === 0) {
-    const runtime = state.battleRuntime!;
     runtime.participants[owner].advantage += 1;
     appendV070Event(state, {
       type: 'witchcraft_battle_fallback_advantage',
