@@ -17,7 +17,7 @@ The frozen canonical package is [releases/v0.7.1/](releases/v0.7.1/). Its manife
 - source-provenance data; and
 - the production Card Anatomy and Arcane-trait figures.
 
-Published release snapshots are immutable. Live browser tools and production renderers consume the complete current authorities in game-data/current-game.json and rulebook/player-facing/current-rulebook.md; release publication freezes copies of those authorities under releases/.
+Published release snapshots are immutable. Live browser tools and production renderers consume the complete current authorities in packages/game-data/current-game.json and rulebook/player-facing/current-rulebook.md; release publication freezes copies of those authorities under releases/.
 
 Earlier valid releases remain historical. Withdrawn reconstructed packages are explicitly named as withdrawn and must not be used as current rules or tool inputs.
 
@@ -75,7 +75,7 @@ The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards
 
 For current development and public browser tooling:
 
-1. game-data/current-game.json is the complete current gameplay authority.
+1. packages/game-data/current-game.json is the complete current gameplay authority.
 2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
 3. config/publishing-authority.json is the current publishing-imprint authority for maintained development and player-facing surfaces; published release snapshots retain their recorded publishing identity.
 4. releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json identifies the frozen v0.7.1 published authority set.
@@ -92,9 +92,9 @@ The repository's current/historical/generated path classifications and cleanup t
 
 Maintained application source that has been separated from deployed URL layout. `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are staged by GitHub Pages at the unchanged public `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` routes.
 
-### game-data/
+### packages/game-data/
 
-Complete current gameplay authority and runtime adapter. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication derive from this source.
+Complete current gameplay authority and runtime adapters. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication derive from this source. GitHub Pages stages the package at the stable public `/game-data/` path for browser consumers; repository tooling should use `packages/game-data/` directly.
 
 ### rulebook/
 
@@ -157,7 +157,7 @@ http://localhost:8000/
 http://localhost:8000/rulebook/
 ~~~
 
-Card Reference, Deckbuilder, Factions, Start, and Playtest are source/deployment separated. Their canonical sources are `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, while production serves them at `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/`. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` paths, while public links should continue to use the stable deployed routes. When testing Deckbuilder behavior locally, materialize `apps/deckbuilder/` at `/deckbuilder/` before serving so its public-route-relative dependencies resolve the same way they do in production.
+Card Reference, Deckbuilder, Factions, Start, and Playtest are source/deployment separated. Their canonical sources are `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/`, while production serves them at `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/`. The gameplay authority is likewise source/deployment separated: canonical source lives at `packages/game-data/`, while browser consumers use the stable `/game-data/` route. Browser/render CI stages those public layouts explicitly; tests and tooling that inspect source should use the `apps/` and `packages/` paths, while public links should continue to use the stable deployed routes. When testing Deckbuilder or another public surface locally, materialize its canonical source and `packages/game-data/` at their public routes before serving so route-relative dependencies resolve the same way they do in production.
 
 For the rules-aware digital-engine codebase:
 
