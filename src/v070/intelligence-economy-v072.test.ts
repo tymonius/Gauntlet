@@ -70,12 +70,7 @@ function missionInstance(state: V070GameState): string {
 }
 
 function ordinaryActionInstance(state: V070GameState): string {
-  return instanceWithEffect(
-    state,
-    'A',
-    'Action',
-    text => text.includes('Draw'),
-  );
+  return instanceWithEffect(state, 'A', 'Action');
 }
 
 function moveToHand(state: V070GameState, playerId: 'A' | 'B', instanceId: string): void {
