@@ -385,6 +385,27 @@ export function discardV070AssetByEffect(
   );
 }
 
+export function putV070AssetInGraveyardByEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  if (!state.players[playerId].zones.assetBank.includes(instanceId)) {
+    throw new V070GameActionError(
+      'An effect-forced Asset Graveyard move must target a banked Asset.',
+    );
+  }
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'graveyard',
+    purpose,
+    false,
+  );
+}
+
 export function discardV070AssetVoluntarily(
   state: V070GameState,
   playerId: PlayerId,

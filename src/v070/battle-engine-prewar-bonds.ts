@@ -58,6 +58,7 @@ import {
   resolveV070FortificationsRetreatChoice,
   v070FortificationsAssetEligibleInstanceIds,
 } from './fortifications';
+import { V070_RETRIBUTION_ID } from './retribution';
 
 export {
   V070_NORMAL_BATTLE_DICE,
@@ -187,7 +188,7 @@ function reduceV070BattleActionInternal(
     );
   }
 
-  const assetEffect = battleAssetEffectForAction(action);
+  const assetEffect = battleAssetEffectForAction(state, action);
   if (assetEffect && !bypassSubversionInterrupt) {
     const next = structuredClone(state) as V070GameState;
     if (openV070SubversionAssetBattleWindow(
@@ -337,6 +338,7 @@ function resolveFortificationsAssetTacticLimit(
 }
 
 function battleAssetEffectForAction(
+  state: V070GameState,
   action: V070BattleAction,
 ): {
   playerId: PlayerId;
@@ -380,6 +382,17 @@ function battleAssetEffectForAction(
         effectLabel: 'Foothold',
         deferredAction: action,
       };
+    case 'resolve_battle_aftermath_controlled_effect':
+      if (state.cardInstances[action.sourceInstanceId]?.cardId !==
+        V070_RETRIBUTION_ID) {
+        return null;
+      }
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.sourceInstanceId,
+        effectLabel: 'Retribution',
+        deferredAction: action,
+      };
     default:
       return null;
   }
@@ -389,6 +402,20 @@ function resumeAfterNegatedBattleAsset(
   state: V070GameState,
   deferredAction: V070SubversionAssetBattleContinuation,
 ): V070GameState {
+  if (deferredAction.type === 'resolve_battle_aftermath_controlled_effect'
+    && state.cardInstances[deferredAction.sourceInstanceId]?.cardId ===
+      V070_RETRIBUTION_ID) {
+    return reduceV070BattleActionInternal(
+      state,
+      {
+        type: 'pass_retribution_asset',
+        playerId: deferredAction.playerId,
+        assetInstanceId: deferredAction.sourceInstanceId,
+      },
+      true,
+    );
+  }
+
   if (deferredAction.type === 'use_safe_conduct') {
     return reduceV070BattleActionInternal(
       state,
