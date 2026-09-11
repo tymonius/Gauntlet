@@ -19,6 +19,7 @@ import {
   v070FootholdAssetEligibleInstanceIds,
 } from './foothold';
 import {
+  initializeV070TermsWindow,
   v070PoliticalCapitalPending,
   v070ProposalChoicePending,
 } from './diplomats';
@@ -36,6 +37,7 @@ import {
   resolveV070SpiritHollowAftermathChoice,
 } from './spirit-hollow';
 import type {
+  V070ResistanceOnsetResumeAction,
   V070SubversionAssetBattleContinuation,
 } from './battle-types';
 import {
@@ -43,6 +45,11 @@ import {
   openV070SubversionAssetBattleWindow,
   resolveV070SubversionAssetBattleChoice,
 } from './subversion-asset';
+import {
+  V070ResistanceAssetOnsetPause,
+  applyV070ResistanceAssetOnsetEffects,
+  applyV070ResistanceAssetOnsetInstance,
+} from './resistance';
 
 export {
   V070_NORMAL_BATTLE_DICE,
@@ -100,6 +107,21 @@ function reduceV070BattleActionInternal(
       action.choice,
       action.subversionInstanceId,
     );
+
+    if (resolved.pending.deferredAction.type === 'apply_resistance_onset_asset') {
+      if (!resolved.used) {
+        applyV070ResistanceAssetOnsetInstance(
+          next,
+          resolved.pending.deferredAction.playerId,
+          resolved.pending.deferredAction.assetInstanceId,
+        );
+      }
+      return resumeV070ResistanceOnsetInitialization(
+        next,
+        requireResistanceOnsetResumeAction(resolved.pending),
+      );
+    }
+
     if (!resolved.used) {
       return reduceV070BattleActionInternal(
         next,
@@ -323,6 +345,86 @@ function resumeAfterNegatedBattleAsset(
   return state;
 }
 
+function resumeV070ResistanceOnsetInitialization(
+  state: V070GameState,
+  resumeAction: V070ResistanceOnsetResumeAction,
+): V070GameState {
+  try {
+    applyV070ResistanceAssetOnsetEffects(state);
+  } catch (error) {
+    if (error instanceof V070ResistanceAssetOnsetPause) {
+      attachResistanceOnsetResumeAction(error.state, resumeAction);
+      return error.state;
+    }
+    throw error;
+  }
+
+  initializeV070TermsWindow(state);
+
+  if (resumeAction.type === 'return_after_ranger_fieldcraft') {
+    return state;
+  }
+
+  // If runtime initialization opened Terms, an attempted proceed-from-Onset is
+  // not yet legal. Preserve the initialized state and let the Terms procedure
+  // take priority instead of throwing away the resolved Subversion decision.
+  if (resumeAction.type === 'proceed_from_onset'
+    && state.battleRuntime?.terms.stage !== 'closed') {
+    return state;
+  }
+
+  return reduceV070BattleActionInternal(state, resumeAction, false);
+}
+
+function requireResistanceOnsetResumeAction(
+  pending: NonNullable<V070GameState['battleRuntime']>['pendingSubversionAssetBattle'] extends infer T
+    ? NonNullable<T>
+    : never,
+): V070ResistanceOnsetResumeAction {
+  if (!pending.resistanceOnsetResumeAction) {
+    throw new V070GameActionError(
+      'Resistance Subversion interruption is missing its Onset continuation.',
+    );
+  }
+  return pending.resistanceOnsetResumeAction;
+}
+
+function attachResistanceOnsetResumeAction(
+  state: V070GameState,
+  resumeAction: V070ResistanceOnsetResumeAction,
+): void {
+  const pending = state.battleRuntime?.pendingSubversionAssetBattle;
+  if (!pending
+    || pending.deferredAction.type !== 'apply_resistance_onset_asset') {
+    throw new V070GameActionError(
+      'Resistance Onset pause is missing its pending Subversion Asset window.',
+    );
+  }
+  pending.resistanceOnsetResumeAction = structuredClone(resumeAction);
+}
+
+function resistanceOnsetResumeActionForCoreAction(
+  action: V070CoreBattleAction,
+): V070ResistanceOnsetResumeAction {
+  switch (action.type) {
+    case 'proceed_from_onset':
+      return { ...action };
+    case 'pass_terms':
+      return { ...action };
+    case 'offer_terms':
+      return { ...action };
+    case 'use_ranger_fieldcraft':
+      return {
+        type: 'return_after_ranger_fieldcraft',
+        playerId: action.playerId,
+      };
+    default:
+      throw new V070GameActionError(
+        `Cannot resume ${action.type} across the initial Resistance Onset interrupt.`,
+      );
+  }
+}
+
 function resumeV070AfterFoothold(
   state: V070GameState,
 ): V070GameState {
@@ -361,6 +463,13 @@ function reduceCoreWithAftermathPauses(
     return reduceV070BattleActionCore(state, action);
   } catch (error) {
     if (error instanceof V070SpiritHollowAftermathPause) {
+      return error.state;
+    }
+    if (error instanceof V070ResistanceAssetOnsetPause) {
+      attachResistanceOnsetResumeAction(
+        error.state,
+        resistanceOnsetResumeActionForCoreAction(action),
+      );
       return error.state;
     }
     throw error;
