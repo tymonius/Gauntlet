@@ -1,4 +1,4 @@
-name: Isolate Vitest shard 7
+name: Isolate Counterworks hang
 
 on:
   pull_request:
@@ -16,27 +16,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Print every file collected in shard 7
+      - name: Run Counterworks alone with hang diagnostics
         run: |
-          cat > .vitest-shard-debug-reporter.mjs <<'EOF'
-          export default class ShardDebugReporter {
-            onInit(ctx) {
-              this.ctx = ctx;
-            }
-            onCollected() {
-              const files = this.ctx.state.getFiles();
-              for (const file of files) console.log(`[COLLECTED] ${file.name}`);
-            }
-          }
-          EOF
-          timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
-            --reporter=./.vitest-shard-debug-reporter.mjs --reporter=verbose \
-            --shard=7/16 \
-            --exclude 'tests/arcane-card-symbol.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
-            src/v070/battle-effects-pre-counterworks.ts \
-            src/v070/battle-engine-pre-accusation.ts \
-            src/v070/battle-negation.ts \
-            src/v070/battle-reveal-choices.ts
+          timeout --kill-after=10s 90s npx vitest run src/v070/counterworks-battle.test.ts \
+            --reporter=verbose --reporter=hanging-process
