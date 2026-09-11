@@ -1,4 +1,4 @@
-name: Isolate Counterworks hang
+name: Trace Counterworks imports
 
 on:
   pull_request:
@@ -16,7 +16,23 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Run Counterworks alone with hang diagnostics
+      - name: Trace Counterworks test imports
         run: |
-          timeout --kill-after=10s 90s npx vitest run src/v070/counterworks-battle.test.ts \
-            --reporter=verbose --reporter=hanging-process
+          cat > .counterworks-import-debug.ts <<'EOF'
+          const modules = [
+            './src/content/v070.ts',
+            './src/v070/engine.ts',
+            './src/v070/turn-engine.ts',
+            './src/v070/battle-engine.ts',
+            './src/v070/counterworks-battle.ts',
+            './src/v070/overlays.ts',
+            './src/v070/battle-effects.ts',
+            './src/v070/views.ts',
+          ];
+          for (const modulePath of modules) {
+            console.log(`[IMPORT START] ${modulePath}`);
+            await import(modulePath);
+            console.log(`[IMPORT DONE] ${modulePath}`);
+          }
+          EOF
+          timeout --kill-after=10s 90s npx vite-node .counterworks-import-debug.ts
