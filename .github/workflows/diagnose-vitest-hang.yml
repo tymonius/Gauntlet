@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  shard:
+  related-shard:
     if: github.event.pull_request.number == 1625
     runs-on: ubuntu-latest
     strategy:
@@ -21,17 +21,16 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: List shard files
+      - name: Run related shard with hard bound
         run: |
-          npx vitest list --filesOnly --shard=${{ matrix.shard }}/16 \
+          echo "Related-test shard ${{ matrix.shard }}/16"
+          timeout --kill-after=10s 90s npx vitest related --run --passWithNoTests \
+            --reporter=verbose --shard=${{ matrix.shard }}/16 \
             --exclude 'tests/arcane-card-symbol.test.ts' \
             --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
             --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-territories.test.ts'
-      - name: Run shard with hard bound
-        run: |
-          timeout --kill-after=10s 120s npx vitest run --shard=${{ matrix.shard }}/16 \
-            --exclude 'tests/arcane-card-symbol.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
-            --exclude 'tests/v064-rules-arbiter-territories.test.ts'
+            --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+            src/v070/battle-effects-pre-counterworks.ts \
+            src/v070/battle-engine-pre-accusation.ts \
+            src/v070/battle-negation.ts \
+            src/v070/battle-reveal-choices.ts
