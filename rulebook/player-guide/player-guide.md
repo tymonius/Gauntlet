@@ -357,7 +357,6 @@ A Last Stand is resolved as a battle, with two important advantages for the defe
 If the attacker wins that battle, the attacker immediately runs the Gauntlet and wins the game.
 
 You do **not** have to control the entire Gauntlet—or even control or capture the opponent's final Territory—before forcing your opponent to make a Last Stand. The territorial route and Last Stand route are two independent ways to finish the same shared objective.
-
 <!-- RULES-SECTION:factions -->
 ## 9. The Six Factions
 
@@ -503,4 +502,4 @@ Keep this page handy while you play. Scan the tool that matches what you are try
 | --- | --- |
 | ![QR code for Ask the Chief Justice](/rulebook/assets/qr/chief-justice.svg) **Ask the Chief Justice** **gauntlet.run/rules-arbiter/** **Use when:** a rule, timing question, or card interaction is unclear. Ask in ordinary language and get a player-friendly ruling grounded in the current rules. | ![QR code for Card Reference](/rulebook/assets/qr/card-reference.svg) **Card Reference** **gauntlet.run/card-reference/** **Use when:** you need the exact current text of a card, Leader, Territory, Proposal, or other game object without searching through the rulebook. |
 | ![QR code for Full Rules](/rulebook/assets/qr/full-rules.svg) **Full Rules** **gauntlet.run/rulebook/** **Use when:** you want to read the complete rules directly, check a definition, or see the technical rule behind a ruling. | ![QR code for Deckbuilder](/rulebook/assets/qr/deckbuilder.svg) **Deckbuilder** **gauntlet.run/deckbuilder/** **Use when:** you are choosing or changing a Deck, checking Deckbuilding Value and legality, or starting from a recommended starter Deck. |
-| ![QR code for Start Playing](/rulebook/assets/qr/start-playing.svg) **Start Playing** **gauntlet.run/start/** **Use when:** someone is new to Gauntlet or needs the guided path through faction choice, Leader choice, starter Decks, and getting a game onto the table. | ![QR code for Start a Playtest](/rulebook/assets/qr/playtest.svg) **Start a Playtest** **gauntlet.run/playtest/** **Use when:** this game is a playtest. Create or join a tracked session so rules questions, results, and feedback can be connected to the game. |
+| ![QR code for Start Playing](/rulebook/assets/qr/start-playing.svg) **Start Playing** **gauntlet.run/start/** **Use when:** someone is new to Gauntlet or needs the guided path through faction choice, Leader choice, starter Decks, and getting a game onto the table. | ![QR code for Start a Playtest](/rulebook/assets/qr/playtest.svg) **Start a Playtest** **gauntlet.run/playtest/tracked/** **Use when:** this game is a playtest. Create or join a tracked session so rules questions, results, and feedback can be connected to the game. |
