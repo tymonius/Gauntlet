@@ -39,6 +39,6 @@ describe("v0.7.1 Fortifications reviewed Tactic-choice case", () => {
   test("current classification discipline does not permit a provisional ruling when clean authority resolves every premise", () => {
     expect(workerSource).toContain("Use explicit only when clean authority directly states each material premise required by the answer");
     expect(workerSource).toContain("Provisional is only for a genuine remaining gap or ambiguity");
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260910-4");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260910-5");
   });
 });

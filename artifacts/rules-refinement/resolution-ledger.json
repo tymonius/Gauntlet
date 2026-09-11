@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-11T01:59:45.240Z",
+  "updatedAt": "2026-09-11T03:57:48.328Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -889,6 +889,23 @@
       "resolvedAt": "2026-09-10T22:51:22.331Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260910-4"
+      }
+    },
+    {
+      "id": "inline-source-marker-sanitization-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "0e985f28-0763-4948-965d-667a3b30e616"
+      ],
+      "caseIds": [
+        "inline-source-marker-sanitization"
+      ],
+      "resolutionSurface": "arbiter_presentation",
+      "summary": "Prevent internal retrieval source IDs from leaking into player-facing Rules Arbiter prose by instructing the model to place citations only in structured source_ids metadata and defensively stripping bracketed S-number markers before persistence and response rendering.",
+      "resolvedAt": "2026-09-11T03:57:48.328Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260910-5"
       }
     }
   ]
