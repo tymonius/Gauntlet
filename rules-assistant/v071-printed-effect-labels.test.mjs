@@ -11,6 +11,6 @@ describe("v0.7.1 printed effect-label fidelity", () => {
   });
 
   test("advances the behavior revision for the terminology fix", () => {
-    expect(workerV071).toContain('BEHAVIOR_REVISION = "v071-qa-20260911-2"');
+    expect(workerV071).toContain('BEHAVIOR_REVISION = "v071-qa-20260911-3"');
   });
 });

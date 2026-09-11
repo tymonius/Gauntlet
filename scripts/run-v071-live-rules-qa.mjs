@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
   applyBenchmarkCorrections,
+  classifyTransportInfrastructure,
   buildContinuityText,
   normalizeQaText,
   significantTopicTerms,
@@ -158,7 +159,7 @@ function inspectAnswer(item, payload) {
   if (["explicit", "inferred"].includes(rulingStatus) && /^\s*table ruling:/i.test(answer)) {
     failures.push('presentation: explicit/inferred answer uses the provisional-sounding "Table ruling" label');
   }
-  if (["explicit", "inferred"].includes(rulingStatus) && /\b(?:supplied passages|supplied text|supplied sources)\b/i.test(answer)) {
+  if (["explicit", "inferred"].includes(rulingStatus) && /\b(?:supplied passages|supplied text|supplied sources|available passages?|available sources?|retrieved passages?|retrieved sources?)\b/i.test(answer)) {
     failures.push("presentation: written-rule answer exposes internal source/retrieval framing");
   }
 
@@ -287,7 +288,7 @@ async function postCase(item, index) {
     if (!retryableError && !retryableResponse) break;
 
     if (attempts < maxAttempts) {
-      const delayMs = 1200 * attempts;
+      const delayMs = status != null && status >= 500 ? 3000 * attempts : 1200 * attempts;
       console.log(
         "RETRY " + String(index + 1).padStart(3, "0") + "/" + benchmarkCases.length
         + " " + item.id + " after "
@@ -298,11 +299,14 @@ async function postCase(item, index) {
     }
   }
 
+  const attemptsUsed = Math.min(attempts, maxAttempts);
   const latencyMs = Math.round(performance.now() - begin);
   if (last?.response) {
     const transportFailures = [];
     if (!last.response.ok) transportFailures.push("http: " + last.response.status);
     if (!last.payload) transportFailures.push("http: response was not JSON");
+    const infrastructureFailure = classifyTransportInfrastructure(last.response.status, last.responseText, last.payload);
+    if (infrastructureFailure) transportFailures.push(infrastructureFailure);
     const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };
 
     return {
@@ -317,7 +321,7 @@ async function postCase(item, index) {
       forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
       expectedTopic: item.expectedTopic || null,
       sessionId,
-      attempts,
+      attempts: attemptsUsed,
       httpStatus: last.response.status,
       latencyMs,
       payload: last.payload,
@@ -340,7 +344,7 @@ async function postCase(item, index) {
     forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
     expectedTopic: item.expectedTopic || null,
     sessionId,
-    attempts,
+    attempts: attemptsUsed,
     httpStatus: null,
     latencyMs,
     payload: null,

@@ -45,6 +45,18 @@
         "Deeds",
         "Buying and buying out Deeds"
       ]
+    },
+    {
+      "id": "card-leveraged-buyout",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": [
+        "Leveraged Buyout",
+        "Golden Rules"
+      ],
+      "expectedAnswerPatterns": [
+        "battle cards are cleared"
+      ]
     }
   ]
 }
