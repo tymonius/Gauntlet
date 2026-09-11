@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const previewScripts = [
   "apps/card-reference/mobile-card-preview.js",
-  "deckbuilder/mobile-card-preview.js",
+  "apps/deckbuilder/mobile-card-preview.js",
 ];
 
 describe("mobile preview modal focus management", () => {
