@@ -27,7 +27,7 @@ The Diplomats add one decision before many battles: **can this conflict be settl
 You track **Influence**, from 0 to 10. During Onset, when Terms are available, you may offer an eligible Proposal and stake its listed Influence. The opponent accepts or refuses.
 
 - **Accepted Terms** end the battle during Onset. Apply the Proposal's Accepted effect. If it was not already ratified, it becomes a Treaty Article and normally gives you 1 Influence.
-- **Refused Terms** apply the Proposal's Refused effect and the battle continues. Before the dice, you may spend available Influence on Leverage. If you then win, an unratified Proposal is normally imposed and gives you 2 Influence. If you lose, you lose the stake.
+- **Refused Terms** apply the Proposal's Refused effect and the battle continues. Before the dice are rolled, you may spend available Influence on Leverage. Leverage is optional: whether or not you use it, if you win the resulting battle, return the stake and impose the Proposal if it is unratified; a newly imposed Proposal normally gives you 2 Influence. If you lose, you lose the stake.
 
 This means a Proposal is not simply a request for peace. It is a fork in the game state. A strong offer gives you a useful result whether the opponent accepts or refuses.
 
@@ -44,7 +44,9 @@ You need:
 - nine double-sided **Proposal / Treaty Article cards**; and
 - the Diplomat cards included in your Deck.
 
-Place your Leader and Reference Card face up where both players can see them. Set your Influence to **1**. Place all nine Proposal cards with their **Proposal** sides face up.
+Place your Leader and Reference Card face up where both players can see them. Put the Influence Tracker beside them and set it to **1 Influence**. Place all nine Proposal cards with their **Proposal** sides face up.
+
+Use the Influence Tracker to show your **available Influence**. Move it up when you gain or recover Influence and down when you stake, spend, or lose Influence. A stake is not spent: moving the tracker down shows that the staked Influence is temporarily unavailable. Keep that amount committed to the Proposal while the Terms are unresolved. If the stake returns, move the tracker back up by that amount; if the stake is lost, leave the tracker where it is. Influence spent on Leverage is spent and does not return with the stake.
 
 Each Proposal shows three things that matter when you offer it:
 
@@ -182,17 +184,17 @@ The Senator can therefore take political risks that would be more dangerous for 
 
 Suppose you have **4 Influence** and offer **Ultimatum**, which has a Stake of 2.
 
-You lower your available Influence from 4 to **2** while the Stake is committed. Your opponent refuses, so Ultimatum gives you its Refused benefit and the battle continues.
+Move your Influence Tracker from 4 to **2** while the Stake is committed. Your opponent refuses, so Ultimatum gives you its Refused benefit and the battle continues.
 
-Before dice, you decide to spend **1 Influence** on Leverage for **+1 to your battle total**. You now have 1 available Influence, with 2 still staked.
+Before the dice are rolled, you decide to spend **1 Influence** on Leverage for **+1 to your battle total**. Move your Influence Tracker from 2 to **1**. You now have 1 available Influence, with 2 still staked.
 
 You win the battle.
 
-Your 2 staked Influence returns, bringing you to 3. If Ultimatum was not already ratified, you impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. You finish with **5 Influence** and one more Treaty Article than you had before the battle.
+Your 2 staked Influence returns, so move the tracker from 1 to **3**. If Ultimatum was not already ratified, you impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. Move the tracker to **5 Influence**. You finish with 5 Influence and one more Treaty Article than you had before the battle.
 
 The opponent's refusal did not merely cause a fight. It gave you a tactical bonus, access to Leverage, and a chance to turn the victory into Peace Treaty progress.
 
-If you had lost instead, the normal result would be to lose the 2 staked Influence. A Senator who had not already used Political Capital that turn could instead trade cards from Hand to recover some or all of that stake.
+If you had lost instead, the 2 staked Influence would be lost, so the tracker would remain at **1**. A Senator who had not already used Political Capital that turn could instead trade cards from Hand to recover some or all of that stake, moving the tracker up by 1 for each Influence recovered.
 
 <!-- RULES-SECTION:first-game -->
 ## 8. Your First Game
