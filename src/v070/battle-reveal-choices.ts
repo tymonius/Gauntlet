@@ -39,6 +39,14 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Hand cards that existed when Tariffs took effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'penance';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Hand cards that existed when Penance took effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
