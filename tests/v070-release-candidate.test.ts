@@ -171,7 +171,7 @@ describe('v0.7.0 historical publication boundary', () => {
   it('advances the public player surfaces to v0.7.1 without rewriting the frozen v0.7.0 package', () => {
     expect(homepage).toContain('Current canonical playtest edition · v0.7.1');
     expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
-    expect(homepage).toContain('<h3>v0.7.1 Release</h3>');
+    expect(homepage).toContain('aria-label="Current playtest edition v0.7.1"');
     expect(startPage).toContain('aria-label="Current playtest edition v0.7.1"');
     expect(cardReferencePage).toContain('<title>Gauntlet Card Reference</title>');
     expect(cardReferencePage).toContain('aria-label="Current playtest edition v0.7.1"');
