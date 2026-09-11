@@ -1,4 +1,4 @@
-name: Isolate Counterworks tests
+name: Trace Counterworks reducer
 
 on:
   pull_request:
@@ -10,32 +10,105 @@ jobs:
   isolate:
     if: github.event.pull_request.number == 1625
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - id: authority
-            pattern: locks the handler
-          - id: opens-choice
-            pattern: opens at the normal reveal stage
-          - id: suppress-overlay
-            pattern: makes one existing Overlay inactive
-          - id: arm-prevention
-            pattern: can arm prevention
-          - id: prevent-overlay
-            pattern: prevents and discards the next opposing Overlay
-          - id: friendly-then-opposing
-            pattern: does not consume prevention on a friendly Overlay
-          - id: invalid-suppression
-            pattern: rejects suppression mode
-    name: ${{ matrix.id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm install
-      - name: Run isolated Counterworks test
+      - name: Trace Counterworks reducer steps
         run: |
-          timeout --kill-after=5s 30s npx vitest run src/v070/counterworks-battle.test.ts \
-            -t "${{ matrix.pattern }}" --reporter=verbose
+          cat > .counterworks-reducer-debug.ts <<'EOF'
+          import {
+            createV070StarterGame,
+            reduceV070SetupAction,
+            type V070GameState,
+          } from './src/v070/engine';
+          import { reduceV070TurnAction } from './src/v070/turn-engine';
+          import { reduceV070BattleAction } from './src/v070/battle-engine';
+          import { V070_COUNTERWORKS_ID } from './src/v070/counterworks-battle';
+
+          function step<T>(label: string, fn: () => T): T {
+            console.log(`[STEP START] ${label}`);
+            const value = fn();
+            console.log(`[STEP DONE] ${label}`);
+            return value;
+          }
+
+          let state = step('create game', () => createV070StarterGame({
+            gameId: 'counterworks-debug',
+            seed: 'counterworks-debug-seed',
+            players: {
+              A: { name: 'Alpha', starterDeckId: 'military-general-forward-doctrine' },
+              B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
+            },
+          }));
+
+          for (const playerId of ['A', 'B'] as const) {
+            state = step(`opening discard ${playerId}`, () => reduceV070SetupAction(state, {
+              type: 'choose_opening_discard',
+              playerId,
+              cardInstanceId: state.players[playerId].openingSelection[0],
+            }));
+          }
+          for (const playerId of ['A', 'B'] as const) {
+            state = step(`arrange territories ${playerId}`, () => reduceV070SetupAction(state, {
+              type: 'arrange_territories',
+              playerId,
+              territoryIds: state.players[playerId].territoryCandidates,
+            }));
+          }
+          state = step('roll A', () => reduceV070SetupAction(state, {
+            type: 'roll_first_player', playerId: 'A', value: 6,
+          }));
+          state = step('roll B', () => reduceV070SetupAction(state, {
+            type: 'roll_first_player', playerId: 'B', value: 1,
+          }));
+
+          state.players.A.position = 2;
+          state.players.B.position = 3;
+          state.board.forEach(space => {
+            space.occupant = null;
+            space.blank = true;
+          });
+          state.board[2].occupant = 'A';
+          state.board[3].occupant = 'B';
+          state.board[3].controller = 'B';
+
+          state = step('resolve capture', () => reduceV070TurnAction(state, {
+            type: 'resolve_capture', playerId: 'A',
+          }));
+          state = step('draw turn card', () => reduceV070TurnAction(state, {
+            type: 'draw_turn_card', playerId: 'A',
+          }));
+          state = step('pass opening', () => reduceV070TurnAction(state, {
+            type: 'pass_opening', playerId: 'A',
+          }));
+          state = step('advance', () => reduceV070TurnAction(state, {
+            type: 'choose_movement', playerId: 'A', choice: 'advance',
+          }));
+          state = step('proceed from onset', () => reduceV070BattleAction(state, {
+            type: 'proceed_from_onset', playerId: 'A',
+          }));
+
+          const source = 'counterworks-A-source';
+          state.cardInstances[source] = {
+            instanceId: source,
+            cardId: V070_COUNTERWORKS_ID,
+            owner: 'A',
+          };
+          state.players.A.zones.hand.push(source);
+
+          state = step('set A counterworks', () => reduceV070BattleAction(state, {
+            type: 'set_gambit', playerId: 'A', cardInstanceId: source,
+          }));
+          state = step('set B no gambit', () => reduceV070BattleAction(state, {
+            type: 'set_gambit', playerId: 'B',
+          }));
+          state = step('reveal gambits', () => reduceV070BattleAction(state, {
+            type: 'reveal_gambits', playerId: 'A',
+          }));
+
+          console.log('[DONE]', state.battleRuntime?.stage, state.battleRuntime?.battleRevealChoices);
+          EOF
+          timeout --kill-after=5s 45s npx vite-node .counterworks-reducer-debug.ts
