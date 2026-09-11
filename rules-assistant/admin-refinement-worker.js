@@ -13,12 +13,60 @@ import {
 } from "./refinement-resolution-ledger.js";
 import { applyCurrentValidityToRefinementReport } from "./refinement-current-validity.js";
 import { handleV071ScopePrecheck } from "./v071-scope-precheck.js";
+import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export * from "./worker-entry.js";
 
 const INLINE_RUNTIME_ID = "rules-refinement-inline-runtime";
 const TRIAGE_API_PATH = "/api/admin/refinement-triage";
 const SCAFFOLD_API_PATH = "/api/admin/refinement-scaffold";
+const QA_BUDGET_STATEMENT = Symbol("qa-budget-statement");
+const QA_BUDGET_SQL = /\bINSERT\s+INTO\s+rules_model_usage_budget\b/i;
+
+function qaUnlimitedBudgetDb(db) {
+  if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") return db;
+
+  return new Proxy(db, {
+    get(target, property) {
+      if (property === "prepare") {
+        return (sql) => {
+          if (QA_BUDGET_SQL.test(String(sql || ""))) {
+            const statement = {
+              [QA_BUDGET_STATEMENT]: true,
+              bind() {
+                return statement;
+              }
+            };
+            return statement;
+          }
+          return target.prepare(sql);
+        };
+      }
+
+      if (property === "batch") {
+        return (statements) => {
+          if (
+            Array.isArray(statements) &&
+            statements.length > 0 &&
+            statements.every((statement) => statement?.[QA_BUDGET_STATEMENT] === true)
+          ) {
+            return Promise.resolve(statements.map(() => ({ meta: { changes: 1 } })));
+          }
+          return target.batch(statements);
+        };
+      }
+
+      const value = Reflect.get(target, property, target);
+      return typeof value === "function" ? value.bind(target) : value;
+    }
+  });
+}
+
+async function envWithAuthorizedQaBudgetBypass(request, env) {
+  const authorization = await authorizeGitHubActionsQa(request);
+  if (!authorization.authorized || !env?.DB) return env;
+  return { ...env, DB: qaUnlimitedBudgetDb(env.DB) };
+}
 
 function attachInlineRefinementRuntime(html) {
   const source = String(html || "");
@@ -124,7 +172,8 @@ export default {
       });
     }
 
-    const response = await worker.fetch(request, env, context);
+    const routedEnv = await envWithAuthorizedQaBudgetBypass(request, env);
+    const response = await worker.fetch(request, routedEnv, context);
     if (request.method !== "GET") return response;
     if (!["/admin", "/admin/"].includes(url.pathname)) return response;
 

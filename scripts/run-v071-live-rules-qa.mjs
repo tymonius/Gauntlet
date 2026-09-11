@@ -24,6 +24,49 @@ const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
   ? Math.max(1, Math.floor(requestedCaseLimit))
   : null;
 const retryableStatuses = new Set([429, 502, 503, 504]);
+const useGitHubActionsOidc = process.env.GAUNTLET_RULES_QA_USE_GITHUB_OIDC === "true";
+const qaOidcAudience = "gauntlet-rules-assistant-live-qa";
+let cachedQaOidcToken = null;
+let cachedQaOidcExpiresAt = 0;
+
+function jwtExpiryMs(token) {
+  try {
+    const payload = JSON.parse(Buffer.from(String(token).split(".")[1], "base64url").toString("utf8"));
+    return Number(payload?.exp || 0) * 1000;
+  } catch {
+    return 0;
+  }
+}
+
+async function getGitHubActionsQaOidcToken() {
+  if (!useGitHubActionsOidc) return null;
+  if (cachedQaOidcToken && cachedQaOidcExpiresAt > Date.now() + 60_000) return cachedQaOidcToken;
+
+  const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+  const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+  if (!requestUrl || !requestToken) {
+    throw new Error("GitHub Actions OIDC was requested but id-token credentials are unavailable.");
+  }
+
+  const url = new URL(requestUrl);
+  url.searchParams.set("audience", qaOidcAudience);
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${requestToken}` },
+    cache: "no-store"
+  });
+  if (!response.ok) {
+    throw new Error(`GitHub Actions OIDC token request failed with HTTP ${response.status}.`);
+  }
+  const payload = await response.json();
+  const token = String(payload?.value || "").trim();
+  const expiresAt = jwtExpiryMs(token);
+  if (!token || expiresAt <= Date.now() + 30_000) {
+    throw new Error("GitHub Actions returned an invalid or already-expiring QA OIDC token.");
+  }
+  cachedQaOidcToken = token;
+  cachedQaOidcExpiresAt = expiresAt;
+  return token;
+}
 
 const benchmarkBase = JSON.parse(readFileSync(benchmarkPath, "utf8"));
 const benchmarkCorrections = JSON.parse(readFileSync(benchmarkCorrectionsPath, "utf8"));
@@ -95,6 +138,10 @@ function inspectAnswer(item, payload) {
   const normalizedAnswer = normalizeQaText(answer);
   const sources = Array.isArray(payload?.sources) ? payload.sources : [];
   const rulingStatus = String(payload?.rulingStatus || "");
+
+  if (["local-budget-fallback", "local-source-lookup"].includes(payload?.executionPath)) {
+    failures.push("infrastructure: production model path unavailable (" + payload.executionPath + ")");
+  }
 
   if (payload?.version !== benchmark.rulesVersion) {
     failures.push("version: expected " + benchmark.rulesVersion + ", received " + (payload?.version || "missing"));
@@ -172,13 +219,16 @@ async function requestAttempt(body) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
   try {
+    const headers = {
+      "Content-Type": "application/json",
+      "Origin": "https://gauntlet.run",
+      "User-Agent": "Gauntlet-v0.7.1-live-QA"
+    };
+    const qaOidcToken = await getGitHubActionsQaOidcToken();
+    if (qaOidcToken) headers["X-Gauntlet-QA-OIDC"] = qaOidcToken;
     const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Origin": "https://gauntlet.run",
-        "User-Agent": "Gauntlet-v0.7.1-live-QA"
-      },
+      headers,
       body: JSON.stringify(body),
       signal: controller.signal
     });
@@ -198,7 +248,8 @@ async function requestAttempt(body) {
 
 async function runInfrastructurePreflight() {
   const result = await postCase(benchmarkCases[0], 0);
-  if (result.httpStatus === 200 && result.payload) {
+  const modelPathFailure = result.failures.find((failure) => failure.startsWith("infrastructure:"));
+  if (result.httpStatus === 200 && result.payload && !modelPathFailure) {
     return { failure: null, result };
   }
 
@@ -376,6 +427,16 @@ for (const item of results) {
   const actual = item.payload?.rulingStatus || "no_response";
   classifications[actual] = (classifications[actual] || 0) + 1;
 }
+const benchmarkInfrastructureFailures = results.filter((item) =>
+  item.failures.some((failure) => failure.startsWith("infrastructure:"))
+);
+const benchmarkInfrastructureFailure = benchmarkInfrastructureFailures.length
+  ? {
+      affectedCases: benchmarkInfrastructureFailures.length,
+      firstCaseId: benchmarkInfrastructureFailures[0].id,
+      error: benchmarkInfrastructureFailures[0].failures.find((failure) => failure.startsWith("infrastructure:"))
+    }
+  : null;
 
 const report = {
   schema: "gauntlet.rules-arbiter-live-qa.v1",
@@ -390,8 +451,9 @@ const report = {
   concurrency,
   maxAttempts,
   interCaseDelayMs,
-  infrastructureFailure: null,
+  infrastructureFailure: benchmarkInfrastructureFailure,
   summary: {
+    benchmarkStatus: benchmarkInfrastructureFailure ? "invalid_infrastructure" : (failed.length ? "failed" : "passed"),
     total: results.length,
     passed: results.length - failed.length,
     failed: failed.length,

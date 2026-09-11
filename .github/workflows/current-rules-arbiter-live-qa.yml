@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   live-qa:
@@ -156,6 +157,7 @@ jobs:
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
           GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
         run: node "${{ steps.plan.outputs.qa_runner }}"
 
       - name: Upload live QA report
