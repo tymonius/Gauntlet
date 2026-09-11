@@ -3,7 +3,7 @@ name: Territory Mobile Render
 on:
   pull_request:
     paths:
-      - "game-data/**"
+      - "packages/game-data/**"
       - "card-design/**"
       - "design-tokens.css"
       - "images/artwork/**"
@@ -30,6 +30,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf game-data
+          mkdir -p game-data
+          cp -a packages/game-data/. game-data/
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
