@@ -33,9 +33,9 @@ The Financiers add an economic layer to the shared game:
 
 The distinction between Capital and Capital Limit is important. **Capital is what you have available to spend. Capital Limit is how much Capital your economy can support at the end of a turn.**
 
-You begin with 2 Capital. Your Capital Limit is always:
+You begin with 2 Capital. To find your Capital Limit, count **1 for each Territory you control**, then add the printed values of every card in your Treasury. In compact form:
 
-> **Territories you control + total card value in your Treasury**
+> **Capital Limit = Territories you control + total card value in your Treasury**
 
 Capital can temporarily exceed that limit. At the end of every turn, reduce your Capital to the current limit if necessary.
 
@@ -47,13 +47,14 @@ You need:
 - one Financier Leader: the **Banker** or the **Executive**;
 - one **Financier Reference Card**;
 - one **Capital Ledger**;
+- a **pen or pencil** for writing on the Capital Ledger;
 - one **Capital Limit Tracker**;
 - eight **Deed Cards** in the shared Deed supply; and
 - the Financier cards included in your Deck.
 
 Place your Leader face up in front of you. Put the Capital Limit Tracker beneath it and align the Leader with your current Capital Limit. With an empty Treasury, that limit is simply the number of Territories you currently control. Whenever your Territory control or Treasury value changes, update the tracker.
 
-Use the public Capital Ledger to record your **current Capital**. Begin with **2 Capital**. Record gains, spending, losses, and any end-of-turn reduction there.
+Use the public Capital Ledger to record your **current Capital**. Begin with **2 Capital**. Keep a pen or pencil with the Ledger and write down each gain, spend, loss, and end-of-turn reduction so the running balance remains public and current.
 
 Keep your Treasury face up and separate from your Hand, Discard Pile, Graveyard, and Asset Bank. Keep the Deed Cards in a shared supply until a Deed is purchased.
 
@@ -66,11 +67,11 @@ When you buy an unowned Deed, take a Deed Card from the supply and place it besi
 
 You begin with **2 Capital**. Capital cannot fall below 0.
 
-Your **Capital Limit** is dynamic:
+Your **Capital Limit** is dynamic. To calculate it, count the Territories you currently control, then add the printed values of all cards currently in your Treasury. That total is the most Capital you can keep at the end of a turn.
 
 > **Capital Limit = Territories you control + total card value in your Treasury.**
 
-For example, if you control two Territories and your Treasury contains cards worth 2 and 3, your Capital Limit is **7**.
+For example, if you control two Territories and your Treasury contains cards worth 2 and 3, start with 2 for the Territories and add 5 from Treasury. Your Capital Limit is **7**.
 
 The Capital Limit is not a ceiling that prevents you from gaining Capital. Income, card effects, or other features may put you above it temporarily. At the end of **every turn**, including the opponent's turn, compare your Capital with your current Capital Limit. If your Capital is higher, reduce it to the limit.
 
@@ -118,11 +119,16 @@ Deed ownership is independent of **control**, **occupation**, and Player Token p
 
 **Buy or buy out a Deed — 1 Action · Denouement.** Pay the Deed's full current cost, then take its Deed Card from the shared supply or from an opposing Financier.
 
-Calculate the cost in three parts:
+To price a Deed in ordinary language:
+
+1. Start with **one more than the number of Deeds you already own**. Once that starting number reaches 6, it stays at 6.
+2. Adjust for your relationship to the Territory: **subtract 1** if you control it, **add nothing** if you occupy it, or **add 1** if you neither control nor occupy it.
+3. **Only when the Deed is owned by another Financier**, add the buyout premium: the number of Deeds that opposing Financier owns, capped at 6.
+4. The final price can never be lower than **1 Capital**.
+
+The compact formula is:
 
 > **Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium**
-
-The minimum final cost is **1 Capital**.
 
 | Your relationship to that Territory | Modifier |
 |---|---:|
@@ -130,11 +136,11 @@ The minimum final cost is **1 Capital**.
 | You occupy it | 0 |
 | You neither control nor occupy it | +1 |
 
-For an **unowned Deed**, the buyout premium is 0.
+For an **unowned Deed**, the buyout premium is 0. In a game against a non-Financier, there is no opposing Financier who can own a Deed, so **buyout premium never applies**.
 
-If an opposing Financier owns the Deed, add a buyout premium equal to:
+In a **Financier mirror**, if the opposing Financier owns the Deed, add a buyout premium equal to the number of Deeds that opponent owns, up to a maximum premium of 6:
 
-> **min(Deeds that opponent owns, 6)**
+> **Buyout premium = min(Deeds the opposing Financier owns, 6)**
 
 If an effect lets you make several purchases, finish each purchase before calculating the next one. Your Deed count may have changed, so the next price may be different.
 
@@ -164,7 +170,7 @@ Play the Market converts a card into uncertain liquidity. It can fund a purchase
 | +3 | 6 |
 | +4 | 10 |
 
-The progression continues in the same pattern: each additional +1 costs one more Capital than the previous increment. Capital spent on Subsidize is spent regardless of who wins the battle.
+The progression continues in the same pattern: the first +1 costs 1 Capital, the next +1 costs 2 more, the next costs 3 more, then 4 more, and so on. In other words, each additional point of battle bonus costs one more Capital than the point before it. Capital spent on Subsidize is spent regardless of who wins the battle.
 
 Subsidize does not use your normal Action. It lets the economy support the battlefield directly, but every Capital spent in battle is Capital you are not using to buy Deeds or preserve for later turns.
 
@@ -227,7 +233,7 @@ Your Treasury value is 4 and you control 2 Territories. Because 4 is greater tha
 
 Assume you use your Opening Action normally, then reach Denouement while occupying an enemy Territory whose Deed is unowned. You use your Denouement Action to buy that Deed.
 
-You already own 2 Deeds, so the base cost is **3**. Because you occupy the Territory, the position modifier is 0, and because the Deed is unowned, there is no buyout premium. The final cost is **3 Capital**.
+You already own 2 Deeds, so start with **3 Capital** for the base price. You occupy the Territory, so there is no position adjustment. The Deed is unowned, so there is no buyout premium. The final cost is therefore **3 Capital**.
 
 Spend 3 Capital, moving the Ledger from 5 to **2**, and place a Deed Card beside that Territory on your side. You now own 3 Deeds. Your Capital Limit remains 6 because buying a Deed does not itself change Territory control or Treasury value.
 
@@ -257,12 +263,14 @@ Do not count Treasury value as income. **Deeds** generate income. **Treasury** r
 
 Do not move a Deed merely because Territory control changes. Deed ownership changes only when a rule or effect changes the Deed.
 
+Do not apply a buyout premium unless the Deed is already owned by an **opposing Financier**. Unowned Deeds—and every Deed in a game against a non-Financier—have no buyout premium.
+
 Do not forget to recalculate a Deed's cost after each purchase when an effect lets you buy several.
 
 <!-- RULES-SECTION:reference -->
 ## Rules and Reference
 
-Keep the **Financier Reference Card**, **Capital Ledger**, **Capital Limit Tracker**, and owned **Deed Cards** visible. Together they show the economy you need to operate most often: current Capital, current capacity, purchase costs, income, Financial Capacity, Play the Market, Subsidize, and Controlling Interest.
+Keep the **Financier Reference Card**, **Capital Ledger**, **pen or pencil**, **Capital Limit Tracker**, and owned **Deed Cards** visible. Together they show the economy you need to operate most often: current Capital, current capacity, purchase costs, income, Financial Capacity, Play the Market, Subsidize, and Controlling Interest.
 
 Use the **Player's Guide** for the shared turn, Actions, movement, battle, Occupation, Capture, and victory rules. When an unusual collateral, buyout, added-Territory, mirror-match, or timing interaction comes up, ask the **Rules Arbiter**. Use the **Comprehensive Gauntlet Rules** when you want the exact technical procedure behind the ruling.
 

@@ -21,14 +21,14 @@
 
 Begin at **0**. Maximum **4**.
 
-The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain **1 Conviction**.
+The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction**.
 
 - This may occur during either player's turn.
 - Several qualifying cards from the same battle give **1 Conviction total**.
 
 ### Condemnation
 
-During the Aftermath of battles involving you, opposing **Tactics go to their owner's Graveyard instead of their Discard Pile**.
+During the Aftermath, opposing **Tactics go to their owner's Graveyard instead of their Discard Pile**.
 
 ## Reverse — Blasphemy & Purification
 

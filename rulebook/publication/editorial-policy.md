@@ -40,6 +40,20 @@ When both are correct, prefer the verb that describes the game action:
 
 Technical precision does not require unnatural prose. The Comprehensive Rules may be formal, but they should still read as English rather than serialized rule identifiers.
 
+## Do not state that a battle "involves" the player
+
+Gauntlet is a two-player game. Every battle necessarily includes both players, so phrases such as **"a battle involving you"** and **"battles involving you"** add no information and should not appear in current player-facing rules.
+
+State the condition that actually matters instead:
+
+- **during the battle** or **during the Aftermath** when participation itself is sufficient;
+- **a battle you initiated** when attacking/initiative matters;
+- **while defending** when the defender role matters;
+- **after you win a battle** or **after you lose a battle** when the result matters; or
+- another concrete trigger that explains why the effect applies.
+
+Do not add participant qualifiers merely to make a trigger sound more technical. If removing "involving you" changes no legal game state, remove it.
+
 ## Prefer low cognitive density over low word count
 
 The goal of teaching material is not to minimize the number of words or pages. It is to minimize the time and mental effort required for a player to reach confident play.
@@ -113,3 +127,4 @@ When reviewing a teaching passage, also ask:
 - Would removing this sentence make the remaining prose denser or more abstract?
 - Would a small diagram, example, or callout save more comprehension time than it adds reading time?
 - Are paired concepts such as Position/control, Occupation/Capture, Hand/Reserve, Gambit/Tactic, and Opening/Denouement kept distinct rather than compressed together?
+- Does any sentence say a battle "involves" the player when it could simply name the actual timing, role, or result that matters?
