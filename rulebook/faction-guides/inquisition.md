@@ -25,7 +25,7 @@ The Inquisition still plays the normal territorial game. Attrition can make a di
 The Inquisition adds five linked systems to the shared game:
 
 - **Conviction** is a public resource from 0 to 4;
-- **Condemnation** sends opposing Tactics to the Graveyard during battles involving you;
+- **Condemnation** sends opposing Tactics to the Graveyard during the Aftermath;
 - **Blasphemy** gains additional Conviction when the opponent uses revealed Arcane cards in specific ways;
 - **Purge** spends Conviction to move cards or Assets into the opponent's Graveyard; and
 - **Purification** gives you an alternate victory if the opponent's normal start-of-turn draw fails with both Draw Pile and Discard Pile empty.
@@ -58,7 +58,7 @@ Conviction is the resource you spend on Purge and, as the Witch Hunter, on Relen
 
 ### Normal Conviction gain
 
-**Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain **1 Conviction**, up to the maximum of 4.
+**Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction**, up to the maximum of 4.
 
 Important details:
 
@@ -85,7 +85,7 @@ Arcane is a **trait**, not a faction. Most obviously, Mystics cards are Arcane, 
 
 ### Condemnation
 
-**Condemnation — Automatic · Aftermath.** During the Aftermath of a battle involving you, opposing **Tactics go to their owner's Graveyard instead of their Discard Pile**.
+**Condemnation — Automatic · Aftermath.** During the Aftermath, opposing **Tactics go to their owner's Graveyard instead of their Discard Pile**.
 
 This changes the normal destination of opposing Tactics. It does not change the normal destination of cards remaining in Reserve; those still go to the Discard Pile unless another effect says otherwise.
 
@@ -176,9 +176,17 @@ The Grand Inquisitor is the most direct first Leader: win battles, collect Convi
 
 - **Relentless Pursuit — 2 Conviction · No Action · Once per turn · After defeating an attacking opponent.** End their turn, then Advance one Position toward their end. If that movement initiates a battle, you are the attacker.
 
-Relentless Pursuit converts a successful defense into immediate counterpressure. Because the opponent's turn ends first, the advance is a new movement sequence granted by the Leader Ability rather than ordinary Movement.
+Relentless Pursuit bridges the opponent's turn into yours. The battle that triggered it still finishes its **Aftermath normally**. Then:
 
-If the advance creates another battle, resolve it normally with the Witch Hunter as attacker. Terms can still end that new battle sequence during Onset when applicable.
+1. end the defeated attacker's turn;
+2. resolve that turn's **Cleanup**;
+3. before your normal turn begins, Advance one Position toward the opponent's end;
+4. if that Advance initiates a battle, resolve that battle completely with you as the attacker; and
+5. after the pursuit movement and any resulting battle are finished, begin your normal turn with **Capture**.
+
+The pursuit Advance is therefore a separate movement sequence between turns. It is not leftover movement from the battle you just won, and it does not replace your normal Movement later in your own turn.
+
+Terms can still end a pursuit battle during Onset when applicable. If the pursuit battle ends or resolves without ending the game, continue into your normal turn at Capture.
 
 Withdrawal has no loser, so it cannot trigger Relentless Pursuit.
 
@@ -207,7 +215,7 @@ Because Final Judgment's Purge was directly permitted rather than taken as an Ac
 For your first Inquisition game, keep five ideas in mind:
 
 1. **Conviction normally comes from the first qualifying Aftermath each turn, not from each card.** Several opposing cards entering the Graveyard together still give only 1 normal Conviction.
-2. **Condemnation changes Tactic cleanup.** Opposing Tactics go to the Graveyard in battles involving you; remaining Reserve cards still discard normally.
+2. **Condemnation changes Tactic cleanup.** Opposing Tactics go to the Graveyard during the Aftermath; remaining Reserve cards still discard normally.
 3. **Blasphemy is a separate Conviction source.** Opposing Arcane Actions and revealed Arcane Gambits or Tactics can gain Conviction outside the normal Aftermath limit.
 4. **An Action Purge can give you two Actions that turn, but only across the two different Action phases.** Never take two Actions in one phase because of Purge.
 5. **Purification checks one specific draw.** Both opposing piles must be empty when the opponent fails their normal start-of-turn draw; other failed draws do not win the game.
