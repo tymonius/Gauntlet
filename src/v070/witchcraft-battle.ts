@@ -23,8 +23,8 @@ import {
   queueV070WitchcraftBattleRevealChoice,
 } from './battle-reveal-choices';
 import {
-  v070BattleEffectHandler as v070FullBattleEffectHandler,
-} from './battle-effects-pre-counterworks';
+  resolveV070WitchcraftBattleEffectHandler,
+} from './witchcraft-handler-resolver';
 import type {
   V070CopyableEffectLabel,
   V070EffectReference,
@@ -126,7 +126,7 @@ export function resolveV070WitchcraftBattleChoice(
   if (!commitment) {
     throw new V070GameActionError('The selected Witchcraft source is no longer in this battle.');
   }
-  const handler = v070FullBattleEffectHandler(target.cardId);
+  const handler = resolveV070WitchcraftBattleEffectHandler(target.cardId);
   if (!handler || handler.expectedText !== target.text) {
     throw new V070GameActionError('The selected Witchcraft effect is not executable by the current battle engine.');
   }
@@ -234,7 +234,7 @@ function simulateApplication(
   commitment: V070BattleCardCommitment,
   effect: V070EffectReference,
 ): { canApply: boolean; addsBattleCard: boolean } {
-  const handler = v070FullBattleEffectHandler(effect.cardId);
+  const handler = resolveV070WitchcraftBattleEffectHandler(effect.cardId);
   if (!handler || handler.expectedText !== effect.text) {
     return { canApply: false, addsBattleCard: false };
   }

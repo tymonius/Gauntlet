@@ -29,6 +29,9 @@ import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
+import {
+  configureV070WitchcraftBattleEffectHandlerResolver,
+} from './witchcraft-handler-resolver';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -114,6 +117,8 @@ export function v070BattleEffectHandler(
 ): previous.V070BattleEffectHandler | undefined {
   return deferredHandlers.get(cardId) ?? previous.v070BattleEffectHandler(cardId);
 }
+
+configureV070WitchcraftBattleEffectHandlerResolver(v070BattleEffectHandler);
 
 export function v070BattleRevealEffectClass(
   cardId: string,
