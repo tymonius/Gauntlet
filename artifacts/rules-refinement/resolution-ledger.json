@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-11T04:17:49.581Z",
+  "updatedAt": "2026-09-11T04:29:06.408Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -215,7 +215,9 @@
         "121ea8a8-717e-454c-a60f-491ef6f2e52f",
         "a3c140c1-c03e-4e7b-8d99-27f45e77455b",
         "cdb61fb6-d270-4452-a445-e7a0acaf29d4",
-        "137ee7d3-8c41-42bb-a2de-ae051657d078"
+        "137ee7d3-8c41-42bb-a2de-ae051657d078",
+        "4d3d5162-01a6-4f4b-a100-dff6cd4f0bed",
+        "1a7ac447-03b3-4824-8083-7c61f153e97d"
       ],
       "resolvedAt": "2026-09-06T08:11:05.017Z",
       "binding": {
@@ -363,7 +365,8 @@
       "rootCause": "retrieval",
       "interactionIds": [
         "2207772f-cc40-48e8-8585-7df489cb3d76",
-        "18751949-fcd4-4d29-8786-6bce59190caf"
+        "18751949-fcd4-4d29-8786-6bce59190caf",
+        "daae1140-89aa-463e-8546-7b19fa94fed1"
       ],
       "caseIds": [
         "onward-battle-movement-termination"
@@ -414,7 +417,8 @@
       "status": "resolved",
       "rootCause": "retrieval",
       "interactionIds": [
-        "476b8f67-9bdf-4364-8d47-add65b67707e"
+        "476b8f67-9bdf-4364-8d47-add65b67707e",
+        "b8ee7052-69dd-41b1-82e9-49032f926d99"
       ],
       "caseIds": [
         "legacy-defender-advantage-defensive-edge"
@@ -482,7 +486,8 @@
       "status": "resolved",
       "rootCause": "conversation_continuity",
       "interactionIds": [
-        "999db05a-01a7-4d4d-85fc-babf8f75d5a5"
+        "999db05a-01a7-4d4d-85fc-babf8f75d5a5",
+        "b922bfa5-6fce-4567-84b0-8c35fbb4b40e"
       ],
       "caseIds": [
         "deed-cost-clarity-followup"
@@ -516,7 +521,9 @@
       "status": "resolved",
       "rootCause": "classification",
       "interactionIds": [
-        "4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4"
+        "4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4",
+        "6a89266c-60cd-4275-b50e-4bfacb3de30f",
+        "0ec2f926-7212-4937-867d-eac92a0a35c6"
       ],
       "caseIds": [
         "rite-of-crossing-completion"
@@ -921,6 +928,26 @@
       "resolutionSurface": "arbiter_prompt",
       "summary": "Require the current v0.7.1 Arbiter to preserve printed effect labels exactly, including distinguishing an Action that banks a card from a later Asset or Use ability so a ruling cannot imply an extra Action expenditure.",
       "resolvedAt": "2026-09-11T04:17:49.581Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260911-1"
+      }
+    },
+    {
+      "id": "reviewed-correct-other-attention-closeout-20260911-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "2a4c793d-21d2-4133-a45d-0a0df4a5ef07",
+        "b2d55ffe-219a-496c-bc22-baac51533e88",
+        "ca25c695-26be-43c8-ba49-ddae85534fba",
+        "eedde1c1-b96f-47ac-a71e-bdf043d1fbdf"
+      ],
+      "caseIds": [
+        "reviewed-correct-no-action"
+      ],
+      "resolutionSurface": "review_bookkeeping",
+      "summary": "Production review confirmed these residual other-attention interactions are substantively correct against current authority, have sufficient retrieval and correct classification, and require no runtime change. Bind the reviewed records so the refinement backlog reflects only actionable defects.",
+      "resolvedAt": "2026-09-11T04:29:06.408Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260911-1"
       }
