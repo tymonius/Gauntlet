@@ -6,6 +6,11 @@ import type {
 } from './battle-types';
 import * as core from './battle-effects-core';
 import {
+  V070_ASSASSINS_BATTLE_TEXT,
+  V070_ASSASSINS_ID,
+  registerV070AssassinsBattleEffect,
+} from './assassins-battle';
+import {
   V070_DARK_OMENS_BATTLE_TEXT,
   V070_DARK_OMENS_ID,
   registerV070DarkOmensBattleEffect,
@@ -190,6 +195,17 @@ const palisadeWallHandler: V070SpecializedBattleEffectHandler = {
   },
 };
 
+const assassinsHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_ASSASSINS_ID,
+  expectedText: V070_ASSASSINS_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070AssassinsBattleEffect(state, owner, commitment.instanceId);
+  },
+};
+
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
@@ -201,6 +217,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [propertyDuesHandler.cardId, propertyDuesHandler],
   [speculationHandler.cardId, speculationHandler],
   [palisadeWallHandler.cardId, palisadeWallHandler],
+  [assassinsHandler.cardId, assassinsHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
