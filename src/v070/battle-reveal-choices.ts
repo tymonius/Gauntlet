@@ -4,236 +4,101 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import * as previous from './battle-reveal-choices-pre-witchcraft';
+
+export * from './battle-reveal-choices-pre-witchcraft';
+
+export interface V070WitchcraftBattleRevealChoice {
+  kind: 'witchcraft';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidateInstanceIds: string[];
+}
 
 export type V070BattleRevealChoice =
-  | {
-      kind: 'divine_mercy';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-    }
-  | {
-      kind: 'dark_omens';
-      owner: PlayerId;
-      sourceInstanceId: string;
-      drawnInstanceId: string;
-    }
-  | {
-      kind: 'sedition';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'requisition';
-      owner: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'tariffs';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'penance';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'property_dues';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'speculation';
-      owner: PlayerId;
-      sourceInstanceId: string;
-    }
-  | {
-      kind: 'palisade_wall';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'assassins';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'capital_punishment';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      /** Opposing Gambits/Tactics whose effects had not taken effect. */
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'disruption';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      role: 'gambit' | 'tactic';
-      /** Opposing cards at this reveal stage whose effects had not taken effect. */
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'battle_negation';
-      owner: PlayerId;
-      opponent: PlayerId;
-      sourceInstanceId: string;
-      sourceCardId: 'inquisition-tyranny' | 'neutral-sabotage';
-      role: 'gambit' | 'tactic';
-      discardTargetImmediately: boolean;
-      /** Opposing cards at this reveal stage whose effects had not taken effect. */
-      candidateInstanceIds: string[];
-    }
-  | {
-      kind: 'counterworks';
-      owner: PlayerId;
-      sourceInstanceId: string;
-      territoryPosition: number;
-      candidateOverlayInstanceIds: string[];
-    };
+  | previous.V070BattleRevealChoice
+  | V070WitchcraftBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
-    battleRevealChoices?: V070BattleRevealChoice[];
-    battleRevealChoiceOpen?: boolean;
+    pendingWitchcraftBattleRevealChoice?: V070WitchcraftBattleRevealChoice | null;
+    witchcraftBattleRevealChoiceOpen?: boolean;
   }
 }
 
-export function queueV070BattleRevealChoice(
+export function queueV070WitchcraftBattleRevealChoice(
   state: V070GameState,
-  choice: V070BattleRevealChoice,
+  choice: V070WitchcraftBattleRevealChoice,
 ): void {
   const runtime = state.battleRuntime;
   if (!state.battle || !runtime) {
     throw new V070GameActionError(
-      'A reveal-timing battle choice requires an active battle.',
+      'Witchcraft battle resolution requires an active battle.',
     );
   }
-  runtime.battleRevealChoices ??= [];
-  runtime.battleRevealChoices.push(choice);
-
-  // These effects alter the exact set of battle cards at the current reveal
-  // stage. Once they register, the scheduler pauses before another reveal
-  // effect can change their candidate set, so the outer battle facade may own
-  // their resolution without teaching older stacked facades new actions.
-  if (choice.kind === 'disruption') {
-    runtime.battleRevealChoiceOpen = true;
-    appendV070Event(state, {
-      type: 'disruption_battle_choice_pending',
-      actor: choice.owner,
-      visibility: 'public',
-      payload: {
-        playerId: choice.owner,
-        sourceInstanceId: choice.sourceInstanceId,
-        sourceCardId: 'neutral-disruption',
-        revealRole: choice.role,
-        candidateCount: choice.candidateInstanceIds.length,
-        mandatory: true,
-      },
-    });
-    appendV070Event(state, {
-      type: 'disruption_battle_choice_options',
-      actor: choice.owner,
-      visibility: choice.owner,
-      payload: {
-        sourceInstanceId: choice.sourceInstanceId,
-        revealRole: choice.role,
-        targetInstanceIds: [...choice.candidateInstanceIds],
-      },
-    });
-    return;
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Witchcraft cannot open while another reveal-timing battle choice is pending.',
+    );
   }
+  runtime.pendingWitchcraftBattleRevealChoice = {
+    ...choice,
+    candidateInstanceIds: [...choice.candidateInstanceIds],
+  };
+  // Witchcraft owns its chooser UI directly at the outer battle facade. Mark
+  // the choice open immediately so older reveal facades pause instead of
+  // trying to interpret a choice kind they predate.
+  runtime.witchcraftBattleRevealChoiceOpen = true;
 
-  if (choice.kind === 'battle_negation') {
-    runtime.battleRevealChoiceOpen = true;
-    appendV070Event(state, {
-      type: 'battle_negation_choice_pending',
-      actor: choice.owner,
-      visibility: 'public',
-      payload: {
-        playerId: choice.owner,
-        sourceInstanceId: choice.sourceInstanceId,
-        sourceCardId: choice.sourceCardId,
-        revealRole: choice.role,
-        candidateCount: choice.candidateInstanceIds.length,
-        mandatory: true,
-      },
-    });
-    appendV070Event(state, {
-      type: 'battle_negation_choice_options',
-      actor: choice.owner,
-      visibility: choice.owner,
-      payload: {
-        sourceInstanceId: choice.sourceInstanceId,
-        sourceCardId: choice.sourceCardId,
-        revealRole: choice.role,
-        targetInstanceIds: [...choice.candidateInstanceIds],
-      },
-    });
-  }
+  appendV070Event(state, {
+    type: 'witchcraft_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'mystics-witchcraft',
+      candidateCount: choice.candidateInstanceIds.length,
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'witchcraft_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      targetInstanceIds: [...choice.candidateInstanceIds],
+    },
+  });
 }
 
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.battleRevealChoices?.[0] ?? null;
+  return state.battleRuntime?.pendingWitchcraftBattleRevealChoice
+    ?? previous.pendingV070BattleRevealChoice(state);
 }
 
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
-  return Boolean(
-    pendingV070BattleRevealChoice(state)
-    && state.battleRuntime?.battleRevealChoiceOpen,
-  );
+  if (state.battleRuntime?.pendingWitchcraftBattleRevealChoice) {
+    return Boolean(state.battleRuntime.witchcraftBattleRevealChoiceOpen);
+  }
+  return previous.isV070BattleRevealChoiceOpen(state);
 }
 
-export function markV070BattleRevealChoiceOpen(
+export function completeV070WitchcraftBattleRevealChoice(
   state: V070GameState,
-): V070BattleRevealChoice {
+): V070WitchcraftBattleRevealChoice {
   const runtime = state.battleRuntime;
-  const pending = pendingV070BattleRevealChoice(state);
-  if (!runtime || !pending) {
+  const pending = runtime?.pendingWitchcraftBattleRevealChoice;
+  if (!runtime || !pending || !runtime.witchcraftBattleRevealChoiceOpen) {
     throw new V070GameActionError(
-      'There is no reveal-timing battle choice to open.',
+      'There is no open Witchcraft battle-effect choice.',
     );
   }
-  runtime.battleRevealChoiceOpen = true;
-  return pending;
-}
-
-export function completeV070BattleRevealChoice(
-  state: V070GameState,
-  expectedKind: V070BattleRevealChoice['kind'],
-): V070BattleRevealChoice {
-  const runtime = state.battleRuntime;
-  const pending = pendingV070BattleRevealChoice(state);
-  if (!runtime || !pending || !runtime.battleRevealChoiceOpen) {
-    throw new V070GameActionError(
-      'There is no open reveal-timing battle choice.',
-    );
-  }
-  if (pending.kind !== expectedKind) {
-    throw new V070GameActionError(
-      `The pending reveal-timing choice is ${pending.kind}, not ${expectedKind}.`,
-    );
-  }
-  runtime.battleRevealChoices!.shift();
-  runtime.battleRevealChoiceOpen = false;
+  runtime.pendingWitchcraftBattleRevealChoice = null;
+  runtime.witchcraftBattleRevealChoiceOpen = false;
   return pending;
 }

@@ -7,33 +7,37 @@ import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
 } from './battle-types';
-import * as previous from './battle-effects-core-pre-witchcraft';
+import * as previous from './battle-effects-core-pre-counterworks-authority';
 import {
-  V070_WITCHCRAFT_BATTLE_TEXT,
-  V070_WITCHCRAFT_ID,
-  registerV070WitchcraftBattleEffect,
-} from './witchcraft-battle';
+  V070_COUNTERWORKS_BATTLE_TEXT,
+  V070_COUNTERWORKS_ID,
+  registerV070CounterworksBattleEffect,
+} from './counterworks-battle';
 
-export * from './battle-effects-core-pre-witchcraft';
+export * from './battle-effects-core-pre-counterworks-authority';
 
-const witchcraftHandler: previous.V070BattleEffectHandler = {
-  cardId: V070_WITCHCRAFT_ID,
-  expectedText: V070_WITCHCRAFT_BATTLE_TEXT,
+const counterworksHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_COUNTERWORKS_ID,
+  expectedText: V070_COUNTERWORKS_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070WitchcraftBattleEffect(state, owner, commitment.instanceId);
+    registerV070CounterworksBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
   },
 };
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  V070_WITCHCRAFT_ID,
+  V070_COUNTERWORKS_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
-  if (cardId === V070_WITCHCRAFT_ID) return witchcraftHandler;
+  if (cardId === V070_COUNTERWORKS_ID) return counterworksHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -43,13 +47,13 @@ export function resolveV070SupportedRevealEffects(
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
   const unsupported = commitments.flatMap(commitment =>
-    unsupportedWitchcraftCommitment(state, commitment, encounteredAt)
+    unsupportedCounterworksCommitment(state, commitment, encounteredAt)
   );
   if (unsupported.length > 0) return unsupported;
 
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    if (cardId !== V070_WITCHCRAFT_ID) {
+    if (cardId !== V070_COUNTERWORKS_ID) {
       const forwarded = previous.resolveV070SupportedRevealEffects(
         state,
         [commitment],
@@ -59,7 +63,7 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
-    witchcraftHandler.apply({
+    counterworksHandler.apply({
       state,
       owner: commitment.owner,
       opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -80,13 +84,13 @@ export function resolveV070SupportedRevealEffects(
   return [];
 }
 
-function unsupportedWitchcraftCommitment(
+function unsupportedCounterworksCommitment(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
   const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-  if (cardId !== V070_WITCHCRAFT_ID) return [];
+  if (cardId !== V070_COUNTERWORKS_ID) return [];
   const card = v070CanonicalContent.cardsById.get(cardId);
   if (!card) {
     return [{
@@ -104,7 +108,7 @@ function unsupportedWitchcraftCommitment(
     || effect.label === 'Gambit/Tactic'
   );
   if (relevant.length === 1
-    && relevant[0]?.text === V070_WITCHCRAFT_BATTLE_TEXT) {
+    && relevant[0]?.text === V070_COUNTERWORKS_BATTLE_TEXT) {
     return [];
   }
   return relevant.map(effect => ({
