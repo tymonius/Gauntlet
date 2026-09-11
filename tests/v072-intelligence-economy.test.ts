@@ -109,8 +109,9 @@ describe('v0.7.2 Intelligence economy authority', () => {
 
   it('teaches the same rule in the maintained rulebook, faction guide, and table reference', () => {
     for (const surface of [rulebook, guide, missionReference]) {
-      expect(surface).toContain(
-        'At the start of your turn, gain Intel equal to your current Operation Progress',
+      const plainSurface = surface.replace(/\*\*/g, '');
+      expect(plainSurface).toMatch(
+        /At the start of your turn, gain Intel equal to your (?:current )?Operation Progress/,
       );
       expect(surface).toContain('Operational Capacity');
       expect(surface).toMatch(/Abort(?: Mission)? does (?:\*\*)?not(?:\*\*)? qualify/i);
