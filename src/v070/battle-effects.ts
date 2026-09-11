@@ -229,6 +229,26 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'military-encampment',
+    expectedText: 'In the Aftermath, if you won while defending a Territory you control, place this Overlay there.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      const battle = state.battle;
+      if (!battle || battle.defender !== owner || battle.lastStand) return;
+      const territory = state.board.find(
+        item => item.position === battle.contestedPosition,
+      );
+      if (territory?.controller !== owner) return;
+      registerBattleCardAftermathOverlayPlacement(
+        state,
+        owner,
+        commitment.instanceId,
+        'military-encampment',
+        'owner_win',
+      );
+    },
+  },
+  {
     cardId: 'neutral-manifest-destiny',
     expectedText: 'In the Aftermath, if you win as the attacker, insert this card into the Gauntlet at your Front Line as a blank Territory you control.',
     timing: 'reveal',
