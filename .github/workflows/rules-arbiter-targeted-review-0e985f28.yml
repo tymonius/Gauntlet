@@ -1,4 +1,4 @@
-name: Rules Arbiter targeted review 0e985f28
+name: Rules Arbiter finalize 0e985f28
 
 on:
   push:
@@ -7,18 +7,12 @@ on:
       - '.github/workflows/rules-arbiter-targeted-review-0e985f28.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  review:
+  finalize:
     runs-on: ubuntu-latest
-    environment: production
     timeout-minutes: 12
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      REVIEW_DIR: .tmp/rules-arbiter-targeted-review
-      TARGET_ID: 0e985f28-0763-4948-965d-667a3b30e616
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,69 +22,95 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify production D1 credentials
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Read target session from production D1
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$REVIEW_DIR"
-          SESSION_SUBQUERY="SELECT session_id FROM rules_interactions WHERE id = '$TARGET_ID'"
-          INTERACTION_SUBQUERY="SELECT id FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY)"
-
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interactions WHERE session_id = ($SESSION_SUBQUERY) ORDER BY sequence_index, created_at" \
-            > "$REVIEW_DIR/interactions.json"
-
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_sources WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/sources.json"
-
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_diagnostics WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/diagnostics.json"
-
-          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
-            --command "SELECT * FROM rules_interaction_audits WHERE interaction_id IN ($INTERACTION_SUBQUERY)" \
-            > "$REVIEW_DIR/audits.json"
-
-      - name: Assemble review bundle
+      - name: Apply systemic source-marker fix
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import path from 'node:path';
-          const dir = process.env.REVIEW_DIR;
-          const readRows = (name) => {
-            const parsed = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
-            const batches = Array.isArray(parsed) ? parsed : [parsed];
-            return batches.flatMap((batch) => Array.isArray(batch?.results) ? batch.results : []);
-          };
-          const bundle = {
-            targetInteractionId: process.env.TARGET_ID,
-            interactions: readRows('interactions.json'),
-            sources: readRows('sources.json'),
-            diagnostics: readRows('diagnostics.json'),
-            audits: readRows('audits.json')
-          };
-          fs.writeFileSync(path.join(dir, 'review-bundle.json'), JSON.stringify(bundle, null, 2) + '\n');
-          console.log(JSON.stringify({
-            targetInteractionId: bundle.targetInteractionId,
-            interactions: bundle.interactions.length,
-            sources: bundle.sources.length,
-            diagnostics: bundle.diagnostics.length,
-            audits: bundle.audits.length
-          }, null, 2));
+
+          const workerPath = 'rules-assistant/worker-v071.js';
+          let worker = fs.readFileSync(workerPath, 'utf8');
+          const replacements = [
+            [
+              'export const BEHAVIOR_REVISION = "v071-qa-20260910-4";',
+              'export const BEHAVIOR_REVISION = "v071-qa-20260910-5";'
+            ],
+            [
+              '5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.',
+              '5. Put supporting source IDs only in the source_ids array. Never include internal source IDs such as [S1] or [S1, S2] in the player-facing answer. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.'
+            ],
+            [
+              'export default {',
+              `export function stripInlineSourceMarkers(value) {\n  return String(value || "")\n    .replace(/\\s*\\[(?:S\\d+\\s*(?:,\\s*S\\d+\\s*)*)\\]/gi, "")\n    .replace(/[ \\t]{2,}/g, " ")\n    .trim();\n}\n\nexport default {`
+            ],
+            [
+              '      const answer = rulingStatus === "provisional"\n        ? ensureProvisionalAnswer(modelResult.answer)\n        : String(modelResult.answer || "").trim();',
+              '      const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer);\n      const answer = rulingStatus === "provisional"\n        ? ensureProvisionalAnswer(cleanModelAnswer)\n        : cleanModelAnswer;'
+            ]
+          ];
+          for (const [before, after] of replacements) {
+            if (!worker.includes(before)) throw new Error(`Expected worker text not found: ${before.slice(0, 80)}`);
+            worker = worker.replace(before, after);
+          }
+          fs.writeFileSync(workerPath, worker);
+
+          const testPath = 'rules-assistant/v071-inline-source-markers.test.mjs';
+          fs.writeFileSync(testPath, `import { describe, expect, test } from "vitest";\nimport { stripInlineSourceMarkers } from "./worker-v071.js";\nimport { readFileSync } from "node:fs";\n\nconst workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");\n\ndescribe("v0.7.1 player-facing source marker hygiene", () => {\n  test("removes internal source IDs from the exact reviewed answer shape", () => {\n    const answer = "Yes—if an opposing effect sets or chooses the commitment face up, Intelligence may Interfere with it directly at that same response timing for 2 Intel. A card revealed through Surveillance may likewise be removed immediately for 2 additional Intel per card. Once that choice stage closes, it cannot be Interfered with later. [S14, S1, S3]";\n    expect(stripInlineSourceMarkers(answer)).toBe("Yes—if an opposing effect sets or chooses the commitment face up, Intelligence may Interfere with it directly at that same response timing for 2 Intel. A card revealed through Surveillance may likewise be removed immediately for 2 additional Intel per card. Once that choice stage closes, it cannot be Interfered with later.");\n  });\n\n  test("leaves ordinary bracketed player-facing text intact", () => {\n    expect(stripInlineSourceMarkers("Resolve [this choice] now." )).toBe("Resolve [this choice] now.");\n  });\n\n  test("prompt keeps source IDs in structured metadata rather than answer prose", () => {\n    expect(workerV071).toContain("Put supporting source IDs only in the source_ids array");\n    expect(workerV071).toContain("Never include internal source IDs such as [S1] or [S1, S2] in the player-facing answer");\n    expect(workerV071).toContain("const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer)");\n  });\n});\n`);
+
+          const ledgerPath = 'artifacts/rules-refinement/resolution-ledger.json';
+          const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+          const id = 'inline-source-marker-sanitization-v071';
+          if ((ledger.entries || []).some((entry) => entry.id === id)) throw new Error(`${id} already exists`);
+          const interactionId = '0e985f28-0763-4948-965d-667a3b30e616';
+          if ((ledger.entries || []).some((entry) => (entry.interactionIds || []).includes(interactionId))) {
+            throw new Error(`Interaction already resolved in ledger: ${interactionId}`);
+          }
+          ledger.entries.push({
+            id,
+            status: 'resolved',
+            rootCause: 'other_attention',
+            interactionIds: [interactionId],
+            caseIds: ['inline-source-marker-sanitization'],
+            resolutionSurface: 'arbiter_presentation',
+            summary: 'Prevent internal retrieval source IDs from leaking into player-facing Rules Arbiter prose by instructing the model to place citations only in structured source_ids metadata and defensively stripping bracketed S-number markers before persistence and response rendering.',
+            resolvedAt: new Date().toISOString(),
+            binding: {
+              behaviorRevision: 'v071-qa-20260910-5'
+            }
+          });
+          ledger.updatedAt = new Date().toISOString();
+          fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2) + '\n');
           NODE
 
-      - name: Upload targeted review bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: rules-arbiter-targeted-review-0e985f28
-          path: .tmp/rules-arbiter-targeted-review/review-bundle.json
-          if-no-files-found: error
-          retention-days: 2
+      - name: Run focused regressions
+        run: npx vitest run rules-assistant/v071-inline-source-markers.test.mjs rules-assistant/v071-qa-foundation.test.mjs
+
+      - name: Validate refinement change
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const names = execFileSync('git', ['diff', '--name-only'], { encoding: 'utf8' })
+            .split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+          writeFileSync('/tmp/changed-files.json', JSON.stringify(names));
+          console.log(JSON.stringify(names, null, 2));
+          NODE
+          node scripts/validate-rules-refinement-source-first.mjs --changed-files /tmp/changed-files.json
+          git diff --check
+
+      - name: Commit refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tymon Scott"
+          git config user.email "54303549+tymonius@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js rules-assistant/v071-inline-source-markers.test.mjs artifacts/rules-refinement/resolution-ledger.json
+          git diff --cached --check
+          git commit -m "Prevent Rules Arbiter source marker leakage"
+          git push origin HEAD:rules-arbiter-review-0e985f28
