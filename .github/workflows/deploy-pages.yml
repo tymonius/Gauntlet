@@ -7,7 +7,7 @@ on:
   pull_request:
     paths:
       - 'media/**'
-      - 'game-data/**'
+      - 'packages/game-data/**'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'images/artwork/cards/**'
@@ -78,7 +78,6 @@ jobs:
             config
             contact
             faq
-            game-data
             images
             press
             privacy
@@ -115,6 +114,15 @@ jobs:
             mkdir -p "$target"
             cp -a "$source/." "$target/"
           done
+
+          # Shared package source is likewise independent from its stable browser URL.
+          # Repository consumers use packages/game-data/, while browser consumers retain /game-data/.
+          source="packages/game-data"
+          target="$site/game-data"
+          test -d "$source"
+          rm -rf "$target"
+          mkdir -p "$target"
+          cp -a "$source/." "$target/"
 
           # Keep historical source under legacy/ while materializing real files at the stable
           # public version URLs without exposing the legacy source boundary itself.
@@ -182,7 +190,7 @@ jobs:
           # Source-only repository roots must never re-enter Pages implicitly. Add a path to
           # public_directories above only when it is intentionally part of the deployed site.
           for excluded in \
-            .github apps artifacts docs governance legacy media rulebook-design rulebook-production \
+            .github apps artifacts docs governance legacy media packages rulebook-design rulebook-production \
             scripts src tests workers; do
             test ! -e "$site/$excluded"
           done
@@ -193,6 +201,7 @@ jobs:
           test -s "$site/factions/index.html"
           test -s "$site/start/index.html"
           test -s "$site/playtest/index.html"
+          test -s "$site/game-data/current-game.json"
           test -s "$site/CNAME"
           test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
           touch "$site/.nojekyll"
@@ -339,6 +348,7 @@ jobs:
           test -s "$SITE_DIR/factions/index.html"
           test -s "$SITE_DIR/start/index.html"
           test -s "$SITE_DIR/playtest/index.html"
+          test -s "$SITE_DIR/game-data/current-game.json"
           test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
           test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
           test -s "$SITE_DIR/faction-sheets/index.html"
