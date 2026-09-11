@@ -24,7 +24,7 @@ import {
   V070_SUPPLIES_ID,
   registerV070SuppliesBattleEffect,
 } from './supplies-battle';
-import { V070_WITCHCRAFT_ID } from './witchcraft-battle';
+import { V070_WITCHCRAFT_ID } from './copied-effect-callers';
 import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
