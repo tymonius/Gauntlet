@@ -173,6 +173,14 @@ export interface V070BattleAftermathControlledEffectChoiceRuntime {
   immediateWinner: PlayerId | null;
 }
 
+export interface V070SpiritHollowAftermathRuntime {
+  playerId: PlayerId;
+  overlayInstanceId: string;
+  territoryInstanceId: string;
+  candidateHandInstanceIds: string[];
+  candidateGraveyardInstanceIds: string[];
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -235,6 +243,8 @@ export interface V070BattleRuntime {
   poisonousGasReserveGraveyardInstanceIds: string[];
   aftermathPositionsSynchronized: boolean;
   aftermathCardsCleared: boolean;
+  pendingSpiritHollowAftermath: V070SpiritHollowAftermathRuntime | null;
+  spiritHollowAftermathPlayers: PlayerId[] | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -327,6 +337,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     poisonousGasReserveGraveyardInstanceIds: [],
     aftermathPositionsSynchronized: false,
     aftermathCardsCleared: false,
+    pendingSpiritHollowAftermath: null,
+    spiritHollowAftermathPlayers: null,
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,

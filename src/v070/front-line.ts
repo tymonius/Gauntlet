@@ -4,7 +4,10 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
-import { replaceV070CaptureWithOverlay } from './overlays';
+import {
+  replaceV070CaptureWithOverlay,
+  resolveV070OverlayCaptureEffects,
+} from './overlays';
 import { expireV070BlockadesForControlLoss } from './sanctions';
 import { discardV070SmugglersRunStashForControlLoss } from './smugglers-run';
 
@@ -79,6 +82,12 @@ export function advanceV070FrontLine(
         frontLineAdvance: true,
       },
     });
+
+    resolveV070OverlayCaptureEffects(
+      state,
+      target.position,
+      source,
+    );
 
     if (controlsEveryV070Territory(state, playerId)) break;
   }

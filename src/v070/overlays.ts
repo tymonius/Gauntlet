@@ -10,8 +10,14 @@ import {
   type PlayerId,
 } from './rules';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import { pauseV070ForSpiritHollowAfterBattleCardsCleared } from './spirit-hollow';
 
 export const V070_DEMILITARIZED_ZONE_ID = 'diplomats-demilitarized-zone';
+
+const V070_CAPTURE_GRAVEYARD_OVERLAY_IDS = new Set([
+  'mystics-circle-of-bones',
+  'mystics-spirit-hollow',
+]);
 
 export function v070OverlaysAt(
   state: V070GameState,
@@ -178,6 +184,51 @@ export function discardV070Overlay(
       reason,
     },
   });
+}
+
+export function graveyardV070Overlay(
+  state: V070GameState,
+  instanceId: string,
+  reason: string,
+): void {
+  const index = state.overlays.findIndex(overlay => overlay.instanceId === instanceId);
+  if (index < 0) return;
+
+  const [overlay] = state.overlays.splice(index, 1);
+  const cardId = cardIdForV070Overlay(state, overlay);
+  const territory = territoryByInstanceId(state, overlay.territoryInstanceId);
+  state.players[overlay.owner].zones.graveyard.push(instanceId);
+
+  appendV070Event(state, {
+    type: 'overlay_graveyarded',
+    actor: overlay.owner,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId,
+      territoryInstanceId: overlay.territoryInstanceId,
+      territoryPosition: territory?.position ?? null,
+      territoryId: territory?.territoryId ?? null,
+      reason,
+    },
+  });
+}
+
+export function resolveV070OverlayCaptureEffects(
+  state: V070GameState,
+  territoryPosition: number,
+  source: string,
+): void {
+  const capturedOverlays = [...v070OverlaysAt(state, territoryPosition)];
+  for (const overlay of capturedOverlays) {
+    const cardId = cardIdForV070Overlay(state, overlay);
+    if (!V070_CAPTURE_GRAVEYARD_OVERLAY_IDS.has(cardId)) continue;
+    graveyardV070Overlay(
+      state,
+      overlay.instanceId,
+      `${cardId} Territory capture (${source})`,
+    );
+  }
 }
 
 export function registerV070DmzEntryLock(
@@ -499,15 +550,29 @@ export function resolveV070OverlayAfterBattle(
   territoryPosition: number,
   activeOverlayAtOnset: string | null,
 ): void {
-  if (!activeOverlayAtOnset) return;
+  if (activeOverlayAtOnset) {
+    const overlay = state.overlays.find(
+      item => item.instanceId === activeOverlayAtOnset,
+    );
+    if (overlay) {
+      const territory = territoryByInstanceId(
+        state,
+        overlay.territoryInstanceId,
+      );
+      if (territory
+        && territory.position === territoryPosition
+        && cardIdForV070Overlay(state, overlay) ===
+          V070_DEMILITARIZED_ZONE_ID) {
+        discardV070Overlay(
+          state,
+          activeOverlayAtOnset,
+          'demilitarized_zone_next_battle',
+        );
+      }
+    }
+  }
 
-  const overlay = state.overlays.find(item => item.instanceId === activeOverlayAtOnset);
-  if (!overlay) return;
-  const territory = territoryByInstanceId(state, overlay.territoryInstanceId);
-  if (!territory || territory.position !== territoryPosition) return;
-  if (cardIdForV070Overlay(state, overlay) !== V070_DEMILITARIZED_ZONE_ID) return;
-
-  discardV070Overlay(state, activeOverlayAtOnset, 'demilitarized_zone_next_battle');
+  pauseV070ForSpiritHollowAfterBattleCardsCleared(state);
 }
 
 function territoryAtPosition(

@@ -185,6 +185,20 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'mystics-spirit-hollow',
+    expectedText: 'In the Aftermath, place this Overlay on the contested Territory.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      registerBattleCardAftermathOverlayPlacement(
+        state,
+        owner,
+        commitment.instanceId,
+        'mystics-spirit-hollow',
+        'always',
+      );
+    },
+  },
+  {
     cardId: 'neutral-battlefield-plunder',
     expectedText: 'In the Aftermath, if you win, place this Overlay on the contested Territory.',
     timing: 'reveal',
