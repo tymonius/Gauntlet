@@ -26,8 +26,8 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/resolve-current-live-publication.mjs --plan > "$RUNNER_TEMP/rules-plan.json"
-          PLAN_PATH="$RUNNER_TEMP/rules-plan.json" node <<'NODE'
-          const fs = require('node:fs');
+          PLAN_PATH="$RUNNER_TEMP/rules-plan.json" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
 
           const plan = JSON.parse(fs.readFileSync(process.env.PLAN_PATH, 'utf8'));
 
