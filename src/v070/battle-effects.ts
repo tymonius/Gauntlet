@@ -20,6 +20,11 @@ import {
   registerV070LandslideBattleEffect,
 } from './landslide';
 import {
+  V070_PALISADE_WALL_BATTLE_TEXT,
+  V070_PALISADE_WALL_ID,
+  registerV070PalisadeWallBattleEffect,
+} from './palisade-wall-battle';
+import {
   V070_PENANCE_BATTLE_TEXT,
   V070_PENANCE_ID,
   registerV070PenanceBattleEffect,
@@ -49,6 +54,10 @@ import {
   V070_TARIFFS_ID,
   registerV070TariffsBattleEffect,
 } from './tariffs-battle';
+import {
+  isV070BattleCardEffectNegated,
+  markV070BattleCardEffectApplied,
+} from './battle-effect-status';
 import { applyV070BattleRetreatStep } from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 import { v070MysticInvocationPendingPlayers } from './mystics';
@@ -69,11 +78,13 @@ type V070RevealEncounteredAt = 'reveal_gambits' | 'reveal_tactics';
 
 interface V070SpecializedBattleEffectHandler
   extends core.V070BattleEffectHandler {
-  /**
-   * Interference resolves before every ordinary effect at the same reveal
-   * stage. Existing handlers default to ordinary until explicitly promoted.
-   */
+  /** Interference resolves before every ordinary effect at this reveal stage. */
   revealClass?: V070RevealEffectClass;
+  /**
+   * False when the specialized module decides exactly when its effect has
+   * taken effect (for example, an interference effect with a target choice).
+   */
+  markAppliedAtRegistration?: boolean;
 }
 
 declare module './battle-types' {
@@ -92,11 +103,7 @@ const landslideHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_LANDSLIDE_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070LandslideBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070LandslideBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -105,11 +112,7 @@ const divineMercyHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_DIVINE_MERCY_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070DivineMercyBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070DivineMercyBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -118,11 +121,7 @@ const darkOmensHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_DARK_OMENS_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070DarkOmensBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070DarkOmensBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -131,11 +130,7 @@ const seditionHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_SEDITION_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070SeditionBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070SeditionBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -144,11 +139,7 @@ const requisitionHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_REQUISITION_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070RequisitionBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070RequisitionBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -157,11 +148,7 @@ const tariffsHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_TARIFFS_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070TariffsBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070TariffsBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -170,11 +157,7 @@ const penanceHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_PENANCE_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070PenanceBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070PenanceBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -183,11 +166,7 @@ const propertyDuesHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_PROPERTY_DUES_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070PropertyDuesBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070PropertyDuesBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
@@ -196,18 +175,22 @@ const speculationHandler: V070SpecializedBattleEffectHandler = {
   expectedText: V070_SPECULATION_BATTLE_TEXT,
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
-    registerV070SpeculationBattleEffect(
-      state,
-      owner,
-      commitment.instanceId,
-    );
+    registerV070SpeculationBattleEffect(state, owner, commitment.instanceId);
   },
 };
 
-const specializedHandlers = new Map<
-  string,
-  V070SpecializedBattleEffectHandler
->([
+const palisadeWallHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_PALISADE_WALL_ID,
+  expectedText: V070_PALISADE_WALL_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070PalisadeWallBattleEffect(state, owner, commitment.instanceId);
+  },
+};
+
+const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
@@ -217,6 +200,7 @@ const specializedHandlers = new Map<
   [penanceHandler.cardId, penanceHandler],
   [propertyDuesHandler.cardId, propertyDuesHandler],
   [speculationHandler.cardId, speculationHandler],
+  [palisadeWallHandler.cardId, palisadeWallHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
@@ -227,15 +211,9 @@ export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
 export function v070BattleEffectHandler(
   cardId: string,
 ): core.V070BattleEffectHandler | undefined {
-  return specializedHandlers.get(cardId)
-    ?? core.v070BattleEffectHandler(cardId);
+  return specializedHandlers.get(cardId) ?? core.v070BattleEffectHandler(cardId);
 }
 
-/**
- * Current core handlers are ordinary effects. Specialized handlers opt into
- * interference explicitly so adding one cannot accidentally change the timing
- * of unrelated battle cards.
- */
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): V070RevealEffectClass {
@@ -247,7 +225,6 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: V070RevealEncounteredAt,
 ): V070UnsupportedBattleEffect[] {
-  // Validate the complete simultaneous reveal before mutating live state.
   const unsupported = commitments.flatMap(commitment =>
     unsupportedRevealEffect(state, commitment, encounteredAt)
   );
@@ -288,10 +265,6 @@ export function v070BattleRevealEffectsPending(
   return Boolean(state.battleRuntime?.pendingRevealEffectEncounteredAt);
 }
 
-/**
- * Continue an already validated reveal sequence after its interrupt resolves.
- * Interference is exhausted before the deferred ordinary queue can begin.
- */
 export function resumeV070SupportedRevealEffects(
   state: V070GameState,
 ): void {
@@ -314,7 +287,6 @@ export function resumeV070SupportedRevealEffects(
         runtime.pendingRevealDeferredOrdinaryCommitments = [];
         continue;
       }
-
       clearPendingRevealProcedure(state);
       return;
     }
@@ -357,6 +329,20 @@ function applyValidatedRevealCommitment(
   const card = v070CanonicalContent.cardsById.get(cardId);
   if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
 
+  if (isV070BattleCardEffectNegated(state, commitment.instanceId)) {
+    appendV070Event(state, {
+      type: 'battle_card_effect_skipped_negated',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+      },
+    });
+    return;
+  }
+
   if (v070MonasterySuppressesArcaneBattleEffects(state)
     && card.trait === 'Arcane') {
     appendV070Event(state, {
@@ -375,6 +361,7 @@ function applyValidatedRevealCommitment(
 
   const specialized = specializedHandlers.get(cardId);
   if (!specialized) {
+    const handler = core.v070BattleEffectHandler(cardId);
     const coreUnsupported = core.resolveV070SupportedRevealEffects(
       state,
       [commitment],
@@ -385,6 +372,9 @@ function applyValidatedRevealCommitment(
         `Validated core battle effect became unsupported during resolution: ${cardId}.`,
       );
     }
+    if (handler && !isDeferredOnlyRevealEffect(cardId, handler.expectedText)) {
+      markV070BattleCardEffectApplied(state, commitment.instanceId);
+    }
     return;
   }
 
@@ -394,6 +384,10 @@ function applyValidatedRevealCommitment(
     opponent: commitment.owner === 'A' ? 'B' : 'A',
     commitment,
   });
+  if (specialized.markAppliedAtRegistration !== false
+    && !isDeferredOnlyRevealEffect(cardId, specialized.expectedText)) {
+    markV070BattleCardEffectApplied(state, commitment.instanceId);
+  }
   appendV070Event(state, {
     type: 'battle_card_effect_applied',
     actor: commitment.owner,
@@ -406,6 +400,11 @@ function applyValidatedRevealCommitment(
       revealClass: specialized.revealClass ?? 'ordinary',
     },
   });
+}
+
+function isDeferredOnlyRevealEffect(cardId: string, text: string): boolean {
+  return /^In the Aftermath\b/.test(text)
+    || cardId === 'military-unbroken-ranks';
 }
 
 function unsupportedRevealEffect(

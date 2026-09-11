@@ -19,9 +19,7 @@ import {
   resolveV070ReembodimentRecovery,
   type V070ReembodimentContinuation,
 } from './reembodiment';
-import {
-  openV070SpiritHollowAftermathChoice,
-} from './spirit-hollow';
+import { openV070SpiritHollowAftermathChoice } from './spirit-hollow';
 import {
   openV070SubversionAssetBattleWindow,
   resolveV070SubversionAssetBattleChoice,
@@ -44,6 +42,10 @@ import {
   openV070DarkOmensBattleChoice,
   resolveV070DarkOmensBattleChoice,
 } from './dark-omens-battle';
+import {
+  openV070PalisadeWallBattleChoice,
+  resolveV070PalisadeWallBattleChoice,
+} from './palisade-wall-battle';
 import {
   openV070PenanceBattleChoice,
   resolveV070PenanceBattleChoice,
@@ -131,6 +133,11 @@ export type V070BattleAction =
       type: 'resolve_speculation_battle';
       playerId: PlayerId;
       use: boolean;
+    }
+  | {
+      type: 'resolve_palisade_wall_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
     };
 
 export function reduceV070BattleAction(
@@ -146,11 +153,7 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      resolveV070DivineMercyBattleChoice(
-        next,
-        action.playerId,
-        action.targetInstanceId,
-      );
+      resolveV070DivineMercyBattleChoice(next, action.playerId, action.targetInstanceId);
       continueV070BattleRevealProcedure(next);
       return next;
     }
@@ -162,11 +165,7 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      const result = resolveV070DarkOmensBattleChoice(
-        next,
-        action.playerId,
-        action.use,
-      );
+      const result = resolveV070DarkOmensBattleChoice(next, action.playerId, action.use);
       if (result.graveyardedInstanceId
         && openReembodimentAfterBattleEffect(
           next,
@@ -187,11 +186,7 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      resolveV070SeditionBattleChoice(
-        next,
-        action.playerId,
-        action.targetInstanceId,
-      );
+      resolveV070SeditionBattleChoice(next, action.playerId, action.targetInstanceId);
       continueV070BattleRevealProcedure(next);
       return next;
     }
@@ -203,11 +198,7 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      resolveV070RequisitionBattleChoice(
-        next,
-        action.playerId,
-        action.assetInstanceId,
-      );
+      resolveV070RequisitionBattleChoice(next, action.playerId, action.assetInstanceId);
       continueV070BattleRevealProcedure(next);
       return next;
     }
@@ -219,11 +210,7 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      resolveV070TariffsBattleChoice(
-        next,
-        action.playerId,
-        action.cardInstanceId,
-      );
+      resolveV070TariffsBattleChoice(next, action.playerId, action.cardInstanceId);
       continueV070BattleRevealProcedure(next);
       return next;
     }
@@ -269,54 +256,54 @@ export function reduceV070BattleAction(
         );
       }
       const next = structuredClone(state) as V070GameState;
-      resolveV070SpeculationBattleChoice(
+      resolveV070SpeculationBattleChoice(next, action.playerId, action.use);
+      continueV070BattleRevealProcedure(next);
+      return next;
+    }
+
+    if (pendingRevealChoice.kind === 'palisade_wall') {
+      if (action.type !== 'resolve_palisade_wall_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Palisade Wall Gambit-negation choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070PalisadeWallBattleChoice(
         next,
         action.playerId,
-        action.use,
+        action.targetInstanceId,
       );
       continueV070BattleRevealProcedure(next);
       return next;
     }
   }
+
   if (action.type === 'resolve_divine_mercy_battle') {
-    throw new V070GameActionError(
-      'There is no open Divine Mercy battle choice.',
-    );
+    throw new V070GameActionError('There is no open Divine Mercy battle choice.');
   }
   if (action.type === 'resolve_dark_omens_battle') {
-    throw new V070GameActionError(
-      'There is no open Dark Omens battle choice.',
-    );
+    throw new V070GameActionError('There is no open Dark Omens battle choice.');
   }
   if (action.type === 'resolve_sedition_battle') {
-    throw new V070GameActionError(
-      'There is no open Sedition battle choice.',
-    );
+    throw new V070GameActionError('There is no open Sedition battle choice.');
   }
   if (action.type === 'resolve_requisition_battle') {
-    throw new V070GameActionError(
-      'There is no open Requisition battle choice.',
-    );
+    throw new V070GameActionError('There is no open Requisition battle choice.');
   }
   if (action.type === 'resolve_tariffs_battle') {
-    throw new V070GameActionError(
-      'There is no open Tariffs battle choice.',
-    );
+    throw new V070GameActionError('There is no open Tariffs battle choice.');
   }
   if (action.type === 'resolve_penance_battle') {
-    throw new V070GameActionError(
-      'There is no open Penance battle choice.',
-    );
+    throw new V070GameActionError('There is no open Penance battle choice.');
   }
   if (action.type === 'resolve_property_dues_battle') {
-    throw new V070GameActionError(
-      'There is no open Property Dues battle choice.',
-    );
+    throw new V070GameActionError('There is no open Property Dues battle choice.');
   }
   if (action.type === 'resolve_speculation_battle') {
-    throw new V070GameActionError(
-      'There is no open Speculation battle choice.',
-    );
+    throw new V070GameActionError('There is no open Speculation battle choice.');
+  }
+  if (action.type === 'resolve_palisade_wall_battle') {
+    throw new V070GameActionError('There is no open Palisade Wall battle choice.');
   }
 
   const pendingRecovery = pendingV070ReembodimentRecovery(state);
@@ -328,24 +315,16 @@ export function reduceV070BattleAction(
     }
     const next = structuredClone(state) as V070GameState;
     const sourceLabel = pendingRecovery.sourceLabel;
-    resolveV070ReembodimentRecovery(
-      next,
-      action.playerId,
-      action.targetInstanceId,
-    );
+    resolveV070ReembodimentRecovery(next, action.playerId, action.targetInstanceId);
     return resumeAfterReembodimentBattlePause(next, sourceLabel);
   }
   if (action.type === 'resolve_reembodiment_recovery') {
-    throw new V070GameActionError(
-      'There is no pending Reembodiment recovery.',
-    );
+    throw new V070GameActionError('There is no pending Reembodiment recovery.');
   }
 
   const pendingSubversion = state.battleRuntime?.pendingSubversionAssetBattle;
   const reembodimentSubversion = pendingSubversion
-    && isReembodimentContinuation(
-      pendingSubversion.deferredAction as unknown,
-    )
+    && isReembodimentContinuation(pendingSubversion.deferredAction as unknown)
     ? pendingSubversion
     : null;
   if (reembodimentSubversion) {
@@ -367,14 +346,10 @@ export function reduceV070BattleAction(
         'The pending Subversion continuation no longer matches Reembodiment.',
       );
     }
-    if (!resolved.used
-      && openV070ReembodimentRecovery(next, continuation)) {
+    if (!resolved.used && openV070ReembodimentRecovery(next, continuation)) {
       return next;
     }
-    return resumeAfterReembodimentBattlePause(
-      next,
-      continuation.sourceLabel,
-    );
+    return resumeAfterReembodimentBattlePause(next, continuation.sourceLabel);
   }
 
   const pendingLandslide = pendingV070LandslideAftermath(state);
@@ -385,11 +360,7 @@ export function reduceV070BattleAction(
       );
     }
     const next = structuredClone(state) as V070GameState;
-    resolveV070LandslideAftermathChoice(
-      next,
-      action.playerId,
-      action.sourceInstanceId,
-    );
+    resolveV070LandslideAftermathChoice(next, action.playerId, action.sourceInstanceId);
     const battle = next.battle;
     if (!battle) return next;
     return reduceV070BattleAction(next, {
@@ -398,9 +369,7 @@ export function reduceV070BattleAction(
     });
   }
   if (action.type === 'resolve_landslide_aftermath') {
-    throw new V070GameActionError(
-      'There is no pending Landslide Aftermath placement.',
-    );
+    throw new V070GameActionError('There is no pending Landslide Aftermath placement.');
   }
 
   if (action.type === 'complete_aftermath') {
@@ -455,18 +424,11 @@ export function reduceV070BattleAction(
   if (continueV070BattleRevealProcedure(next)) return next;
 
   if (!next.battle) {
-    openV070WarBondsAfterFirstBattle(
-      next,
-      battleOrder ?? undefined,
-    );
+    openV070WarBondsAfterFirstBattle(next, battleOrder ?? undefined);
   }
   return next;
 }
 
-/**
- * Continue one simultaneous reveal in exact alternating effect order. A card
- * choice or Mystic Invocation pauses before any later reveal effect applies.
- */
 function continueV070BattleRevealProcedure(
   state: V070GameState,
 ): boolean {
@@ -507,10 +469,11 @@ function continueV070BattleRevealProcedure(
         case 'speculation':
           opened = openV070SpeculationBattleChoice(state);
           break;
+        case 'palisade_wall':
+          opened = openV070PalisadeWallBattleChoice(state);
+          break;
       }
       if (opened) return true;
-      // Unavailable choices remove themselves. Before any later effect applies,
-      // honor a reaction they may have opened (notably Mystic Invocation).
       continue;
     }
 
@@ -555,10 +518,7 @@ function battleOrPlayerPositions(
 ): Record<PlayerId, number | null> {
   return state.battle
     ? { ...state.battle.positions }
-    : {
-        A: state.players.A.position,
-        B: state.players.B.position,
-      };
+    : { A: state.players.A.position, B: state.players.B.position };
 }
 
 function reembodimentControlledBattleEffect(
@@ -566,15 +526,9 @@ function reembodimentControlledBattleEffect(
 ): { playerId: PlayerId; sourceLabel: string } | null {
   switch (action.type) {
     case 'use_mystic_transmutation':
-      return {
-        playerId: action.playerId,
-        sourceLabel: 'Transmutation',
-      };
+      return { playerId: action.playerId, sourceLabel: 'Transmutation' };
     case 'use_guardians_of_the_circle':
-      return {
-        playerId: action.playerId,
-        sourceLabel: 'Guardians of the Circle',
-      };
+      return { playerId: action.playerId, sourceLabel: 'Guardians of the Circle' };
     default:
       return null;
   }
@@ -603,10 +557,7 @@ function isReembodimentSubversionPending(
 ): boolean {
   const pending = state.battleRuntime?.pendingSubversionAssetBattle;
   return Boolean(
-    pending
-    && isReembodimentContinuation(
-      pending.deferredAction as unknown,
-    ),
+    pending && isReembodimentContinuation(pending.deferredAction as unknown),
   );
 }
 
