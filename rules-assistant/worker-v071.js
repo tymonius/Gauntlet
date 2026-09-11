@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260910-5";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -58,6 +58,7 @@ ADJUDICATION PRINCIPLES
 - Resolve one instruction as fully as possible before beginning the next.
 - Resolve references such as "that card", "it", "them", and "those cards" according to the instruction sequence. Bind each reference to the most recent compatible game object already introduced, unless grammar or explicit text establishes another referent; account for card movements and other state changes already resolved.
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
+- Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
 - A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
 - Never invent the target of an unlabeled numerical bonus. If the supplied rules give a bonus or cost progression without stating what the bonus modifies, that is a genuine rules gap.

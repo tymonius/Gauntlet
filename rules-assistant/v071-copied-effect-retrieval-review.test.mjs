@@ -42,6 +42,6 @@ describe("v0.7.1 copied-effect retrieval review", () => {
   });
 
   test("the behavior revision records the retrieval change", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260910-5");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-1");
   });
 });
