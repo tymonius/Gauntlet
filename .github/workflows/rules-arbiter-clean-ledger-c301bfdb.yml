@@ -1,0 +1,41 @@
+name: Rules Arbiter clean c301bfdb ledger diff
+
+on:
+  push:
+    branches: [rules-arbiter-review-c301bfdb]
+    paths:
+      - '.github/workflows/rules-arbiter-clean-ledger-c301bfdb.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-review-c301bfdb
+          fetch-depth: 1
+
+      - name: Restore human-readable ledger Unicode
+        run: |
+          python <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('artifacts/rules-refinement/resolution-ledger.json')
+          data = json.loads(path.read_text())
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+          PY
+
+      - name: Commit cleanup and remove temporary workflow
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/rules-arbiter-clean-ledger-c301bfdb.yml
+          git add artifacts/rules-refinement/resolution-ledger.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Normalize Rules Arbiter resolution ledger formatting"
+          git push origin HEAD:rules-arbiter-review-c301bfdb
