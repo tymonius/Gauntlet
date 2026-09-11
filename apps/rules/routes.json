@@ -11,7 +11,7 @@
     "diplomats": {
       "publicPath": "/rules/factions/diplomats/",
       "source": "rulebook/faction-guides/diplomats.md",
-      "status": "planned"
+      "status": "draft"
     },
     "financiers": {
       "publicPath": "/rules/factions/financiers/",
