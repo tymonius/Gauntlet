@@ -1,0 +1,239 @@
+import {
+  V070GameActionError,
+  appendV070Event,
+  type V070GameState,
+} from './engine';
+import type { PlayerId } from './rules';
+
+export type V070BattleRevealChoice =
+  | {
+      kind: 'divine_mercy';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
+      kind: 'dark_omens';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      drawnInstanceId: string;
+    }
+  | {
+      kind: 'sedition';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'requisition';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'tariffs';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'penance';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'property_dues';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'speculation';
+      owner: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
+      kind: 'palisade_wall';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'assassins';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'capital_punishment';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Gambits/Tactics whose effects had not taken effect. */
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'disruption';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      role: 'gambit' | 'tactic';
+      /** Opposing cards at this reveal stage whose effects had not taken effect. */
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'battle_negation';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      sourceCardId: 'inquisition-tyranny' | 'neutral-sabotage';
+      role: 'gambit' | 'tactic';
+      discardTargetImmediately: boolean;
+      /** Opposing cards at this reveal stage whose effects had not taken effect. */
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'counterworks';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      territoryPosition: number;
+      candidateOverlayInstanceIds: string[];
+    };
+
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    battleRevealChoices?: V070BattleRevealChoice[];
+    battleRevealChoiceOpen?: boolean;
+  }
+}
+
+export function queueV070BattleRevealChoice(
+  state: V070GameState,
+  choice: V070BattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'A reveal-timing battle choice requires an active battle.',
+    );
+  }
+  runtime.battleRevealChoices ??= [];
+  runtime.battleRevealChoices.push(choice);
+
+  // These effects alter the exact set of battle cards at the current reveal
+  // stage. Once they register, the scheduler pauses before another reveal
+  // effect can change their candidate set, so the outer battle facade may own
+  // their resolution without teaching older stacked facades new actions.
+  if (choice.kind === 'disruption') {
+    runtime.battleRevealChoiceOpen = true;
+    appendV070Event(state, {
+      type: 'disruption_battle_choice_pending',
+      actor: choice.owner,
+      visibility: 'public',
+      payload: {
+        playerId: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: 'neutral-disruption',
+        revealRole: choice.role,
+        candidateCount: choice.candidateInstanceIds.length,
+        mandatory: true,
+      },
+    });
+    appendV070Event(state, {
+      type: 'disruption_battle_choice_options',
+      actor: choice.owner,
+      visibility: choice.owner,
+      payload: {
+        sourceInstanceId: choice.sourceInstanceId,
+        revealRole: choice.role,
+        targetInstanceIds: [...choice.candidateInstanceIds],
+      },
+    });
+    return;
+  }
+
+  if (choice.kind === 'battle_negation') {
+    runtime.battleRevealChoiceOpen = true;
+    appendV070Event(state, {
+      type: 'battle_negation_choice_pending',
+      actor: choice.owner,
+      visibility: 'public',
+      payload: {
+        playerId: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        revealRole: choice.role,
+        candidateCount: choice.candidateInstanceIds.length,
+        mandatory: true,
+      },
+    });
+    appendV070Event(state, {
+      type: 'battle_negation_choice_options',
+      actor: choice.owner,
+      visibility: choice.owner,
+      payload: {
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        revealRole: choice.role,
+        targetInstanceIds: [...choice.candidateInstanceIds],
+      },
+    });
+  }
+}
+
+export function pendingV070BattleRevealChoice(
+  state: V070GameState,
+): V070BattleRevealChoice | null {
+  return state.battleRuntime?.battleRevealChoices?.[0] ?? null;
+}
+
+export function isV070BattleRevealChoiceOpen(
+  state: V070GameState,
+): boolean {
+  return Boolean(
+    pendingV070BattleRevealChoice(state)
+    && state.battleRuntime?.battleRevealChoiceOpen,
+  );
+}
+
+export function markV070BattleRevealChoiceOpen(
+  state: V070GameState,
+): V070BattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = pendingV070BattleRevealChoice(state);
+  if (!runtime || !pending) {
+    throw new V070GameActionError(
+      'There is no reveal-timing battle choice to open.',
+    );
+  }
+  runtime.battleRevealChoiceOpen = true;
+  return pending;
+}
+
+export function completeV070BattleRevealChoice(
+  state: V070GameState,
+  expectedKind: V070BattleRevealChoice['kind'],
+): V070BattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = pendingV070BattleRevealChoice(state);
+  if (!runtime || !pending || !runtime.battleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open reveal-timing battle choice.',
+    );
+  }
+  if (pending.kind !== expectedKind) {
+    throw new V070GameActionError(
+      `The pending reveal-timing choice is ${pending.kind}, not ${expectedKind}.`,
+    );
+  }
+  runtime.battleRevealChoices!.shift();
+  runtime.battleRevealChoiceOpen = false;
+  return pending;
+}

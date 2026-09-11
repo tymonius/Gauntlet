@@ -24,12 +24,22 @@ import {
   V070_SUPPLIES_ID,
   registerV070SuppliesBattleEffect,
 } from './supplies-battle';
+import { V070_WITCHCRAFT_ID } from './copied-effect-callers';
 import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
+import {
+  configureV070WitchcraftBattleEffectHandlerResolver,
+} from './witchcraft-handler-resolver';
 
 export * from './battle-effects-pre-capital-gains';
+
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    deferredWitchcraftGambitCommitments?: V070BattleCardCommitment[];
+  }
+}
 
 const capitalGainsHandler: previous.V070BattleEffectHandler = {
   cardId: V070_CAPITAL_GAINS_ID,
@@ -108,6 +118,8 @@ export function v070BattleEffectHandler(
   return deferredHandlers.get(cardId) ?? previous.v070BattleEffectHandler(cardId);
 }
 
+configureV070WitchcraftBattleEffectHandlerResolver(v070BattleEffectHandler);
+
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
@@ -143,15 +155,35 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const role = encounteredAt === 'reveal_gambits' ? 'gambit' : 'tactic';
-  const unsupported = commitments.flatMap(commitment =>
-    unsupportedRevealEffect(state, commitment, role, encounteredAt)
+  const deferredWitchcraft = encounteredAt === 'reveal_tactics'
+    ? takeDeferredWitchcraftGambits(state)
+    : [];
+  const effectiveCommitments = [...commitments, ...deferredWitchcraft];
+  const unsupported = effectiveCommitments.flatMap(commitment =>
+    unsupportedRevealEffect(
+      state,
+      commitment,
+      commitment.role,
+      encounteredAt,
+    )
   );
   if (unsupported.length > 0) return unsupported;
 
   const forwarded: V070BattleCardCommitment[] = [];
-  for (const commitment of commitments) {
+  for (const commitment of effectiveCommitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+
+    // Witchcraft's printed Gambit/Tactic text is explicitly post-Tactics.
+    // A Witchcraft set as the Gambit remains a legal revealed commitment and
+    // may still be targeted by reveal-stage interference, but its own effect
+    // joins the ordinary reveal queue only after Tactics have been revealed.
+    if (encounteredAt === 'reveal_gambits'
+      && commitment.role === 'gambit'
+      && cardId === V070_WITCHCRAFT_ID) {
+      deferWitchcraftGambit(state, commitment);
+      continue;
+    }
+
     const handler = deferredHandlers.get(cardId);
     if (!handler) {
       forwarded.push(commitment);
@@ -201,6 +233,51 @@ export function resolveV070SupportedRevealEffects(
     forwarded,
     encounteredAt,
   );
+}
+
+function deferWitchcraftGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredWitchcraftGambitCommitments ??= [];
+  if (runtime.deferredWitchcraftGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredWitchcraftGambitCommitments.push({ ...commitment });
+}
+
+function takeDeferredWitchcraftGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred = runtime.deferredWitchcraftGambitCommitments ?? [];
+  runtime.deferredWitchcraftGambitCommitments = [];
+  return deferred.filter(commitment =>
+    state.cardInstances[commitment.instanceId]?.cardId === V070_WITCHCRAFT_ID
+    && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+    && battleContainsCommitment(state, commitment)
+  );
+}
+
+function battleContainsCommitment(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): boolean {
+  const participant = state.battleRuntime?.participants[commitment.owner];
+  if (!participant) return false;
+  const candidates = commitment.role === 'gambit'
+    ? [
+        ...(participant.gambit ? [participant.gambit] : []),
+        ...participant.additionalGambits,
+      ]
+    : [
+        ...(participant.tactic ? [participant.tactic] : []),
+        ...participant.additionalTactics,
+      ];
+  return candidates.some(candidate => candidate.instanceId === commitment.instanceId);
 }
 
 function deferredRegistrationExists(
