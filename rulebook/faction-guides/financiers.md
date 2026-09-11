@@ -93,7 +93,9 @@ If **Treasury value is greater than Territories controlled**, Financial Capacity
 - one Action during **Opening**; and
 - one Action during **Denouement**.
 
-You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a **Financier Faction Feature marked 1 Action**.
+You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a **Financier Faction Feature marked 1 Action**: Treasury, buying or buying out a Deed, or Play the Market. **Hostile Takeover is an Executive Leader Ability, not a shared Faction Feature, so using it does not by itself satisfy this requirement.**
+
+Determine Financial Capacity once at this timing. If your Treasury value or Territory control changes later in the turn, that does not grant or remove the permission for that turn.
 
 Financial Capacity rewards an economy whose Treasury has grown larger than its territorial base. It does not give you two unrestricted Actions at any time you choose; it specifically opens one Action window in each Action phase and requires at least one Financier Faction Feature.
 
