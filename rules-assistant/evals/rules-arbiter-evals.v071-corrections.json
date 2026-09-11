@@ -19,7 +19,9 @@
         "Discard Pile",
         "Playing a card for its Action effect"
       ],
-      "expectedAnswerPatterns": []
+      "expectedAnswerPatterns": [
+        "Discard Pile"
+      ]
     },
     {
       "id": "mystics-transmutation",
