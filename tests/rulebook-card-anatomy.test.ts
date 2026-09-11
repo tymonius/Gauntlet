@@ -20,7 +20,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain("const CARD_ID = 'military-unbroken-ranks';");
     expect(anatomy).toContain('card-print-render.html?fit=production&amp;card=${CARD_ID}');
     expect(anatomy).toContain("content?.querySelector('#card-anatomy')");
-    expect(anatomy).toContain("content?.querySelector('#printed-card-effects')");
+    expect(anatomy).toContain("content?.querySelector('#printed-card-effects, #effect-headings')");
     expect(anatomy).toContain("section.className = 'card-anatomy-guide'");
     expect(anatomy).toContain('transformKey(list)');
   });

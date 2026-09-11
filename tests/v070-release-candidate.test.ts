@@ -15,9 +15,9 @@ const v070Worker = readFileSync('rules-assistant/worker-v070.js', 'utf8');
 const workerEntry = readFileSync('rules-assistant/worker-entry.js', 'utf8');
 const arbiterApp = readFileSync('rules-arbiter/app.js', 'utf8');
 const arbiterIndex = readFileSync('rules-arbiter/index.html', 'utf8');
-const startPage = readFileSync('start/index.html', 'utf8');
-const cardReferencePage = readFileSync('card-reference/index.html', 'utf8');
-const deckbuilderPage = readFileSync('deckbuilder/index.html', 'utf8');
+const startPage = readFileSync('apps/start/index.html', 'utf8');
+const cardReferencePage = readFileSync('apps/card-reference/index.html', 'utf8');
+const deckbuilderPage = readFileSync('apps/deckbuilder/index.html', 'utf8');
 const homepage = readFileSync('index.html', 'utf8');
 const finalizer = readFileSync('scripts/finalize-v070-publication.mjs', 'utf8');
 const finalizerWorkflow = readFileSync('.github/workflows/finalize-v070-publication.yml', 'utf8');
@@ -171,7 +171,7 @@ describe('v0.7.0 historical publication boundary', () => {
   it('advances the public player surfaces to v0.7.1 without rewriting the frozen v0.7.0 package', () => {
     expect(homepage).toContain('Current canonical playtest edition · v0.7.1');
     expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
-    expect(homepage).toContain('<h3>v0.7.1 Release</h3>');
+    expect(homepage).toContain('aria-label="Current playtest edition v0.7.1"');
     expect(startPage).toContain('aria-label="Current playtest edition v0.7.1"');
     expect(cardReferencePage).toContain('<title>Gauntlet Card Reference</title>');
     expect(cardReferencePage).toContain('aria-label="Current playtest edition v0.7.1"');
