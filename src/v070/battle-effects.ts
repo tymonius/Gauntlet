@@ -18,6 +18,9 @@ import {
   V070_FORTIFICATIONS_BATTLE_TEXT,
   applyV070FortificationsGambitTacticEffect,
 } from './fortifications';
+import {
+  V070_PROTRACTED_SIEGE_BATTLE_TEXT,
+} from './protracted-siege';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -245,6 +248,26 @@ const handlers: V070BattleEffectHandler[] = [
         commitment.instanceId,
         'military-encampment',
         'owner_win',
+      );
+    },
+  },
+  {
+    cardId: 'neutral-protracted-siege',
+    expectedText: V070_PROTRACTED_SIEGE_BATTLE_TEXT,
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      const battle = state.battle;
+      if (!battle || battle.defender !== owner || battle.lastStand) return;
+      const territory = state.board.find(
+        item => item.position === battle.contestedPosition,
+      );
+      if (territory?.controller !== owner) return;
+      registerBattleCardAftermathOverlayPlacement(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-protracted-siege',
+        'always',
       );
     },
   },
