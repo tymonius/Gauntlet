@@ -5,16 +5,20 @@ import { classifyTransportInfrastructure } from "../scripts/v071-live-rules-qa-s
 
 const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const runnerSource = readFileSync(new URL("../scripts/run-v071-live-rules-qa.mjs", import.meta.url), "utf8");
+const workflowSource = readFileSync(new URL("../.github/workflows/current-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
 
 describe("v0.7.1 Gate 2 live replay regressions", () => {
   test("pins the refined classification boundary", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-4");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-5");
     expect(workerSource).toContain("Multiple citations alone do not make an answer inferred.");
+    expect(workerSource).toContain("Procedural compilation is not inference");
+    expect(workerSource).toContain("a no-contiguity ruling is inferred, not explicit");
     expect(workerSource).toContain("absence of adjacency, contiguity, restrictions, permissions, or requirements");
     expect(workerSource).toContain("state the baseline restriction that the exception changes as well as the exception itself");
     expect(workerSource).toContain("A generic additional-Action permission does not make that direct timing restriction inferred.");
     expect(workerSource).toContain("Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.");
+    expect(workerSource).toContain("Never treat an extra-Action grant as permission to use a phase-limited Feature in a different phase.");
   });
 
   test("adds specific-over-general authority for named-card conflicts", () => {
@@ -37,9 +41,17 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
     ]);
     expect(workerSource).toContain("cite the printed card, the conflicting rulebook authority, and the Golden Rules");
 
+    const discardCorrection = corrections.cases.find((item) => item.id === "core-zone-discard");
+    expect(discardCorrection).toMatchObject({
+      expectedClassification: "explicit",
+      classificationBasis: "direct-authority",
+      expectedAnswerPatterns: []
+    });
+
     const capacityCorrection = corrections.cases.find((item) => item.id === "financiers-capacity");
     expect(capacityCorrection.expectedAnswerPatterns).toEqual(["Denouement"]);
     expect(capacityCorrection.forbiddenAnswerPatterns).toContain("Feature in Opening");
+    expect(capacityCorrection.forbiddenAnswerPatterns).toContain("permits one of them in Opening");
 
     const correction = corrections.cases.find((item) => item.id === "card-leveraged-buyout");
     expect(correction).toMatchObject({
@@ -50,7 +62,7 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
     expect(correction.expectedAnswerPatterns).toContain("battle cards are cleared");
   });
 
-  test("treats Worker 5xx failures as infrastructure and counts attempts correctly", () => {
+  test("treats Worker 5xx failures as infrastructure and gives resource-limit failures a real cooldown", () => {
     const failure = classifyTransportInfrastructure(
       503,
       "<html>Error code: 1102 Worker exceeded resource limits</html>",
@@ -61,7 +73,11 @@ describe("v0.7.1 Gate 2 live replay regressions", () => {
     expect(classifyTransportInfrastructure(429, "rate limited", null)).toBeNull();
     expect(runnerSource).toContain("const attemptsUsed = Math.min(attempts, maxAttempts);");
     expect(runnerSource).toContain("attempts: attemptsUsed");
-    expect(runnerSource).toContain("status != null && status >= 500 ? 3000 * attempts");
+    expect(runnerSource).toContain("workerResourceLimitBackoffMs = [15_000, 30_000, 60_000]");
+    expect(runnerSource).toContain("isWorkerResourceLimitFailure(last)");
+    expect(runnerSource).toContain("const delayMs = retryDelayMs(last, attempts);");
+    expect(runnerSource).toContain("status != null && status >= 500 ? 3000 * attempt");
+    expect(workflowSource).toContain("GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'");
   });
 
   test("does not expose retrieval-coverage language in rulings", () => {

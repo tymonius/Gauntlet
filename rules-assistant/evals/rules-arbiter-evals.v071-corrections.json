@@ -12,6 +12,16 @@
       ]
     },
     {
+      "id": "core-zone-discard",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Discard Pile",
+        "Playing a card for its Action effect"
+      ],
+      "expectedAnswerPatterns": []
+    },
+    {
       "id": "mystics-transmutation",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
@@ -35,7 +45,10 @@
         "use one in Opening",
         "use a Financier Faction Feature in Opening",
         "lets one be used in Opening",
-        "Feature in Opening"
+        "Feature in Opening",
+        "permits one of them in Opening",
+        "permits a Financier Faction Feature in Opening",
+        "allows one of them in Opening"
       ]
     },
     {

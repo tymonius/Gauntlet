@@ -44,6 +44,33 @@ function stripRulebookAnnotations(value) {
   return String(value || '').replace(/<!--[\s\S]*?-->/g, '');
 }
 
+const V071_LEGACY_CARD_FACE_FIELDS = new Set([
+  'action',
+  'asset',
+  'battle',
+  'gambit',
+  'gambit_tactic',
+  'loan',
+  'mission',
+  'overlay',
+  'placement',
+  'tactic',
+]);
+
+export function sanitizeV071CanonicalDataForRules(canonicalData) {
+  const rulesData = typeof structuredClone === 'function'
+    ? structuredClone(canonicalData)
+    : JSON.parse(JSON.stringify(canonicalData));
+  const cards = rulesData?.gameplay?.cards;
+  if (!Array.isArray(cards)) return rulesData;
+
+  for (const card of cards) {
+    if (!card || !Array.isArray(card.effects) || !card.effects.length) continue;
+    for (const key of V071_LEGACY_CARD_FACE_FIELDS) delete card[key];
+  }
+  return rulesData;
+}
+
 export function validateV071PublishedData({ canonicalData, manifest, provenance, rulebookMarkdown } = {}) {
   if (!canonicalData || canonicalData.release_version !== V071_RULES_VERSION) {
     throw new Error('Published v0.7.1 canonical data has the wrong release identity.');
@@ -167,8 +194,9 @@ export async function loadV071RulesCorpus(options = {}) {
   requireBinding(manifest, 'canonical_data', canonicalDigest);
   requireBinding(manifest, 'source_provenance', provenanceDigest);
 
+  const rulesCanonicalData = sanitizeV071CanonicalDataForRules(canonicalData);
   const corpus = buildRulesCorpus({
-    canonicalData,
+    canonicalData: rulesCanonicalData,
     rulebookMarkdown,
     siteOrigin: urls.siteOrigin,
     canonicalDataUrl: urls.canonicalDataUrl,
