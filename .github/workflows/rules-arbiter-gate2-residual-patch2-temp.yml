@@ -1,0 +1,34 @@
+name: Rules Arbiter Gate 2 residual patch 2 (temporary)
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate2-residuals-20260911
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Run Gate 2 residual repair with deps'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate2-residuals-20260911
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install repository dependencies
+        run: npm ci
+      - name: Patch residual Gate 2 failures
+        run: python3 scripts/gate2-residual-patch-temp.py
+      - name: Run focused Rules Arbiter regressions
+        run: npx vitest run rules-assistant/v071-gate2-live-regressions.test.mjs rules-assistant/v071-printed-effect-labels.test.mjs rules-assistant/v071-copied-effect-retrieval-review.test.mjs
+      - name: Commit residual repair
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rules-assistant/worker-v071.js rules-assistant/*.test.mjs rules-assistant/evals/rules-arbiter-evals.v071-corrections.json
+          git commit -m 'Resolve residual Gate 2 Rules Arbiter failures'
+          git push origin HEAD:rules-arbiter-gate2-residuals-20260911
