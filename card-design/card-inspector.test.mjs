@@ -5,8 +5,8 @@ const inspectorSource = readFileSync("card-design/card-inspector.js", "utf8");
 const rendererSource = readFileSync("card-design/face-render.mjs", "utf8");
 const reviewSource = readFileSync("card-design/card-review.js", "utf8");
 const cardDesignIndex = readFileSync("card-design/index.html", "utf8");
-const cardReferenceIndex = readFileSync("card-reference/index.html", "utf8");
-const deckbuilderPreview = readFileSync("deckbuilder/mobile-card-preview.js", "utf8");
+const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
+const deckbuilderPreview = readFileSync("apps/deckbuilder/mobile-card-preview.js", "utf8");
 
 describe("shared card inspector", () => {
   it("keeps artwork inside the normal card hit area until the enlarged card is open", () => {
