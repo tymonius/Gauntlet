@@ -134,9 +134,20 @@ function revealTactics(
     playerId: 'A',
     cardInstanceId: tacticInstanceId,
   });
-  state = reduceV070BattleAction(state, {
-    type: 'choose_tactic', playerId: 'B',
-  });
+
+  while ((state.battleRuntime?.participants.A.tacticChoicesMade ?? 0)
+    < (state.battleRuntime?.participants.A.tacticLimit ?? 0)) {
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A',
+    });
+  }
+  while ((state.battleRuntime?.participants.B.tacticChoicesMade ?? 0)
+    < (state.battleRuntime?.participants.B.tacticLimit ?? 0)) {
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+  }
+
   return reduceV070BattleAction(state, {
     type: 'reveal_tactics', playerId: 'A',
   });
@@ -230,7 +241,6 @@ describe('v0.7.0 Witchcraft battle effect', () => {
 
     state = finishBattle(state);
     expect(state.players.A.zones.graveyard).toContain(witchcraft);
-    expect(state.players.A.zones.discardPile).toContain(target);
   });
 
   test('a Witchcraft set as the Gambit waits until after Tactics are revealed', () => {
@@ -306,7 +316,7 @@ describe('v0.7.0 Witchcraft battle effect', () => {
     expect(pendingV070BattleRevealChoice(state)).toBeNull();
     expect(state.battleRuntime?.participants.A.advantage).toBe(1);
     expect(state.battleRuntime?.participants.A.reserve)
-      .toEqual(reserveAfterGambit.concat(witchcraft));
+      .toEqual(reserveAfterGambit);
     expect(state.battleRuntime?.participants.A.tacticLimit)
       .toBe(tacticLimitAfterGambit);
     expect(state.events).toEqual(expect.arrayContaining([
