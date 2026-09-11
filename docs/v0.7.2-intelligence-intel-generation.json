@@ -15,7 +15,7 @@
   "operationalCapacity": {
     "name": "Operational Capacity",
     "profile": "Automatic",
-    "rule": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase.",
+    "rule": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.",
     "qualifyingFeatures": [
       "Start Mission",
       "Complete Mission",
