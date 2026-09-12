@@ -51,6 +51,6 @@ describe("v0.7.1 battle-card replacement retrieval", () => {
 
   test("the current prompt retains explicit classification discipline", () => {
     expect(workerSource).toContain("Use explicit only when clean authority directly states each material premise required by the answer");
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260911-6"');
+    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260912-7"');
   });
 });
