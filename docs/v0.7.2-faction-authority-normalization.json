@@ -1,0 +1,57 @@
+{
+  "version": "v0.7.2-candidate",
+  "issue": 1681,
+  "mechanics_changed": false,
+  "purpose": "Promote already-current faction procedures into game-data/current-game.json so the Comprehensive Rules can remain a direct authority projection.",
+  "normalized_domains": {
+    "military": [
+      "Command lifecycle",
+      "Orders feature semantics"
+    ],
+    "diplomats": [
+      "Influence and stake lifecycle",
+      "Terms outcomes",
+      "ratification and Treaty Articles",
+      "Leverage",
+      "Peace Treaty timing"
+    ],
+    "financiers": [
+      "Capital and Capital Limit",
+      "Treasury",
+      "Income",
+      "Financial Capacity",
+      "Deeds and cost formula",
+      "Play the Market",
+      "Subsidize",
+      "Controlling Interest"
+    ],
+    "intelligence": [
+      "Intel and Operation Progress",
+      "Mission slot",
+      "Mission start/complete/abort/failure",
+      "Special Operations",
+      "Surveillance",
+      "Interference and Direct Interference"
+    ],
+    "mystics": [
+      "Rite lifecycle",
+      "Rite completion limits",
+      "interruption",
+      "completed-Rite persistence",
+      "Rite/Ritual binding destination"
+    ],
+    "inquisition": [
+      "Conviction",
+      "Condemnation",
+      "Blasphemy",
+      "Purge menu and Action permissions",
+      "Purification"
+    ]
+  },
+  "source_status": "The normalized procedures already exist in current reviewed player-facing faction material and/or current structured authority. This change makes those mechanics explicit in the sole canonical authority; it does not intentionally alter gameplay.",
+  "validation": [
+    "scripts/normalize-faction-rules-authority.mjs is idempotent and fails in check mode when authority is stale.",
+    "scripts/validate-faction-rules-authority.mjs asserts required procedures and key invariants.",
+    "Rules publication authority CI runs both checks."
+  ]
+}
