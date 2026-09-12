@@ -2,7 +2,7 @@
   "schema_version": 2,
   "release_version": "v0.7.0",
   "source_version": "v0.7.0",
-  "authority_set_id": "5f424f1b293ec3aa592fa50ce374be08ef48cfdcc94369ba4697fe9a38d00953",
+  "authority_set_id": "527a39fd3dcd3e3abaf0aefaa0dc8268f41cdc72501843ec8fbd7a6f9cd331b6",
   "current_game_authority": "game-data/current-game.json",
   "current_rulebook_authority": "rulebook/player-facing/current-rulebook.md",
   "historical_derivation": {
@@ -35,6 +35,18 @@
     "peace_treaty_threshold": {
       "corrected_to": 6,
       "reason": "Published Rulebook prose retained the pre-v0.6.4 five-Proposal threshold while canonical v0.7.0 authority correctly required six."
+    },
+    "derived_rulebook_facts": {
+      "source": "canonical gameplay records and faction rule fields",
+      "corrected_claims": [
+        "Military faction-pool count",
+        "Diplomat faction-pool count",
+        "Financier faction-pool count",
+        "Intelligence faction-pool count",
+        "Mystics faction-pool count",
+        "Inquisition faction-pool count",
+        "Mystics Arcane-card count"
+      ]
     }
   }
 }

@@ -188,7 +188,7 @@
           }
         ],
         "victory": "Run the Gauntlet.",
-        "card_count": 13
+        "card_count": 15
       },
       {
         "id": "diplomats",
@@ -250,7 +250,7 @@
           }
         ],
         "victory": "Peace Treaty: after the Capture step, have six different ratified Proposals.",
-        "card_count": 13,
+        "card_count": 15,
         "factionRules": {
           "peace_treaty_threshold": 6
         }
@@ -317,7 +317,7 @@
           }
         ],
         "victory": "Run the Gauntlet or achieve Controlling Interest.",
-        "card_count": 13
+        "card_count": 15
       },
       {
         "id": "intelligence",
@@ -394,7 +394,7 @@
           }
         ],
         "victory": "Run the Gauntlet or complete a Special Operation.",
-        "card_count": 13,
+        "card_count": 15,
         "progression": "Operation Progress"
       },
       {
@@ -457,7 +457,7 @@
           }
         ],
         "victory": "Run the Gauntlet or complete the Ritual of Ascension.",
-        "card_count": 13,
+        "card_count": 15,
         "progression": "Rites"
       },
       {
@@ -523,69 +523,69 @@
           }
         ],
         "victory": "Run the Gauntlet or achieve Purification.",
-        "card_count": 13
+        "card_count": 15
       }
     ],
     "card_pool_summary": {
       "Mystics": {
-        "count": 13,
-        "total_value": 40,
+        "count": 15,
+        "total_value": 46,
         "unique": [
           "Necromancy"
         ],
         "cost_curve": {
           "1": 1,
-          "2": 3,
+          "2": 4,
           "3": 4,
-          "4": 4,
+          "4": 5,
           "5": 1
         }
       },
       "Inquisition": {
-        "count": 13,
-        "total_value": 42,
+        "count": 15,
+        "total_value": 49,
         "unique": [
           "Martyrdom"
         ],
         "cost_curve": {
           "1": 1,
           "2": 3,
-          "3": 4,
-          "4": 2,
+          "3": 5,
+          "4": 3,
           "5": 3
         }
       },
       "Neutral": {
-        "count": 50,
-        "total_value": 119,
+        "count": 52,
+        "total_value": 125,
         "unique": [
           "Manifest Destiny"
         ],
         "cost_curve": {
           "1": 11,
-          "2": 19,
+          "2": 20,
           "3": 11,
-          "4": 8,
+          "4": 9,
           "5": 1
         }
       },
       "Intelligence": {
-        "count": 13,
-        "total_value": 40,
+        "count": 15,
+        "total_value": 47,
         "unique": [
           "Sleeper Network"
         ],
         "cost_curve": {
           "1": 1,
           "2": 3,
-          "3": 4,
-          "4": 4,
+          "3": 5,
+          "4": 5,
           "5": 1
         }
       },
       "Military": {
-        "count": 13,
-        "total_value": 39,
+        "count": 15,
+        "total_value": 47,
         "unique": [
           "Shock and Awe"
         ],
@@ -593,33 +593,35 @@
           "1": 1,
           "2": 4,
           "3": 3,
-          "4": 4,
+          "4": 6,
           "5": 1
         }
       },
       "Financiers": {
-        "count": 13,
-        "total_value": 40,
+        "count": 15,
+        "total_value": 47,
         "unique": [
           "Corner the Market"
         ],
         "cost_curve": {
           "1": 1,
           "2": 3,
-          "3": 4,
-          "4": 4,
+          "3": 5,
+          "4": 5,
           "5": 1
         }
       },
       "Diplomats": {
-        "count": 13,
-        "total_value": 38,
-        "unique": [],
+        "count": 15,
+        "total_value": 45,
+        "unique": [
+          "Plenipotentiary"
+        ],
         "cost_curve": {
           "1": 1,
           "2": 3,
-          "3": 6,
-          "4": 2,
+          "3": 7,
+          "4": 3,
           "5": 1
         }
       }

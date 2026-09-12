@@ -1177,7 +1177,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction Features | None. |
 | Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
-| Faction pool | 13 Military card titles. |
+| Faction pool | 15 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1279,7 +1279,8 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six di
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
-| Faction pool | 13 Diplomat card titles. |
+| Faction pool | 15 Diplomat card titles. |
+| Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
 ## Faction Features
 
@@ -1529,7 +1530,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
-| Faction pool | 13 Financier card titles. |
+| Faction pool | 15 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1730,7 +1731,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Battle tools | Surveillance and Interference. |
 | Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
-| Faction pool | 13 Intelligence card titles. |
+| Faction pool | 15 Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1918,11 +1919,11 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 |---|---|
 | Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
-| Trait | All thirteen Mystics cards have the Arcane trait. |
+| Trait | All fifteen Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
 | Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
-| Faction pool | 13 Mystics card titles. |
+| Faction pool | 15 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -2120,7 +2121,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
-| Faction pool | 13 Inquisition card titles. |
+| Faction pool | 15 Inquisition card titles. |
 | Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 
