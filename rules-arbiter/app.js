@@ -8,6 +8,7 @@ import {
 
 const CURRENT_PUBLIC_RELEASE = "v0.7.1";
 const endpoint = String(window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules").trim();
+const sourceLookupReviewEndpoint = endpoint ? new URL("/api/source-lookup-review", endpoint).href : "";
 const form = document.getElementById("arbiterForm");
 const input = document.getElementById("question");
 const answer = document.getElementById("answer");
@@ -18,9 +19,13 @@ const READY_STATUS = endpoint
   ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
   : "Current v0.7.1 local Rulebook lookup mode.";
 const FALLBACK_STATUS = "AI ruling service unavailable or at capacity; canonical v0.7.1 source lookup remains available.";
+const SOURCE_LOOKUP_MESSAGE = "The AI ruling service is unavailable. The closest matching canonical v0.7.1 passages are shown below; this is source lookup, not an interpreted ruling.";
+const SOURCE_LOOKUP_REVIEW_QUEUE_KEY = "gauntlet-v071-source-lookup-review-queue";
+const SOURCE_LOOKUP_REVIEW_QUEUE_LIMIT = 20;
 
 let corpusPromise;
 let history = [];
+let fallbackReviewFlushPromise = null;
 const sessionId = getSessionId();
 
 status.tabIndex = -1;
@@ -52,7 +57,7 @@ form.addEventListener("submit", async (event) => {
       { role: "user", content: question },
       {
         role: "assistant",
-        content: result.answer,
+        content: playerFacingAnswer(result),
         rulingStatus: result.rulingStatus || null
       }
     ].slice(-12);
@@ -67,6 +72,7 @@ form.addEventListener("submit", async (event) => {
 });
 
 status.textContent = READY_STATUS;
+void flushFallbackReviewQueue();
 
 async function askLocal(question) {
   const corpus = await getCorpus();
@@ -75,6 +81,8 @@ async function askLocal(question) {
   const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
   return {
     ...fallback,
+    answer: fallback.sources?.length ? SOURCE_LOOKUP_MESSAGE : fallback.answer,
+    sources: sanitizeSources(fallback.sources),
     responseType: "source_lookup",
     executionPath: "local source lookup",
     version: RULES_VERSION,
@@ -109,10 +117,14 @@ async function askRemote(question) {
     ) {
       throw new Error("Configured endpoint did not identify itself as the current v0.7.1 Rules Arbiter.");
     }
+    void flushFallbackReviewQueue();
     return payload;
   } catch (error) {
     console.warn("Production Rules Arbiter unavailable; using local Rulebook lookup.", error);
-    return askLocal(question);
+    const fallback = await askLocal(question);
+    queueFallbackReview(question, fallback);
+    void flushFallbackReviewQueue();
+    return fallback;
   }
 }
 
@@ -137,13 +149,21 @@ function isFallbackResult(result) {
   return path.includes("fallback") || path.includes("source lookup");
 }
 
+function playerFacingAnswer(result) {
+  if (isFallbackResult(result) && Array.isArray(result?.sources) && result.sources.length) {
+    return SOURCE_LOOKUP_MESSAGE;
+  }
+  return String(result?.answer || "");
+}
+
 function renderAnswer(result) {
-  const sources = Array.isArray(result.sources) ? result.sources : [];
+  const sources = sanitizeSources(result.sources);
   const label = rulingLabel(result.rulingStatus);
+  const displayAnswer = playerFacingAnswer(result);
   answer.innerHTML = `
     <div class="arbiter-ruling">
       <p class="arbiter-meta"><strong>${escapeHtml(label)}</strong> · ${escapeHtml(result.executionPath || "rules lookup")}</p>
-      <p>${escapeHtml(result.answer).replaceAll("\n", "<br>")}</p>
+      <p>${escapeHtml(displayAnswer).replaceAll("\n", "<br>")}</p>
       ${sources.length ? `<h2 class="arbiter-sources-heading">Sources</h2><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
       <p class="arbiter-boundary">Current ${escapeHtml(result.versionLabel || VERSION_LABEL)} rules sources.</p>
     </div>`;
@@ -151,8 +171,92 @@ function renderAnswer(result) {
 
 function sourceItem(source) {
   const href = source.sourceUrl || "../rulebook/";
-  const excerpt = source.excerpt || source.body || "";
+  const excerpt = sanitizeSourceText(source.excerpt || source.body || "");
   return `<li><a href="${escapeHtml(href)}">${escapeHtml(source.title || "Rulebook source")}</a>${excerpt ? `<p>${escapeHtml(excerpt)}</p>` : ""}</li>`;
+}
+
+function sanitizeSources(sources) {
+  return (Array.isArray(sources) ? sources : []).slice(0, 8).map((source) => ({
+    ...source,
+    title: sanitizeSourceText(source?.title || "Rulebook source"),
+    excerpt: sanitizeSourceText(source?.excerpt || source?.body || ""),
+    body: sanitizeSourceText(source?.body || "")
+  }));
+}
+
+function sanitizeSourceText(value) {
+  return String(value || "")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<![^>]*>/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[*_`~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function queueFallbackReview(question, result) {
+  if (!sourceLookupReviewEndpoint) return;
+  const queue = readFallbackReviewQueue();
+  queue.push({
+    rulesVersion: RULES_VERSION,
+    sessionId,
+    question: String(question || "").slice(0, 2000),
+    answer: playerFacingAnswer(result).slice(0, 4000),
+    sources: sanitizeSources(result?.sources).map(({ id, canonicalId, title, sourcePath, sourceUrl, excerpt }) => ({
+      id: id || canonicalId || "",
+      title,
+      sourcePath: sourcePath || "",
+      sourceUrl: sourceUrl || "",
+      excerpt
+    }))
+  });
+  writeFallbackReviewQueue(queue.slice(-SOURCE_LOOKUP_REVIEW_QUEUE_LIMIT));
+}
+
+function readFallbackReviewQueue() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(SOURCE_LOOKUP_REVIEW_QUEUE_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.slice(-SOURCE_LOOKUP_REVIEW_QUEUE_LIMIT) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeFallbackReviewQueue(queue) {
+  try {
+    if (queue.length) localStorage.setItem(SOURCE_LOOKUP_REVIEW_QUEUE_KEY, JSON.stringify(queue));
+    else localStorage.removeItem(SOURCE_LOOKUP_REVIEW_QUEUE_KEY);
+  } catch {
+  }
+}
+
+async function flushFallbackReviewQueue() {
+  if (!sourceLookupReviewEndpoint) return;
+  if (fallbackReviewFlushPromise) return fallbackReviewFlushPromise;
+
+  fallbackReviewFlushPromise = (async () => {
+    const queue = readFallbackReviewQueue();
+    while (queue.length) {
+      try {
+        const response = await fetch(sourceLookupReviewEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(queue[0])
+        });
+        if (!response.ok) break;
+        queue.shift();
+        writeFallbackReviewQueue(queue);
+      } catch {
+        break;
+      }
+    }
+  })().finally(() => {
+    fallbackReviewFlushPromise = null;
+  });
+
+  return fallbackReviewFlushPromise;
 }
 
 function rulingLabel(value) {
