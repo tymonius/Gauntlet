@@ -67,6 +67,12 @@ function formatPrimitive(value) {
   return String(value);
 }
 
+function formatFieldPrimitive(key, value) {
+  if (value == null && key === 'maximum') return 'No fixed maximum';
+  if (value == null && key === 'requirement') return 'No additional requirement';
+  return formatPrimitive(value);
+}
+
 function partHeader(id, partTitle, covers) {
   const markers = covers.map(ruleId => `<!-- RULES-COVER:${ruleId} -->`).join('\n');
   return `<!-- RULES-PART:${id} -->\n## ${partTitle}${markers ? `\n${markers}` : ''}`;
@@ -95,7 +101,7 @@ function renderTree(value, level = 4, options = {}) {
   for (const [key, child] of Object.entries(value)) {
     if (omit.has(key)) continue;
     if (child == null || typeof child !== 'object') {
-      primitiveLines.push(`- **${title(key)}:** ${formatPrimitive(child)}`);
+      primitiveLines.push(`- **${title(key)}:** ${formatFieldPrimitive(key, child)}`);
     } else if (Array.isArray(child) && child.every(item => item == null || typeof item !== 'object')) {
       if (child.length === 0) {
         primitiveLines.push(`- **${title(key)}:** None`);
@@ -147,20 +153,6 @@ function renderLeaderAbilities(faction) {
   }).join('\n\n');
 }
 
-function renderFactionVictory(faction) {
-  const seen = new Set();
-  const victories = [];
-  for (const leader of faction.leaders) {
-    for (const section of leader.sections.filter(section => section.classification === 'Faction Victory')) {
-      const key = `${section.name}\u0000${section.text || ''}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      victories.push(`- **${section.name}:** ${section.text || ''}`);
-    }
-  }
-  return victories.join('\n');
-}
-
 function renderFactionPart(authority, partIndex, factionId, extras = []) {
   const faction = getFaction(authority, factionId);
   const procedures = authority.gameplay.faction_rules?.[factionId];
@@ -181,9 +173,9 @@ function renderFactionPart(authority, partIndex, factionId, extras = []) {
 
 ${identity}
 
-### Victory routes
+### Victory route summary
 
-${renderFactionVictory(faction)}
+${faction.victory}
 
 ### Shared Faction Feature metadata
 
@@ -257,7 +249,6 @@ function renderConstructionSetup(authority) {
   if (!deck || !setup) throw new Error('Construction/setup authority is incomplete.');
 
   const supplemental = deck.supplemental_components || {};
-  const eligibility = deck.allowed_playable_cards || {};
   const steps = setup.sequence.map((id, index) => `${index + 1}. ${setup.steps[id]}`).join('\n');
 
   return `${partHeader(...PARTS[1])}
@@ -266,18 +257,16 @@ function renderConstructionSetup(authority) {
 
 - A Deck contains at least **${deck.minimum_cards} playable cards** and no more than **${deck.maximum_deckbuilding_value} total deckbuilding value**.
 - A Deck uses exactly **${deck.factions_per_deck} faction** and **${deck.leaders_per_deck} Leader**.
-- ${eligibility.text || eligibility.rule || 'Playable-card eligibility follows the selected faction and Neutral-card rule in canonical authority.'}
-- A Unique card is limited to **${deck.unique_copy_limit} copy**. ${deck.non_unique_copy_limit == null ? 'Non-Unique copies have no shared copy limit beyond the available card pool.' : `Non-Unique cards are limited to ${deck.non_unique_copy_limit} copies.`}
-- Choose exactly **${deck.territories_per_player} different Territories**, with at most **${deck.maximum_arenas} Arena**.
-- Territories ${deck.territories_are_part_of_deck ? 'are' : 'are not'} part of the Deck and ${deck.territories_count_toward_deck_totals ? 'do' : 'do not'} count toward Deck size or deckbuilding value.
+- ${deck.allowed_playable_cards}
+- A Unique card is limited to **${deck.unique_copy_limit} copy**. ${deck.non_unique_copy_rule}
+- Choose exactly **${deck.territories_per_player} different Territories**, with at most **${deck.maximum_arenas} Arena**. Territories ${deck.territories_must_be_different ? 'must' : 'need not'} be different.
+- Territories ${deck.territories_are_part_of_deck ? 'are' : 'are not'} part of the Deck, ${deck.territories_count_toward_minimum_cards ? 'do' : 'do not'} count toward the minimum card count, and ${deck.territories_count_toward_deckbuilding_value ? 'do' : 'do not'} count toward deckbuilding value.
 - Opponents ${deck.opponents_may_choose_same_territory_titles ? 'may' : 'may not'} choose the same Territory titles.
+- The chosen Leader ${deck.leader_begins_face_up ? 'begins face up' : 'does not begin face up'}.
 
 ### II.2 Supplemental components
 
-${supplemental.text || ''}
-
 ${bullets(Object.entries(supplemental)
-    .filter(([key]) => key !== 'text')
     .map(([key, value]) => `**${title(key)}:** ${formatPrimitive(value)}`))}
 
 ### II.3 Setup sequence
@@ -292,15 +281,15 @@ ${renderTree(setup.opening_selection, 4)}
 
 ${renderTree(setup.territory_arrangement, 4)}
 
-${renderTree(setup.gauntlet_reveal, 4)}
+${renderTree(setup.territory_reveal, 4)}
 
 ### II.6 Starting Positions and first player
 
 ${starting}
 
-${renderTree(setup.starting_tokens, 4)}
+${renderTree(setup.starting_position, 4)}
 
-${renderTree(setup.first_player, 4)}`;
+${renderTree(setup.initiative, 4)}`;
 }
 
 function renderTurn(authority) {
