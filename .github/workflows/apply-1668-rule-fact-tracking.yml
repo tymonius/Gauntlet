@@ -1,0 +1,104 @@
+name: Apply #1668 Rulebook fact tracking
+
+on:
+  push:
+    branches:
+      - agent/remove-redundant-battle-involving-you
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fact-tracking:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Promote edited numeric claims to structured facts
+        shell: python
+        run: |
+          from pathlib import Path
+
+          facts_path = Path('rulebook/player-facing/rule-facts.js')
+          facts = facts_path.read_text(encoding='utf-8')
+
+          old = """function leadingNumber(value, label) {
+  const match = String(value ?? '').trim().match(/^(\\d+)\\b/);
+  if (!match) throw new Error('Cannot derive numeric Rulebook fact from ' + label + ': ' + value);
+  return Number(match[1]);
+}
+"""
+          new = old + """
+function matchingNumber(value, pattern, label) {
+  const match = String(value ?? '').match(pattern);
+  if (!match) throw new Error('Cannot derive numeric Rulebook fact from ' + label + ': ' + value);
+  return Number(match[1]);
+}
+"""
+          if old not in facts:
+              raise SystemExit('Could not locate leadingNumber helper insertion point')
+          facts = facts.replace(old, new, 1)
+
+          old = """    'financiers.executive.hostile_takeover.action_cost': leadingNumber(
+      leaderAbility(authority, 'financiers', 'executive', 'Hostile Takeover')?.descriptor,
+      'Executive Hostile Takeover descriptor',
+    ),
+"""
+          new = old + """    'intelligence.ranger.fieldcraft.intel_cost': leadingNumber(
+      leaderAbility(authority, 'intelligence', 'ranger', 'Fieldcraft')?.cost,
+      'Ranger Fieldcraft cost',
+    ),
+    'inquisition.conviction.maximum': matchingNumber(
+      faction(authority, 'inquisition')?.resource,
+      /\\bmaximum\\s+(\\d+)\\b/i,
+      'Inquisition Conviction maximum',
+    ),
+    'inquisition.conviction.gain': matchingNumber(
+      leaderAbility(authority, 'inquisition', 'grand-inquisitor', 'Conviction')?.text,
+      /\\bgain\\s+(\\d+)\\s+Conviction\\b/i,
+      'Inquisition Conviction gain',
+    ),
+"""
+          if old not in facts:
+              raise SystemExit('Could not locate deriveRuleFacts insertion point')
+          facts = facts.replace(old, new, 1)
+          facts_path.write_text(facts, encoding='utf-8')
+
+          rulebook_path = Path('rulebook/player-facing/current-rulebook.md')
+          rulebook = rulebook_path.read_text(encoding='utf-8')
+
+          replacements = [
+              (
+                  '> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:**',
+                  '> **Fieldcraft — 1<!-- RULE-FACT:intelligence.ranger.fieldcraft.intel_cost:number --> Intel · No Action · Once per turn · Territory effect:**',
+              ),
+              (
+                  'The first time opposing cards enter the Graveyard during the Aftermath each turn, gain 1 Conviction.',
+                  'The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1<!-- RULE-FACT:inquisition.conviction.gain:number --> Conviction.',
+              ),
+              (
+                  '> **Conviction:** Maximum 4. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction.',
+                  '> **Conviction:** Maximum 4<!-- RULE-FACT:inquisition.conviction.maximum:number -->. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1<!-- RULE-FACT:inquisition.conviction.gain:number --> Conviction.',
+              ),
+          ]
+
+          for old, new in replacements:
+              count = rulebook.count(old)
+              if not count:
+                  raise SystemExit(f'Expected Rulebook claim not found: {old}')
+              print(f'Replacing {count} occurrence(s): {old}')
+              rulebook = rulebook.replace(old, new)
+
+          rulebook_path.write_text(rulebook, encoding='utf-8')
+
+      - name: Remove one-shot workflow and commit
+        run: |
+          rm .github/workflows/apply-1668-rule-fact-tracking.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rulebook/player-facing/rule-facts.js rulebook/player-facing/current-rulebook.md .github/workflows/apply-1668-rule-fact-tracking.yml
+          git commit -m "Track edited Rulebook facts from current authority"
+          git push
