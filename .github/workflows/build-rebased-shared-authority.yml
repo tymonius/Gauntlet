@@ -1,0 +1,82 @@
+name: Build rebased shared authority
+
+on:
+  push:
+    branches: [rules/shared-authority-rebased]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout rebased branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/shared-authority-rebased
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Replay audited shared authority transforms
+        run: |
+          git show 1145ccba7154a9f2e4203e737ceafd3ba83dfd0c:scripts/normalize-shared-rules-authority.mjs > /tmp/normalize.mjs
+          node /tmp/normalize.mjs
+          git show cdb827595b3ba41d0f0ea2403b0b72765a444413:scripts/finalize-shared-authority-normalization.mjs > /tmp/finalize.mjs
+          node /tmp/finalize.mjs
+          git show e4d9781e99e558ed9c132ae38e4311e1ad69ee6e:scripts/assign-shared-rules-publication.mjs > /tmp/assign.mjs
+          node /tmp/assign.mjs
+
+      - name: Restore durable shared files
+        run: |
+          mkdir -p docs scripts rulebook/comprehensive
+          git show 11f4893b5187252a83c105005ff4b9731b4698ff:docs/v0.7.2-shared-authority-normalization.json > docs/v0.7.2-shared-authority-normalization.json
+          git show 11f4893b5187252a83c105005ff4b9731b4698ff:scripts/validate-shared-rules-authority.mjs > scripts/validate-shared-rules-authority.mjs
+          git show 11f4893b5187252a83c105005ff4b9731b4698ff:rulebook/comprehensive/comprehensive-rules.md > rulebook/comprehensive/comprehensive-rules.md
+
+      - name: Integrate shared validator with faction validator
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('.github/workflows/rules-publication-authority.yml')
+          text = path.read_text()
+          pairs = [
+              ("      - 'scripts/validate-faction-rules-authority.mjs'", "      - 'scripts/validate-shared-rules-authority.mjs'"),
+              ('            /scripts/validate-faction-rules-authority.mjs', '            /scripts/validate-shared-rules-authority.mjs'),
+              ('          node scripts/validate-faction-rules-authority.mjs', '          node scripts/validate-shared-rules-authority.mjs'),
+          ]
+          for anchor, addition in pairs:
+              if addition not in text:
+                  if anchor not in text:
+                      raise SystemExit(f'Missing workflow anchor: {anchor}')
+                  text = text.replace(anchor, anchor + '\n' + addition)
+          path.write_text(text)
+
+      - name: Validate combined authority
+        run: |
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/validate-faction-rules-authority.mjs
+          node scripts/validate-shared-rules-authority.mjs
+
+      - name: Stage durable result
+        run: |
+          mkdir -p /tmp/rebased/.github/workflows /tmp/rebased/config /tmp/rebased/docs /tmp/rebased/game-data /tmp/rebased/rulebook/comprehensive /tmp/rebased/scripts
+          cp .github/workflows/rules-publication-authority.yml /tmp/rebased/.github/workflows/
+          cp config/rules-surface-contract.json /tmp/rebased/config/
+          cp docs/v0.7.2-shared-authority-normalization.json /tmp/rebased/docs/
+          cp game-data/current-game.json /tmp/rebased/game-data/
+          cp rulebook/comprehensive/comprehensive-rules.md /tmp/rebased/rulebook/comprehensive/
+          cp scripts/validate-shared-rules-authority.mjs /tmp/rebased/scripts/
+
+      - name: Upload validated durable result
+        uses: actions/upload-artifact@v4
+        with:
+          name: rebased-shared-authority
+          path: /tmp/rebased
+          include-hidden-files: true
