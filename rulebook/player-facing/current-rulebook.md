@@ -1902,7 +1902,7 @@ At each choice stage:
 **Archetype:** Territory effects, reconnaissance, and field operations
 **Motto:** *Know the land before the battle begins.*
 
-> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn.
+> **Fieldcraft — 1<!-- RULE-FACT:intelligence.ranger.fieldcraft.intel_cost:number --> Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn.
 
 Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand battle bonuses, or limits calculated from Territories.
 
@@ -2203,7 +2203,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 ### How it works
 
-The first time opposing cards enter the Graveyard during the Aftermath each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
+The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1<!-- RULE-FACT:inquisition.conviction.gain:number --> Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
 During Opening or Denouement, take an Action and spend Conviction to Purge. If one phase Action is Purge, you may also take one Action in the other phase that turn. You may spend an Action on Purge no more than once per turn.
 
@@ -2211,7 +2211,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge. If o
 
 #### Conviction
 
-> **Conviction:** Maximum 4. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction.
+> **Conviction:** Maximum 4<!-- RULE-FACT:inquisition.conviction.maximum:number -->. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1<!-- RULE-FACT:inquisition.conviction.gain:number --> Conviction.
 
 - This may occur during either player's turn.
 - Several qualifying cards from the same battle still produce only 1 normal gain.
