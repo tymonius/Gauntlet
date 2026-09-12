@@ -1,0 +1,279 @@
+name: Apply Rules Arbiter r7 patch
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate2-r7
+    paths:
+      - .github/workflows/apply-rules-arbiter-r7.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate2-r7
+          fetch-depth: 0
+      - name: Apply r7 combined-authority hardening
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          worker_path = Path("rules-assistant/worker-v071.js")
+          worker = worker_path.read_text(encoding="utf-8")
+
+          old_revision = "v071-qa-20260911-6"
+          new_revision = "v071-qa-20260912-7"
+          if old_revision not in worker:
+              raise SystemExit("Expected r6 behavior revision was not found")
+          worker = worker.replace(old_revision, new_revision, 1)
+
+          old_constants = '''const FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS = [
+            "rulebook:ranger",
+            "faction:fieldcraft",
+            "leader:fieldcraft"
+          ];
+          let corpusPromise;'''
+          new_constants = '''const FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS = [
+            "rulebook:ranger",
+            "faction:fieldcraft",
+            "leader:fieldcraft"
+          ];
+          const DEED_CONTIGUITY_AUTHORITY_IDS = [
+            "rulebook:deeds",
+            "rulebook:front-line"
+          ];
+          let corpusPromise;'''
+          if old_constants not in worker:
+              raise SystemExit("Could not find authority constant insertion point")
+          worker = worker.replace(old_constants, new_constants, 1)
+
+          old_focus_anchor = '''  const currentWordCount = current.split(/\\s+/).filter(Boolean).length;
+            const destinationFocus ='''
+          new_focus_anchor = '''  const currentWordCount = current.split(/\\s+/).filter(Boolean).length;
+            const deedTopic = /\\bdeeds?\\b/;
+            const contiguityCue = /\\b(?:contigu(?:ous|ity)|adjacen(?:t|cy)|front line)\\b/;
+            const deedContiguityFocus = (
+              deedTopic.test(current) && contiguityCue.test(current)
+            ) || (
+              currentWordCount <= 9
+              && deedTopic.test(recent)
+              && contiguityCue.test(current)
+            );
+            const destinationFocus ='''
+          if old_focus_anchor not in worker:
+              raise SystemExit("Could not find retrieval focus insertion point")
+          worker = worker.replace(old_focus_anchor, new_focus_anchor, 1)
+
+          old_preferred = '''const preferredAuthorityIds = fieldcraftFocus
+            ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS'''
+          new_preferred = '''const preferredAuthorityIds = deedContiguityFocus
+            ? DEED_CONTIGUITY_AUTHORITY_IDS
+            : fieldcraftFocus
+              ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS'''
+          if old_preferred not in worker:
+              raise SystemExit("Could not find preferred-authority selector")
+          worker = worker.replace(old_preferred, new_preferred, 1)
+
+          ask_anchor = '''async function askOpenAI({ env, request, question, history, sources }) {'''
+          reminder_function = r'''export function buildQuestionSpecificAdjudicationReminder(question, sources = []) {
+            const current = String(question || "").trim().toLowerCase();
+            const sourceList = Array.isArray(sources) ? sources : [];
+            const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));
+            const reminders = [];
+
+            if (
+              /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy))\b/.test(current)
+              && canonicalIds.has("rulebook:deeds")
+              && canonicalIds.has("rulebook:front-line")
+            ) {
+              reminders.push(
+                "This question compares one game's ownership rules with a separate contiguity or adjacency rule. A negative conclusion drawn because the queried object's rules do not state that restriction is a combined-authority inference unless clean authority expressly says the restriction does not apply. If the answer is negative for that reason, classify it inferred and cite both authorities that establish the distinction."
+              );
+            }
+
+            const namedCardSource = sourceList.find((source) => {
+              if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+              const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+              return title.length >= 3 && current.includes(title);
+            }) || null;
+            const namedCardTitle = namedCardSource
+              ? String(namedCardSource.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
+              : "";
+            const goldenRules = sourceList.find((source) => String(source?.canonicalId || "") === "rulebook:golden-rules") || null;
+            const rulebookReference = namedCardTitle
+              ? sourceList.find((source) => {
+                  const canonicalId = String(source?.canonicalId || "");
+                  if (!canonicalId || canonicalId.startsWith("card:") || canonicalId === "rulebook:golden-rules") return false;
+                  const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
+                    .map((value) => String(value || "").toLowerCase())
+                    .join(" ");
+                  return authorityText.includes(namedCardTitle);
+                })
+              : null;
+
+            if (namedCardSource && rulebookReference && goldenRules) {
+              reminders.push(
+                "This retrieval contains printed named-card authority, a Rulebook authority that discusses the same named card, and the Golden Rules. Compare the material instructions before classifying. If the card and Rulebook instructions differ, apply the more-specific-rule precedence, classify the resolution inferred, and cite the printed card, the conflicting Rulebook authority, and the Golden Rules. Do not call a conflict-resolved result explicit merely because the printed card supplies the winning instruction."
+              );
+            }
+
+            return reminders.join("\n");
+          }
+
+          async function askOpenAI({ env, request, question, history, sources }) {'''
+          if ask_anchor not in worker:
+              raise SystemExit("Could not find askOpenAI insertion point")
+          worker = worker.replace(ask_anchor, reminder_function, 1)
+
+          ask_start = worker.index('async function askOpenAI({ env, request, question, history, sources }) {')
+          source_start = worker.index('  const sourceText = sources.length', ask_start)
+          worker = worker[:source_start] + '''  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
+            const questionText = adjudicationReminder
+              ? `${question}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
+              : question;
+          ''' + worker[source_start:]
+
+          prompt_question = '${question}'
+          prompt_pos = worker.index(prompt_question, source_start + 1)
+          worker = worker[:prompt_pos] + '${questionText}' + worker[prompt_pos + len(prompt_question):]
+
+          worker_path.write_text(worker, encoding="utf-8")
+
+          rules_dir = Path("rules-assistant")
+          updated_tests = 0
+          for test_path in rules_dir.glob("*.test.mjs"):
+              text = test_path.read_text(encoding="utf-8")
+              if old_revision in text:
+                  test_path.write_text(text.replace(old_revision, new_revision), encoding="utf-8")
+                  updated_tests += 1
+          if updated_tests < 1:
+              raise SystemExit("No existing r6 revision tests were updated")
+
+          regression = r'''import { describe, expect, test } from "vitest";
+          import {
+            BEHAVIOR_REVISION,
+            augmentRetrievalForContext,
+            buildQuestionSpecificAdjudicationReminder
+          } from "./worker-v071.js";
+
+          function document(id, title, body) {
+            return {
+              id,
+              kind: "rulebook",
+              title,
+              heading: title,
+              body,
+              sourcePath: "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md",
+              sourceUrl: `https://gauntlet.run/rulebook/#${id.replace(/^rulebook:/, "")}`,
+              searchText: body.toLowerCase()
+            };
+          }
+
+          function retrieved(doc, id = "S1") {
+            return {
+              id,
+              canonicalId: doc.id,
+              score: 10,
+              title: doc.title,
+              heading: doc.heading,
+              kind: doc.kind,
+              sourcePath: doc.sourcePath,
+              sourceUrl: doc.sourceUrl,
+              excerpt: doc.body,
+              body: doc.body
+            };
+          }
+
+          describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
+            test("pins the r7 behavior revision", () => {
+              expect(BEHAVIOR_REVISION).toBe("v071-qa-20260912-7");
+            });
+
+            test("injects Deeds and Front Line together for contiguity comparisons", () => {
+              const deeds = document(
+                "rulebook:deeds",
+                "Deeds",
+                "Deed ownership is independent of token position and Territory control."
+              );
+              const frontLine = document(
+                "rulebook:front-line",
+                "Front Line",
+                "Your controlled Territories must form one unbroken contiguous line."
+              );
+              const corpus = { documents: [deeds, frontLine] };
+              const result = augmentRetrievalForContext(
+                corpus,
+                "Do purchased deeds have to be contiguous like your Front Line?",
+                [],
+                [retrieved(deeds)]
+              );
+
+              expect(result.slice(0, 2).map((source) => source.canonicalId)).toEqual([
+                "rulebook:deeds",
+                "rulebook:front-line"
+              ]);
+              const reminder = buildQuestionSpecificAdjudicationReminder(
+                "Do purchased deeds have to be contiguous like your Front Line?",
+                result
+              );
+              expect(reminder).toContain("combined-authority inference");
+              expect(reminder).toContain("classify it inferred");
+              expect(reminder).toContain("cite both authorities");
+            });
+
+            test("surfaces the Golden Rules classification check for named-card conflicts", () => {
+              const sources = [
+                {
+                  id: "S1",
+                  canonicalId: "card:financiers-leveraged-buyout",
+                  title: "Card: Leveraged Buyout",
+                  excerpt: "Battle collateral goes to your Graveyard when battle cards are cleared."
+                },
+                {
+                  id: "S2",
+                  canonicalId: "rulebook:collateral",
+                  title: "Collateral",
+                  excerpt: "Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase."
+                },
+                {
+                  id: "S3",
+                  canonicalId: "rulebook:golden-rules",
+                  title: "Golden Rules",
+                  excerpt: "When a specific rule conflicts with a general rule, the more specific rule wins."
+                }
+              ];
+              const reminder = buildQuestionSpecificAdjudicationReminder("How does Leveraged Buyout work?", sources);
+              expect(reminder).toContain("printed named-card authority");
+              expect(reminder).toContain("more-specific-rule precedence");
+              expect(reminder).toContain("classify the resolution inferred");
+              expect(reminder).toContain("Golden Rules");
+            });
+
+            test("does not invent a combined-authority check for ordinary direct authority", () => {
+              const reminder = buildQuestionSpecificAdjudicationReminder("How many cards do I draw?", [
+                { id: "S1", canonicalId: "rulebook:drawing-cards", title: "Drawing cards", excerpt: "Draw two cards." }
+              ]);
+              expect(reminder).toBe("");
+            });
+          });
+          '''
+          Path("rules-assistant/v071-gate2-r7-combined-authority.test.mjs").write_text(regression, encoding="utf-8")
+          PY
+
+          rm .github/workflows/apply-rules-arbiter-r7.yml
+
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Harden combined-authority adjudication"
+          git push origin HEAD:rules-arbiter-gate2-r7
