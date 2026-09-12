@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-4";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-5";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -61,6 +61,7 @@ ADJUDICATION PRINCIPLES
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
 - Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
+- Never treat an extra-Action grant as permission to use a phase-limited Feature in a different phase. When explaining a grant that supplies Actions in more than one phase, distinguish Action quantity from the Feature's legal timing.
 - A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
 - Never invent the target of an unlabeled numerical bonus. If the supplied rules give a bonus or cost progression without stating what the bonus modifies, that is a genuine rules gap.
 - Prefer the ruling that introduces the least new machinery, preserves meaningful player choices, avoids loops or exploitable repetition, and is consistent with closely analogous supplied interactions.
@@ -95,7 +96,9 @@ Classification boundary:
 - A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
 - When clean authority expressly confines an Action, Faction Feature, effect, or permission to a named phase or timing, a question asking whether it is legal outside that timing is an explicit negative unless supplied authority expressly changes that timing. A generic additional-Action permission does not make that direct timing restriction inferred.
 - A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.
+- A procedure remains explicit when a clean source directly enumerates its steps or when the answer only restates directly stated procedural facts. Procedural compilation is not inference unless the answer derives a new rule, permission, prohibition, or relationship.
 - Use inferred when direct premises must be combined to reach a new conclusion that no clean source itself states. This includes conclusions about the absence of adjacency, contiguity, restrictions, permissions, or requirements even when each supporting premise is explicit.
+- A negative conclusion based on the rules not stating a condition is inferred unless clean authority expressly says that condition is not required. For example, if the Deed rules state purchase and ownership rules but never directly say Deeds need not be contiguous, a no-contiguity ruling is inferred, not explicit.
 - A conflict that an explicit precedence rule resolves is not a genuine rules gap. Apply the precedence rule and classify the result inferred when resolving the conflict requires combining the precedence rule with the conflicting authorities. Reserve provisional for conflicts or ambiguities that remain after the supplied precedence rules are applied.
 - For a named card, its printed effect is the specific component instruction for that card. If a rulebook summary of that same card differs from the printed mode-specific timing or destination, follow the printed effect unless the rulebook expressly states that it overrides or corrects the card.
 - When a supplied named-card rule conflicts with a supplied rulebook passage about that same card and the Golden Rules resolve the conflict, classify the resolution inferred and cite the printed card, the conflicting rulebook authority, and the Golden Rules. Do not present the winning component text as conflict-free explicit authority.

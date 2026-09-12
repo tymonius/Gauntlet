@@ -155,7 +155,7 @@ jobs:
           GAUNTLET_RULES_QA_OUTPUT: ${{ steps.plan.outputs.qa_report_path }}
           GAUNTLET_RULES_QA_CONCURRENCY: '1'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
-          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
           GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
           GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
         run: node "${{ steps.plan.outputs.qa_runner }}"

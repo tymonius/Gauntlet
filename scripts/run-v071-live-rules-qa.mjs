@@ -18,13 +18,14 @@ const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
 const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 1, 8));
 const requestTimeoutMs = Math.max(5000, Number(process.env.GAUNTLET_RULES_QA_TIMEOUT_MS) || 45000);
-const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 2, 8));
+const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 4, 8));
 const interCaseDelayMs = Math.max(0, Number(process.env.GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS) || 500);
 const requestedCaseLimit = Number(process.env.GAUNTLET_RULES_QA_LIMIT);
 const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
   ? Math.max(1, Math.floor(requestedCaseLimit))
   : null;
 const retryableStatuses = new Set([429, 502, 503, 504]);
+const workerResourceLimitBackoffMs = [15_000, 30_000, 60_000];
 const useGitHubActionsOidc = process.env.GAUNTLET_RULES_QA_USE_GITHUB_OIDC === "true";
 const qaOidcAudience = "gauntlet-rules-assistant-live-qa";
 let cachedQaOidcToken = null;
@@ -267,6 +268,22 @@ async function runInfrastructurePreflight() {
   };
 }
 
+function isWorkerResourceLimitFailure(last) {
+  if (last?.response?.status !== 503) return false;
+  const details = [last?.responseText, last?.payload?.error, last?.payload?.errorCode]
+    .filter(Boolean)
+    .join(" ");
+  return /worker exceeded resource limits|error\s*code:\s*1102/i.test(details);
+}
+
+function retryDelayMs(last, attempt) {
+  const status = last?.response?.status || null;
+  if (isWorkerResourceLimitFailure(last)) {
+    return workerResourceLimitBackoffMs[Math.min(attempt - 1, workerResourceLimitBackoffMs.length - 1)];
+  }
+  return status != null && status >= 500 ? 3000 * attempt : 1200 * attempt;
+}
+
 async function postCase(item, index) {
   const sessionId = "qa_v071_" + String(index + 1).padStart(3, "0") + "_" + runStamp;
   const body = {
@@ -288,7 +305,7 @@ async function postCase(item, index) {
     if (!retryableError && !retryableResponse) break;
 
     if (attempts < maxAttempts) {
-      const delayMs = status != null && status >= 500 ? 3000 * attempts : 1200 * attempts;
+      const delayMs = retryDelayMs(last, attempts);
       console.log(
         "RETRY " + String(index + 1).padStart(3, "0") + "/" + benchmarkCases.length
         + " " + item.id + " after "
