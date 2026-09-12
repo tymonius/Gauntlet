@@ -58,10 +58,16 @@ describe("game-data source/deployment boundary", () => {
     expect(read("src/content/v064.ts")).toContain("../../packages/game-data/current-game.json");
   });
 
-  it("keeps browser-route imports resolvable in Vitest without recreating a root source alias", () => {
-    const vitest = read("vitest.config.ts");
-    expect(vitest).toContain("./packages/game-data/");
-    expect(vitest).toContain("gameDataPackageRoot");
+  it("maps the stable browser game-data route to package source in direct local renderers", () => {
+    for (const name of [
+      "generate-tts-card-assets.mjs",
+      "generate-tts-territory-assets.mjs",
+      "generate-tts-leader-assets.mjs",
+    ]) {
+      const renderer = read(join("scripts", name));
+      expect(renderer, name).toContain("requestPath.startsWith('game-data/')");
+      expect(renderer, name).toContain("`packages/${requestPath}`");
+    }
   });
 
   it("does not route workflow source changes from the retired root game-data path", () => {
