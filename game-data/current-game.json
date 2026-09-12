@@ -4316,7 +4316,11 @@
           "maximum": 2,
           "gain": "The first time each turn you win a battle, gain 1 Command.",
           "first_win_only_each_turn": true,
-          "available_immediately": true
+          "available_immediately": true,
+          "may_trigger_on_either_players_turn": true,
+          "first_win_at_cap_consumes_trigger": true,
+          "gain_timing": "After a battle has a winner and before later effects caused by that victory. Command gained this way is available for later Aftermath Orders.",
+          "withdrawal_does_not_trigger": true
         },
         "orders": "Orders are the Military Faction Feature. The chosen Leader supplies that player’s available Orders as Leader Abilities. Spend the listed Command and resolve the Order at its stated timing without spending an Action."
       },
@@ -4350,8 +4354,9 @@
           "opportunity": "The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.",
           "procedure": "Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.",
           "accepted": "Return the stake. Apply the Proposal’s Accepted effect. Accepted Terms end the battle sequence during Onset. If the Proposal was unratified, ratify it and normally gain 1 Influence.",
-          "refused": "Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.",
-          "no_winner": "If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result."
+          "refused": "Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, the Diplomat may impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.",
+          "no_winner": "If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result.",
+          "eligibility": "A Proposal is eligible only if its printed Requirement is satisfied and the Diplomat can stake its listed Influence."
         },
         "ratification": {
           "accepted_new_reward": 1,
@@ -4359,7 +4364,8 @@
           "already_ratified_reward": 0,
           "already_ratified_reusable": true,
           "counts_each_proposal_once": true,
-          "text": "An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article."
+          "text": "An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article.",
+          "imposition_optional": true
         },
         "leverage": {
           "timing": "After refused Terms and before battle dice are rolled.",
@@ -4391,7 +4397,8 @@
           "minimum": 0,
           "limit_formula": "Territories you control + total card value in your Treasury",
           "may_exceed_limit_temporarily": true,
-          "limit_enforcement": "At the end of every turn, including the opponent’s turn, if Capital exceeds the current Capital Limit, reduce Capital to that limit."
+          "limit_enforcement": "At the end of every turn, including the opponent’s turn, if Capital exceeds the current Capital Limit, reduce Capital to that limit.",
+          "limit_recalculates_immediately": true
         },
         "treasury": {
           "action_cost": 1,
@@ -4530,6 +4537,14 @@
           "fail": {
             "text": "If a rule, effect, or continuing requirement causes a Mission to fail, reveal it and put it in your Graveyard.",
             "destination": "Graveyard"
+          },
+          "active_state": {
+            "owner_may_inspect": true,
+            "opponent_knows_slot_is_occupied": true,
+            "requirement_hidden_from_opponent": true,
+            "requirement_counts_only_while_active": true,
+            "cannot_use_other_printed_effects_while_active": true,
+            "starting_is_not_playing_card_for_another_effect": true
           }
         },
         "special_operations": {
@@ -4553,6 +4568,12 @@
             "text": "Reveal the Special Operation and pay its Intel cost. If you can pay, win immediately through Special Operation.",
             "increases_operation_progress": false,
             "grants_normal_mission_intel": false
+          },
+          "active_state": {
+            "owner_may_inspect": true,
+            "opponent_knows_slot_is_occupied": true,
+            "requirement_hidden_from_opponent": true,
+            "cannot_use_other_printed_effects_while_active": true
           }
         },
         "surveillance": {
@@ -4579,7 +4600,8 @@
           "replacement_optional": true,
           "replacement_does_not_reopen_surveillance_or_interference": true,
           "revise_own_choice": "If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information already gained.",
-          "direct_interference": "If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use."
+          "direct_interference": "If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use.",
+          "removal_optional": true
         }
       },
       "mystics": {
@@ -4656,6 +4678,23 @@
           "timing": "After the opponent’s normal start-of-turn draw attempt.",
           "text": "If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.",
           "other_failed_draws_do_not_trigger": true
+        },
+        "final_judgment": {
+          "timing": "After winning a battle, after battle cards are cleared.",
+          "limit": "Once per turn",
+          "text": "Immediately Purge. Reduce that Purge’s Conviction cost by 1, to a minimum of 1.",
+          "normal_conviction_gain_precedes_when_applicable": true,
+          "directly_permitted_purge": true
+        },
+        "relentless_pursuit": {
+          "cost": "2 Conviction",
+          "timing": "After defeating an attacking opponent",
+          "limit": "Once per turn",
+          "text": "Finish that battle’s Aftermath, end the defeated attacker’s turn, resolve that turn’s Cleanup, then before your normal turn begins Advance one Position toward their end. If that movement initiates a battle, you are the attacker. Resolve that battle completely, then begin your normal turn with Capture if the game has not ended.",
+          "separate_movement_sequence_between_turns": true,
+          "does_not_replace_normal_movement": true,
+          "terms_apply_normally_to_pursuit_battle": true,
+          "withdrawal_does_not_trigger": true
         }
       }
     },
@@ -8147,7 +8186,9 @@
       "completion_limit": "Only one Rite may be completed per turn.",
       "interruption": "If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.",
       "completed_rites_persist": "Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.",
-      "bound_card_default": "When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default."
+      "bound_card_default": "When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default.",
+      "selection_order": "You may begin your three selected Rites in any order.",
+      "completion": "A begun Rite completes automatically when its printed completion condition occurs, subject to the later-turn and one-completion-per-turn rules."
     }
   },
   "artDirection": {
