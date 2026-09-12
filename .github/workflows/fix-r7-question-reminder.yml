@@ -1,0 +1,52 @@
+name: Fix r7 adjudication reminder wiring
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate2-r7
+    paths:
+      - .github/workflows/fix-r7-question-reminder.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate2-r7
+      - name: Fix reminder wiring
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('rules-assistant/worker-v071.js')
+          s = p.read_text(encoding='utf-8')
+          old = '''  const questionText = adjudicationReminder
+    ? `${questionText}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
+    : question;'''
+          new = '''  const questionText = adjudicationReminder
+    ? `${question}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
+    : question;'''
+          if old not in s:
+              raise SystemExit('questionText construction was not found')
+          s = s.replace(old, new, 1)
+          old_prompt = '`QUESTION\\n${question}`'
+          new_prompt = '`QUESTION\\n${questionText}`'
+          if old_prompt not in s:
+              raise SystemExit('QUESTION prompt was not found')
+          s = s.replace(old_prompt, new_prompt, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          rm .github/workflows/fix-r7-question-reminder.yml
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Fix r7 adjudication reminder wiring"
+          git push origin HEAD:rules-arbiter-gate2-r7
