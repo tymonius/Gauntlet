@@ -596,6 +596,13 @@
             "military"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "military"
+          ]
         }
       ]
     },
@@ -625,6 +632,13 @@
             "diplomats"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "diplomats"
+          ]
         }
       ]
     },
@@ -654,6 +668,13 @@
             "financiers"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "financiers"
+          ]
         }
       ]
     },
@@ -683,6 +704,13 @@
             "intelligence"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "intelligence"
+          ]
         }
       ]
     },
@@ -712,6 +740,13 @@
             "mystics"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "mystics"
+          ]
         }
       ]
     },
@@ -741,6 +776,13 @@
             "inquisition"
           ],
           "optional": true
+        },
+        {
+          "path": [
+            "gameplay",
+            "faction_rules",
+            "inquisition"
+          ]
         }
       ]
     },
