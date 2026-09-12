@@ -27,6 +27,21 @@ jobs:
       - name: Validate repository architecture classification
         run: node scripts/validate-repository-architecture.mjs
 
+      - name: Validate release refresh automation ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -R -n -E 'automation/v[^[:space:]"'"'"'/]+-release-package-refresh' .github/workflows; then
+            echo 'Version-specific standing release-refresh branches are forbidden; use the lifecycle-driven current-release workflow.' >&2
+            exit 1
+          fi
+
+          owners="$(grep -R -l -F 'automation/current-release-package-refresh' .github/workflows | wc -l | tr -d ' ')"
+          test "$owners" -eq 1
+          grep -Fq 'automation/current-release-package-refresh' .github/workflows/materialize-current-release-package.yml
+          grep -Fq 'scripts/render-current-rulebook-booklet.mjs --plan' .github/workflows/materialize-current-release-package.yml
+
       - name: Enforce rules authority and stale-information policy
         env:
           RULES_AUTHORITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
