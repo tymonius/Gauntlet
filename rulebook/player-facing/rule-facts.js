@@ -54,6 +54,12 @@ function leadingNumber(value, label) {
   return Number(match[1]);
 }
 
+function matchingNumber(value, pattern, label) {
+  const match = String(value ?? '').match(pattern);
+  if (!match) throw new Error('Cannot derive numeric Rulebook fact from ' + label + ': ' + value);
+  return Number(match[1]);
+}
+
 function proposalAcceptedDraw(authority, proposalId) {
   const proposal = (authority?.proposals || []).find(candidate => candidate?.id === proposalId);
   const accepted = String(proposal?.accepted || '');
@@ -94,6 +100,20 @@ export function deriveRuleFacts(authority) {
     'financiers.executive.hostile_takeover.action_cost': leadingNumber(
       leaderAbility(authority, 'financiers', 'executive', 'Hostile Takeover')?.descriptor,
       'Executive Hostile Takeover descriptor',
+    ),
+    'intelligence.ranger.fieldcraft.intel_cost': leadingNumber(
+      leaderAbility(authority, 'intelligence', 'ranger', 'Fieldcraft')?.cost,
+      'Ranger Fieldcraft cost',
+    ),
+    'inquisition.conviction.maximum': matchingNumber(
+      faction(authority, 'inquisition')?.resource,
+      /\bmaximum\s+(\d+)\b/i,
+      'Inquisition Conviction maximum',
+    ),
+    'inquisition.conviction.gain': matchingNumber(
+      leaderAbility(authority, 'inquisition', 'grand-inquisitor', 'Conviction')?.text,
+      /\bgain\s+(\d+)\s+Conviction\b/i,
+      'Inquisition Conviction gain',
     ),
   };
 

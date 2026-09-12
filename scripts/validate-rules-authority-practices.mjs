@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   deriveRuleFacts,
@@ -14,6 +14,16 @@ import {
 
 const RULEBOOK_PATH = 'rulebook/player-facing/current-rulebook.md';
 const BASELINE_PATH = 'config/rules-authority-debt-baseline.json';
+const BANNED_BATTLE_SCOPE = /\bbattles?\s+involving\s+you\b/i;
+const CURRENT_PLAYER_LANGUAGE_DIRECTORIES = [
+  'rulebook/faction-guides',
+  'card-design/reference-copy/v0.7.0',
+];
+const CURRENT_PLAYER_LANGUAGE_FILES = [
+  'rules-assistant/rules-deterministic.js',
+  'rules-assistant/answer-presentation.js',
+  'apps/start/index.html',
+];
 
 const NUMBER_TOKEN = /\b(?:\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|once|twice)\b/i;
 const RULES_CONTEXT = /\b(?:action|actions|card|cards|hand|reserve|gambit|gambits|tactic|tactics|territory|territories|rite|rites|proposal|proposals|influence|capital|intel|conviction|command|maximum|minimum|at least|no more than|exactly|begin|draw|discard|keep|gain|spend|cost|value|deck|leader|faction|die|dice|roll|retreat|movement|position|battle|turn|phase|asset|assets|overlay|overlays|mission|missions|operation|operations|front line|capture|purge|unique|arcane)\b/i;
@@ -235,10 +245,40 @@ function validateCurrentPlayerFacingSurfaces(authority, rulebook) {
   console.log('Current player-facing rules surface contract passed.');
 }
 
+function validateNoRedundantBattleScope(authority, rulebook) {
+  const surfaces = [
+    { path: CURRENT_GAME_AUTHORITY_SOURCE, text: JSON.stringify(authority) },
+    { path: RULEBOOK_PATH, text: rulebook },
+    ...CURRENT_PLAYER_LANGUAGE_DIRECTORIES.flatMap((directory) =>
+      readdirSync(resolve(ROOT, directory), { withFileTypes: true })
+        .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
+        .map(entry => ({ path: `${directory}/${entry.name}`, text: readText(`${directory}/${entry.name}`) })),
+    ),
+    ...CURRENT_PLAYER_LANGUAGE_FILES.map(path => ({ path, text: readText(path) })),
+  ];
+
+  const errors = [];
+  for (const surface of surfaces) {
+    const match = BANNED_BATTLE_SCOPE.exec(surface.text);
+    if (!match) continue;
+    const line = surface.text.slice(0, match.index).split('\n').length;
+    errors.push(`${surface.path}:${line} contains redundant two-player battle scope "${match[0]}".`);
+  }
+
+  if (errors.length) {
+    throw new Error(
+      `Current player-facing battle-scope language policy failed:\n- ${errors.join('\n- ')}\n` +
+      'Every Gauntlet battle already contains both players; state the actual role, timing, or condition instead.',
+    );
+  }
+  console.log('Current player-facing battle-scope language policy passed.');
+}
+
 const authority = await loadCurrentGameAuthority();
 const rulebook = readText(RULEBOOK_PATH);
 validateRuleFactMarkers(rulebook, authority);
 validateCurrentPlayerFacingSurfaces(authority, rulebook);
+validateNoRedundantBattleScope(authority, rulebook);
 
 const baseSha = String(process.env.RULES_AUTHORITY_BASE_SHA || '').trim();
 validateDebtBaseline(rulebook, baseSha);
