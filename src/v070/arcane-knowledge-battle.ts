@@ -19,6 +19,7 @@ import {
 } from './copied-effects';
 import {
   activeV070CopiedEffectApplication,
+  isV070ActiveCopiedEffectSource,
   withV070CopiedEffectApplication,
 } from './copied-effect-runtime';
 import {
@@ -250,7 +251,7 @@ function applyArcaneKnowledgeChoice(
       opponent: owner === 'A' ? 'B' : 'A',
       commitment,
     });
-  });
+  }, target.sourceInstanceId);
 
   appendV070Event(state, {
     type: 'arcane_knowledge_battle_effect_applied',
@@ -345,7 +346,7 @@ function simulateCopiedApplication(
         opponent: owner === 'A' ? 'B' : 'A',
         commitment,
       });
-    });
+    }, effect.sourceInstanceId);
   } catch {
     return false;
   }
@@ -416,8 +417,15 @@ function assertArcaneKnowledgeSource(
       'Arcane Knowledge battle resolution requires an active battle.',
     );
   }
-  if (state.cardInstances[sourceInstanceId]?.owner !== owner
-    || state.cardInstances[sourceInstanceId]?.cardId !== V070_ARCANE_KNOWLEDGE_ID) {
+  const source = state.cardInstances[sourceInstanceId];
+  if (source?.cardId !== V070_ARCANE_KNOWLEDGE_ID
+    || (source.owner !== owner
+      && !isV070ActiveCopiedEffectSource(
+        state,
+        owner,
+        sourceInstanceId,
+        V070_ARCANE_KNOWLEDGE_ID,
+      ))) {
     throw new V070GameActionError(
       'Arcane Knowledge battle source does not match the applied card instance.',
     );
