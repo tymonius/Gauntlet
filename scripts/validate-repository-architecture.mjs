@@ -94,6 +94,42 @@ if (docStale.length) {
   );
 }
 
+const workflowsDir = path.join(root, '.github', 'workflows');
+const workflowFiles = fs.readdirSync(workflowsDir)
+  .filter(name => /\.ya?ml$/i.test(name))
+  .sort();
+const materializeWorkflows = workflowFiles.filter(name => name.startsWith('materialize-'));
+const genericRefreshOwners = [];
+
+for (const workflow of workflowFiles) {
+  const workflowSource = fs.readFileSync(path.join(workflowsDir, workflow), 'utf8');
+  if (/automation\/v[^\s/]+-release-package-refresh/.test(workflowSource)) {
+    failures.push(
+      `${workflow}: version-specific standing release-refresh branches are forbidden; ` +
+      'historical releases must not regenerate standing PRs from current development.',
+    );
+  }
+  if (materializeWorkflows.includes(workflow) && workflowSource.includes('automation/current-release-package-refresh')) {
+    genericRefreshOwners.push(workflow);
+  }
+}
+
+if (genericRefreshOwners.length !== 1 || genericRefreshOwners[0] !== 'materialize-current-release-package.yml') {
+  failures.push(
+    'Release refresh ownership must belong only to .github/workflows/materialize-current-release-package.yml.',
+  );
+}
+
+const currentMaterializer = path.join(workflowsDir, 'materialize-current-release-package.yml');
+if (!fs.existsSync(currentMaterializer)) {
+  failures.push('Lifecycle-driven current release materialization workflow is missing.');
+} else {
+  const currentMaterializerSource = fs.readFileSync(currentMaterializer, 'utf8');
+  if (!currentMaterializerSource.includes('scripts/render-current-rulebook-booklet.mjs --plan')) {
+    failures.push('Current release materialization must select its release through the lifecycle-driven render plan.');
+  }
+}
+
 if (failures.length) {
   throw new Error(`Repository architecture validation failed:\n- ${failures.join('\n- ')}`);
 }
