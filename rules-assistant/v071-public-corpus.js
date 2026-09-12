@@ -201,9 +201,10 @@ export async function loadV071RulesCorpus(options = {}) {
   requireBinding(manifest, 'source_provenance', provenanceDigest);
 
   const rulesCanonicalData = sanitizeV071CanonicalDataForRules(canonicalData);
+  const cleanRulebookMarkdown = stripRulebookAnnotations(rulebookMarkdown);
   const corpus = buildRulesCorpus({
     canonicalData: rulesCanonicalData,
-    rulebookMarkdown,
+    rulebookMarkdown: cleanRulebookMarkdown,
     siteOrigin: urls.siteOrigin,
     canonicalDataUrl: urls.canonicalDataUrl,
     rulebookUrl: urls.rulebookUrl,
