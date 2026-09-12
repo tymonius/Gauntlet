@@ -9,8 +9,14 @@ on:
         default: smoke
         type: choice
         options:
+          - targeted
           - smoke
           - full
+      case_ids:
+        description: Comma/whitespace-separated benchmark case IDs (required for targeted scope)
+        required: false
+        default: ""
+        type: string
       confirm_paid_api:
         description: I understand this workflow makes paid OpenAI API calls
         required: true
@@ -46,11 +52,37 @@ jobs:
         run: node scripts/resolve-current-live-publication.mjs
 
       - name: Configure paid QA scope
+        env:
+          QA_SCOPE: ${{ inputs.scope }}
+          QA_CASE_IDS: ${{ inputs.case_ids }}
         run: |
-          if [ "${{ inputs.scope }}" = "full" ]; then
+          set -euo pipefail
+          compact_case_ids="$(printf '%s' "$QA_CASE_IDS" | tr -d '[:space:],')"
+
+          if [ "$QA_SCOPE" = "full" ]; then
+            if [ -n "$compact_case_ids" ]; then
+              echo "case_ids is only valid with targeted scope."
+              exit 1
+            fi
             echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
             echo "Running the full paid Rules Arbiter benchmark for ${{ steps.plan.outputs.version }}."
+          elif [ "$QA_SCOPE" = "targeted" ]; then
+            if [ -z "$compact_case_ids" ]; then
+              echo "targeted scope requires at least one benchmark case id."
+              exit 1
+            fi
+            echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+            {
+              echo "GAUNTLET_RULES_QA_CASE_IDS<<GAUNTLET_QA_CASE_IDS"
+              printf '%s\n' "$QA_CASE_IDS"
+              echo "GAUNTLET_QA_CASE_IDS"
+            } >> "$GITHUB_ENV"
+            echo "Running targeted paid Rules Arbiter QA for ${{ steps.plan.outputs.version }}: $QA_CASE_IDS"
           else
+            if [ -n "$compact_case_ids" ]; then
+              echo "case_ids is only valid with targeted scope."
+              exit 1
+            fi
             echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
             echo "Running a 10-case representative paid Rules Arbiter smoke test for ${{ steps.plan.outputs.version }}."
           fi

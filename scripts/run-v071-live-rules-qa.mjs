@@ -1,6 +1,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
+  parseRequestedCaseIds,
+  selectBenchmarkCases
+} from "./v071-live-rules-qa-case-selection.mjs";
+import {
   applyBenchmarkCorrections,
   classifyTransportInfrastructure,
   buildContinuityText,
@@ -24,6 +28,7 @@ const requestedCaseLimit = Number(process.env.GAUNTLET_RULES_QA_LIMIT);
 const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
   ? Math.max(1, Math.floor(requestedCaseLimit))
   : null;
+const requestedCaseIds = parseRequestedCaseIds(process.env.GAUNTLET_RULES_QA_CASE_IDS);
 const retryableStatuses = new Set([429, 502, 503, 504]);
 const workerResourceLimitBackoffMs = [15_000, 30_000, 60_000];
 const useGitHubActionsOidc = process.env.GAUNTLET_RULES_QA_USE_GITHUB_OIDC === "true";
@@ -78,32 +83,11 @@ if (benchmarkValidationFailures.length) {
   throw new Error("Invalid live QA benchmark:\n- " + benchmarkValidationFailures.join("\n- "));
 }
 
-function selectBenchmarkCases(cases, limit) {
-  if (!limit) return cases;
-
-  const byId = new Map(cases.map((item) => [item.id, item]));
-  const selected = [];
-  const seen = new Set();
-
-  for (const id of Array.isArray(benchmark.smokeCaseIds) ? benchmark.smokeCaseIds : []) {
-    const item = byId.get(id);
-    if (!item || seen.has(id)) continue;
-    selected.push(item);
-    seen.add(id);
-    if (selected.length >= limit) return selected;
-  }
-
-  for (const item of cases) {
-    if (seen.has(item.id)) continue;
-    selected.push(item);
-    seen.add(item.id);
-    if (selected.length >= limit) break;
-  }
-
-  return selected;
-}
-
-const benchmarkCases = selectBenchmarkCases(benchmark.cases, caseLimit);
+const benchmarkCases = selectBenchmarkCases(benchmark.cases, {
+  limit: caseLimit,
+  smokeCaseIds: benchmark.smokeCaseIds,
+  requestedCaseIds
+});
 const startedAt = new Date().toISOString();
 const runStamp = Date.now().toString(36);
 
@@ -401,6 +385,7 @@ if (infrastructureFailure) {
     schema: "gauntlet.rules-arbiter-live-qa.v1",
     rulesVersion: benchmark.rulesVersion,
     benchmarkCorrections: benchmarkCorrections.cases.map((item) => item.id),
+    requestedCaseIds,
     endpoint,
     startedAt,
     completedAt: new Date().toISOString(),
@@ -466,6 +451,7 @@ const report = {
   benchmarkCorrections: benchmarkCorrections.cases.map((item) => item.id),
   executedCaseCount: benchmarkCases.length,
   executedCaseIds: benchmarkCases.map((item) => item.id),
+  requestedCaseIds,
   endpoint,
   startedAt,
   completedAt: new Date().toISOString(),
