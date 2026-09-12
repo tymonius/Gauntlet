@@ -70,6 +70,22 @@ describe("game-data source/deployment boundary", () => {
     }
   });
 
+  it("materializes the stable browser game-data route around supplemental renderers", () => {
+    const scripts = JSON.parse(read("package.json")).scripts;
+    expect(scripts["tts:supplementals"]).toBe(
+      "node tts/run-with-game-data-route.mjs scripts/generate-tts-supplemental-assets.mjs",
+    );
+    expect(scripts["tts:finalized-supplementals"]).toBe(
+      "node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs",
+    );
+
+    const runner = read("tts/run-with-game-data-route.mjs");
+    expect(runner).toContain("resolve(ROOT, 'packages/game-data')");
+    expect(runner).toContain("resolve(ROOT, 'game-data')");
+    expect(runner).toContain("await cp(GAME_DATA_SOURCE, GAME_DATA_ROUTE, { recursive: true })");
+    expect(runner).toContain("await rm(GAME_DATA_ROUTE, { recursive: true, force: true })");
+  });
+
   it("does not route workflow source changes from the retired root game-data path", () => {
     const workflowDir = ".github/workflows";
     const stale: string[] = [];
