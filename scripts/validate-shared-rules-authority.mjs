@@ -36,19 +36,28 @@ const setup = gameplay.setup;
 invariant(Array.isArray(setup.sequence) && setup.sequence.length === 8, 'Setup sequence drifted.');
 for (const step of setup.sequence) invariant(setup.steps?.[step], `Setup step ${step} lacks a canonical procedure.`);
 invariant(setup.opening_selection?.draw === 4 && setup.opening_selection?.discard === 1 && setup.opening_selection?.keep === 3, 'Opening selection counts drifted.');
-invariant(setup.opening_selection?.discard_is_cost_or_effect === false, 'Opening discard classification is missing.');
+invariant(setup.opening_selection?.counts_as_discard_for_other_cost_or_effect === false, 'Opening discard cost/effect classification is missing.');
+invariant(String(setup.opening_selection?.other_cost_or_effect_exception || '').includes('opening discard'), 'Opening discard exception is missing.');
 invariant(setup.territory_reveal?.simultaneous === true && setup.territory_reveal?.default_face_up_after_reveal === true, 'Territory reveal semantics are incomplete.');
 
-// Zones.
+// Zones own identity/information state. Turn/battle procedures remain the sole authority for
+// hand limits, Reserve size, battle-card sources/destinations, and normal recycling.
 const zones = gameplay.card_zones;
 for (const zone of ['draw_pile', 'hand', 'discard_pile', 'graveyard', 'asset_bank', 'gambit_area', 'reserve', 'tactic_area', 'leader_and_faction_area']) {
   invariant(zones?.[zone]?.text, `Missing canonical card-zone definition: ${zone}.`);
 }
-invariant(zones.hand?.normal_cleanup_limit === 3, 'Hand limit drifted.');
-invariant(zones.discard_pile?.recyclable === true && zones.graveyard?.normal_recycling === false, 'Discard/Graveyard circulation rules drifted.');
-invariant(zones.gambit_area?.source === 'Hand' && zones.gambit_area?.normal_destination === 'Graveyard', 'Gambit zone source/destination drifted.');
-invariant(zones.reserve?.normal_size === 3 && zones.reserve?.separate_from_hand === true && zones.reserve?.owner_may_inspect_and_arrange === true, 'Reserve zone rules are incomplete.');
-invariant(zones.tactic_area?.default_source === 'Reserve' && zones.tactic_area?.normal_destination === 'Discard Pile', 'Tactic zone source/destination drifted.');
+invariant(zones.reserve?.separate_from_hand === true && zones.reserve?.owner_may_inspect_and_arrange === true, 'Reserve zone information-state rules are incomplete.');
+invariant(String(zones.discard_pile?.circulation || '').includes('recyclable') && String(zones.graveyard?.circulation || '').includes('outside normal circulation'), 'Discard/Graveyard circulation classification is incomplete.');
+for (const [zone, fields] of Object.entries({
+  hand: ['normal_cleanup_limit'],
+  discard_pile: ['recyclable'],
+  graveyard: ['normal_recycling'],
+  gambit_area: ['source', 'normal_destination'],
+  reserve: ['normal_size', 'source', 'normal_destination'],
+  tactic_area: ['default_source', 'normal_destination']
+})) {
+  for (const field of fields) invariant(!Object.hasOwn(zones[zone], field), `card_zones.${zone}.${field} duplicates procedural authority.`);
+}
 registryPath('core.card-zones', 'gameplay.card_zones');
 
 // Actions and Assets.
@@ -60,12 +69,17 @@ invariant(Array.isArray(actions.action_card_play?.steps) && actions.action_card_
 invariant(actions.asset_discard?.action_cost === 1, 'Discarding an Asset must cost one Action.');
 invariant(actions.asset_ability_action_default === false, 'Asset abilities must not spend Actions by default.');
 
-const assets = gameplay.card_rules.assets;
+const cardRules = gameplay.card_rules;
+const assets = cardRules.assets;
 invariant(assets?.only_banked_effect_heading === true && assets?.bank_heading === 'Asset', 'Asset must remain the only banked-card effect heading.');
 invariant(String(assets?.normal_limit || '').includes('Territories you control'), 'Normal Asset limit must equal Territories controlled.');
-invariant(assets?.forced_limit_discard_is_removal === true, 'Forced Asset-limit discard must remain Removal.');
 invariant(assets?.replacement_is_separate_action === false && assets?.replaced_asset_departure_consequences_apply === true, 'Asset replacement procedure is incomplete.');
 invariant(assets?.prevented_departure_prevents_replacement === true, 'Preventing an Asset departure must prevent replacement-at-limit.');
+invariant(assets?.bank_procedure_source === 'gameplay.card_rules.inherent_bank_action', 'Asset bank procedure must remain single-source.');
+invariant(assets?.removal_classification_source === 'gameplay.card_rules.asset_removal', 'Asset Removal classification must remain single-source.');
+invariant(!Object.hasOwn(assets, 'inherent_bank_action') && !Object.hasOwn(assets, 'forced_limit_discard_is_removal'), 'Asset procedure data is duplicated inside card_rules.assets.');
+invariant(cardRules.inherent_bank_action?.applies_to_cards_with_asset_effect === true && String(cardRules.inherent_bank_action?.text || '').includes('As an Action'), 'Canonical inherent Bank Action drifted.');
+invariant(cardRules.asset_removal?.reduced_asset_limit_forced_discard_is_removal === true, 'Forced Asset-limit discard must remain Removal.');
 registryPath('core.cards.assets', 'gameplay.card_rules.assets');
 
 // Movement and battle commitments.
@@ -78,8 +92,10 @@ invariant(Array.isArray(movement?.entering_opponent_position) && movement.enteri
 const battle = gameplay.battle;
 invariant(battle.commitment_sources?.gambit === 'Hand', 'Normal Gambit source must be Hand.');
 invariant(String(battle.commitment_sources?.tactic || '').startsWith('Reserve'), 'Normal Tactic source must be Reserve.');
-invariant(battle.reserve?.normal_size === 3 && battle.reserve?.temporary_private_zone === true && battle.reserve?.hand_set_aside_without_zone_change === true, 'Reserve formation/state rules are incomplete.');
-invariant(battle.reserve?.owner_may_inspect_and_arrange === true && battle.reserve?.remaining_cards_normal_destination === 'Discard Pile', 'Reserve privacy/cleanup rules are incomplete.');
+invariant(battle.normal_reserve_size === 3 && battle.remaining_reserve_destination === 'Discard Pile', 'Canonical Reserve size/destination drifted.');
+invariant(battle.reserve?.source === 'Draw Pile' && battle.reserve?.temporary_private_zone === true && battle.reserve?.hand_set_aside_without_zone_change === true, 'Reserve formation/state rules are incomplete.');
+invariant(battle.reserve?.owner_may_inspect_and_arrange === true && String(battle.reserve?.formation || '').includes('without changing their zone'), 'Reserve privacy/formation rules are incomplete.');
+invariant(!Object.hasOwn(battle.reserve, 'normal_size') && !Object.hasOwn(battle.reserve, 'remaining_cards_normal_destination'), 'battle.reserve duplicates root Reserve size/destination authority.');
 invariant(battle.withdrawal_procedure?.positional_default?.attacker && battle.withdrawal_procedure?.positional_default?.defender, 'Withdrawal positional defaults are incomplete.');
 invariant(battle.withdrawal_procedure?.only_attacker_withdraws && battle.withdrawal_procedure?.only_defender_withdraws && battle.withdrawal_procedure?.both_withdraw, 'Withdrawal branch outcomes are incomplete.');
 invariant(String(battle.withdrawal_procedure?.onset || '').includes('without an Aftermath'), 'Onset withdrawal must skip Aftermath.');
@@ -88,7 +104,7 @@ registryPath('core.battle.reserve', 'gameplay.battle.reserve');
 registryPath('core.battle.withdrawal-procedure', 'gameplay.battle.withdrawal_procedure');
 
 // Bound cards.
-const bind = gameplay.card_rules.bind;
+const bind = cardRules.bind;
 invariant(bind?.outside_normal_zones === true, 'Bound cards must remain outside normal zones.');
 invariant(bind?.face_up_public === true && bind?.face_down_owner_inspection_only === true, 'Bound-card information state is incomplete.');
 invariant(String(bind?.normal_availability || '').includes('cannot be played, moved, or affected'), 'Bound-card availability restriction is incomplete.');
@@ -96,11 +112,10 @@ invariant(bind?.specific_destination_overrides_default === true, 'Card-specific 
 registryPath('core.cards.bind', 'gameplay.card_rules.bind');
 
 // Choices, multiple battle cards, and reveal-stage interference.
-const cardRules = gameplay.card_rules;
 invariant(cardRules.choices?.available_options_only === true && String(cardRules.choices?.no_valid_option || '').includes('ignored'), 'Choice legality/no-valid-option rule is incomplete.');
 invariant(cardRules.multiple_gambits_or_tactics?.permission_optional_by_default === true, 'Additional Gambit/Tactic permission must be optional by default.');
 invariant(String(cardRules.multiple_gambits_or_tactics?.simultaneous_tactic_choice || '').includes('simultaneously'), 'Multi-Tactic simultaneous selection rule is missing.');
-invariant(String(cardRules.multiple_gambits_or_tactics?.modifier_stacking || '').includes('add together'), 'Reserve/Tactic modifier stacking rule is missing.');
+invariant(!Object.hasOwn(cardRules.multiple_gambits_or_tactics, 'modifier_stacking'), 'Reserve/Tactic modifier stacking must live only in compact shorthand authority.');
 invariant(Array.isArray(cardRules.reveal_stage_interference?.procedure) && cardRules.reveal_stage_interference.procedure.length === 3, 'Reveal-stage interference ordering is incomplete.');
 invariant(cardRules.reveal_stage_interference?.cannot_cancel_applied_effect === true, 'Reveal-stage interference must not cancel an already-applied effect.');
 registryPath('core.cards.choices', 'gameplay.card_rules.choices');
@@ -133,4 +148,4 @@ registryPath('core.cards.no-winner', 'gameplay.card_rules.battle_ends_without_wi
 invariant(String(cardRules.cards_becoming_territories?.manifest_destiny || '').includes('normal Territory with a normal Deed'), 'Manifest Destiny Territory semantics are missing.');
 registryPath('core.cards.becoming-territories', 'gameplay.card_rules.cards_becoming_territories');
 
-console.log('Canonical shared rules authority is complete and registered for direct publication.');
+console.log('Canonical shared rules authority is complete, single-source, and registered for direct publication.');
