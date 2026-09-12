@@ -5,7 +5,7 @@ on:
     branches: [rules/shared-authority-rebased]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -64,19 +64,11 @@ jobs:
           node scripts/validate-faction-rules-authority.mjs
           node scripts/validate-shared-rules-authority.mjs
 
-      - name: Stage durable result
+      - name: Create validated canonical authority blob
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p /tmp/rebased/.github/workflows /tmp/rebased/config /tmp/rebased/docs /tmp/rebased/game-data /tmp/rebased/rulebook/comprehensive /tmp/rebased/scripts
-          cp .github/workflows/rules-publication-authority.yml /tmp/rebased/.github/workflows/
-          cp config/rules-surface-contract.json /tmp/rebased/config/
-          cp docs/v0.7.2-shared-authority-normalization.json /tmp/rebased/docs/
-          cp game-data/current-game.json /tmp/rebased/game-data/
-          cp rulebook/comprehensive/comprehensive-rules.md /tmp/rebased/rulebook/comprehensive/
-          cp scripts/validate-shared-rules-authority.mjs /tmp/rebased/scripts/
-
-      - name: Upload validated durable result
-        uses: actions/upload-artifact@v4
-        with:
-          name: rebased-shared-authority
-          path: /tmp/rebased
-          include-hidden-files: true
+          content="$(base64 -w0 game-data/current-game.json)"
+          sha="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/git/blobs" -f content="$content" -f encoding=base64 --jq .sha)"
+          echo "CANONICAL_AUTHORITY_BLOB=$sha"
+          test "$sha" = "f9248f487afbed0c0fa7a5721fd14b9b955049c2"
