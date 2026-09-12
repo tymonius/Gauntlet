@@ -34,8 +34,8 @@ function retrieved(doc, id = "S1") {
 }
 
 describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
-  test("pins the r7 behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260912-7");
+  test("pins the current behavior revision", () => {
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260912-8");
   });
 
   test("injects Deeds and Front Line together for contiguity comparisons", () => {
@@ -94,7 +94,7 @@ describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
     const reminder = buildQuestionSpecificAdjudicationReminder("How does Leveraged Buyout work?", sources);
     expect(reminder).toContain("printed named-card authority");
     expect(reminder).toContain("more-specific-rule precedence");
-    expect(reminder).toContain("classify the resolution inferred");
+    expect(reminder).toContain("classify the conflict-resolved result inferred");
     expect(reminder).toContain("Golden Rules");
   });
 
