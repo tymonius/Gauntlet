@@ -19,7 +19,7 @@ const universalReferenceCss = readFileSync('card-design/universal-reference.css'
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 function allReferenceComponents() {

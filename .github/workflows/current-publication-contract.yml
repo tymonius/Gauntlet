@@ -58,6 +58,7 @@ jobs:
             /apps/factions/**
             /apps/rules/**
             /apps/start/**
+            /packages/game-data/**
             /rulebook/index.html
             /rules-arbiter/index.html
             /apps/playtest/**/index.html

@@ -181,6 +181,11 @@ jobs:
           mapfile -t retired_sources < <(node -e "for (const file of JSON.parse(process.env.RETIRED_SOURCES || '[]')) console.log(file)")
           for retired in "${retired_sources[@]}"; do
             [[ -e "$retired" ]] && continue
+            # game-data deliberately keeps the same public URL after moving to packages/.
+            # Its dedicated source/deployment boundary regression distinguishes source
+            # dependencies from valid browser-route references; this generic substring
+            # scanner cannot do so safely (and even matches current-game.js inside .json).
+            [[ "$retired" == game-data/* ]] && continue
             while IFS= read -r match; do
               [[ -z "$match" ]] && continue
               [[ "$match" == legacy/* ]] && continue

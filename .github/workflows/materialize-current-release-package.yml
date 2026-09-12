@@ -6,7 +6,7 @@ on:
       - main
       - "release/**-finalize"
     paths:
-      - game-data/**
+      - packages/game-data/**
       - rulebook/**
       - card-design/**
       - images/artwork/cards/**
@@ -33,7 +33,7 @@ on:
     branches:
       - main
     paths:
-      - game-data/**
+      - packages/game-data/**
       - rulebook/**
       - card-design/**
       - images/artwork/cards/**

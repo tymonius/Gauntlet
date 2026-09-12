@@ -3,7 +3,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority } from './current-game-authority.mjs';
 import { resolveFirstArtwork } from '../card-design/card-artwork-resolver.js';
-import { resolveArtDirection } from '../game-data/art-direction.mjs';
+import { resolveArtDirection } from '../packages/game-data/art-direction.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const CURRENT_ALIAS_ROOT = join(ROOT, 'tts', 'generated', 'current');
@@ -27,7 +27,7 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
-const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
+const CURRENT_GAME_SOURCE = 'packages/game-data/current-game.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
 
@@ -104,7 +104,7 @@ export async function resolveCurrentTtsRelease() {
     sourceVersion,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     starterDecksSource: CURRENT_GAME_SOURCE,
-    releasePackageRoot: 'game-data',
+    releasePackageRoot: 'packages/game-data',
     outputRoot: join(ROOT, 'tts', 'generated', sourceVersion),
     currentGameSource: CURRENT_GAME_SOURCE,
     authorityProvenance: Object.freeze({ ...(authority.provenance || {}) }),
@@ -227,7 +227,6 @@ async function repositoryArtworkExists(source) {
     throw error;
   }
 }
-
 
 function stableCardSort(a, b) {
   const groupDifference = GROUP_ORDER.indexOf(a.faction) - GROUP_ORDER.indexOf(b.faction);

@@ -19,7 +19,7 @@ Cleanup is not a license to rewrite game behavior, mutate frozen releases, or br
 
 Current gameplay authority lives in:
 
-- `game-data/current-game.json`
+- `packages/game-data/current-game.json`
 - `rulebook/player-facing/current-rulebook.md`
 - `governance/` for binding decision provenance and cross-surface traceability
 
@@ -44,11 +44,11 @@ A path that cannot be classified cleanly is a cleanup target.
 
 ### 3. Public URLs are compatibility contracts, not source locations
 
-Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` must not move merely to make the source tree prettier.
+Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/start/`, `/playtest/`, and `/game-data/` must not move merely to make the source tree prettier.
 
 GitHub Pages is staged from an explicit public-root allowlist rather than from the entire repository tree. Source organization may therefore change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists.
 
-`apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` use this separation deliberately: their canonical repository source lives under `apps/`, while Pages stages them at the unchanged `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` public paths. Future application moves should follow this model rather than recreating root source aliases.
+`apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` use this separation deliberately: their canonical repository source lives under `apps/`, while Pages stages them at the unchanged `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` public paths. `packages/game-data/` follows the same principle for shared authority: repository consumers use the package path, while Pages stages it at `/game-data/` for browser consumers. Future source moves should follow this model rather than recreating root source aliases.
 
 ### 4. Frozen releases stay frozen
 
@@ -87,7 +87,7 @@ The machine-readable root inventory and transition target are defined by `config
 
 | Path | Role |
 |---|---|
-| `game-data/` | Complete current gameplay authority and adapters |
+| `packages/game-data/` | Complete current gameplay authority and adapters; staged publicly at `/game-data/` |
 | `rulebook/player-facing/` | Complete current Rulebook authority |
 | `governance/` | Decision registry, schemas, traceability, audit records |
 | `config/` | Maintained configuration used by production/tooling where explicitly referenced |
@@ -109,6 +109,12 @@ The machine-readable root inventory and transition target are defined by `config
 | `contact/` | Public contact form and submission confirmation surface |
 | `accessibility/` | Public accessibility practices and known-limitations surface |
 | `press/` | Public press/media information and reference-asset surface |
+
+### Shared packages
+
+| Path | Role |
+|---|---|
+| `packages/` | Canonical source container for maintained shared packages and authorities; currently contains `packages/game-data/` |
 
 ### Production tooling
 
@@ -159,7 +165,7 @@ These deployed historical paths should not receive new product behavior except e
 
 | Path | Current interpretation |
 |---|---|
-| `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `packages/game-data/` |
 | `legacy/digital-engine-reconstruction/` | Preserved clean v0.6.2/v0.6.3 engine reconstruction snapshots moved out of the active `src/` typecheck boundary; historical provenance only | <!-- DOC-HISTORICAL -->
 | `legacy/digital-engine-migration/` | Superseded versioned digital-engine migration implementations archived after relevant behavior was promoted or retired; not part of the active engine boundary | <!-- DOC-HISTORICAL -->
 | `legacy/digital-engine-v06/` | Earlier playable v0.6-era digital engine and opt-in historical dev runners moved out of active `src/`; preserved as implementation/migration evidence, not current digital-rules authority | <!-- DOC-HISTORICAL -->
@@ -202,7 +208,7 @@ releases/
 legacy/
 ```
 
-This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged. `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, and `apps/playtest/` are the concrete application migrations toward this target so far.
+This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages stages an explicit deployed tree, so application, package, and tooling source may move toward these boundaries while stable public URLs remain unchanged. `apps/card-reference/`, `apps/deckbuilder/`, `apps/factions/`, `apps/start/`, `apps/playtest/`, and `packages/game-data/` are the concrete migrations toward this target so far.
 
 ## Cleanup sequence
 
@@ -225,8 +231,8 @@ This is a **conceptual dependency target, not an instruction to move every exist
 
 - Keep GitHub Pages staging explicit rather than mirroring the repository.
 - Preserve current public URLs while source directories are consolidated.
-- Use `apps/card-reference/` → `/card-reference/`, `apps/deckbuilder/` → `/deckbuilder/`, `apps/factions/` → `/factions/`, `apps/start/` → `/start/`, and `apps/playtest/` → `/playtest/` as the reference pattern for subsequent current application moves.
-- Move application source into clearer package boundaries only after verifying each deployed compatibility path.
+- Use `apps/card-reference/` → `/card-reference/`, `apps/deckbuilder/` → `/deckbuilder/`, `apps/factions/` → `/factions/`, `apps/start/` → `/start/`, `apps/playtest/` → `/playtest/`, and `packages/game-data/` → `/game-data/` as the reference pattern for source/public separation.
+- Move current source into clearer application/package boundaries only after verifying each deployed compatibility path.
 
 ### Phase 4 — Digital-engine boundary
 

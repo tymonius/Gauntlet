@@ -1,8 +1,11 @@
 import { spawn } from 'node:child_process';
+import { cp, lstat, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const GAME_DATA_SOURCE = resolve(ROOT, 'packages/game-data');
+const GAME_DATA_ROUTE = resolve(ROOT, 'game-data');
 
 function runNode(script, args = []) {
   return new Promise((resolveRun, rejectRun) => {
@@ -19,11 +22,36 @@ function runNode(script, args = []) {
   });
 }
 
+async function pathExists(path) {
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+async function withGameDataCompatibilityRoute(callback) {
+  if (await pathExists(GAME_DATA_ROUTE)) {
+    throw new Error('Refusing to overwrite an existing root game-data path while materializing the browser compatibility route.');
+  }
+
+  await cp(GAME_DATA_SOURCE, GAME_DATA_ROUTE, { recursive: true });
+  try {
+    return await callback();
+  } finally {
+    await rm(GAME_DATA_ROUTE, { recursive: true, force: true });
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   await runNode('scripts/generate-tts-card-assets.mjs', ['--catalog-only']);
-  await runNode('scripts/generate-card-media-assets.mjs', args);
-  await runNode('scripts/generate-card-media-compositions.mjs', args);
+  await withGameDataCompatibilityRoute(async () => {
+    await runNode('scripts/generate-card-media-assets.mjs', args);
+    await runNode('scripts/generate-card-media-compositions.mjs', args);
+  });
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -33,4 +61,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { runNode };
+export { runNode, withGameDataCompatibilityRoute };

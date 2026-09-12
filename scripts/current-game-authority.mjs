@@ -1,11 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { validateCurrentGameAuthority as validateSharedCurrentGameAuthority } from '../game-data/current-game-validation.mjs';
+import { validateCurrentGameAuthority as validateSharedCurrentGameAuthority } from '../packages/game-data/current-game-validation.mjs';
 import { validateAuthorityEmbeddedFacts } from '../rulebook/player-facing/rule-facts.js';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-export const CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json';
+export const CURRENT_GAME_AUTHORITY_SOURCE = 'packages/game-data/current-game.json';
 
 let authorityPromise = null;
 

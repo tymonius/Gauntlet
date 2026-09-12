@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'game-data/current-game.json'
-      - 'game-data/current-game-validation.mjs'
+      - 'packages/game-data/current-game.json'
+      - 'packages/game-data/current-game-validation.mjs'
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
       - 'scripts/current-game-authority.mjs'
@@ -34,9 +34,9 @@ jobs:
           sparse-checkout: |
             /config/rules-surface-contract.json
             /config/rules-publication-sources.json
-            /game-data/current-game.json
-            /game-data/current-game-validation.mjs
-            /game-data/art-direction.mjs
+            /packages/game-data/current-game.json
+            /packages/game-data/current-game-validation.mjs
+            /packages/game-data/art-direction.mjs
             /scripts/current-game-authority.mjs
             /scripts/validate-faction-rules-authority.mjs
             /scripts/validate-shared-rules-authority.mjs

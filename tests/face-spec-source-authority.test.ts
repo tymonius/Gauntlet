@@ -7,7 +7,7 @@ import {
   resolveFaceSpec,
 } from '../card-design/face-spec.mjs';
 
-const authority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const authority = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const game = Object.freeze({
   authorityUrl: '/game-data/current-game.json',
   visualAuthorityUrl: '/game-data/current-game.json',

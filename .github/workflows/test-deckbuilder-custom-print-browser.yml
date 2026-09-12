@@ -7,8 +7,7 @@ on:
     paths:
       - "apps/deckbuilder/custom-print.*"
       - "card-design/**"
-      - "game-data/current-game.json"
-      - "game-data/**"
+      - "packages/game-data/**"
       - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
   workflow_dispatch:
 
@@ -30,11 +29,12 @@ jobs:
         with:
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Materialize public Deckbuilder route
+      - name: Materialize public Deckbuilder and game-data routes
         run: |
-          rm -rf deckbuilder
-          mkdir -p deckbuilder
+          rm -rf deckbuilder game-data
+          mkdir -p deckbuilder game-data
           cp -a apps/deckbuilder/. deckbuilder/
+          cp -a packages/game-data/. game-data/
 
       - name: Install matching Playwright package
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1

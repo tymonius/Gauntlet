@@ -40,7 +40,7 @@ jobs:
               const oneOf = values => values.some(exact);
 
               render = Boolean(
-                under('game-data/')
+                under('packages/game-data/')
                 || under('card-design/')
                 || under('images/artwork/')
                 || under('apps/card-reference/')

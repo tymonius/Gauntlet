@@ -20,6 +20,7 @@ const FACTIONS = Object.freeze([
 const BACK_POLICIES = new Set(['standardBack', 'twoSided', 'specialBack']);
 const PRODUCTION_STATUSES = new Set(['ready', 'artwork-pending', 'export-pending', 'design-pending']);
 const DESIGN_STATUSES = new Set(['final', 'refinement-pending', 'placeholder']);
+const CURRENT_GAME_PUBLIC_SOURCE = 'game-data/current-game.json';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -27,6 +28,14 @@ function assert(condition, message) {
 
 function designStatusFor(component) {
   return component.designStatus || 'final';
+}
+
+function repositorySourcePath(source) {
+  return source === CURRENT_GAME_PUBLIC_SOURCE ? CURRENT_GAME_AUTHORITY_SOURCE : source;
+}
+
+function isCurrentGameSource(source) {
+  return source === CURRENT_GAME_AUTHORITY_SOURCE || source === CURRENT_GAME_PUBLIC_SOURCE;
 }
 
 function validateCardLikeMetadata(component) {
@@ -127,7 +136,7 @@ export async function validateTtsComponentContract(contract) {
     assert(PRODUCTION_STATUSES.has(component.productionStatus), `${component.id} has invalid productionStatus ${component.productionStatus}.`);
     assert(component.source, `${component.id} must cite its canonical source.`);
     if (component.cardLike) validateCardLikeMetadata(component);
-    await access(join(ROOT, component.source));
+    await access(join(ROOT, repositorySourcePath(component.source)));
   }
 
   for (const component of contract.components || []) {
@@ -135,7 +144,7 @@ export async function validateTtsComponentContract(contract) {
     assert(Number.isInteger(component.quantity) && component.quantity > 0, `${component.id} must declare a positive quantity.`);
     assert(PRODUCTION_STATUSES.has(component.productionStatus), `${component.id} has invalid productionStatus ${component.productionStatus}.`);
     assert(component.source, `${component.id} must cite its canonical source.`);
-    await access(join(ROOT, component.source));
+    await access(join(ROOT, repositorySourcePath(component.source)));
 
     if (component.cardLike) validateCardLikeMetadata(component);
 
@@ -202,7 +211,7 @@ export async function validateTtsComponentContract(contract) {
   assert(factionReferences.every((component) => designStatusFor(component) === 'final'), 'Every faction reference-card design must be final.');
   assert(factionReferences.every((component) => component.copyMode === 'bespoke'), 'Every faction reference card must use authored bespoke player-aid copy.');
   assert(factionReferences.every((component) => String(component.source || '').startsWith('card-design/reference-copy/v0.7.0/')), 'Every faction reference card must source its compact v0.7.0 player-aid copy.');
-  assert(factionReferences.every((component) => component.authoritySource === 'game-data/current-game.json'), 'Every faction reference card must audit against the complete current gameplay authority.');
+  assert(factionReferences.every((component) => component.authoritySource === CURRENT_GAME_PUBLIC_SOURCE), 'Every faction reference card must audit against the complete current gameplay authority.');
 
   const capitalLimitTracker = map.get('financiers-capital-limit-tracker');
   assert(capitalLimitTracker, 'Financiers package must contain its Capital Limit Tracker.');
@@ -245,14 +254,14 @@ export async function validateTtsComponentContract(contract) {
   );
   assert(rites.every((component) => component.productionStatus === 'ready' && component.backPolicy === 'twoSided'), 'All current Mystics Rite cards must be ready and two-sided.');
   assert(rites.every((component) => component.deckInclusion === 'selected-rite'), 'Mystics Rite components must use selected-rite package inclusion.');
-  assert(rites.every((component) => component.source === CURRENT_GAME_AUTHORITY_SOURCE), 'Mystics Rite components must source current-game authority directly.');
+  assert(rites.every((component) => isCurrentGameSource(component.source)), 'Mystics Rite components must source current-game authority directly.');
 
   const ritual = map.get('mystics-ritual-of-ascension');
   assert(ritual, 'Mystics package must contain the Ritual of Ascension card.');
   assert(ritual.family === 'ritual-card', 'Ritual of Ascension must use the ritual-card family.');
   assert(ritual.productionStatus === 'ready' && designStatusFor(ritual) === 'final', 'Ritual of Ascension must be finalized and production-ready.');
   assert(ritual.backPolicy === 'specialBack' && String(ritual.specialBackFile || '').trim(), 'Ritual of Ascension must declare its special reverse face.');
-  assert(ritual.source === CURRENT_GAME_AUTHORITY_SOURCE, 'Ritual of Ascension must source current-game authority directly.');
+  assert(isCurrentGameSource(ritual.source), 'Ritual of Ascension must source current-game authority directly.');
 
   const inquisitionReferences = componentsFor(contract, 'inquisition', 'reference-card');
   assert(inquisitionReferences.length === 2, `Inquisition must contain Doctrine and Purge Reference Cards; found ${inquisitionReferences.length}.`);

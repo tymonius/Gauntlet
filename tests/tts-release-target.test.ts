@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { buildCatalog, resolveCurrentTtsRelease } from '../scripts/tts-current-catalog.mjs';
 
 const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 
 describe('TTS development and publication identity', () => {
   it('tracks the live stable v0.7.1 Workshop target independently from active development', () => {

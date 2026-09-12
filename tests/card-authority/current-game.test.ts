@@ -6,7 +6,7 @@ import {
   validateCurrentGameContract,
 } from '../../scripts/card-authority/model.mjs';
 
-const authority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const authority = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
