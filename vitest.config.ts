@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { defineConfig, configDefaults } from 'vitest/config';
 
 type QuarantineGroup = {
@@ -16,7 +15,6 @@ type QuarantineManifest = {
 const manifestUrl = new URL('./tests/vitest-quarantine.json', import.meta.url);
 const manifest = JSON.parse(readFileSync(manifestUrl, 'utf8')) as QuarantineManifest;
 const quarantinedFiles = manifest.groups.flatMap((group) => group.files);
-const gameDataPackageRoot = fileURLToPath(new URL('./packages/game-data/', import.meta.url)).replace(/\\/g, '/');
 
 const duplicates = quarantinedFiles.filter((file, index) => quarantinedFiles.indexOf(file) !== index);
 if (duplicates.length) {
@@ -24,18 +22,6 @@ if (duplicates.length) {
 }
 
 export default defineConfig({
-  resolve: {
-    alias: [
-      {
-        find: /^(?:\.\.\/)+game-data\/(.+)$/,
-        replacement: `${gameDataPackageRoot}/$1`,
-      },
-      {
-        find: /^\/game-data\/(.+)$/,
-        replacement: `${gameDataPackageRoot}/$1`,
-      },
-    ],
-  },
   test: {
     globals: true,
     environment: 'node',
