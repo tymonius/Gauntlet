@@ -4304,7 +4304,20 @@
           "Entrench",
           "Repel",
           "Fortify"
-        ]
+        ],
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "command": {
+          "starting": 0,
+          "minimum": 0,
+          "maximum": 2,
+          "gain": "The first time each turn you win a battle, gain 1 Command.",
+          "first_win_only_each_turn": true,
+          "available_immediately": true
+        }
       },
       "diplomats": {
         "starting_influence": 1,
@@ -4317,12 +4330,137 @@
           "4": 10
         },
         "accepted_reward": "Ratify an unratified Proposal and gain 1 Influence.",
-        "imposed_reward": "After winning following refused Terms, ratify an unratified Proposal and gain 2 Influence."
+        "imposed_reward": "After winning following refused Terms, ratify an unratified Proposal and gain 2 Influence.",
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "influence": {
+          "starting": 1,
+          "minimum": 0,
+          "maximum": 10,
+          "staked_is_spent": false,
+          "staked_is_available": false,
+          "leverage_spending_returns_with_stake": false
+        },
+        "terms": {
+          "timing": "During Onset, before Gambits.",
+          "opportunity": "The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.",
+          "procedure": "Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.",
+          "accepted": "Return the stake. Apply the Proposal’s Accepted effect. Accepted Terms end the battle sequence during Onset. If the Proposal was unratified, ratify it and normally gain 1 Influence.",
+          "refused": "Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.",
+          "no_winner": "If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result."
+        },
+        "ratification": {
+          "accepted_new_reward": 1,
+          "imposed_new_reward": 2,
+          "already_ratified_reward": 0,
+          "already_ratified_reusable": true,
+          "counts_each_proposal_once": true,
+          "text": "An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article."
+        },
+        "leverage": {
+          "timing": "After refused Terms and before battle dice are rolled.",
+          "costs": {
+            "1": 1,
+            "2": 3,
+            "3": 6,
+            "4": 10
+          },
+          "text": "Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence."
+        },
+        "peace_treaty": {
+          "threshold": 6,
+          "timing": "At the start of the Diplomat’s turn, after Capture and before Draw.",
+          "text": "If six different Proposals are ratified at this check, the Diplomat wins immediately."
+        }
       },
       "financiers": {
         "starting_capital": 2,
         "financial_capacity": "After Capture and before Draw, if Treasury value exceeds Territories controlled, the Financier may take one Action during both Opening and Denouement that turn, provided at least one Action is spent on a Financier Faction Feature marked 1 Action.",
-        "faction_feature_action_phase": "Denouement"
+        "faction_feature_action_phase": "Denouement",
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "capital": {
+          "starting": 2,
+          "minimum": 0,
+          "limit_formula": "Territories you control + total card value in your Treasury",
+          "may_exceed_limit_temporarily": true,
+          "limit_enforcement": "At the end of every turn, including the opponent’s turn, if Capital exceeds the current Capital Limit, reduce Capital to that limit."
+        },
+        "treasury": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "text": "Place one card from your Hand face up in your Treasury.",
+          "public": true,
+          "is_asset": false,
+          "normal_play_or_effect_access": false,
+          "value_contributes_to_capital_limit": true
+        },
+        "income": {
+          "timing": "After Capture at the start of your turn.",
+          "text": "Gain 1 Capital for each Deed you own."
+        },
+        "financial_capacity_rules": {
+          "timing": "After Capture and before Draw.",
+          "qualification": "Treasury value is greater than the number of Territories you control.",
+          "determine_once": true,
+          "text": "If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.",
+          "qualifying_features": [
+            "Treasury",
+            "Deeds",
+            "Play the Market"
+          ]
+        },
+        "deeds": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "ownership_independent_of_control": true,
+          "ownership_independent_of_occupation": true,
+          "text": "Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.",
+          "cost": {
+            "base": "min(Deeds you own + 1, 6)",
+            "position_modifiers": {
+              "control": -1,
+              "occupy": 0,
+              "neither": 1
+            },
+            "buyout_premium": "If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0.",
+            "minimum": 1,
+            "sequential_recalculation": true,
+            "formula": "max(1, min(Deeds you own + 1, 6) + position modifier + buyout premium)"
+          }
+        },
+        "play_the_market": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "cost": "Discard one card from your Hand.",
+          "roll": {
+            "1": "Put the discarded card in your Graveyard; gain 0 Capital.",
+            "6": "Gain Capital equal to twice the discarded card’s value.",
+            "2-3": "Gain 1 Capital.",
+            "4-5": "Gain Capital equal to the discarded card’s value."
+          }
+        },
+        "subsidize": {
+          "timing": "Before dice are rolled.",
+          "action_cost": 0,
+          "costs": {
+            "1": 1,
+            "2": 3,
+            "3": 6,
+            "4": 10
+          },
+          "text": "Spend Capital to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Capital."
+        },
+        "controlling_interest": {
+          "text": "If you own the Deeds to every Territory currently in the Gauntlet, you win immediately.",
+          "immediate": true
+        }
       },
       "intelligence": {
         "faction_feature_action_phase": "Denouement",
@@ -4344,7 +4482,104 @@
         ],
         "operational_capacity_excluded_features": [
           "Abort Mission"
-        ]
+        ],
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "intel": {
+          "starting": 0,
+          "minimum": 0,
+          "maximum": null,
+          "turn_start_gain": "At the start of your turn, gain Intel equal to your Operation Progress."
+        },
+        "operation_progress": {
+          "starting": 0,
+          "minimum": 0,
+          "maximum": null,
+          "text": "Operation Progress is the number of normal Missions you have completed. Increase it by 1 whenever you complete a normal Mission. It is not normally spent."
+        },
+        "mission_slot": {
+          "maximum": 1,
+          "active_mission_and_special_operation_share_slot": true,
+          "eligible_card": "An Intelligence card with a printed Mission requirement."
+        },
+        "missions": {
+          "start": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "text": "Choose an eligible Intelligence card in your Hand with a printed Mission requirement and place it face down near your Leader as your Active Mission.",
+            "cannot_complete_turn_started": true
+          },
+          "complete": {
+            "action_cost": 1,
+            "timing": "A later Denouement after the printed Mission requirement has been satisfied.",
+            "text": "Reveal the Active Mission, increase Operation Progress by 1, gain Intel equal to the card’s value, then put the completed Mission in your Discard Pile.",
+            "destination": "Discard Pile"
+          },
+          "abort": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "cost": "Intel equal to the Mission card’s value",
+            "text": "Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.",
+            "destination": "Discard Pile",
+            "qualifies_for_operational_capacity": false
+          },
+          "fail": {
+            "text": "If a rule, effect, or continuing requirement causes a Mission to fail, reveal it and put it in your Graveyard.",
+            "destination": "Graveyard"
+          }
+        },
+        "special_operations": {
+          "readiness": "Operation Progress exceeds the number of Territories the opponent controls.",
+          "start": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "requirements": [
+              "Readiness is true.",
+              "The Mission / Special Operation slot is empty.",
+              "You have an eligible Intelligence card with a printed Mission requirement in Hand."
+            ],
+            "text": "Place the eligible card face down as your Special Operation."
+          },
+          "readiness_must_continue": true,
+          "readiness_failure": "If Operation Progress stops exceeding the number of Territories the opponent controls while a Special Operation is active, reveal it and put it in your Graveyard.",
+          "complete": {
+            "action_cost": 1,
+            "timing": "Denouement after its printed Mission requirement has been satisfied while readiness remains true.",
+            "intel_cost_formula": "max(1, Territories currently in the Gauntlet - Special Operation card value)",
+            "text": "Reveal the Special Operation and pay its Intel cost. If you can pay, win immediately through Special Operation.",
+            "increases_operation_progress": false,
+            "grants_normal_mission_intel": false
+          }
+        },
+        "surveillance": {
+          "gambit": {
+            "timing": "After the opponent sets a face-down Gambit.",
+            "cost": "1 Intel",
+            "limit": "Once per battle",
+            "text": "Reveal that Gambit."
+          },
+          "tactic": {
+            "timing": "After the opponent chooses face-down Tactics.",
+            "cost": "1 Intel per opposing Tactic revealed",
+            "limit": "Once per battle",
+            "text": "Reveal the chosen opposing Tactics you pay to reveal."
+          }
+        },
+        "interference": {
+          "timing": "Immediately after an opposing Gambit or Tactic is revealed through Surveillance.",
+          "cost": "2 additional Intel per revealed card removed",
+          "gambit_destination": "Hand",
+          "tactic_destination": "Reserve",
+          "replacement_source": "The same source as the removed card",
+          "replacement_face_state": "face down",
+          "replacement_optional": true,
+          "replacement_does_not_reopen_surveillance_or_interference": true,
+          "revise_own_choice": "If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information already gained.",
+          "direct_interference": "If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use."
+        }
       },
       "mystics": {
         "guardians_protection_values": {
@@ -4357,7 +4592,26 @@
         "faction_features_1_action": [
           "Begin a Rite",
           "Begin Ritual"
-        ]
+        ],
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "rite_lifecycle": {
+          "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.",
+          "normalization": {
+            "mechanics_changed": false,
+            "normalization_issue": 1681,
+            "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+          },
+          "one_active_rite": "You may have only one begun but incomplete Rite at a time.",
+          "completion_delay": "A Rite cannot complete during the turn it begins.",
+          "completion_limit": "Only one Rite may be completed per turn.",
+          "interruption": "If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.",
+          "completed_rites_persist": "Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.",
+          "bound_card_default": "When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default."
+        }
       },
       "inquisition": {
         "purge_phases": [
@@ -4366,7 +4620,56 @@
         ],
         "purge_once_per_turn": true,
         "purge_two_phase_permission": true,
-        "final_judgment_classification": "Leader Ability"
+        "final_judgment_classification": "Leader Ability",
+        "normalization": {
+          "mechanics_changed": false,
+          "normalization_issue": 1681,
+          "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+        },
+        "conviction": {
+          "starting": 0,
+          "minimum": 0,
+          "maximum": 4,
+          "timing": "First qualifying Aftermath each turn.",
+          "text": "The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.",
+          "per_qualifying_aftermath_gain": 1,
+          "once_per_turn": true,
+          "may_trigger_on_either_players_turn": true,
+          "does_not_require_win": true
+        },
+        "condemnation": {
+          "timing": "During the Aftermath.",
+          "text": "Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile.",
+          "remaining_reserve_unchanged": true
+        },
+        "blasphemy": {
+          "timing": "Opposing Arcane Action or reveal.",
+          "text": "Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control.",
+          "separate_from_normal_conviction_gain": true
+        },
+        "purge": {
+          "action_cost": 1,
+          "timings": [
+            "Opening",
+            "Denouement"
+          ],
+          "action_purge_limit": "Once per turn",
+          "options": {
+            "1": "Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.",
+            "2": "Choose one opposing Asset and put it in its owner’s Graveyard.",
+            "3": "The opponent chooses one card from their Hand and puts it in their Graveyard.",
+            "4": "Reveal the opponent’s Hand; choose one card and put it in their Graveyard."
+          },
+          "discard_pile_top": "The top of the Discard Pile is its most recently placed card.",
+          "combined_value_choice_preserves_remaining_order": true,
+          "two_phase_permission": "If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.",
+          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself."
+        },
+        "purification": {
+          "timing": "After the opponent’s normal start-of-turn draw attempt.",
+          "text": "If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.",
+          "other_failed_draws_do_not_trigger": true
+        }
       }
     },
     "proposals": [
@@ -7226,55 +7529,147 @@
         "name": "Orders",
         "profile": "No Action",
         "timing": "At each Order's stated timing",
-        "cost": "Listed Command"
+        "cost": "Listed Command",
+        "text": "Orders are the Military Faction Feature. The chosen Leader supplies that player’s available Orders as Leader Abilities. Spend the listed Command and resolve the Order at its stated timing without spending an Action."
       }
     ],
     "diplomats": [
       {
         "name": "Terms",
         "profile": "No Action",
-        "timing": "During Onset"
+        "timing": "During Onset",
+        "text": "Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.",
+        "rules": {
+          "timing": "During Onset, before Gambits.",
+          "opportunity": "The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.",
+          "procedure": "Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.",
+          "accepted": "Return the stake. Apply the Proposal’s Accepted effect. Accepted Terms end the battle sequence during Onset. If the Proposal was unratified, ratify it and normally gain 1 Influence.",
+          "refused": "Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.",
+          "no_winner": "If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result."
+        }
       },
       {
         "name": "Leverage",
         "profile": "No Action",
         "timing": "Before dice after refused Terms",
-        "cost": "Triangular Influence cost"
+        "cost": "Triangular Influence cost",
+        "text": "Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence.",
+        "rules": {
+          "timing": "After refused Terms and before battle dice are rolled.",
+          "costs": {
+            "1": 1,
+            "2": 3,
+            "3": 6,
+            "4": 10
+          },
+          "text": "Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence."
+        }
       }
     ],
     "financiers": [
       {
         "name": "Treasury",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "text": "Place one card from your Hand face up in your Treasury.",
+        "rules": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "text": "Place one card from your Hand face up in your Treasury.",
+          "public": true,
+          "is_asset": false,
+          "normal_play_or_effect_access": false,
+          "value_contributes_to_capital_limit": true
+        }
       },
       {
         "name": "Deeds",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Current Deed cost"
+        "cost": "Current Deed cost",
+        "text": "Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.",
+        "rules": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "ownership_independent_of_control": true,
+          "ownership_independent_of_occupation": true,
+          "text": "Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.",
+          "cost": {
+            "base": "min(Deeds you own + 1, 6)",
+            "position_modifiers": {
+              "control": -1,
+              "occupy": 0,
+              "neither": 1
+            },
+            "buyout_premium": "If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0.",
+            "minimum": 1,
+            "sequential_recalculation": true,
+            "formula": "max(1, min(Deeds you own + 1, 6) + position modifier + buyout premium)"
+          }
+        }
       },
       {
         "name": "Play the Market",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Discard 1 card from Hand"
+        "cost": "Discard 1 card from Hand",
+        "text": "Discard one card from your Hand, roll one die, and resolve the Play the Market result table.",
+        "rules": {
+          "action_cost": 1,
+          "timing": "Denouement",
+          "cost": "Discard one card from your Hand.",
+          "roll": {
+            "1": "Put the discarded card in your Graveyard; gain 0 Capital.",
+            "6": "Gain Capital equal to twice the discarded card’s value.",
+            "2-3": "Gain 1 Capital.",
+            "4-5": "Gain Capital equal to the discarded card’s value."
+          }
+        }
       },
       {
         "name": "Subsidize",
         "profile": "No Action",
         "timing": "Before dice",
-        "cost": "Triangular Capital cost"
+        "cost": "Triangular Capital cost",
+        "text": "Spend Capital to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Capital.",
+        "rules": {
+          "timing": "Before dice are rolled.",
+          "action_cost": 0,
+          "costs": {
+            "1": 1,
+            "2": 3,
+            "3": 6,
+            "4": 10
+          },
+          "text": "Spend Capital to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Capital."
+        }
       },
       {
         "name": "Financial Capacity",
         "profile": "No Action",
-        "timing": "After Capture"
+        "timing": "After Capture",
+        "text": "If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.",
+        "rules": {
+          "timing": "After Capture and before Draw.",
+          "qualification": "Treasury value is greater than the number of Territories you control.",
+          "determine_once": true,
+          "text": "If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.",
+          "qualifying_features": [
+            "Treasury",
+            "Deeds",
+            "Play the Market"
+          ]
+        }
       },
       {
         "name": "Income",
         "profile": "Automatic",
-        "timing": "After Capture"
+        "timing": "After Capture",
+        "text": "Gain 1 Capital for each Deed you own.",
+        "rules": {
+          "timing": "After Capture at the start of your turn.",
+          "text": "Gain 1 Capital for each Deed you own."
+        }
       }
     ],
     "intelligence": [
@@ -7282,32 +7677,123 @@
         "name": "Missions",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Abort cost: Intel equal to Mission value"
+        "cost": "Abort cost: Intel equal to Mission value",
+        "text": "Start, Complete, or Abort the single Active Mission using the canonical Mission procedures.",
+        "rules": {
+          "start": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "text": "Choose an eligible Intelligence card in your Hand with a printed Mission requirement and place it face down near your Leader as your Active Mission.",
+            "cannot_complete_turn_started": true
+          },
+          "complete": {
+            "action_cost": 1,
+            "timing": "A later Denouement after the printed Mission requirement has been satisfied.",
+            "text": "Reveal the Active Mission, increase Operation Progress by 1, gain Intel equal to the card’s value, then put the completed Mission in your Discard Pile.",
+            "destination": "Discard Pile"
+          },
+          "abort": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "cost": "Intel equal to the Mission card’s value",
+            "text": "Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.",
+            "destination": "Discard Pile",
+            "qualifies_for_operational_capacity": false
+          },
+          "fail": {
+            "text": "If a rule, effect, or continuing requirement causes a Mission to fail, reveal it and put it in your Graveyard.",
+            "destination": "Graveyard"
+          }
+        }
       },
       {
         "name": "Special Operations",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel"
+        "cost": "Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel",
+        "text": "When ready, use the shared Mission slot to prepare and complete a Special Operation for the Intelligence faction victory.",
+        "rules": {
+          "readiness": "Operation Progress exceeds the number of Territories the opponent controls.",
+          "start": {
+            "action_cost": 1,
+            "timing": "Denouement",
+            "requirements": [
+              "Readiness is true.",
+              "The Mission / Special Operation slot is empty.",
+              "You have an eligible Intelligence card with a printed Mission requirement in Hand."
+            ],
+            "text": "Place the eligible card face down as your Special Operation."
+          },
+          "readiness_must_continue": true,
+          "readiness_failure": "If Operation Progress stops exceeding the number of Territories the opponent controls while a Special Operation is active, reveal it and put it in your Graveyard.",
+          "complete": {
+            "action_cost": 1,
+            "timing": "Denouement after its printed Mission requirement has been satisfied while readiness remains true.",
+            "intel_cost_formula": "max(1, Territories currently in the Gauntlet - Special Operation card value)",
+            "text": "Reveal the Special Operation and pay its Intel cost. If you can pay, win immediately through Special Operation.",
+            "increases_operation_progress": false,
+            "grants_normal_mission_intel": false
+          }
+        }
       },
       {
         "name": "Surveillance",
         "profile": "No Action",
         "timing": "After opposing Gambit or Tactic choice",
         "cost": "1 Intel per revealed card",
-        "limit": "Once per battle at each stage"
+        "limit": "Once per battle at each stage",
+        "text": "Spend Intel at the Gambit or Tactic choice stage to reveal opposing face-down battle-card choices, subject to the separate once-per-battle limit at each stage.",
+        "rules": {
+          "gambit": {
+            "timing": "After the opponent sets a face-down Gambit.",
+            "cost": "1 Intel",
+            "limit": "Once per battle",
+            "text": "Reveal that Gambit."
+          },
+          "tactic": {
+            "timing": "After the opponent chooses face-down Tactics.",
+            "cost": "1 Intel per opposing Tactic revealed",
+            "limit": "Once per battle",
+            "text": "Reveal the chosen opposing Tactics you pay to reveal."
+          }
+        }
       },
       {
         "name": "Interference",
         "profile": "No Action",
         "timing": "Immediately after reveal or face-up opposing choice",
-        "cost": "2 Intel per removed card"
+        "cost": "2 Intel per removed card",
+        "text": "Immediately after an eligible opposing battle-card reveal, spend Intel to remove that card and permit a replacement from the same source without reopening the information window.",
+        "rules": {
+          "timing": "Immediately after an opposing Gambit or Tactic is revealed through Surveillance.",
+          "cost": "2 additional Intel per revealed card removed",
+          "gambit_destination": "Hand",
+          "tactic_destination": "Reserve",
+          "replacement_source": "The same source as the removed card",
+          "replacement_face_state": "face down",
+          "replacement_optional": true,
+          "replacement_does_not_reopen_surveillance_or_interference": true,
+          "revise_own_choice": "If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information already gained.",
+          "direct_interference": "If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use."
+        }
       },
       {
         "name": "Operational Capacity",
         "profile": "Automatic",
         "timing": "Denouement after using your normal Action during Opening",
-        "text": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify."
+        "text": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.",
+        "rules": {
+          "text": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.",
+          "qualifying_features": [
+            "Start Mission",
+            "Complete Mission",
+            "Start Special Operation",
+            "Complete Special Operation"
+          ],
+          "excluded_features": [
+            "Abort Mission"
+          ]
+        }
       }
     ],
     "mystics": [
@@ -7315,31 +7801,60 @@
         "name": "Rites",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Printed Begin cost"
+        "cost": "Printed Begin cost",
+        "text": "Spend 1 Action during Denouement to begin one incomplete selected Rite, reveal it, and follow its printed Begin instruction. The canonical Rite lifecycle rules govern completion and interruption.",
+        "rules": {
+          "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.",
+          "normalization": {
+            "mechanics_changed": false,
+            "normalization_issue": 1681,
+            "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+          },
+          "one_active_rite": "You may have only one begun but incomplete Rite at a time.",
+          "completion_delay": "A Rite cannot complete during the turn it begins.",
+          "completion_limit": "Only one Rite may be completed per turn.",
+          "interruption": "If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.",
+          "completed_rites_persist": "Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.",
+          "bound_card_default": "When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default."
+        }
       },
       {
         "name": "Invocation",
         "profile": "No Action",
         "timing": "After applying an Arcane card effect",
-        "limit": "Once per turn"
+        "limit": "Once per turn",
+        "text": "Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
       },
       {
         "name": "Transmutation",
         "profile": "No Action",
         "timing": "Before dice",
         "cost": "Put 1 card from Hand in Graveyard",
-        "limit": "Once per turn"
+        "limit": "Once per turn",
+        "text": "Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
       },
       {
         "name": "Ritual of Ascension",
         "profile": "1 Action",
         "timing": "Denouement after 3 Rites",
-        "cost": "Bind 3 Arcane cards"
+        "cost": "Bind 3 Arcane cards",
+        "text": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
+        "rules": {
+          "id": "ascension",
+          "name": "Ritual of Ascension",
+          "artwork": "/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png",
+          "cardBack": "/images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+          "begin": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
+          "convergence": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.",
+          "complete": "Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.",
+          "interrupted": "If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual."
+        }
       },
       {
         "name": "Convergence",
         "profile": "Automatic",
-        "timing": "During a Ritual battle you initiated"
+        "timing": "During a Ritual battle you initiated",
+        "text": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual."
       }
     ],
     "inquisition": [
@@ -7348,27 +7863,76 @@
         "profile": "1 Action",
         "timing": "Opening or Denouement",
         "cost": "Listed Conviction",
-        "limit": "Once per turn"
+        "limit": "Once per turn",
+        "text": "Spend the listed Conviction to perform one Purge option. An Action Purge may be taken during Opening or Denouement once per turn and can enable one Action in the other Action phase that turn.",
+        "rules": {
+          "action_cost": 1,
+          "timings": [
+            "Opening",
+            "Denouement"
+          ],
+          "action_purge_limit": "Once per turn",
+          "options": {
+            "1": "Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.",
+            "2": "Choose one opposing Asset and put it in its owner’s Graveyard.",
+            "3": "The opponent chooses one card from their Hand and puts it in their Graveyard.",
+            "4": "Reveal the opponent’s Hand; choose one card and put it in their Graveyard."
+          },
+          "discard_pile_top": "The top of the Discard Pile is its most recently placed card.",
+          "combined_value_choice_preserves_remaining_order": true,
+          "two_phase_permission": "If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.",
+          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself."
+        }
       },
       {
         "name": "Conviction",
         "profile": "Automatic",
-        "timing": "First qualifying Aftermath each turn"
+        "timing": "First qualifying Aftermath each turn",
+        "text": "The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.",
+        "rules": {
+          "starting": 0,
+          "minimum": 0,
+          "maximum": 4,
+          "timing": "First qualifying Aftermath each turn.",
+          "text": "The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.",
+          "per_qualifying_aftermath_gain": 1,
+          "once_per_turn": true,
+          "may_trigger_on_either_players_turn": true,
+          "does_not_require_win": true
+        }
       },
       {
         "name": "Condemnation",
         "profile": "Automatic",
-        "timing": "Aftermath"
+        "timing": "Aftermath",
+        "text": "Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile.",
+        "rules": {
+          "timing": "During the Aftermath.",
+          "text": "Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile.",
+          "remaining_reserve_unchanged": true
+        }
       },
       {
         "name": "Blasphemy",
         "profile": "Automatic",
-        "timing": "Opposing Arcane Action or reveal"
+        "timing": "Opposing Arcane Action or reveal",
+        "text": "Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control.",
+        "rules": {
+          "timing": "Opposing Arcane Action or reveal.",
+          "text": "Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control.",
+          "separate_from_normal_conviction_gain": true
+        }
       },
       {
         "name": "Purification",
         "profile": "Automatic",
-        "timing": "Opponent's start-of-turn Draw"
+        "timing": "Opponent's start-of-turn Draw",
+        "text": "If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.",
+        "rules": {
+          "timing": "After the opponent’s normal start-of-turn draw attempt.",
+          "text": "If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.",
+          "other_failed_draws_do_not_trigger": true
+        }
       }
     ]
   },
@@ -7852,7 +8416,18 @@
       "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
     },
     "generalRules": {
-      "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets."
+      "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.",
+      "normalization": {
+        "mechanics_changed": false,
+        "normalization_issue": 1681,
+        "purpose": "Promote already-current faction procedures into canonical structured authority for direct technical publication."
+      },
+      "one_active_rite": "You may have only one begun but incomplete Rite at a time.",
+      "completion_delay": "A Rite cannot complete during the turn it begins.",
+      "completion_limit": "Only one Rite may be completed per turn.",
+      "interruption": "If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.",
+      "completed_rites_persist": "Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.",
+      "bound_card_default": "When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default."
     }
   },
   "artDirection": {
