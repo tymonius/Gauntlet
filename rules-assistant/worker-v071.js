@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260912-7";
+export const BEHAVIOR_REVISION = "v071-qa-20260912-8";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -548,7 +548,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
 
   if (namedCardSource && rulebookReference && goldenRules) {
     reminders.push(
-      "This retrieval contains printed named-card authority, a Rulebook authority that discusses the same named card, and the Golden Rules. Compare the material instructions before classifying. If the card and Rulebook instructions differ, apply the more-specific-rule precedence, classify the resolution inferred, and cite the printed card, the conflicting Rulebook authority, and the Golden Rules. Do not call a conflict-resolved result explicit merely because the printed card supplies the winning instruction."
+      "This retrieval contains printed named-card authority, a Rulebook authority that discusses the same named card, and the Golden Rules. First determine whether the card and Rulebook genuinely conflict on the same material instruction. Do not infer a conflict merely because one source is more detailed, summarizes the card, adds compatible restrictions, or states additional nonconflicting rules. If the authorities are compatible, do not invoke specificity; classify the answer normally, and it may remain explicit when every material claim is directly stated. Only when the sources are mutually incompatible on a material instruction should you apply the more-specific-rule precedence, classify the conflict-resolved result inferred, and cite the printed card, the conflicting Rulebook authority, and the Golden Rules. Do not call a genuinely conflict-resolved result explicit merely because the printed card supplies the winning instruction."
     );
   }
 
