@@ -1,0 +1,80 @@
+{
+  "version": "v0.7.2-candidate",
+  "issue": 1685,
+  "mechanics_changed": false,
+  "purpose": "Promote already-current shared procedures from the reviewed Rulebook into game-data/current-game.json so the Comprehensive Rules can remain a complete direct authority projection.",
+  "normalized_domains": {
+    "deck_construction": [
+      "Neutral plus selected-faction card eligibility",
+      "Unique one-copy limit",
+      "three different Territories and one-Arena maximum",
+      "Territory Deck/value exclusions",
+      "supplemental-component default Deck/zone/value exclusions"
+    ],
+    "setup": [
+      "complete setup step procedures",
+      "opening discard classification",
+      "simultaneous Territory reveal"
+    ],
+    "card_zones": [
+      "Draw Pile",
+      "Hand",
+      "Discard Pile",
+      "Graveyard",
+      "Asset Bank",
+      "Gambit area",
+      "Reserve",
+      "Tactic area",
+      "Leader and faction area"
+    ],
+    "actions_and_assets": [
+      "normal legal Action uses",
+      "Action-card play procedure and default destination",
+      "Asset discard Action",
+      "Asset ability Action default",
+      "Asset limit and forced discard",
+      "replacement at the Asset limit",
+      "Asset as the only banked-card effect heading"
+    ],
+    "movement_and_battle": [
+      "Advance, Hold, and Fall Back definitions",
+      "normal one-Position movement",
+      "battle-initiation movement procedure",
+      "Gambit and Tactic default sources",
+      "Reserve formation, privacy, and cleanup",
+      "withdrawal positional branches and Onset/post-Onset behavior"
+    ],
+    "bound_cards": [
+      "outside-normal-zone status",
+      "face-up and face-down information state",
+      "normal play/move/effect prohibition",
+      "binding-end and card-specific destination precedence"
+    ],
+    "effect_and_timing": [
+      "choice legality and no-valid-option behavior",
+      "optional extra Gambits/Tactics and simultaneous multi-Tactic choice",
+      "stacking Reserve/Tactic modifiers",
+      "reveal-stage interference order",
+      "complete compact shorthand meanings",
+      "copied/repeated-effect control and chain bound",
+      "complete battle-ending-without-winner procedure"
+    ],
+    "cards_becoming_territories": [
+      "Manifest Destiny becomes a normal Territory with a normal Deed and uses existing Deed rules"
+    ]
+  },
+  "source_status": "These procedures already exist in the current reviewed player-facing Rulebook and/or partial current structured authority. This normalization makes them explicit in the sole canonical gameplay authority; it does not intentionally alter gameplay.",
+  "authority_layout": {
+    "principle": "Rules are stored in their natural existing gameplay domains rather than in a parallel shared-rules corpus.",
+    "new_domain": "gameplay.card_zones is added because shared zone definitions previously had no canonical structured home. It owns zone identity and information state; turn/battle domains remain the sole authority for procedural values such as Hand limit, Reserve size, sources, destinations, and recycling.",
+    "assets": "gameplay.card_rules.assets owns the previously missing Asset-limit, replacement, and Action-default rules; gameplay.card_rules.inherent_bank_action remains the sole Bank procedure and gameplay.card_rules.asset_removal remains the sole Removal classification.",
+    "shorthand": "Reserve/Tactic modifier stacking is owned by gameplay.card_rules.compact_shorthand rather than duplicated in multiple-card permission rules.",
+    "registry": "New granular registry entries fingerprint card zones and the shared card/battle subdomains needed by direct publication; each new registry entry is assigned to the appropriate Comprehensive Rules part and mirrored by a RULES-COVER scaffold marker."
+  },
+  "migration": "One-time branch materialization, finalization, and publication-assignment scripts/workflows were used to write, deduplicate, and register the normalized authority. They were removed before merge; the materialized current-game, contract, and scaffold coverage data are the durable result.",
+  "validation": [
+    "scripts/validate-shared-rules-authority.mjs asserts completeness, single-source ownership, registry dependencies, and key invariants for the normalized shared domains.",
+    "Rules publication authority CI runs the publication contract, publication scaffold, and permanent shared-rules validators together.",
+    "No one-time migration, finalization, publication-assignment script, or write workflow is required after merge."
+  ]
+}
