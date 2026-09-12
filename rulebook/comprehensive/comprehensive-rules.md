@@ -40,6 +40,9 @@
 <!-- RULES-COVER:core.battle.advantage-disadvantage -->
 <!-- RULES-COVER:core.battle.normal-result -->
 <!-- RULES-COVER:core.battle.aftermath -->
+<!-- RULES-COVER:core.battle.reserve -->
+<!-- RULES-COVER:core.battle.withdrawal-procedure -->
+<!-- RULES-COVER:core.cards.no-winner -->
 
 <!-- RULES-PART:territory-victory -->
 ## Part VI — Territory and Victory Rules
@@ -52,6 +55,9 @@
 ## Part VII — Cards and Zones
 <!-- RULES-COVER:core.cards -->
 <!-- RULES-COVER:core.cards.reveal -->
+<!-- RULES-COVER:core.card-zones -->
+<!-- RULES-COVER:core.cards.assets -->
+<!-- RULES-COVER:core.cards.bind -->
 
 <!-- RULES-PART:effects-timing -->
 ## Part VIII — Effects and Timing
@@ -62,10 +68,14 @@
 <!-- RULES-COVER:core.cards.replacement -->
 <!-- RULES-COVER:core.cards.revising-choice -->
 <!-- RULES-COVER:core.battle -->
+<!-- RULES-COVER:core.cards.choices -->
+<!-- RULES-COVER:core.cards.shorthand -->
+<!-- RULES-COVER:core.cards.repeat -->
 
 <!-- RULES-PART:persistent-shared -->
 ## Part IX — Persistent and Special Shared Rules
 <!-- RULES-COVER:core.cards.overlay -->
+<!-- RULES-COVER:core.cards.becoming-territories -->
 
 <!-- RULES-PART:military -->
 ## Part X — Military Rules
