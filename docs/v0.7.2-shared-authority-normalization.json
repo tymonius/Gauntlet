@@ -66,13 +66,15 @@
   "source_status": "These procedures already exist in the current reviewed player-facing Rulebook and/or partial current structured authority. This normalization makes them explicit in the sole canonical gameplay authority; it does not intentionally alter gameplay.",
   "authority_layout": {
     "principle": "Rules are stored in their natural existing gameplay domains rather than in a parallel shared-rules corpus.",
-    "new_domain": "gameplay.card_zones is added because shared zone definitions previously had no canonical structured home.",
+    "new_domain": "gameplay.card_zones is added because shared zone definitions previously had no canonical structured home. It owns zone identity and information state; turn/battle domains remain the sole authority for procedural values such as Hand limit, Reserve size, sources, destinations, and recycling.",
+    "assets": "gameplay.card_rules.assets owns the previously missing Asset-limit, replacement, and Action-default rules; gameplay.card_rules.inherent_bank_action remains the sole Bank procedure and gameplay.card_rules.asset_removal remains the sole Removal classification.",
+    "shorthand": "Reserve/Tactic modifier stacking is owned by gameplay.card_rules.compact_shorthand rather than duplicated in multiple-card permission rules.",
     "registry": "New granular registry entries fingerprint card zones and the shared card/battle subdomains needed by direct publication; existing broad core dependencies remain valid."
   },
-  "migration": "A one-time branch materializer was used to write the normalized authority and registry. It is removed before merge; the materialized current-game and contract data are the durable result.",
+  "migration": "One-time branch materialization and finalization scripts/workflows were used to write and deduplicate the normalized authority and registry. They were removed before merge; the materialized current-game and contract data are the durable result.",
   "validation": [
-    "scripts/validate-shared-rules-authority.mjs asserts completeness and key invariants for the normalized shared domains.",
+    "scripts/validate-shared-rules-authority.mjs asserts completeness, single-source ownership, registry dependencies, and key invariants for the normalized shared domains.",
     "Rules publication authority CI runs the permanent shared-rules validator.",
-    "No one-time migration script or write workflow is required after merge."
+    "No one-time migration, finalization script, or write workflow is required after merge."
   ]
 }
