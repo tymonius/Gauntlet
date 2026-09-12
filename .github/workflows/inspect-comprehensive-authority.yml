@@ -1,4 +1,4 @@
-name: Inspect comprehensive authority
+name: Validate comprehensive projection
 
 on:
   push:
@@ -8,27 +8,26 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Print remaining shared authority shapes
+      - name: Render Comprehensive Rules
+        run: node scripts/render-comprehensive-rules.mjs --write
+      - name: Check generated projection freshness
+        run: node scripts/render-comprehensive-rules.mjs
+      - name: Validate publication architecture and authority
         run: |
-          node --input-type=module <<'NODE'
-          import { readFile } from 'node:fs/promises';
-          const a = JSON.parse(await readFile('game-data/current-game.json', 'utf8'));
-          const blocks = {
-            turn_actions: a.gameplay.turn.actions,
-            movement_rules: a.gameplay.battlefield.movement_rules,
-            additional_gambits: a.gameplay.card_rules.additional_gambits,
-            additional_tactics: a.gameplay.card_rules.additional_tactics,
-          };
-          for (const [name, value] of Object.entries(blocks)) {
-            console.log(`\n===== ${name} =====`);
-            console.log(JSON.stringify(value, null, 2));
-          }
-          NODE
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/validate-faction-rules-authority.mjs
+          node scripts/validate-shared-rules-authority.mjs
+      - name: Upload generated Comprehensive Rules
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-rules-generated
+          path: rulebook/comprehensive/comprehensive-rules.md
