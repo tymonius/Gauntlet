@@ -1121,7 +1121,10 @@
             "core.battle.battle-total",
             "core.battle.advantage-disadvantage",
             "core.battle.normal-result",
-            "core.battle.aftermath"
+            "core.battle.aftermath",
+            "core.battle.reserve",
+            "core.battle.withdrawal-procedure",
+            "core.cards.no-winner"
           ]
         },
         {
@@ -1139,7 +1142,10 @@
           "title": "Cards and Zones",
           "covers": [
             "core.cards",
-            "core.cards.reveal"
+            "core.cards.reveal",
+            "core.card-zones",
+            "core.cards.assets",
+            "core.cards.bind"
           ]
         },
         {
@@ -1152,14 +1158,18 @@
             "core.cards.negation",
             "core.cards.replacement",
             "core.cards.revising-choice",
-            "core.battle"
+            "core.battle",
+            "core.cards.choices",
+            "core.cards.shorthand",
+            "core.cards.repeat"
           ]
         },
         {
           "id": "persistent-shared",
           "title": "Persistent and Special Shared Rules",
           "covers": [
-            "core.cards.overlay"
+            "core.cards.overlay",
+            "core.cards.becoming-territories"
           ]
         },
         {
