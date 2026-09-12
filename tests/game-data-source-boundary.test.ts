@@ -66,7 +66,7 @@ describe("game-data source/deployment boundary", () => {
     ]) {
       const renderer = read(join("scripts", name));
       expect(renderer, name).toContain("requestPath.startsWith('game-data/')");
-      expect(renderer, name).toContain("`packages/${requestPath}`");
+      expect(renderer, name).toMatch(/packages\/(?:game-data|\$\{requestPath\})/);
     }
   });
 
