@@ -67,8 +67,18 @@ jobs:
       - name: Create validated canonical authority blob
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: python
         run: |
-          content="$(base64 -w0 game-data/current-game.json)"
-          sha="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/git/blobs" -f content="$content" -f encoding=base64 --jq .sha)"
-          echo "CANONICAL_AUTHORITY_BLOB=$sha"
-          test "$sha" = "f9248f487afbed0c0fa7a5721fd14b9b955049c2"
+          import base64, json, os, subprocess
+          from pathlib import Path
+          content = base64.b64encode(Path('game-data/current-game.json').read_bytes()).decode('ascii')
+          payload = Path('/tmp/current-game-blob.json')
+          payload.write_text(json.dumps({'content': content, 'encoding': 'base64'}))
+          sha = subprocess.check_output([
+              'gh', 'api', '--method', 'POST',
+              f"repos/{os.environ['GITHUB_REPOSITORY']}/git/blobs",
+              '--input', str(payload), '--jq', '.sha'
+          ], text=True).strip()
+          print(f'CANONICAL_AUTHORITY_BLOB={sha}')
+          if sha != 'f9248f487afbed0c0fa7a5721fd14b9b955049c2':
+              raise SystemExit(f'Unexpected authority blob SHA: {sha}')
