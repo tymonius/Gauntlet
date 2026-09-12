@@ -1,0 +1,43 @@
+name: Materialize faction authority normalization
+
+on:
+  push:
+    branches:
+      - rules/faction-authority-normalization
+    paths:
+      - 'scripts/normalize-faction-rules-authority.mjs'
+      - '.github/workflows/materialize-faction-authority-normalization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout normalization branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/faction-authority-normalization
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Normalize canonical faction authority
+        run: node scripts/normalize-faction-rules-authority.mjs --write
+
+      - name: Commit normalized authority
+        run: |
+          if git diff --quiet -- game-data/current-game.json; then
+            echo 'Canonical authority already normalized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add game-data/current-game.json
+          git commit -m 'Normalize faction mechanics in canonical authority'
+          git push origin HEAD:rules/faction-authority-normalization
