@@ -9,6 +9,8 @@ import type {
 } from './battle-types';
 import * as previous from './battle-effects-core-pre-witchcraft';
 import {
+  V070_HERESY_BATTLE_TEXT,
+  V070_HERESY_ID,
   V070_WITCHCRAFT_BATTLE_TEXT,
   V070_WITCHCRAFT_ID,
 } from './copied-effect-callers';
@@ -18,6 +20,7 @@ import {
   V070_ARCANE_KNOWLEDGE_ID,
   registerV070ArcaneKnowledgeBattleEffect,
 } from './arcane-knowledge-battle';
+import { registerV070HeresyBattleEffect } from './heresy-battle';
 
 export * from './battle-effects-core-pre-witchcraft';
 
@@ -49,10 +52,25 @@ const arcaneKnowledgeHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const heresyHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_HERESY_ID,
+  expectedText: V070_HERESY_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070HeresyBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_WITCHCRAFT_ID,
   V070_ARCANE_KNOWLEDGE_ID,
+  V070_HERESY_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -60,6 +78,7 @@ export function v070BattleEffectHandler(
 ): previous.V070BattleEffectHandler | undefined {
   if (cardId === V070_WITCHCRAFT_ID) return witchcraftHandler;
   if (cardId === V070_ARCANE_KNOWLEDGE_ID) return arcaneKnowledgeHandler;
+  if (cardId === V070_HERESY_ID) return heresyHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -76,7 +95,8 @@ export function resolveV070SupportedRevealEffects(
   for (const commitment of commitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
     if (cardId !== V070_WITCHCRAFT_ID
-      && cardId !== V070_ARCANE_KNOWLEDGE_ID) {
+      && cardId !== V070_ARCANE_KNOWLEDGE_ID
+      && cardId !== V070_HERESY_ID) {
       const forwarded = previous.resolveV070SupportedRevealEffects(
         state,
         [commitment],
@@ -106,7 +126,9 @@ export function resolveV070SupportedRevealEffects(
 
     const handler = cardId === V070_WITCHCRAFT_ID
       ? witchcraftHandler
-      : arcaneKnowledgeHandler;
+      : cardId === V070_ARCANE_KNOWLEDGE_ID
+        ? arcaneKnowledgeHandler
+        : heresyHandler;
     handler.apply({
       state,
       owner: commitment.owner,
@@ -151,7 +173,9 @@ function unsupportedIntegratedCommitment(
     ? V070_WITCHCRAFT_BATTLE_TEXT
     : cardId === V070_ARCANE_KNOWLEDGE_ID
       ? V070_ARCANE_KNOWLEDGE_BATTLE_TEXT
-      : null;
+      : cardId === V070_HERESY_ID
+        ? V070_HERESY_BATTLE_TEXT
+        : null;
   if (!expectedText) return [];
 
   const card = v070CanonicalContent.cardsById.get(cardId);
