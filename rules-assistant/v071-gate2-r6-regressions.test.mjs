@@ -9,7 +9,7 @@ const appSource = readFileSync(new URL("../rules-arbiter/app.js", import.meta.ur
 
 describe("v0.7.1 Gate 2 r6 regressions", () => {
   test("pins the strengthened multi-phase Feature timing rule", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260911-6");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260912-7");
     expect(workerSource).toContain("that requirement constrains which granted Action must satisfy the Feature requirement");
     expect(workerSource).toContain("treat that requirement as constraining which granted Action must be used for the Feature");
     expect(workerSource).toContain("If only one granted phase is legal for the Feature, the Feature must be used in that phase");

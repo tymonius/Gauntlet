@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-6";
+export const BEHAVIOR_REVISION = "v071-qa-20260912-7";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -47,6 +47,10 @@ const FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS = [
   "rulebook:ranger",
   "faction:fieldcraft",
   "leader:fieldcraft"
+];
+const DEED_CONTIGUITY_AUTHORITY_IDS = [
+  "rulebook:deeds",
+  "rulebook:front-line"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -506,7 +510,59 @@ async function reserveModelRequest(request, env) {
   return reserveBudgetCounters(env, counters, timestamp, "public");
 }
 
+export function buildQuestionSpecificAdjudicationReminder(question, sources = []) {
+  const current = String(question || "").trim().toLowerCase();
+  const sourceList = Array.isArray(sources) ? sources : [];
+  const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));
+  const reminders = [];
+
+  if (
+    /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy))\b/.test(current)
+    && canonicalIds.has("rulebook:deeds")
+    && canonicalIds.has("rulebook:front-line")
+  ) {
+    reminders.push(
+      "This question compares one game's ownership rules with a separate contiguity or adjacency rule. A negative conclusion drawn because the queried object's rules do not state that restriction is a combined-authority inference unless clean authority expressly says the restriction does not apply. If the answer is negative for that reason, classify it inferred and cite both authorities that establish the distinction."
+    );
+  }
+
+  const namedCardSource = sourceList.find((source) => {
+    if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+    const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+    return title.length >= 3 && current.includes(title);
+  }) || null;
+  const namedCardTitle = namedCardSource
+    ? String(namedCardSource.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
+    : "";
+  const goldenRules = sourceList.find((source) => String(source?.canonicalId || "") === "rulebook:golden-rules") || null;
+  const rulebookReference = namedCardTitle
+    ? sourceList.find((source) => {
+        const canonicalId = String(source?.canonicalId || "");
+        if (!canonicalId || canonicalId.startsWith("card:") || canonicalId === "rulebook:golden-rules") return false;
+        const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
+          .map((value) => String(value || "").toLowerCase())
+          .join(" ");
+        return authorityText.includes(namedCardTitle);
+      })
+    : null;
+
+  if (namedCardSource && rulebookReference && goldenRules) {
+    reminders.push(
+      "This retrieval contains printed named-card authority, a Rulebook authority that discusses the same named card, and the Golden Rules. Compare the material instructions before classifying. If the card and Rulebook instructions differ, apply the more-specific-rule precedence, classify the resolution inferred, and cite the printed card, the conflicting Rulebook authority, and the Golden Rules. Do not call a conflict-resolved result explicit merely because the printed card supplies the winning instruction."
+    );
+  }
+
+  return reminders.join("\n");
+}
+
 async function askOpenAI({ env, request, question, history, sources }) {
+  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
+  const questionText = adjudicationReminder
+    ? `${questionText}
+
+QUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification
+${adjudicationReminder}`
+    : question;
   const sourceText = sources.length
     ? sources.map((source, index) => [
         `[${source.id || `S${index + 1}`}] ${source.title || "Canonical source"}`,
@@ -694,6 +750,15 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const recent = history.slice(-6).map((item) => String(item?.content || "")).join(" ").toLowerCase();
   const combined = `${recent} ${current}`;
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
+  const deedTopic = /\bdeeds?\b/;
+  const contiguityCue = /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy)|front line)\b/;
+  const deedContiguityFocus = (
+    deedTopic.test(current) && contiguityCue.test(current)
+  ) || (
+    currentWordCount <= 9
+    && deedTopic.test(recent)
+    && contiguityCue.test(current)
+  );
   const destinationFocus = /\bdestinations?\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
   const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
@@ -798,8 +863,10 @@ const fieldcraftFocus = (
   fieldcraftTopic.test(current)
   || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
 ) && fieldcraftTerritoryStateCue.test(combined);
-const preferredAuthorityIds = fieldcraftFocus
-  ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+const preferredAuthorityIds = deedContiguityFocus
+  ? DEED_CONTIGUITY_AUTHORITY_IDS
+  : fieldcraftFocus
+    ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
   : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !(destinationFocus && battleCardFocus)
     ? namedCardSpecificityAuthorityIds
   : specificRulePrecedenceFocus
