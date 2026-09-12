@@ -17,6 +17,7 @@ const submitButton = form?.querySelector('button[type="submit"]');
 const READY_STATUS = endpoint
   ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
   : "Current v0.7.1 local Rulebook lookup mode.";
+const FALLBACK_STATUS = "AI ruling service unavailable or at capacity; canonical v0.7.1 source lookup remains available.";
 
 let corpusPromise;
 let history = [];
@@ -37,6 +38,7 @@ form.addEventListener("submit", async (event) => {
   if (!question) return;
 
   const restoreInputFocus = form.contains(document.activeElement);
+  let completionStatus = READY_STATUS;
   status.textContent = "Checking the current v0.7.1 rules…";
   if (restoreInputFocus) status.focus({ preventScroll: true });
   setBusy(true);
@@ -44,6 +46,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const result = endpoint ? await askRemote(question) : await askLocal(question);
     renderAnswer(result);
+    if (isFallbackResult(result)) completionStatus = FALLBACK_STATUS;
     history = [
       ...history,
       { role: "user", content: question },
@@ -54,10 +57,11 @@ form.addEventListener("submit", async (event) => {
       }
     ].slice(-12);
   } catch (error) {
+    completionStatus = "Chief Justice unavailable; reload the page or use the Browser Rulebook while service recovers.";
     answer.innerHTML = `<p class="arbiter-error"><strong>Chief Justice unavailable.</strong> ${escapeHtml(error.message)}</p>`;
   } finally {
     setBusy(false);
-    status.textContent = READY_STATUS;
+    status.textContent = completionStatus;
     if (restoreInputFocus) input.focus({ preventScroll: true });
   }
 });
@@ -126,6 +130,11 @@ async function getCorpus() {
 function contextualQuery(question, items) {
   const prior = items.slice(-4).map((item) => item.content).join(" ");
   return prior ? `${prior} ${question}` : question;
+}
+
+function isFallbackResult(result) {
+  const path = String(result?.executionPath || "").toLowerCase();
+  return path.includes("fallback") || path.includes("source lookup");
 }
 
 function renderAnswer(result) {

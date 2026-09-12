@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260911-5";
+export const BEHAVIOR_REVISION = "v071-qa-20260911-6";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -62,6 +62,7 @@ ADJUDICATION PRINCIPLES
 - Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
 - Never treat an extra-Action grant as permission to use a phase-limited Feature in a different phase. When explaining a grant that supplies Actions in more than one phase, distinguish Action quantity from the Feature's legal timing.
+- When several granted Actions span different phases and at least one must be a phase-limited Feature, that requirement constrains which granted Action must satisfy the Feature requirement; it does not move the Feature into another phase. If only one granted phase is legal for that Feature, use the Feature in that phase and use another legal Action in the other granted phase.
 - A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
 - Never invent the target of an unlabeled numerical bonus. If the supplied rules give a bonus or cost progression without stating what the bonus modifies, that is a genuine rules gap.
 - Prefer the ruling that introduces the least new machinery, preserves meaningful player choices, avoids loops or exploitable repetition, and is consistent with closely analogous supplied interactions.
@@ -123,6 +124,7 @@ Requirements:
 15. Do not infer that a requirement for at least one of several Actions to be a phase-limited Feature moves that Feature into an otherwise illegal phase. Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.
 16. When a direct phase restriction itself answers a legality question, keep the ruling explicit even if another supplied rule explains why the player has an additional Action at that time. Cite the timing restriction and the additional-Action rule when both are material to the explanation.
 17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
+18. When an effect grants Actions in multiple phases and requires at least one of those Actions to be a phase-limited Feature, treat that requirement as constraining which granted Action must be used for the Feature, not as permission to change the Feature's timing. If only one granted phase is legal for the Feature, the Feature must be used in that phase; another legal Action must fill any other granted phase.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -488,17 +490,17 @@ async function reserveModelRequest(request, env) {
     {
       scope: "ip_hour",
       bucket: `${timestamp.slice(0, 13)}:${safetyId}`,
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 12)
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 24)
     },
     {
       scope: "global_day",
       bucket: timestamp.slice(0, 10),
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 50)
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 100)
     },
     {
       scope: "global_month",
       bucket: timestamp.slice(0, 7),
-      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 200)
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 500)
     }
   ];
   return reserveBudgetCounters(env, counters, timestamp, "public");
@@ -1001,7 +1003,7 @@ function allowedOrigin(request, env) {
   const requestOrigin = new URL(request.url).origin;
   if (origin === requestOrigin) return origin;
   const allowed = String(
-    env.ALLOWED_ORIGINS || "https://gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
+    env.ALLOWED_ORIGINS || "https://gauntlet.run,https://www.gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
   ).split(",").map((item) => item.trim()).filter(Boolean);
   return allowed.includes(origin) ? origin : null;
 }
