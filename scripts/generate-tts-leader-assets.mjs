@@ -47,7 +47,10 @@ async function startStaticServer() {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
       const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
+      const sourcePath = requestPath.startsWith('game-data/')
+        ? `packages/${requestPath}`
+        : requestPath;
+      const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;
