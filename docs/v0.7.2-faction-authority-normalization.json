@@ -4,12 +4,54 @@
   "mechanics_changed": false,
   "purpose": "Promote already-current faction procedures into packages/game-data/current-game.json so the Comprehensive Rules can remain a direct authority projection.",
   "normalized_domains": {
-    "military": ["Command lifecycle and first-win trigger edge cases", "Orders feature semantics", "current Fortify capture wording"],
-    "diplomats": ["Influence and stake lifecycle", "Terms outcomes and eligibility", "optional imposition after refused Terms and a win", "ratification and Treaty Articles", "Leverage", "Peace Treaty timing"],
-    "financiers": ["Capital and immediately recalculating Capital Limit", "Treasury", "Income", "Financial Capacity", "Deeds and cost formula", "Play the Market", "Subsidize", "Controlling Interest"],
-    "intelligence": ["Intel and Operation Progress, including start-of-turn Intel equal to Operation Progress", "Mission slot and hidden Active Mission state", "Mission start/complete/abort/failure", "Special Operations", "Surveillance", "Interference, optional removal, replacement, choice revision, and Direct Interference"],
-    "mystics": ["selected Rite order", "automatic printed-condition completion", "Rite lifecycle and completion limits", "interruption", "completed-Rite persistence", "Rite/Ritual binding destination"],
-    "inquisition": ["Conviction", "Condemnation", "Blasphemy", "Purge menu and Action permissions", "Purification", "Final Judgment sequencing", "Relentless Pursuit sequencing"]
+    "military": [
+      "Command lifecycle and first-win trigger edge cases",
+      "Orders feature semantics",
+      "current Fortify capture wording"
+    ],
+    "diplomats": [
+      "Influence and stake lifecycle",
+      "Terms outcomes and eligibility",
+      "optional imposition after refused Terms and a win",
+      "ratification and Treaty Articles",
+      "Leverage",
+      "Peace Treaty timing"
+    ],
+    "financiers": [
+      "Capital and immediately recalculating Capital Limit",
+      "Treasury",
+      "Income",
+      "Financial Capacity",
+      "Deeds and cost formula",
+      "Play the Market",
+      "Subsidize",
+      "Controlling Interest"
+    ],
+    "intelligence": [
+      "Intel and Operation Progress, including start-of-turn Intel equal to Operation Progress",
+      "Mission slot and hidden Active Mission state",
+      "Mission start/complete/abort/failure",
+      "Special Operations",
+      "Surveillance",
+      "Interference, optional removal, replacement, choice revision, and Direct Interference"
+    ],
+    "mystics": [
+      "selected Rite order",
+      "automatic printed-condition completion",
+      "Rite lifecycle and completion limits",
+      "interruption",
+      "completed-Rite persistence",
+      "Rite/Ritual binding destination"
+    ],
+    "inquisition": [
+      "Conviction",
+      "Condemnation",
+      "Blasphemy",
+      "Purge menu and Action permissions",
+      "Purification",
+      "Final Judgment sequencing",
+      "Relentless Pursuit sequencing"
+    ]
   },
   "source_status": "The normalized procedures already exist in current reviewed player-facing faction material and/or current structured authority. This change makes those mechanics explicit in the sole canonical authority; it does not intentionally alter gameplay.",
   "authority_layout": {
