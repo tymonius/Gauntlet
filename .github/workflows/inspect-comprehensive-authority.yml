@@ -1,0 +1,52 @@
+name: Inspect comprehensive authority
+
+on:
+  push:
+    branches: [rules/comprehensive-rebased]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Print direct-publication authority blocks
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const a = JSON.parse(await readFile('game-data/current-game.json', 'utf8'));
+          const blocks = {
+            deck_construction: a.gameplay.deck_construction,
+            setup: a.gameplay.setup,
+            card_zones: a.gameplay.card_zones,
+            shared_card_rules: {
+              choices: a.gameplay.card_rules.choices,
+              assets: a.gameplay.card_rules.assets,
+              bind: a.gameplay.card_rules.bind,
+              compact_shorthand: a.gameplay.card_rules.compact_shorthand,
+              reveal_stage_interference: a.gameplay.card_rules.reveal_stage_interference,
+              applying_and_repeating_effects: a.gameplay.card_rules.applying_and_repeating_effects,
+              battle_ends_without_winner: a.gameplay.card_rules.battle_ends_without_winner,
+              cards_becoming_territories: a.gameplay.card_rules.cards_becoming_territories,
+            },
+            battle_shared: {
+              commitment_sources: a.gameplay.battle.commitment_sources,
+              reserve: a.gameplay.battle.reserve,
+              withdrawal_procedure: a.gameplay.battle.withdrawal_procedure,
+            },
+            faction_rules: a.gameplay.faction_rules,
+            proposals: a.proposals,
+            mystics: a.mystics,
+            factionFeatures: a.factionFeatures,
+          };
+          for (const [name, value] of Object.entries(blocks)) {
+            console.log(`\n===== ${name} =====`);
+            console.log(JSON.stringify(value, null, 2));
+          }
+          NODE
