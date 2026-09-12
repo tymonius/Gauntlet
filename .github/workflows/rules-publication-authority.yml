@@ -9,6 +9,8 @@ on:
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
       - 'scripts/current-game-authority.mjs'
+      - 'scripts/normalize-faction-rules-authority.mjs'
+      - 'scripts/validate-faction-rules-authority.mjs'
       - 'scripts/validate-rules-publication-contract.mjs'
       - 'scripts/validate-rules-publication-scaffolds.mjs'
       - 'rulebook/publication/**'
@@ -36,6 +38,8 @@ jobs:
             /game-data/current-game-validation.mjs
             /game-data/art-direction.mjs
             /scripts/current-game-authority.mjs
+            /scripts/normalize-faction-rules-authority.mjs
+            /scripts/validate-faction-rules-authority.mjs
             /scripts/validate-rules-publication-contract.mjs
             /scripts/validate-rules-publication-scaffolds.mjs
             /rulebook/publication/
@@ -53,3 +57,5 @@ jobs:
         run: |
           node scripts/validate-rules-publication-contract.mjs
           node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/normalize-faction-rules-authority.mjs
+          node scripts/validate-faction-rules-authority.mjs
