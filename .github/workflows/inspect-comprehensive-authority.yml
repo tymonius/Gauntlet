@@ -16,15 +16,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Print remaining direct-publication authority blocks
+      - name: Print remaining shared authority shapes
         run: |
           node --input-type=module <<'NODE'
           import { readFile } from 'node:fs/promises';
           const a = JSON.parse(await readFile('game-data/current-game.json', 'utf8'));
           const blocks = {
-            factionFeatureTaxonomy: a.factionFeatureTaxonomy,
-            componentContract: a.componentContract,
-            factions: a.gameplay.factions,
+            turn_actions: a.gameplay.turn.actions,
+            movement_rules: a.gameplay.battlefield.movement_rules,
+            additional_gambits: a.gameplay.card_rules.additional_gambits,
+            additional_tactics: a.gameplay.card_rules.additional_tactics,
           };
           for (const [name, value] of Object.entries(blocks)) {
             console.log(`\n===== ${name} =====`);
