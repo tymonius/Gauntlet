@@ -6,6 +6,7 @@ on:
       - rules/shared-authority-normalization
     paths:
       - 'scripts/normalize-shared-rules-authority.mjs'
+      - 'scripts/validate-shared-rules-authority.mjs'
       - '.github/workflows/materialize-shared-authority-normalization.yml'
   workflow_dispatch:
 
@@ -29,6 +30,9 @@ jobs:
 
       - name: Materialize canonical shared authority
         run: node scripts/normalize-shared-rules-authority.mjs
+
+      - name: Validate canonical shared authority
+        run: node scripts/validate-shared-rules-authority.mjs
 
       - name: Commit normalized authority and registry
         run: |
