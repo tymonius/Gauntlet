@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if grep -R -n -E 'automation/v[^[:space:]"'"'"'/]+-release-package-refresh' .github/workflows; then
+          if grep -R -n -E 'automation/v[^[:space:]/]+-release-package-refresh' .github/workflows; then
             echo 'Version-specific standing release-refresh branches are forbidden; use the lifecycle-driven current-release workflow.' >&2
             exit 1
           fi
