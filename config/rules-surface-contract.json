@@ -571,6 +571,135 @@
       ]
     },
     {
+      "id": "core.card-zones",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_zones"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.choices",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "choices"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.assets",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "assets"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.bind",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "bind"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.shorthand",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "compact_shorthand"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.repeat",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "applying_and_repeating_effects"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.no-winner",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "battle_ends_without_winner"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.cards.becoming-territories",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "card_rules",
+            "cards_becoming_territories"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.reserve",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "reserve"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core.battle.withdrawal-procedure",
+      "scope": "core",
+      "sources": [
+        {
+          "path": [
+            "gameplay",
+            "battle",
+            "withdrawal_procedure"
+          ]
+        }
+      ]
+    },
+    {
       "id": "faction.military.definition",
       "scope": "faction:military",
       "sources": [
