@@ -558,7 +558,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
 async function askOpenAI({ env, request, question, history, sources }) {
   const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
   const questionText = adjudicationReminder
-    ? `${questionText}
+    ? `${question}
 
 QUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification
 ${adjudicationReminder}`
@@ -603,7 +603,7 @@ ${adjudicationReminder}`
           content: [{
             type: "input_text",
             text: [
-              `QUESTION\n${question}`,
+              `QUESTION\n${questionText}`,
               `IMMEDIATELY PRECEDING EXCHANGE — resolve ambiguous follow-ups here first\n${immediateHistoryText}`,
               `EARLIER CONVERSATION AND SESSION RULINGS\n${earlierHistoryText}`,
               `CANONICAL SOURCES\n${sourceText}`
