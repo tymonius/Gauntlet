@@ -212,12 +212,10 @@
         "tactic": "Reserve unless a rule or effect names another source"
       },
       "reserve": {
-        "normal_size": 3,
         "source": "Draw Pile",
         "temporary_private_zone": true,
         "hand_set_aside_without_zone_change": true,
         "owner_may_inspect_and_arrange": true,
-        "remaining_cards_normal_destination": "Discard Pile",
         "formation": "After Gambits are set, set Hands physically aside without changing their zone and draw the applicable number of cards from the Draw Pile to form each player’s Reserve."
       },
       "withdrawal_procedure": {
@@ -4546,8 +4544,8 @@
         "keep": 3,
         "mandatory": true,
         "creates_discard_pile_before_first_turn": true,
-        "discard_is_cost_or_effect": false,
-        "discard_is_cost_or_effect_exception": "Only if a rule expressly refers to the opening discard."
+        "counts_as_discard_for_other_cost_or_effect": false,
+        "other_cost_or_effect_exception": "Only if a rule expressly refers to the opening discard."
       },
       "territory_arrangement": {
         "timing": "After opening selection and before the first-player roll.",
@@ -4800,25 +4798,23 @@
       "multiple_gambits_or_tactics": {
         "permission_optional_by_default": true,
         "simultaneous_tactic_choice": "When several Tactics are chosen as part of the same choice, choose them simultaneously.",
-        "later_added_tactic_uses_additional_tactic_rules": true,
-        "modifier_stacking": "Multiple applicable +N Reserve and +N Tactic instructions add together unless a rule or effect expressly says otherwise."
+        "later_added_tactic_uses_additional_tactic_rules": true
       },
       "assets": {
         "bank_heading": "Asset",
         "only_banked_effect_heading": true,
-        "inherent_bank_action": "Bank: As an Action, play this card from your Hand and bank it.",
         "inherent_bank_counts_as_action_effect_that_banks": true,
-        "special_banking_procedure_overrides_default": true,
         "normal_limit": "The number of Territories you control.",
         "limit_recalculates_with_control": true,
         "forced_discard_when_over_limit": "If the Asset limit falls below the number of banked Assets, immediately discard Assets until within the limit.",
-        "forced_limit_discard_is_removal": true,
         "replace_at_limit": "When banking an Asset at the Asset limit, you may discard one Asset you control to make room and bank the new Asset as part of the same effect.",
         "replacement_is_separate_action": false,
         "prevented_departure_prevents_replacement": true,
         "replaced_asset_departure_consequences_apply": true,
         "ability_action_default": false,
-        "ability_action_rule": "An Asset ability uses an Action only when the Asset or another rule expressly identifies an Action."
+        "ability_action_rule": "An Asset ability uses an Action only when the Asset or another rule expressly identifies an Action.",
+        "bank_procedure_source": "gameplay.card_rules.inherent_bank_action",
+        "removal_classification_source": "gameplay.card_rules.asset_removal"
       },
       "cards_becoming_territories": {
         "manifest_destiny": "Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Territory with a normal Deed. Existing Deed purchase costs, caps, procedures, income rules, and Controlling Interest rules apply unchanged."
@@ -4836,18 +4832,17 @@
       },
       "hand": {
         "visibility": "private",
-        "normal_cleanup_limit": 3,
         "text": "The private cards held by a player. Physically setting the Hand aside during a battle does not move those cards to another zone."
       },
       "discard_pile": {
         "visibility": "face up",
-        "recyclable": true,
-        "text": "A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile."
+        "text": "A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile.",
+        "circulation": "recyclable through the normal Draw procedure"
       },
       "graveyard": {
         "visibility": "face up",
-        "normal_recycling": false,
-        "text": "A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them."
+        "text": "A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them.",
+        "circulation": "outside normal circulation unless an effect moves a card"
       },
       "asset_bank": {
         "visibility": "public",
@@ -4855,24 +4850,17 @@
       },
       "gambit_area": {
         "temporary": true,
-        "source": "Hand",
-        "normal_destination": "Graveyard",
         "text": "The temporary area containing cards set from Hand as Gambits for the current battle."
       },
       "reserve": {
         "temporary": true,
         "visibility": "private",
-        "normal_size": 3,
-        "source": "Draw Pile",
         "separate_from_hand": true,
         "owner_may_inspect_and_arrange": true,
-        "normal_destination": "Discard Pile",
         "text": "A temporary private zone formed during one battle. Each player normally draws three cards to form it. Cards remaining there normally go to the Discard Pile during the Aftermath."
       },
       "tactic_area": {
         "temporary": true,
-        "default_source": "Reserve",
-        "normal_destination": "Discard Pile",
         "text": "The temporary area containing cards chosen or added as Tactics for the current battle."
       },
       "leader_and_faction_area": {
