@@ -4,16 +4,16 @@ compatibility_date = "2026-07-29"
 
 [vars]
 SITE_ORIGIN = "https://gauntlet.run"
-ALLOWED_ORIGINS = "https://gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
+ALLOWED_ORIGINS = "https://gauntlet.run,https://www.gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
 OPENAI_MODEL = "gpt-5.6-terra"
 OPENAI_REASONING_EFFORT = "low"
 RULES_SEMANTIC_PLANNER = "off"
 RULES_VERIFIER = "off"
 RULES_SOURCE_LIMIT = "8"
 RULES_SOURCE_EXCERPT_LENGTH = "1000"
-RULES_MODEL_REQUESTS_PER_IP_HOUR = "12"
-RULES_MODEL_REQUESTS_PER_DAY = "50"
-RULES_MODEL_REQUESTS_PER_MONTH = "200"
+RULES_MODEL_REQUESTS_PER_IP_HOUR = "24"
+RULES_MODEL_REQUESTS_PER_DAY = "100"
+RULES_MODEL_REQUESTS_PER_MONTH = "500"
 
 [[d1_databases]]
 binding = "DB"
