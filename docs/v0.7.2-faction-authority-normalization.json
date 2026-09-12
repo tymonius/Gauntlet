@@ -1,0 +1,68 @@
+{
+  "version": "v0.7.2-candidate",
+  "issue": 1681,
+  "mechanics_changed": false,
+  "purpose": "Promote already-current faction procedures into game-data/current-game.json so the Comprehensive Rules can remain a direct authority projection.",
+  "normalized_domains": {
+    "military": [
+      "Command lifecycle and first-win trigger edge cases",
+      "Orders feature semantics",
+      "current Fortify capture wording"
+    ],
+    "diplomats": [
+      "Influence and stake lifecycle",
+      "Terms outcomes and eligibility",
+      "optional imposition after refused Terms and a win",
+      "ratification and Treaty Articles",
+      "Leverage",
+      "Peace Treaty timing"
+    ],
+    "financiers": [
+      "Capital and immediately recalculating Capital Limit",
+      "Treasury",
+      "Income",
+      "Financial Capacity",
+      "Deeds and cost formula",
+      "Play the Market",
+      "Subsidize",
+      "Controlling Interest"
+    ],
+    "intelligence": [
+      "Intel and Operation Progress, including start-of-turn Intel equal to Operation Progress",
+      "Mission slot and hidden Active Mission state",
+      "Mission start/complete/abort/failure",
+      "Special Operations",
+      "Surveillance",
+      "Interference, optional removal, replacement, choice revision, and Direct Interference"
+    ],
+    "mystics": [
+      "selected Rite order",
+      "automatic printed-condition completion",
+      "Rite lifecycle and completion limits",
+      "interruption",
+      "completed-Rite persistence",
+      "Rite/Ritual binding destination"
+    ],
+    "inquisition": [
+      "Conviction",
+      "Condemnation",
+      "Blasphemy",
+      "Purge menu and Action permissions",
+      "Purification",
+      "Final Judgment sequencing",
+      "Relentless Pursuit sequencing"
+    ]
+  },
+  "source_status": "The normalized procedures already exist in current reviewed player-facing faction material and/or current structured authority. This change makes those mechanics explicit in the sole canonical authority; it does not intentionally alter gameplay.",
+  "authority_layout": {
+    "canonical_procedures": "Exact faction procedures live once in game-data/current-game.json under gameplay.faction_rules or the dedicated Proposal/Mystics corpora.",
+    "faction_feature_metadata": "factionFeatures remains taxonomy/profile metadata and does not duplicate exact procedure text.",
+    "registry": "Each faction.<id>.features registry entry fingerprints both factionFeatures.<id> metadata and gameplay.faction_rules.<id> procedures; dedicated Proposal and Mystics Rite dependencies remain separate."
+  },
+  "migration": "One-time normalization and finalization scripts/workflows were used only to materialize the canonical branch state and were removed before merge.",
+  "validation": [
+    "scripts/validate-faction-rules-authority.mjs asserts required procedures, single-source layout, registry dependencies, and key invariants across all six factions.",
+    "Rules publication authority CI runs the permanent faction authority validator.",
+    "The canonical result is game-data/current-game.json plus its rules-surface registry dependencies; no migration script is required after merge."
+  ]
+}
