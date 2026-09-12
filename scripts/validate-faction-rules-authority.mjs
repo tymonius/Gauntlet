@@ -81,8 +81,13 @@ for (const name of ['Treasury', 'Deeds', 'Play the Market', 'Subsidize', 'Financ
 
 // Intelligence
 const intelligence = factionRules.intelligence;
+const expectedTurnStartIntel = 'At the start of your turn, gain Intel equal to your Operation Progress.';
 invariant(intelligence.intel?.starting === 0 && intelligence.intel?.minimum === 0 && intelligence.intel?.maximum === null, 'Intel bounds drifted.');
+invariant(intelligence.intel?.turn_start_gain === expectedTurnStartIntel, 'Intelligence must gain Intel equal to Operation Progress at the start of its turn.');
+invariant(intelligence.turn_start_intel === expectedTurnStartIntel, 'Intelligence turn-start Intel summary must stay synchronized with the canonical Intel rule.');
 invariant(intelligence.operation_progress?.starting === 0 && intelligence.operation_progress?.maximum === null, 'Operation Progress bounds drifted.');
+invariant(String(intelligence.operation_progress?.text || '').includes('Increase it by 1 whenever you complete a normal Mission'), 'Normal Mission completion must increase Operation Progress by 1.');
+invariant(String(intelligence.missions?.complete?.text || '').includes('gain Intel equal to the card’s value'), 'Normal Mission completion must grant Intel equal to the Mission card value.');
 invariant(intelligence.mission_slot?.maximum === 1 && intelligence.mission_slot?.active_mission_and_special_operation_share_slot === true, 'Mission slot rule drifted.');
 invariant(intelligence.missions?.start?.cannot_complete_turn_started === true, 'Mission completion-delay rule is missing.');
 invariant(intelligence.missions?.active_state?.owner_may_inspect === true && intelligence.missions?.active_state?.requirement_hidden_from_opponent === true, 'Active Mission information-state rules are missing.');
