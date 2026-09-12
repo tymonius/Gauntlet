@@ -20,7 +20,7 @@
 
 At the **start of your turn**, gain Intel equal to your current **Operation Progress**.
 
-Operation Progress begins at 0, is not normally spent, and records completed normal Missions. Completing a normal Mission still gives **+1 Operation Progress** and immediate **Intel equal to that card's value**.
+**Operation Progress is your completed-normal-Mission count, not a resource.** It begins at 0 and is not normally spent. Each time you complete a normal Mission, increase the counter by 1 because you have completed one more Mission. Separately, gain immediate **Intel equal to that Mission card's value**.
 
 ### Operational Capacity
 
@@ -40,11 +40,11 @@ During Denouement, spend **1 Action** to place an eligible Intelligence card fro
 
 During Denouement, if its requirement is satisfied, spend **1 Action** to reveal and complete the Active Mission:
 
-- Increment **Operation Progress by 1**.
+- Increase **Operation Progress by 1** to record one more completed normal Mission.
 - Gain **Intel equal to the card's value**.
 - Put the Mission in your **Discard Pile**.
 
-Completion still requires the Denouement Action above after the requirement is satisfied. The new Progress increases start-of-turn Intel beginning on your next turn; it does not create another immediate Intel payment.
+Completion still requires the Denouement Action above after the requirement is satisfied. The higher completed-Mission count increases start-of-turn Intel beginning on your next turn; it does not create another immediate Intel gain.
 
 ## Reverse — Special Operations
 
@@ -68,11 +68,12 @@ It uses the card's printed Mission requirement. On completion, resolve only the 
 
 ### Complete & Win
 
-During Denouement, if its requirement is satisfied and readiness remains valid, spend **1 Action**, reveal it, and pay:
+During Denouement, if its requirement is satisfied and readiness remains valid, spend **1 Action** and reveal it.
 
-**Territories currently in the Gauntlet − card value**
+Count the Territories currently in the Gauntlet, subtract the Special Operation card's value, and pay that many Intel. You always pay at least **1 Intel**.
 
-Minimum payment: **1 Intel**. If paid, you win immediately. This Action qualifies for Operational Capacity.
+**Intel cost = Territories currently in the Gauntlet − card value, minimum 1**
+
+If paid, you win immediately. This Action qualifies for Operational Capacity.
 
 If readiness is lost before completion, the Special Operation immediately fails and goes to the Graveyard.
-
