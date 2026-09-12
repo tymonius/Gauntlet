@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "targetVersion": "v0.7.2",
+  "status": "approved-design",
+  "changeType": "faction-economy-and-action-capacity",
+  "gameplayBehaviorChanged": true,
+  "summary": "Intelligence gains recurring Intel from accumulated Operation Progress and may use a qualifying Mission or Special Operation Action during Denouement after using its normal Action during Opening.",
+  "turnStartIntel": {
+    "timing": "At the start of your turn",
+    "effect": "Gain Intel equal to your Operation Progress.",
+    "resource": "Intel",
+    "scalingValue": "Operation Progress",
+    "cap": null
+  },
+  "operationalCapacity": {
+    "name": "Operational Capacity",
+    "profile": "Automatic",
+    "rule": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.",
+    "qualifyingFeatures": [
+      "Start Mission",
+      "Complete Mission",
+      "Start Special Operation",
+      "Complete Special Operation"
+    ],
+    "excludedFeatures": [
+      "Abort Mission"
+    ],
+    "samePhaseLimitUnchanged": true,
+    "note": "Mission and Special Operation procedures remain 1 Action Faction Features. Operational Capacity supplies only the cross-phase permission needed for one qualifying Denouement Action after an Opening Action; it is not a free Action and cannot be converted into a second ordinary Denouement Action."
+  },
+  "operationProgressSemantics": {
+    "startingValue": 0,
+    "normalMissionChange": "+1 each time a normal Mission is completed",
+    "meaning": "Operation Progress tracks how many normal Missions the Intelligence player has completed.",
+    "spendable": false,
+    "note": "The +1 Operation Progress from completing a Mission is not an additional payment or resource reward; it records completed-Mission progress. The recurring Intel rule makes that accumulated progress determine baseline Intel generation on later turns."
+  },
+  "missionCompletion": {
+    "immediateIntelUnchanged": "A completed normal Mission still grants Intel equal to that Mission card's value.",
+    "operationProgressUnchanged": "Completing a normal Mission still increments Operation Progress by 1.",
+    "timingConsequence": "The newly increased Operation Progress does not retroactively generate Intel on Mission completion. It contributes to the next and later start-of-turn Intel gains."
+  },
+  "specialOperations": {
+    "readinessAndCostUnchanged": true,
+    "operationalCapacityEligible": true,
+    "note": "Special Operation readiness, completion cost, and victory procedure are otherwise unchanged."
+  },
+  "integrationRequirements": {
+    "currentAuthority": [
+      "Register this document in current-development provenance.",
+      "Add the start-of-turn Intel gain to Intelligence current-game authority and all duplicated Leader/reference summaries that describe Intel.",
+      "Keep Operation Progress classified as Progression rather than a Resource and preserve its completed-Mission tracker semantics.",
+      "Add Operational Capacity as an Automatic Intelligence Faction Feature and encode its exact qualifying and excluded 1 Action procedures."
+    ],
+    "rulebook": [
+      "State explicitly that, at the start of an Intelligence player's turn, they gain Intel equal to current Operation Progress.",
+      "Preserve the separate immediate Mission-completion Intel gain equal to the Mission card's value.",
+      "Teach Operational Capacity as cross-phase Action permission: after using the normal Action during Opening, a qualifying Mission or Special Operation Action may still be taken during Denouement.",
+      "State that Abort Mission does not qualify and that the one-Action-per-phase limit remains unchanged."
+    ],
+    "digitalEngine": [
+      "Apply the Intel gain once at the start of each Intelligence turn without changing Operation Progress and emit ordinary Intel-change state/event behavior for positive gains.",
+      "Permit implemented normal Mission Start/Complete actions during Denouement after an Opening Action without granting a reusable unrestricted Action.",
+      "Do not fabricate Special Operation execution before the digital engine implements Special Operations; the rules authority defines the full Operational Capacity scope while current engine parity covers its already implemented normal Mission actions."
+    ],
+    "teachingSurfaces": [
+      "Update the Intelligence faction guide and worked examples for recurring Intel and Operational Capacity.",
+      "Update Intelligence reference copy so the new economy and Action structure are visible at the table."
+    ],
+    "tests": [
+      "Cover recurring Intel across a real turn transition.",
+      "Cover Start Mission and Complete Mission after an Opening Action.",
+      "Verify Operational Capacity does not authorize an ordinary second Denouement Action or a second Action in one phase.",
+      "Verify authority and teaching surfaces exclude Abort Mission from Operational Capacity."
+    ],
+    "releaseBoundary": "These are v0.7.2 gameplay changes. Published v0.7.1 artifacts remain immutable."
+  }
+}

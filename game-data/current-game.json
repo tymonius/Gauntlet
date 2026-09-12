@@ -24,7 +24,8 @@
       "v072TimingAndCaptureCleanup": "/docs/v0.7.2-timing-and-capture-cleanup.json",
       "v072BattleCommitmentOrderRestoration": "/docs/v0.7.2-battle-commitment-order-restoration.json",
       "v072SharedBaselineRestoration": "/docs/v0.7.2-shared-baseline-restoration.json",
-      "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json"
+      "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json",
+      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json"
     }
   },
   "visualPolicy": {
@@ -434,13 +435,13 @@
                 "classification": "Resource",
                 "name": "Intel",
                 "descriptor": "Begin at 0 · No maximum",
-                "text": "Spend Intel on Intelligence features and effects."
+                "text": "At the start of your turn, gain Intel equal to your Operation Progress. Spend Intel on Intelligence features and effects."
               },
               {
                 "classification": "Progression",
                 "name": "Operation Progress",
                 "descriptor": "Begin at 0",
-                "text": "Increment by 1 each time you complete a normal Mission."
+                "text": "Increment by 1 each time you complete a normal Mission. Operation Progress records completed normal Missions and is not normally spent."
               }
             ]
           },
@@ -467,13 +468,13 @@
                 "classification": "Resource",
                 "name": "Intel",
                 "descriptor": "Begin at 0 · No maximum",
-                "text": "Spend Intel on Intelligence features and effects."
+                "text": "At the start of your turn, gain Intel equal to your Operation Progress. Spend Intel on Intelligence features and effects."
               },
               {
                 "classification": "Progression",
                 "name": "Operation Progress",
                 "descriptor": "Begin at 0",
-                "text": "Increment by 1 each time you complete a normal Mission."
+                "text": "Increment by 1 each time you complete a normal Mission. Operation Progress records completed normal Missions and is not normally spent."
               }
             ]
           }
@@ -4332,7 +4333,18 @@
           "Start Special Operation",
           "Complete Special Operation"
         ],
-        "mission_control_classification": "Leader Ability"
+        "mission_control_classification": "Leader Ability",
+        "turn_start_intel": "At the start of your turn, gain Intel equal to your Operation Progress.",
+        "operational_capacity": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.",
+        "operational_capacity_qualifying_features": [
+          "Start Mission",
+          "Complete Mission",
+          "Start Special Operation",
+          "Complete Special Operation"
+        ],
+        "operational_capacity_excluded_features": [
+          "Abort Mission"
+        ]
       },
       "mystics": {
         "guardians_protection_values": {
@@ -7290,6 +7302,12 @@
         "profile": "No Action",
         "timing": "Immediately after reveal or face-up opposing choice",
         "cost": "2 Intel per removed card"
+      },
+      {
+        "name": "Operational Capacity",
+        "profile": "Automatic",
+        "timing": "Denouement after using your normal Action during Opening",
+        "text": "If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify."
       }
     ],
     "mystics": [
@@ -7583,13 +7601,13 @@
           "classification": "Resource",
           "name": "Intel",
           "descriptor": "Begin at 0 · No maximum",
-          "text": "Spend Intel on Intelligence features and effects."
+          "text": "At the start of your turn, gain Intel equal to your Operation Progress. Spend Intel on Intelligence features and effects."
         },
         {
           "classification": "Progression",
           "name": "Operation Progress",
           "descriptor": "Begin at 0",
-          "text": "Increment by 1 each time you complete a normal Mission."
+          "text": "Increment by 1 each time you complete a normal Mission. Operation Progress records completed normal Missions and is not normally spent."
         }
       ]
     },
@@ -7616,13 +7634,13 @@
           "classification": "Resource",
           "name": "Intel",
           "descriptor": "Begin at 0 · No maximum",
-          "text": "Spend Intel on Intelligence features and effects."
+          "text": "At the start of your turn, gain Intel equal to your Operation Progress. Spend Intel on Intelligence features and effects."
         },
         {
           "classification": "Progression",
           "name": "Operation Progress",
           "descriptor": "Begin at 0",
-          "text": "Increment by 1 each time you complete a normal Mission."
+          "text": "Increment by 1 each time you complete a normal Mission. Operation Progress records completed normal Missions and is not normally spent."
         }
       ]
     },

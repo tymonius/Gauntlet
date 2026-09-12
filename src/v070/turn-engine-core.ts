@@ -120,6 +120,7 @@ import {
 } from './financiers';
 import {
   completeV070ActiveMission,
+  gainV070TurnStartIntel,
   isV070IntelligencePlayer,
   recordV070IntelligenceHandRevealForMission,
   returnV070ActiveMissionToHand,
@@ -2363,6 +2364,55 @@ function requireIntelligenceDenouement(
   }
 }
 
+function spendIntelligenceOperationAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  operation: 'Start Mission' | 'Complete Mission',
+): void {
+  try {
+    spendTurnAction(state, playerId);
+    return;
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : 'That Action cannot be spent now.';
+    if (message !== 'No Actions remain this turn.') {
+      throw error;
+    }
+  }
+
+  const turnState = requireTurnState(state);
+  if (turnState.phase !== 'denouement'
+    || turnState.actionsTaken.opening < 1
+    || turnState.actionsTaken.denouement !== 0) {
+    throw new V070GameActionError('No Actions remain this turn.');
+  }
+
+  try {
+    state.turnState = spendV070Action({
+      ...turnState,
+      actionsAvailable: turnState.actionsAvailable + 1,
+    });
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error
+        ? error.message
+        : 'Operational Capacity cannot provide another Action in this phase.',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'operational_capacity_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      phase: 'denouement',
+      operation,
+    },
+  });
+}
+
 function intelligenceStartMission(
   state: V070GameState,
   playerId: PlayerId,
@@ -2387,7 +2437,7 @@ function intelligenceStartMission(
     );
   }
 
-  spendTurnAction(state, playerId);
+  spendIntelligenceOperationAction(state, playerId, 'Start Mission');
   startV070MissionFromHand(
     state,
     playerId,
@@ -2403,7 +2453,7 @@ function intelligenceCompleteMission(
   missionControlCardInstanceId?: string,
 ): void {
   requireIntelligenceDenouement(state, playerId);
-  spendTurnAction(state, playerId);
+  spendIntelligenceOperationAction(state, playerId, 'Complete Mission');
   completeV070ActiveMission(state, playerId);
 
   if (missionControlCardInstanceId !== undefined) {
@@ -10183,6 +10233,7 @@ function beginV070TurnAfterTransition(
     },
   });
 
+  gainV070TurnStartIntel(state, playerId);
   applyV070TurnStartTerritoryEffects(state, playerId);
   resolveV070SpeculationsAtTurnStart(state, playerId);
   openV070StartTurnOverlayChoice(state, playerId);
