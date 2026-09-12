@@ -50,7 +50,12 @@
         "Feature in Opening",
         "permits one of them in Opening",
         "permits a Financier Faction Feature in Opening",
-        "allows one of them in Opening"
+        "allows one of them in Opening",
+        "lets one of them be your Opening Action",
+        "lets one of them be an Opening Action",
+        "one of them be your Opening Action",
+        "Feature as your Opening Action",
+        "Feature as an Opening Action"
       ]
     },
     {
@@ -74,7 +79,7 @@
       "classificationBasis": "combined-authority",
       "expectedSourcePatterns": [
         "Deeds",
-        "Buying and buying out Deeds"
+        "Front Line"
       ]
     },
     {
