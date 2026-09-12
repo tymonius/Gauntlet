@@ -1,14 +1,14 @@
-name: Validate comprehensive projection
+name: Materialize comprehensive projection
 
 on:
   push:
     branches: [rules/comprehensive-rebased]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  validate:
+  materialize:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -26,8 +26,14 @@ jobs:
           node scripts/validate-rules-publication-scaffolds.mjs
           node scripts/validate-faction-rules-authority.mjs
           node scripts/validate-shared-rules-authority.mjs
-      - name: Upload generated Comprehensive Rules
-        uses: actions/upload-artifact@v4
-        with:
-          name: comprehensive-rules-generated
-          path: rulebook/comprehensive/comprehensive-rules.md
+      - name: Commit generated Comprehensive Rules
+        run: |
+          if git diff --quiet -- rulebook/comprehensive/comprehensive-rules.md; then
+            echo "Generated Comprehensive Rules already materialized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rulebook/comprehensive/comprehensive-rules.md
+          git commit -m "Render Comprehensive Rules from canonical authority"
+          git push
