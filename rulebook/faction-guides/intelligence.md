@@ -9,31 +9,31 @@
 <!-- RULES-SECTION:meet -->
 ## Meet Intelligence
 
-Intelligence turns hidden objectives and hidden information into leverage. You pursue face-down **Missions**, gain spendable **Intel**, build persistent **Operation Progress**, and use Intel to reveal or disrupt opposing battle choices.
+Intelligence turns hidden objectives and hidden information into leverage. You pursue face-down **Missions**, spend **Intel** on information and disruption, and use **Operation Progress** to keep count of how many normal Missions you have completed.
 
-Complete enough Missions and you can prepare a **Special Operation**: a hidden final objective that can win the game if you remain ready, satisfy its requirement, and pay its Intel cost.
+That completed-Mission count matters twice. It determines when you are ready to begin a **Special Operation**, and at the start of each of your turns it generates that much Intel.
 
 The basic Intelligence rhythm is:
 
-> **Start a Mission → satisfy it → complete it → build Progress → let that network generate Intel → spend Intel on information and interference.**
+> **Start a Mission → satisfy it → complete it → record one more completed Mission → gain recurring Intel → spend Intel on information, interference, and your final operation.**
 
 Intelligence still plays the normal territorial game. Missions are completed through the same movement, battles, cards, and board states everyone else uses, and the shared Run the Gauntlet victory remains available at all times.
 
 <!-- RULES-SECTION:changes -->
 ## 1. How Intelligence Changes Gauntlet
 
-Intelligence adds five systems to the shared game:
+Intelligence adds five linked systems to the shared game:
 
-- you track **Intel**, a spendable resource;
-- you separately track **Operation Progress**, persistent progress from completed normal Missions;
+- **Intel** is a spendable resource;
+- **Operation Progress** is a counter that records completed normal Missions;
 - one eligible Intelligence card can sit face down as your **Active Mission** or **Special Operation**;
-- **Operational Capacity** lets a qualifying Mission or Special Operation Action coexist with an Opening Action on the same turn; and
-- **Surveillance** and **Interference** let you challenge some of the hidden information that normally defines a battle.
+- **Operational Capacity** lets you use an Opening Action and still use a qualifying Mission or Special Operation Action during Denouement; and
+- **Surveillance** and **Interference** let you inspect and disrupt some of the hidden choices that normally define a battle.
 
 The distinction between the two tracked values is fundamental:
 
-- **Intel** goes up when you earn it and down when you spend it.
-- **Operation Progress** normally only goes up. It records how many normal Missions you have completed and is not normally spent.
+- **Intel** goes up when you gain it and down when you spend it.
+- **Operation Progress** is not a resource. It normally increases by 1 whenever you complete a normal Mission because it is simply counting how many normal Missions you have completed.
 
 Both begin at **0** and have no maximum.
 
@@ -49,13 +49,25 @@ You need:
 - one **Operation Progress Tracker**; and
 - the Intelligence cards included in your Deck.
 
-Set both Intel and Operation Progress to **0**.
+### Setting up the tracker stack
 
-The printed tracker assembly stacks the **Operation Progress Tracker** beneath the **Intel Tracker**, with your Leader above them. Set both values to 0, then move only the tracker for the value that changes.
+The three cards form one vertical sliding assembly:
 
-Use the **Intel Tracker** for the resource you can spend. Move it up whenever you gain Intel and down whenever you spend Intel.
+1. Put the **Operation Progress Tracker** on the table first.
+2. Put the **Intel Tracker** directly on top of it.
+3. Put your **Leader** directly on top of the Intel Tracker.
+4. At 0 Intel and 0 Operation Progress, both numbered tracks are fully covered.
 
-Use the **Operation Progress Tracker** for completed normal Missions. Move it up by 1 each time you complete a normal Mission. Spending Intel does not lower Operation Progress.
+Think of the stack as having **two separate readout edges**:
+
+- the edge between your **Leader and the Intel Tracker** shows your current **Intel**;
+- the edge between the **Intel Tracker and the Operation Progress Tracker** shows your current **Operation Progress**.
+
+To change **Intel**, adjust the Leader against the Intel Tracker until the correct Intel number is exposed. Do not disturb the Intel/Operation Progress boundary.
+
+To change **Operation Progress**, keep the Leader and Intel Tracker together and adjust that pair against the Operation Progress Tracker until the correct Progress number is exposed. This preserves the Intel reading while the completed-Mission count changes.
+
+That physical arrangement mirrors the rules: Intel is the spendable number nearest your Leader; Operation Progress sits underneath it as the longer-term record of completed normal Missions.
 
 Keep the Mission / Special Operation area beside your Leader. Only an Intelligence card with a printed **Mission** requirement can occupy that slot.
 
@@ -66,13 +78,16 @@ Keep the Mission / Special Operation area beside your Leader. Only an Intelligen
 
 Intel begins at **0**, cannot fall below 0, and has no maximum.
 
-At the **start of each of your turns**, gain Intel equal to your current **Operation Progress**. If your Operation Progress is 0, you gain no Intel from this rule.
+At the **start of each of your turns**, gain Intel equal to your current **Operation Progress**. If Operation Progress is 0, this produces no Intel.
 
-You also gain Intel immediately when you complete a normal Mission: a completed Mission gives Intel equal to that card's value. Other Intelligence cards may also gain or spend Intel.
+You also gain Intel immediately when you complete a normal Mission: gain Intel equal to that Mission card's value. Other Intelligence cards may also gain or spend Intel.
 
-This means completed Missions improve your Intel economy in two different ways without turning Operation Progress into a spendable resource. The Mission gives its printed-value Intel when completed, and the +1 Operation Progress it records increases your recurring Intel income on later turns.
+So a completed Mission affects your Intel economy in two different ways:
 
-Intel pays for several different tools:
+- it gives an immediate amount of Intel equal to the card's value; and
+- because completing it raises your completed-Mission count by one, your later start-of-turn Intel generation increases by one.
+
+Intel pays for:
 
 - **Surveillance**;
 - **Interference**;
@@ -81,36 +96,46 @@ Intel pays for several different tools:
 - completing a Special Operation; and
 - Intelligence card effects that list an Intel cost.
 
-Because the same resource funds both tactical information and your eventual Special Operation, spending Intel remains a real choice. Revealing a crucial Tactic now may be worth delaying a later operation.
+Because the same resource funds tactical information and your eventual Special Operation, spending Intel remains a real choice. Revealing or removing an important battle card now may mean having less Intel available for the final operation later.
 
 ### Operation Progress
 
-Operation Progress begins at **0**, has no maximum, and is not normally spent.
+Operation Progress begins at **0** and has no maximum.
 
-Whenever you complete a **normal Mission**, increase Operation Progress by **1**, regardless of that Mission card's value. Operation Progress records completed normal Missions; it is not a payment you receive or a pool you spend.
+It is not a currency, pool, payment, or reward. **Operation Progress is the number of normal Missions you have completed.**
 
-The newly increased Progress does not produce an extra start-of-turn gain immediately. It contributes to your Intel gain at the start of your **next** turn and each later turn while that Progress remains.
+Whenever you complete a normal Mission, move the Operation Progress Tracker up by **1** because you have now completed one additional Mission. The value does not go down when you spend Intel.
 
-Operation Progress also determines when you are ready to start a Special Operation:
+For example:
 
-> **Your Operation Progress must exceed the number of Territories the opponent controls.**
+- 0 Operation Progress means you have completed 0 normal Missions;
+- 1 Operation Progress means you have completed 1 normal Mission;
+- 3 Operation Progress means you have completed 3 normal Missions.
 
-Equal is not enough. If the opponent controls 2 Territories, you need at least 3 Operation Progress.
+At the start of your turn, that same number tells you how much recurring Intel to gain. A Mission completed during the current turn therefore increases the Intel generated beginning at the start of your **next** turn.
+
+Operation Progress also determines when you are ready to start a Special Operation. Your completed-Mission count must be **greater than the number of Territories the opponent controls**.
+
+> If the opponent controls 2 Territories, you need at least 3 Operation Progress—that is, you must have completed at least 3 normal Missions.
+
+Equal is not enough.
 
 ### Operational Capacity
 
-Mission work should not force Intelligence to give up all ordinary Action play for the turn.
-
 **Operational Capacity — Automatic.** If you used your normal Action during **Opening**, you may still spend **1 Action during Denouement** to **Start or Complete a Mission or Special Operation**.
+
+In ordinary language: Intelligence may use its turn for something else during Opening and still do its Mission work after Movement.
 
 Operational Capacity does not give you a free-floating extra Action:
 
 - you still cannot take more than one Action in Opening;
 - you still cannot take more than one Action in Denouement;
-- the Denouement Action supplied by Operational Capacity must Start or Complete a Mission or Special Operation; and
+- the Denouement Action permitted by Operational Capacity must Start or Complete a Mission or Special Operation; and
 - **Abort a Mission does not qualify**.
 
-Starting and completing Missions and Special Operations therefore remain real **1 Action** Faction Features. Operational Capacity changes how those Actions fit into your turn; it does not make them No Action procedures.
+If you did **not** use your normal Action during Opening, you can simply use that normal Action during Denouement for any legal Denouement Action, including Mission procedures. Operational Capacity matters when the Opening Action has already been used.
+
+Starting and completing Missions and Special Operations remain real **1 Action** Faction Features. Operational Capacity changes how those Actions fit into the turn; it does not make them No Action procedures.
 
 <!-- RULES-SECTION:features -->
 ## 4. Missions, Surveillance, and Intelligence Features
@@ -134,14 +159,16 @@ Starting a Mission is not playing the card for one of its other printed effects.
 
 Satisfying the printed Mission requirement does **not** complete the Mission automatically.
 
-During a later Denouement, if the requirement has been satisfied, take **1 Action** to complete it:
+During a later Denouement, if the requirement has been satisfied, spend **1 Action** to complete it:
 
 1. reveal the Active Mission;
-2. increase Operation Progress by **1**;
+2. record one additional completed normal Mission by increasing **Operation Progress by 1**;
 3. gain **Intel equal to the card's value**; and
 4. put the completed Mission in your Discard Pile.
 
-The Progress increase is always +1. The immediate Intel reward depends on the card's value. Complete a Mission qualifies for Operational Capacity.
+Step 2 is bookkeeping: Operation Progress is now one higher because your completed-Mission count is one higher. Step 3 is the immediate Intel gained from completing that particular Mission.
+
+Complete a Mission qualifies for Operational Capacity.
 
 ### Aborting and failing
 
@@ -163,7 +190,7 @@ Surveillance gives Intelligence two separate information opportunities in each b
 
 The two opportunities are separate. Using Gambit Surveillance does not prevent you from using Tactic Surveillance later in the same battle.
 
-Surveillance reveals the opponent's choice; it does not remove the card. To force that card out of the battle, use Interference immediately after revealing it.
+Surveillance reveals the opponent's choice; it does not remove the card. To force a revealed card out of the battle, use Interference immediately after revealing it.
 
 ### Interference
 
@@ -177,7 +204,7 @@ Surveillance reveals the opponent's choice; it does not remove the card. To forc
 
 If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information you already gained.
 
-Some effects cause an opposing Gambit or Tactic to be chosen **face up**. In that case there is nothing to reveal, but Intelligence may use **Direct Interference** for 2 Intel at the corresponding response timing. The Operations Reference Card summarizes that procedure.
+Some effects cause an opposing Gambit or Tactic to be chosen **face up**. There is nothing to reveal in that case, so you may instead use **Direct Interference** for **2 Intel** at that stage's normal response timing. Direct Interference uses that stage's Interference opportunity; it does not give you an additional Interference use. The Operations Reference Card summarizes the exact procedure.
 
 ### Starting a Special Operation
 
@@ -191,7 +218,7 @@ You may start one only when:
 
 **Start a Special Operation — 1 Action · Denouement.** Place that eligible card face down as your Special Operation. This Action qualifies for Operational Capacity.
 
-The Special Operation uses the card's printed Mission requirement, but completing it does **not** grant normal Mission Progress or Intel.
+The Special Operation uses the card's printed Mission requirement, but completing it does **not** increase Operation Progress or give the immediate Intel normally gained from completing a normal Mission.
 
 ### Readiness and completing a Special Operation
 
@@ -199,13 +226,19 @@ Readiness must remain true while the Special Operation is active.
 
 If your Operation Progress stops exceeding the number of Territories the opponent controls, the Special Operation immediately fails: reveal it and put it in your Graveyard.
 
-During Denouement, if the Special Operation's requirement has been satisfied and readiness is still valid, take **1 Action**, reveal it, and pay:
+During Denouement, if the Special Operation's requirement has been satisfied and readiness is still valid, spend **1 Action** and reveal it.
 
-> **Territories currently in the Gauntlet − Special Operation card value**
+Then determine its Intel cost in plain language:
 
-The minimum payment is **1 Intel**. Complete a Special Operation qualifies for Operational Capacity.
+1. count how many Territories are currently in the Gauntlet;
+2. subtract the Special Operation card's value; and
+3. pay that many Intel, but never less than **1 Intel**.
 
-If you can pay that cost, you immediately win through **Special Operation**.
+Compactly:
+
+> **Intel cost = Territories currently in the Gauntlet − Special Operation card value, minimum 1**
+
+Complete a Special Operation qualifies for Operational Capacity. If you can pay the cost, you immediately win through **Special Operation**.
 
 <!-- RULES-SECTION:victory -->
 ## 5. Your Path to Victory
@@ -216,7 +249,7 @@ Intelligence can win in either of two ways.
 
 You can always win through the shared battlefield victory: control the entire Gauntlet, or force the opponent to make a Last Stand and win the resulting battle.
 
-Missions do not replace the territorial game. Many Mission requirements are satisfied through movement, battles, card play, or board position, so progress toward Intelligence's faction victory can naturally overlap with progress down the Gauntlet.
+Missions do not replace the territorial game. Many Mission requirements are satisfied through movement, battles, card play, or board position, so the same turn can advance both your territorial position and your Intelligence plan.
 
 ### Special Operation
 
@@ -224,12 +257,12 @@ Your faction victory is **Special Operation**.
 
 The path has four steps:
 
-1. complete normal Missions to build Operation Progress and immediate Intel;
-2. use that Operation Progress to generate recurring Intel and get above the opponent's controlled-Territory count;
+1. complete normal Missions; Operation Progress simply records how many you have completed;
+2. use that completed-Mission count to generate recurring Intel and get above the opponent's controlled-Territory count;
 3. start an eligible Special Operation and satisfy its hidden Mission requirement while remaining ready; and
 4. during Denouement, spend 1 Action, reveal it, pay its Intel cost, and win.
 
-A Special Operation is therefore not an instant reward for reaching the Progress threshold. The threshold lets you **prepare** the final operation; you still need to satisfy its requirement and fund its completion.
+Reaching the Operation Progress threshold does not itself win or complete anything. It makes you eligible to prepare the final operation.
 
 <!-- RULES-SECTION:leaders -->
 ## 6. Your Leaders
@@ -238,7 +271,7 @@ A Special Operation is therefore not an instant reward for reaching the Progress
 
 **Playstyle:** territory effects, reconnaissance, and field operations.
 
-- **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect.** When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that printed Territory effect until the end of the turn.
+- **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect.** When a printed Territory effect would affect you, your movement, or the current battle, ignore that printed Territory effect until the end of the turn.
 
 Fieldcraft lets the Ranger keep a plan moving when a Territory's printed rule would interfere with it. It does not erase the Territory itself or change who controls it.
 
@@ -250,20 +283,29 @@ The Ranger is a good first choice when you want Intelligence's Mission and infor
 
 - **Mission Control — No Action · Once per turn · After completing a normal Mission.** Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation.
 
-Mission Control removes the normal Action cost of starting the next Mission after you complete one. It does not give a second Mission slot and does not let the new Mission complete immediately.
+Mission Control starts the next Mission without spending another Action. It does not give you a second Mission slot and does not let the new Mission complete immediately.
 
-The Spymaster rewards preparation: if you already have the next eligible Mission in Hand when the current one completes, you can keep the Mission cycle moving without spending another turn's Action to restart it.
+The Spymaster rewards preparation: if another eligible Mission is already in Hand when the current one completes, you can keep the Mission cycle moving without waiting to spend a later Denouement Action to start again.
 
 <!-- RULES-SECTION:together -->
 ## 7. Putting It Together
 
-Suppose your **Intel is 0** and your **Operation Progress is 0**. During Opening you use your normal Action to play a card. When you reach Denouement, **Operational Capacity** still lets you spend 1 Action to place a value-3 Intelligence card face down as your Active Mission.
+Suppose your **Intel is 0** and your **Operation Progress is 0**. Both numbered tracks are hidden in the tracker stack.
+
+During Opening, you use your normal Action to play a card. When you reach Denouement, **Operational Capacity** still lets you spend 1 Action to place a value-3 Intelligence card face down as your Active Mission.
 
 On a later turn, you satisfy that Mission's printed requirement. You again use your normal Action during Opening. During Denouement, Operational Capacity lets you spend 1 Action to reveal and complete the Mission.
 
-Move the **Operation Progress Tracker from 0 to 1**. Because the completed Mission has value 3, move the **Intel Tracker from 0 to 3**. Put the Mission in your Discard Pile. The new Progress does not immediately generate another Intel; the Mission completion itself supplied the 3 Intel.
+You have now completed **one** normal Mission, so expose **1** on the Operation Progress readout while keeping the Intel readout unchanged. Then gain Intel equal to the Mission's value: expose **3** on the Intel readout. Put the Mission in your Discard Pile.
 
-Suppose you spend all 3 Intel before your next turn. Your Operation Progress remains **1**. At the **start of your next turn**, gain Intel equal to that Progress, moving the Intel Tracker from 0 to **1**. If your Operation Progress later reaches 3, you gain 3 Intel at the start of each of your turns until that value changes.
+Those two changes mean different things:
+
+- **Operation Progress 1** says, "I have completed one normal Mission."
+- **Intel 3** says, "I currently have three Intel available to spend."
+
+Suppose you spend all 3 Intel before your next turn. Move the Intel readout back to **0**; Operation Progress stays at **1**.
+
+At the **start of your next turn**, gain Intel equal to Operation Progress. Your completed-Mission count is still 1, so move Intel from 0 to **1**. If you later complete two more normal Missions, Operation Progress becomes 3 and you gain 3 Intel at the start of each of your turns while that count remains 3.
 
 If you are the **Spymaster**, Mission Control could also have started another eligible normal Mission immediately after the first one completed, without spending another Action. That new Mission still could not complete during the same turn.
 
@@ -272,11 +314,11 @@ If you are the **Spymaster**, Mission Control could also have started another el
 
 For your first Intelligence game, keep five ideas in mind:
 
-1. **Intel and Operation Progress are different.** Intel is spendable. Operation Progress records completed normal Missions and is not normally spent.
-2. **Progress produces recurring Intel.** At the start of your turn, gain Intel equal to your current Operation Progress. Completing a normal Mission also still gives its printed-value Intel immediately.
+1. **Intel and Operation Progress are fundamentally different.** Intel is money-like: gain it and spend it. Operation Progress is a counter: it tells everyone how many normal Missions you have completed.
+2. **Completed Missions create recurring Intel.** At the start of your turn, gain Intel equal to your Operation Progress. Completing a normal Mission also gives Intel equal to that card's value immediately.
 3. **Mission procedures remain Actions.** Starting or completing a Mission costs 1 Action during Denouement, but Operational Capacity can let that Action coexist with an Opening Action on the same turn.
 4. **Surveillance and Interference are separate costs.** Revealing a Gambit normally costs 1 Intel; removing it after the reveal costs 2 additional Intel.
-5. **Special Operation readiness must persist.** Your Progress must exceed the opponent's controlled Territories when you start the operation and continue to exceed them until completion.
+5. **Special Operation readiness must persist.** Your Operation Progress must exceed the opponent's controlled Territories when you start the operation and continue to exceed them until completion.
 
 ### Choosing your first Leader
 
@@ -286,13 +328,15 @@ Choose the **Spymaster** if you want to accelerate the Mission cycle itself. Mis
 
 ### Common mistakes
 
+Do not call Operation Progress a resource or treat the +1 after completing a Mission as something you have earned to spend. It is simply the running count of completed normal Missions.
+
 Do not complete a Mission merely because its requirement happened. Completion still costs an Action during a later Denouement.
 
 Do not treat Operational Capacity as an unrestricted extra Action. It only permits a qualifying Start or Complete Mission / Special Operation Action in Denouement after you used your normal Action during Opening. **Abort Mission does not qualify.**
 
-Do not add the new point of Operation Progress to the Mission's immediate Intel reward. Complete the Mission normally, then use the resulting Progress for start-of-turn Intel beginning on your next turn.
+Do not gain recurring Intel immediately when Operation Progress increases. The completed Mission gives its own immediate Intel; the new Operation Progress value determines recurring Intel beginning at the start of your next turn.
 
-Do not give a Special Operation the normal Mission reward. A Special Operation uses a Mission requirement, but it is not a normal Mission and grants no Operation Progress or Intel for completion.
+Do not give a Special Operation the normal-Mission effects. A Special Operation uses a Mission requirement, but its completion does not increase Operation Progress or give immediate Mission-completion Intel.
 
 Do not treat the Gambit and Tactic Surveillance opportunities as one shared use. They are separate once-per-battle opportunities.
 
@@ -303,8 +347,8 @@ Do not open another Surveillance or Interference window when the opponent replac
 <!-- RULES-SECTION:reference -->
 ## Rules and Reference
 
-Keep the **Mission Reference Card**, **Operations Reference Card**, **Intel Tracker**, **Operation Progress Tracker**, and your Active Mission or Special Operation area visible. Together they show the procedures you need most often: recurring Intel, Operational Capacity, Mission start/completion, Special Operation readiness and cost, Surveillance, Interference, and the two tracked values.
+Keep the **Mission Reference Card**, **Operations Reference Card**, tracker stack, and Active Mission or Special Operation area visible. The two tracker readouts answer two different questions at a glance: **How much Intel can I spend?** and **How many normal Missions have I completed?**
 
 Use the **Player's Guide** for the shared turn, Actions, movement, battle, Occupation, Capture, and victory rules. When an unusual replacement, prevented information effect, Intelligence mirror, Mission failure, or timing interaction comes up, ask the **Rules Arbiter**. Use the **Comprehensive Gauntlet Rules** when you want the exact technical procedure behind the ruling.
 
-You do not need every information-window edge case before your first game. Keep a Mission active, use Operational Capacity to preserve your ordinary Opening play, build Progress, and spend the Intel your network generates where information matters most.
+You do not need every information-window edge case before your first game. Keep one Mission active when you can, treat Operation Progress as a completed-Mission counter, and spend Intel when knowing—or changing—the opponent's hidden choice materially improves the battle.
