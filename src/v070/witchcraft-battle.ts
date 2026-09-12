@@ -27,6 +27,7 @@ import {
 } from './witchcraft-handler-resolver';
 import {
   activeV070CopiedEffectApplication,
+  isV070ActiveCopiedEffectSource,
   withV070CopiedEffectApplication,
 } from './copied-effect-runtime';
 import type {
@@ -151,7 +152,7 @@ export function resolveV070WitchcraftBattleChoice(
       opponent: playerId === 'A' ? 'B' : 'A',
       commitment,
     });
-  });
+  }, target.sourceInstanceId);
 
   appendV070Event(state, {
     type: 'witchcraft_battle_effect_repeated',
@@ -313,8 +314,15 @@ function assertWitchcraftSource(
   if (!state.battle || !state.battleRuntime) {
     throw new V070GameActionError('Witchcraft battle resolution requires an active battle.');
   }
-  if (state.cardInstances[sourceInstanceId]?.owner !== owner
-    || state.cardInstances[sourceInstanceId]?.cardId !== V070_WITCHCRAFT_ID) {
+  const source = state.cardInstances[sourceInstanceId];
+  if (source?.cardId !== V070_WITCHCRAFT_ID
+    || (source.owner !== owner
+      && !isV070ActiveCopiedEffectSource(
+        state,
+        owner,
+        sourceInstanceId,
+        V070_WITCHCRAFT_ID,
+      ))) {
     throw new V070GameActionError('Witchcraft battle source does not match the revealed card instance.');
   }
 }

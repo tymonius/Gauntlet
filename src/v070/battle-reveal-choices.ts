@@ -34,10 +34,25 @@ export interface V070ArcaneKnowledgeBattleRevealChoice {
   parentApplication?: V070CopiedEffectApplication;
 }
 
+export interface V070HeresyBattleRevealCandidate {
+  sourceInstanceId: string;
+  effectLabel: V070CopyableEffectLabel;
+}
+
+export interface V070HeresyBattleRevealChoice {
+  kind: 'heresy';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  encounteredAt: 'reveal_gambits' | 'reveal_tactics';
+  candidates: V070HeresyBattleRevealCandidate[];
+  parentApplication?: V070CopiedEffectApplication;
+}
+
 export type V070BattleRevealChoice =
   | previous.V070BattleRevealChoice
   | V070WitchcraftBattleRevealChoice
-  | V070ArcaneKnowledgeBattleRevealChoice;
+  | V070ArcaneKnowledgeBattleRevealChoice
+  | V070HeresyBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
@@ -45,6 +60,8 @@ declare module './battle-types' {
     witchcraftBattleRevealChoiceOpen?: boolean;
     pendingArcaneKnowledgeBattleRevealChoice?: V070ArcaneKnowledgeBattleRevealChoice | null;
     arcaneKnowledgeBattleRevealChoiceOpen?: boolean;
+    pendingHeresyBattleRevealChoice?: V070HeresyBattleRevealChoice | null;
+    heresyBattleRevealChoiceOpen?: boolean;
   }
 }
 
@@ -141,10 +158,58 @@ export function queueV070ArcaneKnowledgeBattleRevealChoice(
   });
 }
 
+export function queueV070HeresyBattleRevealChoice(
+  state: V070GameState,
+  choice: V070HeresyBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Heresy battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Heresy cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingHeresyBattleRevealChoice = {
+    ...choice,
+    candidates: choice.candidates.map(candidate => ({ ...candidate })),
+    parentApplication: choice.parentApplication
+      ? structuredClone(choice.parentApplication)
+      : undefined,
+  };
+  runtime.heresyBattleRevealChoiceOpen = true;
+
+  appendV070Event(state, {
+    type: 'heresy_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'inquisition-heresy',
+      candidateCount: choice.candidates.length,
+      encounteredAt: choice.encounteredAt,
+      mandatory: false,
+    },
+  });
+  appendV070Event(state, {
+    type: 'heresy_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      candidates: choice.candidates.map(candidate => ({ ...candidate })),
+    },
+  });
+}
+
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice
+  return state.battleRuntime?.pendingHeresyBattleRevealChoice
+    ?? state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice
     ?? state.battleRuntime?.pendingWitchcraftBattleRevealChoice
     ?? previous.pendingV070BattleRevealChoice(state);
 }
@@ -152,6 +217,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingHeresyBattleRevealChoice) {
+    return Boolean(state.battleRuntime.heresyBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice) {
     return Boolean(state.battleRuntime.arcaneKnowledgeBattleRevealChoiceOpen);
   }
@@ -188,5 +256,20 @@ export function completeV070ArcaneKnowledgeBattleRevealChoice(
   }
   runtime.pendingArcaneKnowledgeBattleRevealChoice = null;
   runtime.arcaneKnowledgeBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070HeresyBattleRevealChoice(
+  state: V070GameState,
+): V070HeresyBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingHeresyBattleRevealChoice;
+  if (!runtime || !pending || !runtime.heresyBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Heresy battle-effect choice.',
+    );
+  }
+  runtime.pendingHeresyBattleRevealChoice = null;
+  runtime.heresyBattleRevealChoiceOpen = false;
   return pending;
 }

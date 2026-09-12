@@ -1,4 +1,4 @@
-import { v070CanonicalContent, type V070CanonicalCard } from '../content/v070';
+import { v070CanonicalContent } from '../content/v070';
 import {
   V070GameActionError,
   appendV070Event,
@@ -7,15 +7,17 @@ import {
 import type { V070BattleCardCommitment } from './battle-types';
 import type { PlayerId } from './rules';
 import {
-  beginV070CopiedEffectApplication,
-  continueV070CopiedEffectApplication,
-  eligibleV070CopiedEffectInstances,
-  type V070CanApplyEffectNow,
-  type V070CardInstanceReference,
-  type V070CopiedEffectApplication,
-  type V070CopyableEffectLabel,
-  type V070EffectInstanceReference,
-  type V070EffectReference,
+  V070_HERESY_BATTLE_TEXT,
+  V070_HERESY_ID,
+  prepareV070HeresyApplication,
+  v070HeresyChoices,
+  type V070GraveyardCopiedEffectChoice,
+} from './copied-effect-callers';
+import type {
+  V070CardInstanceReference,
+  V070CopiedEffectApplication,
+  V070CopyableEffectLabel,
+  V070EffectReference,
 } from './copied-effects';
 import {
   activeV070CopiedEffectApplication,
@@ -23,103 +25,54 @@ import {
   withV070CopiedEffectApplication,
 } from './copied-effect-runtime';
 import {
-  completeV070ArcaneKnowledgeBattleRevealChoice,
-  queueV070ArcaneKnowledgeBattleRevealChoice,
-  type V070ArcaneKnowledgeBattleRevealCandidate,
+  completeV070HeresyBattleRevealChoice,
+  queueV070HeresyBattleRevealChoice,
+  type V070HeresyBattleRevealCandidate,
 } from './battle-reveal-choices';
 import { resolveV070WitchcraftBattleEffectHandler } from './witchcraft-handler-resolver';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
+import { spendV070Conviction, v070Conviction } from './inquisition';
 
-export const V070_ARCANE_KNOWLEDGE_ID = 'neutral-arcane-knowledge' as const;
-export const V070_ARCANE_KNOWLEDGE_BATTLE_TEXT =
-  'Apply the Gambit or Tactic effect of one card in your Graveyard that can apply now.' as const;
+export { V070_HERESY_BATTLE_TEXT, V070_HERESY_ID };
 
-const arcaneKnowledgeCard = v070CanonicalContent.cardsById.get(V070_ARCANE_KNOWLEDGE_ID);
-const arcaneKnowledgeBattleEffect = arcaneKnowledgeCard?.effects.find(
-  effect => effect.label === 'Gambit/Tactic',
-);
-if (arcaneKnowledgeBattleEffect?.text !== V070_ARCANE_KNOWLEDGE_BATTLE_TEXT) {
-  throw new Error('Released v0.7.0 Arcane Knowledge battle text no longer matches the executable authority.');
-}
-
-const ARCANE_KNOWLEDGE_BATTLE_LABELS: readonly V070CopyableEffectLabel[] = [
-  'Gambit',
-  'Tactic',
-  'Gambit/Tactic',
-] as const;
-
-export interface V070ArcaneKnowledgeBattleChoice extends V070EffectInstanceReference {
-  sourceZone: 'graveyard';
-}
-
-export function v070ArcaneKnowledgeBattleChoices(
-  graveyard: readonly V070CardInstanceReference[],
-  cardsById: ReadonlyMap<string, V070CanonicalCard>,
-  canApplyNow: V070CanApplyEffectNow,
-): V070ArcaneKnowledgeBattleChoice[] {
-  return eligibleV070CopiedEffectInstances(
-    cardsById,
-    graveyard,
-    ARCANE_KNOWLEDGE_BATTLE_LABELS,
-    canApplyNow,
-  ).map(choice => ({ ...choice, sourceZone: 'graveyard' as const }));
-}
-
-export function prepareV070ArcaneKnowledgeBattleApplication(input: {
-  controller: PlayerId;
-  graveyard: readonly V070CardInstanceReference[];
-  cardsById: ReadonlyMap<string, V070CanonicalCard>;
-  targetSourceInstanceId: string;
-  targetEffectLabel: V070CopyableEffectLabel;
-  canApplyNow: V070CanApplyEffectNow;
-  parentApplication?: V070CopiedEffectApplication;
-}): V070CopiedEffectApplication {
-  const choice = v070ArcaneKnowledgeBattleChoices(
-    input.graveyard,
-    input.cardsById,
-    input.canApplyNow,
-  ).find(entry => (
-    entry.sourceInstanceId === input.targetSourceInstanceId
-    && entry.label === input.targetEffectLabel
-  ));
-  if (!choice) {
-    throw new Error('Arcane Knowledge must choose an eligible Gambit or Tactic effect from your Graveyard.');
-  }
-
-  return input.parentApplication
-    ? continueV070CopiedEffectApplication(
-        input.parentApplication,
-        choice,
-        input.controller,
-        true,
-      )
-    : beginV070CopiedEffectApplication(choice, input.controller);
-}
-
-export function registerV070ArcaneKnowledgeBattleEffect(
+export function registerV070HeresyBattleEffect(
   state: V070GameState,
   owner: PlayerId,
   sourceInstanceId: string,
   sourceRole: 'gambit' | 'tactic',
 ): void {
-  assertArcaneKnowledgeSource(state, owner, sourceInstanceId);
+  assertHeresySource(state, owner, sourceInstanceId);
   const parentApplication = activeV070CopiedEffectApplication(state);
   if (parentApplication && !parentApplication.chainAllowsFurtherCopiedApplication) {
     appendV070Event(state, {
-      type: 'arcane_knowledge_battle_copy_chain_terminated',
+      type: 'heresy_battle_copy_chain_terminated',
       actor: owner,
       visibility: 'public',
       payload: {
         sourceInstanceId,
-        sourceCardId: V070_ARCANE_KNOWLEDGE_ID,
+        sourceCardId: V070_HERESY_ID,
         copiedChainDepth: parentApplication.chainDepth,
       },
     });
     return;
   }
 
+  if (state.players[owner].inquisition == null || v070Conviction(state, owner) < 4) {
+    appendV070Event(state, {
+      type: 'heresy_battle_unaffordable',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId,
+        sourceCardId: V070_HERESY_ID,
+        conviction: state.players[owner].inquisition?.conviction ?? 0,
+      },
+    });
+    return;
+  }
+
   const encounteredAt = currentRevealTiming(state, sourceRole);
-  const choices = liveArcaneKnowledgeChoices(
+  const choices = liveHeresyChoices(
     state,
     owner,
     encounteredAt,
@@ -127,32 +80,20 @@ export function registerV070ArcaneKnowledgeBattleEffect(
   );
   if (choices.length === 0) {
     appendV070Event(state, {
-      type: 'arcane_knowledge_battle_no_applicable_effect',
+      type: 'heresy_battle_no_applicable_effect',
       actor: owner,
       visibility: 'public',
       payload: {
         sourceInstanceId,
-        sourceCardId: V070_ARCANE_KNOWLEDGE_ID,
+        sourceCardId: V070_HERESY_ID,
         encounteredAt,
       },
     });
     return;
   }
 
-  if (choices.length === 1) {
-    applyArcaneKnowledgeChoice(
-      state,
-      owner,
-      sourceInstanceId,
-      choices[0]!,
-      encounteredAt,
-      parentApplication,
-    );
-    return;
-  }
-
-  queueV070ArcaneKnowledgeBattleRevealChoice(state, {
-    kind: 'arcane_knowledge',
+  queueV070HeresyBattleRevealChoice(state, {
+    kind: 'heresy',
     owner,
     sourceInstanceId,
     encounteredAt,
@@ -164,30 +105,55 @@ export function registerV070ArcaneKnowledgeBattleEffect(
   });
 }
 
-export function resolveV070ArcaneKnowledgeBattleChoice(
+export function resolveV070HeresyBattleChoice(
   state: V070GameState,
   playerId: PlayerId,
-  targetInstanceId: string,
-  targetEffectLabel: V070CopyableEffectLabel,
+  use: boolean,
+  targetInstanceId?: string,
+  targetEffectLabel?: V070CopyableEffectLabel,
 ): void {
   const runtime = state.battleRuntime;
-  const pending = runtime?.pendingArcaneKnowledgeBattleRevealChoice;
-  if (!runtime || !pending || !runtime.arcaneKnowledgeBattleRevealChoiceOpen) {
-    throw new V070GameActionError('No Arcane Knowledge battle-effect choice is pending.');
+  const pending = runtime?.pendingHeresyBattleRevealChoice;
+  if (!runtime || !pending || !runtime.heresyBattleRevealChoiceOpen) {
+    throw new V070GameActionError('No Heresy battle-effect choice is pending.');
   }
   if (pending.owner !== playerId) {
-    throw new V070GameActionError('The Arcane Knowledge controller must choose the Graveyard effect.');
+    throw new V070GameActionError('The Heresy controller must choose whether to spend Conviction.');
+  }
+
+  if (!use) {
+    completeV070HeresyBattleRevealChoice(state);
+    appendV070Event(state, {
+      type: 'heresy_battle_declined',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: pending.sourceInstanceId,
+        sourceCardId: V070_HERESY_ID,
+        convictionSpent: 0,
+      },
+    });
+    return;
+  }
+
+  if (!targetInstanceId || !targetEffectLabel) {
+    throw new V070GameActionError(
+      'Using Heresy requires choosing the opponent Graveyard effect to apply.',
+    );
   }
   if (!pending.candidates.some(candidate =>
     candidate.sourceInstanceId === targetInstanceId
     && candidate.effectLabel === targetEffectLabel
   )) {
     throw new V070GameActionError(
-      'Arcane Knowledge must choose one of its originally eligible Graveyard effects.',
+      'Heresy must choose one of its originally eligible opponent Graveyard effects.',
     );
   }
+  if (state.players[playerId].inquisition == null || v070Conviction(state, playerId) < 4) {
+    throw new V070GameActionError('Heresy can no longer spend the required 4 Conviction.');
+  }
 
-  const choices = liveArcaneKnowledgeChoices(
+  const choices = liveHeresyChoices(
     state,
     playerId,
     pending.encounteredAt,
@@ -199,87 +165,81 @@ export function resolveV070ArcaneKnowledgeBattleChoice(
   );
   if (!target) {
     throw new V070GameActionError(
-      'The selected Arcane Knowledge Graveyard effect can no longer apply.',
+      'The selected Heresy opponent Graveyard effect can no longer apply.',
     );
   }
 
-  completeV070ArcaneKnowledgeBattleRevealChoice(state);
-  applyArcaneKnowledgeChoice(
-    state,
-    playerId,
-    pending.sourceInstanceId,
-    target,
-    pending.encounteredAt,
-    pending.parentApplication ?? null,
-  );
-}
-
-function applyArcaneKnowledgeChoice(
-  state: V070GameState,
-  owner: PlayerId,
-  arcaneKnowledgeSourceInstanceId: string,
-  target: V070ArcaneKnowledgeBattleChoice,
-  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
-  parentApplication: V070CopiedEffectApplication | null,
-): void {
-  const application = prepareV070ArcaneKnowledgeBattleApplication({
-    controller: owner,
-    graveyard: graveyardReferences(state, owner),
+  const convictionBefore = v070Conviction(state, playerId);
+  const prepared = prepareV070HeresyApplication({
+    controller: playerId,
+    conviction: convictionBefore,
+    opponentGraveyard: opponentGraveyardReferences(state, playerId),
     cardsById: v070CanonicalContent.cardsById,
     targetSourceInstanceId: target.sourceInstanceId,
     targetEffectLabel: target.label,
-    canApplyNow: effect => effectTimingCanApply(effect, encounteredAt),
-    parentApplication: parentApplication ?? undefined,
+    canApplyNow: effect => effectTimingCanApply(effect, pending.encounteredAt),
+    parentApplication: pending.parentApplication,
   });
   const handler = resolveV070WitchcraftBattleEffectHandler(target.cardId);
   if (!handler || handler.expectedText !== target.text) {
     throw new V070GameActionError(
-      'The selected Arcane Knowledge effect is not executable by the current battle engine.',
+      'The selected Heresy effect is not executable by the current battle engine.',
     );
+  }
+
+  completeV070HeresyBattleRevealChoice(state);
+  spendV070Conviction(state, playerId, 4, 'Heresy');
+  if (v070Conviction(state, playerId) !== prepared.convictionAfter) {
+    throw new V070GameActionError('Heresy Conviction payment did not produce the prepared balance.');
   }
 
   const commitment: V070BattleCardCommitment = {
     instanceId: target.sourceInstanceId,
-    owner,
-    role: copiedCommitmentRole(target.label, encounteredAt),
+    owner: playerId,
+    role: copiedCommitmentRole(target.label, pending.encounteredAt),
     faceUp: true,
   };
-  withV070CopiedEffectApplication(state, application, () => {
+  withV070CopiedEffectApplication(state, prepared.application, () => {
     handler.apply({
       state,
-      owner,
-      opponent: owner === 'A' ? 'B' : 'A',
+      owner: playerId,
+      opponent: playerId === 'A' ? 'B' : 'A',
       commitment,
     });
   }, target.sourceInstanceId);
 
   appendV070Event(state, {
-    type: 'arcane_knowledge_battle_effect_applied',
-    actor: owner,
+    type: 'heresy_battle_effect_applied',
+    actor: playerId,
     visibility: 'public',
     payload: {
-      sourceInstanceId: arcaneKnowledgeSourceInstanceId,
-      sourceCardId: V070_ARCANE_KNOWLEDGE_ID,
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: V070_HERESY_ID,
       targetInstanceId: target.sourceInstanceId,
       targetCardId: target.cardId,
       targetEffectLabel: target.label,
-      copiedChainDepth: application.chainDepth,
+      convictionSpent: 4,
+      copiedChainDepth: prepared.application.chainDepth,
     },
   });
 }
 
-function liveArcaneKnowledgeChoices(
+function liveHeresyChoices(
   state: V070GameState,
   owner: PlayerId,
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
   parentApplication: V070CopiedEffectApplication | null,
-): V070ArcaneKnowledgeBattleChoice[] {
+): V070GraveyardCopiedEffectChoice[] {
   if (parentApplication && !parentApplication.chainAllowsFurtherCopiedApplication) {
     return [];
   }
+  if (state.players[owner].inquisition == null || v070Conviction(state, owner) < 4) {
+    return [];
+  }
 
-  const raw = v070ArcaneKnowledgeBattleChoices(
-    graveyardReferences(state, owner),
+  const opponentGraveyard = opponentGraveyardReferences(state, owner);
+  const raw = v070HeresyChoices(
+    opponentGraveyard,
     v070CanonicalContent.cardsById,
     effect => effectTimingCanApply(effect, encounteredAt),
   );
@@ -292,32 +252,34 @@ function liveArcaneKnowledgeChoices(
     const handler = resolveV070WitchcraftBattleEffectHandler(choice.cardId);
     if (!handler || handler.expectedText !== choice.text) return false;
 
-    let application: V070CopiedEffectApplication;
     try {
-      application = parentApplication
-        ? continueV070CopiedEffectApplication(parentApplication, choice, owner, true)
-        : beginV070CopiedEffectApplication(choice, owner);
+      const prepared = prepareV070HeresyApplication({
+        controller: owner,
+        conviction: v070Conviction(state, owner),
+        opponentGraveyard,
+        cardsById: v070CanonicalContent.cardsById,
+        targetSourceInstanceId: choice.sourceInstanceId,
+        targetEffectLabel: choice.label,
+        canApplyNow: effect => effectTimingCanApply(effect, encounteredAt),
+        parentApplication: parentApplication ?? undefined,
+      });
+      return simulateCopiedApplicationAfterPayment(
+        state,
+        owner,
+        choice,
+        prepared.application,
+        encounteredAt,
+      );
     } catch {
       return false;
     }
-    if (choice.cardId === V070_ARCANE_KNOWLEDGE_ID
-      && !application.chainAllowsFurtherCopiedApplication) {
-      return false;
-    }
-    return simulateCopiedApplication(
-      state,
-      owner,
-      choice,
-      application,
-      encounteredAt,
-    );
   });
 }
 
-function simulateCopiedApplication(
+function simulateCopiedApplicationAfterPayment(
   state: V070GameState,
   owner: PlayerId,
-  effect: V070ArcaneKnowledgeBattleChoice,
+  effect: V070GraveyardCopiedEffectChoice,
   application: V070CopiedEffectApplication,
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): boolean {
@@ -326,11 +288,18 @@ function simulateCopiedApplication(
   const clone = structuredClone(state) as V070GameState;
   const runtime = clone.battleRuntime;
   if (!runtime) return false;
+  runtime.pendingHeresyBattleRevealChoice = null;
+  runtime.heresyBattleRevealChoiceOpen = false;
   runtime.pendingArcaneKnowledgeBattleRevealChoice = null;
   runtime.arcaneKnowledgeBattleRevealChoiceOpen = false;
   runtime.pendingWitchcraftBattleRevealChoice = null;
   runtime.witchcraftBattleRevealChoiceOpen = false;
 
+  try {
+    spendV070Conviction(clone, owner, 4, 'Heresy applicability probe');
+  } catch {
+    return false;
+  }
   const before = applicationFingerprint(clone);
   const commitment: V070BattleCardCommitment = {
     instanceId: effect.sourceInstanceId,
@@ -387,11 +356,12 @@ function copiedCommitmentRole(
   return encounteredAt === 'reveal_gambits' ? 'gambit' : 'tactic';
 }
 
-function graveyardReferences(
+function opponentGraveyardReferences(
   state: V070GameState,
   owner: PlayerId,
 ): V070CardInstanceReference[] {
-  return state.players[owner].zones.graveyard.flatMap(instanceId => {
+  const opponent: PlayerId = owner === 'A' ? 'B' : 'A';
+  return state.players[opponent].zones.graveyard.flatMap(instanceId => {
     const instance = state.cardInstances[instanceId];
     return instance ? [{ instanceId, cardId: instance.cardId }] : [];
   });
@@ -407,33 +377,31 @@ function applicationFingerprint(state: V070GameState): string {
   });
 }
 
-function assertArcaneKnowledgeSource(
+function assertHeresySource(
   state: V070GameState,
   owner: PlayerId,
   sourceInstanceId: string,
 ): void {
   if (!state.battle || !state.battleRuntime) {
-    throw new V070GameActionError(
-      'Arcane Knowledge battle resolution requires an active battle.',
-    );
+    throw new V070GameActionError('Heresy battle resolution requires an active battle.');
   }
   const source = state.cardInstances[sourceInstanceId];
-  if (source?.cardId !== V070_ARCANE_KNOWLEDGE_ID
+  if (source?.cardId !== V070_HERESY_ID
     || (source.owner !== owner
       && !isV070ActiveCopiedEffectSource(
         state,
         owner,
         sourceInstanceId,
-        V070_ARCANE_KNOWLEDGE_ID,
+        V070_HERESY_ID,
       ))) {
     throw new V070GameActionError(
-      'Arcane Knowledge battle source does not match the applied card instance.',
+      'Heresy battle source does not match the applied card instance.',
     );
   }
 }
 
-export function v070ArcaneKnowledgePendingCandidates(
+export function v070HeresyPendingCandidates(
   state: V070GameState,
-): readonly V070ArcaneKnowledgeBattleRevealCandidate[] {
-  return state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice?.candidates ?? [];
+): readonly V070HeresyBattleRevealCandidate[] {
+  return state.battleRuntime?.pendingHeresyBattleRevealChoice?.candidates ?? [];
 }
