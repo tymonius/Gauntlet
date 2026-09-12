@@ -429,7 +429,7 @@
                 "name": "Fieldcraft",
                 "cost": "1 Intel",
                 "descriptor": "No Action · Once per turn · Territory effect",
-                "text": "When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn."
+                "text": "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn."
               },
               {
                 "classification": "Resource",
@@ -575,7 +575,7 @@
                 "classification": "Resource",
                 "name": "Conviction",
                 "descriptor": "Begin at 0 · Maximum 4",
-                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
               }
             ]
           },
@@ -603,7 +603,7 @@
                 "classification": "Resource",
                 "name": "Conviction",
                 "descriptor": "Begin at 0 · Maximum 4",
-                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
               }
             ]
           }
@@ -7595,7 +7595,7 @@
           "name": "Fieldcraft",
           "cost": "1 Intel",
           "descriptor": "No Action · Once per turn · Territory effect",
-          "text": "When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn."
+          "text": "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn."
         },
         {
           "classification": "Resource",
@@ -7719,7 +7719,7 @@
           "classification": "Resource",
           "name": "Conviction",
           "descriptor": "Begin at 0 · Maximum 4",
-          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
         }
       ]
     },
@@ -7747,7 +7747,7 @@
           "classification": "Resource",
           "name": "Conviction",
           "descriptor": "Begin at 0 · Maximum 4",
-          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
         }
       ]
     }

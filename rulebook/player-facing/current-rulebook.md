@@ -1666,7 +1666,7 @@ During Denouement, take an Action, discard one card from Hand, and roll one die:
 
 #### Subsidize
 
-Before dice are rolled in a battle involving you, spend Capital to add to your battle total.
+Before dice are rolled, spend Capital to add to your battle total.
 
 | Bonus | Total cost |
 |---:|---:|
@@ -1902,7 +1902,7 @@ At each choice stage:
 **Archetype:** Territory effects, reconnaissance, and field operations
 **Motto:** *Know the land before the battle begins.*
 
-> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn.
+> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn.
 
 Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand battle bonuses, or limits calculated from Territories.
 
@@ -2169,7 +2169,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 |---|---|
 | Victory | Run the Gauntlet or achieve Purification. |
 | Resource | Conviction, maximum 4. |
-| Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
+| Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath. |
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
@@ -2180,8 +2180,8 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 ## Faction Features
 
 - **Purge — 1 Action · Opening or Denouement · Listed Conviction · Once per turn.** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn; Purge never permits two Actions in one phase.<!-- RULE-FACT:faction-features.inquisition.purge -->
-- **Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.conviction -->
-- **Condemnation — Automatic · Aftermath.** During the Aftermath of battles involving you, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.<!-- RULE-FACT:faction-features.inquisition.condemnation -->
+- **Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.conviction -->
+- **Condemnation — Automatic · Aftermath.** During the Aftermath, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.<!-- RULE-FACT:faction-features.inquisition.condemnation -->
 - **Blasphemy — Automatic · Opposing Arcane Action or reveal.** Gain 1 Conviction whenever an opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.blasphemy -->
 - **Purification — Automatic · Opponent's start-of-turn Draw.** After the opponent's normal start-of-turn draw attempt, if they draw no cards because both their Draw Pile and Discard Pile are empty, win immediately.<!-- RULE-FACT:faction-features.inquisition.purification -->
 
@@ -2203,7 +2203,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 ### How it works
 
-The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
+The first time opposing cards enter the Graveyard during the Aftermath each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
 During Opening or Denouement, take an Action and spend Conviction to Purge. If one phase Action is Purge, you may also take one Action in the other phase that turn. You may spend an Action on Purge no more than once per turn.
 
@@ -2211,7 +2211,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge. If o
 
 #### Conviction
 
-> **Conviction:** Maximum 4. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction.
+> **Conviction:** Maximum 4. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction.
 
 - This may occur during either player's turn.
 - Several qualifying cards from the same battle still produce only 1 normal gain.
@@ -2220,7 +2220,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge. If o
 
 #### Condemnation
 
-> **Condemnation:** During the Aftermath of battles involving you, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.
+> **Condemnation:** During the Aftermath, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.
 
 Opposing Gambits already go to the Graveyard normally. Cards remaining in the opponent's Reserve are discarded normally.
 
