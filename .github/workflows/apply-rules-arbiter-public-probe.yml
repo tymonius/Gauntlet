@@ -1,0 +1,108 @@
+name: Apply Rules Arbiter public probe
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-gate2-public-availability
+    paths:
+      - '.github/workflows/apply-rules-arbiter-public-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-gate2-public-availability
+          fetch-depth: 0
+      - name: Add free browser-path publication probe
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/verify-current-live-publication.yml')
+          text = path.read_text()
+          anchor = '      - name: Verify deployed site against the current-publication contract\n'
+          if anchor not in text:
+              raise SystemExit('Expected publication-contract step anchor not found')
+          if 'Verify public Rules Arbiter browser path' in text:
+              raise SystemExit('Public Rules Arbiter browser probe already present')
+
+          step = r'''      - name: Verify public Rules Arbiter browser path
+        env:
+          CURRENT_RELEASE: ${{ steps.release.outputs.version }}
+          CURRENT_RULES_URL: ${{ steps.release.outputs.rules_url }}
+          EXPECTED_BEHAVIOR_REVISION: ${{ steps.release.outputs.behavior_revision }}
+        run: |
+          node --input-type=module <<'NODE'
+          const endpoint = process.env.CURRENT_RULES_URL;
+          const expectedVersion = process.env.CURRENT_RELEASE;
+          const expectedRevision = process.env.EXPECTED_BEHAVIOR_REVISION;
+          if (!endpoint || !expectedVersion || !expectedRevision) {
+            throw new Error('Current live-publication adapter did not resolve public Rules Arbiter probe inputs.');
+          }
+
+          for (const origin of ['https://gauntlet.run', 'https://www.gauntlet.run']) {
+            const preflight = await fetch(endpoint, {
+              method: 'OPTIONS',
+              headers: {
+                Origin: origin,
+                'Access-Control-Request-Method': 'POST',
+                'Access-Control-Request-Headers': 'Content-Type'
+              },
+              cache: 'no-store'
+            });
+            if (preflight.status !== 204 || preflight.headers.get('access-control-allow-origin') !== origin) {
+              throw new Error(`Rules Arbiter CORS preflight failed for ${origin}: HTTP ${preflight.status}, ACAO=${preflight.headers.get('access-control-allow-origin') || 'missing'}`);
+            }
+
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                Origin: origin,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                question: 'How does this ability work?',
+                history: [],
+                sessionId: `publication_probe_${origin.includes('www.') ? 'www' : 'apex'}`,
+                rulesVersion: expectedVersion
+              }),
+              cache: 'no-store'
+            });
+            const raw = await response.text();
+            let payload = null;
+            try { payload = JSON.parse(raw); } catch {}
+            if (!response.ok) {
+              throw new Error(`Rules Arbiter public POST failed for ${origin}: HTTP ${response.status}: ${raw}`);
+            }
+            if (response.headers.get('access-control-allow-origin') !== origin) {
+              throw new Error(`Rules Arbiter public POST returned incorrect CORS origin for ${origin}.`);
+            }
+            if (
+              payload?.version !== expectedVersion ||
+              payload?.currentPublicRelease !== expectedVersion ||
+              payload?.behaviorRevision !== expectedRevision ||
+              payload?.executionPath !== 'deterministic-clarification' ||
+              !String(payload?.answer || '').trim()
+            ) {
+              throw new Error(`Rules Arbiter public POST contract failed for ${origin}: ${raw}`);
+            }
+            console.log(`Public Rules Arbiter browser path verified for ${origin} without a paid model call.`);
+          }
+          NODE
+
+'''
+          path.write_text(text.replace(anchor, step + anchor, 1))
+          Path('.github/workflows/apply-rules-arbiter-public-probe.yml').unlink()
+          PY
+      - name: Commit probe to PR branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Verify public Rules Arbiter browser path after deploy'
+          git push origin HEAD:fix/rules-arbiter-gate2-public-availability
