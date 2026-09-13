@@ -20,9 +20,25 @@ export function cleanPublicPath(publicPath) {
   return value;
 }
 
+export function cleanPublicFilePath(publicPath) {
+  const value = String(publicPath || '');
+  if (!value.startsWith('/') || value.endsWith('/')) {
+    throw new Error(`Public file path must begin with "/" and name a file: ${value}`);
+  }
+  if (value.includes('..') || value.includes('?') || value.includes('#')) {
+    throw new Error(`Public file path contains unsupported traversal or state: ${value}`);
+  }
+  return value;
+}
+
 export function publicPathTarget(destinationRoot, publicPath) {
   const clean = cleanPublicPath(publicPath).replace(/^\/+|\/+$/g, '');
   return clean ? path.join(destinationRoot, clean) : destinationRoot;
+}
+
+export function publicFileTarget(destinationRoot, publicPath) {
+  const clean = cleanPublicFilePath(publicPath).replace(/^\/+/, '');
+  return path.join(destinationRoot, clean);
 }
 
 export function materializePublicRoutes({
@@ -51,9 +67,39 @@ export function materializePublicRoutes({
   return materialized;
 }
 
+export function materializePublicFiles({
+  root = ROOT,
+  destinationRoot = root,
+  contract = loadPublicationBoundary(root),
+  skipMissingSources = false,
+} = {}) {
+  const materialized = [];
+  for (const file of contract.materializedFiles || []) {
+    const source = path.join(root, file.source);
+    if (!fs.existsSync(source)) {
+      if (skipMissingSources) continue;
+      throw new Error(`Public-file source is missing: ${file.source}`);
+    }
+    if (!fs.statSync(source).isFile()) {
+      throw new Error(`Public-file source must be a file: ${file.source}`);
+    }
+    const destination = publicFileTarget(destinationRoot, file.publicPath);
+    if (path.resolve(source) === path.resolve(destination)) {
+      throw new Error(`Public-file source and destination must remain independent: ${file.source}`);
+    }
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(source, destination);
+    materialized.push(file.publicPath);
+  }
+  return materialized;
+}
+
 export function sourcePathForPublicPath(contract, urlPath) {
   const pathname = decodeURIComponent(String(urlPath || '').split(/[?#]/, 1)[0]);
   const clean = pathname.replace(/^\/+/, '');
+  const fileMapping = (contract.materializedFiles || []).find((mapping) => mapping.publicPath === pathname);
+  if (fileMapping) return fileMapping.source;
+
   const mappings = [...(contract.materializedRoutes || [])]
     .sort((a, b) => b.publicPath.length - a.publicPath.length);
 

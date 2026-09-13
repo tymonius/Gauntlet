@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Enforce provenance records for new or replaced creative/source assets.
+"""Enforce provenance records for new, replaced, and deduplicated creative/source assets.
 
 Assets that are byte-for-byte identical to the repository's declared provenance
 baseline are explicitly tolerated as legacy-unresolved. Any governed asset added
 or changed after that baseline must have a complete provenance record whose
-SHA-256 matches the checked-in file.
+SHA-256 matches the checked-in file. Retired duplicate paths may remain in the
+provenance ledger only when an explicit retirement maps them to a byte-identical
+canonical asset that is still governed and documented.
 """
 
 from __future__ import annotations
@@ -18,6 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ROOT / ".github" / "asset-provenance.json"
+RETIREMENTS_PATH = ROOT / ".github" / "asset-provenance-retirements.json"
 ALLOWED_ORIGINS = {
     "project-created",
     "commissioned",
@@ -91,8 +94,18 @@ def main() -> int:
         print(f"Asset provenance policy could not be read: {exc}", file=sys.stderr)
         return 1
 
+    try:
+        retirements_policy = json.loads(RETIREMENTS_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        retirements_policy = {"version": 1, "retirements": []}
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"Asset provenance retirements could not be read: {exc}", file=sys.stderr)
+        return 1
+
     if policy.get("version") != 1:
         errors.append(".github/asset-provenance.json must use version 1")
+    if retirements_policy.get("version") != 1:
+        errors.append(".github/asset-provenance-retirements.json must use version 1")
 
     baseline = policy.get("baseline_commit")
     if not isinstance(baseline, str) or not HEX_40.fullmatch(baseline):
@@ -188,6 +201,35 @@ def main() -> int:
         if not isinstance(checksum, str) or not HEX_64.fullmatch(checksum):
             errors.append(f"{path}: sha256 must be a 64-character hexadecimal digest")
 
+    retirements_raw = retirements_policy.get("retirements", [])
+    if not isinstance(retirements_raw, list):
+        errors.append("retirements must be an array")
+        retirements_raw = []
+
+    retirements: dict[str, str] = {}
+    for index, retirement in enumerate(retirements_raw):
+        label = f"retirements[{index}]"
+        if not isinstance(retirement, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        retired_path = normalized_repo_path(retirement.get("path"))
+        canonical_path = normalized_repo_path(retirement.get("canonicalPath"))
+        if retired_path is None:
+            errors.append(f"{label}.path must be a normalized repository-relative path")
+            continue
+        if canonical_path is None:
+            errors.append(f"{label}.canonicalPath must be a normalized repository-relative path")
+            continue
+        if retired_path == canonical_path:
+            errors.append(f"{label} must map to a different canonical path")
+            continue
+        if retired_path in retirements:
+            errors.append(f"duplicate asset retirement for {retired_path}")
+            continue
+        if not meaningful_text(retirement.get("reason")):
+            errors.append(f"{label}.reason must be a meaningful, non-placeholder value")
+        retirements[retired_path] = canonical_path
+
     current_assets: set[str] = set()
     for root in roots:
         root_path = ROOT / root
@@ -261,8 +303,39 @@ def main() -> int:
         else:
             legacy_count += 1
 
-    for path in sorted(set(records) - current_assets):
-        errors.append(f"{path}: provenance record is stale because the governed asset does not exist")
+    retired_count = 0
+    stale_records = set(records) - current_assets
+    for path in sorted(stale_records):
+        canonical_path = retirements.get(path)
+        if canonical_path is None:
+            errors.append(f"{path}: provenance record is stale because the governed asset does not exist")
+            continue
+        if canonical_path not in current_assets:
+            errors.append(
+                f"{path}: retirement canonical asset does not exist in governed scope: {canonical_path}"
+            )
+            continue
+        if canonical_path not in records:
+            errors.append(
+                f"{path}: retirement canonical asset lacks an explicit provenance record: {canonical_path}"
+            )
+            continue
+        retired_checksum = records[path].get("sha256")
+        canonical_checksum = sha256_file(ROOT / canonical_path)
+        if not isinstance(retired_checksum, str) or retired_checksum.lower() != canonical_checksum.lower():
+            errors.append(
+                f"{path}: retired provenance checksum does not match canonical asset {canonical_path}"
+            )
+            continue
+        retired_count += 1
+
+    for path, canonical_path in sorted(retirements.items()):
+        if path not in records:
+            errors.append(f"{path}: retirement has no provenance record to preserve")
+        if path in current_assets:
+            errors.append(f"{path}: retirement is stale because the retired asset still exists")
+        if canonical_path not in current_assets:
+            errors.append(f"{path}: retirement points to missing canonical asset {canonical_path}")
 
     if errors:
         print("Asset provenance validation failed:", file=sys.stderr)
@@ -273,7 +346,8 @@ def main() -> int:
     print(
         "Asset provenance OK: "
         f"{legacy_count} legacy-unresolved asset(s), "
-        f"{documented_count} explicitly documented asset(s)."
+        f"{documented_count} explicitly documented asset(s), "
+        f"{retired_count} deduplicated retired path(s)."
     )
     return 0
 
