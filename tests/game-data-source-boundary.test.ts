@@ -70,13 +70,21 @@ describe("game-data source/deployment boundary", () => {
     }
   });
 
-  it("materializes the stable browser game-data route around supplemental renderers", () => {
+  it("materializes the stable browser game-data route around browser renderers", () => {
     const scripts = JSON.parse(read("package.json")).scripts;
     expect(scripts["tts:supplementals"]).toBe(
       "node tts/run-with-game-data-route.mjs scripts/generate-tts-supplemental-assets.mjs",
     );
     expect(scripts["tts:finalized-supplementals"]).toBe(
       "node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs",
+    );
+    expect(scripts["card-authority:render"]).toBe(
+      "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs",
+    );
+
+    const cardAuthority = read(".github/workflows/card-authority.yml");
+    expect(cardAuthority).toContain(
+      "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs",
     );
 
     const runner = read("tts/run-with-game-data-route.mjs");

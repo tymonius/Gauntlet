@@ -34,7 +34,7 @@ async function pathExists(path) {
 
 async function withGameDataCompatibilityRoute(callback) {
   if (await pathExists(GAME_DATA_ROUTE)) {
-    throw new Error('Refusing to overwrite an existing root game-data path while materializing the TTS browser compatibility route.');
+    throw new Error('Refusing to overwrite an existing root game-data path while materializing the browser compatibility route.');
   }
 
   await cp(GAME_DATA_SOURCE, GAME_DATA_ROUTE, { recursive: true });
