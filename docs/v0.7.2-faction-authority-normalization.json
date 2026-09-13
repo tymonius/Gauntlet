@@ -2,7 +2,7 @@
   "version": "v0.7.2-candidate",
   "issue": 1681,
   "mechanics_changed": false,
-  "purpose": "Promote already-current faction procedures into game-data/current-game.json so the Comprehensive Rules can remain a direct authority projection.",
+  "purpose": "Promote already-current faction procedures into packages/game-data/current-game.json so the Comprehensive Rules can remain a direct authority projection.",
   "normalized_domains": {
     "military": [
       "Command lifecycle and first-win trigger edge cases",
@@ -55,7 +55,7 @@
   },
   "source_status": "The normalized procedures already exist in current reviewed player-facing faction material and/or current structured authority. This change makes those mechanics explicit in the sole canonical authority; it does not intentionally alter gameplay.",
   "authority_layout": {
-    "canonical_procedures": "Exact faction procedures live once in game-data/current-game.json under gameplay.faction_rules or the dedicated Proposal/Mystics corpora.",
+    "canonical_procedures": "Exact faction procedures live once in packages/game-data/current-game.json under gameplay.faction_rules or the dedicated Proposal/Mystics corpora.",
     "faction_feature_metadata": "factionFeatures remains taxonomy/profile metadata and does not duplicate exact procedure text.",
     "registry": "Each faction.<id>.features registry entry fingerprints both factionFeatures.<id> metadata and gameplay.faction_rules.<id> procedures; dedicated Proposal and Mystics Rite dependencies remain separate."
   },
@@ -63,6 +63,6 @@
   "validation": [
     "scripts/validate-faction-rules-authority.mjs asserts required procedures, single-source layout, registry dependencies, and key invariants across all six factions.",
     "Rules publication authority CI runs the permanent faction authority validator.",
-    "The canonical result is game-data/current-game.json plus its rules-surface registry dependencies; no migration script is required after merge."
+    "The canonical result is packages/game-data/current-game.json plus its rules-surface registry dependencies; no migration script is required after merge."
   ]
 }

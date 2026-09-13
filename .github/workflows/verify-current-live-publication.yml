@@ -19,7 +19,7 @@ on:
       - 'rulebook/**'
       - 'apps/card-reference/**'
       - 'card-design/**'
-      - 'game-data/current-game.json'
+      - 'packages/game-data/current-game.json'
       - 'apps/factions/**'
       - 'apps/deckbuilder/**'
       - 'rules-arbiter/**'

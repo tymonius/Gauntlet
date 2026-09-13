@@ -69,12 +69,22 @@ function contentType(path) {
   }[extension] || 'application/octet-stream';
 }
 
+function resolvePublicRequestPath(requestPath) {
+  if (requestPath === 'game-data' || requestPath.startsWith('game-data/')) {
+    const packageRelative = requestPath === 'game-data'
+      ? ''
+      : requestPath.slice('game-data/'.length);
+    return resolve(ROOT, 'packages/game-data', packageRelative || '.');
+  }
+  return resolve(ROOT, requestPath || 'index.html');
+}
+
 async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
       const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
+      const requested = resolvePublicRequestPath(requestPath);
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;
@@ -305,4 +315,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { renderTerritories, validateCatalog };
+export { renderTerritories, validateCatalog, resolvePublicRequestPath };

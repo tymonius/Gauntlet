@@ -2,7 +2,7 @@
   "version": "v0.7.2-candidate",
   "issue": 1685,
   "mechanics_changed": false,
-  "purpose": "Promote already-current shared procedures from the reviewed Rulebook into game-data/current-game.json so the Comprehensive Rules can remain a complete direct authority projection.",
+  "purpose": "Promote already-current shared procedures from the reviewed Rulebook into packages/game-data/current-game.json so the Comprehensive Rules can remain a complete direct authority projection.",
   "normalized_domains": {
     "deck_construction": [
       "Neutral plus selected-faction card eligibility",

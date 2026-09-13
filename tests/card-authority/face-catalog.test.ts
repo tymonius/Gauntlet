@@ -8,7 +8,7 @@ import {
   validateFaceCatalogContract,
 } from '../../scripts/card-authority/model.mjs';
 
-const authority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const authority = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 
 describe('canonical physical-face contract', () => {
   it('derives exactly one canonical face and production-ready FaceSpec for every authoritative physical face', () => {

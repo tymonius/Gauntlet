@@ -94,12 +94,6 @@
       "transitional": true,
       "note": "Public FAQ."
     },
-    "game-data": {
-      "role": "authority",
-      "target_groups": ["packages"],
-      "transitional": true,
-      "note": "Complete current gameplay authority and adapters."
-    },
     "governance": {
       "role": "authority",
       "target_groups": ["tools"],
@@ -123,6 +117,12 @@
       "target_groups": ["assets", "tools"],
       "transitional": true,
       "note": "Current reproducible media/composition configuration and export tooling."
+    },
+    "packages": {
+      "role": "authority",
+      "target_groups": ["packages"],
+      "transitional": false,
+      "note": "Canonical container for maintained shared packages and authorities; currently contains the complete current game-data package."
     },
     "press": {
       "role": "active_application",

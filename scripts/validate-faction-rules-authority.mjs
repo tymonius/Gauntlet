@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const authority = JSON.parse(fs.readFileSync(path.join(root, 'game-data/current-game.json'), 'utf8'));
+const authority = JSON.parse(fs.readFileSync(path.join(root, 'packages/game-data/current-game.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(root, 'config/rules-surface-contract.json'), 'utf8'));
 
 const factionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];

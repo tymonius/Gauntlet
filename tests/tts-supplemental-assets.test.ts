@@ -19,7 +19,7 @@ const universalReferenceCss = readFileSync('card-design/universal-reference.css'
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 function allReferenceComponents() {
@@ -264,7 +264,8 @@ describe('TTS supplemental component exports', () => {
 
   it('is wired into source checks, package generation, save assembly, validation, and TTS CI', () => {
     expect(packageJson.scripts['tts:supplementals:check']).toBe('node scripts/generate-tts-supplemental-assets.mjs --check');
-    expect(packageJson.scripts['tts:supplementals']).toBe('node scripts/generate-tts-supplemental-assets.mjs');
+    expect(packageJson.scripts['tts:supplementals']).toBe('node tts/run-with-game-data-route.mjs scripts/generate-tts-supplemental-assets.mjs');
+    expect(packageJson.scripts['tts:finalized-supplementals']).toBe('node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs');
     expect(packageJson.scripts['tts:save:assemble']).toBe('node scripts/assemble-tts-supplemental-save.mjs');
     expect(packageJson.scripts['tts:check']).toContain('assemble-tts-supplemental-save.mjs --check');
     expect(packageJson.scripts['tts:check']).toContain('tts-supplemental-geometry.mjs');

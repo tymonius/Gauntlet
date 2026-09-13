@@ -1,6 +1,6 @@
 # Current Gauntlet game data
 
-`game-data/current-game.json` is the **complete current gameplay authority** for Gauntlet's active development state.
+`packages/game-data/current-game.json` is the **complete current gameplay authority** for Gauntlet's active development state.
 
 It is not a manifest, patch list, overlay, or source-precedence declaration. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication load this document directly.
 
@@ -41,7 +41,7 @@ In particular, these historical files do not participate in current resolution:
 
 ## Runtime adapter
 
-`game-data/current-game.mjs` loads only `game-data/current-game.json`.
+`packages/game-data/current-game.mjs` loads only `packages/game-data/current-game.json`.
 
 Its responsibilities are limited to:
 
@@ -92,4 +92,4 @@ Do **not** introduce a new current UI or tool that selects its own versioned gam
 - transitional `sources`, `resolution`, `baseVersion`, or `factionOverrides` fields;
 - retired current terminology.
 
-The default rule is simple: **current gameplay comes from `game-data/current-game.json`; current rules come from `rulebook/player-facing/current-rulebook.md`.**
+The default rule is simple: **current gameplay comes from `packages/game-data/current-game.json`; current rules come from `rulebook/player-facing/current-rulebook.md`.**

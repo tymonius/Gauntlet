@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 
 const root = process.cwd();
 const lifecyclePath = path.join(root, 'config', 'release-lifecycle.json');
-const currentGamePath = path.join(root, 'game-data', 'current-game.json');
+const currentGamePath = path.join(root, 'packages', 'game-data', 'current-game.json');
 const lifecycle = JSON.parse(fs.readFileSync(lifecyclePath, 'utf8'));
 const authority = JSON.parse(fs.readFileSync(currentGamePath, 'utf8'));
 const version = String(lifecycle.current_release || '').trim();

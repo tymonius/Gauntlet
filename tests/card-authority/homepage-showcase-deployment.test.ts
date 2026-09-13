@@ -8,7 +8,7 @@ import {
 
 const source = JSON.parse(readFileSync('media/compositions.json', 'utf8'));
 const publicManifest = JSON.parse(readFileSync('assets/homepage-card-showcase.json', 'utf8'));
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const homepage = readFileSync('homepage-card-showcase.js', 'utf8');
 const pagesWorkflow = readFileSync('.github/workflows/deploy-pages.yml', 'utf8');
 
@@ -36,6 +36,6 @@ describe('homepage showcase deployment boundary', () => {
     expect(homepage).toContain("const SHOWCASE_MANIFEST = '/assets/homepage-card-showcase.json'");
     expect(homepage).not.toContain('/media/');
     expect(pagesWorkflow).toMatch(/\n\s+assets\n/);
-    expect(pagesWorkflow).toMatch(/\.github apps artifacts docs governance legacy media rulebook-design/);
+    expect(pagesWorkflow).toMatch(/\.github apps artifacts docs governance legacy media packages rulebook-design/);
   });
 });

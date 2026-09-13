@@ -1,5 +1,5 @@
 import baseGameplayJson from '../../artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
-import currentGameAuthorityJson from '../../game-data/current-game.json';
+import currentGameAuthorityJson from '../../packages/game-data/current-game.json';
 import cardChangesJson from '../../legacy/v0.6.4-candidate/v0.6.4-card-additions.json';
 import rulesSourceJson from '../../legacy/v0.6.4-candidate/v0.6.4-rules.json';
 import territorySourceJson from '../../legacy/v0.6.4-candidate/v0.6.4-territories.json';
@@ -38,7 +38,7 @@ function candidateAuthorityMetadata() {
   };
 }
 
-export const CURRENT_GAME_AUTHORITY_PATH = 'game-data/current-game.json' as const;
+export const CURRENT_GAME_AUTHORITY_PATH = 'packages/game-data/current-game.json' as const;
 export const V064_CANDIDATE_RULES_VERSION = 'v0.6.4-candidate' as const;
 export const V064_TERRITORY_SOURCE_ISSUE = 738 as const;
 const BUNDLED_BASE_GAMEPLAY_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json' as const;

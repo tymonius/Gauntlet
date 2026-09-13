@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { cp, lstat, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const GAME_DATA_SOURCE = resolve(ROOT, 'packages/game-data');
@@ -46,19 +46,14 @@ async function withGameDataCompatibilityRoute(callback) {
 }
 
 async function main() {
-  const args = process.argv.slice(2);
-  await runNode('scripts/generate-tts-card-assets.mjs', ['--catalog-only']);
-  await withGameDataCompatibilityRoute(async () => {
-    await runNode('scripts/generate-card-media-assets.mjs', args);
-    await runNode('scripts/generate-card-media-compositions.mjs', args);
-  });
+  const [script, ...args] = process.argv.slice(2);
+  if (!script) throw new Error('Usage: node tts/run-with-game-data-route.mjs <script> [...args]');
+  await withGameDataCompatibilityRoute(() => runNode(script, args));
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
-    console.error(error.stack || error.message || error);
-    process.exitCode = 1;
-  });
-}
+main().catch((error) => {
+  console.error(error.stack || error.message || error);
+  process.exitCode = 1;
+});
 
 export { runNode, withGameDataCompatibilityRoute };

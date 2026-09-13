@@ -46,8 +46,8 @@
     "tts:territories": "node scripts/generate-tts-territory-assets.mjs",
     "tts:leaders": "node scripts/generate-tts-leader-assets.mjs",
     "tts:starters": "node scripts/generate-tts-starter-decks.mjs",
-    "tts:supplementals": "node scripts/generate-tts-supplemental-assets.mjs",
-    "tts:finalized-supplementals": "node scripts/generate-tts-finalized-supplementals.mjs",
+    "tts:supplementals": "node tts/run-with-game-data-route.mjs scripts/generate-tts-supplemental-assets.mjs",
+    "tts:finalized-supplementals": "node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs",
     "tts:release:stage": "npm run tts:environment && node scripts/stage-tts-release-assets.mjs",
     "tts:release:status": "node scripts/check-tts-release-readiness.mjs",
     "tts:release:strict": "node scripts/check-tts-release-readiness.mjs --strict",
@@ -74,7 +74,7 @@
     "dev:legacy:cli": "tsx legacy/digital-engine-v06/cli/dev-runner-v06.ts",
     "dev:legacy:gui": "tsx legacy/digital-engine-v06/gui/dev-server-v06.ts",
     "card-authority:check": "node scripts/card-authority/validate-current-game.mjs && node scripts/card-authority/validate-face-catalog.mjs && node scripts/card-authority/validate-consumers.mjs && vitest run tests/card-authority",
-    "card-authority:render": "node scripts/card-authority/validate-rendered-faces.mjs"
+    "card-authority:render": "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

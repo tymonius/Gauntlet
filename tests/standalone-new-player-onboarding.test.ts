@@ -51,7 +51,7 @@ describe("standalone new-player onboarding", () => {
 
   it("offers every canonical faction and Leader starter pair", () => {
     const app = read("apps/start/app.js");
-    const authority = JSON.parse(read("game-data/current-game.json"));
+    const authority = JSON.parse(read("packages/game-data/current-game.json"));
     const available = new Set(authority.starterDecks.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`));
 
     expect(app).toContain('fetch("../game-data/current-game.json"');
@@ -116,7 +116,7 @@ describe("standalone new-player onboarding", () => {
 
   it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
     const starter = read("apps/deckbuilder/starter-decks.js");
-    const authority = JSON.parse(read("game-data/current-game.json"));
+    const authority = JSON.parse(read("packages/game-data/current-game.json"));
     const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === "mystics");
 
     expect(starter).toContain("Recommended Rite order");
