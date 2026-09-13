@@ -35,7 +35,7 @@ function retrieved(doc, id = "S1") {
 
 describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
   test("pins the current behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260913-9");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260913-10");
   });
 
   test("injects Deeds and Front Line together for contiguity comparisons", () => {
@@ -68,6 +68,30 @@ describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
     expect(reminder).toContain("combined-authority inference");
     expect(reminder).toContain("classify it inferred");
     expect(reminder).toContain("cite both authorities");
+  });
+
+  test("marks downstream win-trigger consequences as combined-authority inference", () => {
+    const sources = [
+      {
+        id: "S1",
+        canonicalId: "rulebook:accepted-terms",
+        title: "Accepted Terms",
+        excerpt: "The battle sequence ends during Onset. No battle is fought, and there is no winner or loser."
+      },
+      {
+        id: "S2",
+        canonicalId: "rulebook:military-command",
+        title: "Command",
+        excerpt: "The first time each turn the Military wins a battle, gain 1 Command."
+      }
+    ];
+    const reminder = buildQuestionSpecificAdjudicationReminder(
+      "If Accepted Terms ends the sequence, does Military gain Command?",
+      sources
+    );
+    expect(reminder).toContain("combined-authority inference");
+    expect(reminder).toContain("Classify that derived consequence inferred");
+    expect(reminder).toContain("cite the authorities establishing both premises");
   });
 
   test("surfaces the Golden Rules classification check for named-card conflicts", () => {
