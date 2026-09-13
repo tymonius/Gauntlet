@@ -968,6 +968,7 @@
           "title": "Cards and Your Play Area",
           "dependsOn": [
             "core.cards",
+            "core.card-zones",
             "core.components"
           ]
         },
@@ -1010,6 +1011,7 @@
             "core.battle.gambit-count",
             "core.battle.tactic-count",
             "core.battle.reserve-size",
+            "core.battle.reserve",
             "core.battle.battle-total",
             "core.battle.advantage-disadvantage",
             "core.battle.defensive-edge",
@@ -1024,7 +1026,8 @@
           "dependsOn": [
             "core.battlefield.capture",
             "core.battlefield.front-line",
-            "core.battlefield.occupation"
+            "core.battlefield.occupation",
+            "core.battlefield.counterattack"
           ]
         },
         {
