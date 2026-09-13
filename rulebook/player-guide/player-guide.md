@@ -14,7 +14,7 @@ You begin at opposite ends of a line of six Territories. On your turn, you can p
 
 Keep advancing until you **run the Gauntlet**: take control of the entire battlefield by capturing all of your opponent's Territories, or push your opponent beyond the battlefield, force them to make a **Last Stand**, and win the resulting battle.
 
-That is the shared game. Your faction adds one more layer—its own resource, tools, style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.
+That is the shared game. Your faction adds one more layer—its own tools, resource or progression system, style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.
 
 You do not need to memorize every unusual interaction before your first game. Play the normal rules in this guide, read cards as they come up, and use the Rules Arbiter or Comprehensive Rules when something exceptional needs an exact ruling.
 
@@ -88,7 +88,7 @@ An effect heading tells you how that part of the card is used. The shared headin
 - **Gambit** — risk the card from your Hand during a battle.
 - **Tactic** — use the card from your temporary Reserve during a battle.
 - **Gambit/Tactic** — the card may be used in either of those battle roles.
-- **Reaction** — play the card when the trigger or timing printed in its Reaction effect occurs. A Reaction does not spend your normal Action unless it specifically says that it does.
+- **Reaction** — use its directly permitted effect when the printed trigger occurs. A Reaction does not spend your normal Action unless it specifically says that it does; follow any printed source, timing, and destination.
 - **Overlay** — attach the card to a Territory as instructed. While exposed, its Overlay effect temporarily replaces the effect immediately beneath it.
 
 Factions also introduce some headings of their own. Follow the card and the relevant Faction Guide when one appears; you do not need to learn those faction systems to understand the shared game.
@@ -200,6 +200,8 @@ During your normal Movement, choose one of three options:
 - **Hold** — remain where you are.
 - **Fall Back** — move one position toward your own end.
 
+You cannot voluntarily Fall Back beyond your own end of the Gauntlet. If an effect grants additional movement, resolve it one position at a time; Player Tokens cannot move through or past one another.
+
 A **position** is a place your Player Token can occupy along the Gauntlet, including the spaces just beyond either end when the game pushes a player that far.
 
 ### Meeting your opponent
@@ -310,6 +312,8 @@ Suppose you attack onto the first enemy Territory and win. Your opponent retreat
 
 That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.
 
+If the controller of a Territory initiates a battle against an opponent occupying that Territory, that battle is a **Counterattack**.
+
 ### Capture
 
 At the beginning of each of your turns, before you draw, check your **Capture** step.
@@ -401,7 +405,7 @@ Owning a Deed is not the same as controlling its Territory; the Financiers are p
 
 ### Intelligence — Build toward a hidden operation
 
-Intelligence works through **Missions**. Completing ordinary Missions builds **Operation Progress** and earns **Intel**, while surveillance and interference tools help it learn about and disrupt the opponent's plans.
+Intelligence works through **Missions**. Completing ordinary Missions builds **Operation Progress** and earns **Intel**. At the start of each of its turns, an Intelligence player also gains Intel equal to their Operation Progress. Surveillance and interference tools help it learn about and disrupt the opponent's plans.
 
 Its alternate victory is to prepare and complete a **Special Operation** once its operation has progressed far enough.
 
