@@ -27,7 +27,7 @@ The Diplomats add one decision before many battles: **can this conflict be settl
 You track **Influence**, from 0 to 10. During Onset, when Terms are available, you may offer an eligible Proposal and stake its listed Influence. The opponent accepts or refuses.
 
 - **Accepted Terms** end the battle during Onset. Apply the Proposal's Accepted effect. If it was not already ratified, it becomes a Treaty Article and normally gives you 1 Influence.
-- **Refused Terms** apply the Proposal's Refused effect and the battle continues. Before the dice are rolled, you may spend available Influence on Leverage. Leverage is optional: whether or not you use it, if you win the resulting battle, return the stake and impose the Proposal if it is unratified; a newly imposed Proposal normally gives you 2 Influence. If you lose, you lose the stake.
+- **Refused Terms** apply the Proposal's Refused effect and the battle continues. Before the dice are rolled, you may spend available Influence on Leverage. Leverage is optional: whether or not you use it, if you win the resulting battle, return the stake and you may impose the Proposal if it is unratified; a newly imposed Proposal normally gives you 2 Influence. If you lose, you lose the stake.
 
 This means a Proposal is not simply a request for peace. It is a fork in the game state. A strong offer gives you a useful result whether the opponent accepts or refuses.
 
@@ -190,7 +190,7 @@ Before the dice are rolled, you decide to spend **1 Influence** on Leverage for 
 
 You win the battle.
 
-Your 2 staked Influence returns, so move the tracker from 1 to **3**. If Ultimatum was not already ratified, you impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. Move the tracker to **5 Influence**. You finish with 5 Influence and one more Treaty Article than you had before the battle.
+Your 2 staked Influence returns, so move the tracker from 1 to **3**. If Ultimatum was not already ratified, you choose to impose it, flip it to its Treaty Article side, and normally gain **2 Influence** for the new imposed ratification. Move the tracker to **5 Influence**. You finish with 5 Influence and one more Treaty Article than you had before the battle.
 
 The opponent's refusal did not merely cause a fight. It gave you a tactical bonus, access to Leverage, and a chance to turn the victory into Peace Treaty progress.
 
