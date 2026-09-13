@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { buildRulesCorpus, retrieveRules } from "./local-search.js";
 import { augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
 
+const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
   "utf8"
@@ -42,6 +43,11 @@ function expectFogOfWarFirst(question, history = []) {
 }
 
 describe("v0.7.1 Fog of War conversational continuity", () => {
+  test("the current adjudication guide binds ownership and control to the object named by authority", () => {
+    expect(workerSource).toContain("Keep ownership and control attached to the game object the supplied authority names.");
+    expect(workerSource).toContain("Do not transfer the owner or controller of a card, Overlay, Deed, Territory, or other object onto another object it affects unless supplied authority expressly equates those roles.");
+  });
+
   test("direct Fog of War questions retrieve the card as primary authority", () => {
     expectFogOfWarFirst("Explain fog of war");
   });
@@ -59,6 +65,7 @@ describe("v0.7.1 Fog of War conversational continuity", () => {
     const body = String(source?.body || "");
     expect(body).toContain("this Territory's controller sets their Gambit and chooses their Tactics after the opponent");
     expect(body).toContain("Discard this Overlay after that battle");
+    expect(body).not.toContain("this Overlay's controller");
   });
 
   test("direct ownership and control paraphrases remain on the same card authority", () => {

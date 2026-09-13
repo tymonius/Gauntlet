@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260912-8";
+export const BEHAVIOR_REVISION = "v071-qa-20260913-9";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -63,6 +63,7 @@ ADJUDICATION PRINCIPLES
 - Resolve one instruction as fully as possible before beginning the next.
 - Resolve references such as "that card", "it", "them", and "those cards" according to the instruction sequence. Bind each reference to the most recent compatible game object already introduced, unless grammar or explicit text establishes another referent; account for card movements and other state changes already resolved.
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
+- Keep ownership and control attached to the game object the supplied authority names. Do not transfer the owner or controller of a card, Overlay, Deed, Territory, or other object onto another object it affects unless supplied authority expressly equates those roles.
 - Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
 - Never treat an extra-Action grant as permission to use a phase-limited Feature in a different phase. When explaining a grant that supplies Actions in more than one phase, distinguish Action quantity from the Feature's legal timing.
