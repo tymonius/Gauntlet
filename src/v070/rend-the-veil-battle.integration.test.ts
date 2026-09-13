@@ -24,8 +24,8 @@ function startBattle(): V070GameState {
     seed: 'rend-the-veil-battle-seed',
     players: {
       A: {
-        name: 'Mystics',
-        starterDeckId: 'mystics-spirit-walker-ancestral-path',
+        name: 'Fixture A',
+        starterDeckId: 'inquisition-grand-inquisitor-final-judgment',
       },
       B: { name: 'Military', starterDeckId: 'military-commandant-holdfast' },
     },
