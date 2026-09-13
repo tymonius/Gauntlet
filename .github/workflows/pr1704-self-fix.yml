@@ -30,17 +30,17 @@ jobs:
 
           edits = [
               (
-                  '  const intelligenceTopic = /\\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\\b/;',
+                  '  const intelligenceTopic = ',
                   '  const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;\n'
-                  '  const intelligenceTopic = /\\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\\b/;'
+                  '  const intelligenceTopic = '
               ),
               (
                   '&& !(destinationFocus && battleCardFocus) && !battleCardQuantityFocus',
                   '&& !genericBattleCardDestinationFocus && !battleCardQuantityFocus'
               ),
               (
-                  ': destinationFocus && battleCardFocus\n                ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS',
-                  ': genericBattleCardDestinationFocus\n                ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS'
+                  ': destinationFocus && battleCardFocus',
+                  ': genericBattleCardDestinationFocus'
               ),
           ]
 
