@@ -8,6 +8,7 @@ Arena is not part of the current canonical game. Until an Arena release is publi
 
 - [Working Design Record](Gauntlet_Arena_Working_Design.md) — the Arena-specific prototype model, provisional rules, unresolved questions, test boundaries, and revision history. It was originally authored against the v0.6.2 two-player baseline.
 - [v0.6.3 Baseline Migration](Gauntlet_Arena_v0.6.3_Baseline_Migration.md) — the current compatibility overlay that identifies how the inherited two-player baseline changed in v0.6.3 and which Arena subjects require explicit translation before the next prototype test.
+- [Future Scaling and Compatibility Notes](Gauntlet_Arena_Future_Scaling_and_Compatibility.md) — deferred design notes on extending the radial battlefield beyond four players while preserving one shared standard-game card system rather than creating Arena-specific versions of existing cards.
 
 The Working Design Record remains the source of Arena-specific prototype decisions. Where it merely inherits or names v0.6.2 as the standard-game baseline, the v0.6.3 Baseline Migration supersedes that inherited baseline. It does **not** silently rewrite an Arena-specific prototype rule.
 
