@@ -172,6 +172,20 @@ describe('v0.7.0 Rend the Veil battle integration', () => {
     expect(state.players.A.zones.graveyard).toContain(target);
   });
 
+  test('does not offer an Aftermath-only Tactic effect before the Aftermath', () => {
+    let state = startBattle();
+    const rend = inject(state, 'A', V070_REND_THE_VEIL_ID, 'aftermath-timing');
+    const supplies = putInGraveyard(state, 'A', 'neutral-supplies', 'aftermath-only');
+
+    state = revealNoTactics(setAndRevealGambits(state, rend));
+
+    expect(pendingV070BattleRevealChoice(state)).toBeNull();
+    expect(state.players.A.zones.graveyard).toContain(supplies);
+    expect(state.events.some(event =>
+      event.type === 'rend_the_veil_battle_no_applicable_effect'
+    )).toBe(true);
+  });
+
   test('copies the chosen Tactic effect now and moves that exact physical card in the Aftermath', () => {
     let state = startBattle();
     const rend = inject(state, 'A', V070_REND_THE_VEIL_ID, 'apply');
