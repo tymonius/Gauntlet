@@ -51,10 +51,16 @@ describe("game-data source/deployment boundary", () => {
     );
   });
 
+  it("uses package source for direct file execution and the stable route for browser face rendering", () => {
+    const faceSpec = read("card-design/face-spec.mjs");
+    expect(faceSpec).toContain("import.meta.url.startsWith('file:')");
+    expect(faceSpec).toContain("../packages/game-data/art-direction.mjs");
+    expect(faceSpec).toContain("../game-data/art-direction.mjs");
+  });
+
   it("keeps repository-only consumers on the canonical package source", () => {
     expect(read("scripts/current-game-authority.mjs")).toContain("../packages/game-data/current-game-validation.mjs");
     expect(read("scripts/tts-current-catalog.mjs")).toContain("../packages/game-data/art-direction.mjs");
-    expect(read("card-design/face-spec.mjs")).toContain("../packages/game-data/art-direction.mjs");
     expect(read("src/content/v064.ts")).toContain("../../packages/game-data/current-game.json");
   });
 
