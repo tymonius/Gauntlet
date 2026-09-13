@@ -310,9 +310,7 @@ When your token is on an opposing Territory that you do not control, you are **o
 
 Suppose you attack onto the first enemy Territory and win. Your opponent retreats and you remain there. You occupy that Territory, but it still belongs to your opponent for now.
 
-That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.
-
-A **Counterattack** is a battle you start against an opponent who is occupying a Territory you control.
+That delay gives your opponent a chance to attack you there before you capture the Territory—a **Counterattack**.
 
 ### Capture
 
