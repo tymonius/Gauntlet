@@ -1,0 +1,39 @@
+name: Materialize Player Guide authority review
+
+on:
+  push:
+    branches: [rules/player-guide-authority-review-work]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply conservative review corrections
+        run: node scripts/materialize-player-guide-authority-review.mjs
+      - name: Validate publication architecture
+        run: |
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/validate-faction-rules-authority.mjs
+          node scripts/validate-shared-rules-authority.mjs
+          node scripts/render-comprehensive-rules.mjs
+          git diff --check
+      - name: Commit durable review changes
+        run: |
+          if git diff --quiet -- rulebook/player-guide/player-guide.md config/rules-surface-contract.json; then
+            echo "Player Guide review already materialized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rulebook/player-guide/player-guide.md config/rules-surface-contract.json
+          git commit -m "Review Player Guide against current authority"
+          git push
