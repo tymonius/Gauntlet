@@ -10,6 +10,7 @@ on:
       - 'packages/game-data/**'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
+      - 'config/publication-boundary.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/rules-arbiter/**'
@@ -27,6 +28,9 @@ on:
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
       - 'legacy/public-versions/v0.7.0/**'
+      - 'scripts/publication-boundary.mjs'
+      - 'scripts/stage-pages-publication.mjs'
+      - 'scripts/validate-publication-boundary.mjs'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
@@ -64,88 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           site="$RUNNER_TEMP/gauntlet-pages"
-          rm -rf "$site"
-          mkdir -p "$site"
-
-          # GitHub Pages is a deployment artifact, not a mirror of the repository.
-          # Preserve stable public/application paths while excluding source-only,
-          # historical-authoring, CI, and repository-maintenance roots by default.
-          public_directories=(
-            about
-            accessibility
-            assets
-            card-design
-            changelog
-            config
-            contact
-            faq
-            images
-            press
-            privacy
-            releases
-            rulebook
-            rules-arbiter
-            rules-assistant
-            tts
-            v0.7.1
-          )
-
-          root_public_files=(404.html CNAME index.html)
-          while IFS= read -r -d '' file; do
-            root_public_files+=("${file#./}")
-          done < <(
-            find . -maxdepth 1 -type f \
-              \( -name '*.css' -o -name '*.js' -o -name '*.ico' -o -name '*.png' \
-                 -o -name '*.svg' -o -name '*.webp' -o -name '*.jpg' -o -name '*.jpeg' \
-                 -o -name '*.webmanifest' -o -name '*.xml' -o -name '*.txt' \) \
-              -print0
-          )
-
-          git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
-            | tar -xf - -C "$site"
-
-          # Maintained application source may live independently from its stable public URL.
-          # Card Reference, Deckbuilder, Factions, Rules, Start, and Playtest are source/deployment-separated apps
-          # under apps/, while their deployed compatibility contracts remain at stable public routes.
-          for surface in card-reference deckbuilder factions rules start playtest; do
-            source="apps/$surface"
-            target="$site/$surface"
-            test -d "$source"
-            rm -rf "$target"
-            mkdir -p "$target"
-            cp -a "$source/." "$target/"
-          done
-
-          # Shared package source is likewise independent from its stable browser URL.
-          # Repository consumers use packages/game-data/, while browser consumers retain /game-data/.
-          source="packages/game-data"
-          target="$site/game-data"
-          test -d "$source"
-          rm -rf "$target"
-          mkdir -p "$target"
-          cp -a "$source/." "$target/"
-
-          # Keep historical source under legacy/ while materializing real files at the stable
-          # public version URLs without exposing the legacy source boundary itself.
-          for version in v0.6.2 v0.6.3 v0.7.0; do
-            source="legacy/public-versions/$version"
-            target="$site/$version"
-            test -d "$source"
-            rm -rf "$target"
-            mkdir -p "$target"
-            cp -a "$source/." "$target/"
-          done
-
-          # Retired browser applications also live under legacy/, but retain their historical
-          # public URL roots in the deployed Pages artifact.
-          for surface in deckbuilder-v0.5 deckbuilder-v0.6 faction-sheets; do
-            source="legacy/public-compatibility/$surface"
-            target="$site/$surface"
-            test -d "$source"
-            rm -rf "$target"
-            mkdir -p "$target"
-            cp -a "$source/." "$target/"
-          done
+          node scripts/stage-pages-publication.mjs "$site"
 
           # Keep large authoring/source subsets out of the deployed artifact while retaining
           # the production asset namespaces that current public pages consume.
@@ -188,23 +111,6 @@ jobs:
             "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
             "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf"
 
-          # Source-only repository roots must never re-enter Pages implicitly. Add a path to
-          # public_directories above only when it is intentionally part of the deployed site.
-          for excluded in \
-            .github apps artifacts docs governance legacy media packages rulebook-design rulebook-production \
-            scripts src tests workers; do
-            test ! -e "$site/$excluded"
-          done
-
-          test -s "$site/index.html"
-          test -s "$site/card-reference/index.html"
-          test -s "$site/deckbuilder/index.html"
-          test -s "$site/factions/index.html"
-          test -s "$site/rules/index.html"
-          test -s "$site/rules/factions/index.html"
-          test -s "$site/rules/factions/military/index.html"
-          test -s "$site/start/index.html"
-          test -s "$site/playtest/index.html"
           test -s "$site/game-data/current-game.json"
           test -s "$site/CNAME"
           test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
@@ -298,6 +204,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          node scripts/validate-publication-boundary.mjs --site "$SITE_DIR"
+
           SITE="$SITE_DIR" PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" SAVE="$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE" node <<'NODE'
           const fs = require('fs');
           const path = require('path');
@@ -347,21 +255,6 @@ jobs:
           test "$bytes" -lt 970000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
-          test -s "$SITE_DIR/card-reference/index.html"
-          test -s "$SITE_DIR/deckbuilder/index.html"
-          test -s "$SITE_DIR/factions/index.html"
-          test -s "$SITE_DIR/rules/index.html"
-          test -s "$SITE_DIR/rules/factions/index.html"
-          test -s "$SITE_DIR/rules/factions/military/index.html"
-          test -s "$SITE_DIR/start/index.html"
-          test -s "$SITE_DIR/playtest/index.html"
-          test -s "$SITE_DIR/game-data/current-game.json"
-          test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
-          test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
-          test -s "$SITE_DIR/faction-sheets/index.html"
-          test -s "$SITE_DIR/v0.6.2/index.html"
-          test -s "$SITE_DIR/v0.6.3/index.html"
-          test -s "$SITE_DIR/v0.7.0/index.html"
           for image in \
             "chief-justice-homepage.webp" \
             "chief-justice-rules-arbiter-popup.webp" \

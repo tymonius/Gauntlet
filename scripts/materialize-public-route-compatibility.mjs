@@ -1,46 +1,4 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { materializePublicRoutes } from './publication-boundary.mjs';
 
-const root = process.cwd();
-const historicalRoot = path.join(root, 'legacy', 'public-versions');
-
-const relocatedPublicSources = [
-  ['apps/start', 'start'],
-  ['apps/playtest', 'playtest'],
-  ['apps/card-reference', 'card-reference'],
-  ['apps/factions', 'factions'],
-  ['apps/deckbuilder', 'deckbuilder'],
-  ['apps/rules', 'rules'],
-  ['packages/game-data', 'game-data'],
-];
-const materializedSources = [];
-for (const [sourcePath, route] of relocatedPublicSources) {
-  const source = path.join(root, sourcePath);
-  if (!fs.existsSync(source)) continue;
-  const destination = path.join(root, route);
-  fs.mkdirSync(destination, { recursive: true });
-  fs.cpSync(source, destination, { recursive: true });
-  materializedSources.push(route);
-}
-
-if (!fs.existsSync(historicalRoot)) {
-  throw new Error('Historical public-version route sources are missing.');
-}
-
-const versions = fs.readdirSync(historicalRoot, { withFileTypes: true })
-  .filter(entry => entry.isDirectory() && /^v\d+\.\d+\.\d+$/.test(entry.name))
-  .map(entry => entry.name)
-  .sort();
-
-if (!versions.length) throw new Error('No historical public-version route sources were found.');
-
-for (const version of versions) {
-  const source = path.join(historicalRoot, version, 'index.html');
-  if (!fs.existsSync(source)) throw new Error(`Historical route source is missing: legacy/public-versions/${version}/index.html.`);
-  const destinationDir = path.join(root, version);
-  fs.mkdirSync(destinationDir, { recursive: true });
-  fs.copyFileSync(source, path.join(destinationDir, 'index.html'));
-}
-
-const materialized = [...materializedSources, ...versions];
+const materialized = materializePublicRoutes({ skipMissingSources: true });
 console.log(`Materialized ${materialized.length} public route compatibility target(s): ${materialized.join(', ')}.`);
