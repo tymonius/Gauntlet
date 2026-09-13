@@ -16,11 +16,12 @@ permissions:
 jobs:
   blind-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     env:
       GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260913-9
       GATE3_EXPECTED_AUTHORITY_SET: 5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339
       GATE3_STANDARD_REPORT: artifacts/rules-qa/v071-gate3-blind-a.json
+      GATE3_PLAYER_LANGUAGE_REPORT: artifacts/rules-qa/v071-gate3-blind-a-player-language.json
       GATE3_CLARIFICATION_REPORT: artifacts/rules-qa/v071-gate3-blind-a-clarifications.json
 
     steps:
@@ -166,6 +167,25 @@ jobs:
           GAUNTLET_RULES_QA_LIMIT: '0'
         run: node scripts/run-v071-live-rules-qa.mjs
 
+      - name: Prepare player-language blind cases
+        run: |
+          set -euo pipefail
+          cp rules-assistant/evals/rules-arbiter-gate3-blind-a-player-language.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
+
+      - name: Run Gate 3 blind player-language cases
+        id: player_language
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
+          GAUNTLET_RULES_QA_LIMIT: '0'
+        run: node scripts/run-v071-live-rules-qa.mjs
+
       - name: Run Gate 3 blind clarification cases
         id: clarification
         continue-on-error: true
@@ -190,6 +210,7 @@ jobs:
             "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
             "repositorySha": "$GITHUB_SHA",
             "standardOutcome": "${{ steps.standard.outcome }}",
+            "playerLanguageOutcome": "${{ steps.player_language.outcome }}",
             "clarificationOutcome": "${{ steps.clarification.outcome }}"
           }
           JSON
@@ -201,11 +222,12 @@ jobs:
           name: rules-arbiter-gate3-blind-a-v0.7.1
           path: |
             ${{ env.GATE3_STANDARD_REPORT }}
+            ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
             ${{ env.GATE3_CLARIFICATION_REPORT }}
             artifacts/rules-qa/v071-gate3-blind-a-metadata.json
           if-no-files-found: error
           retention-days: 30
 
       - name: Enforce Gate 3 blind result
-        if: steps.standard.outcome != 'success' || steps.clarification.outcome != 'success'
+        if: steps.standard.outcome != 'success' || steps.player_language.outcome != 'success' || steps.clarification.outcome != 'success'
         run: exit 1
