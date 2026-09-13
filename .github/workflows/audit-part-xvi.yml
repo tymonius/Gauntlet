@@ -1,0 +1,66 @@
+name: Audit Comprehensive Rules Part XVI
+
+on:
+  push:
+    branches: [rules/comprehensive-part-xvi-audit2]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Audit glossary terms against canonical authority
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+
+          const authority = JSON.parse(await readFile('game-data/current-game.json', 'utf8'));
+          const rulebook = await readFile('rulebook/player-facing/current-rulebook.md', 'utf8');
+          const glossary = rulebook.split('# Glossary')[1]?.split('\n---')[0] ?? '';
+          const legacyTerms = [...glossary.matchAll(/^\*\*([^*]+)\*\*:/gm)].map(m => m[1].trim());
+          const factionTerms = [
+            'Command','Orders','Influence','Proposal','Stake','Ratification','Terms','Leverage','Peace Treaty',
+            'Capital','Capital Limit','Treasury','Deed','Financial Capacity','Controlling Interest',
+            'Intel','Operation Progress','Mission','Special Operation','Surveillance','Interference',
+            'Arcane','Rite','Ritual','Invocation','Transmutation','Convergence',
+            'Conviction','Purge','Condemnation','Blasphemy','Purification'
+          ];
+          const terms = [...new Set([...legacyTerms, ...factionTerms])].sort((a,b)=>a.localeCompare(b));
+
+          const leaves = [];
+          const walk = (value, path=[]) => {
+            if (typeof value === 'string') leaves.push({path:path.join('.'), value});
+            else if (Array.isArray(value)) value.forEach((v,i)=>walk(v,[...path,String(i)]));
+            else if (value && typeof value === 'object') Object.entries(value).forEach(([k,v])=>walk(v,[...path,k]));
+          };
+          walk(authority);
+
+          const keyish = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'');
+          for (const term of terms) {
+            const needle = term.toLowerCase();
+            const keyNeedle = keyish(term);
+            const candidates = leaves
+              .map(x => {
+                const val = x.value.toLowerCase();
+                const pathKey = keyish(x.path);
+                let score = 0;
+                if (pathKey.includes(keyNeedle)) score += 5;
+                if (val.startsWith(needle + ' ' ) || val.startsWith(needle + ':') || val.startsWith('a ' + needle + ' ') || val.startsWith('an ' + needle + ' ')) score += 5;
+                if (val.includes(needle)) score += 1;
+                return {...x, score};
+              })
+              .filter(x => x.score > 0)
+              .sort((a,b)=>b.score-a.score || a.path.localeCompare(b.path))
+              .slice(0,8);
+            console.log(`\n=== ${term} ===`);
+            if (!candidates.length) console.log('(no string candidate)');
+            for (const c of candidates) console.log(`[${c.score}] ${c.path} :: ${c.value}`);
+          }
+          NODE
