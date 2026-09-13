@@ -307,6 +307,11 @@ function simulateCopiedApplication(
 function effectCanApplyAfterTactics(effect: V070EffectReference): boolean {
   if (/^(?:When|After) Gambits are revealed\b/.test(effect.text)) return false;
   if (/^When you (?:set|choose) this card\b/.test(effect.text)) return false;
+  if (/^After Tactics are chosen\b/.test(effect.text)) return false;
+  if (/^Before Tactics normally reveal\b/.test(effect.text)) return false;
+  if (/^(?:In the Aftermath|At the end of the Aftermath|Following the Aftermath)\b/.test(effect.text)) {
+    return false;
+  }
   return true;
 }
 
