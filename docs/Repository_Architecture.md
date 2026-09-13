@@ -77,7 +77,7 @@ Source organization may change independently of deployed URL layout, but every s
 
 `config/release-lifecycle.json` determines whether a versioned public route is current, historical, or withdrawn. A historical or withdrawn landing may point players toward current tools, but it must not present its own release as current.
 
-Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages stages historical source from `legacy/` while preserving stable version URLs. The lifecycle-selected current versioned entrypoint remains a first-class public surface until its lifecycle transitions.
+Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages stages historical source from `legacy/` while preserving stable version URLs. The lifecycle-selected versioned entrypoint remains a first-class public surface until its lifecycle transitions.
 
 ### 5. Frozen releases stay frozen
 
@@ -169,7 +169,7 @@ These contracts answer different questions and must not silently substitute for 
 | `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
-| `v0.7.1/` | Lifecycle-selected current versioned public entrypoint; transitions to historical when lifecycle authority changes |
+| `v0.7.1/` | Versioned public entrypoint tracked by repository architecture; lifecycle status is determined only by `config/release-lifecycle.json` and not by repository placement. | <!-- DOC-HISTORICAL -->
 
 The stable public routes `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, `/faction-sheets/`, `/v0.6.2/`, `/v0.6.3/`, and `/v0.7.0/` do not require root-level repository source aliases.
 
