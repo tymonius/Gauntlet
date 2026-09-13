@@ -689,7 +689,8 @@ function renderDefinitionsIndex(authority, contract) {
     }
 
     const reference = entry.sections.join('; ');
-    const body = sourceValue || `See ${reference}.`;
+    const sourceBody = sourceValue && /[.!?]$/.test(sourceValue.trim()) ? sourceValue : sourceValue ? `${sourceValue}.` : null;
+    const body = sourceBody || `See ${reference}.`;
     const related = (entry.seeAlso || [])
       .map(id => byId.get(id)?.term)
       .filter(Boolean);

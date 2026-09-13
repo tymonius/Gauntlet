@@ -1753,7 +1753,7 @@ End their turn, then advance one Position toward their end. If this movement ini
 
 **Capital.** See Part XII — Financier Rules. See also **Capital Limit**, **Treasury**, **Deed**.
 
-**Capital Limit.** Territories you control + total card value in your Treasury See also **Capital**, **Treasury**.
+**Capital Limit.** Territories you control + total card value in your Treasury. See also **Capital**, **Treasury**.
 
 **Capture.** During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line, add that Territory to your Front Line. Normal Capture advances the Front Line by at most one Territory per turn. When Capture adds the final opposing Territory to your Front Line, your Front Line spans the entire Gauntlet; you immediately run the Gauntlet and win. See also **Front Line**, **Control**.
 
