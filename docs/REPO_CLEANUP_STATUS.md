@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-09-11
+Last updated: 2026-09-13
 
 ## Governing objective
 
@@ -12,80 +12,72 @@ The controlling question remains:
 
 > **Should this thing exist here at all, and what architectural role does it serve?**
 
-Do not polish files that may later move, merge, regenerate, archive, or disappear.
+GitHub/current `main` is authoritative. This file is only the compact repository-local handoff.
 
 ## Durable tracking
 
-Master tracker: [#1430 — Repository cleanup and architecture reorganization](https://github.com/tymonius/Gauntlet/issues/1430)
+- Master tracker: [#1430 — Repository cleanup and architecture reorganization](https://github.com/tymonius/Gauntlet/issues/1430)
+- Human architecture map: [`docs/Repository_Architecture.md`](Repository_Architecture.md)
+- Machine root-architecture contract: [`config/repository-architecture.json`](../config/repository-architecture.json)
+- Public/deployment boundary contract: [`config/publication-boundary.json`](../config/publication-boundary.json)
 
-Human architecture map: [`docs/Repository_Architecture.md`](Repository_Architecture.md)
+## Architecture baseline now merged
 
-Machine architecture contract: [`config/repository-architecture.json`](../config/repository-architecture.json)
+- [#1559](https://github.com/tymonius/Gauntlet/pull/1559) made top-level repository ownership/lifecycle machine-readable.
+- [#1562](https://github.com/tymonius/Gauntlet/pull/1562), [#1571](https://github.com/tymonius/Gauntlet/pull/1571), [#1626](https://github.com/tymonius/Gauntlet/pull/1626), [#1633](https://github.com/tymonius/Gauntlet/pull/1633), and [#1641](https://github.com/tymonius/Gauntlet/pull/1641) established `apps/` as the canonical maintained application-source boundary while preserving stable public URLs through explicit deployment staging.
+- [#1683](https://github.com/tymonius/Gauntlet/pull/1683) moved the complete current gameplay-authority package from the retired root `game-data/` source boundary to `packages/game-data/` while preserving the stable browser `/game-data/` route.
+- Historical v0.6.x reconstruction/publication sources that still need preservation live under explicit recovery/history boundaries rather than masquerading as current authority.
 
-GitHub/repository state is authoritative. This file is only the compact handoff.
+The older cleanup stack remains useful design evidence only. Re-land still-valid ideas deliberately against current `main`; do not merge stale branches over newer engine, Rules Arbiter, publication, or rendering work.
 
-## Current architecture baseline
+## Current tranche: public route and Pages publication boundary
 
-[#1559 — Make repository architecture machine-readable on current main](https://github.com/tymonius/Gauntlet/pull/1559)
+[#1691 — Codify public route and Pages publication boundary](https://github.com/tymonius/Gauntlet/pull/1691) is the active structural PR, implementing the durable work preserved in [#1670](https://github.com/tymonius/Gauntlet/issues/1670).
 
-This re-landed the top-level architecture guard cleanly on current `main` instead of force-merging the old stacked cleanup branches. Every root directory has an explicit lifecycle role, target architectural group, and transition status; Governance Integrity checks the machine contract, actual root tree, and human architecture document together.
+This tranche makes the deployment graph explicit rather than leaving it duplicated across shell arrays and compatibility helpers:
 
-[#1562 — Separate Playtest source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1562) is merged. It established the Phase 3 source/deployment-separation pattern by moving canonical Playtest source to `apps/playtest/` while preserving the stable public `/playtest/` route through explicit Pages staging.
+- `config/publication-boundary.json` inventories directly published Pages roots, source-only repository roots, source-to-public route mappings, managed current-app deep links, and lifecycle-bound versioned routes;
+- Pages staging consumes that contract and remains default-deny for new repository roots;
+- local/public-route compatibility materialization consumes the same mapping rather than maintaining a second inventory;
+- current application `index.html` routes are validated against the declared deep-link graph;
+- staged local `href`/`src` references are checked and managed-route links must point to declared routes;
+- versioned route status is derived from `config/release-lifecycle.json`, preventing historical or withdrawn releases from presenting themselves as current;
+- current public URLs and current `config/` publication behavior remain unchanged unless separately audited and intentionally revised.
 
-[#1571 — Separate Start source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1571) is merged. It applied the same boundary to Start, moving canonical source to `apps/start/` while preserving `/start/`.
+The tranche also corrects a preserved historical version landing that incorrectly claimed current status; release lifecycle authority now governs that claim.
 
-[#1626 — Separate Card Reference source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1626) is merged. It moved canonical Card Reference source to `apps/card-reference/` while preserving `/card-reference/` and hardened source-path retirement checks.
-
-[#1633 — Separate Factions source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1633) is merged. It moved the Factions application to `apps/factions/`, preserved `/factions/`, and reclassified homepage-only Factions styling into shared `assets/` ownership.
-
-[#1641 — Separate Deckbuilder source from public URL layout](https://github.com/tymonius/Gauntlet/pull/1641) is merged. It moved the complete maintained Deckbuilder application to `apps/deckbuilder/`, preserved `/deckbuilder/`, retained app-integrated print/export features with the Deckbuilder runtime, and extended public-route materialization across the source-separated application set.
-
-The earlier cleanup stack from #1456 through #1539 remains useful review/history evidence, but current `main` advanced substantially while it was open. Do not merge that old stack wholesale over newer digital-engine, Rules Arbiter, onboarding, card-pipeline, or release work. Re-land still-valid cleanup decisions deliberately against current `main`.
-
-## Current tranche: game-data shared-package separation
-
-The first shared-package migration moves the complete current gameplay authority and its thin adapters from `game-data/` to `packages/game-data/` while preserving the browser-facing `/game-data/` route.
-
-- canonical current gameplay authority becomes `packages/game-data/current-game.json`;
-- its validation/runtime/art-direction adapters remain together in the same package;
-- repository scripts, tests, and CI that inspect source use `packages/game-data/` directly;
-- public browser consumers continue using `/game-data/` and relative `../game-data/` URLs;
-- GitHub Pages and publication compatibility materialize `packages/game-data/` at the stable `/game-data/` route;
-- `packages/` becomes a first-class non-transitional repository ownership boundary;
-- frozen releases and historical versioned data paths remain untouched.
-
-No intentional gameplay, authority-content, rendering, current-release, or public-URL change belongs in this tranche.
+No gameplay change belongs in this tranche.
 
 ## Architectural decisions now established
 
-- **Source paths and public URLs are independent.** A stable deployed URL does not require a matching root source directory.
-- **`apps/` is a first-class maintained-source boundary.** Current Card Reference, Deckbuilder, Factions, Start, and Playtest source live there; subsequent application migrations should follow the same pattern rather than create compatibility aliases at repository root.
-- **`packages/` is a first-class maintained shared-source boundary.** Current gameplay authority and its adapters live at `packages/game-data/`; public browser access remains `/game-data/` through staging rather than a root source alias.
-- **App-integrated print/export code stays with its owning application.** A feature is not production tooling merely because it prints or exports; the Deckbuilder print/TTS features are runtime extensions of the Deckbuilder itself.
-- **Cross-application assets should be classified by actual ownership, not historical directory placement.** Homepage-only Factions presentation belongs with shared/public assets rather than inside the Factions application.
-- **Pages is an explicit deployment artifact.** It materializes stable routes from canonical source boundaries and must not mirror the repository wholesale.
-- **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned public compatibility sources are not current authority.
-- **Behavior-preserving architecture cleanup stays separate from gameplay/product changes.**
-- **Generated-output lifecycle is a separate architectural question.** Do not combine binary/artifact retention changes with otherwise mechanical source moves unless required.
+- **Source paths and public URLs are independent.** Stable deployed URLs do not require matching root source directories.
+- **`apps/` is the maintained application-source boundary.** Current Card Reference, Deckbuilder, Factions, Rules, Start, and Playtest sources live there and deploy to stable routes.
+- **`packages/` is a maintained shared-source boundary.** Current gameplay authority lives at `packages/game-data/`; browser consumers retain `/game-data/` through materialization/staging.
+- **Pages is an explicit deployment artifact.** It must not become a repository mirror, and new source roots are non-public unless the publication contract deliberately includes them.
+- **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned historical sources are not current authority even when their public URLs remain supported.
+- **App-integrated print/export stays with the owning app.** A runtime feature is not production tooling merely because it prints or exports.
+- **Generated-output lifecycle remains a separate architectural question.** Do not mix binary-retention policy into otherwise mechanical source moves unless required.
+- **Behavior-preserving architecture cleanup remains separate from gameplay/product changes.**
 
 ## Next top-down queue
 
-After the game-data package migration is green and merged:
+After #1691 is green and merged:
 
-1. Inspect the Rulebook boundary (`rulebook/`) and separate current rules authority from browser/production support before relocating either role.
-2. Inspect `card-design/` and shared rendering/UI dependencies to identify the smallest genuine reusable packages (`rendering`, shared UI) versus production authoring tools.
-3. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
-4. Audit asset/generated-output lifecycle after source ownership is stable.
-5. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Inspect the `rulebook/` boundary and separate current rules authority from browser/production support before relocating either role.
+2. Resolve [#1671](https://github.com/tymonius/Gauntlet/issues/1671): retire obsolete renderer-family/compatibility/parity scaffolding after confirming the canonical face renderer has all live consumers.
+3. Resolve [#1672](https://github.com/tymonius/Gauntlet/issues/1672): re-land asset/generated-output cleanup on current `main` only after source ownership is stable.
+4. Resolve [#1673](https://github.com/tymonius/Gauntlet/issues/1673): retire version-specific release-refresh automation in favor of lifecycle-driven current-release automation.
+5. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
+6. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
+7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
-1. Read this file.
-2. Read [#1430](https://github.com/tymonius/Gauntlet/issues/1430).
-3. Inspect merged #1562, #1571, #1626, #1633, and #1641 plus the current structural PR, including CI and review comments.
-4. Reconcile against current `main` before carrying forward any older cleanup branch.
-5. Continue the highest-level unresolved architectural work before descending into local file cleanup.
-6. Update this file when the current tranche, architectural decisions, or next-step queue materially changes.
+1. Read #1430 and the current open cleanup PR/issue.
+2. Read this file and `docs/Repository_Architecture.md`.
+3. Reconcile all proposed structural work against current `main` before carrying forward any older branch.
+4. Continue the highest-level unresolved architectural work before descending into local file cleanup.
+5. Update this file whenever the active tranche, architectural decisions, or next-step queue materially changes.
 
 ## Removal condition
 

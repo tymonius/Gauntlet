@@ -23,6 +23,9 @@ jobs:
             /package-lock.json
             /config/release-lifecycle.json
             /config/github-release-contract.json
+            /config/publication-boundary.json
+            /scripts/publication-boundary.mjs
+            /scripts/validate-publication-boundary.mjs
             /scripts/validate-current-public-contract.mjs
             /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
@@ -70,32 +73,7 @@ jobs:
             /releases/**
 
       - name: Materialize relocated public routes
-        run: |
-          if [ -d apps/card-reference ]; then
-            mkdir -p card-reference
-            cp -a apps/card-reference/. card-reference/
-          fi
-          if [ -d apps/deckbuilder ]; then
-            mkdir -p deckbuilder
-            cp -a apps/deckbuilder/. deckbuilder/
-          fi
-          if [ -d apps/factions ]; then
-            mkdir -p factions
-            cp -a apps/factions/. factions/
-          fi
-          if [ -d apps/rules ]; then
-            mkdir -p rules
-            cp -a apps/rules/. rules/
-          fi
-          if [ -d apps/playtest ]; then
-            mkdir -p playtest
-            cp -a apps/playtest/. playtest/
-          fi
-          if [ -d apps/start ]; then
-            mkdir -p start
-            cp -a apps/start/. start/
-          fi
-          node scripts/materialize-public-route-compatibility.mjs
+        run: node scripts/materialize-public-route-compatibility.mjs
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -107,6 +85,7 @@ jobs:
 
       - name: Validate current player-facing publication contract
         run: |
+          node scripts/validate-publication-boundary.mjs
           node scripts/validate-current-public-contract.mjs
           node scripts/validate-current-release-payload.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
