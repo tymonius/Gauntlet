@@ -89,7 +89,7 @@ Your Orders help you reach those shared victories in different ways.
 
 The **General** is best at extending pressure. Extra movement can create an attack, a battle bonus can help secure the win, and a successful attack can lead directly into another Advance.
 
-The **Commandant** is best at making the opponent's advances costly. Defensive strength helps win Counterattacks and defenses, extra retreat creates space, and Fortify can convert a victory on enemy ground into immediate control when the capture is legal.
+The **Commandant** is best at making the opponent's advances costly. Defensive strength helps repel attacks and survive Counterattacks, extra retreat creates space, and Fortify can convert a victory on enemy ground into immediate control when the capture is legal.
 
 Neither Leader changes what victory means. They change how you create and exploit the battlefield position that gets you there.
 
@@ -114,7 +114,7 @@ The General's Orders reward you for choosing the moment to attack and for keepin
 
 ### Commandant
 
-**Playstyle:** defense, Counterattacks, and battlefield control.
+**Playstyle:** defense, holding occupied ground, and battlefield control.
 
 The Commandant's Orders reward you for absorbing an attack, winning on defense, and holding enemy ground long enough to turn position into control.
 
@@ -155,7 +155,7 @@ For your first Military game, keep four ideas in mind:
 
 Choose the **General** if you want to be the player creating pressure: Advance, attack, win, and keep moving.
 
-Choose the **Commandant** if you prefer to punish attacks and turn defensive victories into control: hold, Counterattack, push the opponent back, and capture from strong positions.
+Choose the **Commandant** if you prefer to punish attacks and turn defensive victories into control: hold, survive Counterattacks, push the opponent back, and capture from strong positions.
 
 ### Common mistake
 
