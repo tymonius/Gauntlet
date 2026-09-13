@@ -24,7 +24,9 @@ jobs:
           const authority = JSON.parse(await readFile('game-data/current-game.json', 'utf8'));
           const rulebook = await readFile('rulebook/player-facing/current-rulebook.md', 'utf8');
           const glossary = rulebook.split('# Glossary')[1]?.split('\n---')[0] ?? '';
-          const legacyTerms = [...glossary.matchAll(/^\*\*([^*]+)\*\*:/gm)].map(m => m[1].trim());
+          const legacyEntries = [...glossary.matchAll(/^\*\*([^*]+):\*\*\s*(.+)$/gm)]
+            .map(m => ({term:m[1].trim(), legacy:m[2].trim()}));
+          const legacyByTerm = new Map(legacyEntries.map(x => [x.term, x.legacy]));
           const factionTerms = [
             'Command','Orders','Influence','Proposal','Stake','Ratification','Terms','Leverage','Peace Treaty',
             'Capital','Capital Limit','Treasury','Deed','Financial Capacity','Controlling Interest',
@@ -32,7 +34,7 @@ jobs:
             'Arcane','Rite','Ritual','Invocation','Transmutation','Convergence',
             'Conviction','Purge','Condemnation','Blasphemy','Purification'
           ];
-          const terms = [...new Set([...legacyTerms, ...factionTerms])].sort((a,b)=>a.localeCompare(b));
+          const terms = [...new Set([...legacyEntries.map(x=>x.term), ...factionTerms])].sort((a,b)=>a.localeCompare(b));
 
           const leaves = [];
           const walk = (value, path=[]) => {
@@ -43,6 +45,7 @@ jobs:
           walk(authority);
 
           const keyish = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'');
+          console.log(`Legacy glossary entries: ${legacyEntries.length}`);
           for (const term of terms) {
             const needle = term.toLowerCase();
             const keyNeedle = keyish(term);
@@ -52,7 +55,7 @@ jobs:
                 const pathKey = keyish(x.path);
                 let score = 0;
                 if (pathKey.includes(keyNeedle)) score += 5;
-                if (val.startsWith(needle + ' ' ) || val.startsWith(needle + ':') || val.startsWith('a ' + needle + ' ') || val.startsWith('an ' + needle + ' ')) score += 5;
+                if (val.startsWith(needle + ' ') || val.startsWith(needle + ':') || val.startsWith('a ' + needle + ' ') || val.startsWith('an ' + needle + ' ')) score += 5;
                 if (val.includes(needle)) score += 1;
                 return {...x, score};
               })
@@ -60,6 +63,7 @@ jobs:
               .sort((a,b)=>b.score-a.score || a.path.localeCompare(b.path))
               .slice(0,8);
             console.log(`\n=== ${term} ===`);
+            if (legacyByTerm.has(term)) console.log(`LEGACY :: ${legacyByTerm.get(term)}`);
             if (!candidates.length) console.log('(no string candidate)');
             for (const c of candidates) console.log(`[${c.score}] ${c.path} :: ${c.value}`);
           }
