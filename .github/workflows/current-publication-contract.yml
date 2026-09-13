@@ -70,9 +70,10 @@ jobs:
             /analytics-consent.js
             /design-tokens.css
             /images/faction-symbols/*.svg
+            /images/sketches/hero-sketches/hero sketch.png
             /releases/**
 
-      - name: Materialize relocated public routes
+      - name: Materialize public compatibility paths
         run: node scripts/materialize-public-route-compatibility.mjs
 
       - name: Set up Node
