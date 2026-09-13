@@ -1,0 +1,431 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "A",
+  "behaviorRevision": "v071-qa-20260913-9",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 blind benchmark tranche A. Questions are frozen before the first live run and must not be used to tune the candidate behavior before that run.",
+  "blindnessPolicy": [
+    "Do not edit this tranche after its first paid live run except to preserve an immutable record of what was run.",
+    "Any failed tranche-A case may become a regression after diagnosis, but it may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche A, certify the changed behavior with a newly authored blind tranche."
+  ],
+  "dimensions": [
+    "core rules and timing",
+    "all six faction systems",
+    "all twelve Leaders",
+    "named-card interactions",
+    "specific permissions versus general procedure",
+    "conversation continuity and topic switching",
+    "genuine rules gaps",
+    "out-of-scope handling",
+    "Chief Justice table-useful voice"
+  ],
+  "cases": [
+    {
+      "id": "blind-a-core-opening-discard-trigger",
+      "category": "core",
+      "question": "During setup I put one of my four opening cards face up in my Discard Pile. Does that count as discarding a card for another effect that triggers when I discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Opening selection and Territory arrangement"],
+      "expectedAnswerPatterns": ["does not count as discarding"]
+    },
+    {
+      "id": "blind-a-core-starting-placement-trigger",
+      "category": "core",
+      "question": "My Starting Territory has an effect that happens when I enter it. Does placing my Player Token there during setup trigger that entry effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Starting Territory"],
+      "expectedAnswerPatterns": ["does not count as entering"]
+    },
+    {
+      "id": "blind-a-core-movement-interrupted-by-battle",
+      "category": "core",
+      "question": "I can advance two Positions this Movement. The first Position starts a battle. If I win, may I spend the unused second Position after that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Movement"],
+      "expectedAnswerPatterns": ["unused", "lost"]
+    },
+    {
+      "id": "blind-a-core-last-stand-separate-movement",
+      "category": "core",
+      "question": "I already used my normal Movement this turn. If I am later required to make Last Stand movement, is that Last Stand movement prevented because I already moved?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Last Stand"],
+      "expectedAnswerPatterns": ["separate"]
+    },
+    {
+      "id": "blind-a-core-extra-action-phase-limit",
+      "category": "core",
+      "question": "An effect gives me an additional Action during Opening. May I spend that Action on an effect whose Action is printed for Denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Additional Actions"],
+      "expectedAnswerPatterns": ["does not", "timing"]
+    },
+    {
+      "id": "blind-a-core-exchange-all-or-nothing",
+      "category": "core",
+      "question": "An effect tells me to exchange two cards, but one of the cards cannot legally move from its current zone. Does the other card move anyway?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Exchange"],
+      "expectedAnswerPatterns": ["no exchange occurs"]
+    },
+    {
+      "id": "blind-a-core-graveyard-entry-trigger",
+      "category": "core",
+      "question": "A card enters my Graveyard and another effect immediately moves it somewhere else. Does an effect that triggers when the card enters the Graveyard still trigger?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Graveyard"],
+      "expectedAnswerPatterns": ["entry trigger", "still"]
+    },
+    {
+      "id": "blind-a-core-shared-timing-alternates",
+      "category": "core",
+      "question": "Both players have multiple effects that apply at the same timing after cards are revealed. Do all of those effects resolve simultaneously?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Shared timing"],
+      "expectedAnswerPatterns": ["attacker", "defender", "alternat"]
+    },
+    {
+      "id": "blind-a-military-command-timing",
+      "category": "military",
+      "question": "I have enough Command left, but an Order's printed timing has already passed. Can I spend the Command now and use that Order anyway?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Command and Orders"],
+      "expectedAnswerPatterns": ["printed timing"]
+    },
+    {
+      "id": "blind-a-diplomats-accepted-terms-no-battle",
+      "category": "diplomats",
+      "question": "My opponent accepts my Terms during Onset. Do we still set Gambits and finish the battle sequence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Accepted Terms"],
+      "expectedAnswerPatterns": ["No battle is fought", "no Gambits"]
+    },
+    {
+      "id": "blind-a-financiers-deed-control-independent",
+      "category": "financiers",
+      "question": "I own the Deed to a Territory that my opponent controls. Does owning its Deed make me control that Territory or move my token there?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Deed ownership is independent"],
+      "expectedAnswerPatterns": ["independent"]
+    },
+    {
+      "id": "blind-a-intelligence-mission-operation-exclusive",
+      "category": "intelligence",
+      "question": "I already have an Active Mission. Can I also start a Special Operation and keep both active at the same time?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Starting a Mission"],
+      "expectedAnswerPatterns": ["cannot have", "simultaneously"]
+    },
+    {
+      "id": "blind-a-mystics-unselected-rite",
+      "category": "mystics",
+      "question": "I did not choose Rite of Crossing among my three Rites for this game. Can I decide to begin it later anyway?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Only those selected Rites may be begun"],
+      "expectedAnswerPatterns": ["Only", "selected"]
+    },
+    {
+      "id": "blind-a-inquisition-effect-draw-purification",
+      "category": "inquisition",
+      "question": "An effect tells my opponent to draw, but both their Draw Pile and Discard Pile are empty. Does that failed effect-generated draw make me win through Purification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Purification"],
+      "expectedAnswerPatterns": ["does not trigger Purification"]
+    },
+    {
+      "id": "blind-a-cross-accepted-terms-command",
+      "category": "interaction",
+      "question": "My opponent is Military and accepts my Terms during Onset. Do they gain Command from that encounter?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": ["Accepted Terms", "Command and Orders"],
+      "expectedAnswerPatterns": ["no winner", "Command"]
+    },
+    {
+      "id": "blind-a-general-onward-after-battle",
+      "category": "leaders",
+      "question": "I used Onward during Movement and that movement started a battle. After the battle finishes, I still have Command. Can I use Onward again then to keep moving?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Onward"],
+      "expectedAnswerPatterns": ["cannot be used after a battle"]
+    },
+    {
+      "id": "blind-a-commandant-repel-retreat",
+      "category": "leaders",
+      "question": "I am the Commandant and win while defending. If I use Repel, when does its extra retreat happen relative to the opponent's normal retreat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Repel"],
+      "expectedAnswerPatterns": ["After", "normal retreat"]
+    },
+    {
+      "id": "blind-a-ambassador-cordiality-own-terms",
+      "category": "leaders",
+      "question": "I am the Ambassador and I accept Terms offered by my opponent. Does Cordiality draw me a card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Cordiality"],
+      "expectedAnswerPatterns": ["your Terms"]
+    },
+    {
+      "id": "blind-a-senator-political-capital-partial",
+      "category": "leaders",
+      "question": "As Senator I lose a battle after my Terms were refused and would lose 3 staked Influence. I put only 2 cards from Hand into my Graveyard for Political Capital. What happens to the 3 Influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Political Capital"],
+      "expectedAnswerPatterns": ["Recover 1", "per card", "lose the rest"]
+    },
+    {
+      "id": "blind-a-banker-line-credit-five-cost",
+      "category": "leaders",
+      "question": "As Banker, my first Deed purchase this turn costs 5 Capital. I use a high-value card as Line of Credit collateral. How much of the 5 can that collateral cover, and where does it go after the purchase?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Line of Credit"],
+      "expectedAnswerPatterns": ["2", "discard"]
+    },
+    {
+      "id": "blind-a-executive-hostile-takeover-defender",
+      "category": "leaders",
+      "question": "I am the Executive and just won a battle while defending my own Territory. Can I use Hostile Takeover from that win?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Hostile Takeover"],
+      "expectedAnswerPatterns": ["attacker"]
+    },
+    {
+      "id": "blind-a-ranger-fieldcraft-printed-effect",
+      "category": "leaders",
+      "question": "I am the Ranger. A printed Territory effect would penalize me in a battle this turn. If I have 1 Intel and have not used Fieldcraft this turn, can I ignore that printed effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Fieldcraft"],
+      "expectedAnswerPatterns": ["ignore", "until the end of the turn"]
+    },
+    {
+      "id": "blind-a-spymaster-mission-control-special-op",
+      "category": "leaders",
+      "question": "I am the Spymaster and just completed a normal Mission. Can Mission Control immediately start a Special Operation from my Hand as the replacement mission?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Mission Control"],
+      "expectedAnswerPatterns": ["cannot be a Special Operation"]
+    },
+    {
+      "id": "blind-a-alchemist-materia-prima-battle-draw",
+      "category": "leaders",
+      "question": "As Alchemist, the first qualifying card from my Hand enters my Graveyard during a battle for Transmutation. When do I draw the card from Materia Prima?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Materia Prima"],
+      "expectedAnswerPatterns": ["after the Aftermath"]
+    },
+    {
+      "id": "blind-a-spirit-walker-guardians-threshold",
+      "category": "leaders",
+      "question": "I am the Spirit Walker with two completed Rites. A battle loss would interrupt my active Rite. Is an Arcane card with value 2 enough for Guardians of the Circle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Guardians of the Circle"],
+      "expectedAnswerPatterns": ["3"]
+    },
+    {
+      "id": "blind-a-grand-inquisitor-final-judgment-after-purge",
+      "category": "leaders",
+      "question": "I already spent an Action on Purge this turn, then later win a battle as Grand Inquisitor. May I still use Final Judgment after the battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Final Judgment"],
+      "expectedAnswerPatterns": ["does not consume", "once-per-turn permission"]
+    },
+    {
+      "id": "blind-a-witch-hunter-pursuit-defending",
+      "category": "leaders",
+      "question": "I am the Witch Hunter and win a battle that I initiated. Does Relentless Pursuit trigger from that win?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Relentless Pursuit"],
+      "expectedAnswerPatterns": ["attacking opponent"]
+    },
+    {
+      "id": "blind-a-card-forced-march-no-battle",
+      "category": "cards",
+      "question": "I play Forced March for its Action and use the additional movement it grants. Can that additional movement be the step that initiates a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Forced March"],
+      "expectedAnswerPatterns": ["cannot initiate a battle"]
+    },
+    {
+      "id": "blind-a-card-give-chase-second-battle",
+      "category": "cards",
+      "question": "Give Chase moves me into a second battle this turn after I win as attacker. What restrictions apply when that new battle starts?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Give Chase"],
+      "expectedAnswerPatterns": ["cannot set a Gambit", "Orders"]
+    },
+    {
+      "id": "blind-a-card-gunboat-diplomacy-refused",
+      "category": "cards",
+      "question": "I reveal Gunboat Diplomacy while offering Terms and the opponent refuses. What happens to Gunboat Diplomacy when we proceed to Gambits?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Gunboat Diplomacy"],
+      "expectedAnswerPatterns": ["face up", "additional Gambit", "does not count"]
+    },
+    {
+      "id": "blind-a-card-hellfire-one-benefit-per-conviction",
+      "category": "cards",
+      "question": "I spend 3 Conviction on Hellfire in battle. Can each Conviction give me both +1 Battle Total and, if I win, one card from the opponent's Draw Pile to the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Hellfire"],
+      "expectedAnswerPatterns": ["one benefit"]
+    },
+    {
+      "id": "blind-a-card-intercepted-orders-replacement",
+      "category": "cards",
+      "question": "Intercepted Orders returns one opposing Tactic to the opponent's Reserve. Is the opponent allowed to choose an eligible replacement Tactic?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Intercepted Orders"],
+      "expectedAnswerPatterns": ["replacement"]
+    },
+    {
+      "id": "blind-a-card-landslide-owner-discards",
+      "category": "cards",
+      "question": "My opponent controls the Territory, but I own the Landslide Overlay on it. They retreat onto that Territory and Landslide resolves. Which player discards Landslide afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Landslide"],
+      "expectedAnswerPatterns": ["card owner"]
+    },
+    {
+      "id": "blind-a-card-manifest-destiny-normal-deed",
+      "category": "cards",
+      "question": "Manifest Destiny adds its blank Territory to the Gauntlet. After it becomes a Territory, does it have a normal Deed like the other Territories?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Manifest Destiny"],
+      "expectedAnswerPatterns": ["normal Deed"]
+    },
+    {
+      "id": "blind-a-card-counterworks-prevent-overlay",
+      "category": "cards",
+      "question": "An opposing effect would place an Overlay on a Territory and I discard Counterworks to prevent that placement. Where does the card that would have become the Overlay go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Counterworks"],
+      "expectedAnswerPatterns": ["discard"]
+    },
+    {
+      "id": "blind-a-card-natures-altar-same-turn-rite",
+      "category": "cards",
+      "question": "I begin a Rite through Nature's Altar during Opening. If I satisfy its completion condition later that same turn and still control the Territory, may that Rite complete this turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Nature's Altar"],
+      "expectedAnswerPatterns": ["may complete this turn"]
+    },
+    {
+      "id": "blind-a-card-paths-of-shadow-retreat",
+      "category": "cards",
+      "question": "I lose a battle with Paths of Shadow and use its Aftermath effect. Do I make the normal retreat first and then move to a Territory I control?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Paths of Shadow"],
+      "expectedAnswerPatterns": ["instead of retreating normally"],
+      "forbiddenAnswerPatterns": ["normal retreat first"]
+    },
+    {
+      "id": "blind-a-conversation-accepted-terms-aftermath",
+      "category": "conversation",
+      "question": "So do we ever reach Aftermath in that case?",
+      "history": [
+        {"role": "user", "content": "What happens if the defender accepts my Terms during Onset?"},
+        {"role": "assistant", "content": "Accepted Terms end the sequence during Onset. The Proposal's Accepted effect resolves, the Stake returns, and no battle is fought."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Accepted Terms"],
+      "expectedTopic": "accepted Terms",
+      "expectedAnswerPatterns": ["no Aftermath"]
+    },
+    {
+      "id": "blind-a-conversation-line-credit-destination",
+      "category": "conversation",
+      "question": "Where does that collateral card go once the purchase is finished?",
+      "history": [
+        {"role": "user", "content": "How much can Line of Credit contribute to my first Deed purchase?"},
+        {"role": "assistant", "content": "It can use one card from Hand or Treasury as collateral for up to half the purchase cost, rounded down."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Line of Credit"],
+      "expectedTopic": "Line of Credit collateral",
+      "expectedAnswerPatterns": ["discard"]
+    },
+    {
+      "id": "blind-a-conversation-forced-march-followup",
+      "category": "conversation",
+      "question": "Could that extra step be the one that starts a battle?",
+      "history": [
+        {"role": "user", "content": "I used Forced March for its Action. What changes about my movement?"},
+        {"role": "assistant", "content": "During Movement this turn, Forced March lets you move one additional Position."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Forced March"],
+      "expectedTopic": "Forced March movement",
+      "expectedAnswerPatterns": ["cannot initiate a battle"]
+    },
+    {
+      "id": "blind-a-conversation-topic-switch-purification",
+      "category": "conversation",
+      "question": "Different question: if an effect tells my opponent to draw from empty Draw and Discard Piles, do I win by Purification?",
+      "history": [
+        {"role": "user", "content": "Does owning a Deed give me control of its Territory?"},
+        {"role": "assistant", "content": "No. Deed ownership is independent of Territory control and token position."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Purification"],
+      "expectedTopic": "Purification",
+      "expectedAnswerPatterns": ["does not trigger Purification"]
+    },
+    {
+      "id": "blind-a-gap-unlabeled-bonus",
+      "category": "unsupported",
+      "question": "A playtest card at the table says only '+2' and gives no label or target for that number. What exactly gets +2?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "expectedAnswerPatterns": ["Provisional Arbiter Ruling:"]
+    },
+    {
+      "id": "blind-a-out-of-scope-creative-writing",
+      "category": "unsupported",
+      "question": "Write a short tavern scene in which the General and the Banker argue about politics.",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "non-gameplay"
+    }
+  ]
+}

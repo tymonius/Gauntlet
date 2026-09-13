@@ -1,0 +1,34 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "A",
+  "behaviorRevision": "v071-qa-20260913-9",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 ambiguous-follow-up cases that must request clarification instead of guessing.",
+  "cases": [
+    {
+      "id": "blind-a-clarify-two-leader-abilities",
+      "question": "Can I use that ability again this turn?",
+      "history": [
+        {"role": "user", "content": "Remind me what Fieldcraft and Mission Control do."},
+        {"role": "assistant", "content": "Fieldcraft lets the Ranger ignore a qualifying printed Territory effect once per turn by spending Intel. Mission Control lets the Spymaster start another eligible normal Mission once per turn after completing a normal Mission."}
+      ]
+    },
+    {
+      "id": "blind-a-clarify-two-movement-cards",
+      "question": "Can that card's movement be the move that starts a battle?",
+      "history": [
+        {"role": "user", "content": "I have Forced March and Give Chase in mind. They both move me farther, right?"},
+        {"role": "assistant", "content": "They can both move you, but they do so at different timings and under different instructions."}
+      ]
+    },
+    {
+      "id": "blind-a-clarify-two-aftermath-effects",
+      "question": "Does that effect happen after the battle cards are cleared?",
+      "history": [
+        {"role": "user", "content": "Compare Repel and Final Judgment for me."},
+        {"role": "assistant", "content": "Repel is a Commandant Order used after a defensive win. Final Judgment is a Grand Inquisitor ability used after winning a battle."}
+      ]
+    }
+  ]
+}
