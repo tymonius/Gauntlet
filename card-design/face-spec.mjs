@@ -1,6 +1,10 @@
 import { artworkCandidates } from './card-artwork-resolver.js';
 import { listFaces, resolveFace } from './face-authority.mjs';
-import { hasExplicitArtDirection, resolveArtDirection } from '../packages/game-data/art-direction.mjs';
+
+const artDirectionModuleUrl = import.meta.url.startsWith('file:')
+  ? new URL('../packages/game-data/art-direction.mjs', import.meta.url)
+  : new URL('../game-data/art-direction.mjs', import.meta.url);
+const { hasExplicitArtDirection, resolveArtDirection } = await import(artDirectionModuleUrl.href);
 
 const BASE_CARD_STYLES = Object.freeze([
   '/design-tokens.css',
