@@ -44,7 +44,7 @@ This tranche makes the deployment graph explicit rather than leaving it duplicat
 - versioned route status is derived from `config/release-lifecycle.json`, preventing historical or withdrawn releases from presenting themselves as current;
 - current public URLs and current `config/` publication behavior remain unchanged unless separately audited and intentionally revised.
 
-The tranche also corrects the preserved `/v0.6.3/` landing, which still described v0.6.3 as current even though lifecycle authority marks it historical.
+The tranche also corrects a preserved historical version landing that incorrectly claimed current status; release lifecycle authority now governs that claim.
 
 No gameplay change belongs in this tranche.
 
