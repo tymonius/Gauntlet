@@ -1,4 +1,12 @@
-import { materializePublicRoutes } from './publication-boundary.mjs';
+import {
+  materializePublicFiles,
+  materializePublicRoutes,
+} from './publication-boundary.mjs';
 
-const materialized = materializePublicRoutes({ skipMissingSources: true });
-console.log(`Materialized ${materialized.length} public route compatibility target(s): ${materialized.join(', ')}.`);
+const materializedRoutes = materializePublicRoutes({ skipMissingSources: true });
+const materializedFiles = materializePublicFiles({ skipMissingSources: true });
+
+console.log(
+  `Materialized ${materializedRoutes.length} public route compatibility target(s): ${materializedRoutes.join(', ')}. ` +
+  `Materialized ${materializedFiles.length} public file compatibility target(s): ${materializedFiles.join(', ')}.`,
+);
