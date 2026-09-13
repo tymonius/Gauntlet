@@ -264,7 +264,8 @@ describe('TTS supplemental component exports', () => {
 
   it('is wired into source checks, package generation, save assembly, validation, and TTS CI', () => {
     expect(packageJson.scripts['tts:supplementals:check']).toBe('node scripts/generate-tts-supplemental-assets.mjs --check');
-    expect(packageJson.scripts['tts:supplementals']).toBe('node scripts/generate-tts-supplemental-assets.mjs');
+    expect(packageJson.scripts['tts:supplementals']).toBe('node tts/run-with-game-data-route.mjs scripts/generate-tts-supplemental-assets.mjs');
+    expect(packageJson.scripts['tts:finalized-supplementals']).toBe('node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs');
     expect(packageJson.scripts['tts:save:assemble']).toBe('node scripts/assemble-tts-supplemental-save.mjs');
     expect(packageJson.scripts['tts:check']).toContain('assemble-tts-supplemental-save.mjs --check');
     expect(packageJson.scripts['tts:check']).toContain('tts-supplemental-geometry.mjs');
