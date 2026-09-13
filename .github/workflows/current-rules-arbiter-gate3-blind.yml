@@ -1,0 +1,211 @@
+name: Rules Arbiter Gate 3 blind tranche A
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_paid_api:
+        description: I understand this workflow makes paid OpenAI API calls
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  blind-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260913-9
+      GATE3_EXPECTED_AUTHORITY_SET: 5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339
+      GATE3_STANDARD_REPORT: artifacts/rules-qa/v071-gate3-blind-a.json
+      GATE3_CLARIFICATION_REPORT: artifacts/rules-qa/v071-gate3-blind-a-clarifications.json
+
+    steps:
+      - name: Require paid-API confirmation
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Paid API confirmation was not provided."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Resolve lifecycle-selected live publication
+        id: plan
+        run: node scripts/resolve-current-live-publication.mjs
+
+      - name: Enforce frozen Gate 3 candidate
+        run: |
+          set -euo pipefail
+          test "${{ steps.plan.outputs.version }}" = "v0.7.1"
+          if [ "${{ steps.plan.outputs.behavior_revision }}" != "$GATE3_EXPECTED_BEHAVIOR_REVISION" ]; then
+            echo "Gate 3 candidate behavior moved: expected $GATE3_EXPECTED_BEHAVIOR_REVISION, found ${{ steps.plan.outputs.behavior_revision }}."
+            exit 1
+          fi
+          if [ "${{ steps.plan.outputs.authority_set_id }}" != "$GATE3_EXPECTED_AUTHORITY_SET" ]; then
+            echo "Gate 3 authority moved: expected $GATE3_EXPECTED_AUTHORITY_SET, found ${{ steps.plan.outputs.authority_set_id }}."
+            exit 1
+          fi
+
+      - name: Install release validation dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate lifecycle-selected published corpus
+        run: |
+          set -euo pipefail
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-github-release-contract.mjs
+
+      - name: Wait for frozen Rules Arbiter revision
+        env:
+          RULES_HEALTH_ENDPOINT: ${{ steps.plan.outputs.health_url }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.GATE3_EXPECTED_BEHAVIOR_REVISION;
+          const endpoint = process.env.RULES_HEALTH_ENDPOINT;
+          const attempts = 40;
+          for (let attempt = 1; attempt <= attempts; attempt += 1) {
+            try {
+              const response = await fetch(endpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.behaviorRevision || "missing";
+              console.log(`Deploy check ${attempt}/${attempts}: ${actual}`);
+              if (response.ok && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Deploy check ${attempt}/${attempts}: ${error.message}`);
+            }
+            if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, 15000));
+          }
+          console.error(`Production Rules Arbiter never reported frozen Gate 3 behavior ${expected}.`);
+          process.exit(1);
+          NODE
+
+      - name: Verify published corpus and Worker cache
+        env:
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/${{ steps.plan.outputs.manifest_path }}
+          RULES_CORPUS_HEALTH_ENDPOINT: ${{ steps.plan.outputs.corpus_health_url }}
+        run: |
+          node <<'NODE'
+          const expected = process.env.GATE3_EXPECTED_AUTHORITY_SET;
+          const manifestEndpoint = process.env.RULES_PUBLIC_MANIFEST;
+          const corpusEndpoint = process.env.RULES_CORPUS_HEALTH_ENDPOINT;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          let published = false;
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const response = await fetch(`${manifestEndpoint}?gate3=${process.env.GITHUB_SHA || "manual"}&attempt=${attempt}`, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authority_set_id || "missing";
+              console.log(`Published corpus check ${attempt}/120: ${actual}`);
+              if (response.ok && actual === expected) {
+                published = true;
+                break;
+              }
+            } catch (error) {
+              console.log(`Published corpus check ${attempt}/120: ${error.message}`);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          if (!published) {
+            console.error(`gauntlet.run never published frozen Gate 3 authority set ${expected}. No paid QA calls were made.`);
+            process.exit(1);
+          }
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(`${corpusEndpoint}?gate3=${process.env.GITHUB_SHA || "manual"}&attempt=${attempt}`, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authoritySetId || "missing";
+              console.log(`Worker corpus check ${attempt}/20: ${actual}`);
+              if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+          console.error(`Production Rules Arbiter did not load frozen Gate 3 authority set ${expected}. No paid QA calls were made.`);
+          process.exit(1);
+          NODE
+
+      - name: Prepare immutable blind tranche in ephemeral QA workspace
+        run: |
+          set -euo pipefail
+          cp rules-assistant/evals/rules-arbiter-gate3-blind-a.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
+          cat > rules-assistant/evals/rules-arbiter-evals.v071-corrections.json <<'JSON'
+          {
+            "schema": "gauntlet.rules-arbiter-evals.v071-corrections.v1",
+            "rulesVersion": "v0.7.1",
+            "purpose": "Empty corrections for immutable Gate 3 blind tranche A.",
+            "cases": []
+          }
+          JSON
+
+      - name: Run Gate 3 blind standard cases
+        id: standard
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_STANDARD_REPORT }}
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
+          GAUNTLET_RULES_QA_LIMIT: '0'
+        run: node scripts/run-v071-live-rules-qa.mjs
+
+      - name: Run Gate 3 blind clarification cases
+        id: clarification
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.GATE3_CLARIFICATION_REPORT }}
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
+        run: node scripts/run-v071-gate3-clarification-qa.mjs
+
+      - name: Write Gate 3 run metadata
+        if: always()
+        run: |
+          mkdir -p artifacts/rules-qa
+          cat > artifacts/rules-qa/v071-gate3-blind-a-metadata.json <<JSON
+          {
+            "schema": "gauntlet.rules-arbiter-gate3-run-metadata.v1",
+            "tranche": "A",
+            "rulesVersion": "v0.7.1",
+            "behaviorRevision": "$GATE3_EXPECTED_BEHAVIOR_REVISION",
+            "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
+            "repositorySha": "$GITHUB_SHA",
+            "standardOutcome": "${{ steps.standard.outcome }}",
+            "clarificationOutcome": "${{ steps.clarification.outcome }}"
+          }
+          JSON
+
+      - name: Upload Gate 3 blind reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-gate3-blind-a-v0.7.1
+          path: |
+            ${{ env.GATE3_STANDARD_REPORT }}
+            ${{ env.GATE3_CLARIFICATION_REPORT }}
+            artifacts/rules-qa/v071-gate3-blind-a-metadata.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce Gate 3 blind result
+        if: steps.standard.outcome != 'success' || steps.clarification.outcome != 'success'
+        run: exit 1
