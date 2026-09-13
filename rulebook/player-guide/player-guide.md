@@ -312,7 +312,7 @@ Suppose you attack onto the first enemy Territory and win. Your opponent retreat
 
 That delay matters: your opponent gets a chance to drive you back before you turn battlefield position into permanent control.
 
-If your opponent is occupying one of your Territories and you attack them there, you are making a **Counterattack**.
+A **Counterattack** is a battle you start against an opponent who is occupying a Territory you control.
 
 ### Capture
 
