@@ -24,7 +24,10 @@ import {
   V070_SUPPLIES_ID,
   registerV070SuppliesBattleEffect,
 } from './supplies-battle';
-import { V070_WITCHCRAFT_ID } from './copied-effect-callers';
+import {
+  V070_REND_THE_VEIL_ID,
+  V070_WITCHCRAFT_ID,
+} from './copied-effect-callers';
 import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
@@ -38,6 +41,7 @@ export * from './battle-effects-pre-capital-gains';
 declare module './battle-types' {
   interface V070BattleRuntime {
     deferredWitchcraftGambitCommitments?: V070BattleCardCommitment[];
+    deferredRendTheVeilGambitCommitments?: V070BattleCardCommitment[];
   }
 }
 
@@ -155,10 +159,13 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const deferredWitchcraft = encounteredAt === 'reveal_tactics'
-    ? takeDeferredWitchcraftGambits(state)
+  const deferredPostTactics = encounteredAt === 'reveal_tactics'
+    ? [
+        ...takeDeferredWitchcraftGambits(state),
+        ...takeDeferredRendTheVeilGambits(state),
+      ]
     : [];
-  const effectiveCommitments = [...commitments, ...deferredWitchcraft];
+  const effectiveCommitments = [...commitments, ...deferredPostTactics];
   const unsupported = effectiveCommitments.flatMap(commitment =>
     unsupportedRevealEffect(
       state,
@@ -173,14 +180,18 @@ export function resolveV070SupportedRevealEffects(
   for (const commitment of effectiveCommitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
 
-    // Witchcraft's printed Gambit/Tactic text is explicitly post-Tactics.
-    // A Witchcraft set as the Gambit remains a legal revealed commitment and
-    // may still be targeted by reveal-stage interference, but its own effect
-    // joins the ordinary reveal queue only after Tactics have been revealed.
+    // Witchcraft and Rend the Veil have printed Gambit/Tactic text that is
+    // explicitly post-Tactics. A copy set as the Gambit remains a legal
+    // revealed commitment, but its own effect joins the reveal queue only
+    // after Tactics have been revealed.
     if (encounteredAt === 'reveal_gambits'
       && commitment.role === 'gambit'
-      && cardId === V070_WITCHCRAFT_ID) {
-      deferWitchcraftGambit(state, commitment);
+      && (cardId === V070_WITCHCRAFT_ID || cardId === V070_REND_THE_VEIL_ID)) {
+      if (cardId === V070_WITCHCRAFT_ID) {
+        deferWitchcraftGambit(state, commitment);
+      } else {
+        deferRendTheVeilGambit(state, commitment);
+      }
       continue;
     }
 
@@ -257,6 +268,33 @@ function takeDeferredWitchcraftGambits(
   runtime.deferredWitchcraftGambitCommitments = [];
   return deferred.filter(commitment =>
     state.cardInstances[commitment.instanceId]?.cardId === V070_WITCHCRAFT_ID
+    && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+    && battleContainsCommitment(state, commitment)
+  );
+}
+
+function deferRendTheVeilGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredRendTheVeilGambitCommitments ??= [];
+  if (runtime.deferredRendTheVeilGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredRendTheVeilGambitCommitments.push({ ...commitment });
+}
+
+function takeDeferredRendTheVeilGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred = runtime.deferredRendTheVeilGambitCommitments ?? [];
+  runtime.deferredRendTheVeilGambitCommitments = [];
+  return deferred.filter(commitment =>
+    state.cardInstances[commitment.instanceId]?.cardId === V070_REND_THE_VEIL_ID
     && !isV070BattleCardEffectNegated(state, commitment.instanceId)
     && battleContainsCommitment(state, commitment)
   );

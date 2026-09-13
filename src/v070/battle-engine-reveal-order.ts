@@ -12,6 +12,7 @@ import {
 import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
 import { resolveV070ArcaneKnowledgeBattleChoice } from './arcane-knowledge-battle';
 import { resolveV070HeresyBattleChoice } from './heresy-battle';
+import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -39,6 +40,18 @@ export type V070BattleAction =
       use: true;
       targetInstanceId: string;
       targetEffectLabel: V070CopyableEffectLabel;
+    }
+  | {
+      type: 'resolve_rend_the_veil_battle';
+      playerId: PlayerId;
+      use: false;
+    }
+  | {
+      type: 'resolve_rend_the_veil_battle';
+      playerId: PlayerId;
+      use: true;
+      targetInstanceId: string;
+      targetEffectLabel: V070CopyableEffectLabel;
     };
 
 export function reduceV070BattleAction(
@@ -46,6 +59,23 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'rend_the_veil' && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_rend_the_veil_battle') {
+      throw new V070GameActionError(
+        'Choose whether Rend the Veil applies a Graveyard Tactic effect before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070RendTheVeilBattleChoice(
+      next,
+      action.playerId,
+      action.use,
+      action.use ? action.targetInstanceId : undefined,
+      action.use ? action.targetEffectLabel : undefined,
+    );
+    return next;
+  }
+
   if (pending?.kind === 'heresy' && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_heresy_battle') {
       throw new V070GameActionError(
@@ -95,6 +125,9 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_rend_the_veil_battle') {
+    throw new V070GameActionError('There is no open Rend the Veil battle-effect choice.');
+  }
   if (action.type === 'resolve_heresy_battle') {
     throw new V070GameActionError('There is no open Heresy battle-effect choice.');
   }

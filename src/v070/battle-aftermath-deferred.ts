@@ -111,11 +111,15 @@ export function settleV070DeferredBattleAftermathDestinations(
     return;
   }
 
-  // A non-result battle ending (for example a post-Onset withdrawal) cannot
-  // satisfy a win/loss-conditioned deferred effect and must not leak it into
-  // the next battle.
+  // A post-Onset non-result ending still completes applicable non-result
+  // Aftermath procedures. Unconditional destinations therefore settle, while
+  // win/loss-conditioned effects are discarded and cannot leak to a later battle.
   if (battleEndedWithoutResult(previousState, state)) {
     state.deferredBattleAftermathDestinationEffects = [];
+    for (const effect of effects) {
+      if (effect.condition !== 'always') continue;
+      applyDestinationEffect(state, effect);
+    }
   }
 }
 
@@ -263,7 +267,7 @@ function persistentSourceZone(
   zones: V070PlayerZones,
   instanceId: string,
 ): string[] | null {
-  for (const zone of [zones.drawPile, zones.hand, zones.discardPile]) {
+  for (const zone of [zones.drawPile, zones.hand, zones.discardPile, zones.graveyard]) {
     if (zone.includes(instanceId)) return zone;
   }
   return null;
