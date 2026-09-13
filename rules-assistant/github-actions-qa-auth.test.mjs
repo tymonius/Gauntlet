@@ -26,18 +26,28 @@ function validClaims(overrides = {}) {
 }
 
 describe("GitHub Actions live-QA OIDC authorization", () => {
-  test("pins authorization to the official manual main-branch workflow", () => {
+  test("pins authorization to the official manual main-branch QA workflows", () => {
     expect(githubActionsQaAuthContract).toEqual({
       audience: "gauntlet-rules-assistant-live-qa",
       repository: "tymonius/Gauntlet",
       repositoryId: "375950579",
       workflowRef: "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
+      workflowRefs: [
+        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
+        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
+      ],
       eventName: "workflow_dispatch",
       ref: "refs/heads/main",
       runnerEnvironment: "github-hosted",
       header: "X-Gauntlet-QA-OIDC"
     });
     expect(claimsAreAuthorized(validClaims(), now)).toBe(true);
+  });
+
+  test("authorizes the dedicated Gate 3 blind workflow on main", () => {
+    expect(claimsAreAuthorized(validClaims({
+      workflow_ref: githubActionsQaAuthContract.workflowRefs[1]
+    }), now)).toBe(true);
   });
 
   test.each([
