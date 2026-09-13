@@ -1,0 +1,69 @@
+name: Refine Comprehensive Rules Part XVI
+
+on:
+  push:
+    branches: [rules/comprehensive-part-xvi-work]
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Add publication punctuation and heading validation
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+
+          const rendererPath = 'scripts/render-comprehensive-rules.mjs';
+          let renderer = await readFile(rendererPath, 'utf8');
+          const oldBody = "    const reference = entry.sections.join('; ');\n    const body = sourceValue || `See ${reference}.`;";
+          const newBody = "    const reference = entry.sections.join('; ');\n    const sourceBody = sourceValue && /[.!?]$/.test(sourceValue.trim()) ? sourceValue : sourceValue ? `${sourceValue}.` : null;\n    const body = sourceBody || `See ${reference}.`;";
+          if (!renderer.includes(newBody)) {
+            if (!renderer.includes(oldBody)) throw new Error('Part XVI renderer body marker not found.');
+            renderer = renderer.replace(oldBody, newBody);
+            await writeFile(rendererPath, renderer);
+          }
+
+          const validatorPath = 'scripts/validate-rules-term-registry.mjs';
+          let validator = await readFile(validatorPath, 'utf8');
+          const oldReads = "const authority = JSON.parse(await readFile(resolve(ROOT, 'game-data/current-game.json'), 'utf8'));\nconst registry";
+          const newReads = "const authority = JSON.parse(await readFile(resolve(ROOT, 'game-data/current-game.json'), 'utf8'));\nconst comprehensiveRules = await readFile(resolve(ROOT, 'rulebook/comprehensive/comprehensive-rules.md'), 'utf8');\nconst registry";
+          if (!validator.includes(newReads)) {
+            if (!validator.includes(oldReads)) throw new Error('Term registry validator read marker not found.');
+            validator = validator.replace(oldReads, newReads);
+          }
+          const oldSectionCheck = "    if (!/^(?:[IVXLCDM]+\\.\\d+ .+|Part [IVXLCDM]+ — .+)$/.test(section)) {\n      throw new Error(`Term registry entry ${entry.id} has malformed section reference: ${section}`);\n    }";
+          const newSectionCheck = "    if (!/^(?:[IVXLCDM]+\\.\\d+ .+|Part [IVXLCDM]+ — .+)$/.test(section)) {\n      throw new Error(`Term registry entry ${entry.id} has malformed section reference: ${section}`);\n    }\n    const expectedHeading = section.startsWith('Part ') ? `## ${section}` : `### ${section}`;\n    if (!comprehensiveRules.split('\\n').includes(expectedHeading)) {\n      throw new Error(`Term registry entry ${entry.id} references missing Comprehensive Rules heading: ${section}`);\n    }";
+          if (!validator.includes(newSectionCheck)) {
+            if (!validator.includes(oldSectionCheck)) throw new Error('Term registry validator section marker not found.');
+            validator = validator.replace(oldSectionCheck, newSectionCheck);
+          }
+          await writeFile(validatorPath, validator);
+          NODE
+      - name: Regenerate and validate
+        run: |
+          node scripts/render-comprehensive-rules.mjs --write
+          node scripts/validate-rules-term-registry.mjs
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/validate-faction-rules-authority.mjs
+          node scripts/validate-shared-rules-authority.mjs
+          node scripts/render-comprehensive-rules.mjs
+      - name: Commit refined durable files
+        run: |
+          if git diff --quiet -- scripts/render-comprehensive-rules.mjs scripts/validate-rules-term-registry.mjs rulebook/comprehensive/comprehensive-rules.md; then
+            echo "Part XVI refinement already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/render-comprehensive-rules.mjs scripts/validate-rules-term-registry.mjs rulebook/comprehensive/comprehensive-rules.md
+          git commit -m "Harden Comprehensive Rules Part XVI references"
+          git push
