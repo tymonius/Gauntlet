@@ -5,6 +5,10 @@ const gate3 = JSON.parse(readFileSync(
   new URL("./evals/rules-arbiter-gate3-blind-a.v071.json", import.meta.url),
   "utf8"
 ));
+const playerLanguage = JSON.parse(readFileSync(
+  new URL("./evals/rules-arbiter-gate3-blind-a-player-language.v071.json", import.meta.url),
+  "utf8"
+));
 const clarifications = JSON.parse(readFileSync(
   new URL("./evals/rules-arbiter-gate3-blind-a-clarifications.v071.json", import.meta.url),
   "utf8"
@@ -24,6 +28,12 @@ test("Gate 3 blind tranche A is frozen to the certified r9 candidate", () => {
   expect(gate3.authoritySetId).toBe(EXPECTED_AUTHORITY);
   expect(gate3.cases).toHaveLength(43);
 
+  expect(playerLanguage.rulesVersion).toBe("v0.7.1");
+  expect(playerLanguage.tranche).toBe("A");
+  expect(playerLanguage.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
+  expect(playerLanguage.authoritySetId).toBe(EXPECTED_AUTHORITY);
+  expect(playerLanguage.cases).toHaveLength(20);
+
   expect(clarifications.rulesVersion).toBe("v0.7.1");
   expect(clarifications.tranche).toBe("A");
   expect(clarifications.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
@@ -31,9 +41,10 @@ test("Gate 3 blind tranche A is frozen to the certified r9 candidate", () => {
   expect(clarifications.cases).toHaveLength(3);
 });
 
-test("Gate 3 standard cases are unique and do not reuse Gate 2 questions", () => {
-  const ids = gate3.cases.map((item) => item.id);
-  const questions = gate3.cases.map((item) => item.question.trim().toLowerCase());
+test("Gate 3 scored cases are unique and do not reuse Gate 2 questions", () => {
+  const scored = [...gate3.cases, ...playerLanguage.cases];
+  const ids = scored.map((item) => item.id);
+  const questions = scored.map((item) => item.question.trim().toLowerCase());
   const gate2Questions = new Set(gate2.cases.map((item) => item.question.trim().toLowerCase()));
 
   expect(new Set(ids).size).toBe(ids.length);
@@ -82,9 +93,19 @@ test("Gate 3 tranche A covers all required benchmark surfaces", () => {
   expect(gate3.cases.some((item) => item.expectedClassification === "out_of_scope")).toBe(true);
 });
 
+test("Gate 3 player-language cases preserve realistic novice phrasing", () => {
+  expect(playerLanguage.cases.every((item) => item.category === "player-language")).toBe(true);
+  const questions = playerLanguage.cases.map((item) => item.question);
+  expect(questions).toContain("how many battle card do i get to use");
+  expect(questions).toContain("i already put down a gambit can i still use a tactic too");
+  expect(questions).toContain("what happens if my deck runs out");
+  expect(questions.some((question) => question === question.toLowerCase())).toBe(true);
+  expect(questions.some((question) => question.split(/\s+/).length <= 6)).toBe(true);
+});
+
 test("Gate 3 classification expectations use the live QA contract", () => {
   const allowed = new Set(["explicit", "inferred", "provisional", "out_of_scope"]);
-  for (const item of gate3.cases) {
+  for (const item of [...gate3.cases, ...playerLanguage.cases]) {
     expect(allowed.has(item.expectedClassification)).toBe(true);
     if (["explicit", "inferred"].includes(item.expectedClassification)) {
       expect(Array.isArray(item.expectedSourcePatterns)).toBe(true);
