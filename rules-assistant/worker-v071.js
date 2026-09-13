@@ -586,10 +586,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
 async function askOpenAI({ env, request, question, history, sources }) {
   const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
   const questionText = adjudicationReminder
-    ? `${question}
-
-QUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification
-${adjudicationReminder}`
+    ? `${question}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
     : question;
   const sourceText = sources.length
     ? sources.map((source, index) => [
@@ -784,7 +781,9 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const immediateRecentNormalized = normalizeReferentSubject(immediateRecent);
-  const recentCardAuthorityIds = isContextDependentQuestion(current)
+  const recentCardFollowupCue = currentWordCount <= 14
+    && /\b(?:it|its|that|this|those|these|same|one|extra|again|another)\b/.test(current);
+  const recentCardAuthorityIds = recentCardFollowupCue
     ? documents
         .filter((document) => String(document?.id || "").startsWith("card:"))
         .filter((document) => {
@@ -812,7 +811,6 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const acceptedResponseCue = /\b(?:accept(?:s|ed|ing)?|say(?:s|ing)? yes|said yes|agree(?:s|d|ing)?)\b/.test(current);
   const termsOrDealCue = /\b(?:terms?|deal|offer)\b/.test(current);
   const acceptedTermsFocus = acceptedResponseCue && termsOrDealCue;
-  const acceptedDealBattleFocus = acceptedTermsFocus && /\b(?:fight|battle)\b/.test(current);
   const battleCardReplacementFocus = /\b(?:replace|replaces|replaced|replacing|replacement|replacements)\b/.test(current)
     && /\b(?:gambits?|tactics?|battle cards?)\b/.test(combined);
   const battleCardReplacementDestinationFocus = battleCardReplacementFocus
@@ -938,9 +936,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
               ? BATTLE_CARD_QUANTITY_AUTHORITY_IDS
               : destinationFocus && battleCardFocus
                 ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-                : acceptedDealBattleFocus
-                  ? ACCEPTED_TERMS_AUTHORITY_IDS
-                  : [];
+                : [];
   const preferredAuthorityIds = [...new Set([
     ...topicAuthorityIds,
     ...recentCardAuthorityIds
