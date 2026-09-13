@@ -74,7 +74,7 @@
     "dev:legacy:cli": "tsx legacy/digital-engine-v06/cli/dev-runner-v06.ts",
     "dev:legacy:gui": "tsx legacy/digital-engine-v06/gui/dev-server-v06.ts",
     "card-authority:check": "node scripts/card-authority/validate-current-game.mjs && node scripts/card-authority/validate-face-catalog.mjs && node scripts/card-authority/validate-consumers.mjs && vitest run tests/card-authority",
-    "card-authority:render": "node scripts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs"
+    "card-authority:render": "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
