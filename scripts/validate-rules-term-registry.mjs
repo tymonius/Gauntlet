@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { ROOT } from './current-game-authority.mjs';
 
 const contract = JSON.parse(await readFile(resolve(ROOT, 'config/rules-surface-contract.json'), 'utf8'));
-const authority = JSON.parse(await readFile(resolve(ROOT, 'game-data/current-game.json'), 'utf8'));
+const authority = JSON.parse(await readFile(resolve(ROOT, 'packages/game-data/current-game.json'), 'utf8'));
 const comprehensiveRules = await readFile(resolve(ROOT, 'rulebook/comprehensive/comprehensive-rules.md'), 'utf8');
 const registry = contract?.publicationArchitecture?.comprehensiveRules?.termRegistry;
 
