@@ -18,6 +18,15 @@ jobs:
           node-version: 22
       - name: Materialize term registry and renderer
         run: node scripts/materialize-part-xvi.mjs
+      - name: Repair temporary renderer materialization quoting
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const path = 'scripts/render-comprehensive-rules.mjs';
+          let content = await readFile(path, 'utf8');
+          content = content.replaceAll('\\`', '`').replaceAll('\\${', '${');
+          await writeFile(path, content);
+          NODE
       - name: Render Comprehensive Rules
         run: node scripts/render-comprehensive-rules.mjs --write
       - name: Validate Part XVI and publication architecture
