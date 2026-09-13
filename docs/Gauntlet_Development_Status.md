@@ -84,7 +84,15 @@ TTS remains the supported remote-play solution while the rules-aware digital gam
 
 Do not destabilize the current two-player game to accelerate Arena. Outstanding problems remain branching Fronts, collisions/Position capacity, directional retreat and Breakouts, elimination cleanup, multiplayer targeting/duration, faction-victory adaptation, compatibility auditing, and physical geometry/pacing tests.
 
-### 8. Release and production discipline
+### 8. Alliances
+
+[Gauntlet: Alliances issue #1696](https://github.com/tymonius/Gauntlet/issues/1696) preserves the exploratory fixed-team 2v2 design track. The active concept record lives under [`docs/alliances/`](alliances/).
+
+Alliances is deliberately deferred rather than competing with current two-player or Arena work. The current working direction uses a **2 × 6 battlefield**, two parallel Gauntlet columns joined across six ranks, **2 shared Movement per Alliance Movement phase**, straight/diagonal maneuver, passing and flanking, allied co-occupation, 1v1/2v1/2v2 battles, possible concurrent engagements, a team-level **Rout** consequence, hostile-Territory consolidation to prevent footraces, and a requirement to control both enemy final-rank Territories before Last Stand access.
+
+Before implementation, rebase the Alliances inheritance model against the then-current canonical two-player release and test geometry/battle flow before attempting a complete faction compatibility rewrite.
+
+### 9. Release and production discipline
 
 For every future release:
 
