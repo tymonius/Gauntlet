@@ -850,6 +850,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
     ? [namedCardSource.canonicalId, namedCardRuleReference.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
     : [];
+  const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;
   const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
@@ -916,7 +917,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     ? DEED_CONTIGUITY_AUTHORITY_IDS
     : fieldcraftFocus
       ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
-    : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !(destinationFocus && battleCardFocus) && !battleCardQuantityFocus && !acceptedTermsFocus
+    : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !genericBattleCardDestinationFocus && !battleCardQuantityFocus && !acceptedTermsFocus
       ? namedCardSpecificityAuthorityIds
     : specificRulePrecedenceFocus
       ? specificRulePrecedenceAuthorityIds
@@ -934,7 +935,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
             ? battleCardReplacementAuthorityIds
             : battleCardQuantityFocus
               ? BATTLE_CARD_QUANTITY_AUTHORITY_IDS
-              : destinationFocus && battleCardFocus
+              : genericBattleCardDestinationFocus
                 ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
                 : [];
   const preferredAuthorityIds = [...new Set([
