@@ -5,7 +5,7 @@
 
 # Comprehensive Gauntlet Rules
 
-> **Direct authority projection.** This file is generated from `game-data/current-game.json`. Parts I–XV are active generated projections. Part XVI remains staged because no canonical definitions/index authority has yet been established.
+> **Direct authority projection.** This file is generated from `game-data/current-game.json`. Parts I–XVI are active generated projections. Part XVI uses publication-only term metadata from the rules-surface contract while all mechanical definitions remain direct projections of canonical gameplay authority.
 
 The Comprehensive Rules are the single technical rules corpus. The Player's Guide and Faction Guides are teaching surfaces and may simplify wording without changing mechanics.
 
@@ -1731,4 +1731,238 @@ End their turn, then advance one Position toward their end. If this movement ini
 <!-- RULES-PART:definitions-index -->
 ## Part XVI — Definitions and Index
 
-> **Projection staged.** Definitions and the index will be assembled only after a canonical definitions/index source is established; this projection does not invent one.
+### XVI.1 Defined Terms and Cross-References
+
+**Action.** The active player normally takes one Action total during the turn, during either Opening or Denouement. See also **Opening**, **Denouement**.
+
+**Advantage and Disadvantage.** See V.5 Advantage and disadvantage.
+
+**Aftermath.** See V.10 Aftermath.
+
+**Arcane.** Arcane is a trait, not faction allegiance. Mystics cards are Arcane, and cards from other pools may also have the trait. Arcane cards are marked with the Mystics sigil, shown in the card's faction color or the Neutral color on Neutral cards. The symbol's shape identifies the Arcane trait; its color reflects the card's allegiance.
+
+**Asset.** See VII.3 Banking Assets; VII.5 Asset Removal. See also **Asset Bank**.
+
+**Asset Bank.** The public area containing a player’s banked Assets. See also **Asset**.
+
+**Battle Total.** A player's battle total is the selected battle die result plus all applicable numerical battle-total modifiers.
+
+**Blasphemy.** Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control. See also **Conviction**, **Arcane**.
+
+**Bound Card.** A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
+
+**Capital.** See Part XII — Financier Rules. See also **Capital Limit**, **Treasury**, **Deed**.
+
+**Capital Limit.** Territories you control + total card value in your Treasury See also **Capital**, **Treasury**.
+
+**Capture.** During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line, add that Territory to your Front Line. Normal Capture advances the Front Line by at most one Territory per turn. When Capture adds the final opposing Territory to your Front Line, your Front Line spans the entire Gauntlet; you immediately run the Gauntlet and win. See also **Front Line**, **Control**.
+
+**Command.** See Part X — Military Rules. See also **Orders**.
+
+**Condemnation.** Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile. See also **Conviction**.
+
+**Control.** See VI.1 Front Line; VI.2 Capture. See also **Front Line**, **Occupation**.
+
+**Controlling Interest.** If you own the Deeds to every Territory currently in the Gauntlet, you win immediately. See also **Deed**.
+
+**Convergence.** While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual. See also **Rite**, **Ritual of Ascension**.
+
+**Conviction.** See Part XV — Inquisition Rules. See also **Purge**, **Condemnation**, **Blasphemy**.
+
+**Counterattack.** A Counterattack is a battle initiated by the controller of a Territory against an opponent who is the occupier of that Territory. See also **Occupation**.
+
+**Deck.** See II.1 Deck construction. See also **Draw Pile**.
+
+**Deed.** See Part XII — Financier Rules. See also **Capital**, **Controlling Interest**.
+
+**Deeds.** See **Deed**.
+
+**Defensive Edge.** When the defender has Defensive Edge, the defender wins tied battle totals. The defender normally has it while controlling the contested Territory or making a Last Stand, unless an effect removes it. See also **Tiebreak Roll**.
+
+**Denouement.** See III.1 Turn sequence; III.2 Actions. See also **Action**, **Opening**.
+
+**Discard Pile.** A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile. See also **Draw Pile**, **Graveyard**.
+
+**Draw Pile.** The face-down pile formed from the Deck. Draw cards from its top. See also **Deck**, **Discard Pile**.
+
+**Faction Feature.** A named faction-specific mechanic shared by the faction. A Faction Feature may have multiple uses, modes, or procedures; those are described under the feature rather than treated as separate Features. See also **Leader Ability**.
+
+**Fall Back.** Move one Position toward your own end. See also **Retreat**, **Withdrawal**.
+
+**Financial Capacity.** After Capture and before Draw, if Treasury value exceeds Territories controlled, the Financier may take one Action during both Opening and Denouement that turn, provided at least one Action is spent on a Financier Faction Feature marked 1 Action.
+
+**Front Line.** The unbroken sequence of Territories a player controls from their own end. Control cannot skip an opposing Territory, although a Player Token may move beyond its Front Line. See also **Control**, **Capture**.
+
+**Gambit.** See V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings. See also **Tactic**, **Reserve**.
+
+**Gambits.** See **Gambit**.
+
+**Gauntlet.** Six Territory Cards arranged in one column.
+
+**Graveyard.** A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them. See also **Discard Pile**.
+
+**Hand.** The private cards held by a player. Physically setting the Hand aside during a battle does not move those cards to another zone.
+
+**Influence.** See Part XI — Diplomat Rules. See also **Proposal**, **Stake**, **Terms**.
+
+**Intel.** See Part XIII — Intelligence Rules. See also **Operation Progress**, **Mission**, **Special Operation**.
+
+**Interference.** See Part XIII — Intelligence Rules. See also **Surveillance**, **Reveal-stage Interference**.
+
+**Invocation.** Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile. See also **Rite**, **Arcane**.
+
+**Last Stand.** After the opponent is forced beyond their own end, an attacker on the opponent's final Territory may initiate the Last Stand by using a separate legal movement sequence to Advance beyond that end. See also **Defensive Edge**.
+
+**Leader Ability.** A mechanic or option supplied specifically by the chosen Leader rather than shared by the faction. A Leader Ability may provide a specific option used through a shared Faction Feature, such as an individual Military Order. See also **Faction Feature**.
+
+**Leverage.** Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence. See also **Influence**, **Terms**.
+
+**Mission.** An Intelligence card with a printed Mission requirement. See also **Operation Progress**, **Special Operation**.
+
+**Missions.** See **Mission**.
+
+**Negation.** A negated card has no effect but remains in battle.
+
+**Occupation.** Occupation is the state in which a player's token is on an opposing Territory that player does not control. That player is the occupier. Occupation does not itself change control. See also **Control**, **Counterattack**.
+
+**Occupier.** See **Occupation**.
+
+**Onset.** When movement initiates a battle, enter Onset. Establish the attacker, defender, contested Position, and attacker's previous Position. Resolve Terms first when applicable. If the battle is prevented or a player withdraws during Onset, end the battle sequence without setting Gambits and without a battle result. Otherwise resolve other effects that apply during Onset or before Gambits are set, then proceed to Gambits.
+
+**Opening.** See III.1 Turn sequence; III.2 Actions. See also **Action**, **Denouement**.
+
+**Operation Progress.** Operation Progress is the number of normal Missions you have completed. Increase it by 1 whenever you complete a normal Mission. It is not normally spent. See also **Intel**, **Mission**.
+
+**Orders.** Orders are the Military Faction Feature. The chosen Leader supplies that player’s available Orders as Leader Abilities. Spend the listed Command and resolve the Order at its stated timing without spending an Action. See also **Command**.
+
+**Overlay.** An Overlay is a persistent card attached to a Territory. The top exposed Overlay is active and supersedes the printed effect immediately beneath it while exposed.
+
+**Peace Treaty.** If six different Proposals are ratified at this check, the Diplomat wins immediately. See also **Proposal**, **Ratification**.
+
+**Position.** A Position is any Territory or off-board space where a Player Token may be placed under the positioning rules.
+
+**Proposal.** See Part XI — Diplomat Rules. See also **Stake**, **Ratification**, **Terms**.
+
+**Proposals.** See **Proposal**.
+
+**Purge.** See Part XV — Inquisition Rules. See also **Conviction**.
+
+**Purification.** If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately. See also **Conviction**.
+
+**Ratification.** An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article. See also **Proposal**, **Peace Treaty**.
+
+**Reserve.** A temporary private zone formed during one battle. Each player normally draws three cards to form it. Cards remaining there normally go to the Discard Pile during the Aftermath. See also **Gambit**, **Tactic**.
+
+**Retreat.** A losing player retreats. Retreat follows a battle result and applies normal win, loss, Occupation, and result effects. See also **Fall Back**, **Withdrawal**.
+
+**Reveal-stage Interference.** An effect of a revealed Gambit or Tactic that reveals, negates, returns, discards, replaces, or otherwise prevents another Gambit or Tactic at that same reveal stage from applying normally. See also **Interference**.
+
+**Rite.** See Part XIV — Mystics Rules. See also **Ritual of Ascension**, **Invocation**, **Transmutation**, **Convergence**.
+
+**Rites.** See **Rite**.
+
+**Ritual.** See **Ritual of Ascension**.
+
+**Ritual of Ascension.** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game. See also **Rite**, **Convergence**.
+
+**Special Operation.** See Part XIII — Intelligence Rules. See also **Mission**, **Operation Progress**, **Intel**.
+
+**Special Operations.** See **Special Operation**.
+
+**Stake.** See Part XI — Diplomat Rules. See also **Influence**, **Proposal**, **Terms**.
+
+**Surveillance.** See Part XIII — Intelligence Rules. See also **Intel**, **Interference**.
+
+**Tactic.** See V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings. See also **Gambit**, **Reserve**.
+
+**Tactics.** See **Tactic**.
+
+**Terms.** Terms are resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused. Accepted Terms end the battle sequence during Onset. Refused Terms apply their Refused effect and any refusal modifiers, then Onset continues unless that effect ends the sequence. See also **Proposal**, **Stake**.
+
+**Tiebreak Roll.** Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or previous battle totals. Higher roll wins; reroll further ties. See also **Defensive Edge**.
+
+**Transmutation.** Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total. See also **Rite**.
+
+**Treasury.** See Part XII — Financier Rules. See also **Capital**, **Capital Limit**.
+
+**Withdrawal.** Withdrawal ends the battle sequence without determining a winner. There is no winner or loser, and victory, loss, and retreat triggers do not occur. See also **Fall Back**, **Retreat**.
+
+### XVI.2 Rules Index
+
+- **Action:** III.2 Actions
+- **Advantage and Disadvantage:** V.5 Advantage and disadvantage
+- **Aftermath:** V.10 Aftermath
+- **Arcane:** Part XIV — Mystics Rules
+- **Asset:** VII.3 Banking Assets; VII.5 Asset Removal
+- **Asset Bank:** VII.1 Card zones
+- **Battle Total:** V.4 Battle total
+- **Blasphemy:** Part XV — Inquisition Rules
+- **Bound Card:** VII.6 Bound cards
+- **Capital:** Part XII — Financier Rules
+- **Capital Limit:** Part XII — Financier Rules
+- **Capture:** VI.2 Capture
+- **Command:** Part X — Military Rules
+- **Condemnation:** Part XV — Inquisition Rules
+- **Control:** VI.1 Front Line; VI.2 Capture
+- **Controlling Interest:** Part XII — Financier Rules
+- **Convergence:** Part XIV — Mystics Rules
+- **Conviction:** Part XV — Inquisition Rules
+- **Counterattack:** IV.5 Counterattack
+- **Deck:** II.1 Deck construction
+- **Deed:** Part XII — Financier Rules
+- **Deeds:** See **Deed** — Part XII — Financier Rules
+- **Defensive Edge:** V.6 Defensive Edge and Tiebreak Roll
+- **Denouement:** III.1 Turn sequence; III.2 Actions
+- **Discard Pile:** VII.1 Card zones; III.3 Draw
+- **Draw Pile:** VII.1 Card zones; III.3 Draw
+- **Faction Feature:** I.1 Faction Features and Leader Abilities
+- **Fall Back:** IV.2 Normal movement
+- **Financial Capacity:** Part XII — Financier Rules
+- **Front Line:** VI.1 Front Line; VI.2 Capture
+- **Gambit:** V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
+- **Gambits:** See **Gambit** — V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
+- **Gauntlet:** IV.1 Gauntlet and Position
+- **Graveyard:** VII.1 Card zones
+- **Hand:** VII.1 Card zones
+- **Influence:** Part XI — Diplomat Rules
+- **Intel:** Part XIII — Intelligence Rules
+- **Interference:** Part XIII — Intelligence Rules
+- **Invocation:** Part XIV — Mystics Rules
+- **Last Stand:** VI.4 Last Stand
+- **Leader Ability:** I.1 Faction Features and Leader Abilities
+- **Leverage:** Part XI — Diplomat Rules
+- **Mission:** Part XIII — Intelligence Rules
+- **Missions:** See **Mission** — Part XIII — Intelligence Rules
+- **Negation:** VIII.6 Negation
+- **Occupation:** IV.4 Occupation
+- **Occupier:** See **Occupation** — IV.4 Occupation
+- **Onset:** V.3 Onset
+- **Opening:** III.1 Turn sequence; III.2 Actions
+- **Operation Progress:** Part XIII — Intelligence Rules
+- **Orders:** Part X — Military Rules
+- **Overlay:** IX.1 Overlays
+- **Peace Treaty:** Part XI — Diplomat Rules
+- **Position:** IV.1 Gauntlet and Position
+- **Proposal:** Part XI — Diplomat Rules
+- **Proposals:** See **Proposal** — Part XI — Diplomat Rules
+- **Purge:** Part XV — Inquisition Rules
+- **Purification:** Part XV — Inquisition Rules
+- **Ratification:** Part XI — Diplomat Rules
+- **Reserve:** V.2 Commitment sources and Reserve; VII.1 Card zones
+- **Retreat:** V.8 Retreat and withdrawal
+- **Reveal-stage Interference:** VIII.5 Reveal-stage interference
+- **Rite:** Part XIV — Mystics Rules
+- **Rites:** See **Rite** — Part XIV — Mystics Rules
+- **Ritual:** See **Ritual of Ascension** — Part XIV — Mystics Rules
+- **Ritual of Ascension:** Part XIV — Mystics Rules
+- **Special Operation:** Part XIII — Intelligence Rules
+- **Special Operations:** See **Special Operation** — Part XIII — Intelligence Rules
+- **Stake:** Part XI — Diplomat Rules
+- **Surveillance:** Part XIII — Intelligence Rules
+- **Tactic:** V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
+- **Tactics:** See **Tactic** — V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
+- **Terms:** V.3 Onset; Part XI — Diplomat Rules
+- **Tiebreak Roll:** V.6 Defensive Edge and Tiebreak Roll
+- **Transmutation:** Part XIV — Mystics Rules
+- **Treasury:** Part XII — Financier Rules
+- **Withdrawal:** V.8 Retreat and withdrawal

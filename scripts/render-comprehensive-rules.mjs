@@ -659,6 +659,57 @@ ${renderTree(overlay, 4)}
 ${renderTree(rules.cards_becoming_territories, 4)}`;
 }
 
+function resolveAuthorityPath(authority, path) {
+  let value = authority;
+  for (const segment of path) {
+    if (value == null || !(segment in value)) {
+      throw new Error(`Part XVI term source does not resolve: ${path.join('.')}`);
+    }
+    value = value[segment];
+  }
+  return value;
+}
+
+function renderDefinitionsIndex(authority, contract) {
+  const registry = contract?.publicationArchitecture?.comprehensiveRules?.termRegistry;
+  if (!Array.isArray(registry) || registry.length === 0) {
+    throw new Error('Part XVI requires a non-empty Comprehensive Rules termRegistry.');
+  }
+
+  const byId = new Map(registry.map(entry => [entry.id, entry]));
+  const definitionEntries = [];
+  const indexEntries = [];
+
+  for (const entry of registry) {
+    const sourceValue = entry.definitionSource
+      ? resolveAuthorityPath(authority, entry.definitionSource.path)
+      : null;
+    if (sourceValue != null && typeof sourceValue !== 'string') {
+      throw new Error(`Part XVI definition source must resolve to a string: ${entry.id}`);
+    }
+
+    const reference = entry.sections.join('; ');
+    const body = sourceValue || `See ${reference}.`;
+    const related = (entry.seeAlso || [])
+      .map(id => byId.get(id)?.term)
+      .filter(Boolean);
+    const relatedText = related.length ? ` See also ${related.map(term => `**${term}**`).join(', ')}.` : '';
+    definitionEntries.push({ term: entry.term, text: `**${entry.term}.** ${body}${relatedText}` });
+    indexEntries.push({ term: entry.term, text: `- **${entry.term}:** ${reference}` });
+
+    for (const alias of entry.aliases || []) {
+      definitionEntries.push({ term: alias, text: `**${alias}.** See **${entry.term}**.` });
+      indexEntries.push({ term: alias, text: `- **${alias}:** See **${entry.term}** — ${reference}` });
+    }
+  }
+
+  const sortEntries = entries => entries.sort((a, b) => a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }));
+  const definitions = sortEntries(definitionEntries).map(entry => entry.text).join('\n\n');
+  const index = sortEntries(indexEntries).map(entry => entry.text).join('\n');
+
+  return `${partHeader(...PARTS[15])}\n\n### XVI.1 Defined Terms and Cross-References\n\n${definitions}\n\n### XVI.2 Rules Index\n\n${index}`;
+}
+
 function validateArchitecture(contract) {
   const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;
   if (!comprehensive || comprehensive.dependencyMode !== 'direct') {
@@ -694,7 +745,7 @@ export function renderComprehensiveRules(authority, contract) {
       { heading: 'Rites and Ritual of Ascension', value: authority.mystics },
     ]),
     renderFactionPart(authority, 14, 'inquisition'),
-    stagedPart(...PARTS[15], 'Definitions and the index will be assembled only after a canonical definitions/index source is established; this projection does not invent one.'),
+    renderDefinitionsIndex(authority, contract),
   ];
 
   return `<!-- GENERATED FILE: scripts/render-comprehensive-rules.mjs -->
@@ -704,7 +755,7 @@ export function renderComprehensiveRules(authority, contract) {
 
 # Comprehensive Gauntlet Rules
 
-> **Direct authority projection.** This file is generated from \`game-data/current-game.json\`. Parts I–XV are active generated projections. Part XVI remains staged because no canonical definitions/index authority has yet been established.
+> **Direct authority projection.** This file is generated from \`game-data/current-game.json\`. Parts I–XVI are active generated projections. Part XVI uses publication-only term metadata from the rules-surface contract while all mechanical definitions remain direct projections of canonical gameplay authority.
 
 The Comprehensive Rules are the single technical rules corpus. The Player's Guide and Faction Guides are teaching surfaces and may simplify wording without changing mechanics.
 
