@@ -23,8 +23,12 @@ jobs:
           node --input-type=module <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           const path = 'scripts/render-comprehensive-rules.mjs';
+          const marker = 'function validateArchitecture(contract) {';
           let content = await readFile(path, 'utf8');
-          content = content.replaceAll('\\`', '`').replaceAll('\\${', '${');
+          const markerIndex = content.indexOf(marker);
+          if (markerIndex < 0) throw new Error('Renderer architecture marker not found.');
+          const prefix = content.slice(0, markerIndex).replaceAll('\\`', '`').replaceAll('\\${', '${');
+          content = prefix + content.slice(markerIndex);
           await writeFile(path, content);
           NODE
       - name: Render Comprehensive Rules
