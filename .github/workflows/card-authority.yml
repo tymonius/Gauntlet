@@ -146,7 +146,7 @@ jobs:
         run: npm run card-authority:render
 
       - name: Validate homepage card showcase consumer
-        run: node scripts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs
+        run: node tts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs
 
       - name: Upload card authority render report
         if: always()
