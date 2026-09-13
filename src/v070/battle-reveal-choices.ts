@@ -48,11 +48,25 @@ export interface V070HeresyBattleRevealChoice {
   parentApplication?: V070CopiedEffectApplication;
 }
 
+export interface V070RendTheVeilBattleRevealCandidate {
+  sourceInstanceId: string;
+  effectLabel: V070CopyableEffectLabel;
+}
+
+export interface V070RendTheVeilBattleRevealChoice {
+  kind: 'rend_the_veil';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidates: V070RendTheVeilBattleRevealCandidate[];
+  parentApplication?: V070CopiedEffectApplication;
+}
+
 export type V070BattleRevealChoice =
   | previous.V070BattleRevealChoice
   | V070WitchcraftBattleRevealChoice
   | V070ArcaneKnowledgeBattleRevealChoice
-  | V070HeresyBattleRevealChoice;
+  | V070HeresyBattleRevealChoice
+  | V070RendTheVeilBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
@@ -62,6 +76,8 @@ declare module './battle-types' {
     arcaneKnowledgeBattleRevealChoiceOpen?: boolean;
     pendingHeresyBattleRevealChoice?: V070HeresyBattleRevealChoice | null;
     heresyBattleRevealChoiceOpen?: boolean;
+    pendingRendTheVeilBattleRevealChoice?: V070RendTheVeilBattleRevealChoice | null;
+    rendTheVeilBattleRevealChoiceOpen?: boolean;
   }
 }
 
@@ -205,10 +221,57 @@ export function queueV070HeresyBattleRevealChoice(
   });
 }
 
+export function queueV070RendTheVeilBattleRevealChoice(
+  state: V070GameState,
+  choice: V070RendTheVeilBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Rend the Veil battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Rend the Veil cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingRendTheVeilBattleRevealChoice = {
+    ...choice,
+    candidates: choice.candidates.map(candidate => ({ ...candidate })),
+    parentApplication: choice.parentApplication
+      ? structuredClone(choice.parentApplication)
+      : undefined,
+  };
+  runtime.rendTheVeilBattleRevealChoiceOpen = true;
+
+  appendV070Event(state, {
+    type: 'rend_the_veil_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'mystics-rend-the-veil',
+      candidateCount: choice.candidates.length,
+      mandatory: false,
+    },
+  });
+  appendV070Event(state, {
+    type: 'rend_the_veil_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      candidates: choice.candidates.map(candidate => ({ ...candidate })),
+    },
+  });
+}
+
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingHeresyBattleRevealChoice
+  return state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
+    ?? state.battleRuntime?.pendingHeresyBattleRevealChoice
     ?? state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice
     ?? state.battleRuntime?.pendingWitchcraftBattleRevealChoice
     ?? previous.pendingV070BattleRevealChoice(state);
@@ -217,6 +280,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingRendTheVeilBattleRevealChoice) {
+    return Boolean(state.battleRuntime.rendTheVeilBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingHeresyBattleRevealChoice) {
     return Boolean(state.battleRuntime.heresyBattleRevealChoiceOpen);
   }
@@ -271,5 +337,20 @@ export function completeV070HeresyBattleRevealChoice(
   }
   runtime.pendingHeresyBattleRevealChoice = null;
   runtime.heresyBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070RendTheVeilBattleRevealChoice(
+  state: V070GameState,
+): V070RendTheVeilBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingRendTheVeilBattleRevealChoice;
+  if (!runtime || !pending || !runtime.rendTheVeilBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Rend the Veil battle-effect choice.',
+    );
+  }
+  runtime.pendingRendTheVeilBattleRevealChoice = null;
+  runtime.rendTheVeilBattleRevealChoiceOpen = false;
   return pending;
 }
