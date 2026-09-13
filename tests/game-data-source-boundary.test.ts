@@ -79,19 +79,21 @@ describe("game-data source/deployment boundary", () => {
       "node tts/run-with-game-data-route.mjs scripts/generate-tts-finalized-supplementals.mjs",
     );
     expect(scripts["card-authority:render"]).toBe(
-      "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs",
+      "node scripts/run-with-game-data-route.mjs scripts/card-authority/validate-rendered-faces.mjs",
     );
 
     const cardAuthority = read(".github/workflows/card-authority.yml");
     expect(cardAuthority).toContain(
-      "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs",
+      "node scripts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs",
     );
 
-    const runner = read("tts/run-with-game-data-route.mjs");
+    const runner = read("scripts/run-with-game-data-route.mjs");
     expect(runner).toContain("resolve(ROOT, 'packages/game-data')");
     expect(runner).toContain("resolve(ROOT, 'game-data')");
     expect(runner).toContain("await cp(GAME_DATA_SOURCE, GAME_DATA_ROUTE, { recursive: true })");
     expect(runner).toContain("await rm(GAME_DATA_ROUTE, { recursive: true, force: true })");
+    expect(read("tts/run-with-game-data-route.mjs")).toContain("../scripts/run-with-game-data-route.mjs");
+    expect(read("scripts/generate-card-media-library.mjs")).toContain("from './run-with-game-data-route.mjs'");
   });
 
   it("does not route workflow source changes from the retired root game-data path", () => {
