@@ -138,7 +138,12 @@ These contracts answer different questions and must not silently substitute for 
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; quarantined historical engine implementations live under `legacy/` |
 | `changelog/` | Current player-facing changelog |
-| `about/`, `faq/`, `privacy/`, `contact/`, `accessibility/`, `press/` | Maintained public project/information surfaces |
+| `about/` | Public project/about information surface |
+| `accessibility/` | Public accessibility practices and known-limitations surface |
+| `contact/` | Public contact form and submission confirmation surface |
+| `faq/` | Public project FAQ surface |
+| `press/` | Public press/media information and reference-asset surface |
+| `privacy/` | Public privacy/data-handling notice |
 
 ### Shared packages
 
