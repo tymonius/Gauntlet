@@ -1,0 +1,41 @@
+name: Materialize Comprehensive Rules Part XVI
+
+on:
+  push:
+    branches: [rules/comprehensive-part-xvi-work]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Materialize term registry and renderer
+        run: node scripts/materialize-part-xvi.mjs
+      - name: Render Comprehensive Rules
+        run: node scripts/render-comprehensive-rules.mjs --write
+      - name: Validate Part XVI and publication architecture
+        run: |
+          node scripts/validate-rules-term-registry.mjs
+          node scripts/validate-rules-publication-contract.mjs
+          node scripts/validate-rules-publication-scaffolds.mjs
+          node scripts/validate-faction-rules-authority.mjs
+          node scripts/validate-shared-rules-authority.mjs
+          node scripts/render-comprehensive-rules.mjs
+      - name: Commit materialized durable files
+        run: |
+          if git diff --quiet -- config/rules-surface-contract.json scripts/render-comprehensive-rules.mjs rulebook/comprehensive/comprehensive-rules.md; then
+            echo "Part XVI materialization already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/rules-surface-contract.json scripts/render-comprehensive-rules.mjs rulebook/comprehensive/comprehensive-rules.md
+          git commit -m "Generate Comprehensive Rules Part XVI"
+          git push
