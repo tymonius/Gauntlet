@@ -1,0 +1,195 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-player-language.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "A",
+  "behaviorRevision": "v071-qa-20260913-9",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 blind cases phrased like likely player questions: short, colloquial, terminology-poor, lightly ungrammatical, or using ordinary words instead of rulebook vocabulary.",
+  "blindnessPolicy": [
+    "Do not edit this player-language tranche after its first paid live run except to preserve an immutable record of what was run.",
+    "Do not normalize these questions into rulebook terminology before sending them to the production Rules Arbiter.",
+    "If candidate behavior changes after tranche A, certify the changed behavior with newly authored blind player-language cases."
+  ],
+  "cases": [
+    {
+      "id": "blind-a-player-battle-card-count",
+      "category": "player-language",
+      "question": "how many battle card do i get to use",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Gambit", "Tactic"],
+      "expectedAnswerPatterns": ["one", "Gambit", "Tactic"]
+    },
+    {
+      "id": "blind-a-player-gambit-and-tactic",
+      "category": "player-language",
+      "question": "i already put down a gambit can i still use a tactic too",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Gambit", "Tactic"],
+      "expectedAnswerPatterns": ["Yes", "Tactic"]
+    },
+    {
+      "id": "blind-a-player-unused-move-after-fight",
+      "category": "player-language",
+      "question": "i had 2 move and the first one started a fight. if i win do i still get the other move",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Movement"],
+      "expectedAnswerPatterns": ["unused", "lost"]
+    },
+    {
+      "id": "blind-a-player-action-before-move",
+      "category": "player-language",
+      "question": "can i use my action before i move or does it have to be after",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Opening", "Denouement"],
+      "expectedAnswerPatterns": ["Opening", "Denouement"]
+    },
+    {
+      "id": "blind-a-player-gambit-destination",
+      "category": "player-language",
+      "question": "where does my gambit go after the fight",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Clearing battle cards"],
+      "expectedAnswerPatterns": ["Graveyard"]
+    },
+    {
+      "id": "blind-a-player-tactic-destination",
+      "category": "player-language",
+      "question": "what about the tactic, discard or graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Clearing battle cards"],
+      "expectedAnswerPatterns": ["Discard Pile"]
+    },
+    {
+      "id": "blind-a-player-diplomat-accepted-deal",
+      "category": "player-language",
+      "question": "if they say yes to my deal do we still fight",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Accepted Terms"],
+      "expectedAnswerPatterns": ["No battle is fought"]
+    },
+    {
+      "id": "blind-a-player-deed-means-territory",
+      "category": "player-language",
+      "question": "so if i bought the deed is that territory mine now",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Deed ownership is independent"],
+      "expectedAnswerPatterns": ["independent"]
+    },
+    {
+      "id": "blind-a-player-mission-and-special-op",
+      "category": "player-language",
+      "question": "can i have a mission and the special op going at the same time",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Starting a Mission"],
+      "expectedAnswerPatterns": ["cannot have", "simultaneously"]
+    },
+    {
+      "id": "blind-a-player-unpicked-rite",
+      "category": "player-language",
+      "question": "can i do one of the rites i didnt pick at the start",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Only those selected Rites may be begun"],
+      "expectedAnswerPatterns": ["selected"]
+    },
+    {
+      "id": "blind-a-player-empty-piles-purification",
+      "category": "player-language",
+      "question": "their deck and discard are empty at the start of their turn. do i just win",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Purification"],
+      "expectedAnswerPatterns": ["Purification"]
+    },
+    {
+      "id": "blind-a-player-ranger-ignore-territory",
+      "category": "player-language",
+      "question": "im ranger and this territory is giving me a penalty in the fight, can i just ignore it",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Fieldcraft"],
+      "expectedAnswerPatterns": ["1 Intel", "ignore"]
+    },
+    {
+      "id": "blind-a-player-banker-credit-card-destination",
+      "category": "player-language",
+      "question": "with the banker's credit thing, where does the card i used to help pay for the deed go",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Line of Credit"],
+      "expectedAnswerPatterns": ["discard"]
+    },
+    {
+      "id": "blind-a-player-repel-distance",
+      "category": "player-language",
+      "question": "does repel make them move back 2 spaces total",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Repel"],
+      "expectedAnswerPatterns": ["normal retreat", "one additional"]
+    },
+    {
+      "id": "blind-a-player-forced-march-fight",
+      "category": "player-language",
+      "question": "forced march says extra move. can that move start a fight",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Forced March"],
+      "expectedAnswerPatterns": ["cannot initiate a battle"]
+    },
+    {
+      "id": "blind-a-player-tied-battle",
+      "category": "player-language",
+      "question": "we tied. who wins",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Defensive Edge", "Tiebreak Roll"],
+      "expectedAnswerPatterns": ["Defensive Edge", "Tiebreak Roll"]
+    },
+    {
+      "id": "blind-a-player-hand-limit",
+      "category": "player-language",
+      "question": "how many cards can i have in my hand at the end of my turn",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Hand"],
+      "expectedAnswerPatterns": ["three"]
+    },
+    {
+      "id": "blind-a-player-asset-limit",
+      "category": "player-language",
+      "question": "how many assets can i have",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Asset limit"],
+      "expectedAnswerPatterns": ["Territories", "control"]
+    },
+    {
+      "id": "blind-a-player-action-count",
+      "category": "player-language",
+      "question": "how many actions do i get",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Normal Action limit"],
+      "expectedAnswerPatterns": ["one Action"]
+    },
+    {
+      "id": "blind-a-player-draw-pile-empty",
+      "category": "player-language",
+      "question": "what happens if my deck runs out",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Draw Pile", "Discard Pile"],
+      "expectedAnswerPatterns": ["shuffle", "Discard Pile"]
+    }
+  ]
+}
