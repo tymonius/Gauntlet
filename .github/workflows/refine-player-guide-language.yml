@@ -1,0 +1,58 @@
+name: Refine Player Guide language
+
+on:
+  push:
+    branches:
+      - rules/player-guide-authority-review
+    paths:
+      - .github/workflows/refine-player-guide-language.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules/player-guide-authority-review
+      - name: Refine new Player Guide wording
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('rulebook/player-guide/player-guide.md')
+          text = path.read_text()
+          replacements = {
+              "That is the shared game. Your faction adds one more layer—its own tools, resource or progression system, style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.":
+              "That is the shared game. Your faction adds one more layer—its own special tools, its own way of building power or progress, a different style of play, and sometimes another way to win. Learn the shared game first, then read the short guide for the faction you are playing.",
+
+              "- **Reaction** — use its directly permitted effect when the printed trigger occurs. A Reaction does not spend your normal Action unless it specifically says that it does; follow any printed source, timing, and destination.":
+              "- **Reaction** — use the effect when its trigger happens. It does not use your normal Action unless the card says otherwise. Follow the card for where it comes from, when to use it, and where it goes afterward.",
+
+              "You cannot voluntarily Fall Back beyond your own end of the Gauntlet. If an effect grants additional movement, resolve it one position at a time; Player Tokens cannot move through or past one another.":
+              "You cannot choose to Fall Back past your own end of the Gauntlet. If something lets you move more than one position, move one position at a time. You can never move through or past the other player.",
+
+              "If the controller of a Territory initiates a battle against an opponent occupying that Territory, that battle is a **Counterattack**.":
+              "If your opponent is occupying one of your Territories and you attack them there, you are making a **Counterattack**.",
+
+              "Intelligence works through **Missions**. Completing ordinary Missions builds **Operation Progress** and earns **Intel**. At the start of each of its turns, an Intelligence player also gains Intel equal to their Operation Progress. Surveillance and interference tools help it learn about and disrupt the opponent's plans.":
+              "Intelligence works through **Missions**. Completing ordinary Missions builds **Operation Progress** and earns **Intel**. At the start of each turn, the Intelligence player gains Intel equal to their Operation Progress, so completed Missions keep paying off. Surveillance and interference tools help it learn about and disrupt the opponent's plans.",
+          }
+
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Missing expected text: {old}')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text)
+      - name: Verify diff
+        run: git diff --check && git diff -- rulebook/player-guide/player-guide.md
+      - name: Commit refinement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rulebook/player-guide/player-guide.md
+          git commit -m "Use plain language in Player Guide corrections"
+          git push origin HEAD:rules/player-guide-authority-review
