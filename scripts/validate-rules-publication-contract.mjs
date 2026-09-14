@@ -157,6 +157,22 @@ if (!factionTemplate || factionTemplate.kind !== 'teaching' || factionTemplate.d
   fail(errors, 'Faction Guide template must be a reviewedTeaching teaching surface.');
 }
 
+const factionTemplateIds = (factionTemplate?.sections || []).map(section => section.id);
+const factionTemplateIdSet = new Set(factionTemplateIds);
+if (factionTemplateIdSet.size !== factionTemplateIds.length) {
+  fail(errors, 'Faction Guide template contains duplicate section ids.');
+}
+const factionEditorialIds = sources?.surfaces?.['faction-guide-template']?.editorialSections || [];
+const factionEditorialSections = new Set(factionEditorialIds);
+if (factionEditorialSections.size !== factionEditorialIds.length) {
+  fail(errors, 'Faction Guide template editorialSections contains duplicate section ids.');
+}
+for (const id of factionEditorialSections) {
+  if (!factionTemplateIdSet.has(id)) {
+    fail(errors, `Faction Guide template editorialSections references unknown section ${id}.`);
+  }
+}
+
 for (const faction of contract.factions || []) {
   validateDependencies(errors, registryById, faction.dependsOn, `Faction Guide ${faction.id}`);
   for (const dependency of faction.dependsOn || []) {
@@ -167,9 +183,21 @@ for (const faction of contract.factions || []) {
       );
     }
   }
+
   if (faction.status === 'active' && !Array.isArray(faction.sections)) {
     fail(errors, `Active Faction Guide ${faction.id} must declare its authored sections and review fingerprints.`);
   }
+
+  if (Array.isArray(faction.sections)) {
+    const sectionIds = faction.sections.map(section => section.id);
+    if (new Set(sectionIds).size !== sectionIds.length) {
+      fail(errors, `Faction Guide ${faction.id} contains duplicate section ids.`);
+    }
+    if (JSON.stringify(exactSet(sectionIds)) !== JSON.stringify(exactSet(factionTemplateIds))) {
+      fail(errors, `Faction Guide ${faction.id} authored sections do not match the Faction Guide template.`);
+    }
+  }
+
   for (const section of faction.sections || []) {
     validateReviewedSection(
       errors,
@@ -178,7 +206,16 @@ for (const faction of contract.factions || []) {
       section,
       `Faction Guide ${faction.id} / ${section.id}`,
       faction.status === 'active',
+      factionEditorialSections.has(section.id),
     );
+    for (const dependency of section.dependsOn || []) {
+      if (dependency.startsWith('faction.') && !dependency.startsWith(`faction.${faction.id}.`)) {
+        fail(
+          errors,
+          `Faction Guide ${faction.id} / ${section.id} may not depend on another faction's operating rules (${dependency}).`,
+        );
+      }
+    }
   }
 }
 

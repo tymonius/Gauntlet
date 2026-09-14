@@ -22,7 +22,10 @@
     "faction-guide-template": {
       "path": "rulebook/faction-guides/template.md",
       "marker": "RULES-SURFACE:faction-guide-template",
-      "sectionMarker": "RULES-SECTION"
+      "sectionMarker": "RULES-SECTION",
+      "editorialSections": [
+        "reference"
+      ]
     }
   },
   "factionGuides": {
