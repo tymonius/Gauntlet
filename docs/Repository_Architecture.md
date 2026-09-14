@@ -23,9 +23,9 @@ Current gameplay authority lives at:
 - `governance/` for binding decision provenance and cross-surface traceability; and
 - `config/` for maintained contracts that define how authority is projected, published, and validated.
 
-`config/rules-surface-contract.json` governs the active rules projections. The maintained Player's Guide, Faction Guides, and Comprehensive Rules live under `packages/rules/`. They are reviewed or direct rules surfaces derived from gameplay authority; they are not a second independent gameplay authority.
+`config/rules-surface-contract.json` governs the active rules projections. The maintained Player's Guide, Faction Guides, Comprehensive Rules, and their publication/editorial support live under `packages/rules/`. They are reviewed or direct rules surfaces and support derived from gameplay authority; they are not a second independent gameplay authority.
 
-The active `/rules/` architecture treats the Comprehensive Rules as the complete technical corpus, with the Player's Guide and Faction Guides as teaching layers. The older monolithic Browser Rulebook remains available only as a transition/coverage reference while retirement coverage is proved.
+The active `/rules/` architecture treats the Comprehensive Rules as the complete technical corpus, with the Player's Guide and Faction Guides as teaching layers. The older monolithic Browser Rulebook remains available as a transition/coverage reference; retirement coverage is proven separately, while route retirement remains an explicit later change.
 
 Published release snapshots under `releases/` are immutable historical evidence.
 
@@ -71,7 +71,7 @@ Source organization may therefore change independently of deployed URL layout. C
 - `apps/start/` → `/start/`
 - `apps/playtest/` → `/playtest/`
 - `packages/game-data/` → `/game-data/`
-- maintained files under `packages/rules/` → stable `/rules/sources/...` paths
+- maintained files under `packages/rules/` → stable `/rules/sources/...` paths where the publication contract explicitly materializes them
 - `legacy/public-versions/v0.6.2/` → `/v0.6.2/`
 - `legacy/public-versions/v0.6.3/` → `/v0.6.3/`
 - `legacy/public-versions/v0.7.0/` → `/v0.7.0/`.
@@ -112,7 +112,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `packages/game-data/` | Complete current gameplay authority and adapters; staged publicly at `/game-data/` |
-| `packages/rules/` | Maintained active rules source package: Player's Guide, Faction Guides, and Comprehensive Rules; projected from gameplay authority and staged to stable `/rules/sources/...` paths |
+| `packages/rules/` | Maintained active rules source and publication-support package: Player's Guide, Faction Guides, Comprehensive Rules, editorial policy, visual-pedagogy planning, and rule-dependency fingerprint support; only explicitly materialized rules sources are staged to stable `/rules/sources/...` paths |
 | `governance/` | Decision registry, schemas, traceability, and audit records |
 | `config/` | Maintained cross-system configuration and contracts |
 
@@ -126,11 +126,11 @@ These contracts answer different questions and must not silently substitute for 
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
-### Transitional legacy/publication boundary
+### Transitional legacy Rulebook boundary
 
 | Path | Role |
 |---|---|
-| `rulebook/` | Legacy monolithic Rulebook source plus publication/editorial and version-specific compatibility support. Browser Rulebook application source lives under `apps/rulebook/`; durable active three-layer rules source lives under `packages/rules/`. This root remains transitional until legacy Rulebook retirement and publication-support classification are complete. |
+| `rulebook/` | Primarily legacy monolithic Rulebook source and version-specific compatibility support, plus Rulebook QR assets and the still-maintained `rule-facts.js` helper. Browser Rulebook application source lives under `apps/rulebook/`; durable active rules source and publication support live under `packages/rules/`. This root remains transitional until the residual helper/assets are separated and the legacy Rulebook route lifecycle is resolved. |
 
 ### Shared packages
 
@@ -243,7 +243,7 @@ This is a conceptual dependency target, not an instruction to move every existin
 
 ### Phase 3 — Subsystem boundary cleanup
 
-- Keep active rules source under `packages/rules/` and complete the legacy Rulebook/publication-support split under `rulebook/`.
+- Keep active rules source and publication support under `packages/rules/`; finish separating the residual legacy Rulebook helper/assets under `rulebook/` according to lifecycle.
 - Finish retiring obsolete renderer-family compatibility/parity scaffolding.
 - Make the active digital engine an obvious first-class application/package while keeping historical implementations quarantined.
 - Consolidate true production tooling toward `tools/` only after caller/lifecycle classification is clear.
