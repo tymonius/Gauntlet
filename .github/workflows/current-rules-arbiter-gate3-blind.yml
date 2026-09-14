@@ -8,6 +8,14 @@ on:
         required: true
         default: false
         type: boolean
+      scope:
+        description: Run the full tranche, or only the still-blind clarification cases
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - clarifications-only
 
 permissions:
   contents: read
@@ -144,6 +152,7 @@ jobs:
           NODE
 
       - name: Prepare immutable blind tranche in ephemeral QA workspace
+        if: inputs.scope == 'full'
         run: |
           set -euo pipefail
           cp rules-assistant/evals/rules-arbiter-gate3-blind-b.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
@@ -157,6 +166,7 @@ jobs:
           JSON
 
       - name: Run Gate 3 blind standard cases
+        if: inputs.scope == 'full'
         id: standard
         continue-on-error: true
         env:
@@ -171,11 +181,13 @@ jobs:
         run: node scripts/run-v071-live-rules-qa.mjs
 
       - name: Prepare player-language blind cases
+        if: inputs.scope == 'full'
         run: |
           set -euo pipefail
           cp rules-assistant/evals/rules-arbiter-gate3-blind-b-player-language.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
 
       - name: Run Gate 3 blind player-language cases
+        if: inputs.scope == 'full'
         id: player_language
         continue-on-error: true
         env:
@@ -194,6 +206,7 @@ jobs:
         continue-on-error: true
         env:
           GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
+          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json
           GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.GATE3_CLARIFICATION_REPORT }}
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
@@ -212,6 +225,7 @@ jobs:
             "behaviorRevision": "$GATE3_EXPECTED_BEHAVIOR_REVISION",
             "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
             "repositorySha": "$GITHUB_SHA",
+            "scope": "${{ inputs.scope }}",
             "standardOutcome": "${{ steps.standard.outcome }}",
             "playerLanguageOutcome": "${{ steps.player_language.outcome }}",
             "clarificationOutcome": "${{ steps.clarification.outcome }}"
@@ -232,5 +246,8 @@ jobs:
           retention-days: 30
 
       - name: Enforce Gate 3 blind result
-        if: steps.standard.outcome != 'success' || steps.player_language.outcome != 'success' || steps.clarification.outcome != 'success'
+        if: >-
+          steps.clarification.outcome != 'success' ||
+          (inputs.scope == 'full' &&
+          (steps.standard.outcome != 'success' || steps.player_language.outcome != 'success'))
         run: exit 1
