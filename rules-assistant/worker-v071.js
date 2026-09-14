@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260913-10";
+export const BEHAVIOR_REVISION = "v071-qa-20260914-11";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -68,6 +68,9 @@ ADJUDICATION PRINCIPLES
 - Do not reopen a completed timing window or reapply an effect unless the supplied rules expressly do so.
 - Resolve one instruction as fully as possible before beginning the next.
 - Resolve references such as "that card", "it", "them", and "those cards" according to the instruction sequence. Bind each reference to the most recent compatible game object already introduced, unless grammar or explicit text establishes another referent; account for card movements and other state changes already resolved.
+- Treat concrete game-state facts stated by the player as premises unless the player is asking whether that premise is legally possible. Apply retrieved authority to the consequences of those facts; do not silently replace a stated win with a withdrawal, loss, or other alternative event merely because that event appears in retrieved authority.
+- Resolve possessives such as "their Territory" or "their land" from their grammatical antecedent and the immediate conversation. Do not silently switch the referent to the current player merely because a retrieved rule is written from that player’s perspective.
+- When the player explicitly names a card, Leader ability, Faction feature, or other supplied authority, treat that named authority as the governing subject for generic phrases such as "that effect" or "that card effect" unless the question clearly introduces a different subject.
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
 - Keep ownership and control attached to the game object the supplied authority names. Do not transfer the owner or controller of a card, Overlay, Deed, Territory, or other object onto another object it affects unless supplied authority expressly equates those roles.
 - Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
@@ -107,6 +110,8 @@ Classification boundary:
 - Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.
 - A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
 - Substituting values supplied by the question into a directly stated numerical formula, threshold, or progression remains explicit when no independent rule premise is required. Arithmetic evaluation of a direct rule is not by itself a deductive bridge.
+- Do not downgrade a directly stated result to inferred merely because other retrieved sources are present. If one clean authority directly answers every material part of the question, classify the ruling explicit unless the answer actually depends on combining that authority with another independent premise.
+- Directly enumerated consequences of one rule or effect remain explicit, including its stated timing, conditional branches, exceptions, destinations, and numerical results. Surrounding baseline or context sources do not by themselves turn that direct answer into an inference.
 - When a card or other specific component text directly states the queried exception, permission, prohibition, timing, or same-turn allowance, answering that direct instruction remains explicit even when it differs from the normal baseline. Do not classify the direct exception inferred merely because a general rule states the baseline it overrides.
 - When one clean authority establishes that an event does not count as a win, loss, battle, trigger event, or other required condition, and a separate authority makes another effect depend on that condition, the downstream consequence is inferred unless one clean source directly states that consequence. That conclusion combines authorities even though both premises are explicit.
 - When clean authority expressly confines an Action, Faction Feature, effect, or permission to a named phase or timing, a question asking whether it is legal outside that timing is an explicit negative unless supplied authority expressly changes that timing. A generic additional-Action permission does not make that direct timing restriction inferred.
@@ -526,6 +531,13 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));
   const reminders = [];
 
+  const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);
+  if (namedAuthoritySubjects.length === 1) {
+    reminders.push(
+      "The question explicitly names a supplied governing authority. Resolve the requested property from that named authority before considering generic alternatives. If that authority directly states every material part needed for the answer, classify the ruling explicit even when other context sources are present. Do not invent additional procedure, timing windows, replacements, destinations, or game objects that the named authority does not state."
+    );
+  }
+
   if (
     /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy))\b/.test(current)
     && canonicalIds.has("rulebook:deeds")
@@ -715,6 +727,64 @@ function normalizeReferentSubject(value) {
     .trim();
 }
 
+function canonicalAuthoritySubject(source) {
+  const canonicalId = String(source?.canonicalId || "");
+  const match = canonicalId.match(/^(?:card|leader|faction):(.+)$/i);
+  if (!match) return "";
+  return normalizeReferentSubject(
+    match[1]
+      .replace(/^(?:military|diplomats|financiers|mystics|inquisition|intelligence|neutral)-/i, "")
+      .replace(/-/g, " ")
+  );
+}
+
+function authorityNameAliases(source) {
+  const aliases = [];
+  for (const value of [source?.heading, source?.title]) {
+    const raw = String(value || "").replace(/^(?:Card|Leader|Faction):\s*/i, "").trim();
+    if (!raw) continue;
+    aliases.push(raw);
+    const dashSubject = raw.split(/\s+[—–]\s+/).at(-1);
+    if (dashSubject && dashSubject !== raw) aliases.push(dashSubject);
+    const colonSubject = raw.split(/:\s+/).at(-1);
+    if (colonSubject && colonSubject !== raw) aliases.push(colonSubject);
+  }
+  return [...new Set(aliases.map(normalizeReferentSubject).filter(Boolean))];
+}
+
+function currentNamedAuthoritySubjects(question, retrieval = []) {
+  const current = ` ${normalizeReferentSubject(question)} `;
+  if (!current.trim()) return [];
+
+  const generic = new Set([
+    "battle", "battle sequence", "complete rules", "rules", "timing", "action",
+    "movement", "territory", "advantage", "after phase", "aftermath"
+  ]);
+  const subjects = new Set();
+
+  for (const source of retrieval.slice(0, 10)) {
+    const canonicalId = String(source?.canonicalId || "");
+    if (!/^(?:card|leader|faction):/i.test(canonicalId)) continue;
+
+    const canonicalSubject = canonicalAuthoritySubject(source);
+    if (
+      canonicalSubject.length >= 4
+      && !generic.has(canonicalSubject)
+      && current.includes(` ${canonicalSubject} `)
+    ) {
+      subjects.add(canonicalSubject);
+      continue;
+    }
+
+    const matchingAliases = authorityNameAliases(source)
+      .filter((alias) => alias.length >= 4 && !generic.has(alias) && current.includes(` ${alias} `))
+      .sort((a, b) => a.length - b.length);
+    if (matchingAliases.length) subjects.add(matchingAliases[0]);
+  }
+
+  return [...subjects];
+}
+
 function recentSpecificSubjects(history = [], retrieval = []) {
   const recent = normalizeReferentSubject(
     history.slice(-2).map((item) => String(item?.content || "")).join(" ")
@@ -744,6 +814,9 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
   const describedCardMatch = current.match(/\b(?:the|this|that|a)\s+(?:stored|saved|held|set[ -]?aside)\s+card\b/i);
   const match = genericRuleMatch || genericCardMatch || describedCardMatch;
   if (!match) return null;
+
+  const namedAuthoritySubjects = currentNamedAuthoritySubjects(current, retrieval);
+  if (namedAuthoritySubjects.length === 1) return null;
 
   const noun = genericCardMatch || describedCardMatch
     ? "card"
