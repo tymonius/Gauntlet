@@ -48,7 +48,7 @@ The maintained implementation formerly at `rulebook/player-facing/rule-facts.js`
 This tranche is deliberately structural:
 
 - move the maintained `rule-facts.js` implementation unchanged to `packages/rules/rule-facts.js`;
-- update current governance validation and the lifecycle-selected v0.7.1 Rulebook renderer to consume the packaged helper directly;
+- update current governance validation and the lifecycle-selected current Rulebook renderer to consume the packaged helper directly;
 - retain `rulebook/player-facing/rule-facts.js` only as a tiny compatibility re-export for preserved version-pinned tooling such as the v0.7.0 renderer;
 - correct stale authority language in `legacy/README.md`;
 - update architecture contracts so `rulebook/` no longer owns maintained current rule-fact logic;
