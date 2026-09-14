@@ -43,6 +43,12 @@ if (crosswalk.retirementReadiness !== 'coverage-proven') {
 if (crosswalk.routeRetirementIncluded !== false) {
   fail('Coverage proof must not itself retire the legacy /rulebook/ route.');
 }
+const actualLegacySourceFingerprint = fingerprint(legacySource);
+if (!/^[0-9a-f]{64}$/.test(crosswalk.legacySourceFingerprint || '')) {
+  fail(`Legacy Rulebook retirement crosswalk must declare legacySourceFingerprint=${actualLegacySourceFingerprint}.`);
+} else if (crosswalk.legacySourceFingerprint !== actualLegacySourceFingerprint) {
+  fail(`Legacy Rulebook source changed since retirement review. Re-review the full source before refreshing legacySourceFingerprint to ${actualLegacySourceFingerprint}.`);
+}
 
 const actualSections = parseTopLevelSections(legacySource);
 const expectedSections = crosswalk.sections || [];
@@ -151,4 +157,4 @@ if (errors.length) {
 }
 
 const mechanicallyReviewed = expectedSections.filter(section => section.classification !== 'editorial').length;
-console.log(`Legacy Rulebook retirement coverage valid: ${expectedSections.length} top-level sections inventoried, ${mechanicallyReviewed} fingerprint-reviewed, all registered gameplay rules covered by active Comprehensive Rules.`);
+console.log(`Legacy Rulebook retirement coverage valid: full-source fingerprint plus ${expectedSections.length} top-level sections inventoried, ${mechanicallyReviewed} mechanically relevant sections fingerprint-reviewed, all registered gameplay rules covered by active Comprehensive Rules.`);
