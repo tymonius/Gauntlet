@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-const app = readFileSync('rulebook/app.js', 'utf8');
+const app = readFileSync('apps/rulebook/app.js', 'utf8');
 
 describe('Browser Rulebook deep links', () => {
   test('replays the current fragment after asynchronous Rulebook rendering', () => {
