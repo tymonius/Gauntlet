@@ -32,7 +32,7 @@ jobs:
         run: node scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
       - name: Commit crosswalk proof
         run: |
-          if git diff --quiet -- config/legacy-rulebook-retirement-crosswalk.json docs/rules/legacy-rulebook-retirement-crosswalk.md; then
+          if [ -z "$(git status --porcelain -- config/legacy-rulebook-retirement-crosswalk.json docs/rules/legacy-rulebook-retirement-crosswalk.md)" ]; then
             echo 'Legacy Rulebook retirement proof already materialized.'
             exit 0
           fi
