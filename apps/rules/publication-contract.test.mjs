@@ -40,13 +40,21 @@ describe('active rules publication routes', () => {
   it('keeps active readers indexable and independent of repository source layout', async () => {
     const player = await read('apps/rules/player-guide/index.html');
     const comprehensive = await read('apps/rules/comprehensive/index.html');
+    const sharedReader = await read('apps/rules/reader.js');
     const factionReader = await read('apps/rules/factions/guide.js');
 
     expect(player).toContain('data-rules-source="/rules/sources/player-guide.md"');
     expect(player).not.toContain('noindex');
+    expect(player).toContain('href="/rules/card-anatomy.css"');
+    expect(player).toContain('src="/rules/card-anatomy.js"');
+    expect(player).not.toContain('/rulebook/');
     expect(comprehensive).toContain('data-rules-source="/rules/sources/comprehensive-rules.md"');
     expect(comprehensive).not.toContain('noindex');
+    expect(sharedReader).toContain("from '/rules/markdown.js'");
+    expect(sharedReader).not.toContain("from '/rulebook/");
     expect(factionReader).toContain('/rules/sources/factions/');
+    expect(factionReader).toContain("from '/rules/markdown.js'");
+    expect(factionReader).not.toContain("from '/rulebook/");
 
     for (const id of factionIds) {
       const html = await read(`apps/rules/factions/${id}/index.html`);
