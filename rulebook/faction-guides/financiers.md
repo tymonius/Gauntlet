@@ -4,7 +4,7 @@
 
 # Financier Guide
 
-> **Draft.** This guide teaches the Financiers in player-facing language. Exact timing, unusual purchases, collateral interactions, and mirror-match procedure belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the Financiers in player-facing language. Exact timing, unusual purchases, collateral interactions, and mirror-match procedure belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet the Financiers

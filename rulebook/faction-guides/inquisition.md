@@ -4,7 +4,7 @@
 
 # Inquisition Guide
 
-> **Draft.** This guide teaches the Inquisition in player-facing language. Exact copied-effect interactions, unusual Graveyard replacement effects, and edge-case Purge timing belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the Inquisition in player-facing language. Exact copied-effect interactions, unusual Graveyard replacement effects, and edge-case Purge timing belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet the Inquisition

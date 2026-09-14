@@ -25,11 +25,11 @@
 <body class="rules-hub">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span><span class="site-edition-badge">v0.7.1</span></a>
+    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span><span class="site-edition-badge" data-current-version>current development</span></a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
       <a href="/playtest/">Playtest</a>
-      <a href="/rulebook/">Rules</a>
+      <a href="/rules/" aria-current="page">Rules</a>
       <a href="/factions/">Factions</a>
       <a href="/deckbuilder/">Deckbuilder</a>
       <a href="/card-reference/">Card Reference</a>
@@ -45,11 +45,11 @@
     </section>
 
     <section class="rules-grid" aria-label="Gauntlet rules resources">
-      <a class="rules-card" href="/rulebook/player-guide-review/">
+      <a class="rules-card" href="/rules/player-guide/">
         <p class="eyebrow">Learn the shared game</p>
         <h2>Player's Guide</h2>
         <p>The battlefield, turn structure, movement, battles, Capture, victory, card basics, and enough faction literacy to sit down and play.</p>
-        <strong>Open draft Player's Guide →</strong>
+        <strong>Open Player's Guide →</strong>
       </a>
 
       <a class="rules-card" href="/rules/factions/">
@@ -59,11 +59,11 @@
         <strong>Choose a faction guide →</strong>
       </a>
 
-      <a class="rules-card" href="/rulebook/">
-        <p class="eyebrow">Current published reference</p>
-        <h2>Official Rulebook</h2>
-        <p>The currently published rulebook remains the official web reference while the new Comprehensive Rules corpus is completed.</p>
-        <strong>Open official rules →</strong>
+      <a class="rules-card" href="/rules/comprehensive/">
+        <p class="eyebrow">Complete technical reference</p>
+        <h2>Comprehensive Rules</h2>
+        <p>The complete technical corpus generated directly from current gameplay authority, including faction procedures, timing, definitions, and edge cases.</p>
+        <strong>Open Comprehensive Rules →</strong>
       </a>
 
       <a class="rules-card" href="/rules-arbiter/">
@@ -72,6 +72,12 @@
         <p>Ask a specific timing, interaction, card, or edge-case question and get an answer grounded in the rules authority.</p>
         <strong>Ask the Rules Arbiter →</strong>
       </a>
+    </section>
+
+    <section class="rules-section transition-reference">
+      <p class="eyebrow">Transition reference</p>
+      <h2>The legacy Rulebook remains available while we prove retirement coverage.</h2>
+      <p>The active rules architecture now lives here under <strong>/rules/</strong>. The previous monolithic Rulebook remains accessible during the coverage crosswalk and will not be retired until every legacy rule is accounted for. <a href="/rulebook/">Open the legacy Rulebook →</a></p>
     </section>
 
     <section class="rules-section">
@@ -92,5 +98,6 @@
     </div>
     <nav class="ga-site-footer__links" aria-label="Footer navigation"><a href="/about/">About</a><a href="/faq/">FAQ</a><a href="/contact/">Contact</a><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a><a href="/privacy/">Privacy</a></nav>
   </footer>
+  <script type="module" src="/rules/version.js"></script>
 </body>
 </html>

@@ -74,6 +74,14 @@
   "materializedFiles": [
     {"source": "rulebook/player-facing/current-rulebook.md", "publicPath": "/rulebook/player-facing/current-rulebook.md", "kind": "current-rules-source"},
     {"source": "rulebook/player-guide/player-guide.md", "publicPath": "/rulebook/player-guide/player-guide.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/player-guide/player-guide.md", "publicPath": "/rules/sources/player-guide.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/military.md", "publicPath": "/rules/sources/factions/military.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/diplomats.md", "publicPath": "/rules/sources/factions/diplomats.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/financiers.md", "publicPath": "/rules/sources/factions/financiers.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/intelligence.md", "publicPath": "/rules/sources/factions/intelligence.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/mystics.md", "publicPath": "/rules/sources/factions/mystics.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/faction-guides/inquisition.md", "publicPath": "/rules/sources/factions/inquisition.md", "kind": "reviewed-teaching-source"},
+    {"source": "rulebook/comprehensive/comprehensive-rules.md", "publicPath": "/rules/sources/comprehensive-rules.md", "kind": "direct-technical-source"},
     {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"}
   ],
   "managedRoutes": [
@@ -97,6 +105,7 @@
     "/rulebook/",
     "/rulebook/player-guide-review/",
     "/rules/",
+    "/rules/comprehensive/",
     "/rules/factions/",
     "/rules/factions/diplomats/",
     "/rules/factions/financiers/",
@@ -104,6 +113,7 @@
     "/rules/factions/intelligence/",
     "/rules/factions/military/",
     "/rules/factions/mystics/",
+    "/rules/player-guide/",
     "/start/",
     "/playtest/",
     "/playtest/analysis/",
