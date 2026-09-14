@@ -5,24 +5,24 @@ const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), 'utf8
 const factionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
 
 describe('active rules publication routes', () => {
-  it('publishes all active rule surfaces from maintained sources', async () => {
+  it('publishes all active rule surfaces from maintained package sources', async () => {
     const routes = JSON.parse(await read('apps/rules/routes.json'));
 
     expect(routes.playerGuide).toEqual({
       publicPath: '/rules/player-guide/',
-      source: 'rulebook/player-guide/player-guide.md',
+      source: 'packages/rules/player-guide/player-guide.md',
       status: 'active',
     });
     expect(routes.comprehensiveRules).toEqual({
       publicPath: '/rules/comprehensive/',
-      source: 'rulebook/comprehensive/comprehensive-rules.md',
+      source: 'packages/rules/comprehensive/comprehensive-rules.md',
       status: 'active',
     });
 
     for (const id of factionIds) {
       expect(routes.factionGuides[id].status).toBe('active');
       expect(routes.factionGuides[id].publicPath).toBe(`/rules/factions/${id}/`);
-      expect(routes.factionGuides[id].source).toBe(`rulebook/faction-guides/${id}.md`);
+      expect(routes.factionGuides[id].source).toBe(`packages/rules/faction-guides/${id}.md`);
     }
   });
 
@@ -30,10 +30,10 @@ describe('active rules publication routes', () => {
     const boundary = JSON.parse(await read('config/publication-boundary.json'));
     const published = new Map(boundary.materializedFiles.map((entry) => [entry.source, entry.publicPath]));
 
-    expect(published.get('rulebook/player-guide/player-guide.md')).toBe('/rules/sources/player-guide.md');
-    expect(published.get('rulebook/comprehensive/comprehensive-rules.md')).toBe('/rules/sources/comprehensive-rules.md');
+    expect(published.get('packages/rules/player-guide/player-guide.md')).toBe('/rules/sources/player-guide.md');
+    expect(published.get('packages/rules/comprehensive/comprehensive-rules.md')).toBe('/rules/sources/comprehensive-rules.md');
     for (const id of factionIds) {
-      expect(published.get(`rulebook/faction-guides/${id}.md`)).toBe(`/rules/sources/factions/${id}.md`);
+      expect(published.get(`packages/rules/faction-guides/${id}.md`)).toBe(`/rules/sources/factions/${id}.md`);
     }
   });
 
@@ -74,11 +74,11 @@ describe('active rules publication routes', () => {
   });
 
   it('removes draft status from the maintained active Guide sources', async () => {
-    const playerGuide = await read('rulebook/player-guide/player-guide.md');
+    const playerGuide = await read('packages/rules/player-guide/player-guide.md');
     expect(playerGuide).not.toMatch(/^> \*\*Draft\.\*\*/m);
 
     for (const id of factionIds) {
-      const guide = await read(`rulebook/faction-guides/${id}.md`);
+      const guide = await read(`packages/rules/faction-guides/${id}.md`);
       expect(guide).not.toMatch(/^> \*\*Draft\.\*\*/m);
     }
   });
