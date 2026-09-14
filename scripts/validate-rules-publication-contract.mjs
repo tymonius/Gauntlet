@@ -150,13 +150,6 @@ if (!playerGuide || playerGuide.kind !== 'teaching' || playerGuide.dependencyMod
       }
     }
   }
-
-  console.log('PLAYER_GUIDE_REVIEW_FINGERPRINTS_BEGIN');
-  for (const chapter of playerGuide.chapters || []) {
-    if (editorialSections.has(chapter.id)) continue;
-    console.log(`${chapter.id}=${fingerprintRuleDependencies(authority, registryById, chapter.dependsOn || [])}`);
-  }
-  console.log('PLAYER_GUIDE_REVIEW_FINGERPRINTS_END');
 }
 
 const factionTemplate = contract?.publicationArchitecture?.factionGuideTemplate;
