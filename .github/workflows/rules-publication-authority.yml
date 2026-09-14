@@ -9,6 +9,8 @@ on:
       - 'packages/rules/**'
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
+      - 'config/legacy-rulebook-retirement-crosswalk.json'
+      - 'config/legacy-rulebook-retirement-crosswalk.sha256'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/render-comprehensive-rules.mjs'
       - 'scripts/validate-rules-term-registry.mjs'
@@ -16,6 +18,8 @@ on:
       - 'scripts/validate-shared-rules-authority.mjs'
       - 'scripts/validate-rules-publication-contract.mjs'
       - 'scripts/validate-rules-publication-scaffolds.mjs'
+      - 'scripts/validate-legacy-rulebook-retirement-crosswalk.mjs'
+      - 'rulebook/player-facing/current-rulebook.md'
       - 'rulebook/publication/**'
   workflow_dispatch:
 
@@ -34,6 +38,8 @@ jobs:
           sparse-checkout: |
             /config/rules-surface-contract.json
             /config/rules-publication-sources.json
+            /config/legacy-rulebook-retirement-crosswalk.json
+            /config/legacy-rulebook-retirement-crosswalk.sha256
             /packages/game-data/current-game.json
             /packages/game-data/current-game-validation.mjs
             /packages/game-data/art-direction.mjs
@@ -45,8 +51,10 @@ jobs:
             /scripts/validate-shared-rules-authority.mjs
             /scripts/validate-rules-publication-contract.mjs
             /scripts/validate-rules-publication-scaffolds.mjs
+            /scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
             /rulebook/publication/
             /rulebook/player-facing/rule-facts.js
+            /rulebook/player-facing/current-rulebook.md
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -60,4 +68,5 @@ jobs:
           node scripts/validate-faction-rules-authority.mjs
           node scripts/validate-shared-rules-authority.mjs
           node scripts/validate-rules-term-registry.mjs
+          node scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
           node scripts/render-comprehensive-rules.mjs

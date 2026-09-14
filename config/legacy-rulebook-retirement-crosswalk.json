@@ -1,0 +1,655 @@
+{
+  "schemaVersion": 1,
+  "legacySource": "rulebook/player-facing/current-rulebook.md",
+  "technicalSuccessor": "comprehensive-rules",
+  "retirementReadiness": "coverage-proven",
+  "routeRetirementIncluded": false,
+  "reviewBasis": "Each mechanically relevant top-level legacy section is fingerprinted against the exact reviewed prose and mapped to registered gameplay-rule dependencies or the Comprehensive Rules term registry. Any legacy prose change invalidates this proof until re-reviewed.",
+  "sections": [
+    {
+      "id": "title",
+      "heading": "GAUNTLET",
+      "classification": "editorial"
+    },
+    {
+      "id": "welcome",
+      "heading": "Welcome to Gauntlet",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.deck-construction",
+        "core.battlefield",
+        "core.battlefield.victory",
+        "core.factions.framework"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "welcome",
+            "battlefield-and-victory",
+            "factions"
+          ]
+        }
+      ],
+      "sourceFingerprint": "7dec946a9a8682e1b41f3d97eb01a27660d4f4f958196750ca17590c7df004f0"
+    },
+    {
+      "id": "how-to-use",
+      "heading": "How to Use This Rulebook",
+      "classification": "editorial"
+    },
+    {
+      "id": "game-at-a-glance",
+      "heading": "Game at a Glance",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.turn.sequence",
+        "core.turn.actions",
+        "core.battlefield.movement",
+        "core.battle.movement-initiation",
+        "core.battle.onset",
+        "core.battle.sequence",
+        "core.battle.reserve",
+        "core.battle.normal-result",
+        "core.battlefield.front-line",
+        "core.battlefield.capture",
+        "core.battlefield.occupation",
+        "faction.diplomats.features"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "turn",
+            "movement",
+            "battles",
+            "ground"
+          ]
+        }
+      ],
+      "sourceFingerprint": "a397ce980a8665513447d49b358337a8313ea39b43a0eecca177c2897f1febcc"
+    },
+    {
+      "id": "how-to-win",
+      "heading": "How to Win",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.battlefield.victory",
+        "core.battlefield.front-line",
+        "core.battlefield.capture",
+        "core.battlefield.last-stand",
+        "core.battlefield.movement"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "battlefield-and-victory",
+            "run-the-gauntlet"
+          ]
+        }
+      ],
+      "sourceFingerprint": "805f32c1605ffe30ea40fa94aecba26c7f6f6947e867176c5db277373dd687c3"
+    },
+    {
+      "id": "golden-rules",
+      "heading": "Golden Rules",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.cards.golden-rules"
+      ],
+      "sourceFingerprint": "3c3bb0e219763c28f00e2c5f4b9e5a545ff0ee80a6867820a848831576c64fb3"
+    },
+    {
+      "id": "part-i",
+      "heading": "Part I — Learn to Play",
+      "classification": "editorial"
+    },
+    {
+      "id": "components",
+      "heading": "1. Components",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.components",
+        "core.deck-construction",
+        "core.battlefield",
+        "core.factions.framework"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "cards-and-play-area",
+            "setup"
+          ]
+        }
+      ],
+      "sourceFingerprint": "f627be6aabe6f85dbb376a43265fa570e4f3364bbbec62d065366c832a66a658"
+    },
+    {
+      "id": "cards-zones-play-area",
+      "heading": "2. Cards, Zones, and the Play Area",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.cards",
+        "core.card-zones",
+        "core.cards.assets",
+        "core.cards.bind",
+        "core.battle.reserve",
+        "core.battle.aftermath",
+        "core.turn.actions",
+        "core.components"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "cards-and-play-area",
+            "battles",
+            "turn"
+          ]
+        }
+      ],
+      "sourceFingerprint": "65f2793c5cd9df3ead55eac6f7fe93d3ff82a085d2ce627f585ab4523705cdbb"
+    },
+    {
+      "id": "setup",
+      "heading": "3. Setup",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.setup",
+        "core.battlefield.starting-position",
+        "core.card-zones",
+        "core.components"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "setup"
+          ]
+        }
+      ],
+      "sourceFingerprint": "5878e1a7db0f48ad03208193c9684513029510ea68ef3a332ab768c8c0c40a89"
+    },
+    {
+      "id": "your-turn",
+      "heading": "4. Your Turn",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.turn",
+        "core.turn.sequence",
+        "core.turn.draw",
+        "core.turn.actions",
+        "core.turn.cleanup",
+        "core.battlefield.capture",
+        "core.battlefield.movement",
+        "core.battle.movement-initiation"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "turn",
+            "movement",
+            "ground"
+          ]
+        }
+      ],
+      "sourceFingerprint": "a34f6609de1193781c91d4ec6d8167180992c493bc2568a77a9889933a1f0d6a"
+    },
+    {
+      "id": "actions-features-leaders-assets",
+      "heading": "5. Actions, Faction Features, Leader Abilities, and Assets",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.turn.actions",
+        "core.factions.framework",
+        "core.cards.assets",
+        "core.turn.cleanup",
+        "faction.military.features",
+        "faction.inquisition.features"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "turn",
+            "cards-and-play-area"
+          ]
+        }
+      ],
+      "sourceFingerprint": "4f74c29f64584d7ac3c18d5fdf09869c06d4c237dce32c5ab7f3fdd4aa0dac8d"
+    },
+    {
+      "id": "movement-position",
+      "heading": "6. Movement and Position",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.battlefield.position",
+        "core.battlefield.movement",
+        "core.battle.movement-initiation",
+        "core.battle.onset"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "movement"
+          ]
+        }
+      ],
+      "sourceFingerprint": "9e969a2176d2706391f4c2e62ffd6a38adb3a2ab136127dcd82a476857adca94"
+    },
+    {
+      "id": "battles",
+      "heading": "7. Battles",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.battle",
+        "core.battle.sequence",
+        "core.battle.commitment-order",
+        "core.battle.onset",
+        "core.battle.gambit-count",
+        "core.battle.tactic-count",
+        "core.battle.reserve-size",
+        "core.battle.reserve",
+        "core.battle.battle-total",
+        "core.battle.advantage-disadvantage",
+        "core.battle.defensive-edge",
+        "core.battle.tiebreak",
+        "core.battle.normal-result",
+        "core.battle.aftermath",
+        "core.battle.withdrawal",
+        "core.battle.retreat",
+        "core.battle.withdrawal-procedure",
+        "core.cards.no-winner",
+        "faction.diplomats.features",
+        "faction.diplomats.proposals"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "battles"
+          ]
+        },
+        {
+          "surface": "faction-guide",
+          "faction": "diplomats",
+          "sections": [
+            "features"
+          ]
+        }
+      ],
+      "sourceFingerprint": "94dfc5bff2bf264e4ea6019b69f93514bc1d6f355a4e2435baffac97e0eb4dd2"
+    },
+    {
+      "id": "front-line-occupation-capture",
+      "heading": "8. Front Line, Occupation, and Capture",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.battlefield.capture",
+        "core.battlefield.front-line",
+        "core.battlefield.occupation",
+        "core.battlefield.counterattack",
+        "core.battlefield.last-stand",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "ground"
+          ]
+        }
+      ],
+      "sourceFingerprint": "c5ab413f90c9b957aab92357f09b88fcb3cfafa992261a79dac571448cf7fafb"
+    },
+    {
+      "id": "running-gauntlet",
+      "heading": "9. Running the Gauntlet",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.battlefield.victory",
+        "core.battlefield.front-line",
+        "core.battlefield.capture",
+        "core.battlefield.last-stand",
+        "core.battlefield.movement",
+        "core.battle.defensive-edge"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "run-the-gauntlet"
+          ]
+        }
+      ],
+      "sourceFingerprint": "55b438b6a0436743d76f6d806910944e09f1b875e79450d520461df653489d46"
+    },
+    {
+      "id": "part-ii",
+      "heading": "Part II — Complete Shared Rules",
+      "classification": "editorial"
+    },
+    {
+      "id": "constructing-deck",
+      "heading": "10. Constructing a Deck",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.deck-construction",
+        "core.components",
+        "faction.mystics.definition",
+        "faction.mystics.features",
+        "faction.mystics.rites"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "deckbuilding"
+          ]
+        },
+        {
+          "surface": "faction-guide",
+          "faction": "mystics",
+          "sections": [
+            "components"
+          ]
+        }
+      ],
+      "sourceFingerprint": "9698ff47cf267a8bc96486dec73d15545e589a123223ffd27aa47dda8bec7690"
+    },
+    {
+      "id": "detailed-card-timing",
+      "heading": "11. Detailed Card and Timing Rules",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.cards.golden-rules",
+        "core.cards.shared-timing",
+        "core.cards.reveal",
+        "core.cards.negation",
+        "core.cards.replacement",
+        "core.cards.revising-choice",
+        "core.cards.choices",
+        "core.cards.assets",
+        "core.cards.bind",
+        "core.cards.shorthand",
+        "core.cards.repeat",
+        "core.cards.no-winner",
+        "core.battle.reserve",
+        "core.battle.withdrawal-procedure",
+        "core.battlefield.movement",
+        "core.battle.movement-initiation",
+        "core.turn.actions",
+        "faction.diplomats.features"
+      ],
+      "sourceFingerprint": "9dc8d384b434a11cafcf051c4fdc7f48d77e3ff90e47a7386cbf9ea964ccba7c"
+    },
+    {
+      "id": "overlays-shared-card-rules",
+      "heading": "12. Overlays and Other Shared Card Rules",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.cards.overlay",
+        "core.cards.becoming-territories",
+        "faction.financiers.features"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "cards-and-play-area"
+          ]
+        }
+      ],
+      "sourceFingerprint": "c6f4533ccb296e0549558722914895d2aa50c55d3279b2a8bcb2ba9ebfee5037"
+    },
+    {
+      "id": "part-iii-factions",
+      "heading": "Part III — Factions",
+      "classification": "mechanical",
+      "dependsOn": [
+        "core.factions.framework",
+        "core.components",
+        "core.deck-construction",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "factions"
+          ]
+        }
+      ],
+      "sourceFingerprint": "cdfc6ec43b8f9ef7ee2b583edaeeb5bfb06d8dfa8041be9fc3a3009cf1939040"
+    },
+    {
+      "id": "military",
+      "heading": "13. Military",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.military.definition",
+        "faction.military.features",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "military",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "98e628c774689b3b377019f2c2875aeb48327ddcb4fd1d6b045c18b5f2be209d"
+    },
+    {
+      "id": "diplomats",
+      "heading": "14. Diplomats",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.diplomats.definition",
+        "faction.diplomats.features",
+        "faction.diplomats.proposals",
+        "core.battle.onset",
+        "core.battlefield.victory",
+        "core.cards.no-winner",
+        "core.battle.withdrawal-procedure"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "diplomats",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "353cd2dc97a194f9676e23c269c4bee3e77747829d6c0f711128ecb472e2101c"
+    },
+    {
+      "id": "financiers",
+      "heading": "15. Financiers",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.financiers.definition",
+        "faction.financiers.features",
+        "core.turn.actions",
+        "core.turn.cleanup",
+        "core.battlefield.capture",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "financiers",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "41b99bd6a2f3db2a29c69f36e85485febe0124056c4ae4040b3fb72ee0bcd455"
+    },
+    {
+      "id": "intelligence",
+      "heading": "16. Intelligence",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.intelligence.definition",
+        "faction.intelligence.features",
+        "core.turn.actions",
+        "core.battle.commitment-order",
+        "core.cards.revising-choice",
+        "core.cards.reveal",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "intelligence",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "a903f3eccf043427755c553c105b686f5bb53eb919515539a13ea4c673b8e282"
+    },
+    {
+      "id": "mystics",
+      "heading": "17. Mystics",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.mystics.definition",
+        "faction.mystics.features",
+        "faction.mystics.rites",
+        "core.cards.bind",
+        "core.battle.movement-initiation",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "mystics",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "a2c1e319e7e2ec06df2cc0e6a763acf7fbe8d1fc6dd8b2431be6b89896377166"
+    },
+    {
+      "id": "inquisition",
+      "heading": "18. Inquisition",
+      "classification": "mechanical",
+      "dependsOn": [
+        "faction.inquisition.definition",
+        "faction.inquisition.features",
+        "core.turn.draw",
+        "core.battle.aftermath",
+        "core.battlefield.victory"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "faction-guide",
+          "faction": "inquisition",
+          "sections": [
+            "meet",
+            "resource",
+            "features",
+            "victory",
+            "leaders"
+          ]
+        }
+      ],
+      "sourceFingerprint": "22d4270b1cf057aacd02a31bc6e530b5d3b19cc8a0f63c5ddfd4f24b3846ab59"
+    },
+    {
+      "id": "part-iv-reference",
+      "heading": "Part IV — Reference",
+      "classification": "editorial"
+    },
+    {
+      "id": "quick-turn-reference",
+      "heading": "Quick Turn Reference",
+      "classification": "procedural",
+      "dependsOn": [
+        "core.turn.sequence",
+        "core.turn.draw",
+        "core.turn.actions",
+        "core.turn.cleanup",
+        "core.battlefield.capture",
+        "core.battlefield.movement"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "turn"
+          ]
+        }
+      ],
+      "sourceFingerprint": "d7f9d0dc4b08b5a034818a973c50ea72931d54740846986f2d449d599d1506eb"
+    },
+    {
+      "id": "quick-battle-reference",
+      "heading": "Quick Battle Reference",
+      "classification": "procedural",
+      "dependsOn": [
+        "core.battle.sequence",
+        "core.battle.onset",
+        "core.battle.commitment-order",
+        "core.battle.reserve",
+        "core.battle.battle-total",
+        "core.battle.advantage-disadvantage",
+        "core.battle.defensive-edge",
+        "core.battle.tiebreak",
+        "core.battle.normal-result",
+        "core.battle.aftermath"
+      ],
+      "teachingSuccessors": [
+        {
+          "surface": "player-guide",
+          "sections": [
+            "battles"
+          ]
+        }
+      ],
+      "sourceFingerprint": "30886b0e07ec63d9ff33c062c2d6abe3ee36bf0a19a0a930a2686224944114e3"
+    },
+    {
+      "id": "glossary",
+      "heading": "Glossary",
+      "classification": "reference",
+      "coverageMode": "termRegistry",
+      "sourceFingerprint": "a8416048ebd7be04f54da810d7b733af7be0fd7ed5a055b65e37cb0478c08abf"
+    },
+    {
+      "id": "copyright-playtest",
+      "heading": "Copyright and Playtest Use",
+      "classification": "editorial"
+    }
+  ]
+}
