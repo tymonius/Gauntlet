@@ -99,7 +99,7 @@
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourcePatterns": [
-        "offer one eligible Proposal as Terms"
+        "choose one eligible Proposal"
       ]
     },
     {
@@ -107,7 +107,7 @@
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourcePatterns": [
-        "if 6 different Proposals are ratified, you win"
+        "six different Proposals are ratified"
       ]
     }
   ]
