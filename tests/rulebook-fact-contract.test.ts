@@ -5,7 +5,7 @@ import {
   synchronizeKnownRulebookClaims,
   synchronizeRuleFactMarkers,
   validateRuleFactMarkers,
-} from '../rulebook/player-facing/rule-facts.js';
+} from '../packages/rules/rule-facts.js';
 import {
   applyV070CanonicalCorrections,
   applyV070RulebookCorrections,
@@ -15,7 +15,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 
 describe('Rulebook fact registry', () => {
   it('keeps tracked current Rulebook facts synchronized with current-game authority', () => {
-    const authority = JSON.parse(read('game-data/current-game.json'));
+    const authority = JSON.parse(read('packages/game-data/current-game.json'));
     const rulebook = read('rulebook/player-facing/current-rulebook.md');
     const facts = validateRuleFactMarkers(rulebook, authority);
 
@@ -41,7 +41,7 @@ describe('Rulebook fact registry', () => {
   });
 
   it('produces an exact repair instead of relying on search-and-replace memory', () => {
-    const authority = JSON.parse(read('game-data/current-game.json'));
+    const authority = JSON.parse(read('packages/game-data/current-game.json'));
     const rulebook = read('rulebook/player-facing/current-rulebook.md')
       .replace(
         '15<!-- RULE-FACT:cards.military.count:number --> Military card titles.',
