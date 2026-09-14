@@ -1,0 +1,36 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-player-language.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "B",
+  "behaviorRevision": "v071-qa-20260913-10",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche B cases phrased like likely player questions: short, colloquial, terminology-poor, lightly ungrammatical, or using ordinary words instead of rulebook vocabulary.",
+  "blindnessPolicy": [
+    "Do not edit this player-language tranche after its first paid live run except to preserve an immutable record of what was run.",
+    "Do not normalize these questions into rulebook terminology before sending them to the production Rules Arbiter.",
+    "If candidate behavior changes after tranche B, certify the changed behavior with newly authored blind player-language cases.",
+    "Do not exactly reuse Gate 2 or tranche-A player questions."
+  ],
+  "cases": [
+    {"id":"blind-b-player-edge-tie","category":"player-language","question":"battle total tied and i have defensive edge, is it mine","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Defensive Edge"],"expectedAnswerPatterns":["defender","wins"]},
+    {"id":"blind-b-player-onset-withdraw","category":"player-language","question":"if i back out during onset do we still do aftermath stuff","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Withdrawal"],"expectedAnswerPatterns":["no Aftermath"]},
+    {"id":"blind-b-player-defender-terms","category":"player-language","question":"attacker passed on terms, can defender offer now","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Terms"],"expectedAnswerPatterns":["defender","offer"]},
+    {"id":"blind-b-player-capture-two","category":"player-language","question":"can one capture grab two enemy territories if im already past both","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Capture"],"expectedAnswerPatterns":["at most one"]},
+    {"id":"blind-b-player-past-front-line","category":"player-language","question":"my token is past my front line. do i control that spot now","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Front Line"],"expectedAnswerPatterns":["does not","control"]},
+    {"id":"blind-b-player-command-first-win","category":"player-language","question":"won my first fight this turn, military gets a command now right","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Command"],"expectedAnswerPatterns":["1 Command"]},
+    {"id":"blind-b-player-six-proposals","category":"player-language","question":"i got six different proposals ratified do i win right away","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Peace Treaty"],"expectedAnswerPatterns":["start of your turn"]},
+    {"id":"blind-b-player-treasury-cap","category":"player-language","question":"do cards in treasury raise how much capital i can hold","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Capital"],"expectedAnswerPatterns":["Treasury"]},
+    {"id":"blind-b-player-progress-normal-mission","category":"player-language","question":"finished a normal mission, progress ticks up one?","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Operation Progress"],"expectedAnswerPatterns":["1"]},
+    {"id":"blind-b-player-two-rites-transmutation","category":"player-language","question":"got two rites done can i use transmutation now","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Transmutation"],"expectedAnswerPatterns":["two","before dice"]},
+    {"id":"blind-b-player-purification-normal-draw","category":"player-language","question":"their regular start turn draw whiffs with both piles empty. inquisition wins?","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Purification"],"expectedAnswerPatterns":["win"]},
+    {"id":"blind-b-player-rout-new-fight","category":"player-language","question":"rout moves me forward after i win. can that start another fight","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Rout"],"expectedAnswerPatterns":["may initiate a battle"]},
+    {"id":"blind-b-player-fortify-line","category":"player-language","question":"commandant won while sitting on their land, can fortify push my line","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Fortify"],"expectedAnswerPatterns":["Front Line"]},
+    {"id":"blind-b-player-mission-control-delay","category":"player-language","question":"mission control starts a new mission, can that one finish this turn too","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Mission Control"],"expectedAnswerPatterns":["cannot complete that turn"]},
+    {"id":"blind-b-player-sleeper-removed","category":"player-language","question":"sleeper network gets removed, do i play every card under it","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Sleeper Network"],"expectedAnswerPatterns":["play 1","discard the rest"]},
+    {"id":"blind-b-player-spies-revise","category":"player-language","question":"spies showed their tactic early, can i change mine after seeing it","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Spies"],"expectedAnswerPatterns":["revise"]},
+    {"id":"blind-b-player-stand-ground-retreat","category":"player-language","question":"stand ground stops my normal retreat when i lose right","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Stand Ground"],"expectedAnswerPatterns":["does not prevent","normal required retreat"]},
+    {"id":"blind-b-player-tactical-planning-limit","category":"player-language","question":"tactical planning gives extra reserve so i get another tactic too?","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Tactical Planning"],"expectedAnswerPatterns":["Tactic limit unchanged"]},
+    {"id":"blind-b-player-spirit-hollow-capture","category":"player-language","question":"spirit hollow territory got captured where does the hollow go","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Spirit Hollow"],"expectedAnswerPatterns":["Graveyard"]},
+    {"id":"blind-b-player-soul-swap","category":"player-language","question":"soul for soul just swaps one hand card with one grave card?","expectedClassification":"explicit","classificationBasis":"direct-authority","expectedSourcePatterns":["Soul for Soul"],"expectedAnswerPatterns":["Hand","Graveyard"]}
+  ]
+}
