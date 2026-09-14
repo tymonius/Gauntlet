@@ -24,6 +24,13 @@ import {
 } from './arcane-knowledge-battle';
 import { registerV070HeresyBattleEffect } from './heresy-battle';
 import { registerV070RendTheVeilBattleEffect } from './rend-the-veil-battle';
+import {
+  V070_RECONNAISSANCE_BATTLE_TEXT,
+  V070_RECONNAISSANCE_ID,
+  deferV070ReconnaissanceGambit,
+  registerV070ReconnaissanceBattleEffect,
+  takeV070DeferredReconnaissanceGambits,
+} from './reconnaissance-battle';
 
 export * from './battle-effects-core-pre-witchcraft';
 
@@ -89,12 +96,31 @@ const rendTheVeilHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const reconnaissanceHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_RECONNAISSANCE_ID,
+  expectedText: V070_RECONNAISSANCE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    if (commitment.role === 'gambit'
+      && state.battleRuntime?.pendingRevealEffectEncounteredAt !== 'reveal_tactics') {
+      deferV070ReconnaissanceGambit(state, commitment);
+      return;
+    }
+    registerV070ReconnaissanceBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_WITCHCRAFT_ID,
   V070_ARCANE_KNOWLEDGE_ID,
   V070_HERESY_ID,
   V070_REND_THE_VEIL_ID,
+  V070_RECONNAISSANCE_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -104,6 +130,7 @@ export function v070BattleEffectHandler(
   if (cardId === V070_ARCANE_KNOWLEDGE_ID) return arcaneKnowledgeHandler;
   if (cardId === V070_HERESY_ID) return heresyHandler;
   if (cardId === V070_REND_THE_VEIL_ID) return rendTheVeilHandler;
+  if (cardId === V070_RECONNAISSANCE_ID) return reconnaissanceHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -112,10 +139,13 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const deferredRendTheVeil = encounteredAt === 'reveal_tactics'
-    ? takeDeferredRendTheVeilGambits(state)
+  const deferredPostTactics = encounteredAt === 'reveal_tactics'
+    ? [
+        ...takeDeferredRendTheVeilGambits(state),
+        ...takeV070DeferredReconnaissanceGambits(state),
+      ]
     : [];
-  const effectiveCommitments = [...commitments, ...deferredRendTheVeil];
+  const effectiveCommitments = [...commitments, ...deferredPostTactics];
   const unsupported = effectiveCommitments.flatMap(commitment =>
     unsupportedIntegratedCommitment(state, commitment, encounteredAt)
   );
@@ -126,7 +156,8 @@ export function resolveV070SupportedRevealEffects(
     if (cardId !== V070_WITCHCRAFT_ID
       && cardId !== V070_ARCANE_KNOWLEDGE_ID
       && cardId !== V070_HERESY_ID
-      && cardId !== V070_REND_THE_VEIL_ID) {
+      && cardId !== V070_REND_THE_VEIL_ID
+      && cardId !== V070_RECONNAISSANCE_ID) {
       const forwarded = previous.resolveV070SupportedRevealEffects(
         state,
         [commitment],
@@ -172,13 +203,33 @@ export function resolveV070SupportedRevealEffects(
       continue;
     }
 
+    if (cardId === V070_RECONNAISSANCE_ID
+      && encounteredAt === 'reveal_gambits'
+      && commitment.role === 'gambit') {
+      deferV070ReconnaissanceGambit(state, commitment);
+      appendV070Event(state, {
+        type: 'reconnaissance_battle_effect_deferred',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          cardId,
+          role: commitment.role,
+          until: 'after_tactics_revealed',
+        },
+      });
+      continue;
+    }
+
     const handler = cardId === V070_WITCHCRAFT_ID
       ? witchcraftHandler
       : cardId === V070_ARCANE_KNOWLEDGE_ID
         ? arcaneKnowledgeHandler
         : cardId === V070_HERESY_ID
           ? heresyHandler
-          : rendTheVeilHandler;
+          : cardId === V070_REND_THE_VEIL_ID
+            ? rendTheVeilHandler
+            : reconnaissanceHandler;
     handler.apply({
       state,
       owner: commitment.owner,
@@ -271,7 +322,9 @@ function unsupportedIntegratedCommitment(
         ? V070_HERESY_BATTLE_TEXT
         : cardId === V070_REND_THE_VEIL_ID
           ? V070_REND_THE_VEIL_BATTLE_TEXT
-          : null;
+          : cardId === V070_RECONNAISSANCE_ID
+            ? V070_RECONNAISSANCE_BATTLE_TEXT
+            : null;
   if (!expectedText) return [];
 
   const card = v070CanonicalContent.cardsById.get(cardId);
