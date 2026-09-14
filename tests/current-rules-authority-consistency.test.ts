@@ -6,7 +6,7 @@ import {
   synchronizeKnownRulebookClaims,
   validateAuthorityEmbeddedFacts,
   validateRuleFactMarkers,
-} from '../rulebook/player-facing/rule-facts.js';
+} from '../packages/rules/rule-facts.js';
 import {
   applyV070CanonicalCorrections,
   applyV070RulebookCorrections,
@@ -16,7 +16,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 
 describe('current rules authority consistency', () => {
   it('derives current faction summaries from current-game records instead of fixed expectations', () => {
-    const game = JSON.parse(read('game-data/current-game.json'));
+    const game = JSON.parse(read('packages/game-data/current-game.json'));
     const rulebook = read('rulebook/player-facing/current-rulebook.md');
     const facts = validateAuthorityEmbeddedFacts(game);
     validateRuleFactMarkers(rulebook, game);
@@ -56,7 +56,7 @@ describe('current rules authority consistency', () => {
   });
 
   it('uses the structured Mystics Ritual name across current authority', () => {
-    const game = JSON.parse(read('game-data/current-game.json'));
+    const game = JSON.parse(read('packages/game-data/current-game.json'));
     const rulebook = read('rulebook/player-facing/current-rulebook.md');
     const ritualName = game.mystics.ritual.name;
 
