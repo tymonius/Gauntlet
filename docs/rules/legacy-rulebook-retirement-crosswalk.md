@@ -4,14 +4,15 @@ This document records the reviewed coverage proof for `rulebook/player-facing/cu
 
 ## Proof model
 
+- The complete legacy source is SHA-256 fingerprinted in `config/legacy-rulebook-retirement-crosswalk.sha256`; any change anywhere in the document invalidates retirement readiness until the source is re-reviewed.
 - Every top-level legacy section is inventoried in order.
-- Every non-editorial section is SHA-256 fingerprinted against the exact reviewed prose. Any edit invalidates validation until the mapping is re-reviewed.
+- Every non-editorial section also has a section-level SHA-256 fingerprint against the exact reviewed prose, providing finer-grained mechanical review tracking.
 - Mechanical and procedural sections declare registered rule dependencies from `config/rules-surface-contract.json`.
 - The active Comprehensive Rules remain the direct technical successor and must cover the complete registered rule graph.
 - Teaching successors are validated as active Player's Guide or Faction Guide sections where a player-facing replacement exists.
 - The legacy Glossary is replaced by the Comprehensive Rules term registry and Definitions/Index part.
 
-This is a **structural and authority-graph proof**, not an automated semantic interpretation of English prose. Its reliability comes from binding the human-reviewed mapping to exact source fingerprints and invalidating it whenever that prose changes.
+This is a **structural and authority-graph proof**, not an automated semantic interpretation of English prose. Its reliability comes from binding the human-reviewed mapping to the exact whole source plus mechanically relevant section fingerprints and invalidating it whenever that source changes.
 
 ## Coverage
 
