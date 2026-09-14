@@ -107,11 +107,11 @@
     {
       "id": "blind-b-diplomats-peace-treaty-start-turn",
       "category": "diplomats",
-      "question": "I ratify my sixth different Proposal during my turn. Does Peace Treaty win immediately at that moment, or at the start of my turn?",
+      "question": "I ratified my sixth different Proposal during my turn. When exactly does Peace Treaty check for the win on my next turn?",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourcePatterns": ["Peace Treaty"],
-      "expectedAnswerPatterns": ["start of your turn", "6"]
+      "expectedAnswerPatterns": ["after the Capture step", "before the Draw step"]
     },
     {
       "id": "blind-b-financiers-capital-limit",
@@ -170,7 +170,7 @@
     {
       "id": "blind-b-ambassador-cordiality-limit",
       "category": "leaders",
-      "question": "Two different opponents' Terms are accepted during the same turn. Can the Ambassador draw from Cordiality twice that turn?",
+      "question": "I already drew from Cordiality once this turn. Later, my opponent accepts another set of my Terms in a separate battle. Can I draw again?",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourcePatterns": ["Cordiality"],
