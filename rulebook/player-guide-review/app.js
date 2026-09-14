@@ -1,5 +1,6 @@
 import { renderMarkdown } from '../markdown.js';
 import { loadCurrentGame } from '../../game-data/current-game.mjs';
+import '../player-guide/visuals.js';
 
 const SOURCE_URL = '../player-guide/player-guide.md';
 const content = document.querySelector('[data-review-content]');
