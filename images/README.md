@@ -23,4 +23,6 @@ The following historical reference names resolve conceptually to their approved 
 
 Likewise, the original hero study belongs with its alternate studies at `sketches/hero-sketches/hero sketch.png`; a duplicate root copy is not retained. The historical public URL `/images/sketches/hero sketch.png` is materialized from that canonical source by `config/publication-boundary.json` during Pages staging.
 
+Legacy base64/multipart parchment upload fragments are not source assets. Production uses the full-resolution `*-parchment-v2.png` files directly, so `.b64` sidecars belong outside Git.
+
 Large-format source artwork may legitimately remain large. Size alone is not grounds for deleting a unique approved or source asset.
