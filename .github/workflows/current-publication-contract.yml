@@ -42,6 +42,8 @@ jobs:
             /rules-assistant/worker-v*.js
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
+            /rulebook/player-facing/current-rulebook.md
+            /rulebook/player-guide/player-guide.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /index.html
             /legacy/public-versions/
@@ -51,7 +53,6 @@ jobs:
             /404.html
             /robots.txt
             /sitemap.xml
-            /rulebook/index.html
             /rules-arbiter/index.html
             /site-footer.css
             /site-polish.css

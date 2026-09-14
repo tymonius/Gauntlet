@@ -121,8 +121,11 @@ if (siteRoot) {
   assert(fs.existsSync(siteRoot) && fs.statSync(siteRoot).isDirectory(), `Staged Pages directory is missing: ${siteRoot}`);
 
   const allowedDirectories = new Set(contract.pages.publishedDirectories);
+  const materializedTopLevelDirectories = new Set();
   for (const mapping of contract.materializedRoutes) {
-    allowedDirectories.add(mapping.publicPath.replace(/^\/+/, '').split('/', 1)[0]);
+    const topLevel = mapping.publicPath.replace(/^\/+|\/+$/g, '').split('/', 1)[0];
+    if (topLevel) materializedTopLevelDirectories.add(topLevel);
+    allowedDirectories.add(topLevel);
   }
   const requiredRootFiles = new Set(contract.pages.rootFiles?.required || []);
   const generatedRootFiles = new Set(contract.pages.rootFiles?.generated || []);
@@ -142,6 +145,7 @@ if (siteRoot) {
   }
 
   for (const root of sourceOnlyRoots) {
+    if (materializedTopLevelDirectories.has(root)) continue;
     assert(!fs.existsSync(path.join(siteRoot, root)), `Source-only repository root leaked into Pages: ${root}`);
   }
   for (const file of requiredRootFiles) {

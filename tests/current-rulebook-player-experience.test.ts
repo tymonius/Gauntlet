@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-const app = read('rulebook/app.js');
-const portraits = read('rulebook/leader-portraits.js');
+const app = read('apps/rulebook/app.js');
+const portraits = read('apps/rulebook/leader-portraits.js');
 
 const leaders = [
   ['General', 'images/sketches/general.png'],
@@ -21,11 +21,11 @@ const leaders = [
 ] as const;
 
 describe('current Browser Rulebook components', () => {
-  it('verifies the certified Rulebook source before presenting it', () => {
-    expect(app).toContain("const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';");
-    expect(app).toContain("const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';");
+  it('binds released Rulebook presentation to the published release manifest', () => {
+    expect(app).toContain("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';");
+    expect(app).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
-    expect(app).toContain('if (actualHash !== SOURCE_SHA256)');
+    expect(app).toContain('if (actualHash !== rulebook.sha256)');
   });
 
   it('builds all six two-Leader galleries from existing approved sketches', () => {

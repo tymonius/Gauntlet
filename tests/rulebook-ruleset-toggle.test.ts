@@ -8,9 +8,9 @@ const releaseManifest = JSON.parse(read('releases/v0.7.1/Gauntlet_v0.7.1_Manifes
 const publishedRulebookPath = releaseManifest.binding_sources.rulebook.path;
 const publishedRulebook = read(publishedRulebookPath);
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
-const index = read('rulebook/index.html');
-const app = read('rulebook/app.js');
-const rulesetStyles = read('rulebook/ruleset-toggle.css');
+const index = read('apps/rulebook/index.html');
+const app = read('apps/rulebook/app.js');
+const rulesetStyles = read('apps/rulebook/ruleset-toggle.css');
 
 describe('Published v0.7.1 Browser Rulebook', () => {
   it('publishes v0.7.1 by default and hides the candidate switch when no distinct candidate exists', () => {

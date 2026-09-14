@@ -101,7 +101,7 @@ for (const required of [
   if (!published.includes(required)) fail(`Player-facing Rulebook lost approved readthrough wording: ${JSON.stringify(required)}`);
 }
 
-const app = read('rulebook/app.js');
+const app = read('apps/rulebook/app.js');
 if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';")) {
   fail('Current Browser Rulebook is not bound to the published v0.7.1 release manifest.');
 }

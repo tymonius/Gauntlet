@@ -6,6 +6,7 @@ on:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
       - "apps/factions/**/index.html"
+      - "apps/rulebook/**"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
@@ -21,6 +22,7 @@ on:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
       - "apps/factions/**/index.html"
+      - "apps/rulebook/**"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
       - "releases/v0.6.3/**"
@@ -53,7 +55,7 @@ jobs:
             scripts/build-clean-v063-publication-release.mjs
             scripts/generate-v063-canonical-data-candidate.mjs
             scripts/publication-utils.mjs
-            rulebook/app.js
+            apps/rulebook/app.js
             rulebook/player-facing/chapter-11.md
             rulebook/player-facing/corrections.js
             rules-assistant/rules-deterministic-v063.js

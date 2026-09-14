@@ -10,7 +10,7 @@ describe("Inquisition canonical faction color", () => {
     const referenceStyles = readFileSync("apps/card-reference/styles.css", "utf8");
     const referenceFactionColors = readFileSync("apps/card-reference/faction-colors.css", "utf8");
     const trackedStyles = readFileSync("apps/playtest/tracked/styles.css", "utf8");
-    const rulebookApp = readFileSync("rulebook/app.js", "utf8");
+    const rulebookApp = readFileSync("apps/rulebook/app.js", "utf8");
 
     expect(factionStyles).toContain(`.faction-inquisition { --faction: ${CANONICAL_INQUISITION}; --faction-dark: ${CANONICAL_INQUISITION};`);
     expect(referenceStyles).toContain(`--preview-accent: ${CANONICAL_INQUISITION};`);
