@@ -9,10 +9,12 @@ import {
   isV070BattleRevealChoiceOpen,
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
+import { resumeV070SupportedRevealEffects } from './battle-effects';
 import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
 import { resolveV070ArcaneKnowledgeBattleChoice } from './arcane-knowledge-battle';
 import { resolveV070HeresyBattleChoice } from './heresy-battle';
 import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
+import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -52,6 +54,11 @@ export type V070BattleAction =
       use: true;
       targetInstanceId: string;
       targetEffectLabel: V070CopyableEffectLabel;
+    }
+  | {
+      type: 'resolve_reconnaissance_battle';
+      playerId: PlayerId;
+      withdraw: boolean;
     };
 
 export function reduceV070BattleAction(
@@ -59,6 +66,25 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'reconnaissance'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_reconnaissance_battle') {
+      throw new V070GameActionError(
+        'Choose whether Reconnaissance withdraws before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ReconnaissanceBattleChoice(
+      next,
+      action.playerId,
+      action.withdraw,
+    );
+    if (!action.withdraw) {
+      resumeV070SupportedRevealEffects(next);
+    }
+    return next;
+  }
+
   if (pending?.kind === 'rend_the_veil' && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_rend_the_veil_battle') {
       throw new V070GameActionError(
@@ -125,6 +151,11 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_reconnaissance_battle') {
+    throw new V070GameActionError(
+      'There is no open Reconnaissance battle-effect choice.',
+    );
+  }
   if (action.type === 'resolve_rend_the_veil_battle') {
     throw new V070GameActionError('There is no open Rend the Veil battle-effect choice.');
   }
