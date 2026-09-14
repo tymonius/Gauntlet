@@ -6,32 +6,42 @@
     "military": {
       "publicPath": "/rules/factions/military/",
       "source": "rulebook/faction-guides/military.md",
-      "status": "draft"
+      "status": "active"
     },
     "diplomats": {
       "publicPath": "/rules/factions/diplomats/",
       "source": "rulebook/faction-guides/diplomats.md",
-      "status": "draft"
+      "status": "active"
     },
     "financiers": {
       "publicPath": "/rules/factions/financiers/",
       "source": "rulebook/faction-guides/financiers.md",
-      "status": "draft"
+      "status": "active"
     },
     "intelligence": {
       "publicPath": "/rules/factions/intelligence/",
       "source": "rulebook/faction-guides/intelligence.md",
-      "status": "draft"
+      "status": "active"
     },
     "mystics": {
       "publicPath": "/rules/factions/mystics/",
       "source": "rulebook/faction-guides/mystics.md",
-      "status": "draft"
+      "status": "active"
     },
     "inquisition": {
       "publicPath": "/rules/factions/inquisition/",
       "source": "rulebook/faction-guides/inquisition.md",
-      "status": "draft"
+      "status": "active"
     }
+  },
+  "playerGuide": {
+    "publicPath": "/rules/player-guide/",
+    "source": "rulebook/player-guide/player-guide.md",
+    "status": "active"
+  },
+  "comprehensiveRules": {
+    "publicPath": "/rules/comprehensive/",
+    "source": "rulebook/comprehensive/comprehensive-rules.md",
+    "status": "active"
   }
 }

@@ -2,7 +2,9 @@ import { renderMarkdown } from '/rulebook/markdown.js';
 import { loadCurrentGame } from '/game-data/current-game.mjs';
 
 const page = document.body;
-const sourceUrl = page.dataset.guideSource;
+const sourcePath = page.dataset.guideSource;
+const sourceName = sourcePath?.split('/').pop();
+const sourceUrl = sourceName ? `/rules/sources/factions/${sourceName}` : null;
 const content = document.querySelector('[data-guide-content]');
 const toc = document.querySelector('[data-guide-toc]');
 const status = document.querySelector('[data-guide-status]');
@@ -62,13 +64,13 @@ async function renderGuide() {
 
     const version = currentGame.displayVersion || currentGame.version || 'current development';
     versionBadges.forEach((badge) => { badge.textContent = version; });
-    if (status) status.textContent = `Draft guide · authority ${version} · source-backed from the rules publication tree`;
+    if (status) status.textContent = `Active Faction Guide · reviewed teaching surface · authority ${version}`;
     scrollToHash();
   } catch (error) {
     console.error(error);
     content.setAttribute('aria-busy', 'false');
     content.innerHTML = `<div class="guide-error" role="alert"><strong>Could not load this Faction Guide.</strong><p>${String(error.message || error)}</p></div>`;
-    if (status) status.textContent = 'Draft guide source unavailable.';
+    if (status) status.textContent = 'Faction Guide source unavailable.';
   }
 }
 

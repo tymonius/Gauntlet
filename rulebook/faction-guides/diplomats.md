@@ -4,7 +4,7 @@
 
 # Diplomat Guide
 
-> **Draft.** This guide teaches the Diplomats in player-facing language. Exact timing, mirror-match procedure, and unusual interactions belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the Diplomats in player-facing language. Exact timing, mirror-match procedure, and unusual interactions belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet the Diplomats

@@ -3,7 +3,7 @@
 
 # Gauntlet Player's Guide
 
-> **Draft.** This guide teaches the normal shared game in player-facing language. Its mechanical statements depend on the authoritative rules registered in `config/rules-surface-contract.json`. Exact interaction rules belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the normal shared game in player-facing language. Its mechanical statements depend on the authoritative rules registered in `config/rules-surface-contract.json`. Exact interaction rules belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:welcome -->
 ## Welcome to Gauntlet

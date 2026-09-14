@@ -4,7 +4,7 @@
 
 # Mystics Guide
 
-> **Draft.** This guide teaches the Mystics in player-facing language. Exact binding cleanup, copied-effect interactions, impossible Rite states, and unusual interruption timing belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the Mystics in player-facing language. Exact binding cleanup, copied-effect interactions, impossible Rite states, and unusual interruption timing belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet the Mystics

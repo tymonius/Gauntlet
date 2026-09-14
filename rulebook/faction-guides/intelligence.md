@@ -4,7 +4,7 @@
 
 # Intelligence Guide
 
-> **Draft.** This guide teaches Intelligence in player-facing language. Exact mirror-match procedure, prevented information effects, replacement windows, and unusual Mission interactions belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches Intelligence in player-facing language. Exact mirror-match procedure, prevented information effects, replacement windows, and unusual Mission interactions belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet Intelligence

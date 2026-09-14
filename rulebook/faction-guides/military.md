@@ -4,7 +4,7 @@
 
 # Military Guide
 
-> **Draft.** This guide teaches the Military in player-facing language. Exact timing and unusual interactions belong in the Comprehensive Gauntlet Rules.
+> **Player-facing guide.** This guide teaches the Military in player-facing language. Exact timing and unusual interactions belong in the Comprehensive Gauntlet Rules.
 
 <!-- RULES-SECTION:meet -->
 ## Meet the Military
