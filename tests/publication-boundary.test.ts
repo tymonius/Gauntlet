@@ -10,9 +10,16 @@ const publicationWorkflow = readFileSync('.github/workflows/current-publication-
 describe('public route and Pages publication boundary', () => {
   it('keeps source ownership independent from stable public routes', () => {
     const mappings = new Map(contract.materializedRoutes.map((entry: any) => [entry.source, entry.publicPath]));
+    expect(mappings.get('apps/about')).toBe('/about/');
+    expect(mappings.get('apps/accessibility')).toBe('/accessibility/');
     expect(mappings.get('apps/card-reference')).toBe('/card-reference/');
+    expect(mappings.get('apps/changelog')).toBe('/changelog/');
+    expect(mappings.get('apps/contact')).toBe('/contact/');
     expect(mappings.get('apps/deckbuilder')).toBe('/deckbuilder/');
+    expect(mappings.get('apps/faq')).toBe('/faq/');
     expect(mappings.get('apps/factions')).toBe('/factions/');
+    expect(mappings.get('apps/press')).toBe('/press/');
+    expect(mappings.get('apps/privacy')).toBe('/privacy/');
     expect(mappings.get('apps/rules')).toBe('/rules/');
     expect(mappings.get('apps/start')).toBe('/start/');
     expect(mappings.get('apps/playtest')).toBe('/playtest/');

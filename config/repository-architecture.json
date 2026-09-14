@@ -28,23 +28,11 @@
       "transitional": false,
       "note": "GitHub-native automation boundary; remains at repository root by platform contract."
     },
-    "about": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public project/about surface."
-    },
-    "accessibility": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public accessibility surface."
-    },
     "apps": {
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; currently contains Card Reference, Deckbuilder, Factions, Start, and Playtest."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -64,35 +52,17 @@
       "transitional": true,
       "note": "Rendering/authoring system; target split between shared rendering package and production tools."
     },
-    "changelog": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current player-facing changelog."
-    },
     "config": {
       "role": "authority",
       "target_groups": ["root"],
       "transitional": false,
       "note": "Maintained cross-system configuration; root placement is deliberate."
     },
-    "contact": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public contact surface."
-    },
     "docs": {
       "role": "documentation",
       "target_groups": ["docs"],
       "transitional": false,
       "note": "Maintained documentation and explicitly archived development records."
-    },
-    "faq": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public FAQ."
     },
     "governance": {
       "role": "authority",
@@ -123,18 +93,6 @@
       "target_groups": ["packages"],
       "transitional": false,
       "note": "Canonical container for maintained shared packages and authorities; currently contains the complete current game-data package."
-    },
-    "press": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public press/media surface."
-    },
-    "privacy": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Public privacy/data-handling surface."
     },
     "releases": {
       "role": "frozen_release",

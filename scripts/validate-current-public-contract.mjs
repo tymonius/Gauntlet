@@ -4,14 +4,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
+import { loadPublicationBoundary, sourcePathForPublicPath as resolvePublicationSourcePath } from './publication-boundary.mjs';
 
 const root = process.cwd();
 const remoteBase = process.env.GAUNTLET_PUBLIC_BASE_URL?.replace(/\/+$/, '') || null;
 const cacheBust = process.env.GAUNTLET_CONTRACT_BUST || '';
 const factions = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
-const deployedAppRoots = new Set(['card-reference', 'deckbuilder', 'factions', 'rules', 'start', 'playtest']);
-const historicalPublicVersionRoots = new Set(['v0.6.2', 'v0.6.3', 'v0.7.0']);
-const retiredCompatibilityRoots = new Set(['deckbuilder-v0.5', 'deckbuilder-v0.6', 'faction-sheets']);
+const publicationBoundary = loadPublicationBoundary(root);
 
 function publicPath(value) {
   if (!value) return null;
@@ -40,11 +39,7 @@ function repositoryPathExists(relative) {
 }
 
 function sourcePathForPublicPath(clean) {
-  const [publicRoot] = clean.split('/');
-  if (deployedAppRoots.has(publicRoot)) return path.join('apps', clean);
-  if (historicalPublicVersionRoots.has(publicRoot)) return path.join('legacy', 'public-versions', clean);
-  if (retiredCompatibilityRoots.has(publicRoot)) return path.join('legacy', 'public-compatibility', clean);
-  return clean;
+  return resolvePublicationSourcePath(publicationBoundary, `/${clean}`);
 }
 
 function localPath(urlPath) {
