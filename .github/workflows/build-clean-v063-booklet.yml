@@ -63,6 +63,8 @@ jobs:
           rm -rf rulebook-design rulebook-production
           cp -R legacy/v0.6.1-rulebook-publication/rulebook-design ./rulebook-design
           cp -R legacy/v0.6.1-rulebook-publication/rulebook-production ./rulebook-production
+          # Preserved cover markup still uses the pre-cleanup hero-sketch path.
+          cp "images/sketches/hero-sketches/hero sketch.png" "images/sketches/hero sketch.png"
 
       - name: Build and validate approved-design booklet
         run: |
