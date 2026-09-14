@@ -32,7 +32,7 @@
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Browser Rulebook, Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -102,9 +102,9 @@
     },
     "rulebook": {
       "role": "authority",
-      "target_groups": ["apps", "packages"],
+      "target_groups": ["packages", "tools", "docs"],
       "transitional": true,
-      "note": "Current Rulebook authority plus browser/production support; target split is explicit."
+      "note": "Maintained technical and teaching rules surfaces plus publication/editorial support remain mixed here; gameplay authority remains packages/game-data/current-game.json. Browser Rulebook application source lives under apps/rulebook."
     },
     "rules-arbiter": {
       "role": "active_application",
