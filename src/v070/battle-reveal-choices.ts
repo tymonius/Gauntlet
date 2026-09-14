@@ -61,12 +61,19 @@ export interface V070RendTheVeilBattleRevealChoice {
   parentApplication?: V070CopiedEffectApplication;
 }
 
+export interface V070ReconnaissanceBattleRevealChoice {
+  kind: 'reconnaissance';
+  owner: PlayerId;
+  sourceInstanceId: string;
+}
+
 export type V070BattleRevealChoice =
   | previous.V070BattleRevealChoice
   | V070WitchcraftBattleRevealChoice
   | V070ArcaneKnowledgeBattleRevealChoice
   | V070HeresyBattleRevealChoice
-  | V070RendTheVeilBattleRevealChoice;
+  | V070RendTheVeilBattleRevealChoice
+  | V070ReconnaissanceBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
@@ -78,6 +85,8 @@ declare module './battle-types' {
     heresyBattleRevealChoiceOpen?: boolean;
     pendingRendTheVeilBattleRevealChoice?: V070RendTheVeilBattleRevealChoice | null;
     rendTheVeilBattleRevealChoiceOpen?: boolean;
+    pendingReconnaissanceBattleRevealChoice?: V070ReconnaissanceBattleRevealChoice | null;
+    reconnaissanceBattleRevealChoiceOpen?: boolean;
   }
 }
 
@@ -267,10 +276,41 @@ export function queueV070RendTheVeilBattleRevealChoice(
   });
 }
 
+export function queueV070ReconnaissanceBattleRevealChoice(
+  state: V070GameState,
+  choice: V070ReconnaissanceBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Reconnaissance battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Reconnaissance cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingReconnaissanceBattleRevealChoice = { ...choice };
+  runtime.reconnaissanceBattleRevealChoiceOpen = true;
+
+  appendV070Event(state, {
+    type: 'reconnaissance_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'intelligence-reconnaissance',
+      mandatory: false,
+    },
+  });
+}
+
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
+  return state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
+    ?? state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
     ?? state.battleRuntime?.pendingHeresyBattleRevealChoice
     ?? state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice
     ?? state.battleRuntime?.pendingWitchcraftBattleRevealChoice
@@ -280,6 +320,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingReconnaissanceBattleRevealChoice) {
+    return Boolean(state.battleRuntime.reconnaissanceBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingRendTheVeilBattleRevealChoice) {
     return Boolean(state.battleRuntime.rendTheVeilBattleRevealChoiceOpen);
   }
@@ -352,5 +395,20 @@ export function completeV070RendTheVeilBattleRevealChoice(
   }
   runtime.pendingRendTheVeilBattleRevealChoice = null;
   runtime.rendTheVeilBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070ReconnaissanceBattleRevealChoice(
+  state: V070GameState,
+): V070ReconnaissanceBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingReconnaissanceBattleRevealChoice;
+  if (!runtime || !pending || !runtime.reconnaissanceBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Reconnaissance battle-effect choice.',
+    );
+  }
+  runtime.pendingReconnaissanceBattleRevealChoice = null;
+  runtime.reconnaissanceBattleRevealChoiceOpen = false;
   return pending;
 }
