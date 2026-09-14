@@ -45,7 +45,7 @@ A path that cannot be classified cleanly is a cleanup target.
 
 ### 3. Public URLs are compatibility contracts, not source locations
 
-Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/rules/`, `/start/`, `/playtest/`, and `/game-data/` must not move merely to make the source tree prettier.
+Current public paths such as `/about/`, `/accessibility/`, `/card-reference/`, `/changelog/`, `/contact/`, `/deckbuilder/`, `/faq/`, `/factions/`, `/press/`, `/privacy/`, `/rules/`, `/start/`, `/playtest/`, `/rulebook/`, and `/game-data/` must not move merely to make the source tree prettier.
 
 `config/publication-boundary.json` is the machine-readable public/deployment contract. It defines:
 
@@ -59,9 +59,16 @@ GitHub Pages staging, local/public-route compatibility materialization, and publ
 
 Source organization may change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists. The current reference mappings include:
 
+- `apps/about/` → `/about/`
+- `apps/accessibility/` → `/accessibility/`
 - `apps/card-reference/` → `/card-reference/`
+- `apps/changelog/` → `/changelog/`
+- `apps/contact/` → `/contact/`
 - `apps/deckbuilder/` → `/deckbuilder/`
+- `apps/faq/` → `/faq/`
 - `apps/factions/` → `/factions/`
+- `apps/press/` → `/press/`
+- `apps/privacy/` → `/privacy/`
 - `apps/rules/` → `/rules/`
 - `apps/start/` → `/start/`
 - `apps/playtest/` → `/playtest/`
@@ -131,19 +138,12 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; currently includes Card Reference, Deckbuilder, Factions, Rules, Start, and Playtest |
+| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; includes Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy |
 | `rulebook/` | Current rules authority plus browser/publication support; still transitional and requires a dedicated boundary audit |
 | `rules-assistant/` | Rules Arbiter implementation, retrieval, tests, and deployable endpoint; still transitional |
 | `rules-arbiter/` | Current static Rules Arbiter browser shell |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; quarantined historical engine implementations live under `legacy/` |
-| `changelog/` | Current player-facing changelog |
-| `about/` | Public project/about information surface |
-| `accessibility/` | Public accessibility practices and known-limitations surface |
-| `contact/` | Public contact form and submission confirmation surface |
-| `faq/` | Public project FAQ surface |
-| `press/` | Public press/media information and reference-asset surface |
-| `privacy/` | Public privacy/data-handling notice |
 
 ### Shared packages
 
@@ -212,6 +212,13 @@ The long-term conceptual dependency shape is:
 
 ```text
 apps/
+  about/
+  accessibility/
+  changelog/
+  contact/
+  faq/
+  press/
+  privacy/
   deckbuilder/
   card-reference/
   rulebook/
