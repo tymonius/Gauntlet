@@ -43,17 +43,18 @@ Older cleanup branches remain design evidence only. Re-land still-valid ideas de
 
 ## Current tranche: remove current logic from the legacy Rulebook boundary
 
-`rulebook/player-facing/rule-facts.js` is not historical compatibility code. It derives and validates facts from `packages/game-data/current-game.json`, synchronizes current rules prose, and is consumed by current governance validation. Its placement under `rulebook/` is therefore a lifecycle mismatch.
+The maintained implementation formerly at `rulebook/player-facing/rule-facts.js` is not historical compatibility code. It derives and validates facts from `packages/game-data/current-game.json` and synchronizes current rules prose. Its implementation therefore belongs with maintained rules support under `packages/rules/`.
 
 This tranche is deliberately structural:
 
-- move `rule-facts.js` unchanged to `packages/rules/rule-facts.js`;
-- update current governance validation to consume the packaged helper;
+- move the maintained `rule-facts.js` implementation unchanged to `packages/rules/rule-facts.js`;
+- update current governance validation and the lifecycle-selected v0.7.1 Rulebook renderer to consume the packaged helper directly;
+- retain `rulebook/player-facing/rule-facts.js` only as a tiny compatibility re-export for preserved version-pinned tooling such as the v0.7.0 renderer;
 - correct stale authority language in `legacy/README.md`;
-- update architecture contracts so `rulebook/` no longer targets the maintained-package lifecycle;
+- update architecture contracts so `rulebook/` no longer owns maintained current rule-fact logic;
 - leave legacy monolithic Rulebook content, historical v0.6.3/v0.7.0 correction inputs, Chapter 11 support, and QR assets untouched pending their own lifecycle decisions.
 
-After this tranche, no maintained current rules helper should remain under `rulebook/`.
+After this tranche, no maintained current rule-fact implementation remains under `rulebook/`; the old path is compatibility-only.
 
 ## Architectural decisions now established
 
@@ -71,11 +72,12 @@ After this tranche, no maintained current rules helper should remain under `rule
 - `player-facing/current-rulebook.md` — legacy monolithic Rulebook compatibility/publication source; not gameplay authority.
 - `player-facing/chapter-11.md` + `player-facing/corrections.js` — verified v0.6.3 historical support consumed by the preserved v0.6.3 validation/reconstruction path.
 - `player-facing/v070-corrections.js` — verified v0.7.0 historical renderer support.
+- `player-facing/rule-facts.js` — transitional compatibility re-export only; maintained implementation lives at `packages/rules/rule-facts.js`.
 - `assets/qr/` — lifecycle not yet proven; do not classify as dead/unused without consumer evidence.
 
 ## Next top-down queue
 
-1. Finish the `packages/rules/rule-facts.js` move and prove governance/full CI stays green.
+1. Finish the `packages/rules/rule-facts.js` move and prove governance, the current Rulebook renderer, and full CI stay green.
 2. Classify/consolidate the verified v0.6.3 and v0.7.0 historical Rulebook support with their true historical tooling owners; do not put tooling inputs under `legacy/public-versions/`, which is a staged browser-source boundary.
 3. Prove the lifecycle/consumers for `rulebook/assets/qr/` before moving or deleting it.
 4. Decide legacy `/rulebook/` route retirement/redirect/archive behavior separately from source placement, using the #1729 crosswalk as evidence rather than deleting the route implicitly.
