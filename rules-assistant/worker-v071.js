@@ -7,9 +7,10 @@ import {
 } from "./v071-public-corpus.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
+import { normalizeR13RulingStatus } from "./r13-classification.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260914-12";
+export const BEHAVIOR_REVISION = "v071-qa-20260914-13";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -355,7 +356,11 @@ export default {
       failureStage = "model";
       const modelResult = await askOpenAI({ env, request, question, history, sources: retrieval });
       let sources = selectUsedSources(retrieval, modelResult.source_ids);
-      const rulingStatus = normalizeModelRulingStatus(modelResult.ruling_status, question, sources);
+      const rulingStatus = normalizeR13RulingStatus(
+        normalizeModelRulingStatus(modelResult.ruling_status, question, sources),
+        question,
+        sources
+      );
       if (rulingStatus === "out_of_scope") sources = [];
       const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer);
       const answer = rulingStatus === "provisional"
