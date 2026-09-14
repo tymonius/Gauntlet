@@ -20,7 +20,6 @@ on:
       - 'scripts/validate-rules-publication-scaffolds.mjs'
       - 'scripts/validate-legacy-rulebook-retirement-crosswalk.mjs'
       - 'rulebook/player-facing/current-rulebook.md'
-      - 'rulebook/publication/**'
   workflow_dispatch:
 
 permissions:
@@ -52,7 +51,6 @@ jobs:
             /scripts/validate-rules-publication-contract.mjs
             /scripts/validate-rules-publication-scaffolds.mjs
             /scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
-            /rulebook/publication/
             /rulebook/player-facing/rule-facts.js
             /rulebook/player-facing/current-rulebook.md
 
