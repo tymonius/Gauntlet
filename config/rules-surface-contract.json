@@ -2378,57 +2378,702 @@
     {
       "id": "military",
       "guideId": "military-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.military.definition",
         "faction.military.features"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.military.definition",
+            "faction.military.features",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "d399d42b934a07782912ecba9fa777bbcdb2ba95b8baf458600d4b2c9eb2e3c6"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.military.features",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "843fe2a77a87a315e24c681b50fadd1643a16fb70f843a495e3c9c86ae799f10"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.military.definition",
+            "faction.military.features",
+            "core.components"
+          ],
+          "reviewFingerprint": "f4edd3c81e594726b0be8d78d49a7079c89cc894d46ccba871c2c3a21e404db4"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.military.features"
+          ],
+          "reviewFingerprint": "0e2cda75cf1b5766c1bcb907ed5fe475172ab6c489dd32dce4df74c1e0ff4bc4"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.military.features",
+            "core.turn.actions",
+            "core.battle.withdrawal-procedure"
+          ],
+          "reviewFingerprint": "8769748057cc8e6f2026208461f829363819f61c4022d8a32eb032195908f8ca"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.military.features",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand",
+            "core.battlefield.capture",
+            "core.battlefield.front-line",
+            "core.battlefield.counterattack"
+          ],
+          "reviewFingerprint": "67bfdf2790acf3c57b74774d97e192928a95c9720ca0f55a74fd95120409b779"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.military.features",
+            "core.battlefield.movement",
+            "core.battle.movement-initiation",
+            "core.battle.aftermath",
+            "core.battle.retreat",
+            "core.battlefield.occupation",
+            "core.battlefield.capture",
+            "core.battlefield.front-line"
+          ],
+          "reviewFingerprint": "d66794d0a3205aad5b4cddebc4b4b35e106d8010c456c49f4402a5be28342fab"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.military.features",
+            "core.battle.aftermath",
+            "core.battle.retreat"
+          ],
+          "reviewFingerprint": "d47de98b4cb6aa73cc22ae0bba66d18a9330db6f858555dc9636f07a6b5b0c48"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.military.features",
+            "core.battlefield.counterattack",
+            "core.turn.actions"
+          ],
+          "reviewFingerprint": "712e79003bf29d794cf23a2cb645b9fb78a8643f0d0b3dcdf2153e7c8b4deec9"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     },
     {
       "id": "diplomats",
       "guideId": "diplomats-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.diplomats.definition",
         "faction.diplomats.features",
         "faction.diplomats.proposals"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.diplomats.definition",
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battle.onset",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "12c9f5de6684e91cfe237453af0949c5049d4872945f09632dd034909088df99"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battle.onset",
+            "core.battle.battle-total",
+            "core.turn.actions"
+          ],
+          "reviewFingerprint": "0257ebb79f52df9507938cc41cf0520c61a0f7cb131892b59a4d6a2dcb04679a"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.diplomats.definition",
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.components"
+          ],
+          "reviewFingerprint": "090273e0b65a0d33d21dd65328a870cb96060e84e70a891844f5086d7e8f9783"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "b411d4214d03fa2c8ea9e427cafd138bd998ad6f6b8f0ed0fb4c67d9a923f1ef"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battle.onset",
+            "core.battle.gambit-count",
+            "core.battle.aftermath"
+          ],
+          "reviewFingerprint": "5735bdc9a7af2f017f5a6683fa1f93bb245451e620b9278601085503f0d9c9b6"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand",
+            "core.turn.sequence"
+          ],
+          "reviewFingerprint": "36b71d513aeb95d14b834f070cbf6fcfc3de67b9290f5ca93034aaa83709f63e"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.diplomats.features"
+          ],
+          "reviewFingerprint": "ffecb8c976370c56e22bd5953a0918571d2412a07f94be017b6caf84826f99c8"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "b411d4214d03fa2c8ea9e427cafd138bd998ad6f6b8f0ed0fb4c67d9a923f1ef"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.diplomats.features",
+            "faction.diplomats.proposals",
+            "core.battlefield.victory",
+            "core.turn.sequence"
+          ],
+          "reviewFingerprint": "79509281d3515cc0d3554c47029d57309526d78e79e3106c27f183be2fc4f429"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     },
     {
       "id": "financiers",
       "guideId": "financiers-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.financiers.definition",
         "faction.financiers.features"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.financiers.definition",
+            "faction.financiers.features",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "b3689d99f47bf5b75afb97865739debf3ca3947c853024c3ebcc065beda2fe2f"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.turn.actions",
+            "core.turn.cleanup"
+          ],
+          "reviewFingerprint": "60cc3c3d0b223dae8517e883348b16245ede3d32b1d75ae78c1d02d26d442e8a"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.financiers.definition",
+            "faction.financiers.features",
+            "core.components"
+          ],
+          "reviewFingerprint": "7f03eb0ceabc4536bf212b6badfa9b5560d49c90e626c31ccf4b86a22f2ed5ad"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.turn.actions",
+            "core.turn.cleanup",
+            "core.battlefield.capture"
+          ],
+          "reviewFingerprint": "65f114568823ea994ca6ccd7d3190d5c099df5f45b8a8488d31978c087efc35b"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.turn.actions",
+            "core.card-zones",
+            "core.battlefield.occupation",
+            "core.battlefield.capture",
+            "core.battlefield.front-line",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "e06893e8cf6736ad1457ae67fa7480c8d1ad1406abffb09603d64d39e80b6a1c"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand"
+          ],
+          "reviewFingerprint": "1debe0306a4aca29e5a49ea69a98ba5eecbe55adfdd707ef3bed96d770903798"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.battlefield.occupation",
+            "core.battlefield.capture",
+            "core.battlefield.front-line"
+          ],
+          "reviewFingerprint": "573ea6c1fde53e32d8a8259f46ff54e6aa25250904d519997010da153c08b6ae"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.battlefield.capture",
+            "core.battlefield.occupation",
+            "core.turn.actions"
+          ],
+          "reviewFingerprint": "71e6cab6bdefdd1fb9b8feac66da5c810330cb6321b05970f6f09a17dbf84cd8"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.financiers.features",
+            "core.turn.actions",
+            "core.turn.cleanup",
+            "core.battlefield.occupation"
+          ],
+          "reviewFingerprint": "060c59b730f3fa832cb71c0dbb7f4a08295e027e3a85d1263c1bb81312464bf4"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     },
     {
       "id": "intelligence",
       "guideId": "intelligence-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.intelligence.definition",
         "faction.intelligence.features"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.intelligence.definition",
+            "faction.intelligence.features",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "092067bb587a268c6c9c07e7888134e9dd4f8d08c3391437e7abcf3edd1d71e2"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.turn.actions",
+            "core.battle.commitment-order"
+          ],
+          "reviewFingerprint": "7364934aa62427cfbc58136a550d23b7d6bebf98a93c5fa37c294c12502fec71"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.intelligence.definition",
+            "faction.intelligence.features",
+            "core.components"
+          ],
+          "reviewFingerprint": "b33d4f17f843955e9171130b4e4c3fba80c8b6e33774d7414d22eb522e215d16"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.turn.actions",
+            "core.turn.sequence"
+          ],
+          "reviewFingerprint": "bb140382c725ef9f2d14a5065fd4ecc42c78778f4dfb8cee37f89a8fce1f90e1"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.turn.actions",
+            "core.battle.commitment-order",
+            "core.battle.gambit-count",
+            "core.battle.tactic-count",
+            "core.battle.reserve",
+            "core.cards.reveal",
+            "core.cards.replacement",
+            "core.cards.revising-choice"
+          ],
+          "reviewFingerprint": "277eef2c0ecf8aeec3b1d7446a42de72a3ef6671967ff84a9d576a7236be59b5"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand",
+            "core.turn.actions"
+          ],
+          "reviewFingerprint": "1d175c7449e2e84ada44ed814c95f5b32cc89cdee17e032c9b737fb821b531d7"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.intelligence.features"
+          ],
+          "reviewFingerprint": "d13adaf9adc3da2596c7820225ff3fbf3490f530de1eff529ddfc0e2662a0832"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.turn.actions",
+            "core.turn.sequence"
+          ],
+          "reviewFingerprint": "bb140382c725ef9f2d14a5065fd4ecc42c78778f4dfb8cee37f89a8fce1f90e1"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.intelligence.features",
+            "core.turn.actions",
+            "core.battle.commitment-order"
+          ],
+          "reviewFingerprint": "7364934aa62427cfbc58136a550d23b7d6bebf98a93c5fa37c294c12502fec71"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     },
     {
       "id": "mystics",
       "guideId": "mystics-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.mystics.definition",
         "faction.mystics.features",
         "faction.mystics.rites"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.mystics.definition",
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "c0ce0d15ced61eb00583beabc883c9b252a8a3356e7070b01b08096e05194b59"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "62bd481248cb451689fe7e7d47022e75675d0e24d9ce48a5cab31a6f6e7fb3ec"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.mystics.definition",
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.components",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "92c02d80c394bb06d76d863b86074da387fb870a141720e2b034502998bd18d5"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "669beb877003277887b75a720bf97db45a3889cab82cddba9a896c3f37d10266"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones",
+            "core.cards.bind",
+            "core.cards.assets",
+            "core.cards.overlay",
+            "core.battle.advantage-disadvantage",
+            "core.battle.retreat",
+            "core.battlefield.occupation",
+            "core.battlefield.capture"
+          ],
+          "reviewFingerprint": "774c6a3f656e59aa6b6ca24fb42ccb4ff45a25baae97d723cb373ecae4e9aa32"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand",
+            "core.card-zones",
+            "core.cards.bind",
+            "core.battle.withdrawal-procedure"
+          ],
+          "reviewFingerprint": "f6f54c2418cde66fa4175cf37f99129ac9b4962ad902dacdca0e965a4c86126d"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones",
+            "core.battle.aftermath"
+          ],
+          "reviewFingerprint": "8f260b2bcfae7bff8d26cb590f4a2a427707ba48d65c70c0e3d02b429fd09d6e"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones",
+            "core.cards.bind",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "9bbc5c3f80891ab82663dd29049374bc36aeb706707bad0960130593edabbe81"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.mystics.features",
+            "faction.mystics.rites",
+            "core.card-zones",
+            "core.cards.bind",
+            "core.battle.battle-total"
+          ],
+          "reviewFingerprint": "9bbc5c3f80891ab82663dd29049374bc36aeb706707bad0960130593edabbe81"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     },
     {
       "id": "inquisition",
       "guideId": "inquisition-guide",
-      "status": "planned",
+      "status": "active",
       "dependsOn": [
         "faction.inquisition.definition",
         "faction.inquisition.features"
+      ],
+      "sections": [
+        {
+          "id": "meet",
+          "title": "Meet the Faction",
+          "dependsOn": [
+            "faction.inquisition.definition",
+            "faction.inquisition.features",
+            "core.battlefield.victory",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "4b568403dc5fab9e90eaf1cab3cd90060bdbfcd0329a22f15a0237960126daae"
+        },
+        {
+          "id": "changes",
+          "title": "How This Faction Changes Gauntlet",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.turn.actions",
+            "core.turn.draw",
+            "core.battle.aftermath",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "4bf724264f6917607ffa0d8e6be843c9403944bcf2fa0ca21637afa585766a85"
+        },
+        {
+          "id": "components",
+          "title": "Your Faction Components",
+          "dependsOn": [
+            "faction.inquisition.definition",
+            "faction.inquisition.features",
+            "core.components"
+          ],
+          "reviewFingerprint": "357ec924bda72debd994cf91b4d5ca0eaa99992a4e165e7bf2d752d532bea5d9"
+        },
+        {
+          "id": "resource",
+          "title": "Your Resource or Progress System",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battle.aftermath",
+            "core.card-zones",
+            "core.cards.reveal"
+          ],
+          "reviewFingerprint": "ecf4ad6095fa89f03697f98aa1cede9fa02f84c424e420eafeb7f0df8480b091"
+        },
+        {
+          "id": "features",
+          "title": "Your Faction Features",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battle.aftermath",
+            "core.card-zones",
+            "core.turn.actions",
+            "core.turn.draw",
+            "core.cards.assets"
+          ],
+          "reviewFingerprint": "ea6892d1eab3de59b21bdb19560dcb9b272b7212e41760b1d1d69d1635cdad5c"
+        },
+        {
+          "id": "victory",
+          "title": "Your Path to Victory",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battlefield.victory",
+            "core.battlefield.last-stand",
+            "core.turn.draw",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "35a328f192f316a4ba304d455f40651db1ec28897af6d075874c27673b6551a8"
+        },
+        {
+          "id": "leaders",
+          "title": "Your Leaders",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battle.aftermath",
+            "core.turn.cleanup",
+            "core.battlefield.movement",
+            "core.battle.movement-initiation",
+            "core.turn.sequence",
+            "core.battle.onset",
+            "core.battle.withdrawal-procedure"
+          ],
+          "reviewFingerprint": "52eed23eb1dd562bed60d5f473346654e5aa0c4210056e7b7f5ee81cbf459f3a"
+        },
+        {
+          "id": "together",
+          "title": "Putting It Together",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battle.aftermath",
+            "core.cards.reveal",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "ecf4ad6095fa89f03697f98aa1cede9fa02f84c424e420eafeb7f0df8480b091"
+        },
+        {
+          "id": "first-game",
+          "title": "Your First Game",
+          "dependsOn": [
+            "faction.inquisition.features",
+            "core.battle.aftermath",
+            "core.turn.actions",
+            "core.turn.draw",
+            "core.card-zones"
+          ],
+          "reviewFingerprint": "4bf724264f6917607ffa0d8e6be843c9403944bcf2fa0ca21637afa585766a85"
+        },
+        {
+          "id": "reference",
+          "title": "Rules and Reference",
+          "dependsOn": []
+        }
       ]
     }
   ],
