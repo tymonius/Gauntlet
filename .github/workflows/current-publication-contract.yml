@@ -47,6 +47,7 @@ jobs:
             /legacy/public-versions/
             /v*/index.html
             /apps/
+            /packages/game-data/**
             /404.html
             /robots.txt
             /sitemap.xml
