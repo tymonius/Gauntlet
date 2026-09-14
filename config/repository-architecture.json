@@ -32,7 +32,7 @@
       "role": "active_application",
       "target_groups": ["apps"],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Browser Rulebook, Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -80,7 +80,7 @@
       "role": "historical_compatibility",
       "target_groups": ["legacy"],
       "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance."
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance, including the retired Browser Rulebook source and stable /rulebook/ compatibility landing."
     },
     "media": {
       "role": "production_tooling",
@@ -104,7 +104,7 @@
       "role": "historical_compatibility",
       "target_groups": ["packages", "assets", "legacy"],
       "transitional": true,
-      "note": "Primarily legacy monolithic Rulebook and version-specific support, plus Rulebook QR assets and the still-maintained rule-facts helper. Gameplay authority lives at packages/game-data/current-game.json, active rules and publication support live at packages/rules/, and Browser Rulebook application source lives at apps/rulebook/."
+      "note": "Primarily legacy monolithic Rulebook and version-specific support, plus Rulebook QR assets and the still-maintained rule-facts helper. Gameplay authority lives at packages/game-data/current-game.json, active rules and publication support live at packages/rules/, and the retired Browser Rulebook source is archived under legacy/rulebook-browser/."
     },
     "rules-arbiter": {
       "role": "active_application",

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "status": "retired",
+  "legacySource": "rulebook/player-facing/current-rulebook.md",
+  "coverageProof": "config/legacy-rulebook-retirement-crosswalk.json",
+  "retiredBrowserSource": "legacy/rulebook-browser",
+  "retiredRoute": "/rulebook/",
+  "compatibilitySource": "legacy/public-compatibility/rulebook",
+  "successorRoute": "/rules/",
+  "historicalRelease": {
+    "version": "v0.7.1",
+    "landingRoute": "/v0.7.1/",
+    "rulebookSource": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md",
+    "booklet": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf"
+  },
+  "retiredPublicSourceAliases": [
+    "/rulebook/player-facing/current-rulebook.md",
+    "/rulebook/player-guide/player-guide.md",
+    "/rulebook/player-guide-review/"
+  ]
+}

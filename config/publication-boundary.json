@@ -59,7 +59,7 @@
     {"source": "apps/factions", "publicPath": "/factions/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/press", "publicPath": "/press/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/privacy", "publicPath": "/privacy/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/rulebook", "publicPath": "/rulebook/", "kind": "current-app", "manageIndexRoutes": true},
+    {"source": "legacy/public-compatibility/rulebook", "publicPath": "/rulebook/", "kind": "retired-compatibility", "manageIndexRoutes": true},
     {"source": "apps/rules", "publicPath": "/rules/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/start", "publicPath": "/start/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/playtest", "publicPath": "/playtest/", "kind": "current-app", "manageIndexRoutes": true},
@@ -72,8 +72,6 @@
     {"source": "legacy/public-compatibility/faction-sheets", "publicPath": "/faction-sheets/", "kind": "retired-compatibility", "manageIndexRoutes": false}
   ],
   "materializedFiles": [
-    {"source": "rulebook/player-facing/current-rulebook.md", "publicPath": "/rulebook/player-facing/current-rulebook.md", "kind": "legacy-rulebook-source"},
-    {"source": "packages/rules/player-guide/player-guide.md", "publicPath": "/rulebook/player-guide/player-guide.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/player-guide/player-guide.md", "publicPath": "/rules/sources/player-guide.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/faction-guides/military.md", "publicPath": "/rules/sources/factions/military.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/faction-guides/diplomats.md", "publicPath": "/rules/sources/factions/diplomats.md", "kind": "reviewed-teaching-source"},
@@ -103,7 +101,6 @@
     "/press/",
     "/privacy/",
     "/rulebook/",
-    "/rulebook/player-guide-review/",
     "/rules/",
     "/rules/comprehensive/",
     "/rules/factions/",
