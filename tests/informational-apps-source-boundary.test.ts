@@ -44,7 +44,7 @@ describe("informational app source/deployment boundary", () => {
   it("keeps current-publication validation on the shared route contract", () => {
     const validator = read("scripts/validate-current-public-contract.mjs");
     expect(validator).toContain("from './publication-boundary.mjs'");
-    expect(validator).toContain("sourcePathForPublicPath(publicationBoundary");
+    expect(validator).toContain("resolvePublicationSourcePath(publicationBoundary");
     expect(validator).not.toContain("deployedAppRoots");
   });
 });
