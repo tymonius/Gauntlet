@@ -30,17 +30,16 @@ jobs:
           set -euo pipefail
           expected_base='764677229d17d9d889a855274d1262617d9c6449'
           expected_worker='a42e2b275bc38ac1ed0829374fd34904a8a1a3f8'
-          test "$(git rev-parse HEAD^)" = "$expected_base"
+          git merge-base --is-ancestor "$expected_base" HEAD
           test "$(git hash-object rules-assistant/worker-v071.js)" = "$expected_worker"
-          expected='.github/workflows/r11-self-apply.yml'
+          expected=$'.github/scripts/apply-r11-hardening.py\n.github/workflows/r11-self-apply.yml'
           test "$(git diff --name-only "$expected_base"..HEAD)" = "$expected"
 
       - name: Apply r11 hardening and focused regressions
         shell: bash
         run: |
           set -euo pipefail
-          git show e287fb4120fc37317c6dc6975aec790fd7a6570e:.github/scripts/apply-r11-hardening.py > /tmp/apply-r11-hardening.py
-          python /tmp/apply-r11-hardening.py
+          python .github/scripts/apply-r11-hardening.py
           python - <<'PY'
           from pathlib import Path
 
@@ -78,7 +77,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git rm .github/workflows/r11-self-apply.yml
+          git rm .github/workflows/r11-self-apply.yml .github/scripts/apply-r11-hardening.py
           git add -A
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
