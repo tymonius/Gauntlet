@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("rulebook/mobile-toc-focus.js", "utf8");
-const html = readFileSync("rulebook/index.html", "utf8");
+const source = readFileSync("apps/rulebook/mobile-toc-focus.js", "utf8");
+const html = readFileSync("apps/rulebook/index.html", "utf8");
 
 describe("mobile Rulebook TOC focus", () => {
   it("loads the focus handoff with the browser Rulebook", () => {
