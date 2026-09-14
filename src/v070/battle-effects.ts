@@ -29,6 +29,11 @@ import {
   V070_WITCHCRAFT_ID,
 } from './copied-effect-callers';
 import {
+  V070_RECONNAISSANCE_ID,
+  deferV070ReconnaissanceGambit,
+  takeV070DeferredReconnaissanceGambits,
+} from './reconnaissance-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -163,6 +168,7 @@ export function resolveV070SupportedRevealEffects(
     ? [
         ...takeDeferredWitchcraftGambits(state),
         ...takeDeferredRendTheVeilGambits(state),
+        ...takeV070DeferredReconnaissanceGambits(state),
       ]
     : [];
   const effectiveCommitments = [...commitments, ...deferredPostTactics];
@@ -180,17 +186,23 @@ export function resolveV070SupportedRevealEffects(
   for (const commitment of effectiveCommitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
 
-    // Witchcraft and Rend the Veil have printed Gambit/Tactic text that is
-    // explicitly post-Tactics. A copy set as the Gambit remains a legal
-    // revealed commitment, but its own effect joins the reveal queue only
-    // after Tactics have been revealed.
+    // Witchcraft, Rend the Veil, and Reconnaissance have printed
+    // Gambit/Tactic text that resolves only after Tactics are revealed. A
+    // copy set as the Gambit remains a legal revealed commitment, but its own
+    // effect joins the reveal queue only at the post-Tactics timing.
     if (encounteredAt === 'reveal_gambits'
       && commitment.role === 'gambit'
-      && (cardId === V070_WITCHCRAFT_ID || cardId === V070_REND_THE_VEIL_ID)) {
+      && (
+        cardId === V070_WITCHCRAFT_ID
+        || cardId === V070_REND_THE_VEIL_ID
+        || cardId === V070_RECONNAISSANCE_ID
+      )) {
       if (cardId === V070_WITCHCRAFT_ID) {
         deferWitchcraftGambit(state, commitment);
-      } else {
+      } else if (cardId === V070_REND_THE_VEIL_ID) {
         deferRendTheVeilGambit(state, commitment);
+      } else {
+        deferV070ReconnaissanceGambit(state, commitment);
       }
       continue;
     }
