@@ -1,0 +1,48 @@
+name: Temporary Comprehensive Rules activation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-activate-comprehensive-rules.yml'
+      - 'scripts/tmp-activate-comprehensive-rules.mjs'
+      - 'config/rules-surface-contract.json'
+      - 'rulebook/comprehensive/**'
+      - 'scripts/render-comprehensive-rules.mjs'
+      - 'scripts/validate-rules-publication-contract.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'rules/activate-comprehensive'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/activate-comprehensive
+          fetch-depth: 0
+
+      - name: Activate Comprehensive Rules contract
+        run: node scripts/tmp-activate-comprehensive-rules.mjs
+
+      - name: Validate publication contract
+        run: node scripts/validate-rules-publication-contract.mjs
+
+      - name: Verify Comprehensive Rules projection freshness
+        run: node scripts/render-comprehensive-rules.mjs
+
+      - name: Commit activation
+        run: |
+          if git diff --quiet -- config/rules-surface-contract.json; then
+            echo 'Comprehensive Rules activation already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add config/rules-surface-contract.json
+          git commit -m 'docs: activate Comprehensive Rules contract'
+          git push origin HEAD:rules/activate-comprehensive
