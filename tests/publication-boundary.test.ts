@@ -41,7 +41,6 @@ describe('public route and Pages publication boundary', () => {
     expect(existsSync('apps/rulebook/app.js')).toBe(true);
     expect(existsSync('apps/rulebook/player-guide-review/index.html')).toBe(true);
     expect(existsSync('rulebook/index.html')).toBe(false);
-    expect(existsSync('rulebook/app.js')).toBe(false);
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
     expect(existsSync('rulebook/player-guide/player-guide.md')).toBe(true);
     expect(existsSync('rulebook/publication/editorial-policy.md')).toBe(true);

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
 const releasedChapter11 = read('rulebook/player-facing/chapter-11.md');
-const browserApp = read('rulebook/app.js');
+const browserApp = read('apps/rulebook/app.js');
 
 describe('Maintained current Rulebook source', () => {
   it('is the direct current-development player-facing authority', () => {
