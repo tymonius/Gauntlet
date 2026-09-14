@@ -135,7 +135,7 @@ jobs:
               console.log(`Worker corpus check ${attempt}/20: ${actual}`);
               if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
             } catch (error) {
-              console.log(`Worker corpus check ${attempt}/${20}: ${error.message}`);
+              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
             }
             if (attempt < 20) await sleep(3000);
           }
