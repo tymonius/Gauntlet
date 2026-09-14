@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "retirements": [
+    {
+      "path": "images/artwork/reference/environments/river-fort.png",
+      "canonicalPath": "images/artwork/cards/neutral/consolidation.png",
+      "reason": "byte-identical duplicate removed during repository cleanup"
+    },
+    {
+      "path": "images/artwork/reference/reserve/militia-armory-enlistment.png",
+      "canonicalPath": "images/artwork/cards/neutral/new-recruits.png",
+      "reason": "byte-identical duplicate removed during repository cleanup"
+    },
+    {
+      "path": "images/artwork/reference/reserve/reinforcements-sunlit-ridge-02.png",
+      "canonicalPath": "images/artwork/cards/neutral/reinforcements.png",
+      "reason": "byte-identical duplicate removed during repository cleanup"
+    },
+    {
+      "path": "images/sketches/hero sketch.png",
+      "canonicalPath": "images/sketches/hero-sketches/hero sketch.png",
+      "reason": "byte-identical duplicate removed during repository cleanup; public compatibility path is materialized at deployment"
+    }
+  ]
+}

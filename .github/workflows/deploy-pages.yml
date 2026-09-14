@@ -100,6 +100,7 @@ jobs:
           # Publish those files without carrying the much larger sketch-authoring subdirectories.
           mkdir -p "$site/images/sketches"
           find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
+          node scripts/materialize-public-route-compatibility.mjs "$site"
 
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete

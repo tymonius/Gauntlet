@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   ROOT,
   loadPublicationBoundary,
+  materializePublicFiles,
   materializePublicRoutes,
 } from './publication-boundary.mjs';
 
@@ -39,8 +40,9 @@ for (const entry of fs.readdirSync(ROOT, { withFileTypes: true })) {
   fs.copyFileSync(path.join(ROOT, entry.name), path.join(destinationRoot, entry.name));
 }
 
-const materialized = materializePublicRoutes({ destinationRoot, contract });
+const materializedRoutes = materializePublicRoutes({ destinationRoot, contract });
+const materializedFiles = materializePublicFiles({ destinationRoot, contract });
 console.log(
-  `Staged ${contract.pages.publishedDirectories.length} direct public director${contract.pages.publishedDirectories.length === 1 ? 'y' : 'ies'} ` +
-  `and ${materialized.length} source-separated public route(s) into ${destinationRoot}.`,
+  `Staged ${contract.pages.publishedDirectories.length} direct public director${contract.pages.publishedDirectories.length === 1 ? 'y' : 'ies'}, ` +
+  `${materializedRoutes.length} source-separated public route(s), and ${materializedFiles.length} materialized public file(s) into ${destinationRoot}.`,
 );

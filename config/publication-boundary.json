@@ -70,6 +70,9 @@
     {"source": "legacy/public-compatibility/deckbuilder-v0.6", "publicPath": "/deckbuilder-v0.6/", "kind": "retired-compatibility", "manageIndexRoutes": false},
     {"source": "legacy/public-compatibility/faction-sheets", "publicPath": "/faction-sheets/", "kind": "retired-compatibility", "manageIndexRoutes": false}
   ],
+  "materializedFiles": [
+    {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"}
+  ],
   "managedRoutes": [
     "/card-reference/",
     "/deckbuilder/",
