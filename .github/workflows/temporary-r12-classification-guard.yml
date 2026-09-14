@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: rules-arbiter-r12-classification
-          fetch-depth: 2
+          fetch-depth: 4
 
       - name: Verify exact base ancestry
         run: |
