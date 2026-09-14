@@ -64,6 +64,7 @@
     {"source": "apps/start", "publicPath": "/start/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/playtest", "publicPath": "/playtest/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "packages/game-data", "publicPath": "/game-data/", "kind": "shared-browser-contract", "manageIndexRoutes": false},
+    {"source": "packages/rules/assets/qr", "publicPath": "/rules/assets/qr/", "kind": "current-rules-assets", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.6.2", "publicPath": "/v0.6.2/", "kind": "historical-version", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.6.3", "publicPath": "/v0.6.3/", "kind": "historical-version", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.7.0", "publicPath": "/v0.7.0/", "kind": "historical-version", "manageIndexRoutes": false},
@@ -82,6 +83,12 @@
     {"source": "packages/rules/faction-guides/mystics.md", "publicPath": "/rules/sources/factions/mystics.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/faction-guides/inquisition.md", "publicPath": "/rules/sources/factions/inquisition.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/comprehensive/comprehensive-rules.md", "publicPath": "/rules/sources/comprehensive-rules.md", "kind": "direct-technical-source"},
+    {"source": "packages/rules/assets/qr/chief-justice.svg", "publicPath": "/rulebook/assets/qr/chief-justice.svg", "kind": "legacy-rulebook-asset-alias"},
+    {"source": "packages/rules/assets/qr/card-reference.svg", "publicPath": "/rulebook/assets/qr/card-reference.svg", "kind": "legacy-rulebook-asset-alias"},
+    {"source": "packages/rules/assets/qr/full-rules.svg", "publicPath": "/rulebook/assets/qr/full-rules.svg", "kind": "legacy-rulebook-asset-alias"},
+    {"source": "packages/rules/assets/qr/deckbuilder.svg", "publicPath": "/rulebook/assets/qr/deckbuilder.svg", "kind": "legacy-rulebook-asset-alias"},
+    {"source": "packages/rules/assets/qr/start-playing.svg", "publicPath": "/rulebook/assets/qr/start-playing.svg", "kind": "legacy-rulebook-asset-alias"},
+    {"source": "packages/rules/assets/qr/playtest.svg", "publicPath": "/rulebook/assets/qr/playtest.svg", "kind": "legacy-rulebook-asset-alias"},
     {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"}
   ],
   "managedRoutes": [
