@@ -30,6 +30,7 @@ GitHub/current `main` is authoritative. This file is only the compact repository
 - [#1699](https://github.com/tymonius/Gauntlet/pull/1699), [#1709](https://github.com/tymonius/Gauntlet/pull/1709), and [#1713](https://github.com/tymonius/Gauntlet/pull/1713) completed recovered asset/generated-output cleanup under [#1672](https://github.com/tymonius/Gauntlet/issues/1672).
 - [#1716](https://github.com/tymonius/Gauntlet/pull/1716) consolidated the remaining simple informational public surfaces under `apps/` while preserving their stable public URLs.
 - [#1723](https://github.com/tymonius/Gauntlet/pull/1723) separated the Browser Rulebook application into `apps/rulebook/` while retaining current rules authority and teaching material under `rulebook/`.
+- [#1724](https://github.com/tymonius/Gauntlet/pull/1724) established the active three-layer rules publication architecture under stable `/rules/` routes: Player's Guide, faction guides, and Comprehensive Rules, with explicitly materialized source Markdown.
 - Recovered cleanup issues #1670, #1671, #1672, and #1673 are complete.
 - Historical v0.6.x reconstruction/publication sources that still need preservation live under explicit recovery/history boundaries rather than masquerading as current authority.
 
@@ -37,7 +38,7 @@ The older cleanup stack remains useful design evidence only. Re-land still-valid
 
 ## Current tranche: Rulebook lifecycle classification
 
-The Browser Rulebook/source split is merged. The active cleanup pass now classifies what remains under `rulebook/` by lifecycle before moving anything else.
+The Browser Rulebook/source split and active `/rules/` publication architecture are merged. The active cleanup pass now classifies what remains under `rulebook/` by lifecycle before moving anything else.
 
 The first safe removal set is completed overlay/migration scaffolding that no longer participates in maintained current authority or preserved historical support:
 
@@ -49,7 +50,7 @@ Current and historical responsibilities remain deliberately separate:
 - `rulebook/player-facing/rule-facts.js` remains maintained current-authority fact synchronization;
 - `rulebook/player-facing/corrections.js` remains for now because preserved v0.6.3 language support imports it through `rules-assistant/v063-last-stand-language.js`;
 - `rulebook/player-facing/v070-corrections.js` remains for now because the frozen v0.7.0 booklet renderer imports it;
-- Player's Guide, faction-guide, and Comprehensive Rules source placement is left untouched while [#1724](https://github.com/tymonius/Gauntlet/pull/1724) actively works on their publication surfaces.
+- the Player's Guide, six faction guides, and Comprehensive Rules are now active maintained sources consumed through the explicit `/rules/sources/...` publication boundary established by #1724.
 
 No gameplay authority, rule text, or product behavior change belongs in this tranche. Current gameplay authority remains `packages/game-data/current-game.json`.
 
@@ -60,6 +61,7 @@ No gameplay authority, rule text, or product behavior change belongs in this tra
 - **`packages/` is a maintained shared-source boundary.** Current gameplay authority lives at `packages/game-data/`; browser consumers retain `/game-data/` through materialization/staging.
 - **Pages is an explicit deployment artifact.** It must not become a repository mirror, and new source roots are non-public unless the publication contract deliberately includes them.
 - **`rulebook/` is a rules-source boundary, not a browser-app boundary, but remains transitional.** Current authority and teaching material belong there during classification; completed migration scaffolding does not.
+- **Active rules publication is route-contract driven.** Player's Guide, faction guides, and Comprehensive Rules publish through `/rules/` and `/rules/sources/...` independently of their repository source placement.
 - **Historical release/support source stays intact until it can move as a coherent historical unit.** A version-specific file is not dead merely because it is not part of current gameplay authority.
 - **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned historical sources are not current authority even when their public URLs remain supported.
 - **App-integrated print/export stays with the owning app.** A runtime feature is not production tooling merely because it prints or exports.
@@ -67,8 +69,8 @@ No gameplay authority, rule text, or product behavior change belongs in this tra
 
 ## Next top-down queue
 
-1. Finish the `rulebook/` lifecycle pass without colliding with active rules-publication work: current authority, teaching/reference material, publication support, and historical release/support source.
-2. Once [#1724](https://github.com/tymonius/Gauntlet/pull/1724) settles, reconcile the Player's Guide/faction/Comprehensive source boundary against the resulting `/rules/` publication architecture.
+1. Reconcile the now-active Player's Guide/faction/Comprehensive source hierarchy against the settled `/rules/` publication architecture and decide whether the remaining `rulebook/` subtrees should stay grouped or move to clearer maintained-source boundaries.
+2. Finish classification of Rulebook publication/editorial support and historical release/support source without mixing current and frozen lifecycles.
 3. Inspect the Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
 4. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
 5. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
