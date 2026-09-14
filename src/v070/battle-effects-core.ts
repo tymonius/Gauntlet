@@ -24,6 +24,11 @@ import {
 } from './arcane-knowledge-battle';
 import { registerV070HeresyBattleEffect } from './heresy-battle';
 import { registerV070RendTheVeilBattleEffect } from './rend-the-veil-battle';
+import {
+  V070_COURT_MARTIAL_BATTLE_TEXT,
+  V070_COURT_MARTIAL_ID,
+  applyV070CourtMartialBattleEffect,
+} from './court-martial-battle';
 
 export * from './battle-effects-core-pre-witchcraft';
 
@@ -89,12 +94,27 @@ const rendTheVeilHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const courtMartialHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_COURT_MARTIAL_ID,
+  expectedText: V070_COURT_MARTIAL_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, opponent, commitment }) => {
+    applyV070CourtMartialBattleEffect(
+      state,
+      owner,
+      opponent,
+      commitment.instanceId,
+    );
+  },
+};
+
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
   ...previous.V070_SUPPORTED_REVEAL_EFFECT_IDS,
   V070_WITCHCRAFT_ID,
   V070_ARCANE_KNOWLEDGE_ID,
   V070_HERESY_ID,
   V070_REND_THE_VEIL_ID,
+  V070_COURT_MARTIAL_ID,
 ] as readonly string[];
 
 export function v070BattleEffectHandler(
@@ -104,6 +124,7 @@ export function v070BattleEffectHandler(
   if (cardId === V070_ARCANE_KNOWLEDGE_ID) return arcaneKnowledgeHandler;
   if (cardId === V070_HERESY_ID) return heresyHandler;
   if (cardId === V070_REND_THE_VEIL_ID) return rendTheVeilHandler;
+  if (cardId === V070_COURT_MARTIAL_ID) return courtMartialHandler;
   return previous.v070BattleEffectHandler(cardId);
 }
 
@@ -126,7 +147,8 @@ export function resolveV070SupportedRevealEffects(
     if (cardId !== V070_WITCHCRAFT_ID
       && cardId !== V070_ARCANE_KNOWLEDGE_ID
       && cardId !== V070_HERESY_ID
-      && cardId !== V070_REND_THE_VEIL_ID) {
+      && cardId !== V070_REND_THE_VEIL_ID
+      && cardId !== V070_COURT_MARTIAL_ID) {
       const forwarded = previous.resolveV070SupportedRevealEffects(
         state,
         [commitment],
@@ -178,7 +200,9 @@ export function resolveV070SupportedRevealEffects(
         ? arcaneKnowledgeHandler
         : cardId === V070_HERESY_ID
           ? heresyHandler
-          : rendTheVeilHandler;
+          : cardId === V070_REND_THE_VEIL_ID
+            ? rendTheVeilHandler
+            : courtMartialHandler;
     handler.apply({
       state,
       owner: commitment.owner,
@@ -271,7 +295,9 @@ function unsupportedIntegratedCommitment(
         ? V070_HERESY_BATTLE_TEXT
         : cardId === V070_REND_THE_VEIL_ID
           ? V070_REND_THE_VEIL_BATTLE_TEXT
-          : null;
+          : cardId === V070_COURT_MARTIAL_ID
+            ? V070_COURT_MARTIAL_BATTLE_TEXT
+            : null;
   if (!expectedText) return [];
 
   const card = v070CanonicalContent.cardsById.get(cardId);
