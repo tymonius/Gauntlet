@@ -8,7 +8,10 @@
     "player-guide": {
       "path": "rulebook/player-guide/player-guide.md",
       "marker": "RULES-SURFACE:player-guide",
-      "sectionMarker": "RULES-SECTION"
+      "sectionMarker": "RULES-SECTION",
+      "editorialSections": [
+        "next"
+      ]
     },
     "comprehensive-rules": {
       "path": "rulebook/comprehensive/comprehensive-rules.md",

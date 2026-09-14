@@ -11,6 +11,7 @@ import {
 } from '../rulebook/publication/rule-dependencies.mjs';
 
 const CONTRACT_PATH = 'config/rules-surface-contract.json';
+const SOURCES_PATH = 'config/rules-publication-sources.json';
 const CURRENT_GAME_PUBLIC_SOURCE = 'game-data/current-game.json';
 const RULE_ID = /^(?:core|faction\.[a-z0-9-]+)(?:\.[a-z0-9-]+)+$/;
 
@@ -32,17 +33,28 @@ function validateDependencies(errors, registryById, dependencies, context) {
   }
 }
 
-function validateReviewedSection(errors, authority, registryById, section, context, active) {
+function validateReviewedSection(errors, authority, registryById, section, context, active, editorial = false) {
   const dependencies = section.dependsOn || [];
   validateDependencies(errors, registryById, dependencies, context);
-  if (!active) return;
 
-  if (!dependencies.length) {
-    fail(errors, `${context} is active teaching copy but declares no rule dependencies.`);
+  if (editorial) {
+    if (dependencies.length) {
+      fail(errors, `${context} is editorial teaching copy but declares gameplay rule dependencies.`);
+    }
+    if (section.reviewFingerprint) {
+      fail(errors, `${context} is editorial teaching copy but declares a gameplay reviewFingerprint.`);
+    }
     return;
   }
+
+  if (!dependencies.length) {
+    fail(errors, `${context} is mechanical teaching copy but declares no rule dependencies.`);
+    return;
+  }
+  if (!active) return;
+
   if (!/^[0-9a-f]{64}$/.test(section.reviewFingerprint || '')) {
-    fail(errors, `${context} is active teaching copy but has no valid reviewFingerprint.`);
+    fail(errors, `${context} is active mechanical teaching copy but has no valid reviewFingerprint.`);
     return;
   }
   const expected = fingerprintRuleDependencies(authority, registryById, dependencies);
@@ -55,10 +67,15 @@ function validateReviewedSection(errors, authority, registryById, section, conte
 }
 
 const contract = JSON.parse(await readFile(resolve(ROOT, CONTRACT_PATH), 'utf8'));
+const sources = JSON.parse(await readFile(resolve(ROOT, SOURCES_PATH), 'utf8'));
 const authority = await loadCurrentGameAuthority();
 const errors = [];
 
 if (contract.schemaVersion !== 1) fail(errors, 'Rules surface contract must use schemaVersion 1.');
+if (sources.schemaVersion !== 1) fail(errors, 'Rules publication source manifest must use schemaVersion 1.');
+if (sources.surfaceContract !== CONTRACT_PATH) {
+  fail(errors, `Rules publication source manifest must point to ${CONTRACT_PATH}.`);
+}
 if (![CURRENT_GAME_AUTHORITY_SOURCE, CURRENT_GAME_PUBLIC_SOURCE].includes(contract.authoritySource)) {
   fail(
     errors,
@@ -103,8 +120,27 @@ if (!playerGuide || playerGuide.kind !== 'teaching' || playerGuide.dependencyMod
   fail(errors, 'Player Guide must be a reviewedTeaching teaching surface.');
 } else {
   const active = playerGuide.status === 'active';
+  const chapterIds = new Set((playerGuide.chapters || []).map(chapter => chapter.id));
+  const editorialIds = sources?.surfaces?.['player-guide']?.editorialSections || [];
+  const editorialSections = new Set(editorialIds);
+
+  if (editorialSections.size !== editorialIds.length) {
+    fail(errors, 'Player Guide editorialSections contains duplicate section ids.');
+  }
+  for (const id of editorialSections) {
+    if (!chapterIds.has(id)) fail(errors, `Player Guide editorialSections references unknown chapter ${id}.`);
+  }
+
   for (const chapter of playerGuide.chapters || []) {
-    validateReviewedSection(errors, authority, registryById, chapter, `Player Guide / ${chapter.id}`, active);
+    validateReviewedSection(
+      errors,
+      authority,
+      registryById,
+      chapter,
+      `Player Guide / ${chapter.id}`,
+      active,
+      editorialSections.has(chapter.id),
+    );
     for (const dependency of chapter.dependsOn || []) {
       if (dependency.startsWith('faction.') && !dependency.endsWith('.definition')) {
         fail(
