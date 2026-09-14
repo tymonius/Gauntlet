@@ -9,6 +9,7 @@ on:
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
       - 'config/legacy-rulebook-retirement-crosswalk.json'
+      - 'config/legacy-rulebook-retirement-crosswalk.sha256'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/render-comprehensive-rules.mjs'
       - 'scripts/validate-rules-term-registry.mjs'
@@ -40,6 +41,7 @@ jobs:
             /config/rules-surface-contract.json
             /config/rules-publication-sources.json
             /config/legacy-rulebook-retirement-crosswalk.json
+            /config/legacy-rulebook-retirement-crosswalk.sha256
             /packages/game-data/current-game.json
             /packages/game-data/current-game-validation.mjs
             /packages/game-data/art-direction.mjs
