@@ -39,16 +39,16 @@ The older cleanup stack remains useful design evidence only. Re-land still-valid
 
 The Browser Rulebook/source split is merged. The active cleanup pass now classifies what remains under `rulebook/` by lifecycle before moving anything else.
 
-The first safe removal set is completed overlay/migration scaffolding that no longer participates in maintained current authority:
+The first safe removal set is completed overlay/migration scaffolding that no longer participates in maintained current authority or preserved historical support:
 
 - `rulebook/release-candidate.js` — v0.6.4-candidate Browser Rulebook overlay machinery;
-- `rulebook/faction-feature-terminology.js` — one-time terminology migration transformer from the v0.7.0 cutover;
-- `rulebook/player-facing/corrections.js` — superseded v0.6.3-plus-current-corrections overlay machinery.
+- `rulebook/faction-feature-terminology.js` — one-time terminology migration transformer from the v0.7.0 cutover.
 
 Current and historical responsibilities remain deliberately separate:
 
 - `rulebook/player-facing/rule-facts.js` remains maintained current-authority fact synchronization;
-- `rulebook/player-facing/v070-corrections.js` remains for now because the frozen v0.7.0 booklet renderer still imports it;
+- `rulebook/player-facing/corrections.js` remains for now because preserved v0.6.3 language support imports it through `rules-assistant/v063-last-stand-language.js`;
+- `rulebook/player-facing/v070-corrections.js` remains for now because the frozen v0.7.0 booklet renderer imports it;
 - Player's Guide, faction-guide, and Comprehensive Rules source placement is left untouched while [#1724](https://github.com/tymonius/Gauntlet/pull/1724) actively works on their publication surfaces.
 
 No gameplay authority, rule text, or product behavior change belongs in this tranche. Current gameplay authority remains `packages/game-data/current-game.json`.
@@ -60,14 +60,14 @@ No gameplay authority, rule text, or product behavior change belongs in this tra
 - **`packages/` is a maintained shared-source boundary.** Current gameplay authority lives at `packages/game-data/`; browser consumers retain `/game-data/` through materialization/staging.
 - **Pages is an explicit deployment artifact.** It must not become a repository mirror, and new source roots are non-public unless the publication contract deliberately includes them.
 - **`rulebook/` is a rules-source boundary, not a browser-app boundary, but remains transitional.** Current authority and teaching material belong there during classification; completed migration scaffolding does not.
-- **Historical release-generation source stays intact until it can move as a coherent historical unit.** A version-specific file is not dead merely because it is not part of current gameplay authority.
+- **Historical release/support source stays intact until it can move as a coherent historical unit.** A version-specific file is not dead merely because it is not part of current gameplay authority.
 - **Historical compatibility stays explicit.** `legacy/`, frozen releases, and versioned historical sources are not current authority even when their public URLs remain supported.
 - **App-integrated print/export stays with the owning app.** A runtime feature is not production tooling merely because it prints or exports.
 - **Behavior-preserving architecture cleanup remains separate from gameplay/product changes.**
 
 ## Next top-down queue
 
-1. Finish the `rulebook/` lifecycle pass without colliding with active rules-publication work: current authority, teaching/reference material, publication support, and historical release-generation source.
+1. Finish the `rulebook/` lifecycle pass without colliding with active rules-publication work: current authority, teaching/reference material, publication support, and historical release/support source.
 2. Once [#1724](https://github.com/tymonius/Gauntlet/pull/1724) settles, reconcile the Player's Guide/faction/Comprehensive source boundary against the resulting `/rules/` publication architecture.
 3. Inspect the Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
 4. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
