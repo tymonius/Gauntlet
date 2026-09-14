@@ -2,9 +2,11 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 
 const CROSSWALK_PATH = 'config/legacy-rulebook-retirement-crosswalk.json';
+const SOURCE_FINGERPRINT_PATH = 'config/legacy-rulebook-retirement-crosswalk.sha256';
 const CONTRACT_PATH = 'config/rules-surface-contract.json';
 
 const crosswalk = JSON.parse(fs.readFileSync(CROSSWALK_PATH, 'utf8'));
+const expectedLegacySourceFingerprint = fs.readFileSync(SOURCE_FINGERPRINT_PATH, 'utf8').trim();
 const contract = JSON.parse(fs.readFileSync(CONTRACT_PATH, 'utf8'));
 const legacySource = fs.readFileSync(crosswalk.legacySource, 'utf8');
 const errors = [];
@@ -44,10 +46,10 @@ if (crosswalk.routeRetirementIncluded !== false) {
   fail('Coverage proof must not itself retire the legacy /rulebook/ route.');
 }
 const actualLegacySourceFingerprint = fingerprint(legacySource);
-if (!/^[0-9a-f]{64}$/.test(crosswalk.legacySourceFingerprint || '')) {
-  fail(`Legacy Rulebook retirement crosswalk must declare legacySourceFingerprint=${actualLegacySourceFingerprint}.`);
-} else if (crosswalk.legacySourceFingerprint !== actualLegacySourceFingerprint) {
-  fail(`Legacy Rulebook source changed since retirement review. Re-review the full source before refreshing legacySourceFingerprint to ${actualLegacySourceFingerprint}.`);
+if (!/^[0-9a-f]{64}$/.test(expectedLegacySourceFingerprint)) {
+  fail(`${SOURCE_FINGERPRINT_PATH} must contain one lowercase SHA-256 fingerprint.`);
+} else if (expectedLegacySourceFingerprint !== actualLegacySourceFingerprint) {
+  fail(`Legacy Rulebook source changed since retirement review. Re-review the full source before refreshing ${SOURCE_FINGERPRINT_PATH} to ${actualLegacySourceFingerprint}.`);
 }
 
 const actualSections = parseTopLevelSections(legacySource);
