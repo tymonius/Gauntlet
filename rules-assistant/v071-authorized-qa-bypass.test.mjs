@@ -17,9 +17,9 @@ describe("authorized Rules Arbiter live QA", () => {
   });
 
   test("retains public abuse limits without a separate QA ceiling", () => {
-    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_IP_HOUR = "12"');
-    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_DAY = "50"');
-    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_MONTH = "200"');
+    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_IP_HOUR = "24"');
+    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_DAY = "100"');
+    expect(wrangler).toContain('RULES_MODEL_REQUESTS_PER_MONTH = "500"');
     expect(wrangler).not.toContain("RULES_QA_MODEL_REQUESTS");
   });
 
