@@ -62,7 +62,7 @@ No gameplay or product behavior change belongs in this tranche.
 After the informational-app tranche is green and merged:
 
 1. Inspect the `rulebook/` boundary and separate current rules authority from browser/production support before relocating either role.
-2. Inspect the Rules Arbiter implementation/data/export placement once the active v0.7.2 work is stable enough that cleanup will not collide with ongoing functional changes.
+2. Inspect the Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
 3. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
 4. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
 5. Audit governance/traceability and CI paths that still encode transitional locations.
