@@ -727,7 +727,7 @@ function normalizeReferentSubject(value) {
   return String(value || "")
     .toLowerCase()
     .replace(/[’']s\b/g, "")
-    .replace(/^(?:card|leader|faction):\s*/i, "")
+    .replace(/^(?:card|leader|faction|rulebook):\s*/i, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
