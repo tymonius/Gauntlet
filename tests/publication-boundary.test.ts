@@ -53,6 +53,12 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.managedRoutes).toContain('/rulebook/player-guide-review/');
   });
 
+  it('keeps in-place compatibility materialization from overwriting source-only roots', () => {
+    expect(materializer).toContain('const sourceOnlyRoots = new Set');
+    expect(materializer).toContain('return !sourceOnlyRoots.has(topLevel);');
+    expect(materializer).toContain('return source !== destination;');
+  });
+
   it('makes materialization and Pages staging consume the contract', () => {
     expect(materializer).toContain("from './publication-boundary.mjs'");
     expect(pagesStager).toContain('loadPublicationBoundary');
