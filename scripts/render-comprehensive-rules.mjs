@@ -3,7 +3,11 @@ import { resolve } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';
 
 const CONTRACT_PATH = resolve(ROOT, 'config/rules-surface-contract.json');
-const OUTPUT_PATH = resolve(ROOT, 'rulebook/comprehensive/comprehensive-rules.md');
+const SOURCES_PATH = resolve(ROOT, 'config/rules-publication-sources.json');
+const sourceManifest = JSON.parse(await readFile(SOURCES_PATH, 'utf8'));
+const comprehensiveSource = sourceManifest?.surfaces?.['comprehensive-rules']?.path;
+if (!comprehensiveSource) throw new Error('Rules publication source manifest is missing the Comprehensive Rules path.');
+const OUTPUT_PATH = resolve(ROOT, comprehensiveSource);
 const mode = process.argv.includes('--write') ? 'write' : 'check';
 
 const PARTS = [
@@ -770,7 +774,7 @@ const output = renderComprehensiveRules(authority, contract);
 
 if (mode === 'write') {
   await writeFile(OUTPUT_PATH, output);
-  console.log('Rendered rulebook/comprehensive/comprehensive-rules.md from current gameplay authority.');
+  console.log(`Rendered ${comprehensiveSource} from current gameplay authority.`);
 } else {
   const current = await readFile(OUTPUT_PATH, 'utf8');
   if (current !== output) {

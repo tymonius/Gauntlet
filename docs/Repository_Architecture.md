@@ -1,63 +1,60 @@
 # Repository Architecture
 
-This document defines the intended repository shape for Gauntlet and classifies the major source, deployment, historical, generated, and authority boundaries so cleanup can proceed without breaking current releases, public URLs, or game/rules authority.
+This document defines the intended repository shape for Gauntlet and classifies the major authority, application, source-package, tooling, historical, generated, and deployment boundaries.
 
 ## Goals
 
 Repository structure should make four things obvious:
 
-1. **Where current authority lives.**
-2. **Which applications and production systems are active.**
-3. **Which paths exist only for historical compatibility or frozen releases.**
-4. **Which files are generated outputs rather than hand-maintained sources.**
+1. where current gameplay authority lives;
+2. which applications and maintained source packages are active;
+3. which paths exist only for historical compatibility or frozen releases; and
+4. which files are generated outputs rather than hand-maintained source.
 
-Cleanup is not a license to rewrite game behavior, mutate frozen releases, or break public URLs. Structural changes must preserve current behavior and keep required CI green.
+Cleanup is not a license to rewrite game behavior, mutate frozen releases, or break public URLs. Structural changes must preserve current behavior and required CI.
 
 ## Architectural rules
 
-### 1. Authority before surfaces
+### 1. Gameplay authority comes before rules surfaces
 
-Current gameplay/rules authority lives in:
+Current gameplay authority lives at:
 
-- `packages/game-data/current-game.json`
-- `rulebook/player-facing/current-rulebook.md`
-- `governance/` for binding decision provenance and cross-surface traceability
+- `packages/game-data/current-game.json` for canonical gameplay mechanics and game objects;
+- `governance/` for binding decision provenance and cross-surface traceability; and
+- `config/` for maintained contracts that define how authority is projected, published, and validated.
+
+`config/rules-surface-contract.json` governs the active rules projections. The maintained Player's Guide, Faction Guides, and Comprehensive Rules live under `packages/rules/`. They are reviewed or direct rules surfaces derived from gameplay authority; they are not a second independent gameplay authority.
+
+The active `/rules/` architecture treats the Comprehensive Rules as the complete technical corpus, with the Player's Guide and Faction Guides as teaching layers. The older monolithic Browser Rulebook remains available only as a transition/coverage reference while retirement coverage is proved.
 
 Published release snapshots under `releases/` are immutable historical evidence.
 
-Browser pages, printable documents, card media, TTS assets, and digital implementations are derived or implementation surfaces. If they disagree with governing current authority, fix the authority when appropriate and regenerate or update the surface; do not silently promote a derived artifact into authority.
-
-Current authority must also be **semantically surface-ready**. Active renderers and applications may reshape data for layout or UI convenience, but they must not silently relabel effects, merge gameplay branches, rewrite rules text, or otherwise repair current authority at runtime. Version-specific compatibility transforms belong only at explicit historical boundaries.
+Active renderers and applications may reshape authoritative data for layout or UI convenience, but they must not silently relabel effects, merge gameplay branches, rewrite mechanics, or repair authority at runtime. Version-specific compatibility transforms belong only at explicit historical boundaries.
 
 ### 2. Current, historical, and generated paths must be distinguishable
 
-Every maintained top-level subsystem should be classifiable as one of:
+Every maintained subsystem should be classifiable as one of:
 
-- **Authority** — hand-maintained canonical game/rules/governance source.
+- **Authority** — canonical gameplay, governance, or repository-contract source.
 - **Active application** — current player-facing or developer-facing runtime.
+- **Maintained source package** — shared source consumed by multiple current surfaces.
 - **Production tooling** — generators, renderers, release/build tooling, or validation.
 - **Historical compatibility** — retained because an old public URL or supported historical tool must continue to function.
 - **Frozen release** — immutable versioned publication.
-- **Generated/evidence** — outputs that should be reproducible from maintained sources or retained as QA/release evidence.
-- **Shared presentation assets** — source assets intentionally consumed across multiple public/application surfaces.
+- **Generated/evidence** — reproducible outputs or retained QA/release evidence.
+- **Shared presentation assets** — source assets intentionally consumed across multiple surfaces.
 
 A path that cannot be classified cleanly is a cleanup target.
 
 ### 3. Public URLs are compatibility contracts, not source locations
 
-Current public paths such as `/about/`, `/accessibility/`, `/card-reference/`, `/changelog/`, `/contact/`, `/deckbuilder/`, `/faq/`, `/factions/`, `/press/`, `/privacy/`, `/rules/`, `/start/`, `/playtest/`, `/rulebook/`, and `/game-data/` must not move merely to make the source tree prettier.
+Current public paths such as `/about/`, `/card-reference/`, `/deckbuilder/`, `/factions/`, `/rules/`, `/rulebook/`, `/start/`, `/playtest/`, and `/game-data/` must not move merely to make the source tree prettier.
 
-`config/publication-boundary.json` is the machine-readable public/deployment contract. It defines:
+`config/publication-boundary.json` is the machine-readable public/deployment contract. It defines direct Pages roots, source-only repository roots, source-to-route mappings, explicitly materialized files, managed deep links, and versioned routes.
 
-- repository directories published directly to Pages;
-- repository roots that are source-only and therefore non-public by default;
-- canonical source-to-public route mappings;
-- current managed deep-link routes whose tracked `index.html` surfaces must be inventoried exactly; and
-- versioned public routes whose lifecycle status comes from `config/release-lifecycle.json`.
+GitHub Pages staging and publication validation consume this contract rather than mirroring the repository. New source roots are non-public by default unless the contract deliberately includes them.
 
-GitHub Pages staging, local/public-route compatibility materialization, and publication validation consume this contract rather than maintaining independent route inventories. New repository roots are therefore **non-public by default** unless the publication contract is deliberately changed.
-
-Source organization may change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists. The current reference mappings include:
+Source organization may therefore change independently of deployed URL layout. Current examples include:
 
 - `apps/about/` → `/about/`
 - `apps/accessibility/` → `/accessibility/`
@@ -69,98 +66,88 @@ Source organization may change independently of deployed URL layout, but every s
 - `apps/factions/` → `/factions/`
 - `apps/press/` → `/press/`
 - `apps/privacy/` → `/privacy/`
+- `apps/rulebook/` → `/rulebook/`
 - `apps/rules/` → `/rules/`
 - `apps/start/` → `/start/`
 - `apps/playtest/` → `/playtest/`
 - `packages/game-data/` → `/game-data/`
+- maintained files under `packages/rules/` → stable `/rules/sources/...` paths
 - `legacy/public-versions/v0.6.2/` → `/v0.6.2/`
 - `legacy/public-versions/v0.6.3/` → `/v0.6.3/`
-- `legacy/public-versions/v0.7.0/` → `/v0.7.0/`
-- retired compatibility sources under `legacy/public-compatibility/` → their stable historical browser routes.
+- `legacy/public-versions/v0.7.0/` → `/v0.7.0/`.
 
-`config/` remains an intentionally published Pages root in the current deployment contract. Older cleanup proposals that treated all configuration as inherently private are historical design evidence, not authority for current deployment behavior.
+`config/` remains intentionally published where the publication contract requires it.
 
 ### 4. Versioned public routes follow release lifecycle authority
 
-`config/release-lifecycle.json` determines whether a versioned public route is current, historical, or withdrawn. A historical or withdrawn landing may point players toward current tools, but it must not present its own release as current.
-
-Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages stages historical source from `legacy/` while preserving stable version URLs. The lifecycle-selected versioned entrypoint remains a first-class public surface until its lifecycle transitions.
+`config/release-lifecycle.json` determines whether a versioned public route is current, historical, or withdrawn. Historical browser source does not need to remain at repository root merely because its public URL is versioned.
 
 ### 5. Frozen releases stay frozen
 
 Do not reorganize files inside published release packages for repository aesthetics. Historical compatibility fixes belong in browser/publication source boundaries; published release payloads remain immutable unless an explicit archival correction is approved.
 
-### 6. Parameterize repeated release logic
+### 6. Repeated release logic should converge
 
-Version-specific scripts and workflows are acceptable when a release genuinely needs unique behavior. Repeated logic that differs only by version should converge toward parameterized tooling such as:
+Version-specific scripts and workflows are acceptable when a release genuinely needs unique behavior. Repeated logic that differs only by version should converge toward parameterized tooling such as `release:build <version>`, `release:validate <version>`, and `print:build <version>`.
 
-```text
-release:build <version>
-release:validate <version>
-print:build <version>
-```
+### 7. Generated binaries are not accidental authority
 
-Cleanup should reduce duplicated implementations without erasing the evidence needed to reproduce historical releases.
-
-### 7. Generated binaries should not become accidental source authority
-
-Large image, PDF, TTS, and other binary outputs should have an explicit lifecycle:
-
-- canonical source asset,
-- generated current artifact,
-- frozen release artifact, or
-- disposable build output.
-
-The repository contains a large binary footprint, especially under `images/`, `releases/`, and `tts/`. Binary-storage strategy is a separate cleanup tranche; do not rewrite Git history or introduce Git LFS casually because doing so would disrupt existing clones and release hashes.
+Large image, PDF, TTS, and other binary outputs should have an explicit lifecycle: canonical source asset, generated current artifact, frozen release artifact, or disposable build output. Binary-storage strategy is a separate cleanup tranche; do not rewrite Git history or introduce Git LFS casually.
 
 ## Machine-readable contracts
 
 | Contract | Responsibility |
 |---|---|
 | `config/repository-architecture.json` | Top-level repository ownership, lifecycle role, target architectural group, and transition status |
-| `config/publication-boundary.json` | Public/deployment graph: direct Pages roots, source-only roots, source→route mappings, managed deep links, versioned routes |
+| `config/publication-boundary.json` | Public/deployment graph: direct Pages roots, source-only roots, source→route mappings, materialized files, managed routes, versioned routes |
+| `config/rules-surface-contract.json` | Relationship between canonical gameplay authority and active technical/teaching rules surfaces |
 | `config/release-lifecycle.json` | Current/historical/withdrawn release lifecycle and current-release selection |
 
 These contracts answer different questions and must not silently substitute for one another.
 
 ## Current path classification
 
-### Authority
+### Authority and maintained source packages
 
 | Path | Role |
 |---|---|
 | `packages/game-data/` | Complete current gameplay authority and adapters; staged publicly at `/game-data/` |
-| `rulebook/player-facing/` | Complete current Rulebook authority |
-| `governance/` | Decision registry, schemas, traceability, audit records |
-| `config/` | Maintained cross-system configuration and contracts; some files are intentionally deployed where the publication contract requires them |
+| `packages/rules/` | Maintained active rules source package: Player's Guide, Faction Guides, and Comprehensive Rules; projected from gameplay authority and staged to stable `/rules/sources/...` paths |
+| `governance/` | Decision registry, schemas, traceability, and audit records |
+| `config/` | Maintained cross-system configuration and contracts |
 
 ### Active applications and player-facing surfaces
 
 | Path | Role |
 |---|---|
-| `apps/` | Canonical source container for maintained applications separated from deployed URL layout; includes Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy |
-| `rulebook/` | Current rules authority plus browser/publication support; still transitional and requires a dedicated boundary audit |
+| `apps/` | Canonical source container for maintained applications separated from deployed URL layout |
 | `rules-assistant/` | Rules Arbiter implementation, retrieval, tests, and deployable endpoint; still transitional |
-| `rules-arbiter/` | Current static Rules Arbiter browser shell |
+| `rules-arbiter/` | Current static Rules Arbiter browser shell; still transitional |
 | `workers/` | Deployed support services |
-| `src/` | Active rules-aware digital engine; quarantined historical engine implementations live under `legacy/` |
+| `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
+
+### Transitional legacy/publication boundary
+
+| Path | Role |
+|---|---|
+| `rulebook/` | Legacy monolithic Rulebook source plus publication/editorial and version-specific compatibility support. Browser Rulebook application source lives under `apps/rulebook/`; durable active three-layer rules source lives under `packages/rules/`. This root remains transitional until legacy Rulebook retirement and publication-support classification are complete. |
 
 ### Shared packages
 
 | Path | Role |
 |---|---|
-| `packages/` | Canonical source container for maintained shared packages and authorities; currently contains `packages/game-data/` |
+| `packages/` | Canonical source container for maintained shared packages and authorities; currently contains `packages/game-data/` and `packages/rules/` |
 
 ### Production tooling
 
 | Path | Role |
 |---|---|
-| `card-design/` | Card/component rendering and authoring; transitional toward a shared-rendering/package + production-tool split |
+| `card-design/` | Card/component rendering and authoring; transitional toward shared rendering plus production-tool boundaries |
 | `tts/` | TTS generation, packaging, renderer support, QA, and versioned release evidence |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
-| `tests/` | Cross-surface and release contract/regression harness; root placement is deliberate |
-| `media/` | Reproducible media/composition configuration and export tooling; source/derived lifecycle still needs audit |
+| `tests/` | Repository-wide contract/regression harness; root placement is deliberate |
+| `media/` | Reproducible media/composition configuration and export tooling; lifecycle still needs audit |
 
 ### Historical compatibility
 
@@ -169,9 +156,7 @@ These contracts answer different questions and must not silently substitute for 
 | `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
-| `v0.7.1/` | Versioned public entrypoint tracked by repository architecture; lifecycle status is determined only by `config/release-lifecycle.json` and not by repository placement. | <!-- DOC-HISTORICAL -->
-
-The stable public routes `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, `/faction-sheets/`, `/v0.6.2/`, `/v0.6.3/`, and `/v0.7.0/` do not require root-level repository source aliases.
+| `v0.7.1/` | Lifecycle-selected versioned public entrypoint; lifecycle status is determined by `config/release-lifecycle.json` rather than repository placement |
 
 ### Frozen releases and evidence
 
@@ -179,18 +164,13 @@ The stable public routes `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, `/faction-s
 |---|---|
 | `releases/` | Immutable published release packages |
 | `artifacts/` | Reconstruction/build/QA evidence pending retention audit |
-| `tts/v*/` | Versioned TTS release artifacts/evidence; not current authoring authority |
+| `tts/v*/` | Versioned TTS release artifacts/evidence, not current authoring authority |
 
-### Documentation and project records
-
-| Path | Role |
-|---|---|
-| `docs/` | Maintained project documentation plus explicitly archived historical development records; not gameplay authority unless a governing source says otherwise |
-
-### Assets and shared presentation
+### Documentation and assets
 
 | Path | Role |
 |---|---|
+| `docs/` | Maintained project documentation plus explicitly archived historical development records |
 | `images/` | Source and derived visual assets currently mixed; requires a dedicated asset-lifecycle audit |
 | `assets/` | Shared site/component assets |
 | root CSS/JS files | Shared public-site presentation served from stable root paths; eventual consolidation must preserve deployed URLs |
@@ -200,15 +180,13 @@ The stable public routes `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, `/faction-s
 | Path | Current interpretation |
 |---|---|
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `packages/game-data/` |
-| `legacy/digital-engine-reconstruction/` | Preserved clean v0.6.2/v0.6.3 engine reconstruction snapshots; historical provenance only | <!-- DOC-HISTORICAL -->
-| `legacy/digital-engine-migration/` | Superseded versioned engine migrations archived after relevant behavior was promoted or retired | <!-- DOC-HISTORICAL -->
-| `legacy/digital-engine-v06/` | Earlier playable v0.6-era engine and historical dev runners; not current digital-rules authority | <!-- DOC-HISTORICAL -->
-| `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance | <!-- DOC-HISTORICAL -->
-| `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records; not current gameplay authority | <!-- DOC-HISTORICAL -->
+| `legacy/digital-engine-reconstruction/` | Preserved v0.6.2/v0.6.3 engine reconstruction snapshots; historical provenance only |
+| `legacy/digital-engine-migration/` | Superseded versioned engine migrations archived after relevant behavior was promoted or retired |
+| `legacy/digital-engine-v06/` | Earlier playable v0.6-era engine and historical dev runners; not current digital-rules authority |
+| `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance |
+| `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records; not current gameplay authority <!-- DOC-HISTORICAL --> |
 
 ## Target architecture
-
-The long-term conceptual dependency shape is:
 
 ```text
 apps/
@@ -246,7 +224,7 @@ releases/
 legacy/
 ```
 
-This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. Pages stages an explicit deployed tree, so application, package, and tooling source may move toward these boundaries while stable public URLs remain unchanged.
+This is a conceptual dependency target, not an instruction to move every existing directory immediately. Pages stages an explicit deployed tree, so source may move toward these boundaries while stable public URLs remain unchanged.
 
 ## Cleanup sequence
 
@@ -255,18 +233,17 @@ This is a **conceptual dependency target, not an instruction to move every exist
 - Document current path ownership and lifecycle.
 - Mark legacy/historical surfaces explicitly.
 - Prevent new current code from depending on retired authorities.
-- Keep repository-root ownership and public/deployment contracts machine-readable.
+- Keep root ownership and deployment contracts machine-readable.
 
 ### Phase 2 — Source/deployment separation
 
-- Keep GitHub Pages staging explicit and contract-driven rather than mirroring the repository.
+- Keep Pages staging explicit and contract-driven rather than mirroring the repository.
 - Preserve stable public URLs while source directories are consolidated.
-- Validate managed deep links and local staged dependencies.
-- Keep versioned public route semantics aligned with release lifecycle authority.
+- Validate managed deep links and staged dependencies.
 
 ### Phase 3 — Subsystem boundary cleanup
 
-- Separate Rulebook authority from browser/production support.
+- Keep active rules source under `packages/rules/` and complete the legacy Rulebook/publication-support split under `rulebook/`.
 - Finish retiring obsolete renderer-family compatibility/parity scaffolding.
 - Make the active digital engine an obvious first-class application/package while keeping historical implementations quarantined.
 - Consolidate true production tooling toward `tools/` only after caller/lifecycle classification is clear.
@@ -282,7 +259,6 @@ This is a **conceptual dependency target, not an instruction to move every exist
 
 - Separate source artwork from generated card/TTS/site outputs.
 - Decide which generated binaries belong in Git, release artifacts, external hosting, or disposable build output.
-- Consider Git LFS only as a deliberate migration, not cosmetic cleanup.
 
 ### Phase 6 — Root and file-level cleanup
 
@@ -296,11 +272,11 @@ A cleanup tranche is successful only when:
 
 - required CI remains green;
 - current public URLs continue to work;
-- frozen release hashes/content are unchanged unless an archival correction was explicitly approved;
+- frozen release hashes/content are unchanged unless an archival correction is explicitly approved;
 - no gameplay behavior changes without a governing decision;
 - current authority becomes easier, not harder, to identify;
 - duplicated route/source/tool inventories decrease rather than multiply;
 - new repository roots remain non-public unless deliberately added to the publication contract; and
 - an unfamiliar contributor can determine where a new change belongs from this document and the machine-readable contracts.
 
-The objective is not the fewest directories or files. The objective is **clear ownership, explicit lifecycle, reproducibility, and low-risk change**.
+The objective is not the fewest directories or files. The objective is clear ownership, explicit lifecycle, reproducibility, and low-risk change.

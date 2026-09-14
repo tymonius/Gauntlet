@@ -3,8 +3,11 @@ import { resolve } from 'node:path';
 import { ROOT } from './current-game-authority.mjs';
 
 const contract = JSON.parse(await readFile(resolve(ROOT, 'config/rules-surface-contract.json'), 'utf8'));
+const sources = JSON.parse(await readFile(resolve(ROOT, 'config/rules-publication-sources.json'), 'utf8'));
 const authority = JSON.parse(await readFile(resolve(ROOT, 'packages/game-data/current-game.json'), 'utf8'));
-const comprehensiveRules = await readFile(resolve(ROOT, 'rulebook/comprehensive/comprehensive-rules.md'), 'utf8');
+const comprehensiveSource = sources?.surfaces?.['comprehensive-rules']?.path;
+if (!comprehensiveSource) throw new Error('Rules publication source manifest is missing the Comprehensive Rules path.');
+const comprehensiveRules = await readFile(resolve(ROOT, comprehensiveSource), 'utf8');
 const registry = contract?.publicationArchitecture?.comprehensiveRules?.termRegistry;
 
 if (!Array.isArray(registry) || registry.length === 0) {
