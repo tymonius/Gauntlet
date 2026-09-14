@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260914-11";
+export const BEHAVIOR_REVISION = "v071-qa-20260914-12";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -355,7 +355,7 @@ export default {
       failureStage = "model";
       const modelResult = await askOpenAI({ env, request, question, history, sources: retrieval });
       let sources = selectUsedSources(retrieval, modelResult.source_ids);
-      const rulingStatus = normalizeRulingStatus(modelResult.ruling_status, sources.length);
+      const rulingStatus = normalizeModelRulingStatus(modelResult.ruling_status, question, sources);
       if (rulingStatus === "out_of_scope") sources = [];
       const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer);
       const answer = rulingStatus === "provisional"
@@ -1043,11 +1043,61 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     .map((source, index) => ({ ...source, id: `S${index + 1}` }));
 }
 
-function normalizeRulingStatus(value, sourceCount) {
+function normalizeOverviewToken(value) {
+  const token = String(value || "").toLowerCase();
+  const withdrawalForms = new Set(["withdrawal", "withdrawing", "withdraws", "withdrew", "withdrawn"]);
+  if (withdrawalForms.has(token)) return "withdraw";
+  if (token.length > 5 && token.endsWith("ing")) return token.slice(0, -3);
+  if (token.length > 5 && token.endsWith("ed")) return token.slice(0, -2);
+  if (token.length > 4 && token.endsWith("s")) return token.slice(0, -1);
+  return token;
+}
+
+function overviewSubjectTokens(question) {
+  const current = String(question || "").trim().replace(/[?!.]+$/, "");
+  const match = current.match(/^how\s+(?:do|does)\s+(.+?)\s+work$/i)
+    || current.match(/^what\s+happens\s+when\s+(.+)$/i);
+  if (!match) return [];
+
+  const subject = match[1];
+  if (/\b(?:can|could|would|if|unless|except|versus|vs\.?|interact|interaction|conflict|override|same as|different from|like)\b/i.test(subject)) {
+    return [];
+  }
+
+  const stopWords = new Set([
+    "a", "an", "and", "the", "i", "you", "we", "they", "player", "players",
+    "my", "your", "our", "their", "from", "in", "on", "at", "during", "of",
+    "for", "to", "into", "with", "game", "battle"
+  ]);
+
+  return [...new Set((subject.toLowerCase().match(/[a-z0-9]+/g) || [])
+    .map(normalizeOverviewToken)
+    .filter((token) => token.length >= 3 && !stopWords.has(token)))];
+}
+
+function sourceTopicTokens(source) {
+  const title = String(source?.title || "").toLowerCase();
+  return new Set((title.match(/[a-z0-9]+/g) || []).map(normalizeOverviewToken));
+}
+
+export function shouldPromoteDirectOverviewToExplicit(question, sources = []) {
+  const subjectTokens = overviewSubjectTokens(question);
+  if (!subjectTokens.length) return false;
+  return (Array.isArray(sources) ? sources : []).some((source) => {
+    const tokens = sourceTopicTokens(source);
+    return subjectTokens.every((token) => tokens.has(token));
+  });
+}
+
+export function normalizeModelRulingStatus(value, question, sources = []) {
   const normalized = ["explicit", "inferred", "provisional", "out_of_scope"].includes(value)
     ? value
     : "provisional";
+  const sourceCount = Array.isArray(sources) ? sources.length : 0;
   if (["explicit", "inferred"].includes(normalized) && sourceCount < 1) return "provisional";
+  if (normalized === "inferred" && shouldPromoteDirectOverviewToExplicit(question, sources)) {
+    return "explicit";
+  }
   return normalized;
 }
 

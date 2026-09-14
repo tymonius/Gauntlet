@@ -16,7 +16,7 @@ This document records the first authenticated paid-model run of frozen Gate 3 bl
 
 The standard and player-language portions of tranche B are now frozen blind evidence. Do not edit those benchmark datasets or rerun them as evidence of a later blind pass. Failed B cases may be promoted into regression tests. Any later behavior revision requires a newly authored blind tranche C or later.
 
-The three intended B clarification cases were not executed in this run and therefore remain unseen by the production Arbiter. They may still be run once against unchanged r10 after the workflow is corrected to select the B clarification benchmark without rerunning the exposed standard/player-language cases.
+The three intended B clarification cases were not executed in this initial run. They were subsequently executed once against unchanged r10 by the corrected clarification-only workflow; that recovery evidence is recorded below. The exposed standard/player-language cases were not rerun.
 
 ## Audit conclusion
 
@@ -90,6 +90,25 @@ The workflow intended to execute `rules-arbiter-gate3-blind-b-clarifications.v07
 Consequently the run executed three tranche-A clarification cases and rejected them because those cases were frozen to behavior r9 while production correctly reported r10. The resulting 0/3 is infrastructure noise and must not be interpreted as clarification behavior evidence.
 
 The correct repair is to keep the same trusted Gate 3 workflow path, explicitly select the B clarification benchmark, and allow a clarification-only dispatch. That permits the three still-blind B clarification cases to be executed once against unchanged r10 without making second paid calls for the already-exposed standard or player-language B cases.
+
+## Clarification recovery evidence
+
+The corrected clarification-only workflow was executed once against unchanged r10 after the benchmark-selection defect was repaired.
+
+- Workflow run: https://github.com/tymonius/Gauntlet/actions/runs/34808362781
+- Behavior revision: `v071-qa-20260913-10`
+- Authority set: `5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339`
+- Scope: `clarifications-only`
+- Standard/player-language cases: skipped
+- Clarification benchmark explicitly selected: `rules-arbiter-gate3-blind-b-clarifications.v071.json`
+- Result: **3/3 passed**
+  - `blind-b-clarify-two-neutral-cards`
+  - `blind-b-clarify-two-general-orders`
+  - `blind-b-clarify-two-banked-assets`
+- Artifact: `10333528595`
+- Artifact ZIP SHA-256: `66a276065e6fdc5954dd1d17f5359eee6c76d61711b6abbb0687e7fedf05d6b6`
+
+This completes tranche B clarification evidence. Tranche B remains immutable and must not be rerun as blind certification evidence for r11 or later behavior.
 
 ## r11 follow-up scope after clarification evidence is captured
 

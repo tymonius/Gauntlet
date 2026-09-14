@@ -93,6 +93,22 @@
       "expectedAnswerPatterns": [
         "battle cards are cleared"
       ]
+    },
+    {
+      "id": "diplomats-terms",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "offer one eligible Proposal as Terms"
+      ]
+    },
+    {
+      "id": "diplomats-peace-treaty",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "if 6 different Proposals are ratified, you win"
+      ]
     }
   ]
 }
