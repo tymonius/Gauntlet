@@ -1,0 +1,431 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "B",
+  "behaviorRevision": "v071-qa-20260913-10",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 blind benchmark tranche B for the merged r10 candidate. Questions are frozen before the first live run and must not be used to tune candidate behavior before that run.",
+  "blindnessPolicy": [
+    "Do not edit this tranche after its first paid live run except to preserve an immutable record of what was run.",
+    "Any failed tranche-B case may become a regression after diagnosis, but it may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche B, certify the changed behavior with a newly authored blind tranche.",
+    "Tranche B must not exactly reuse questions from Gate 2 or Gate 3 tranche A."
+  ],
+  "dimensions": [
+    "core rules and timing",
+    "all six faction systems",
+    "all twelve Leaders",
+    "named-card interactions",
+    "specific permissions versus general procedure",
+    "conversation continuity and topic switching",
+    "genuine rules gaps",
+    "out-of-scope handling",
+    "Chief Justice table-useful voice"
+  ],
+  "cases": [
+    {
+      "id": "blind-b-core-tiebreak-clean-roll",
+      "category": "core",
+      "question": "A battle is still tied after applying battle totals, and we have to make a Tiebreak Roll. Do Advantage, card bonuses, or the old battle totals affect that roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Tiebreak Roll"],
+      "expectedAnswerPatterns": ["one die", "Do not apply"]
+    },
+    {
+      "id": "blind-b-core-onset-withdraw-no-aftermath",
+      "category": "core",
+      "question": "I withdraw during Onset before Gambits are set. Is there an Aftermath or a winner for that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Withdrawal"],
+      "expectedAnswerPatterns": ["no winner", "no Aftermath"]
+    },
+    {
+      "id": "blind-b-core-late-withdraw-clears-cards",
+      "category": "core",
+      "question": "The battle already passed Onset and reached Gambits, then an effect makes me withdraw. Do the committed battle cards still get cleared?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Withdrawal"],
+      "expectedAnswerPatterns": ["clears", "battle cards"]
+    },
+    {
+      "id": "blind-b-core-terms-offer-order",
+      "category": "core",
+      "question": "At Onset, may the defender offer Terms before the attacker has had a chance to offer or pass?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Terms"],
+      "expectedAnswerPatterns": ["attacker", "first"]
+    },
+    {
+      "id": "blind-b-core-capture-one-step",
+      "category": "core",
+      "question": "My token is far beyond my Front Line and is already on the second opposing Territory beyond it. Can one normal Capture step add both opposing Territories to my Front Line?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Capture"],
+      "expectedAnswerPatterns": ["at most one"]
+    },
+    {
+      "id": "blind-b-core-front-line-no-skip",
+      "category": "core",
+      "question": "Can my Front Line skip an opposing Territory I do not control if my token has already moved past it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Front Line"],
+      "expectedAnswerPatterns": ["cannot skip"]
+    },
+    {
+      "id": "blind-b-core-last-stand-edge-and-bonus",
+      "category": "core",
+      "question": "In a Last Stand, does the defender get only the +1 battle-total bonus, or do they also have Defensive Edge?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Last Stand", "Defensive Edge"],
+      "expectedAnswerPatterns": ["+1", "Defensive Edge"]
+    },
+    {
+      "id": "blind-b-core-clear-battle-card-destinations",
+      "category": "core",
+      "question": "When battle cards clear normally, are Gambits and Tactics sent to the same zone?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Clearing battle cards"],
+      "expectedAnswerPatterns": ["Gambits", "Graveyard", "Tactics", "Discard Pile"]
+    },
+    {
+      "id": "blind-b-military-command-first-win",
+      "category": "military",
+      "question": "I win two battles in the same turn as Military. Assuming I started at 0 Command, how much Command do those two wins generate from the normal faction resource rule?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Command"],
+      "expectedAnswerPatterns": ["first time", "1 Command"]
+    },
+    {
+      "id": "blind-b-diplomats-peace-treaty-start-turn",
+      "category": "diplomats",
+      "question": "I ratify my sixth different Proposal during my turn. Does Peace Treaty win immediately at that moment, or at the start of my turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Peace Treaty"],
+      "expectedAnswerPatterns": ["start of your turn", "6"]
+    },
+    {
+      "id": "blind-b-financiers-capital-limit",
+      "category": "financiers",
+      "question": "For the Financiers' Capital Limit, what contributes to the limit: controlled Territories, cards in Treasury, or both?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Capital"],
+      "expectedAnswerPatterns": ["Territories you control", "Treasury"]
+    },
+    {
+      "id": "blind-b-intelligence-operation-progress",
+      "category": "intelligence",
+      "question": "What exactly increases Operation Progress in v0.7.1: completing a normal Mission, merely starting one, or completing a Special Operation?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Operation Progress"],
+      "expectedAnswerPatterns": ["complete a normal Mission"]
+    },
+    {
+      "id": "blind-b-mystics-transmutation-unlock",
+      "category": "mystics",
+      "question": "After I have completed two Rites, what does Transmutation let me do before dice are rolled?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Transmutation"],
+      "expectedAnswerPatterns": ["card from your Hand", "Graveyard", "value", "battle total"]
+    },
+    {
+      "id": "blind-b-inquisition-purification-normal-draw",
+      "category": "inquisition",
+      "question": "Purification checks an empty Draw Pile and Discard Pile. Does it trigger from any failed draw, or specifically from the opponent's normal start-of-turn draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Purification"],
+      "expectedAnswerPatterns": ["normal start-of-turn draw"]
+    },
+    {
+      "id": "blind-b-general-rout-can-battle",
+      "category": "leaders",
+      "question": "The General wins as attacker and uses Rout at the end of Aftermath. If the one-Position advance reaches the opponent, may that Rout movement initiate another battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Rout"],
+      "expectedAnswerPatterns": ["may initiate a battle"]
+    },
+    {
+      "id": "blind-b-commandant-fortify-occupation",
+      "category": "leaders",
+      "question": "The Commandant wins while occupying an enemy Territory. What does Fortify do to the Front Line?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Fortify"],
+      "expectedAnswerPatterns": ["Advance your Front Line", "one Territory"]
+    },
+    {
+      "id": "blind-b-ambassador-cordiality-limit",
+      "category": "leaders",
+      "question": "Two different opponents' Terms are accepted during the same turn. Can the Ambassador draw from Cordiality twice that turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Cordiality"],
+      "expectedAnswerPatterns": ["Once per turn"]
+    },
+    {
+      "id": "blind-b-senator-political-capital-trigger",
+      "category": "leaders",
+      "question": "The Senator loses an ordinary battle in which no Terms were refused. Can Political Capital be used to recover anything from that loss?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Political Capital"],
+      "expectedAnswerPatterns": ["refused Terms"]
+    },
+    {
+      "id": "blind-b-banker-line-credit-first-purchase",
+      "category": "leaders",
+      "question": "The Banker already used Line of Credit on a Deed purchase this turn. Can the Banker use new collateral on a second Deed purchase in the same turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Line of Credit"],
+      "expectedAnswerPatterns": ["First Deed purchase each turn"]
+    },
+    {
+      "id": "blind-b-executive-hostile-takeover-timing",
+      "category": "leaders",
+      "question": "The Executive just won as attacker and is occupying that enemy Territory. Is Hostile Takeover a free immediate effect, or does it require an Action during Denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Hostile Takeover"],
+      "expectedAnswerPatterns": ["1 Action", "Denouement"]
+    },
+    {
+      "id": "blind-b-ranger-fieldcraft-card-effect",
+      "category": "leaders",
+      "question": "A card effect, not a printed Territory effect, would penalize the Ranger. Can Fieldcraft spend 1 Intel to ignore that card effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Fieldcraft"],
+      "expectedAnswerPatterns": ["printed Territory effect"]
+    },
+    {
+      "id": "blind-b-spymaster-mission-control-same-turn",
+      "category": "leaders",
+      "question": "Mission Control starts another eligible normal Mission after the Spymaster completes one. May that replacement Mission also complete during the same turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Mission Control"],
+      "expectedAnswerPatterns": ["cannot complete that turn"]
+    },
+    {
+      "id": "blind-b-alchemist-materia-prima-first-only",
+      "category": "leaders",
+      "question": "The Alchemist puts two qualifying cards from Hand into the Graveyard on the same turn for Arcane effects. How many times can Materia Prima draw from those sacrifices?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Materia Prima"],
+      "expectedAnswerPatterns": ["first time", "Once per turn"]
+    },
+    {
+      "id": "blind-b-spirit-walker-guardians-cost-three-rites",
+      "category": "leaders",
+      "question": "The Spirit Walker has completed all three Rites when a battle loss would interrupt the Ritual. What minimum card value can Guardians of the Circle use to prevent that interruption?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Guardians of the Circle"],
+      "expectedAnswerPatterns": ["4"]
+    },
+    {
+      "id": "blind-b-grand-inquisitor-final-judgment-discount",
+      "category": "leaders",
+      "question": "When the Grand Inquisitor uses Final Judgment after a battle win, how much does it reduce that Purge's Conviction cost, and how low can the cost go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Final Judgment"],
+      "expectedAnswerPatterns": ["1", "minimum of 1"]
+    },
+    {
+      "id": "blind-b-witch-hunter-pursuit-new-attacker",
+      "category": "leaders",
+      "question": "Relentless Pursuit ends the attacking opponent's turn and then moves the Witch Hunter forward. If that movement starts a battle, who is the attacker?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Relentless Pursuit"],
+      "expectedAnswerPatterns": ["you are the attacker"]
+    },
+    {
+      "id": "blind-b-card-sedition-battle-asset",
+      "category": "cards",
+      "question": "I use Sedition as a Gambit or Tactic while my opponent has face-up Assets. Who chooses the Asset that becomes inactive during the battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Sedition"],
+      "expectedAnswerPatterns": ["opponent chooses", "face-up Asset"]
+    },
+    {
+      "id": "blind-b-card-sequestration-action",
+      "category": "cards",
+      "question": "I play Sequestration for its Action while both players have several Assets. How many Assets does each player keep, if able?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Sequestration"],
+      "expectedAnswerPatterns": ["keeps 1 Asset", "discards the rest"]
+    },
+    {
+      "id": "blind-b-card-sleeper-network-removed",
+      "category": "cards",
+      "question": "Sleeper Network is Removed while it has several cards bound beneath it. How many of those bound cards may be played immediately for their Action effects?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Sleeper Network"],
+      "expectedAnswerPatterns": ["play 1", "discard the rest"]
+    },
+    {
+      "id": "blind-b-card-soul-for-soul-action",
+      "category": "cards",
+      "question": "For Soul for Soul's Action, which two zones supply the cards being exchanged?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Soul for Soul"],
+      "expectedAnswerPatterns": ["Hand", "Graveyard", "Exchange"]
+    },
+    {
+      "id": "blind-b-card-speculation-action-check",
+      "category": "cards",
+      "question": "I placed Speculation beside a Territory with its Action. At the start of my next turn I neither occupy nor control that Territory. Where does Speculation go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Speculation"],
+      "expectedAnswerPatterns": ["Graveyard"]
+    },
+    {
+      "id": "blind-b-card-spies-revise-tactics",
+      "category": "cards",
+      "question": "Spies reveals the opponent's face-down Tactic before normal Tactic reveal. After seeing it, what may I do with my own Tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Spies"],
+      "expectedAnswerPatterns": ["revise", "Tactics", "withdraw"]
+    },
+    {
+      "id": "blind-b-card-spirit-hollow-captured",
+      "category": "cards",
+      "question": "Spirit Hollow is on a Territory when that Territory is captured. What happens to the Spirit Hollow Overlay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Spirit Hollow"],
+      "expectedAnswerPatterns": ["owner", "Graveyard"]
+    },
+    {
+      "id": "blind-b-card-stand-ground-normal-retreat",
+      "category": "cards",
+      "question": "I have Stand Ground banked and lose a battle. Can I discard Stand Ground to ignore my normal required retreat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Stand Ground"],
+      "expectedAnswerPatterns": ["does not prevent", "normal required retreat"]
+    },
+    {
+      "id": "blind-b-card-subversion-negate-asset",
+      "category": "cards",
+      "question": "An opposing Asset effect is about to apply while I have Subversion. What does Subversion do to that effect and to the opposing Asset if it remains in play?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Subversion"],
+      "expectedAnswerPatterns": ["negate", "Discard Pile"]
+    },
+    {
+      "id": "blind-b-card-tactical-planning-reserve-not-tactic",
+      "category": "cards",
+      "question": "My Tactical Planning Gambit gives +1 Reserve when Gambits are revealed. Does that also raise my Tactic limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Tactical Planning"],
+      "expectedAnswerPatterns": ["Tactic limit unchanged"]
+    },
+    {
+      "id": "blind-b-conversation-tactical-planning-followup",
+      "category": "conversation",
+      "question": "So does that mean I get to choose one more Tactic too?",
+      "history": [
+        {"role": "user", "content": "What does Tactical Planning do when I set it as a Gambit?"},
+        {"role": "assistant", "content": "When Gambits are revealed, Tactical Planning gives you +1 Reserve."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Tactical Planning"],
+      "expectedTopic": "Tactical Planning",
+      "expectedAnswerPatterns": ["Tactic limit unchanged"]
+    },
+    {
+      "id": "blind-b-conversation-sleeper-network-followup",
+      "category": "conversation",
+      "question": "If it gets Removed instead, can I play all the cards under it?",
+      "history": [
+        {"role": "user", "content": "Sleeper Network has three cards bound beneath it. What happens when I use its Action?"},
+        {"role": "assistant", "content": "Its Asset text lets you put Sleeper Network in your Graveyard, reveal the bound cards, and play each bound card you can for its Action effect."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Sleeper Network"],
+      "expectedTopic": "Sleeper Network removal",
+      "expectedAnswerPatterns": ["play 1", "discard the rest"]
+    },
+    {
+      "id": "blind-b-conversation-spirit-hollow-followup",
+      "category": "conversation",
+      "question": "And where does that Overlay go if the Territory gets captured later?",
+      "history": [
+        {"role": "user", "content": "What does Spirit Hollow do after a battle on its Territory?"},
+        {"role": "assistant", "content": "After battle cards are cleared, each player may sacrifice a card from Hand to move another card from their Graveyard to their Discard Pile."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Spirit Hollow"],
+      "expectedTopic": "Spirit Hollow",
+      "expectedAnswerPatterns": ["owner", "Graveyard"]
+    },
+    {
+      "id": "blind-b-conversation-topic-switch-fortify",
+      "category": "conversation",
+      "question": "Different question: my Commandant just won while occupying their Territory. Can Fortify advance my Front Line?",
+      "history": [
+        {"role": "user", "content": "When exactly does Peace Treaty check for six ratified Proposals?"},
+        {"role": "assistant", "content": "Peace Treaty checks at the start of the Diplomat player's turn."}
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": ["Fortify"],
+      "expectedTopic": "Fortify",
+      "expectedAnswerPatterns": ["Advance your Front Line", "one Territory"]
+    },
+    {
+      "id": "blind-b-gap-counterworks-discard-destination",
+      "category": "unsupported",
+      "question": "Counterworks says the prevented card is discarded but does not name a destination. Does the written v0.7.1 authority tell us whether that means its owner's Discard Pile or Graveyard?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "expectedAnswerPatterns": ["Provisional Arbiter Ruling:"]
+    },
+    {
+      "id": "blind-b-out-of-scope-best-faction-opinion",
+      "category": "unsupported",
+      "question": "Which Gauntlet faction do you personally think is the most fun to play?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "non-rules"
+    },
+    {
+      "id": "blind-b-interaction-onset-withdraw-pursuit",
+      "category": "interaction",
+      "question": "I am the Witch Hunter defending when the attacker withdraws during Onset. Does Relentless Pursuit trigger from that encounter?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": ["Withdrawal", "Relentless Pursuit"],
+      "expectedAnswerPatterns": ["no winner", "Relentless Pursuit"]
+    }
+  ]
+}
