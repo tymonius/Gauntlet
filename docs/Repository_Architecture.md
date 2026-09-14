@@ -184,7 +184,7 @@ These contracts answer different questions and must not silently substitute for 
 | `legacy/digital-engine-migration/` | Superseded versioned engine migrations archived after relevant behavior was promoted or retired |
 | `legacy/digital-engine-v06/` | Earlier playable v0.6-era engine and historical dev runners; not current digital-rules authority |
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance |
-| `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records; not current gameplay authority |
+| `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records; not current gameplay authority <!-- DOC-HISTORICAL --> |
 
 ## Target architecture
 
