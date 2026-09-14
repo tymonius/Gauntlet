@@ -14,9 +14,9 @@ import {
 
 const RULEBOOK_PATH = 'rulebook/player-facing/current-rulebook.md';
 const BASELINE_PATH = 'config/rules-authority-debt-baseline.json';
+const RULES_PUBLICATION_SOURCES_PATH = 'config/rules-publication-sources.json';
 const BANNED_BATTLE_SCOPE = /\bbattles?\s+involving\s+you\b/i;
 const CURRENT_PLAYER_LANGUAGE_DIRECTORIES = [
-  'rulebook/faction-guides',
   'card-design/reference-copy/v0.7.0',
 ];
 const CURRENT_PLAYER_LANGUAGE_FILES = [
@@ -246,9 +246,16 @@ function validateCurrentPlayerFacingSurfaces(authority, rulebook) {
 }
 
 function validateNoRedundantBattleScope(authority, rulebook) {
+  const publicationSources = readJson(RULES_PUBLICATION_SOURCES_PATH);
+  const registeredFactionGuidePaths = [
+    ...Object.values(publicationSources?.factionGuides || {}),
+    publicationSources?.surfaces?.['faction-guide-template']?.path,
+  ].filter(path => typeof path === 'string' && path);
+
   const surfaces = [
     { path: CURRENT_GAME_AUTHORITY_SOURCE, text: JSON.stringify(authority) },
     { path: RULEBOOK_PATH, text: rulebook },
+    ...registeredFactionGuidePaths.map(path => ({ path, text: readText(path) })),
     ...CURRENT_PLAYER_LANGUAGE_DIRECTORIES.flatMap((directory) =>
       readdirSync(resolve(ROOT, directory), { withFileTypes: true })
         .filter(entry => entry.isFile() && entry.name.endsWith('.md'))

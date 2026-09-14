@@ -6,7 +6,7 @@
   "playerGuidePedagogy": "rulebook/publication/player-guide-visual-pedagogy-map.md",
   "surfaces": {
     "player-guide": {
-      "path": "rulebook/player-guide/player-guide.md",
+      "path": "packages/rules/player-guide/player-guide.md",
       "marker": "RULES-SURFACE:player-guide",
       "sectionMarker": "RULES-SECTION",
       "editorialSections": [
@@ -14,13 +14,13 @@
       ]
     },
     "comprehensive-rules": {
-      "path": "rulebook/comprehensive/comprehensive-rules.md",
+      "path": "packages/rules/comprehensive/comprehensive-rules.md",
       "marker": "RULES-SURFACE:comprehensive-rules",
       "sectionMarker": "RULES-PART",
       "coverageMarker": "RULES-COVER"
     },
     "faction-guide-template": {
-      "path": "rulebook/faction-guides/template.md",
+      "path": "packages/rules/faction-guides/template.md",
       "marker": "RULES-SURFACE:faction-guide-template",
       "sectionMarker": "RULES-SECTION",
       "editorialSections": [
@@ -29,11 +29,11 @@
     }
   },
   "factionGuides": {
-    "military": "rulebook/faction-guides/military.md",
-    "diplomats": "rulebook/faction-guides/diplomats.md",
-    "financiers": "rulebook/faction-guides/financiers.md",
-    "intelligence": "rulebook/faction-guides/intelligence.md",
-    "mystics": "rulebook/faction-guides/mystics.md",
-    "inquisition": "rulebook/faction-guides/inquisition.md"
+    "military": "packages/rules/faction-guides/military.md",
+    "diplomats": "packages/rules/faction-guides/diplomats.md",
+    "financiers": "packages/rules/faction-guides/financiers.md",
+    "intelligence": "packages/rules/faction-guides/intelligence.md",
+    "mystics": "packages/rules/faction-guides/mystics.md",
+    "inquisition": "packages/rules/faction-guides/inquisition.md"
   }
 }

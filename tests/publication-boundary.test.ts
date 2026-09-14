@@ -36,20 +36,25 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).toContain('config');
   });
 
-  it('publishes only the Rulebook app and declared browser-consumed rules files', () => {
+  it('publishes only declared legacy Rulebook and active rules source files', () => {
     expect(existsSync('apps/rulebook/index.html')).toBe(true);
     expect(existsSync('apps/rulebook/app.js')).toBe(true);
     expect(existsSync('apps/rulebook/player-guide-review/index.html')).toBe(true);
     expect(existsSync('rulebook/index.html')).toBe(false);
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
-    expect(existsSync('rulebook/player-guide/player-guide.md')).toBe(true);
+    expect(existsSync('packages/rules/player-guide/player-guide.md')).toBe(true);
+    expect(existsSync('packages/rules/comprehensive/comprehensive-rules.md')).toBe(true);
     expect(existsSync('rulebook/publication/editorial-policy.md')).toBe(true);
 
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/rulebook/player-facing/current-rulebook.md')).toBe('rulebook/player-facing/current-rulebook.md');
-    expect(files.get('/rulebook/player-guide/player-guide.md')).toBe('rulebook/player-guide/player-guide.md');
+    expect(files.get('/rulebook/player-guide/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
+    expect(files.get('/rules/sources/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
+    expect(files.get('/rules/sources/comprehensive-rules.md')).toBe('packages/rules/comprehensive/comprehensive-rules.md');
     expect(contract.managedRoutes).toContain('/rulebook/');
     expect(contract.managedRoutes).toContain('/rulebook/player-guide-review/');
+    expect(contract.managedRoutes).toContain('/rules/player-guide/');
+    expect(contract.managedRoutes).toContain('/rules/comprehensive/');
   });
 
   it('keeps in-place compatibility materialization from overwriting source-only roots', () => {
@@ -65,7 +70,8 @@ describe('public route and Pages publication boundary', () => {
     expect(pagesValidator).toContain('materializedTopLevelDirectories');
     expect(publicationWorkflow).toContain('/config/publication-boundary.json');
     expect(publicationWorkflow).toContain('/rulebook/player-facing/current-rulebook.md');
-    expect(publicationWorkflow).toContain('/rulebook/player-guide/player-guide.md');
+    expect(publicationWorkflow).toContain('/packages/rules/**');
+    expect(publicationWorkflow).not.toContain('/rulebook/player-guide/player-guide.md');
     expect(publicationWorkflow).not.toContain('/rulebook/index.html');
     expect(publicationWorkflow).toContain('node scripts/validate-publication-boundary.mjs');
     expect(pagesWorkflow).toContain("'config/publication-boundary.json'");

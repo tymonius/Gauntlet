@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/game-data/current-game.json'
       - 'packages/game-data/current-game-validation.mjs'
+      - 'packages/rules/**'
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
       - 'config/legacy-rulebook-retirement-crosswalk.json'
@@ -20,9 +21,6 @@ on:
       - 'scripts/validate-legacy-rulebook-retirement-crosswalk.mjs'
       - 'rulebook/player-facing/current-rulebook.md'
       - 'rulebook/publication/**'
-      - 'rulebook/player-guide/**'
-      - 'rulebook/faction-guides/**'
-      - 'rulebook/comprehensive/**'
   workflow_dispatch:
 
 permissions:
@@ -45,6 +43,7 @@ jobs:
             /packages/game-data/current-game.json
             /packages/game-data/current-game-validation.mjs
             /packages/game-data/art-direction.mjs
+            /packages/rules/
             /scripts/current-game-authority.mjs
             /scripts/render-comprehensive-rules.mjs
             /scripts/validate-rules-term-registry.mjs
@@ -56,9 +55,6 @@ jobs:
             /rulebook/publication/
             /rulebook/player-facing/rule-facts.js
             /rulebook/player-facing/current-rulebook.md
-            /rulebook/player-guide/
-            /rulebook/faction-guides/
-            /rulebook/comprehensive/
 
       - name: Set up Node
         uses: actions/setup-node@v4
