@@ -8,6 +8,7 @@ on:
     paths:
       - 'media/**'
       - 'packages/game-data/**'
+      - 'packages/rules/**'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/publication-boundary.json'
