@@ -25,62 +25,67 @@ GitHub/current `main` is authoritative. This file is only the compact repository
 
 ## Architecture baseline now merged
 
-- [#1559](https://github.com/tymonius/Gauntlet/pull/1559) made top-level repository ownership/lifecycle machine-readable.
-- [#1562](https://github.com/tymonius/Gauntlet/pull/1562), [#1571](https://github.com/tymonius/Gauntlet/pull/1571), [#1626](https://github.com/tymonius/Gauntlet/pull/1626), [#1633](https://github.com/tymonius/Gauntlet/pull/1633), and [#1641](https://github.com/tymonius/Gauntlet/pull/1641) established `apps/` as the canonical maintained application-source boundary while preserving stable public URLs through explicit deployment staging.
-- [#1683](https://github.com/tymonius/Gauntlet/pull/1683) moved the complete current gameplay-authority package from retired root `game-data/` to `packages/game-data/` while preserving `/game-data/`.
+- [#1559](https://github.com/tymonius/Gauntlet/pull/1559) made top-level ownership/lifecycle machine-readable.
+- [#1562](https://github.com/tymonius/Gauntlet/pull/1562), [#1571](https://github.com/tymonius/Gauntlet/pull/1571), [#1626](https://github.com/tymonius/Gauntlet/pull/1626), [#1633](https://github.com/tymonius/Gauntlet/pull/1633), and [#1641](https://github.com/tymonius/Gauntlet/pull/1641) established `apps/` as the maintained application-source boundary while preserving public URLs through deployment staging.
+- [#1683](https://github.com/tymonius/Gauntlet/pull/1683) moved current gameplay authority to `packages/game-data/` while preserving `/game-data/`.
 - [#1691](https://github.com/tymonius/Gauntlet/pull/1691) made the Pages/public-route graph contract-driven.
 - [#1699](https://github.com/tymonius/Gauntlet/pull/1699), [#1709](https://github.com/tymonius/Gauntlet/pull/1709), and [#1713](https://github.com/tymonius/Gauntlet/pull/1713) completed recovered asset/generated-output cleanup under [#1672](https://github.com/tymonius/Gauntlet/issues/1672).
 - [#1716](https://github.com/tymonius/Gauntlet/pull/1716) consolidated remaining simple informational public surfaces under `apps/`.
 - [#1723](https://github.com/tymonius/Gauntlet/pull/1723) separated Browser Rulebook application source into `apps/rulebook/` while preserving `/rulebook/`.
-- [#1724](https://github.com/tymonius/Gauntlet/pull/1724) established the active three-layer `/rules/` architecture: Player's Guide, Faction Guides, and Comprehensive Rules, with explicitly materialized source Markdown.
-- [#1727](https://github.com/tymonius/Gauntlet/pull/1727) retired completed v0.6.4-candidate/terminology migration scaffolding while preserving still-consumed historical correction modules.
-- [#1729](https://github.com/tymonius/Gauntlet/pull/1729) established a validated, fingerprinted retirement crosswalk proving the legacy monolithic Rulebook is covered by the active rules architecture; route retirement remains a separate lifecycle change.
-- [#1731](https://github.com/tymonius/Gauntlet/pull/1731) moved the durable Player's Guide, Faction Guides/template, and Comprehensive Rules into `packages/rules/`, made the publication source registry the maintained path inventory for active rules sources, and preserved all public URLs.
+- [#1724](https://github.com/tymonius/Gauntlet/pull/1724) established the active three-layer `/rules/` architecture.
+- [#1727](https://github.com/tymonius/Gauntlet/pull/1727) retired completed rules-migration scaffolding while preserving still-consumed historical correction modules.
+- [#1729](https://github.com/tymonius/Gauntlet/pull/1729) added a fingerprinted retirement crosswalk proving the legacy monolithic Rulebook is covered by the active rules architecture; route retirement remains separate.
+- [#1731](https://github.com/tymonius/Gauntlet/pull/1731) moved the Player's Guide, Faction Guides/template, and Comprehensive Rules into `packages/rules/` and centralized active rules-source paths in the publication registry.
+- [#1734](https://github.com/tymonius/Gauntlet/pull/1734) moved active editorial/pedagogy/dependency publication support into `packages/rules/publication/`, closed the Pages trigger gap for `packages/rules/**`, and reclassified `rulebook/` as transitional historical compatibility.
 - Recovered cleanup issues #1670, #1671, #1672, and #1673 are complete.
 
 Older cleanup branches remain design evidence only. Re-land still-valid ideas deliberately against current `main`; do not merge stale branches over newer engine, Rules Arbiter, publication, or rendering work.
 
-## Current tranche: rules publication support
+## Current tranche: remove current logic from the legacy Rulebook boundary
 
-The active rules documents now live under `packages/rules/`. The remaining active publication-support trio—editorial policy, Player's Guide visual-pedagogy map, and semantic rule-dependency fingerprint helper—belongs to the same maintained package rather than the transitional `rulebook/` root.
+The maintained implementation formerly at `rulebook/player-facing/rule-facts.js` is not historical compatibility code. It derives and validates facts from `packages/game-data/current-game.json` and synchronizes current rules prose. Its implementation therefore belongs with maintained rules support under `packages/rules/`.
 
 This tranche is deliberately structural:
 
-- move `rulebook/publication/` support into `packages/rules/publication/`;
-- keep gameplay authority at `packages/game-data/current-game.json`;
-- keep active rules text/mechanics unchanged;
-- point `config/rules-publication-sources.json` and publication validation at the packaged support;
-- normalize stale repository-source references in the pedagogy map without rewriting stable leading-slash `/rulebook/...` public fallback URLs;
-- make Pages PR validation trigger for `packages/rules/**` changes;
-- reclassify the residual top-level `rulebook/` root as transitional historical compatibility rather than gameplay/rules authority.
+- move the maintained `rule-facts.js` implementation unchanged to `packages/rules/rule-facts.js`;
+- update current governance validation and the lifecycle-selected current Rulebook renderer to consume the packaged helper directly;
+- retain `rulebook/player-facing/rule-facts.js` only as a tiny compatibility re-export for preserved version-pinned tooling such as the v0.7.0 renderer;
+- correct stale authority language in `legacy/README.md`;
+- update architecture contracts so `rulebook/` no longer owns maintained current rule-fact logic;
+- leave legacy monolithic Rulebook content, historical v0.6.3/v0.7.0 correction inputs, Chapter 11 support, and QR assets untouched pending their own lifecycle decisions.
 
-After this tranche, `rulebook/` should contain only:
-
-- the legacy monolithic Rulebook and its current fact-synchronization helper;
-- v0.6.3/v0.7.0 historical correction/support inputs;
-- historical Chapter 11 support; and
-- Rulebook QR assets.
+After this tranche, no maintained current rule-fact implementation remains under `rulebook/`; the old path is compatibility-only.
 
 ## Architectural decisions now established
 
-- **Gameplay authority is singular.** Canonical gameplay authority is `packages/game-data/current-game.json`; active technical/teaching rules documents are governed projections, not an independent mechanics authority.
+- **Gameplay authority is singular.** Canonical gameplay authority is `packages/game-data/current-game.json`; active technical/teaching rules documents and helpers are governed projections/support, not an independent mechanics authority.
 - **`apps/` is the maintained application-source boundary.** Public URLs do not dictate repository source placement.
-- **`packages/` is the maintained shared-source boundary.** It contains current gameplay authority (`packages/game-data/`) and durable active rules source plus publication support (`packages/rules/`).
+- **`packages/` is the maintained shared-source boundary.** It contains current gameplay authority (`packages/game-data/`) and durable active rules source/support (`packages/rules/`).
 - **Pages is an explicit deployment artifact.** New source roots are non-public unless the publication contract deliberately materializes them.
-- **The monolithic Browser Rulebook is transitional legacy coverage.** Its app lives in `apps/rulebook/`; its retirement coverage is now mechanically proved, but route retirement remains a separate deliberate change.
+- **The monolithic Browser Rulebook is transitional legacy coverage.** Its app lives in `apps/rulebook/`; its retirement coverage is mechanically proved, but route retirement remains a separate deliberate change.
 - **Historical release/support source stays intact until it can move as a coherent historical unit.** A version-specific file is not dead merely because it is not current gameplay authority.
+- **`legacy/public-versions/` is specifically historical browser-source material staged to stable versioned URLs.** Do not mix renderer/validation support inputs into that boundary merely because they share a version number.
 - **Behavior-preserving architecture cleanup remains separate from gameplay/product changes.**
+
+## Verified residual `rulebook/` classification
+
+- `player-facing/current-rulebook.md` — legacy monolithic Rulebook compatibility/publication source; not gameplay authority.
+- `player-facing/chapter-11.md` + `player-facing/corrections.js` — verified v0.6.3 historical support consumed by the preserved v0.6.3 validation/reconstruction path.
+- `player-facing/v070-corrections.js` — verified v0.7.0 historical renderer support.
+- `player-facing/rule-facts.js` — transitional compatibility re-export only; maintained implementation lives at `packages/rules/rule-facts.js`.
+- `assets/qr/` — lifecycle not yet proven; do not classify as dead/unused without consumer evidence.
 
 ## Next top-down queue
 
-1. Finish the `packages/rules/publication/` support move and prove publication/governance/Pages CI stays green.
-2. Classify the residual `rulebook/` boundary by lifecycle: legacy monolithic Rulebook + `rule-facts.js`, v0.6.3/v0.7.0 historical support, `chapter-11.md`, and QR assets.
-3. Decide legacy `/rulebook/` route retirement/redirect/archive behavior separately from source placement, using the #1729 crosswalk as evidence rather than deleting the route implicitly.
-4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-5. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
-6. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
-7. Audit governance/traceability and CI paths that still encode transitional locations.
-8. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Finish the `packages/rules/rule-facts.js` move and prove governance, the current Rulebook renderer, and full CI stay green.
+2. Classify/consolidate the verified v0.6.3 and v0.7.0 historical Rulebook support with their true historical tooling owners; do not put tooling inputs under `legacy/public-versions/`, which is a staged browser-source boundary.
+3. Prove the lifecycle/consumers for `rulebook/assets/qr/` before moving or deleting it.
+4. Decide legacy `/rulebook/` route retirement/redirect/archive behavior separately from source placement, using the #1729 crosswalk as evidence rather than deleting the route implicitly.
+5. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+6. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
+7. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
+8. Audit governance/traceability and CI paths that still encode transitional locations.
+9. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
