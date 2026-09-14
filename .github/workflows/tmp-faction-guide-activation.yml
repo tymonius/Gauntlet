@@ -1,0 +1,44 @@
+name: Temporary Faction Guide activation materializer
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-faction-guide-activation.yml'
+      - 'scripts/tmp-materialize-faction-guide-activation.mjs'
+      - 'config/rules-surface-contract.json'
+      - 'config/rules-publication-sources.json'
+      - 'scripts/validate-rules-publication-contract.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'rules/activate-faction-guides'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/activate-faction-guides
+          fetch-depth: 0
+
+      - name: Materialize Faction Guide activation
+        run: node scripts/tmp-materialize-faction-guide-activation.mjs
+
+      - name: Validate rules publication contract
+        run: node scripts/validate-rules-publication-contract.mjs
+
+      - name: Commit generated activation files
+        run: |
+          if git diff --quiet -- config/rules-surface-contract.json config/rules-publication-sources.json scripts/validate-rules-publication-contract.mjs; then
+            echo 'Faction Guide activation already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add config/rules-surface-contract.json config/rules-publication-sources.json scripts/validate-rules-publication-contract.mjs
+          git commit -m 'docs: activate Faction Guide review contracts'
+          git push origin HEAD:rules/activate-faction-guides
