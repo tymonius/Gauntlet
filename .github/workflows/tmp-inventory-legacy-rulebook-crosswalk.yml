@@ -1,0 +1,23 @@
+name: Temporary legacy Rulebook retirement inventory
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-inventory-legacy-rulebook-crosswalk.yml'
+      - 'scripts/tmp-inventory-legacy-rulebook-crosswalk.mjs'
+      - 'rulebook/player-facing/current-rulebook.md'
+      - 'config/rules-surface-contract.json'
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'rules/legacy-rulebook-retirement-crosswalk'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inventory legacy Rulebook and active rules contract
+        run: node scripts/tmp-inventory-legacy-rulebook-crosswalk.mjs
