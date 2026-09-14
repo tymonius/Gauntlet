@@ -21,7 +21,8 @@ describe('public route and Pages publication boundary', () => {
     expect(mappings.get('apps/factions')).toBe('/factions/');
     expect(mappings.get('apps/press')).toBe('/press/');
     expect(mappings.get('apps/privacy')).toBe('/privacy/');
-    expect(mappings.get('apps/rulebook')).toBe('/rulebook/');
+    expect(mappings.get('legacy/public-compatibility/rulebook')).toBe('/rulebook/');
+    expect(mappings.has('apps/rulebook')).toBe(false);
     expect(mappings.get('apps/rules')).toBe('/rules/');
     expect(mappings.get('apps/start')).toBe('/start/');
     expect(mappings.get('apps/playtest')).toBe('/playtest/');
@@ -36,10 +37,10 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).toContain('config');
   });
 
-  it('publishes only declared legacy Rulebook and active rules source files', () => {
-    expect(existsSync('apps/rulebook/index.html')).toBe(true);
-    expect(existsSync('apps/rulebook/app.js')).toBe(true);
-    expect(existsSync('apps/rulebook/player-guide-review/index.html')).toBe(true);
+  it('publishes only the retired compatibility landing and declared active rules sources', () => {
+    expect(existsSync('apps/rulebook')).toBe(false);
+    expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);
+    expect(existsSync('legacy/public-compatibility/rulebook/index.html')).toBe(true);
     expect(existsSync('rulebook/index.html')).toBe(false);
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
     expect(existsSync('packages/rules/player-guide/player-guide.md')).toBe(true);
@@ -47,12 +48,11 @@ describe('public route and Pages publication boundary', () => {
     expect(existsSync('rulebook/publication/editorial-policy.md')).toBe(true);
 
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
-    expect(files.get('/rulebook/player-facing/current-rulebook.md')).toBe('rulebook/player-facing/current-rulebook.md');
-    expect(files.get('/rulebook/player-guide/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
+    expect([...files.keys()].some((publicPath) => String(publicPath).startsWith('/rulebook/'))).toBe(false);
     expect(files.get('/rules/sources/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
     expect(files.get('/rules/sources/comprehensive-rules.md')).toBe('packages/rules/comprehensive/comprehensive-rules.md');
     expect(contract.managedRoutes).toContain('/rulebook/');
-    expect(contract.managedRoutes).toContain('/rulebook/player-guide-review/');
+    expect(contract.managedRoutes).not.toContain('/rulebook/player-guide-review/');
     expect(contract.managedRoutes).toContain('/rules/player-guide/');
     expect(contract.managedRoutes).toContain('/rules/comprehensive/');
   });

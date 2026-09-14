@@ -45,6 +45,8 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "card-design/card-print-render.html",
   "card-design/component-print-render.html",
   "card-design/territory-print-render.html",
+  // Retired route redirect shim; analytics belongs on the active /rules/ destination.
+  "legacy/public-compatibility/rulebook/index.html",
   // Historical public-version archive; these are frozen, non-canonical pages.
   "legacy/public-versions/v0.6.3/changes/index.html",
   "legacy/public-versions/v0.6.3/deckbuilder/index.html",
