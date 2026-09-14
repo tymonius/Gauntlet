@@ -9,7 +9,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260913-9";
+export const BEHAVIOR_REVISION = "v071-qa-20260913-10";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -17,8 +17,14 @@ const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
   "rulebook:tactic-area",
   "rulebook:clearing-battle-cards"
 ];
+const BATTLE_CARD_QUANTITY_AUTHORITY_IDS = [
+  "rulebook:game-at-a-glance"
+];
 const BATTLE_CARD_REPLACEMENT_AUTHORITY_IDS = [
   "rulebook:replacing-a-gambit-or-tactic"
+];
+const ACCEPTED_TERMS_AUTHORITY_IDS = [
+  "rulebook:accepted-terms"
 ];
 const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
   "rulebook:gambit-surveillance",
@@ -100,6 +106,9 @@ Every gameplay-rules question must receive one of four classifications:
 Classification boundary:
 - Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.
 - A faithful paraphrase of a fact directly stated by clean authority remains explicit. Do not downgrade to inferred merely because the player names the resulting game state differently; for example, a setup instruction that directly places a Player Token at that player’s end directly answers where that player starts.
+- Substituting values supplied by the question into a directly stated numerical formula, threshold, or progression remains explicit when no independent rule premise is required. Arithmetic evaluation of a direct rule is not by itself a deductive bridge.
+- When a card or other specific component text directly states the queried exception, permission, prohibition, timing, or same-turn allowance, answering that direct instruction remains explicit even when it differs from the normal baseline. Do not classify the direct exception inferred merely because a general rule states the baseline it overrides.
+- When one clean authority establishes that an event does not count as a win, loss, battle, trigger event, or other required condition, and a separate authority makes another effect depend on that condition, the downstream consequence is inferred unless one clean source directly states that consequence. That conclusion combines authorities even though both premises are explicit.
 - When clean authority expressly confines an Action, Faction Feature, effect, or permission to a named phase or timing, a question asking whether it is legal outside that timing is an explicit negative unless supplied authority expressly changes that timing. A generic additional-Action permission does not make that direct timing restriction inferred.
 - A summary may remain explicit when it compiles several independently stated facts from multiple clean sources, provided every material statement is directly stated and the summary adds no new relationship, permission, prohibition, equivalence, or conclusion between them. Multiple citations alone do not make an answer inferred.
 - A procedure remains explicit when a clean source directly enumerates its steps or when the answer only restates directly stated procedural facts. Procedural compilation is not inference unless the answer derives a new rule, permission, prohibition, or relationship.
@@ -124,12 +133,12 @@ Requirements:
 10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
 11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.
 12. Track referents through each instruction in written order. For phrases such as "that card", "it", "them", or "those cards", bind the reference to the most recent compatible game object introduced by the text after accounting for movements or state changes already resolved. Do not switch the referent back to the source card merely because it is the card being read; do so only when the grammar or explicit text identifies the source card.
-13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.
+13. Do not guess an unidentified referent. If a terse follow-up says "this ability", "that effect", "that card", or another generic object description and the immediately preceding exchange does not unambiguously identify one matching game object, ask a concise clarification instead of speculating about plausible cards, factions, abilities, or timings.
 14. When explaining an exception that expands an Action, phase, or timing permission, state the baseline restriction that the exception changes as well as the exception itself. An additional Action does not erase the normal legal timing of the Feature or effect using it.
 15. Do not infer that a requirement for at least one of several Actions to be a phase-limited Feature moves that Feature into an otherwise illegal phase. Satisfy the requirement in a phase where the Feature is already legal unless the text expressly changes its timing.
 16. When a direct phase restriction itself answers a legality question, keep the ruling explicit even if another supplied rule explains why the player has an additional Action at that time. Cite the timing restriction and the additional-Action rule when both are material to the explanation.
 17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
-18. When an effect grants Actions in multiple phases and requires at least one of those Actions to be a phase-limited Feature, treat that requirement as constraining which granted Action must be used for the Feature, not as permission to change the Feature's timing. If only one granted phase is legal for the Feature, the Feature must be used in that phase; another legal Action must fill any other granted phase.
+18. When an effect grants Actions in multiple phases and requires at least one of those Actions to be a phase-limited Feature, treat that requirement as constraining which granted Action must be used for the Feature, not as permission to change the Feature's timing. If only one granted phase is legal for that Feature, the Feature must be used in that phase; another legal Action must fill any other granted phase.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -527,6 +536,24 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
+  const sourceAuthorityText = sourceList.map((source) => [
+    source?.title,
+    source?.heading,
+    source?.excerpt,
+    source?.body
+  ].map((value) => String(value || "").toLowerCase()).join(" "));
+  const noQualifyingEventSource = sourceAuthorityText.some((text) =>
+    /\b(?:not a battle fought, won, or lost|no battle is fought|no winner|without a battle result)\b/.test(text)
+  );
+  const dependentTriggerSource = sourceAuthorityText.some((text) =>
+    /\b(?:wins? a battle|after .*win|if .*win|victory)\b/.test(text)
+  );
+  if (noQualifyingEventSource && dependentTriggerSource) {
+    reminders.push(
+      "This question links one authority that says the encounter does not produce the required battle/win/result with another authority whose effect triggers only from that required condition. The downstream trigger conclusion is a combined-authority inference unless one clean source directly states the final consequence. Classify that derived consequence inferred and cite the authorities establishing both premises."
+    );
+  }
+
   const namedCardSource = sourceList.find((source) => {
     if (!String(source?.canonicalId || "").startsWith("card:")) return false;
     const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
@@ -559,10 +586,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
 async function askOpenAI({ env, request, question, history, sources }) {
   const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
   const questionText = adjudicationReminder
-    ? `${question}
-
-QUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification
-${adjudicationReminder}`
+    ? `${question}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
     : question;
   const sourceText = sources.length
     ? sources.map((source, index) => [
@@ -716,11 +740,14 @@ function recentSpecificSubjects(history = [], retrieval = []) {
 export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
   const current = String(question || "").trim();
   const genericRuleMatch = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
+  const genericCardMatch = current.match(/\b(?:this|that)\s+card(?:[’']s)?\b/i);
   const describedCardMatch = current.match(/\b(?:the|this|that|a)\s+(?:stored|saved|held|set[ -]?aside)\s+card\b/i);
-  const match = genericRuleMatch || describedCardMatch;
+  const match = genericRuleMatch || genericCardMatch || describedCardMatch;
   if (!match) return null;
 
-  const noun = describedCardMatch ? "card" : String(match[1] || "ability").toLowerCase();
+  const noun = genericCardMatch || describedCardMatch
+    ? "card"
+    : String(match[1] || "ability").toLowerCase();
   const recentText = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
   const familyCue = noun === "effect"
     ? /\beffects?\b/i
@@ -749,8 +776,23 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
 export function augmentRetrievalForContext(corpus, question, history = [], retrieval = []) {
   const current = String(question || "").trim().toLowerCase();
   const recent = history.slice(-6).map((item) => String(item?.content || "")).join(" ").toLowerCase();
+  const immediateRecent = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
   const combined = `${recent} ${current}`;
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
+  const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
+  const immediateRecentNormalized = normalizeReferentSubject(immediateRecent);
+  const recentCardFollowupCue = currentWordCount <= 14
+    && /\b(?:it|its|that|this|those|these|same|one|extra|again|another)\b/.test(current);
+  const recentCardAuthorityIds = recentCardFollowupCue
+    ? documents
+        .filter((document) => String(document?.id || "").startsWith("card:"))
+        .filter((document) => {
+          const title = normalizeReferentSubject(document?.title || document?.heading || "");
+          return title.length >= 4 && immediateRecentNormalized.includes(title);
+        })
+        .map((document) => document.id)
+        .slice(0, 4)
+    : [];
   const deedTopic = /\bdeeds?\b/;
   const contiguityCue = /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy)|front line)\b/;
   const deedContiguityFocus = (
@@ -760,9 +802,15 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && deedTopic.test(recent)
     && contiguityCue.test(current)
   );
-  const destinationFocus = /\bdestinations?\b/.test(current)
+  const destinationFocus = /\b(?:destinations?|discard(?: pile)?|graveyard)\b/.test(current)
+    || /\bwhere\b[^?]{0,40}\b(?:go|goes|end up|land)\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
-  const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
+  const battleCardFocus = /\b(?:gambits?|tactics?|battle cards?)\b/.test(combined);
+  const battleCardQuantityFocus = /\b(?:how many|number|count)\b/.test(current)
+    && /\b(?:battle cards?|gambits?|tactics?)\b/.test(current);
+  const acceptedResponseCue = /\b(?:accept(?:s|ed|ing)?|say(?:s|ing)? yes|said yes|agree(?:s|d|ing)?)\b/.test(current);
+  const termsOrDealCue = /\b(?:terms?|deal|offer)\b/.test(current);
+  const acceptedTermsFocus = acceptedResponseCue && termsOrDealCue;
   const battleCardReplacementFocus = /\b(?:replace|replaces|replaced|replacing|replacement|replacements)\b/.test(current)
     && /\b(?:gambits?|tactics?|battle cards?)\b/.test(combined);
   const battleCardReplacementDestinationFocus = battleCardReplacementFocus
@@ -782,112 +830,120 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
       ]
     : [];
   const namedCardSource = retrieval.find((source) => {
-  if (!String(source?.canonicalId || "").startsWith("card:")) return false;
-  const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
-  return title.length >= 3 && current.includes(title);
-}) || null;
-const namedCardTitle = namedCardSource
-  ? String(namedCardSource?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
-  : "";
-const namedCardRuleReference = namedCardTitle
-  ? retrieval.find((source) => {
-      if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
-      const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
-        .map((value) => String(value || "").toLowerCase())
-        .join(" ");
-      return authorityText.includes(namedCardTitle);
-    })
-  : null;
-const namedCardSpecificityFocus = Boolean(namedCardSource && namedCardRuleReference);
-const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
-  ? [namedCardSource.canonicalId, namedCardRuleReference.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
-  : [];
+    if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+    const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+    return title.length >= 3 && current.includes(title);
+  }) || null;
+  const namedCardTitle = namedCardSource
+    ? String(namedCardSource?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
+    : "";
+  const namedCardRuleReference = namedCardTitle
+    ? retrieval.find((source) => {
+        if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
+        const authorityText = [source?.title, source?.heading, source?.excerpt, source?.body]
+          .map((value) => String(value || "").toLowerCase())
+          .join(" ");
+        return authorityText.includes(namedCardTitle);
+      })
+    : null;
+  const namedCardSpecificityFocus = Boolean(namedCardSource && namedCardRuleReference);
+  const namedCardSpecificityAuthorityIds = namedCardSpecificityFocus
+    ? [namedCardSource.canonicalId, namedCardRuleReference.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
+    : [];
+  const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;
   const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
   const intelligenceInterferenceFocus = (
-  intelligenceTopic.test(current)
-  || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
-) && intelligenceProcedureSubject;
-const shockAndAweTopic = /\bshock\s+and\s+awe\b/;
-const shockAndAweFollowupCue = /\b(?:orders?|move|movement|advance|capture|front line|command|breakthrough|consolidate|retreat|afterward)\b/.test(current);
-const shockAndAweFocus = shockAndAweTopic.test(current)
-  || (currentWordCount <= 8 && shockAndAweTopic.test(recent) && shockAndAweFollowupCue);
-const shockAndAweAuthorityIds = shockAndAweFocus && /\bwar crimes\b/.test(combined)
-  ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
-  : SHOCK_AND_AWE_AUTHORITY_IDS;
-const peaceTreatyTopic = /\b(?:peace treaty|treaty articles?|ratif(?:y|ies|ied|ying|ication|ications))\b/;
-const peaceTreatyTimingCue = /\b(?:win|wins|winning|victory|now|immediately|start|next turn|capture|draw|sixth|6th|six|6|again)\b/.test(current);
-const proposalVictoryCue = /\bproposals?\b/.test(current) && peaceTreatyTimingCue;
-const recentPeaceTreatyTopic = peaceTreatyTopic.test(recent) || /\bproposals?\b/.test(recent);
-const peaceTreatyFocus = peaceTreatyTopic.test(current)
-  || proposalVictoryCue
-  || (currentWordCount <= 8 && recentPeaceTreatyTopic && peaceTreatyTimingCue);
-const peaceTreatyAuthorityIds = peaceTreatyFocus
-  ? [
-      ...PEACE_TREATY_AUTHORITY_IDS,
-      ...(/\baccept(?:ed|s|ing|ance)?\b/.test(combined) ? ["rulebook:accepted-terms"] : []),
-      ...(/\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\b/.test(combined) ? ["rulebook:refused-terms"] : [])
-    ]
-  : PEACE_TREATY_AUTHORITY_IDS;
-const mysticsTransmutationTopic = /\btransmutation\b/;
-const mysticsSecondRiteCue = /\b(?:second|2nd|two|2)\b[^.!?]{0,50}\brites?\b|\brites?\b[^.!?]{0,50}\b(?:second|2nd|two|2)\b/;
-const mysticsProcedureCue = /\b(?:ability|feature|unlock(?:s|ed|ing)?|before dice|dice|hand|graveyard|value|spirit walker|alchemist)\b/.test(combined);
-const mysticsFollowupCue = /\b(?:it|that|same|ability|feature|unlock(?:s|ed|ing)?|before|dice|hand|graveyard|value)\b/.test(current);
-const recentMysticsTransmutationTopic = mysticsTransmutationTopic.test(recent) || mysticsSecondRiteCue.test(recent);
-const mysticsProgressionFocus = mysticsSecondRiteCue.test(current)
-  || (currentWordCount <= 9 && mysticsSecondRiteCue.test(recent) && mysticsFollowupCue);
-const mysticsTransmutationFocus = mysticsTransmutationTopic.test(current)
-  || (mysticsProgressionFocus && mysticsProcedureCue)
-  || (currentWordCount <= 9 && recentMysticsTransmutationTopic && mysticsFollowupCue);
-const mysticsTransmutationAuthorityIds = mysticsTransmutationFocus
-  ? [
-      ...(mysticsProgressionFocus ? ["rulebook:progression"] : []),
-      ...MYSTICS_TRANSMUTATION_AUTHORITY_IDS,
-      ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
-    ]
-  : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
-const specificRulePrecedenceFocus =
-  /\b(?:conflict(?:s|ing)?|override(?:s|d|ing)?|different|which rule wins|more specific)\b/.test(current)
-  && /\b(?:specific|card|rule|instruction|effect)\b/.test(combined)
-  && /\b(?:normal|general|sequence|order|rule|effect)\b/.test(combined);
-const specificRulePrecedenceAuthorityIds = specificRulePrecedenceFocus
-  ? [
-      ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS,
-      ...(/\b(?:battle|gambit|tactic|sequence)\b/.test(combined) ? ["rulebook:battle-sequence"] : [])
-    ]
-  : SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS;
-const fieldcraftTopic = /\bfieldcraft\b/;
-const fieldcraftTerritoryStateCue = /\b(?:control(?:s|led|ling)?|occupation|occupier|capture(?:s|d|ing)?|defensive edge|last stand|battle bonus(?:es)?|territor(?:y|ies)[ -]?(?:limit|limits)|limits? calculated from territor(?:y|ies))\b/;
-const fieldcraftFollowupCue = /\b(?:it|that|this|control|occupation|occupier|capture|defensive edge|last stand|bonus|limit|territory|territories)\b/.test(current);
-const fieldcraftFocus = (
-  fieldcraftTopic.test(current)
-  || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
-) && fieldcraftTerritoryStateCue.test(combined);
-const preferredAuthorityIds = deedContiguityFocus
-  ? DEED_CONTIGUITY_AUTHORITY_IDS
-  : fieldcraftFocus
-    ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
-  : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !(destinationFocus && battleCardFocus)
-    ? namedCardSpecificityAuthorityIds
-  : specificRulePrecedenceFocus
-    ? specificRulePrecedenceAuthorityIds
-  : mysticsTransmutationFocus
-    ? mysticsTransmutationAuthorityIds
-  : peaceTreatyFocus
-    ? peaceTreatyAuthorityIds
-    : shockAndAweFocus
-      ? shockAndAweAuthorityIds
-      : intelligenceInterferenceFocus
-        ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
-        : battleCardReplacementFocus
-          ? battleCardReplacementAuthorityIds
-          : destinationFocus && battleCardFocus
-            ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-            : [];
+    intelligenceTopic.test(current)
+    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+  ) && intelligenceProcedureSubject;
+  const shockAndAweTopic = /\bshock\s+and\s+awe\b/;
+  const shockAndAweFollowupCue = /\b(?:orders?|move|movement|advance|capture|front line|command|breakthrough|consolidate|retreat|afterward)\b/.test(current);
+  const shockAndAweFocus = shockAndAweTopic.test(current)
+    || (currentWordCount <= 8 && shockAndAweTopic.test(recent) && shockAndAweFollowupCue);
+  const shockAndAweAuthorityIds = shockAndAweFocus && /\bwar crimes\b/.test(combined)
+    ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
+    : SHOCK_AND_AWE_AUTHORITY_IDS;
+  const peaceTreatyTopic = /\b(?:peace treaty|treaty articles?|ratif(?:y|ies|ied|ying|ication|ications))\b/;
+  const peaceTreatyTimingCue = /\b(?:win|wins|winning|victory|now|immediately|start|next turn|capture|draw|sixth|6th|six|6|again)\b/.test(current);
+  const proposalVictoryCue = /\bproposals?\b/.test(current) && peaceTreatyTimingCue;
+  const recentPeaceTreatyTopic = peaceTreatyTopic.test(recent) || /\bproposals?\b/.test(recent);
+  const peaceTreatyFocus = peaceTreatyTopic.test(current)
+    || proposalVictoryCue
+    || (currentWordCount <= 8 && recentPeaceTreatyTopic && peaceTreatyTimingCue);
+  const peaceTreatyAuthorityIds = peaceTreatyFocus
+    ? [
+        ...PEACE_TREATY_AUTHORITY_IDS,
+        ...(/\baccept(?:ed|s|ing|ance)?\b/.test(combined) ? ["rulebook:accepted-terms"] : []),
+        ...(/\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\b/.test(combined) ? ["rulebook:refused-terms"] : [])
+      ]
+    : PEACE_TREATY_AUTHORITY_IDS;
+  const mysticsTransmutationTopic = /\btransmutation\b/;
+  const mysticsSecondRiteCue = /\b(?:second|2nd|two|2)\b[^.!?]{0,50}\brites?\b|\brites?\b[^.!?]{0,50}\b(?:second|2nd|two|2)\b/;
+  const mysticsProcedureCue = /\b(?:ability|feature|unlock(?:s|ed|ing)?|before dice|dice|hand|graveyard|value|spirit walker|alchemist)\b/.test(combined);
+  const mysticsFollowupCue = /\b(?:it|that|same|ability|feature|unlock(?:s|ed|ing)?|before|dice|hand|graveyard|value)\b/.test(current);
+  const recentMysticsTransmutationTopic = mysticsTransmutationTopic.test(recent) || mysticsSecondRiteCue.test(recent);
+  const mysticsProgressionFocus = mysticsSecondRiteCue.test(current)
+    || (currentWordCount <= 9 && mysticsSecondRiteCue.test(recent) && mysticsFollowupCue);
+  const mysticsTransmutationFocus = mysticsTransmutationTopic.test(current)
+    || (mysticsProgressionFocus && mysticsProcedureCue)
+    || (currentWordCount <= 9 && recentMysticsTransmutationTopic && mysticsFollowupCue);
+  const mysticsTransmutationAuthorityIds = mysticsTransmutationFocus
+    ? [
+        ...(mysticsProgressionFocus ? ["rulebook:progression"] : []),
+        ...MYSTICS_TRANSMUTATION_AUTHORITY_IDS,
+        ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
+      ]
+    : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
+  const specificRulePrecedenceFocus =
+    /\b(?:conflict(?:s|ing)?|override(?:s|d|ing)?|different|which rule wins|more specific)\b/.test(current)
+    && /\b(?:specific|card|rule|instruction|effect)\b/.test(combined)
+    && /\b(?:normal|general|sequence|order|rule|effect)\b/.test(combined);
+  const specificRulePrecedenceAuthorityIds = specificRulePrecedenceFocus
+    ? [
+        ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS,
+        ...(/\b(?:battle|gambit|tactic|sequence)\b/.test(combined) ? ["rulebook:battle-sequence"] : [])
+      ]
+    : SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS;
+  const fieldcraftTopic = /\bfieldcraft\b/;
+  const fieldcraftTerritoryStateCue = /\b(?:control(?:s|led|ling)?|occupation|occupier|capture(?:s|d|ing)?|defensive edge|last stand|battle bonus(?:es)?|territor(?:y|ies)[ -]?(?:limit|limits)|limits? calculated from territor(?:y|ies))\b/;
+  const fieldcraftFollowupCue = /\b(?:it|that|this|control|occupation|occupier|capture|defensive edge|last stand|bonus|limit|territory|territories)\b/.test(current);
+  const fieldcraftFocus = (
+    fieldcraftTopic.test(current)
+    || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
+  ) && fieldcraftTerritoryStateCue.test(combined);
+  const topicAuthorityIds = deedContiguityFocus
+    ? DEED_CONTIGUITY_AUTHORITY_IDS
+    : fieldcraftFocus
+      ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
+    : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !genericBattleCardDestinationFocus && !battleCardQuantityFocus && !acceptedTermsFocus
+      ? namedCardSpecificityAuthorityIds
+    : specificRulePrecedenceFocus
+      ? specificRulePrecedenceAuthorityIds
+    : mysticsTransmutationFocus
+      ? mysticsTransmutationAuthorityIds
+    : peaceTreatyFocus
+      ? peaceTreatyAuthorityIds
+    : acceptedTermsFocus
+      ? ACCEPTED_TERMS_AUTHORITY_IDS
+      : shockAndAweFocus
+        ? shockAndAweAuthorityIds
+        : intelligenceInterferenceFocus
+          ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+          : battleCardReplacementFocus
+            ? battleCardReplacementAuthorityIds
+            : battleCardQuantityFocus
+              ? BATTLE_CARD_QUANTITY_AUTHORITY_IDS
+              : genericBattleCardDestinationFocus
+                ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+                : [];
+  const preferredAuthorityIds = [...new Set([
+    ...topicAuthorityIds,
+    ...recentCardAuthorityIds
+  ])];
   if (!preferredAuthorityIds.length) return retrieval;
 
-  const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const preferred = preferredAuthorityIds
     .map((canonicalId, index) => {
       const document = documents.find((candidate) => candidate.id === canonicalId);
