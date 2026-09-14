@@ -5,7 +5,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('apps/rulebook/index.html');
 const anatomy = read('apps/rulebook/card-anatomy.js');
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
-const currentGame = JSON.parse(read('game-data/current-game.json'));
+const currentGame = JSON.parse(read('packages/game-data/current-game.json'));
 const styles = read('apps/rulebook/card-anatomy.css');
 
 describe('Browser Rulebook card anatomy guide', () => {
