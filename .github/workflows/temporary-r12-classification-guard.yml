@@ -1,0 +1,64 @@
+name: Temporary r12 classification guard
+
+on:
+  push:
+    branches:
+      - rules-arbiter-r12-classification
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    if: ${{ !contains(github.event.head_commit.message, 'Apply r12 classification hardening') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-r12-classification
+          fetch-depth: 2
+
+      - name: Verify exact base ancestry
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 24e1de521b9b81692ec76c59e80ccb55a50f5a4f HEAD
+          test -f scripts/apply-r12-classification.mjs
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply r12 patch
+        run: node scripts/apply-r12-classification.mjs
+
+      - name: Validate syntax and diff hygiene
+        run: |
+          set -euo pipefail
+          node --check rules-assistant/worker-v071.js
+          node --check rules-assistant/v071-r12-direct-overview-classification.test.mjs
+          git diff --check
+          test "$(git diff --name-only -- rules-assistant/evals/rules-arbiter-gate3-blind-b.v071.json rules-assistant/evals/rules-arbiter-gate3-blind-b-player-language.v071.json rules-assistant/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json | wc -l)" -eq 0
+
+      - name: Install targeted test dependency
+        run: npm install --no-save --package-lock=false vitest
+
+      - name: Run focused Rules Arbiter regressions
+        run: >-
+          npx vitest run
+          rules-assistant/v071-r12-direct-overview-classification.test.mjs
+          rules-assistant/v071-gate3-b-regressions.test.mjs
+          rules-assistant/v071-gate2-live-regressions.test.mjs
+
+      - name: Remove temporary applicator and commit validated patch
+        run: |
+          set -euo pipefail
+          rm scripts/apply-r12-classification.mjs
+          rm .github/workflows/temporary-r12-classification-guard.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: Apply r12 classification hardening"
+          git push origin HEAD:rules-arbiter-r12-classification
