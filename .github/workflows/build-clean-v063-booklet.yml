@@ -31,7 +31,7 @@ jobs:
             /scripts/materialize-clean-v063-booklet.mjs
             /scripts/publication-utils.mjs
             /rules-assistant/v063-last-stand-language.js
-            /rulebook/index.html
+            /legacy/rulebook-browser/index.html
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
             /legacy/v0.6.1-rulebook-publication/rulebook-design/**
@@ -63,6 +63,11 @@ jobs:
           rm -rf rulebook-design rulebook-production
           cp -R legacy/v0.6.1-rulebook-publication/rulebook-design ./rulebook-design
           cp -R legacy/v0.6.1-rulebook-publication/rulebook-production ./rulebook-production
+          # Preserved cover markup still uses the pre-cleanup hero-sketch path.
+          cp "images/sketches/hero-sketches/hero sketch.png" "images/sketches/hero sketch.png"
+          # Historical production still expects a transient /rulebook/ browser entrypoint.
+          mkdir -p rulebook
+          cp legacy/rulebook-browser/index.html rulebook/index.html
 
       - name: Build and validate approved-design booklet
         run: |
