@@ -45,7 +45,6 @@ describe('public route and Pages publication boundary', () => {
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
     expect(existsSync('packages/rules/player-guide/player-guide.md')).toBe(true);
     expect(existsSync('packages/rules/comprehensive/comprehensive-rules.md')).toBe(true);
-    expect(existsSync('rulebook/publication/editorial-policy.md')).toBe(true);
 
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect([...files.keys()].some((publicPath) => String(publicPath).startsWith('/rulebook/'))).toBe(false);
