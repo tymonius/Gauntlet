@@ -1,8 +1,8 @@
 # Player's Guide Visual Pedagogy Map
 
-This document is the layout and instructional-visual plan for the Gauntlet Player's Guide. It is not a second rules source. Rules meaning comes from `game-data/current-game.json` through the rules publication contract; this map describes how that meaning should be taught visually.
+This document is the layout and instructional-visual plan for the Gauntlet Player's Guide. It is not a second rules source. Rules meaning comes from `packages/game-data/current-game.json` through the rules publication contract; this map describes how that meaning should be taught visually.
 
-The governing editorial standard is `rulebook/publication/editorial-policy.md`.
+The governing editorial standard is `packages/rules/publication/editorial-policy.md`.
 
 ## Objective
 
@@ -23,7 +23,7 @@ The shared-game portion should aim for a comfortable first read of roughly 15–
 
 ### Card anatomy renderer — REUSE
 
-Source: `rulebook/card-anatomy.js`
+Source: `apps/rulebook/card-anatomy.js`
 
 The rulebook already has a purpose-built anatomy system. It should be the starting point for Chapter 2 rather than recreating a card anatomy graphic.
 
@@ -40,7 +40,7 @@ The Player's Guide should consume or adapt this component so the diagram stays s
 
 ### Arcane trait-mark example — REUSE
 
-Source: `rulebook/card-anatomy.js`
+Source: `apps/rulebook/card-anatomy.js`
 
 The same component already produces a focused Arcane trait-mark example using the current production rendering of **Witchcraft**. This is the graphic the guide should reuse when explaining that some cards carry a sigil/trait mark such as **Arcane**.
 
@@ -48,7 +48,7 @@ This should remain a small supporting graphic, not become a second full card-ana
 
 ### Anatomy static fallbacks — REVISE / REPAIR
 
-`rulebook/card-anatomy.js` currently names these fallback paths:
+`apps/rulebook/card-anatomy.js` currently names these fallback paths:
 
 - `/rulebook/assets/figures/playable-card-anatomy.svg`
 - `/rulebook/assets/figures/territory-card-anatomy.svg`
@@ -160,13 +160,13 @@ Make the game's card vocabulary concrete without turning the chapter into a glos
 
 ### Primary visual — REUSE
 
-**Playable card anatomy from `rulebook/card-anatomy.js`**
+**Playable card anatomy from `apps/rulebook/card-anatomy.js`**
 
 Use the existing current-production anatomy treatment rather than designing a duplicate.
 
 ### Secondary visual — REUSE
 
-**Territory card anatomy from `rulebook/card-anatomy.js`** where useful to distinguish Territory structure from playable-card structure.
+**Territory card anatomy from `apps/rulebook/card-anatomy.js`** where useful to distinguish Territory structure from playable-card structure.
 
 ### Supporting visual — REUSE
 

@@ -8,7 +8,7 @@ import {
 import {
   fingerprintRuleDependencies,
   resolveRegisteredRule,
-} from '../rulebook/publication/rule-dependencies.mjs';
+} from '../packages/rules/publication/rule-dependencies.mjs';
 
 const CONTRACT_PATH = 'config/rules-surface-contract.json';
 const SOURCES_PATH = 'config/rules-publication-sources.json';
