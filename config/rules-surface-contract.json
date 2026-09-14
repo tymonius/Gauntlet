@@ -944,7 +944,7 @@
       "kind": "teaching",
       "dependencyMode": "reviewedTeaching",
       "scope": "core-with-opponent-faction-overviews",
-      "status": "planned",
+      "status": "active",
       "chapters": [
         {
           "id": "welcome",
@@ -952,7 +952,8 @@
           "dependsOn": [
             "core.battlefield",
             "core.battlefield.victory"
-          ]
+          ],
+          "reviewFingerprint": "6e20765329e442dacd730da7e230acebb1654f50467353e3b41003e4921622de"
         },
         {
           "id": "battlefield-and-victory",
@@ -961,7 +962,8 @@
             "core.battlefield",
             "core.battlefield.victory",
             "core.battlefield.last-stand"
-          ]
+          ],
+          "reviewFingerprint": "fba631a4350b27d3073e637bcc8911cc6ee9960130aa9932ade42f7a8a44e0c7"
         },
         {
           "id": "cards-and-play-area",
@@ -970,7 +972,8 @@
             "core.cards",
             "core.card-zones",
             "core.components"
-          ]
+          ],
+          "reviewFingerprint": "cc0e2b3fda8fea00ffe17537bdfa0bcfab2d7fe65ce480411980e49556071457"
         },
         {
           "id": "setup",
@@ -979,7 +982,8 @@
             "core.setup",
             "core.deck-construction",
             "core.battlefield.starting-position"
-          ]
+          ],
+          "reviewFingerprint": "bd79412a02ace0d82d21717dda44b7922dd718919fa667df46145fa0243e896a"
         },
         {
           "id": "turn",
@@ -989,7 +993,8 @@
             "core.turn.draw",
             "core.turn.actions",
             "core.turn.cleanup"
-          ]
+          ],
+          "reviewFingerprint": "143ff119d9a7ced6776ee016f7c2339a3bbb3f8863c2f7c2faec9253762b0963"
         },
         {
           "id": "movement",
@@ -999,7 +1004,8 @@
             "core.battlefield.position",
             "core.battlefield.movement",
             "core.battle.movement-initiation"
-          ]
+          ],
+          "reviewFingerprint": "0543d98e3a1b509d0a5ab0b1fdce6c2c74cb99a7240cd227934f38768a3c56eb"
         },
         {
           "id": "battles",
@@ -1018,7 +1024,8 @@
             "core.battle.tiebreak",
             "core.battle.normal-result",
             "core.battle.aftermath"
-          ]
+          ],
+          "reviewFingerprint": "9df1f08972f8bf117fcd8513dcbffcd025752792f53d36c8de4326e49c552fd3"
         },
         {
           "id": "ground",
@@ -1028,7 +1035,8 @@
             "core.battlefield.front-line",
             "core.battlefield.occupation",
             "core.battlefield.counterattack"
-          ]
+          ],
+          "reviewFingerprint": "a80ea7420d46471b259e6d2de7aecb6aa838318a14a818293ea45eaabf128ae8"
         },
         {
           "id": "run-the-gauntlet",
@@ -1036,7 +1044,8 @@
           "dependsOn": [
             "core.battlefield.victory",
             "core.battlefield.last-stand"
-          ]
+          ],
+          "reviewFingerprint": "0ab58c2b5625409509a05f38e74671e0ff2c6a651faa4fed19ad372c0edb2365"
         },
         {
           "id": "factions",
@@ -1048,14 +1057,16 @@
             "faction.intelligence.definition",
             "faction.mystics.definition",
             "faction.inquisition.definition"
-          ]
+          ],
+          "reviewFingerprint": "744b3c4562a541224c90b0621089f6c8f7f7d6068b9d7e24dabd31da95a6ba93"
         },
         {
           "id": "deckbuilding",
           "title": "Building a Deck",
           "dependsOn": [
             "core.deck-construction"
-          ]
+          ],
+          "reviewFingerprint": "8363911f06d4b1d2576dbce46d0f38cc3235a7ac992ac5da1927dfa34a3de816"
         },
         {
           "id": "next",
