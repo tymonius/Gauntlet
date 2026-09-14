@@ -60,6 +60,9 @@ jobs:
       - name: Install release validation dependency
         run: npm install --no-save --package-lock=false pdf-lib
 
+      - name: Materialize public compatibility paths
+        run: node scripts/materialize-public-route-compatibility.mjs
+
       - name: Validate lifecycle-selected published corpus
         run: |
           set -euo pipefail
@@ -132,7 +135,7 @@ jobs:
               console.log(`Worker corpus check ${attempt}/20: ${actual}`);
               if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
             } catch (error) {
-              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
+              console.log(`Worker corpus check ${attempt}/${20}: ${error.message}`);
             }
             if (attempt < 20) await sleep(3000);
           }
