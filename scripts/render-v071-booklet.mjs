@@ -4,7 +4,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
-import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
+import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../packages/rules/rule-facts.js';
 import { loadPublishingAuthority } from './publishing-authority.mjs';
 import { prepareLegacyRulebookPublicationCompatibility, cleanupLegacyRulebookPublicationCompatibility } from './legacy-rulebook-publication-compat.mjs';
 

@@ -23,7 +23,7 @@ Current gameplay authority lives at:
 - `governance/` for binding decision provenance and cross-surface traceability; and
 - `config/` for maintained contracts that define how authority is projected, published, and validated.
 
-`config/rules-surface-contract.json` governs the active rules projections. The maintained Player's Guide, Faction Guides, Comprehensive Rules, and their publication/editorial support live under `packages/rules/`. They are reviewed or direct rules surfaces and support derived from gameplay authority; they are not a second independent gameplay authority.
+`config/rules-surface-contract.json` governs the active rules projections. The maintained Player's Guide, Faction Guides, Comprehensive Rules, current rule-fact synchronization support, and publication/editorial support live under `packages/rules/`. They are reviewed or derived rules surfaces/support from gameplay authority; they are not a second independent gameplay authority.
 
 The active `/rules/` architecture treats the Comprehensive Rules as the complete technical corpus, with the Player's Guide and Faction Guides as teaching layers. The older monolithic Browser Rulebook remains available as a transition/coverage reference; retirement coverage is proven separately, while route retirement remains an explicit later change.
 
@@ -112,7 +112,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `packages/game-data/` | Complete current gameplay authority and adapters; staged publicly at `/game-data/` |
-| `packages/rules/` | Maintained active rules source and publication-support package: Player's Guide, Faction Guides, Comprehensive Rules, editorial policy, visual-pedagogy planning, and rule-dependency fingerprint support; only explicitly materialized rules sources are staged to stable `/rules/sources/...` paths |
+| `packages/rules/` | Maintained active rules source/support package: Player's Guide, Faction Guides, Comprehensive Rules, editorial policy, visual-pedagogy planning, rule-dependency fingerprint support, and current rule-fact derivation/synchronization; only explicitly materialized rules sources are staged to stable `/rules/sources/...` paths |
 | `governance/` | Decision registry, schemas, traceability, and audit records |
 | `config/` | Maintained cross-system configuration and contracts |
 
@@ -130,7 +130,7 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `rulebook/` | Primarily legacy monolithic Rulebook source and version-specific compatibility support, plus Rulebook QR assets and the still-maintained `rule-facts.js` helper. Browser Rulebook application source lives under `apps/rulebook/`; durable active rules source and publication support live under `packages/rules/`. This root remains transitional until the residual helper/assets are separated and the legacy Rulebook route lifecycle is resolved. |
+| `rulebook/` | Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. Browser Rulebook application source lives under `apps/rulebook/`; durable active rules source/support lives under `packages/rules/`. No maintained current rules helper should live in this root after the rule-facts move; it remains transitional until historical support/assets and the legacy Rulebook route lifecycle are resolved. |
 
 ### Shared packages
 
@@ -243,7 +243,7 @@ This is a conceptual dependency target, not an instruction to move every existin
 
 ### Phase 3 — Subsystem boundary cleanup
 
-- Keep active rules source and publication support under `packages/rules/`; finish separating the residual legacy Rulebook helper/assets under `rulebook/` according to lifecycle.
+- Keep active rules source/support under `packages/rules/`; finish separating the residual historical Rulebook support/assets under `rulebook/` according to lifecycle.
 - Finish retiring obsolete renderer-family compatibility/parity scaffolding.
 - Make the active digital engine an obvious first-class application/package while keeping historical implementations quarantined.
 - Consolidate true production tooling toward `tools/` only after caller/lifecycle classification is clear.

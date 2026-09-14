@@ -5,7 +5,7 @@ import {
   deriveRuleFacts,
   ruleNumberWord,
   validateRuleFactMarkers,
-} from '../rulebook/player-facing/rule-facts.js';
+} from '../packages/rules/rule-facts.js';
 import {
   CURRENT_GAME_AUTHORITY_SOURCE,
   ROOT,

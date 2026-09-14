@@ -4,7 +4,7 @@ import {
   deriveRuleFacts,
   ruleNumberWord,
   synchronizeKnownRulebookClaims,
-} from '../rulebook/player-facing/rule-facts.js';
+} from '../packages/rules/rule-facts.js';
 import {
   applyV070CanonicalCorrections,
   applyV070RulebookCorrections,
@@ -14,7 +14,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 
 describe('Diplomat Peace Treaty threshold', () => {
   it('keeps current player-facing surfaces aligned with the structured threshold', () => {
-    const currentGame = JSON.parse(read('game-data/current-game.json'));
+    const currentGame = JSON.parse(read('packages/game-data/current-game.json'));
     const threshold = deriveRuleFacts(currentGame)['diplomats.peace_treaty_threshold'];
     const thresholdWord = ruleNumberWord(threshold);
 

@@ -92,7 +92,7 @@
       "role": "authority",
       "target_groups": ["packages"],
       "transitional": false,
-      "note": "Canonical container for maintained shared packages and authorities; contains the complete current game-data authority plus the maintained active rules source and publication-support package."
+      "note": "Canonical container for maintained shared packages and authorities; contains the complete current game-data authority plus the maintained active rules source, publication support, and current rule-fact synchronization helper."
     },
     "releases": {
       "role": "frozen_release",
@@ -102,9 +102,9 @@
     },
     "rulebook": {
       "role": "historical_compatibility",
-      "target_groups": ["packages", "assets", "legacy"],
+      "target_groups": ["assets", "legacy"],
       "transitional": true,
-      "note": "Primarily legacy monolithic Rulebook and version-specific support, plus Rulebook QR assets and the still-maintained rule-facts helper. Gameplay authority lives at packages/game-data/current-game.json, active rules and publication support live at packages/rules/, and Browser Rulebook application source lives at apps/rulebook/."
+      "note": "Legacy monolithic Rulebook and version-specific compatibility support plus Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json, active rules and maintained current rules support live at packages/rules/, and Browser Rulebook application source lives at apps/rulebook/."
     },
     "rules-arbiter": {
       "role": "active_application",
