@@ -21,6 +21,7 @@ GitHub/current `main` is authoritative. This file is only the compact repository
 - Machine root-architecture contract: [`config/repository-architecture.json`](../config/repository-architecture.json)
 - Public/deployment boundary contract: [`config/publication-boundary.json`](../config/publication-boundary.json)
 - Active rules-surface contract: [`config/rules-surface-contract.json`](../config/rules-surface-contract.json)
+- Rules publication source registry: [`config/rules-publication-sources.json`](../config/rules-publication-sources.json)
 
 ## Architecture baseline now merged
 
@@ -33,43 +34,53 @@ GitHub/current `main` is authoritative. This file is only the compact repository
 - [#1723](https://github.com/tymonius/Gauntlet/pull/1723) separated Browser Rulebook application source into `apps/rulebook/` while preserving `/rulebook/`.
 - [#1724](https://github.com/tymonius/Gauntlet/pull/1724) established the active three-layer `/rules/` architecture: Player's Guide, Faction Guides, and Comprehensive Rules, with explicitly materialized source Markdown.
 - [#1727](https://github.com/tymonius/Gauntlet/pull/1727) retired completed v0.6.4-candidate/terminology migration scaffolding while preserving still-consumed historical correction modules.
+- [#1729](https://github.com/tymonius/Gauntlet/pull/1729) established a validated, fingerprinted retirement crosswalk proving the legacy monolithic Rulebook is covered by the active rules architecture; route retirement remains a separate lifecycle change.
+- [#1731](https://github.com/tymonius/Gauntlet/pull/1731) moved the durable Player's Guide, Faction Guides/template, and Comprehensive Rules into `packages/rules/`, made the publication source registry the maintained path inventory for active rules sources, and preserved all public URLs.
 - Recovered cleanup issues #1670, #1671, #1672, and #1673 are complete.
 
 Older cleanup branches remain design evidence only. Re-land still-valid ideas deliberately against current `main`; do not merge stale branches over newer engine, Rules Arbiter, publication, or rendering work.
 
-## Current tranche: active rules-source package
+## Current tranche: rules publication support
 
-The active Player's Guide, six Faction Guides, Faction Guide template, and Comprehensive Rules are durable maintained source shared by the `/rules/` application and publication system. They are being moved from mixed `rulebook/` subtrees into `packages/rules/` while preserving all deployed URLs through `config/publication-boundary.json`.
+The active rules documents now live under `packages/rules/`. The remaining active publication-support trio—editorial policy, Player's Guide visual-pedagogy map, and semantic rule-dependency fingerprint helper—belongs to the same maintained package rather than the transitional `rulebook/` root.
 
-This tranche is deliberately mechanical:
+This tranche is deliberately structural:
 
-- gameplay authority remains `packages/game-data/current-game.json`;
-- rules text and mechanics are unchanged;
-- `/rules/`, `/rules/sources/...`, and the transitional `/rulebook/player-guide/player-guide.md` review path remain stable;
-- `apps/rules/routes.json` points to the packaged maintained sources;
-- publication CI checks out the complete `packages/rules/` source package instead of one-off Rulebook source paths;
-- the legacy monolithic Browser Rulebook remains under `rulebook/` during retirement-coverage work;
-- historical v0.6.3/v0.7.0 correction support and Rulebook publication/editorial material stay in place until their owning lifecycles are handled coherently.
+- move `rulebook/publication/` support into `packages/rules/publication/`;
+- keep gameplay authority at `packages/game-data/current-game.json`;
+- keep active rules text/mechanics unchanged;
+- point `config/rules-publication-sources.json` and publication validation at the packaged support;
+- normalize stale repository-source references in the pedagogy map without rewriting stable leading-slash `/rulebook/...` public fallback URLs;
+- make Pages PR validation trigger for `packages/rules/**` changes;
+- reclassify the residual top-level `rulebook/` root as transitional historical compatibility rather than gameplay/rules authority.
+
+After this tranche, `rulebook/` should contain only:
+
+- the legacy monolithic Rulebook and its current fact-synchronization helper;
+- v0.6.3/v0.7.0 historical correction/support inputs;
+- historical Chapter 11 support; and
+- Rulebook QR assets.
 
 ## Architectural decisions now established
 
 - **Gameplay authority is singular.** Canonical gameplay authority is `packages/game-data/current-game.json`; active technical/teaching rules documents are governed projections, not an independent mechanics authority.
 - **`apps/` is the maintained application-source boundary.** Public URLs do not dictate repository source placement.
-- **`packages/` is the maintained shared-source boundary.** It contains both current gameplay authority (`packages/game-data/`) and durable active rules source (`packages/rules/`).
+- **`packages/` is the maintained shared-source boundary.** It contains current gameplay authority (`packages/game-data/`) and durable active rules source plus publication support (`packages/rules/`).
 - **Pages is an explicit deployment artifact.** New source roots are non-public unless the publication contract deliberately materializes them.
-- **The monolithic Browser Rulebook is transitional legacy coverage.** Its app lives in `apps/rulebook/`; its remaining source/support under `rulebook/` should not be mixed back into the active three-layer rules package.
+- **The monolithic Browser Rulebook is transitional legacy coverage.** Its app lives in `apps/rulebook/`; its retirement coverage is now mechanically proved, but route retirement remains a separate deliberate change.
 - **Historical release/support source stays intact until it can move as a coherent historical unit.** A version-specific file is not dead merely because it is not current gameplay authority.
 - **Behavior-preserving architecture cleanup remains separate from gameplay/product changes.**
 
 ## Next top-down queue
 
-1. Finish the `packages/rules/` move and prove the publication/CI boundary is green.
-2. Classify the remaining `rulebook/` publication/editorial, legacy monolithic Rulebook, QR assets, and version-specific support into coherent legacy/tooling/docs destinations.
-3. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-4. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
-5. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
-6. Audit governance/traceability and CI paths that still encode transitional locations.
-7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Finish the `packages/rules/publication/` support move and prove publication/governance/Pages CI stays green.
+2. Classify the residual `rulebook/` boundary by lifecycle: legacy monolithic Rulebook + `rule-facts.js`, v0.6.3/v0.7.0 historical support, `chapter-11.md`, and QR assets.
+3. Decide legacy `/rulebook/` route retirement/redirect/archive behavior separately from source placement, using the #1729 crosswalk as evidence rather than deleting the route implicitly.
+4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+5. Inspect `card-design/` and shared rendering/UI dependencies for genuine reusable package boundaries versus production authoring tools.
+6. Continue production-tool consolidation toward `tools/` only after caller/lifecycle classification is clear.
+7. Audit governance/traceability and CI paths that still encode transitional locations.
+8. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
