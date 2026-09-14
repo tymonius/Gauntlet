@@ -11,7 +11,7 @@ const websiteFooterTargets = [
   'rules-arbiter/index.html',
   'apps/card-reference/index.html',
   'apps/deckbuilder/index.html',
-  'changelog/index.html',
+  'apps/changelog/index.html',
   'apps/factions/military/index.html',
   'apps/factions/diplomats/index.html',
   'apps/factions/financiers/index.html',
