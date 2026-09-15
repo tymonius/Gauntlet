@@ -324,7 +324,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-npm-${{ steps.playwright-version.outputs.version }}
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Chromium
         if: steps.scope.outputs.any_render == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
