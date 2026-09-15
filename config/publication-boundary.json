@@ -82,7 +82,10 @@
     {"source": "packages/rules/faction-guides/mystics.md", "publicPath": "/rules/sources/factions/mystics.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/faction-guides/inquisition.md", "publicPath": "/rules/sources/factions/inquisition.md", "kind": "reviewed-teaching-source"},
     {"source": "packages/rules/comprehensive/comprehensive-rules.md", "publicPath": "/rules/sources/comprehensive-rules.md", "kind": "direct-technical-source"},
-    {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"}
+    {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"},
+    {"source": "legacy/card-design-v0.6.3/long-card-render.html", "publicPath": "/card-design/long-card-render.html", "kind": "historical-card-review"},
+    {"source": "legacy/card-design-v0.6.3/long-card-render.js", "publicPath": "/card-design/long-card-render.js", "kind": "historical-card-review"},
+    {"source": "legacy/card-design-v0.6.3/generated/long-card-review-catalog.js", "publicPath": "/card-design/generated/v0.6.3/long-card-review-catalog.js", "kind": "historical-card-review"}
   ],
   "managedRoutes": [
     "/about/",
