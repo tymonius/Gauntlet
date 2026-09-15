@@ -60,6 +60,8 @@ describe('public route and Pages publication boundary', () => {
       'deed-ornament-study.html',
       'deed-rule-font-study.html',
       'military-symbols.html',
+      'capital-ledger-review.md',
+      'tracker-card-design-notes.md',
     ];
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
 
