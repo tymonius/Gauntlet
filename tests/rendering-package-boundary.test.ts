@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 const publication = JSON.parse(readFileSync('config/publication-boundary.json', 'utf8'));
 const architecture = JSON.parse(readFileSync('config/repository-architecture.json', 'utf8'));
 const materializer = readFileSync('scripts/materialize-public-route-compatibility.mjs', 'utf8');
+const cardAuthorityModel = readFileSync('scripts/card-authority/model.mjs', 'utf8');
+const ttsCardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 const cardAuthorityWorkflow = readFileSync('.github/workflows/card-authority.yml', 'utf8');
 const ttsWorkflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const mediaWorkflow = readFileSync('.github/workflows/generate-card-media-assets.yml', 'utf8');
@@ -26,6 +28,11 @@ describe('shared rendering package boundary', () => {
     expect(readFileSync('card-design/production-surface.mjs', 'utf8')).toBe(
       "export * from '../packages/rendering/production-surface.mjs';\n",
     );
+  });
+
+  it('makes validation and TTS generation consume package authority directly', () => {
+    expect(cardAuthorityModel).toContain("from '../../packages/rendering/face-authority.mjs'");
+    expect(ttsCardGenerator).toContain("from '../packages/rendering/production-surface.mjs'");
   });
 
   it('materializes package authority onto the stable public browser module URLs', () => {
