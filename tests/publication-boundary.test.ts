@@ -75,7 +75,7 @@ describe('public route and Pages publication boundary', () => {
   it('keeps the archived Browser Rulebook live as the v0.7.1 release bridge until v0.7.2 cutover', () => {
     expect(existsSync('apps/rulebook')).toBe(false);
     expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);
-    expect(existsSync('legacy/public-compatibility/rulebook/index.html')).toBe(true);
+    expect(existsSync('legacy/public-compatibility/rulebook/index.html')).toBe(false);
     expect(existsSync('rulebook/index.html')).toBe(false);
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
     expect(existsSync('packages/rules/player-guide/player-guide.md')).toBe(true);
@@ -84,8 +84,8 @@ describe('public route and Pages publication boundary', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/rulebook/player-facing/current-rulebook.md')).toBe('rulebook/player-facing/current-rulebook.md');
     expect(files.get('/rulebook/player-guide/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
-    expect(files.get('/rules/sources/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
-    expect(files.get('/rules/sources/comprehensive-rules.md')).toBe('packages/rules/comprehensive/comprehensive-rules.md');
+    expect(files.get('/rulebook/sources/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
+    expect(files.get('/rulebook/sources/complete-rules.md')).toBe('packages/rules/comprehensive/comprehensive-rules.md');
     expect(contract.managedRoutes).toContain('/rulebook/');
     expect(contract.managedRoutes).toContain('/rulebook/player-guide-review/');
     expect(contract.managedRoutes).toContain('/rules/player-guide/');
