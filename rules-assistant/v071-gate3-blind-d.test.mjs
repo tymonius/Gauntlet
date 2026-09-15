@@ -42,8 +42,20 @@ describe("Gate 3 blind tranche D freeze", () => {
       expect(validateSemanticBenchmark(dataset)).toEqual([]);
       expect(validateClassificationExpectations(dataset)).toEqual([]);
     }
-    expect(standard.cases).toHaveLength(46);
+    expect(standard.cases).toHaveLength(55);
     expect(player.cases).toHaveLength(16);
+  });
+
+  test("covers all twelve Leaders explicitly", () => {
+    const standardText = standard.cases
+      .map((item) => `${item.question} ${(item.expectedSourcePatterns || []).join(" ")}`)
+      .join("\n");
+    for (const leader of [
+      "General", "Commandant", "Ambassador", "Senator", "Banker", "Executive",
+      "Ranger", "Spymaster", "Alchemist", "Spirit Walker", "Grand Inquisitor", "Witch Hunter"
+    ]) {
+      expect(standardText).toContain(leader);
+    }
   });
 
   test("forbids legacy literal answer-pattern grading in semantic datasets", () => {
