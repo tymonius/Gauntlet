@@ -35,14 +35,13 @@ Earlier application, public-route, game-data, asset, release-automation, and rul
 - [#1742](https://github.com/tymonius/Gauntlet/pull/1742) moved maintained card-design standards to `docs/card-design/` while preserving their public URLs.
 - [#1749](https://github.com/tymonius/Gauntlet/pull/1749) archived the version-specific Capital Ledger review and tracker design notes after confirming they were historical evidence rather than current authority.
 - DOC-HISTORICAL: [#1752](https://github.com/tymonius/Gauntlet/pull/1752) archived the complete v0.6.3 reference-copy subtree after verifying the then-current component authority pointed only at v0.7.0 reference copy. The old public v0.6.3 paths remain materialized for provenance.
+- [#1753](https://github.com/tymonius/Gauntlet/pull/1753) established `packages/rendering/` as the environment-neutral physical-face model authority while preserving the established browser/TTS compatibility paths and public URLs.
 
-## Current tranche — shared rendering model package
+## Completed tranche — shared rendering model package
 
-Current PR: [#1753](https://github.com/tymonius/Gauntlet/pull/1753)
+The shared-package seam is now implemented and verified through repository tests, governance, Card Authority canonical-face rendering, TTS generation/preview validation, and Pages staging.
 
-The first genuine `packages/rendering/` boundary is now narrow enough to implement without moving browser-specific rendering code mechanically.
-
-Verified environment-neutral authority moving into the package:
+Environment-neutral authority lives under the package:
 
 - `packages/rendering/production-surface.mjs` — production card geometry and raster scale;
 - `packages/rendering/face-authority.mjs` — canonical physical-face catalog, template identity, pairing, and back-policy model.
@@ -54,31 +53,34 @@ The established repository-root browser/TTS paths remain as thin compatibility a
 
 Because `packages/` remains source-only for GitHub Pages, `config/publication-boundary.json` materializes the package authority directly at the stable public URLs `/card-design/production-surface.mjs` and `/card-design/face-authority.mjs`. The in-place compatibility materializer deliberately preserves tracked adapters instead of overwriting repository source.
 
-TTS and card-media sparse checkouts, plus Card Authority render scope, include `packages/rendering/` in the same tranche. `tests/rendering-package-boundary.test.ts` locks the ownership, adapter, publication, and CI contracts together.
+TTS and card-media sparse checkouts, plus Card Authority render scope, include `packages/rendering/`. `tests/rendering-package-boundary.test.ts` locks the ownership, adapter, publication, direct-consumer, and CI contracts together.
 
-## Rendering boundary still deliberately unresolved
+## Card-design rendering boundary audit
 
-Do **not** interpret `packages/rendering/` as permission to move the rest of `card-design/` wholesale.
+The post-extraction dependency audit confirms that the remaining canonical face pipeline is environment-specific production tooling, not additional shared package authority. See [`card-design/README.md`](../card-design/README.md) for the local map.
 
-The following remain environment- or presentation-specific and require their own dependency/consumer audit before any move:
+Verified classifications:
 
-- `card-design/face-spec.mjs` — mixes canonical face identity with browser/public asset dependencies and Node/browser authority routing;
-- `card-design/face-template-registry.mjs`;
-- `card-design/face-templates/*.mjs`;
-- renderer pages/styles and authoring/compositor implementation.
+- `card-design/face-spec.mjs` is a browser/publication-aware presentation adapter: it resolves public stylesheet and artwork URLs, current visual authority, and environment-dependent art-direction imports.
+- `card-design/face-template-registry.mjs` and `card-design/face-templates/*.mjs` are DOM renderer implementation; templates construct `HTMLElement` output and depend on browser globals.
+- `card-design/face-preparation.mjs` is browser layout/render preparation using font loading, `Image`, computed styles, DOM measurement, and production fitting.
+- `card-design/face-render.mjs` is browser orchestration using `window`, `document`, dynamic stylesheet/script loading, iframe inspection, and DOM output.
+- `card-design/render-context.mjs` consumes the browser current-game bridge and therefore belongs with render runtime rather than environment-neutral package authority.
+- artwork compositor/review/inspection and family-specific renderer surfaces are production authoring/render tooling and should be considered separately from shared model authority.
 
-The current package extraction is intentionally limited to the pure shared model layer.
+Do **not** move these modules into `packages/rendering/` merely to reduce the root. Any future physical move must target an appropriate browser/tooling boundary and preserve the deployed `/card-design/` import/publication contract.
 
 ## Card-design lifecycle state
 
-`card-design/` remains a transitional production-tooling root, but its non-runtime material is now classified:
+`card-design/` remains a transitional production-tooling root, but its major roles are now classified:
 
 - maintained design standards live under `docs/card-design/`;
 - historical design studies/review notes live under `legacy/card-design-studies/`;
 - v0.6.3 long-review and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
 - the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
-- pure shared rendering model authority is moving under `packages/rendering/`;
-- browser-specific rendering and authoring implementation remains under `card-design/` pending further classification.
+- pure shared rendering model authority lives under `packages/rendering/`;
+- browser rendering runtime remains under `card-design/` pending a deliberate tooling/public-path relocation strategy;
+- authoring, review, compositor, and family-specific presentation tooling remains under `card-design/` pending a separate tools-boundary audit.
 
 ## Rules boundary state
 
@@ -94,13 +96,12 @@ The current package extraction is intentionally limited to the pure shared model
 
 ## Next top-down queue
 
-1. Finish [#1753](https://github.com/tymonius/Gauntlet/pull/1753) and prove the package/adapters/publication/CI contract through repository tests, Card Authority, TTS, and Pages staging.
-2. Audit the remaining `card-design/` renderer/template/authoring implementation by dependency role; do not move environment-specific code merely to reduce the root.
-3. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances to v0.7.2; do not collapse the transition early.
-4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-5. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-6. Audit governance/traceability and CI paths that still encode transitional locations.
-7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Separate the remaining `card-design/` browser-render runtime from authoring/review/compositor tooling conceptually, then design any physical relocation around the established public/import contract instead of moving files mechanically.
+2. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances to v0.7.2; do not collapse the transition early.
+3. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+4. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+5. Audit governance/traceability and CI paths that still encode transitional locations.
+6. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
