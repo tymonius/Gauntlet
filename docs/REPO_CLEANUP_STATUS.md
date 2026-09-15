@@ -34,7 +34,7 @@ Earlier application, public-route, game-data, asset, release-automation, and rul
 - [#1741](https://github.com/tymonius/Gauntlet/pull/1741) archived superseded Deed/Military design-study pages while preserving their public review URLs.
 - [#1742](https://github.com/tymonius/Gauntlet/pull/1742) moved maintained card-design standards to `docs/card-design/` while preserving their public URLs.
 - [#1749](https://github.com/tymonius/Gauntlet/pull/1749) archived the version-specific Capital Ledger review and tracker design notes after confirming they were historical evidence rather than current authority.
-- [#1752](https://github.com/tymonius/Gauntlet/pull/1752) archived the complete v0.6.3 reference-copy subtree after verifying current component authority points only at v0.7.0 reference copy. The old public v0.6.3 paths remain materialized for provenance.
+- DOC-HISTORICAL: [#1752](https://github.com/tymonius/Gauntlet/pull/1752) archived the complete v0.6.3 reference-copy subtree after verifying the then-current component authority pointed only at v0.7.0 reference copy. The old public v0.6.3 paths remain materialized for provenance.
 
 ## Current tranche — shared rendering model package
 
@@ -76,7 +76,7 @@ The current package extraction is intentionally limited to the pure shared model
 - maintained design standards live under `docs/card-design/`;
 - historical design studies/review notes live under `legacy/card-design-studies/`;
 - v0.6.3 long-review and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
-- current v0.7.0 reference copy remains under `card-design/reference-copy/v0.7.0/`;
+- the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
 - pure shared rendering model authority is moving under `packages/rendering/`;
 - browser-specific rendering and authoring implementation remains under `card-design/` pending further classification.
 
