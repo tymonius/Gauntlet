@@ -1,0 +1,107 @@
+name: Scratch Gate 3 C worker patch
+
+on:
+  push:
+    branches:
+      - scratch-gate3-c-worker-patch
+
+permissions:
+  contents: write
+
+jobs:
+  patch-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: scratch-gate3-c-worker-patch
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply exact Worker patch
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'rules-assistant/worker-v071.js';
+          let text = fs.readFileSync(path, 'utf8');
+
+          if (text.includes('export const BEHAVIOR_REVISION = "v071-qa-20260915-14";')) {
+            console.log('Worker patch is already present.');
+            process.exit(0);
+          }
+
+          function replaceOnce(oldText, newText, label) {
+            const first = text.indexOf(oldText);
+            if (first < 0) throw new Error(`Missing expected ${label} snippet.`);
+            if (text.indexOf(oldText, first + oldText.length) >= 0) {
+              throw new Error(`Expected exactly one ${label} snippet.`);
+            }
+            text = text.slice(0, first) + newText + text.slice(first + oldText.length);
+          }
+
+          replaceOnce(
+            'import { normalizeR13RulingStatus } from "./r13-classification.js";',
+            'import { normalizeR13RulingStatus } from "./r13-classification.js";\nimport {\n  buildGate3CAdjudicationReminder,\n  hasTerseSurveillanceLanguage,\n  isOccupationControlQuestion,\n  shouldCarryImmediateHistory\n} from "./v071-gate3-c-remediation.js";',
+            'remediation import'
+          );
+          replaceOnce(
+            'export const BEHAVIOR_REVISION = "v071-qa-20260914-13";',
+            'export const BEHAVIOR_REVISION = "v071-qa-20260915-14";',
+            'behavior revision'
+          );
+          replaceOnce(
+            'const DEED_CONTIGUITY_AUTHORITY_IDS = [\n  "rulebook:deeds",\n  "rulebook:front-line"\n];',
+            'const DEED_CONTIGUITY_AUTHORITY_IDS = [\n  "rulebook:deeds",\n  "rulebook:front-line"\n];\nconst OCCUPATION_CONTROL_AUTHORITY_IDS = [\n  "rulebook:occupation"\n];',
+            'occupation authority constant'
+          );
+          replaceOnce(
+            'export function buildQuestionSpecificAdjudicationReminder(question, sources = []) {',
+            'export function buildQuestionSpecificAdjudicationReminder(question, sources = [], history = []) {',
+            'adjudication reminder signature'
+          );
+          replaceOnce(
+            '  const reminders = [];\n\n  const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);',
+            '  const reminders = [];\n  const gate3CReminder = buildGate3CAdjudicationReminder(question, sourceList, history);\n  if (gate3CReminder) reminders.push(gate3CReminder);\n\n  const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);',
+            'adjudication reminder hook'
+          );
+          replaceOnce(
+            '  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);',
+            '  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources, history);',
+            'history-aware adjudication reminder call'
+          );
+          replaceOnce(
+            '  if (!words.length || words.length > 10) return false;\n\n  const referentCue = /\\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\\b/.test(current);\n  const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\\b/.test(current);\n  const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\\b/.test(current);\n  const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);\n  return referentCue || continuationCue || shortCounterfactualCue || bareQuestionCue;',
+            '  if (!words.length) return false;\n  if (shouldCarryImmediateHistory(current)) return true;\n\n  const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\\b/.test(current);\n  const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);\n  return shortCounterfactualCue || bareQuestionCue;',
+            'context-dependent question gate'
+          );
+          replaceOnce(
+            '  const recentCardFollowupCue = currentWordCount <= 14\n    && /\\b(?:it|its|that|this|those|these|same|one|extra|again|another)\\b/.test(current);',
+            '  const recentCardFollowupCue = shouldCarryImmediateHistory(current);',
+            'recent-card follow-up gate'
+          );
+          replaceOnce(
+            '  const intelligenceInterferenceFocus = (\n    intelligenceTopic.test(current)\n    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)\n  ) && intelligenceProcedureSubject;',
+            '  const intelligenceInterferenceFocus = (\n    intelligenceTopic.test(current)\n    || hasTerseSurveillanceLanguage(current)\n    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)\n  ) && intelligenceProcedureSubject;',
+            'terse Surveillance focus'
+          );
+          replaceOnce(
+            '  const fieldcraftFocus = (\n    fieldcraftTopic.test(current)\n    || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)\n  ) && fieldcraftTerritoryStateCue.test(combined);\n  const topicAuthorityIds = deedContiguityFocus\n    ? DEED_CONTIGUITY_AUTHORITY_IDS\n    : fieldcraftFocus\n      ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS',
+            '  const fieldcraftFocus = (\n    fieldcraftTopic.test(current)\n    || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)\n  ) && fieldcraftTerritoryStateCue.test(combined);\n  const occupationControlFocus = isOccupationControlQuestion(current);\n  const topicAuthorityIds = deedContiguityFocus\n    ? DEED_CONTIGUITY_AUTHORITY_IDS\n    : fieldcraftFocus\n      ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS\n    : occupationControlFocus\n      ? OCCUPATION_CONTROL_AUTHORITY_IDS',
+            'occupation retrieval focus'
+          );
+
+          fs.writeFileSync(path, text);
+          NODE
+          node --check rules-assistant/worker-v071.js
+      - name: Commit patched Worker
+        run: |
+          if git diff --quiet -- rules-assistant/worker-v071.js; then
+            echo "No Worker change to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js
+          git commit -m "Patch Gate 3 C Rules Arbiter runtime"
+          git push origin HEAD:scratch-gate3-c-worker-patch
