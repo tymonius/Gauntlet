@@ -89,6 +89,8 @@
     {"source": "legacy/card-design-studies/deed-ornament-study.html", "publicPath": "/card-design/deed-ornament-study.html", "kind": "historical-design-study"},
     {"source": "legacy/card-design-studies/deed-rule-font-study.html", "publicPath": "/card-design/deed-rule-font-study.html", "kind": "historical-design-study"},
     {"source": "legacy/card-design-studies/military-symbols.html", "publicPath": "/card-design/military-symbols.html", "kind": "historical-design-study"},
+    {"source": "legacy/card-design-studies/capital-ledger-review.md", "publicPath": "/card-design/capital-ledger-review.md", "kind": "historical-design-study"},
+    {"source": "legacy/card-design-studies/tracker-card-design-notes.md", "publicPath": "/card-design/tracker-card-design-notes.md", "kind": "historical-design-study"},
     {"source": "docs/card-design/PARCHMENT_BACKGROUND_MAPPING.md", "publicPath": "/card-design/PARCHMENT_BACKGROUND_MAPPING.md", "kind": "maintained-design-documentation"},
     {"source": "docs/card-design/faction-feature-taxonomy.md", "publicPath": "/card-design/faction-feature-taxonomy.md", "kind": "maintained-design-documentation"}
   ],
