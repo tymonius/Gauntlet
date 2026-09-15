@@ -61,221 +61,294 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      let relativePath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      if (!relativePath) relativePath = 'index.html';
-      if (relativePath.endsWith('/')) relativePath += 'index.html';
-
-      const filePath = resolve(ROOT, relativePath);
-      const relativeToRoot = relative(ROOT, filePath);
-      if (relativeToRoot.startsWith('..') || relativeToRoot.split(sep).includes('..')) {
-        response.writeHead(403);
-        response.end('Forbidden');
+      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+      const sourcePath = requestPath.startsWith('game-data/')
+        ? `packages/${requestPath}`
+        : requestPath;
+      const requested = resolve(ROOT, sourcePath || 'index.html');
+      if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
+        response.writeHead(403).end('Forbidden');
         return;
       }
-
-      const info = await stat(filePath).catch(() => null);
-      if (!info?.isFile()) {
-        response.writeHead(404);
-        response.end('Not found');
-        return;
-      }
-
-      response.writeHead(200, { 'Content-Type': contentType(filePath) });
-      response.end(await readFile(filePath));
+      const file = (await stat(requested)).isDirectory() ? join(requested, 'index.html') : requested;
+      response.writeHead(200, { 'Content-Type': contentType(file) });
+      response.end(await readFile(file));
     } catch (error) {
-      response.writeHead(500);
-      response.end(String(error?.stack || error));
+      response.writeHead(error.code === 'ENOENT' ? 404 : 500).end(error.message);
     }
   });
 
-  await new Promise((resolvePromise, reject) => {
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', resolvePromise);
-  });
-
-  const address = server.address();
-  if (!address || typeof address === 'string') throw new Error('Unable to resolve local render server address.');
-  return {
-    baseUrl: `http://127.0.0.1:${address.port}`,
-    close: () => new Promise((resolvePromise, reject) => server.close(error => error ? reject(error) : resolvePromise())),
-  };
+  await new Promise((done) => server.listen(0, '127.0.0.1', done));
+  return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-async function launchBrowser() {
-  const { chromium } = await import('playwright');
-  return chromium.launch({ headless: true });
-}
-
-function playableCardFaces(catalog) {
-  return catalog.cards.map(card => ({
-    ...card,
-    canonicalFaceId: `card:${card.id}`,
-  }));
-}
-
-function cardBackFaces(catalog) {
-  return PLAYABLE_BACK_FACTIONS.map(faction => ({
-    id: faction,
-    name: `${faction} card back`,
-    faction,
-    canonicalFaceId: `back:${faction}`,
-  }));
-}
-
-function cardRenderUrl(baseUrl, canonicalFaceId, printArtwork) {
-  const url = new URL('/card-design/face-render.html', baseUrl);
-  url.searchParams.set('id', canonicalFaceId);
-  if (printArtwork) url.searchParams.set('printArtwork', 'true');
-  return url.href;
-}
-
-async function renderFace(page, url, outputPath) {
-  await page.goto(url, { waitUntil: 'networkidle' });
-  await page.locator('[data-canonical-face]').waitFor({ state: 'visible' });
-  await page.locator('[data-canonical-face]').screenshot({ path: outputPath });
-}
-
-async function ensureDirectory(path) {
-  await mkdir(path, { recursive: true });
-}
-
-function sheetFileName(prefix, index) {
-  return `${prefix}-${String(index + 1).padStart(2, '0')}.png`;
-}
-
-async function renderCardFaces({ browser, baseUrl, faces, outputRoot, printArtwork }) {
-  const pages = [];
-  const page = await browser.newPage({
-    viewport: { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT },
-    deviceScaleFactor: DEVICE_SCALE_FACTOR,
-  });
-  try {
-    for (const face of faces) {
-      const file = `${face.id}.png`;
-      const outputPath = join(outputRoot, file);
-      await renderFace(page, cardRenderUrl(baseUrl, face.canonicalFaceId, printArtwork), outputPath);
-      pages.push({ ...face, file });
+function sheetHtml(baseUrl, version, sheetCards) {
+  const slots = Array.from({ length: SHEET_COLUMNS * SHEET_ROWS }, (_, index) => {
+    if (index === HIDDEN_SLOT) {
+      return `<img src="${baseUrl}/tts/generated/${version}/${FALLBACK_BACK_FILE}" alt="fallback hidden-card image">`;
     }
-  } finally {
-    await page.close();
-  }
-  return pages;
+    const card = sheetCards[index];
+    return card
+      ? `<img src="${baseUrl}/tts/generated/${version}/cards/${card.id}.png" alt="${card.id}">`
+      : '<div class="empty"></div>';
+  }).join('');
+
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+    *{box-sizing:border-box}html,body{margin:0;background:transparent}
+    .sheet{display:grid;grid-template-columns:repeat(${SHEET_COLUMNS},${CSS_CARD_WIDTH}px);grid-template-rows:repeat(${SHEET_ROWS},${CSS_CARD_HEIGHT}px);width:${SHEET_COLUMNS * CSS_CARD_WIDTH}px;height:${SHEET_ROWS * CSS_CARD_HEIGHT}px}
+    .sheet>*{display:block;width:${CSS_CARD_WIDTH}px;height:${CSS_CARD_HEIGHT}px}.empty{background:transparent}
+  </style></head><body><div class="sheet">${slots}</div></body></html>`;
 }
 
-async function compositeSheet({ browser, baseUrl, faces, outputPath }) {
-  const page = await browser.newPage({
-    viewport: {
-      width: CSS_CARD_WIDTH * SHEET_COLUMNS,
-      height: CSS_CARD_HEIGHT * SHEET_ROWS,
-    },
-    deviceScaleFactor: DEVICE_SCALE_FACTOR,
-  });
-
-  try {
-    const html = `<!doctype html><html><head><meta charset="utf-8"><style>
-      html, body { margin: 0; padding: 0; background: transparent; }
-      .sheet { display: grid; grid-template-columns: repeat(${SHEET_COLUMNS}, ${CSS_CARD_WIDTH}px); grid-template-rows: repeat(${SHEET_ROWS}, ${CSS_CARD_HEIGHT}px); }
-      .slot { width: ${CSS_CARD_WIDTH}px; height: ${CSS_CARD_HEIGHT}px; overflow: hidden; }
-      img { display: block; width: ${CSS_CARD_WIDTH}px; height: ${CSS_CARD_HEIGHT}px; }
-    </style></head><body><div class="sheet">${faces.map(face => `<div class="slot"><img src="${face.src}" alt=""></div>`).join('')}</div></body></html>`;
-    await page.setContent(html, { waitUntil: 'networkidle' });
-    await page.screenshot({ path: outputPath, omitBackground: true });
-  } finally {
-    await page.close();
-  }
-}
-
-async function renderSheets({ browser, baseUrl, faces, outputRoot, prefix }) {
-  const sheets = [];
-  for (const [index, group] of chunk(faces, CARDS_PER_SHEET).entries()) {
-    const slots = [...group];
-    while (slots.length < CARDS_PER_SHEET) slots.push(null);
-    slots.push(null);
-    const renderFaces = slots.map(face => face
-      ? { src: new URL(face.file, `${baseUrl}/tts/generated/cards/`).href }
-      : { src: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==' });
-    const file = sheetFileName(prefix, index);
-    await compositeSheet({ browser, baseUrl, faces: renderFaces, outputPath: join(outputRoot, file) });
-    sheets.push({ file, count: group.length });
-  }
-  return sheets;
-}
-
-export async function generateTtsCardAssets({ strictArtwork = false } = {}) {
-  const catalog = await buildCatalog({ strictArtwork });
-  const release = await resolveCurrentTtsRelease();
-  const outputRoot = resolve(ROOT, 'tts/generated');
-  const cardsRoot = join(outputRoot, 'cards');
-  const backsRoot = join(outputRoot, 'backs');
-  const sheetsRoot = join(outputRoot, 'sheets');
-
-  await rm(cardsRoot, { recursive: true, force: true });
-  await rm(backsRoot, { recursive: true, force: true });
-  await rm(sheetsRoot, { recursive: true, force: true });
-  await ensureDirectory(cardsRoot);
-  await ensureDirectory(backsRoot);
-  await ensureDirectory(sheetsRoot);
-
-  const server = await startStaticServer();
-  const browser = await launchBrowser();
-  try {
-    const cards = await renderCardFaces({
-      browser,
-      baseUrl: server.baseUrl,
-      faces: playableCardFaces(catalog),
-      outputRoot: cardsRoot,
-      printArtwork: true,
-    });
-    const backs = await renderCardFaces({
-      browser,
-      baseUrl: server.baseUrl,
-      faces: cardBackFaces(catalog),
-      outputRoot: backsRoot,
-      printArtwork: false,
-    });
-
-    const cardSheets = await renderSheets({
-      browser,
-      baseUrl: server.baseUrl,
-      faces: cards.map(card => ({ ...card, file: `cards/${card.file}` })),
-      outputRoot: sheetsRoot,
-      prefix: 'cards',
-    });
-    const backSheets = await renderSheets({
-      browser,
-      baseUrl: server.baseUrl,
-      faces: backs.map(back => ({ ...back, file: `backs/${back.file}` })),
-      outputRoot: sheetsRoot,
-      prefix: 'backs',
-    });
-
-    const componentContract = await loadTtsComponentContract();
-    const manifest = {
-      schemaVersion: 1,
-      gameVersion: catalog.version,
-      releaseTag: release.tag,
-      generatedAt: new Date().toISOString(),
-      dimensions: {
-        card: { width: CARD_WIDTH, height: CARD_HEIGHT },
-        sheet: { width: CARD_WIDTH * SHEET_COLUMNS, height: CARD_HEIGHT * SHEET_ROWS },
-      },
-      cards,
-      backs,
-      sheets: { cards: cardSheets, backs: backSheets },
-      fallbackBack: resolveStandardBackFile(componentContract, FALLBACK_BACK_FACTION) || FALLBACK_BACK_FILE,
+async function validateRenderedCard(page, card) {
+  const result = await page.evaluate(() => {
+    const element = document.querySelector('.gauntlet-card');
+    const rect = element?.getBoundingClientRect();
+    return {
+      ready: document.body.dataset.renderReady,
+      width: rect?.width,
+      height: rect?.height,
+      fitWarning: element?.classList.contains('fit-warning'),
+      parchment: element?.dataset.parchmentLoaded,
     };
+  });
 
-    await writeFile(join(outputRoot, 'card-assets-manifest.json'), jsonText(manifest));
-    await writeCatalog(catalog, outputRoot);
-    return manifest;
+  if (result.ready !== 'true') throw new Error(`Renderer did not become ready for ${card.id}.`);
+  if (Math.abs(result.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(result.height - CSS_CARD_HEIGHT) > 0.25) {
+    throw new Error(`Unexpected CSS card dimensions for ${card.id}: ${result.width} × ${result.height}.`);
+  }
+  if (result.fitWarning) throw new Error(`Card content does not fit the approved frame: ${card.id}.`);
+  if (result.parchment !== 'true') throw new Error(`Parchment failed to load for ${card.id}.`);
+}
+
+async function renderProductionBack(page, baseUrl, outputRoot, faction) {
+  await page.setViewportSize({ width: 520, height: 700 });
+  await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`back:${faction}`)}`, { waitUntil: 'load' });
+  await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderReady === 'error');
+  const back = page.locator('.gauntlet-card-back');
+  await back.waitFor();
+  await page.waitForFunction(
+    (expectedFaction) => document.querySelector('.gauntlet-card-back')?.dataset.cardBackFaction === expectedFaction,
+    faction,
+  );
+  await page.waitForTimeout(100);
+
+  const metrics = await back.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const wordmark = element.querySelector('.gauntlet-card-back__wordmark');
+    const pattern = element.querySelector('.gauntlet-card-back__pattern');
+    const wordmarkStyle = wordmark ? getComputedStyle(wordmark) : null;
+    const patternRect = pattern?.getBoundingClientRect();
+    return {
+      width: rect.width,
+      height: rect.height,
+      faction: element.dataset.cardBackFaction,
+      wordmarkMask: wordmarkStyle ? (wordmarkStyle.maskImage || wordmarkStyle.webkitMaskImage) : 'none',
+      patternTransform: pattern ? getComputedStyle(pattern).transform : 'none',
+      patternSource: pattern?.currentSrc || pattern?.src || '',
+      patternComplete: Boolean(pattern?.complete),
+      patternNaturalWidth: Number(pattern?.naturalWidth || 0),
+      patternNaturalHeight: Number(pattern?.naturalHeight || 0),
+      patternWidth: patternRect?.width || 0,
+      patternHeight: patternRect?.height || 0,
+    };
+  });
+
+  if (metrics.faction !== faction || Math.abs(metrics.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(metrics.height - CSS_CARD_HEIGHT) > 0.25) {
+    throw new Error(`Production ${faction} back rendered with unexpected geometry: ${JSON.stringify(metrics)}.`);
+  }
+  if (
+    metrics.wordmarkMask === 'none'
+    || !metrics.patternComplete
+    || metrics.patternNaturalWidth <= 0
+    || metrics.patternNaturalHeight <= 0
+    || !metrics.patternSource.includes('/card-design/card-back-pattern.svg')
+    || metrics.patternTransform !== 'none'
+    || Math.abs(metrics.patternWidth - (CSS_CARD_WIDTH - 16.4)) > 0.5
+    || Math.abs(metrics.patternHeight - (CSS_CARD_HEIGHT - 16.4)) > 0.5
+  ) {
+    throw new Error(`Production ${faction} back did not load the flattened shared wordmark/pattern treatment: ${JSON.stringify(metrics)}.`);
+  }
+
+  const file = `backs/${faction}.png`;
+  await back.screenshot({ path: join(outputRoot, file), omitBackground: true });
+  return { faction, file, pixels: { width: CARD_WIDTH, height: CARD_HEIGHT } };
+}
+
+async function renderAssets(catalog, componentContract) {
+  let chromium;
+  try {
+    ({ chromium } = await import('playwright'));
+  } catch {
+    throw new Error('Playwright is required. Run npm install, then npx playwright install chromium.');
+  }
+
+  const release = await resolveCurrentTtsRelease();
+  const outputRoot = release.outputRoot;
+  await rm(join(outputRoot, 'cards'), { recursive: true, force: true });
+  await rm(join(outputRoot, 'sheets'), { recursive: true, force: true });
+  await rm(join(outputRoot, 'backs'), { recursive: true, force: true });
+  await mkdir(join(outputRoot, 'cards'), { recursive: true });
+  await mkdir(join(outputRoot, 'sheets'), { recursive: true });
+  await mkdir(join(outputRoot, 'backs'), { recursive: true });
+
+  const { server, baseUrl } = await startStaticServer();
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    viewport: { width: 520, height: 700 },
+    deviceScaleFactor: DEVICE_SCALE_FACTOR,
+  });
+  const page = await context.newPage();
+
+  try {
+    let fontsValidated = false;
+    for (const card of catalog.playableCards) {
+      await page.setViewportSize({ width: 520, height: 700 });
+      await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`card:${card.id}`)}`, { waitUntil: 'load' });
+      await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderReady === 'error');
+      const renderState = await page.evaluate(() => ({
+        ready: document.body.dataset.renderReady || '',
+        message: document.body.dataset.renderErrorMessage || '',
+      }));
+      if (renderState.ready !== 'true') {
+        throw new Error(`Canonical face renderer failed for playable card ${card.id}: ${renderState.message || 'unspecified render error'}`);
+      }
+      await page.waitForSelector('.gauntlet-card', { state: 'attached' });
+
+      if (!fontsValidated) {
+        const fonts = await page.evaluate(async () => {
+          await document.fonts.ready;
+          return {
+            title: document.fonts.check('12px "p22-1722-pro"'),
+            rules: document.fonts.check('12px "adobe-caslon-pro"'),
+          };
+        });
+        if (!fonts.title || !fonts.rules) {
+          throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}`);
+        }
+        fontsValidated = true;
+      }
+
+      await validateRenderedCard(page, card);
+      await page.locator('.gauntlet-card').screenshot({
+        path: join(outputRoot, 'cards', `${card.id}.png`),
+        omitBackground: true,
+      });
+    }
+
+    const backVariants = {};
+    for (const faction of PLAYABLE_BACK_FACTIONS) {
+      backVariants[faction] = await renderProductionBack(page, baseUrl, outputRoot, faction);
+    }
+
+    const sheets = chunk(catalog.playableCards, CARDS_PER_SHEET);
+    const sheetRecords = [];
+    for (let index = 0; index < sheets.length; index += 1) {
+      const cards = sheets[index];
+      const sheetNumber = index + 1;
+      const deckId = sheetNumber;
+      await page.setViewportSize({
+        width: SHEET_COLUMNS * CSS_CARD_WIDTH,
+        height: SHEET_ROWS * CSS_CARD_HEIGHT,
+      });
+      await page.setContent(sheetHtml(baseUrl, release.version, cards), { waitUntil: 'load' });
+      await page.waitForFunction(() => Array.from(document.images).every(
+        (image) => image.complete && image.naturalWidth > 0,
+      ));
+
+      const file = `sheets/gauntlet-${release.version.replaceAll('.', '')}-sheet-${String(sheetNumber).padStart(2, '0')}.png`;
+      await page.locator('.sheet').screenshot({
+        path: join(outputRoot, file),
+        omitBackground: true,
+      });
+      sheetRecords.push({
+        sheetNumber,
+        deckId,
+        faceFile: file,
+        fallbackHiddenFile: FALLBACK_BACK_FILE,
+        numWidth: SHEET_COLUMNS,
+        numHeight: SHEET_ROWS,
+        backIsHidden: true,
+        uniqueBack: false,
+        cards: cards.map((card, cardIndex) => ({
+          id: card.id,
+          name: card.name,
+          faction: card.faction,
+          index: cardIndex,
+          ttsCardId: deckId * 100 + cardIndex,
+        })),
+      });
+    }
+
+    await writeFile(join(outputRoot, 'manifest.json'), jsonText({
+      schemaVersion: 4,
+      gameVersion: release.version,
+      release: catalog.release,
+      output: {
+        cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },
+        sheetPixels: {
+          width: CARD_WIDTH * SHEET_COLUMNS,
+          height: CARD_HEIGHT * SHEET_ROWS,
+        },
+        columns: SHEET_COLUMNS,
+        rows: SHEET_ROWS,
+        cardsPerSheet: CARDS_PER_SHEET,
+        hiddenSlotIndex: HIDDEN_SLOT,
+      },
+      prototypeBack: false,
+      componentContract: 'config/tts-component-contract.json',
+      backPolicy: {
+        policy: 'standardBack',
+        ...componentContract.standardBack,
+        neutralCardsUseSameStandardBack: true,
+        backIsHidden: true,
+        uniqueBack: false,
+        fallbackHiddenFile: FALLBACK_BACK_FILE,
+        note: 'All ordinary playable cards use standardBack. The current mode chooses either the player faction variant or the universal black variant; Neutral cards never reveal allegiance while face down.',
+      },
+      backVariants,
+      sheets: sheetRecords,
+      missingArtwork: catalog.missingArtwork,
+    }));
   } finally {
+    await context.close();
     await browser.close();
-    await server.close();
+    await new Promise((done) => server.close(done));
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const strictArtwork = process.argv.includes('--strict-art');
-  const manifest = await generateTtsCardAssets({ strictArtwork });
-  console.log(`Generated ${manifest.cards.length} cards, ${manifest.backs.length} backs, ${manifest.sheets.cards.length} card sheet(s), and ${manifest.sheets.backs.length} back sheet(s) for ${manifest.gameVersion}.`);
+async function main() {
+  const options = new Set(process.argv.slice(2));
+  const checkOnly = options.has('--check');
+  const catalogOnly = options.has('--catalog-only') || checkOnly;
+  const strictArt = options.has('--strict-art');
+  const [catalog, componentContract] = await Promise.all([
+    buildCatalog(),
+    loadTtsComponentContract(),
+  ]);
+
+  if (strictArt && catalog.missingArtwork.length) {
+    throw new Error(`Missing artwork for ${catalog.missingArtwork.length} cards:\n${catalog.missingArtwork.join('\n')}`);
+  }
+  for (const faction of PLAYABLE_BACK_FACTIONS) resolveStandardBackFile(componentContract, faction);
+
+  if (checkOnly) {
+    console.log(`Current TTS source check passed for ${catalog.gameVersion}: ${catalog.playableCards.length} playable cards, ${catalog.territories.length} Territories, ${catalog.missingArtwork.length} cards without artwork, standard backs=${componentContract.standardBack.mode}.`);
+    return;
+  }
+
+  const release = await writeCatalog(catalog);
+  if (!catalogOnly) await renderAssets(catalog, componentContract);
+  console.log(catalogOnly
+    ? `Wrote current TTS catalog for ${release.version} to ${relative(ROOT, release.outputRoot)} and tts/generated/current/.`
+    : `Rendered ${catalog.playableCards.length} card images, ${PLAYABLE_BACK_FACTIONS.length} production backs, and ${Math.ceil(catalog.playableCards.length / CARDS_PER_SHEET)} TTS sheets to ${relative(ROOT, release.outputRoot)}.`);
 }
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  });
+}
+
+export { renderAssets };
