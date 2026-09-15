@@ -5,9 +5,9 @@ import {
   buildFaceCatalog,
   listFaces,
   resolveFace,
-} from '../card-design/face-authority.mjs';
+} from '../packages/rendering/face-authority.mjs';
 
-const authority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const authority = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const game = Object.freeze({
   cards: authority.gameplay.cards,
   territories: authority.gameplay.territories,
