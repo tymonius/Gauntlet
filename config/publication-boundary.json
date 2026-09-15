@@ -85,7 +85,10 @@
     {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.html", "publicPath": "/card-design/long-card-render.html", "kind": "historical-card-review"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.js", "publicPath": "/card-design/long-card-render.js", "kind": "historical-card-review"},
-    {"source": "legacy/card-design-v0.6.3/generated/long-card-review-catalog.js", "publicPath": "/card-design/generated/v0.6.3/long-card-review-catalog.js", "kind": "historical-card-review"}
+    {"source": "legacy/card-design-v0.6.3/generated/long-card-review-catalog.js", "publicPath": "/card-design/generated/v0.6.3/long-card-review-catalog.js", "kind": "historical-card-review"},
+    {"source": "legacy/card-design-studies/deed-ornament-study.html", "publicPath": "/card-design/deed-ornament-study.html", "kind": "historical-design-study"},
+    {"source": "legacy/card-design-studies/deed-rule-font-study.html", "publicPath": "/card-design/deed-rule-font-study.html", "kind": "historical-design-study"},
+    {"source": "legacy/card-design-studies/military-symbols.html", "publicPath": "/card-design/military-symbols.html", "kind": "historical-design-study"}
   ],
   "managedRoutes": [
     "/about/",
