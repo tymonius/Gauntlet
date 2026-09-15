@@ -15,8 +15,6 @@ on:
       - 'config/legacy-rulebook-retirement-crosswalk.sha256'
       - 'config/legacy-rulebook-retirement.json'
       - 'scripts/current-game-authority.mjs'
-      - 'scripts/render-comprehensive-rules.mjs'
-      - 'scripts/comprehensive-rules-factions.mjs'
       - 'scripts/validate-rules-term-registry.mjs'
       - 'scripts/validate-faction-rules-authority.mjs'
       - 'scripts/validate-shared-rules-authority.mjs'
@@ -57,8 +55,6 @@ jobs:
             /packages/rules/
             /apps/rules/
             /scripts/current-game-authority.mjs
-            /scripts/render-comprehensive-rules.mjs
-            /scripts/comprehensive-rules-factions.mjs
             /scripts/validate-rules-term-registry.mjs
             /scripts/validate-faction-rules-authority.mjs
             /scripts/validate-shared-rules-authority.mjs
@@ -87,4 +83,3 @@ jobs:
           node scripts/validate-rules-term-registry.mjs
           node scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
           node scripts/validate-legacy-rulebook-retirement.mjs
-          node scripts/render-comprehensive-rules.mjs
