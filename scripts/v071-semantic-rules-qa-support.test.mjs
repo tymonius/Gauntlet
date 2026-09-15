@@ -28,10 +28,10 @@ describe("semantic-v1 benchmark validation", () => {
     expect(validateSemanticBenchmark(semanticBenchmark())).toEqual([]);
   });
 
-  test("rejects lexical answer patterns", () => {
+  test("rejects lexical answer pattern fields even when empty", () => {
     const benchmark = semanticBenchmark();
-    benchmark.cases[0].expectedAnswerPatterns = ["movement sequence ends"];
-    benchmark.cases[0].forbiddenAnswerPatterns = ["resume movement"];
+    benchmark.cases[0].expectedAnswerPatterns = [];
+    benchmark.cases[0].forbiddenAnswerPatterns = [];
     expect(validateSemanticBenchmark(benchmark)).toEqual([
       "case-1: semantic-v1 forbids expectedAnswerPatterns; use semanticCriteria instead",
       "case-1: semantic-v1 forbids forbiddenAnswerPatterns; use forbiddenSemanticClaims instead"
@@ -52,6 +52,31 @@ describe("semantic-v1 benchmark validation", () => {
     expect(failures).toContain("duplicate semantic-v1 case id case-1");
     expect(failures).toContain("case-1: duplicate required criterion id same");
     expect(failures).toContain("case-1: semantic criterion id same is reused across required and forbidden criteria");
+  });
+
+  test("rejects criteria that would otherwise be truncated by the evaluator", () => {
+    const benchmark = semanticBenchmark();
+    benchmark.cases[0].semanticCriteria = Array.from({ length: 17 }, (_, index) => ({
+      id: `required-${index}`,
+      statement: index === 0 ? "x".repeat(1201) : `Required proposition ${index}`
+    }));
+    benchmark.cases[0].forbiddenSemanticClaims = [{
+      id: "f".repeat(121),
+      statement: "Forbidden proposition"
+    }];
+    const failures = validateSemanticBenchmark(benchmark);
+    expect(failures).toContain("case-1: required criteria exceed maximum of 16");
+    expect(failures).toContain("case-1: required criterion required-0 statement exceeds 1200 characters");
+    expect(failures).toContain("case-1: forbidden criterion id exceeds 120 characters");
+  });
+
+  test("rejects malformed criterion types", () => {
+    const benchmark = semanticBenchmark();
+    benchmark.cases[0].semanticCriteria = [{ id: 42, statement: "Rule" }];
+    benchmark.cases[0].forbiddenSemanticClaims = "not-an-array";
+    const failures = validateSemanticBenchmark(benchmark);
+    expect(failures).toContain("case-1: required criterion is missing an id");
+    expect(failures).toContain("case-1: forbidden criteria must be an array");
   });
 
   test("leaves legacy benchmarks unchanged", () => {
