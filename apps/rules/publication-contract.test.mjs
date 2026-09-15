@@ -2,93 +2,61 @@ import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
-const factionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
 
-describe('active rules publication routes', () => {
-  it('publishes all active rule surfaces from maintained package sources', async () => {
+const expectedRedirects = new Map([
+  ['/rules/', { source: 'apps/rules/index.html', target: '/rulebook/?rules=candidate&doc=player-guide' }],
+  ['/rules/player-guide/', { source: 'apps/rules/player-guide/index.html', target: '/rulebook/?rules=candidate&doc=player-guide' }],
+  ['/rules/comprehensive/', { source: 'apps/rules/comprehensive/index.html', target: '/rulebook/?rules=candidate&doc=complete-rules' }],
+  ['/rules/factions/', { source: 'apps/rules/factions/index.html', target: '/rulebook/?rules=candidate&doc=player-guide#9-the-six-factions' }],
+  ['/rules/factions/military/', { source: 'apps/rules/factions/military/index.html', target: '/rulebook/?rules=candidate&doc=military' }],
+  ['/rules/factions/diplomats/', { source: 'apps/rules/factions/diplomats/index.html', target: '/rulebook/?rules=candidate&doc=diplomats' }],
+  ['/rules/factions/financiers/', { source: 'apps/rules/factions/financiers/index.html', target: '/rulebook/?rules=candidate&doc=financiers' }],
+  ['/rules/factions/intelligence/', { source: 'apps/rules/factions/intelligence/index.html', target: '/rulebook/?rules=candidate&doc=intelligence' }],
+  ['/rules/factions/mystics/', { source: 'apps/rules/factions/mystics/index.html', target: '/rulebook/?rules=candidate&doc=mystics' }],
+  ['/rules/factions/inquisition/', { source: 'apps/rules/factions/inquisition/index.html', target: '/rulebook/?rules=candidate&doc=inquisition' }],
+]);
+
+describe('rules compatibility routes', () => {
+  it('declares /rulebook/ as the primary rules publication and /rules/ as compatibility-only', async () => {
     const routes = JSON.parse(await read('apps/rules/routes.json'));
+    expect(routes.schemaVersion).toBe(2);
+    expect(routes.status).toBe('compatibility-only');
+    expect(routes.primaryRulesRoute).toBe('/rulebook/');
+    expect(new Map(Object.entries(routes.redirects))).toEqual(
+      new Map([...expectedRedirects].map(([route, value]) => [route, value.target])),
+    );
+  });
 
-    expect(routes.playerGuide).toEqual({
-      publicPath: '/rules/player-guide/',
-      source: 'packages/rules/player-guide/player-guide.md',
-      status: 'active',
-    });
-    expect(routes.comprehensiveRules).toEqual({
-      publicPath: '/rules/comprehensive/',
-      source: 'packages/rules/comprehensive/comprehensive-rules.md',
-      status: 'active',
-    });
-
-    for (const id of factionIds) {
-      expect(routes.factionGuides[id].status).toBe('active');
-      expect(routes.factionGuides[id].publicPath).toBe(`/rules/factions/${id}/`);
-      expect(routes.factionGuides[id].source).toBe(`packages/rules/faction-guides/${id}.md`);
+  it('redirects every former standalone reader into the integrated Browser Rulebook', async () => {
+    for (const [route, { source, target }] of expectedRedirects) {
+      const html = await read(source);
+      const escapedTarget = target.replaceAll('&', '&amp;');
+      expect(html, route).toContain('name="robots" content="noindex, follow"');
+      expect(html, route).toContain(`content="0; url=${escapedTarget}"`);
+      expect(html, route).toContain(`href="https://gauntlet.run${escapedTarget}"`);
+      expect(html, route).toContain("window.location.replace(target);");
+      expect(html, route).not.toContain('data-rules-source=');
+      expect(html, route).not.toContain('data-guide-source=');
     }
   });
 
-  it('stages maintained Markdown at stable /rules/sources paths', async () => {
+  it('publishes /rules/ only as a compatibility route and no longer stages duplicate rule sources there', async () => {
     const boundary = JSON.parse(await read('config/publication-boundary.json'));
-    const published = new Map(boundary.materializedFiles.map((entry) => [entry.source, entry.publicPath]));
-
-    expect(published.get('packages/rules/player-guide/player-guide.md')).toBe('/rules/sources/player-guide.md');
-    expect(published.get('packages/rules/comprehensive/comprehensive-rules.md')).toBe('/rules/sources/comprehensive-rules.md');
-    for (const id of factionIds) {
-      expect(published.get(`packages/rules/faction-guides/${id}.md`)).toBe(`/rules/sources/factions/${id}.md`);
-    }
+    expect(boundary.materializedRoutes.find((entry) => entry.publicPath === '/rulebook/')).toMatchObject({
+      source: 'legacy/rulebook-browser',
+      kind: 'release-transition-app',
+    });
+    expect(boundary.materializedRoutes.find((entry) => entry.publicPath === '/rules/')).toMatchObject({
+      source: 'apps/rules',
+      kind: 'compatibility-route',
+    });
+    expect(boundary.materializedFiles.some((entry) => entry.publicPath.startsWith('/rules/sources/'))).toBe(false);
   });
 
-  it('keeps active readers indexable and independent of repository source layout', async () => {
-    const player = await read('apps/rules/player-guide/index.html');
-    const comprehensive = await read('apps/rules/comprehensive/index.html');
-    const sharedReader = await read('apps/rules/reader.js');
-    const factionReader = await read('apps/rules/factions/guide.js');
-
-    expect(player).toContain('data-rules-source="/rules/sources/player-guide.md"');
-    expect(player).not.toContain('noindex');
-    expect(player).toContain('href="/rules/card-anatomy.css"');
-    expect(player).toContain('src="/rules/card-anatomy.js"');
-    expect(player).not.toContain('/rulebook/');
-    expect(comprehensive).toContain('data-rules-source="/rules/sources/comprehensive-rules.md"');
-    expect(comprehensive).not.toContain('noindex');
-    expect(sharedReader).toContain("from '/rules/markdown.js'");
-    expect(sharedReader).not.toContain("from '/rulebook/");
-    expect(factionReader).toContain('/rules/sources/factions/');
-    expect(factionReader).toContain("from '/rules/markdown.js'");
-    expect(factionReader).not.toContain("from '/rulebook/");
-
-    for (const id of factionIds) {
-      const html = await read(`apps/rules/factions/${id}/index.html`);
-      expect(html).not.toContain('noindex');
-      expect(html).not.toMatch(/draft guide/i);
-      expect(html).toContain('href="/rules/player-guide/"');
-    }
-  });
-
-  it('keeps the new architecture available in parallel while v0.7.1 remains the released Browser Rulebook surface', async () => {
-    const hub = await read('apps/rules/index.html');
-    expect(hub).toContain('href="/rules/player-guide/"');
-    expect(hub).toContain('href="/rules/factions/"');
-    expect(hub).toContain('href="/rules/comprehensive/"');
-    expect(hub).toContain('href="/rules-arbiter/"');
-    expect(hub).toContain('href="/rulebook/"');
-    expect(hub).toContain('v0.7.1 remains the public release until the v0.7.2 cutover.');
-    expect(hub).toContain('switch between Released v0.7.1 and the current release candidate');
-    expect(hub).toContain('href="/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf"');
-    expect(hub).not.toContain('The monolithic Browser Rulebook has been retired.');
-  });
-
-  it('retains print-friendly reader contracts', async () => {
-    const readerCss = await read('apps/rules/reader.css');
-    const factionCss = await read('apps/rules/factions/guide.css');
-    expect(readerCss).toContain('@media print');
-    expect(factionCss).toContain('@media print');
-  });
-
-  it('removes draft status from the maintained active Guide sources', async () => {
+  it('keeps maintained player-facing guide sources active without exposing the old standalone readers', async () => {
     const playerGuide = await read('packages/rules/player-guide/player-guide.md');
     expect(playerGuide).not.toMatch(/^> \*\*Draft\.\*\*/m);
-
-    for (const id of factionIds) {
+    for (const id of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
       const guide = await read(`packages/rules/faction-guides/${id}.md`);
       expect(guide).not.toMatch(/^> \*\*Draft\.\*\*/m);
     }
