@@ -39,7 +39,7 @@ function getProcedures(authority, factionId) {
 }
 
 function assertKnownKeys(object, allowed, label) {
-  const unknown = Object.keys(object || {}).filter(key => !allowed.includes(key));
+  const unknown = Object.keys(object || {}).filter(key => !allowed.includes(key) && !INTERNAL_FIELDS.has(key));
   if (unknown.length) {
     throw new Error(`${label} contains unhandled authority fields: ${unknown.join(', ')}`);
   }
@@ -106,7 +106,7 @@ function factionIntro(faction) {
 function renderMilitary(authority, part) {
   const faction = getFaction(authority, 'military');
   const p = getProcedures(authority, 'military');
-  assertKnownKeys(p, ['resource', 'fortify', 'orders', 'leader_abilities', 'command'], 'Military procedures');
+  assertKnownKeys(p, ['resource', 'fortify', 'orders', 'leader_abilities', 'faction_features_1_action', 'command'], 'Military procedures');
   const c = required(p.command, 'military.command');
 
   return `${partHeader(part)}
