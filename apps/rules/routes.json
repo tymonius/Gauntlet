@@ -1,47 +1,17 @@
 {
-  "schemaVersion": 1,
-  "rulesHub": "/rules/",
-  "factionGuideIndex": "/rules/factions/",
-  "factionGuides": {
-    "military": {
-      "publicPath": "/rules/factions/military/",
-      "source": "packages/rules/faction-guides/military.md",
-      "status": "active"
-    },
-    "diplomats": {
-      "publicPath": "/rules/factions/diplomats/",
-      "source": "packages/rules/faction-guides/diplomats.md",
-      "status": "active"
-    },
-    "financiers": {
-      "publicPath": "/rules/factions/financiers/",
-      "source": "packages/rules/faction-guides/financiers.md",
-      "status": "active"
-    },
-    "intelligence": {
-      "publicPath": "/rules/factions/intelligence/",
-      "source": "packages/rules/faction-guides/intelligence.md",
-      "status": "active"
-    },
-    "mystics": {
-      "publicPath": "/rules/factions/mystics/",
-      "source": "packages/rules/faction-guides/mystics.md",
-      "status": "active"
-    },
-    "inquisition": {
-      "publicPath": "/rules/factions/inquisition/",
-      "source": "packages/rules/faction-guides/inquisition.md",
-      "status": "active"
-    }
-  },
-  "playerGuide": {
-    "publicPath": "/rules/player-guide/",
-    "source": "packages/rules/player-guide/player-guide.md",
-    "status": "active"
-  },
-  "comprehensiveRules": {
-    "publicPath": "/rules/comprehensive/",
-    "source": "packages/rules/comprehensive/comprehensive-rules.md",
-    "status": "active"
+  "schemaVersion": 2,
+  "status": "compatibility-only",
+  "primaryRulesRoute": "/rulebook/",
+  "redirects": {
+    "/rules/": "/rulebook/?rules=candidate&doc=player-guide",
+    "/rules/player-guide/": "/rulebook/?rules=candidate&doc=player-guide",
+    "/rules/comprehensive/": "/rulebook/?rules=candidate&doc=complete-rules",
+    "/rules/factions/": "/rulebook/?rules=candidate&doc=player-guide#9-the-six-factions",
+    "/rules/factions/military/": "/rulebook/?rules=candidate&doc=military",
+    "/rules/factions/diplomats/": "/rulebook/?rules=candidate&doc=diplomats",
+    "/rules/factions/financiers/": "/rulebook/?rules=candidate&doc=financiers",
+    "/rules/factions/intelligence/": "/rulebook/?rules=candidate&doc=intelligence",
+    "/rules/factions/mystics/": "/rulebook/?rules=candidate&doc=mystics",
+    "/rules/factions/inquisition/": "/rulebook/?rules=candidate&doc=inquisition"
   }
 }

@@ -1,103 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag("consent", "default", { analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
-  </script>
-  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Learn Gauntlet with the Player's Guide, faction operating guides, complete rules, and Rules Arbiter." />
-  <link rel="canonical" href="https://gauntlet.run/rules/" />
-  <title>Rules & Guides — Gauntlet</title>
-  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="theme-color" content="#8f1f25" />
-  <link rel="stylesheet" href="/site.css" />
-  <link rel="stylesheet" href="/rules/rules.css" />
-  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
-  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
+  <meta name="robots" content="noindex, follow" />
+  <meta http-equiv="refresh" content="0; url=/rulebook/?rules=candidate&amp;doc=player-guide" />
+  <link rel="canonical" href="https://gauntlet.run/rulebook/?rules=candidate&amp;doc=player-guide" />
+  <title>Rules moved — Gauntlet</title>
+  <script>
+    const target = new URL('/rulebook/?rules=candidate&doc=player-guide', window.location.origin);
+    if (window.location.hash) target.hash = window.location.hash;
+    window.location.replace(target);
+  </script>
 </head>
-<body class="rules-hub">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span><span class="site-edition-badge" data-current-version>current development</span></a>
-    <nav aria-label="Primary navigation">
-      <a href="/start/">Start</a>
-      <a href="/playtest/">Playtest</a>
-      <a href="/rulebook/">Rules</a>
-      <a href="/factions/">Factions</a>
-      <a href="/deckbuilder/">Deckbuilder</a>
-      <a href="/card-reference/">Card Reference</a>
-      <a href="/rules-arbiter/">Rules Arbiter</a>
-    </nav>
-  </header>
-
-  <main id="main-content" tabindex="-1" class="rules-main">
-    <section class="rules-hero">
-      <p class="eyebrow">Current-development rules architecture</p>
-      <h1>Use the rules surface that matches the question.</h1>
-      <p>These guides are the new rules architecture being prepared for the next release. Until v0.7.2 cuts over, the released rules remain v0.7.1 at <a href="/rulebook/">the Browser Rulebook</a>, where you can switch between Released v0.7.1 and the current release candidate.</p>
-    </section>
-
-    <section class="rules-grid" aria-label="Gauntlet rules resources">
-      <a class="rules-card" href="/rules/player-guide/">
-        <p class="eyebrow">Learn the shared game</p>
-        <h2>Player's Guide</h2>
-        <p>The battlefield, turn structure, movement, battles, Capture, victory, card basics, and enough faction literacy to sit down and play.</p>
-        <strong>Open Player's Guide →</strong>
-      </a>
-
-      <a class="rules-card" href="/rules/factions/">
-        <p class="eyebrow">Run your faction</p>
-        <h2>Faction Guides</h2>
-        <p>One focused operating guide per faction: its resource loop, Faction Features, victory route, Leaders, and first-game priorities.</p>
-        <strong>Choose a faction guide →</strong>
-      </a>
-
-      <a class="rules-card" href="/rules/comprehensive/">
-        <p class="eyebrow">Complete technical reference</p>
-        <h2>Comprehensive Rules</h2>
-        <p>The complete technical corpus generated directly from current gameplay authority, including faction procedures, timing, definitions, and edge cases.</p>
-        <strong>Open Comprehensive Rules →</strong>
-      </a>
-
-      <a class="rules-card" href="/rules-arbiter/">
-        <p class="eyebrow">Resolve a question</p>
-        <h2>Rules Arbiter</h2>
-        <p>Ask a specific timing, interaction, card, or edge-case question and get an answer grounded in the rules authority.</p>
-        <strong>Ask the Rules Arbiter →</strong>
-      </a>
-    </section>
-
-    <section class="rules-section transition-reference">
-      <p class="eyebrow">Released rules</p>
-      <h2>v0.7.1 remains the public release until the v0.7.2 cutover.</h2>
-      <p><a href="/rulebook/">Open the Browser Rulebook and ruleset toggle →</a> · <a href="/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">Open the frozen v0.7.1 booklet →</a></p>
-    </section>
-
-    <section class="rules-section">
-      <p class="eyebrow">The intended path</p>
-      <h2>Most players should not need the complete technical corpus.</h2>
-      <p>The teaching layers are deliberately narrow. Read the Player's Guide once, keep your own Faction Guide nearby for the first game or two, and use technical reference only when a real question appears.</p>
-      <div class="rules-path" aria-label="Recommended learning path">
-        <span>Player's Guide</span><span aria-hidden="true">→</span><span>Your Faction Guide</span><span aria-hidden="true">→</span><span>Comprehensive Rules / Rules Arbiter when needed</span>
-      </div>
-    </section>
+<body>
+  <main>
+    <h1>Gauntlet rules moved</h1>
+    <p>The current rules publications now live inside the <a href="/rulebook/?rules=candidate&amp;doc=player-guide">Gauntlet Browser Rulebook</a>.</p>
   </main>
-
-  <footer class="ga-site-footer" data-gauntlet-footer="standard">
-    <div class="ga-site-footer__identity">
-      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home"><img src="/images/Gauntlet.svg" alt="" aria-hidden="true" /></a>
-      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
-      <div class="ga-site-footer__publisher"><img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" /><p class="ga-site-footer__publisher-copy"><span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span><span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span></p></div>
-    </div>
-    <nav class="ga-site-footer__links" aria-label="Footer navigation"><a href="/about/">About</a><a href="/faq/">FAQ</a><a href="/contact/">Contact</a><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a><a href="/privacy/">Privacy</a></nav>
-  </footer>
-  <script type="module" src="/rules/version.js"></script>
 </body>
 </html>
