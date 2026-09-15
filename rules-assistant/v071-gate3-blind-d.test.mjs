@@ -42,7 +42,7 @@ describe("Gate 3 blind tranche D freeze", () => {
       expect(validateSemanticBenchmark(dataset)).toEqual([]);
       expect(validateClassificationExpectations(dataset)).toEqual([]);
     }
-    expect(standard.cases).toHaveLength(55);
+    expect(standard.cases).toHaveLength(61);
     expect(player.cases).toHaveLength(16);
   });
 
