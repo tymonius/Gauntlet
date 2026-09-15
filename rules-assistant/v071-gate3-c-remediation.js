@@ -41,7 +41,7 @@ export function shouldCarryImmediateHistory(question) {
   if (words.length <= 10) return true;
 
   const continuationLead = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about|after|if)\b/.test(current);
-  const strongDeictic = /\b(?:this|that)\s+(?:one|ones|card|effect|ability|feature|step|move|movement|result|ruling|choice|option|territory|gambit|tactic)\b/.test(current)
+  const strongDeictic = /\b(?:this|that)\s+(?:(?:extra|additional|same|other|next|previous)\s+)?(?:one|ones|card|effect|ability|feature|step|move|movement|result|ruling|choice|option|territory|gambit|tactic)\b/.test(current)
     || /\b(?:theirs|former|latter|same one|same card|same effect|same ability|same feature|same step)\b/.test(current);
   return continuationLead || strongDeictic;
 }
