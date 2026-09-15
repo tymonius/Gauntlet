@@ -22,6 +22,12 @@ describe("v0.7.1 Gate 3 tranche C remediation helpers", () => {
     expect(shouldCarryImmediateHistory(confession)).toBe(true);
   });
 
+  test("does not treat a relative clause in a self-contained long question as conversation context", () => {
+    const question = "Can Intelligence interfere with a Gambit that was already face up?";
+    expect(hasReferentialFollowupCue(question)).toBe(true);
+    expect(shouldCarryImmediateHistory(question)).toBe(false);
+  });
+
   test("does not carry history across an explicit topic pivot", () => {
     const question = "Separate issue: this Territory effect is slowing my Ranger. How long does Fieldcraft shut that effect off?";
     expect(hasReferentialFollowupCue(question)).toBe(false);
