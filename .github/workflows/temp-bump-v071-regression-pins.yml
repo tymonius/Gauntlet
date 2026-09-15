@@ -1,0 +1,58 @@
+name: Temporary v0.7.1 regression revision pin bump
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate3-c-remediation
+
+permissions:
+  contents: write
+
+jobs:
+  bump-regression-pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate3-c-remediation
+          fetch-depth: 0
+
+      - name: Update only maintained test revision pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(grep -rl --include='*.test.mjs' 'v071-qa-20260914-13' rules-assistant | sort)
+          printf '%s\n' "${files[@]}"
+          if [[ ${#files[@]} -ne 14 ]]; then
+            echo "Expected exactly 14 maintained test files pinned to r13; found ${#files[@]}." >&2
+            exit 1
+          fi
+          python - "${files[@]}" <<'PY'
+          from pathlib import Path
+          import sys
+
+          old = "v071-qa-20260914-13"
+          new = "v071-qa-20260915-14"
+          for name in sys.argv[1:]:
+              path = Path(name)
+              text = path.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count < 1:
+                  raise SystemExit(f"{name}: expected at least one old revision pin")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
+          if grep -RIl --include='*.test.mjs' 'v071-qa-20260914-13' rules-assistant; then
+            echo "An old r13 revision pin remains in maintained tests." >&2
+            exit 1
+          fi
+
+      - name: Remove temporary workflow
+        run: rm .github/workflows/temp-bump-v071-regression-pins.yml
+
+      - name: Commit regression pin updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant .github/workflows/temp-bump-v071-regression-pins.yml
+          git commit -m "Bump v0.7.1 regression pins to r14"
+          git push origin HEAD:rules-arbiter-gate3-c-remediation
