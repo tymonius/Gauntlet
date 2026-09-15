@@ -1,0 +1,57 @@
+name: Temporary Complete Rules faction materialize
+
+on:
+  push:
+    branches:
+      - rules/complete-rules-faction-readability
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/complete-rules-faction-readability
+          fetch-depth: 1
+
+      - name: Switch Complete Rules to player-facing faction renderer
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'scripts/render-comprehensive-rules.mjs';
+          let source = fs.readFileSync(path, 'utf8');
+          const importAnchor = "import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';";
+          const factionImport = "import { renderPlayerFacingFactionPart } from './comprehensive-rules-factions.mjs';";
+          if (!source.includes(factionImport)) {
+            if (!source.includes(importAnchor)) throw new Error('Renderer import anchor not found.');
+            source = source.replace(importAnchor, `${importAnchor}\n${factionImport}`);
+          }
+          const replacements = new Map([
+            ["renderFactionPart(authority, 9, 'military'),", "renderPlayerFacingFactionPart(authority, PARTS[9], 'military'),"],
+            ["renderFactionPart(authority, 10, 'diplomats', [{ heading: 'Proposal corpus', value: authority.proposals }]),", "renderPlayerFacingFactionPart(authority, PARTS[10], 'diplomats'),"],
+            ["renderFactionPart(authority, 11, 'financiers'),", "renderPlayerFacingFactionPart(authority, PARTS[11], 'financiers'),"],
+            ["renderFactionPart(authority, 12, 'intelligence'),", "renderPlayerFacingFactionPart(authority, PARTS[12], 'intelligence'),"],
+            ["renderFactionPart(authority, 13, 'mystics', [{ heading: 'Rites and Ritual of Ascension', value: authority.mystics }]),", "renderPlayerFacingFactionPart(authority, PARTS[13], 'mystics'),"],
+            ["renderFactionPart(authority, 14, 'inquisition'),", "renderPlayerFacingFactionPart(authority, PARTS[14], 'inquisition'),"],
+          ]);
+          for (const [before, after] of replacements) {
+            if (source.includes(before)) source = source.replace(before, after);
+            else if (!source.includes(after)) throw new Error(`Renderer call anchor not found: ${before}`);
+          }
+          fs.writeFileSync(path, source);
+          NODE
+          node scripts/render-comprehensive-rules.mjs --write
+
+      - name: Remove temporary workflow and commit materialized rules
+        run: |
+          rm .github/workflows/temporary-complete-rules-faction-materialize.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Rewrite Complete Rules faction chapters as player-facing prose"
+          git push origin HEAD:rules/complete-rules-faction-readability
