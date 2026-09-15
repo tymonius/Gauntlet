@@ -180,6 +180,17 @@ jobs:
           GAUNTLET_RULES_QA_LIMIT: '0'
         run: node scripts/run-v071-live-rules-qa.mjs
 
+      - name: Grade Gate 3 blind standard semantics
+        if: inputs.scope == 'full'
+        id: standard_grade
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_STANDARD_REPORT }}
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+        run: node scripts/run-v071-semantic-rules-qa.mjs
+
       - name: Prepare player-language blind cases
         if: inputs.scope == 'full'
         run: |
@@ -201,6 +212,17 @@ jobs:
           GAUNTLET_RULES_QA_LIMIT: '0'
         run: node scripts/run-v071-live-rules-qa.mjs
 
+      - name: Grade Gate 3 blind player-language semantics
+        if: inputs.scope == 'full'
+        id: player_language_grade
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+        run: node scripts/run-v071-semantic-rules-qa.mjs
+
       - name: Run Gate 3 blind clarification cases
         id: clarification
         continue-on-error: true
@@ -219,15 +241,17 @@ jobs:
           mkdir -p artifacts/rules-qa
           cat > artifacts/rules-qa/v071-gate3-blind-c-metadata.json <<JSON
           {
-            "schema": "gauntlet.rules-arbiter-gate3-run-metadata.v1",
+            "schema": "gauntlet.rules-arbiter-gate3-run-metadata.v2",
             "tranche": "C",
             "rulesVersion": "v0.7.1",
             "behaviorRevision": "$GATE3_EXPECTED_BEHAVIOR_REVISION",
             "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
             "repositorySha": "$GITHUB_SHA",
             "scope": "${{ inputs.scope }}",
-            "standardOutcome": "${{ steps.standard.outcome }}",
-            "playerLanguageOutcome": "${{ steps.player_language.outcome }}",
+            "standardCollectionOutcome": "${{ steps.standard.outcome }}",
+            "standardOutcome": "${{ steps.standard_grade.outcome }}",
+            "playerLanguageCollectionOutcome": "${{ steps.player_language.outcome }}",
+            "playerLanguageOutcome": "${{ steps.player_language_grade.outcome }}",
             "clarificationOutcome": "${{ steps.clarification.outcome }}"
           }
           JSON
@@ -249,5 +273,5 @@ jobs:
         if: >-
           steps.clarification.outcome != 'success' ||
           (inputs.scope == 'full' &&
-          (steps.standard.outcome != 'success' || steps.player_language.outcome != 'success'))
+          (steps.standard_grade.outcome != 'success' || steps.player_language_grade.outcome != 'success'))
         run: exit 1
