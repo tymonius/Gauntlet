@@ -346,7 +346,7 @@ function renderMovement(authority) {
 
   return `${partHeader(...PARTS[3])}
 
-### IV.1 Gauntlet, Position, and Front Line
+### IV.1 Gauntlet and Position
 
 ${battlefield.gauntlet}
 
@@ -412,7 +412,7 @@ ${battle.commitment_order.face_state}
 
 Each player may normally set ${battle.normal_gambits} Gambit${battle.normal_gambits === 1 ? '' : 's'}, form a Reserve of ${battle.normal_reserve_size} cards, and choose ${battle.normal_tactics} Tactic${battle.normal_tactics === 1 ? '' : 's'} unless a rule or effect changes those quantities.
 
-### V.2 Gambits, Reserves, and Tactics
+### V.2 Commitment sources and Reserve
 
 A normal Gambit comes from **${battle.commitment_sources.gambit}**. After Gambits are set, each player physically sets their Hand aside without changing its zone, then draws the applicable number of cards from the **Draw Pile** to form a private **Reserve**. The owner may inspect and arrange their Reserve.
 
@@ -837,9 +837,6 @@ if (mode === 'write') {
   const current = await readFile(OUTPUT_PATH, 'utf8');
   if (current !== output) {
     console.error('Comprehensive Rules are stale. Run: node scripts/render-comprehensive-rules.mjs --write');
-    console.error('---BEGIN EXPECTED COMPREHENSIVE RULES---');
-    console.error(output);
-    console.error('---END EXPECTED COMPREHENSIVE RULES---');
     process.exitCode = 1;
   } else {
     console.log('Comprehensive Rules match the player-facing direct authority projection.');

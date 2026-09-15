@@ -178,7 +178,7 @@ All unused Actions and turn-limited Action permissions expire when the turn ends
 <!-- RULES-COVER:core.battlefield.counterattack -->
 <!-- RULES-COVER:core.battle.movement-initiation -->
 
-### IV.1 Gauntlet, Position, and Front Line
+### IV.1 Gauntlet and Position
 
 Six Territory Cards arranged in one column.
 
@@ -252,7 +252,7 @@ Commitments are face down unless a rule or effect says otherwise.
 
 Each player may normally set 1 Gambit, form a Reserve of 3 cards, and choose 1 Tactic unless a rule or effect changes those quantities.
 
-### V.2 Gambits, Reserves, and Tactics
+### V.2 Commitment sources and Reserve
 
 A normal Gambit comes from **Hand**. After Gambits are set, each player physically sets their Hand aside without changing its zone, then draws the applicable number of cards from the **Draw Pile** to form a private **Reserve**. The owner may inspect and arrange their Reserve.
 
