@@ -53,6 +53,23 @@ describe('public route and Pages publication boundary', () => {
     expect(files.get(`${publicCardDesignRoot}/generated/v0.6.3/long-card-review-catalog.js`)).toBe('legacy/card-design-v0.6.3/generated/long-card-review-catalog.js');
   });
 
+  it('archives superseded card-design studies without changing their public URLs', () => {
+    const activeCardDesignRoot = ['card', 'design'].join('-');
+    const publicCardDesignRoot = `/${activeCardDesignRoot}`;
+    const studies = [
+      'deed-ornament-study.html',
+      'deed-rule-font-study.html',
+      'military-symbols.html',
+    ];
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+
+    for (const study of studies) {
+      expect(existsSync(`legacy/card-design-studies/${study}`)).toBe(true);
+      expect(existsSync(`${activeCardDesignRoot}/${study}`)).toBe(false);
+      expect(files.get(`${publicCardDesignRoot}/${study}`)).toBe(`legacy/card-design-studies/${study}`);
+    }
+  });
+
   it('keeps the archived Browser Rulebook live as the v0.7.1 release bridge until v0.7.2 cutover', () => {
     expect(existsSync('apps/rulebook')).toBe(false);
     expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);
