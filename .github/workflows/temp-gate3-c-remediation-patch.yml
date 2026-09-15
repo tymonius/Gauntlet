@@ -1,0 +1,150 @@
+name: Temporary Gate 3 C remediation patch
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate3-c-remediation
+
+permissions:
+  contents: write
+
+jobs:
+  patch-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate3-c-remediation
+          fetch-depth: 0
+
+      - name: Apply exact Worker remediation edits
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("rules-assistant/worker-v071.js")
+          text = path.read_text(encoding="utf-8")
+
+          replacements = [
+            (
+              'import { normalizeR13RulingStatus } from "./r13-classification.js";\n',
+              'import { normalizeR13RulingStatus } from "./r13-classification.js";\n'
+              'import {\n'
+              '  buildGate3CAdjudicationReminder,\n'
+              '  hasTerseSurveillanceLanguage,\n'
+              '  isOccupationControlQuestion,\n'
+              '  shouldCarryImmediateHistory\n'
+              '} from "./v071-gate3-c-remediation.js";\n'
+            ),
+            (
+              'export const BEHAVIOR_REVISION = "v071-qa-20260914-13";',
+              'export const BEHAVIOR_REVISION = "v071-qa-20260915-14";'
+            ),
+            (
+              'const DEED_CONTIGUITY_AUTHORITY_IDS = [\n'
+              '  "rulebook:deeds",\n'
+              '  "rulebook:front-line"\n'
+              '];\n',
+              'const DEED_CONTIGUITY_AUTHORITY_IDS = [\n'
+              '  "rulebook:deeds",\n'
+              '  "rulebook:front-line"\n'
+              '];\n'
+              'const OCCUPATION_CONTROL_AUTHORITY_IDS = [\n'
+              '  "rulebook:occupation",\n'
+              '  "rulebook:front-line",\n'
+              '  "rulebook:normal-capture"\n'
+              '];\n'
+            ),
+            (
+              'function isContextDependentQuestion(question) {\n'
+              '  const current = String(question || "").trim().toLowerCase();\n'
+              '  const words = current.match(/[a-z0-9\']+/g) || [];\n'
+              '  if (!words.length || words.length > 10) return false;\n\n'
+              '  const referentCue = /\\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\\b/.test(current);\n'
+              '  const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\\b/.test(current);\n'
+              '  const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\\b/.test(current);\n'
+              '  const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);\n'
+              '  return referentCue || continuationCue || shortCounterfactualCue || bareQuestionCue;\n'
+              '}\n',
+              'function isContextDependentQuestion(question) {\n'
+              '  const current = String(question || "").trim().toLowerCase();\n'
+              '  const words = current.match(/[a-z0-9\']+/g) || [];\n'
+              '  if (!words.length) return false;\n\n'
+              '  const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\\b/.test(current);\n'
+              '  const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);\n'
+              '  return shouldCarryImmediateHistory(question) || shortCounterfactualCue || bareQuestionCue;\n'
+              '}\n'
+            ),
+            (
+              '  const recentCardFollowupCue = currentWordCount <= 14\n'
+              '    && /\\b(?:it|its|that|this|those|these|same|one|extra|again|another)\\b/.test(current);\n',
+              '  const recentCardFollowupCue = shouldCarryImmediateHistory(question);\n'
+            ),
+            (
+              '  const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;\n'
+              '  const intelligenceTopic = /\\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\\b/;\n',
+              '  const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;\n'
+              '  const occupationControlFocus = isOccupationControlQuestion(question);\n'
+              '  const intelligenceTopic = /\\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\\b/;\n'
+            ),
+            (
+              '  const intelligenceInterferenceFocus = (\n'
+              '    intelligenceTopic.test(current)\n'
+              '    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)\n'
+              '  ) && intelligenceProcedureSubject;\n',
+              '  const intelligenceInterferenceFocus = (\n'
+              '    intelligenceTopic.test(current)\n'
+              '    || hasTerseSurveillanceLanguage(question)\n'
+              '    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)\n'
+              '  ) && intelligenceProcedureSubject;\n'
+            ),
+            (
+              '  const topicAuthorityIds = deedContiguityFocus\n'
+              '    ? DEED_CONTIGUITY_AUTHORITY_IDS\n'
+              '    : fieldcraftFocus\n',
+              '  const topicAuthorityIds = occupationControlFocus\n'
+              '    ? OCCUPATION_CONTROL_AUTHORITY_IDS\n'
+              '    : deedContiguityFocus\n'
+              '      ? DEED_CONTIGUITY_AUTHORITY_IDS\n'
+              '    : fieldcraftFocus\n'
+            ),
+            (
+              'export function buildQuestionSpecificAdjudicationReminder(question, sources = []) {\n'
+              '  const current = String(question || "").trim().toLowerCase();\n'
+              '  const sourceList = Array.isArray(sources) ? sources : [];\n'
+              '  const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));\n'
+              '  const reminders = [];\n\n'
+              '  const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);\n',
+              'export function buildQuestionSpecificAdjudicationReminder(question, sources = [], history = []) {\n'
+              '  const current = String(question || "").trim().toLowerCase();\n'
+              '  const sourceList = Array.isArray(sources) ? sources : [];\n'
+              '  const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));\n'
+              '  const reminders = [];\n'
+              '  const gate3CReminder = buildGate3CAdjudicationReminder(question, sourceList, history);\n'
+              '  if (gate3CReminder) reminders.push(gate3CReminder);\n\n'
+              '  const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);\n'
+            ),
+            (
+              '  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);\n',
+              '  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources, history);\n'
+            )
+          ]
+
+          for index, (old, new) in enumerate(replacements, start=1):
+            count = text.count(old)
+            if count != 1:
+              raise SystemExit(f"Replacement {index} expected exactly one anchor, found {count}.")
+            text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding="utf-8")
+
+      - name: Remove temporary patch workflow
+        run: rm .github/workflows/temp-gate3-c-remediation-patch.yml
+
+      - name: Commit patched Worker
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js .github/workflows/temp-gate3-c-remediation-patch.yml
+          git commit -m "Wire Gate 3 C behavior remediation"
+          git push origin HEAD:rules-arbiter-gate3-c-remediation
