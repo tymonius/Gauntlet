@@ -1,0 +1,61 @@
+name: Temporary transformed state parser patch
+
+on:
+  push:
+    branches:
+      - rules-arbiter-gate3-c-remediation
+
+permissions:
+  contents: write
+
+jobs:
+  patch-parser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rules-arbiter-gate3-c-remediation
+          fetch-depth: 0
+
+      - name: Apply exact parser fix
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("rules-assistant/r13-classification.js")
+          text = path.read_text(encoding="utf-8")
+          old = '''function transformedStateSubject(question) {
+            const current = String(question || "").trim();
+            const transformation = current.match(/\\b(?:turn|turns|turned|become|becomes|became|transform|transforms|transformed)\\b[\\s\\S]{0,80}?\\b(?:into\\s+)?(?:an?\\s+|the\\s+)?([A-Z][A-Za-z0-9'’-]*(?:\\s+[A-Z][A-Za-z0-9'’-]*){0,3})\\b/);
+            if (!transformation) return "";
+            const subject = normalizePhrase(transformation[1]);
+            if (!subject || new Set(["overlay", "card", "territory", "asset", "gambit", "tactic"]).has(subject)) return "";
+            return subject;
+          }
+          '''.replace('          ', '')
+          new = '''function transformedStateSubject(question) {
+            const current = String(question || "").trim();
+            const explicitTarget = current.match(/\\b(?:turn|turns|turned|become|becomes|became|transform|transforms|transformed)\\b[\\s\\S]{0,80}?\\binto\\s+(?:an?\\s+|the\\s+)?([A-Z][A-Za-z0-9'’-]*(?:\\s+[A-Z][A-Za-z0-9'’-]*){0,3})\\b/);
+            const directTarget = current.match(/\\b(?:become|becomes|became)\\s+(?:an?\\s+|the\\s+)?([A-Z][A-Za-z0-9'’-]*(?:\\s+[A-Z][A-Za-z0-9'’-]*){0,3})\\b/);
+            const transformation = explicitTarget || directTarget;
+            if (!transformation) return "";
+            const subject = normalizePhrase(transformation[1]);
+            if (!subject || new Set(["overlay", "card", "territory", "asset", "gambit", "tactic"]).has(subject)) return "";
+            return subject;
+          }
+          '''.replace('          ', '')
+          count = text.count(old)
+          if count != 1:
+            raise SystemExit(f"Expected exactly one transformedStateSubject anchor, found {count}.")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+      - name: Remove temporary workflow
+        run: rm .github/workflows/temp-fix-transformed-state-parser.yml
+
+      - name: Commit parser fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/r13-classification.js .github/workflows/temp-fix-transformed-state-parser.yml
+          git commit -m "Fix transformed state target parsing"
+          git push origin HEAD:rules-arbiter-gate3-c-remediation
