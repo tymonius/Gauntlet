@@ -2,12 +2,80 @@ import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
-const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
 const PUBLISHED_VERSION = 'v0.7.1';
 const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md';
 const FALLBACK_PDF_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
+const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';
+
+const CANDIDATE_DOCUMENTS = new Map([
+  ['player-guide', {
+    label: "Player's Guide",
+    title: "Player's Guide",
+    sourceUrl: './sources/player-guide.md',
+    marker: 'RULES-SURFACE:player-guide',
+    lede: "Learn Gauntlet's shared game before adding the operating rules for your chosen faction.",
+    tocLevels: new Set([2]),
+  }],
+  ['military', {
+    label: 'Military Guide',
+    title: 'Military Guide',
+    sourceUrl: './sources/factions/military.md',
+    marker: 'RULES-FACTION:military',
+    lede: 'The operating guide for Command, Orders, Military Leaders, and first-game priorities.',
+    tocLevels: new Set([2]),
+  }],
+  ['diplomats', {
+    label: 'Diplomats Guide',
+    title: 'Diplomats Guide',
+    sourceUrl: './sources/factions/diplomats.md',
+    marker: 'RULES-FACTION:diplomats',
+    lede: 'The operating guide for Influence, Proposals, Diplomat Leaders, and diplomatic victory play.',
+    tocLevels: new Set([2]),
+  }],
+  ['financiers', {
+    label: 'Financiers Guide',
+    title: 'Financiers Guide',
+    sourceUrl: './sources/factions/financiers.md',
+    marker: 'RULES-FACTION:financiers',
+    lede: 'The operating guide for Capital, Deeds, Financier Leaders, and economic control of the Gauntlet.',
+    tocLevels: new Set([2]),
+  }],
+  ['intelligence', {
+    label: 'Intelligence Guide',
+    title: 'Intelligence Guide',
+    sourceUrl: './sources/factions/intelligence.md',
+    marker: 'RULES-FACTION:intelligence',
+    lede: 'The operating guide for Intel, Operations, Intelligence Leaders, and covert progress.',
+    tocLevels: new Set([2]),
+  }],
+  ['mystics', {
+    label: 'Mystics Guide',
+    title: 'Mystics Guide',
+    sourceUrl: './sources/factions/mystics.md',
+    marker: 'RULES-FACTION:mystics',
+    lede: 'The operating guide for Rites, Rituals, Mystic Leaders, and Arcane play.',
+    tocLevels: new Set([2]),
+  }],
+  ['inquisition', {
+    label: 'Inquisition Guide',
+    title: 'Inquisition Guide',
+    sourceUrl: './sources/factions/inquisition.md',
+    marker: 'RULES-FACTION:inquisition',
+    lede: 'The operating guide for Conviction, Purges, Inquisition Leaders, and doctrinal control.',
+    tocLevels: new Set([2]),
+  }],
+  ['complete-rules', {
+    label: 'Complete Rules',
+    title: 'Complete Rules',
+    sourceUrl: './sources/complete-rules.md',
+    marker: 'RULES-SURFACE:comprehensive-rules',
+    lede: 'The complete player-facing technical rules reference for exact procedures, timing, interactions, and edge cases.',
+    tocLevels: new Set([2, 3]),
+  }],
+]);
+
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -17,9 +85,13 @@ const searchStatus = document.querySelector('[data-search-status]');
 const tocToggle = document.querySelector('[data-toc-toggle]');
 const sidebar = document.querySelector('[data-rulebook-sidebar]');
 const eyebrow = document.querySelector('[data-rulebook-eyebrow]');
+const heroTitle = document.querySelector('[data-rulebook-title]');
+const heroLede = document.querySelector('[data-rulebook-lede]');
 const candidateNote = document.querySelector('[data-candidate-rules-note]');
 const rulesetSwitch = document.querySelector('[data-ruleset-switch]');
 const candidateVersionLabel = document.querySelector('[data-candidate-version]');
+const candidateDocumentSwitch = document.querySelector('[data-candidate-document-switch]');
+const candidateDocumentSelect = document.querySelector('[data-candidate-document]');
 const footerVersion = document.querySelector('[data-rulebook-footer-version]');
 const printHeading = document.querySelector('[data-rulebook-print-heading]');
 const printNote = document.querySelector('[data-rulebook-print-note]');
@@ -29,10 +101,11 @@ const publishedBookletLinks = [...document.querySelectorAll('[data-published-boo
 
 let sourcePromise = null;
 let releaseManifestPromise = null;
-let currentSourcePromise = null;
+const candidateSourcePromises = new Map();
 let publishedSourceUrl = FALLBACK_PUBLISHED_SOURCE_URL;
 let pdfUrl = FALLBACK_PDF_URL;
 let activeMode = RELEASED_MODE;
+let activeCandidateDocument = DEFAULT_CANDIDATE_DOCUMENT;
 let sectionObserver = null;
 
 const FACTIONS = new Map([
@@ -63,11 +136,12 @@ function cleanChapterLabel(label) {
   return label.replace(/^\d+\.\s*/, '').trim();
 }
 
-function buildToc(headings) {
+function buildToc(headings, mode = activeMode, documentId = activeCandidateDocument) {
   if (!toc) return;
-
+  const candidateDocument = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   const visibleHeadings = headings.filter(({ id, level }) => {
     if (id === 'gauntlet' || id === 'official-rulebook') return false;
+    if (mode === CANDIDATE_MODE) return candidateDocument.tocLevels.has(level);
     return level <= 2;
   });
 
@@ -78,9 +152,13 @@ function buildToc(headings) {
     link.href = `#${id}`;
     link.textContent = label;
     link.dataset.tocId = id;
-    link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
-    if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
-    if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
+    if (mode === CANDIDATE_MODE) {
+      link.className = level === 2 ? 'toc-primary' : 'toc-secondary';
+    } else {
+      link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
+      if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
+      if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
+    }
     const faction = FACTIONS.get(chapterLabel);
     if (faction) {
       link.classList.add('toc-faction');
@@ -200,7 +278,7 @@ function observeSections() {
     links.get(visible.target.id)?.setAttribute('aria-current', 'location');
   }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
 
-  content.querySelectorAll('h1[id], h2[id]').forEach((heading) => sectionObserver.observe(heading));
+  content.querySelectorAll('h1[id], h2[id], h3[id]').forEach((heading) => sectionObserver.observe(heading));
 }
 
 function clearSearchMarks() {
@@ -271,40 +349,64 @@ function modeFromUrl() {
   return url.searchParams.get('rules') === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
 }
 
-function writeModeToUrl(mode, replace = false) {
+function documentFromUrl() {
   const url = new URL(window.location.href);
-  if (mode === CANDIDATE_MODE) url.searchParams.set('rules', CANDIDATE_MODE);
-  else url.searchParams.delete('rules');
-  const method = replace ? 'replaceState' : 'pushState';
-  window.history[method]({ ruleset: mode }, '', url);
+  const requested = url.searchParams.get('doc') || DEFAULT_CANDIDATE_DOCUMENT;
+  return CANDIDATE_DOCUMENTS.has(requested) ? requested : DEFAULT_CANDIDATE_DOCUMENT;
 }
 
-function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
+function writeModeToUrl(mode, replace = false, documentId = activeCandidateDocument) {
+  const url = new URL(window.location.href);
+  if (mode === CANDIDATE_MODE) {
+    const normalizedDocument = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
+    url.searchParams.set('rules', CANDIDATE_MODE);
+    url.searchParams.set('doc', normalizedDocument);
+  } else {
+    url.searchParams.delete('rules');
+    url.searchParams.delete('doc');
+  }
+  const method = replace ? 'replaceState' : 'pushState';
+  window.history[method]({ ruleset: mode, document: documentId }, '', url);
+}
+
+function setRulesetUi(mode, currentGame = null, distinctCandidate = false, documentId = activeCandidateDocument) {
   const candidate = mode === CANDIDATE_MODE && distinctCandidate;
   const candidateLabel = currentGame?.displayVersion || currentGame?.version || 'current development';
+  const documentConfig = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   if (rulesetSwitch) rulesetSwitch.hidden = !distinctCandidate;
   if (candidateVersionLabel) candidateVersionLabel.textContent = candidateLabel;
+  if (candidateDocumentSwitch) candidateDocumentSwitch.hidden = !candidate;
+  if (candidateDocumentSelect) candidateDocumentSelect.value = documentId;
   document.body.dataset.rulesetMode = mode;
+  if (candidate) document.body.dataset.candidateDocument = documentId;
+  else delete document.body.dataset.candidateDocument;
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
   });
   publishedBookletLinks.forEach((link) => { link.hidden = candidate; });
+
+  // The current production Rules Arbiter remains bound to released v0.7.1 until the
+  // v0.7.2 corpus is cut over. Do not expose it as though it were candidate-aware.
   if (rulesAssistantButton) rulesAssistantButton.hidden = candidate;
   if (candidateNote) {
     candidateNote.hidden = !candidate;
     candidateNote.textContent = candidate
-      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.7.1 and is hidden in this view.'
+      ? `Candidate view: ${documentConfig.label} from the modular ${candidateLabel} rules publication. The Rules Arbiter still follows released ${PUBLISHED_VERSION} and remains unavailable here until its v0.7.2 corpus is cut over.`
       : '';
   }
 
   if (candidate) {
     if (eyebrow) eyebrow.textContent = `Release candidate rules · ${candidateLabel}`;
-    if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · Current release-candidate rules view.`;
-    if (printHeading) printHeading.textContent = 'Release candidate rules';
-    if (printNote) printNote.textContent = `The ${candidateLabel} Rulebook is the current development authority. Switch to Released ${PUBLISHED_VERSION} for the published printable booklet.`;
-    document.title = `Gauntlet ${candidateLabel} Browser Rulebook`;
+    if (heroTitle) heroTitle.textContent = documentConfig.title;
+    if (heroLede) heroLede.textContent = documentConfig.lede;
+    if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · ${documentConfig.label}.`;
+    if (printHeading) printHeading.textContent = `${documentConfig.label} booklet`;
+    if (printNote) printNote.textContent = 'Printable candidate booklets are being prepared as part of the v0.7.2 publication cutover.';
+    document.title = `${documentConfig.title} — Gauntlet ${candidateLabel}`;
   } else {
     if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
+    if (heroTitle) heroTitle.textContent = 'Official Browser Rulebook';
+    if (heroLede) heroLede.textContent = 'The complete shared rules and faction systems, presented for comfortable reading at the table or on the go.';
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.1</strong> · Current canonical playtest edition.';
     if (printHeading) printHeading.textContent = 'Print the released rulebook';
     if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
@@ -343,9 +445,16 @@ function initializeControls() {
     button.addEventListener('click', async () => {
       const mode = button.dataset.ruleset === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
       if (mode === activeMode) return;
-      writeModeToUrl(mode);
+      writeModeToUrl(mode, false, activeCandidateDocument);
       await renderRulebook(mode);
     });
+  });
+
+  candidateDocumentSelect?.addEventListener('change', async () => {
+    const requested = candidateDocumentSelect.value;
+    activeCandidateDocument = CANDIDATE_DOCUMENTS.has(requested) ? requested : DEFAULT_CANDIDATE_DOCUMENT;
+    writeModeToUrl(CANDIDATE_MODE, false, activeCandidateDocument);
+    await renderRulebook(CANDIDATE_MODE);
   });
 
   searchForm?.addEventListener('submit', (event) => {
@@ -371,6 +480,7 @@ function initializeControls() {
   });
 
   window.addEventListener('popstate', () => {
+    activeCandidateDocument = documentFromUrl();
     renderRulebook(modeFromUrl());
   });
 
@@ -453,34 +563,29 @@ async function loadVerifiedReleasedSource() {
   return sourcePromise;
 }
 
-function candidateRulebookVersionMarker(currentGame) {
-  const match = String(currentGame?.version || '').match(/^v(\d+\.\d+\.\d+)-candidate$/i);
-  return match ? `**Version ${match[1]} Candidate**` : null;
-}
-
-async function loadCurrentRulebookSource(currentGame) {
-  if (!currentSourcePromise) {
-    currentSourcePromise = fetch(CURRENT_SOURCE_URL, { cache: 'no-store' })
+async function loadCandidateDocumentSource(documentId) {
+  const documentConfig = CANDIDATE_DOCUMENTS.get(documentId);
+  if (!documentConfig) throw new Error(`Unknown candidate rules document: ${documentId}`);
+  if (!candidateSourcePromises.has(documentId)) {
+    const promise = fetch(documentConfig.sourceUrl, { cache: 'no-store' })
       .then(async (response) => {
-        if (!response.ok) throw new Error(`Current Rulebook source returned ${response.status}`);
+        if (!response.ok) throw new Error(`${documentConfig.label} source returned ${response.status}`);
         const markdown = await response.text();
-        const expectedMarker = candidateRulebookVersionMarker(currentGame);
-        if (!expectedMarker || !markdown.includes(expectedMarker)) {
-          throw new Error(`Current Rulebook source does not match current-game authority (${expectedMarker || 'no candidate version'}).`);
+        if (!markdown.includes(documentConfig.marker)) {
+          throw new Error(`${documentConfig.label} source is missing its publication marker.`);
         }
-        if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
-        if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
-        if (/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu.test(markdown)) {
-          throw new Error('Current Rulebook source contains retired faction terminology.');
+        if (!markdown.includes('AUTHORITY:game-data/current-game.json')) {
+          throw new Error(`${documentConfig.label} source is not bound to current gameplay authority.`);
         }
         return markdown;
       })
       .catch((error) => {
-        currentSourcePromise = null;
+        candidateSourcePromises.delete(documentId);
         throw error;
       });
+    candidateSourcePromises.set(documentId, promise);
   }
-  return currentSourcePromise;
+  return candidateSourcePromises.get(documentId);
 }
 
 async function renderRulebook(mode) {
@@ -494,37 +599,53 @@ async function renderRulebook(mode) {
   const candidateVersion = currentGame?.displayVersion || currentGame?.version || '';
   const distinctCandidate = Boolean(candidateVersion && candidateVersion !== PUBLISHED_VERSION);
   activeMode = requestedMode === CANDIDATE_MODE && distinctCandidate ? CANDIDATE_MODE : RELEASED_MODE;
-  if (requestedMode !== activeMode) writeModeToUrl(activeMode, true);
+  if (activeMode === CANDIDATE_MODE) activeCandidateDocument = documentFromUrl();
+  if (requestedMode !== activeMode) {
+    writeModeToUrl(activeMode, true, activeCandidateDocument);
+  } else if (activeMode === CANDIDATE_MODE) {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('doc') !== activeCandidateDocument) {
+      writeModeToUrl(activeMode, true, activeCandidateDocument);
+    }
+  }
+
+  const documentConfig = CANDIDATE_DOCUMENTS.get(activeCandidateDocument) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   content.setAttribute('aria-busy', 'true');
   clearSearchMarks();
   if (searchInput) searchInput.value = '';
   if (searchStatus) searchStatus.textContent = '';
   status.textContent = activeMode === CANDIDATE_MODE
-    ? 'Loading the release-candidate rules…'
+    ? `Loading ${documentConfig.label}…`
     : 'Loading the canonical rulebook…';
 
   try {
-    let markdown = null;
-    if (activeMode === CANDIDATE_MODE) markdown = await loadCurrentRulebookSource(currentGame);
-    else markdown = await loadVerifiedReleasedSource();
+    const markdown = activeMode === CANDIDATE_MODE
+      ? await loadCandidateDocumentSource(activeCandidateDocument)
+      : await loadVerifiedReleasedSource();
 
     const rendered = renderMarkdown(markdown);
     content.innerHTML = rendered.html;
     content.removeAttribute('aria-busy');
-    buildToc(rendered.headings);
+    buildToc(rendered.headings, activeMode, activeCandidateDocument);
     decoratePublication();
     decorateHeadings();
     observeSections();
-    setRulesetUi(activeMode, currentGame, distinctCandidate);
-    document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', { detail: { mode: activeMode } }));
+    setRulesetUi(activeMode, currentGame, distinctCandidate, activeCandidateDocument);
+    document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', {
+      detail: { mode: activeMode, document: activeMode === CANDIDATE_MODE ? activeCandidateDocument : 'released-rulebook' },
+    }));
     scrollToLocationHash();
 
     const sectionCount = Math.max(
       0,
-      rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
+      rendered.headings.filter(({ level, id }) => {
+        if (id === 'gauntlet' || id === 'official-rulebook') return false;
+        if (activeMode === CANDIDATE_MODE) return documentConfig.tocLevels.has(level);
+        return level === 1;
+      }).length
     );
     status.textContent = activeMode === CANDIDATE_MODE
-      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.1'} · ${sectionCount} sections · rules loaded`
+      ? `Release candidate ${candidateVersion || 'current development'} · ${documentConfig.label} · ${sectionCount} sections · rules loaded`
       : `Canonical v0.7.1 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
@@ -532,17 +653,20 @@ async function renderRulebook(mode) {
     content.innerHTML = `
       <section class="load-error" role="alert">
         <h1>The browser rulebook could not be loaded.</h1>
-        <p>Use the <a href="${pdfUrl}">reader PDF</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.</p>
+        <p>${activeMode === CANDIDATE_MODE
+          ? 'The selected release-candidate document is temporarily unavailable.'
+          : `Use the <a href="${pdfUrl}">reader PDF</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.`}</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';
-    setRulesetUi(activeMode, currentGame, distinctCandidate);
+    setRulesetUi(activeMode, currentGame, distinctCandidate, activeCandidateDocument);
   }
 }
 
 async function loadRulebook() {
   initializeControls();
   activeMode = modeFromUrl();
+  activeCandidateDocument = documentFromUrl();
   await renderRulebook(activeMode);
 }
 
