@@ -1,0 +1,39 @@
+name: Temporary Complete Rules sync
+
+on:
+  push:
+    branches:
+      - rules/complete-rules-core-readability
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/complete-rules-core-readability
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Render Complete Rules
+        run: node scripts/render-comprehensive-rules.mjs --write
+
+      - name: Commit generated publication
+        run: |
+          if git diff --quiet -- packages/rules/comprehensive/comprehensive-rules.md; then
+            echo "Complete Rules already synchronized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/rules/comprehensive/comprehensive-rules.md
+          git commit -m "Regenerate Complete Rules player-facing core"
+          git push origin HEAD:rules/complete-rules-core-readability
