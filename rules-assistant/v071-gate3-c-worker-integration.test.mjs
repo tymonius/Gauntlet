@@ -71,6 +71,20 @@ describe("v0.7.1 Gate 3 tranche C Worker integration", () => {
     expect(reminder).toContain("Confession");
   });
 
+  test("does not carry prior card context across an explicit topic switch", () => {
+    const history = [
+      { role: "user", content: "I played Advance Guard during Opening. What does the movement part do?" },
+      { role: "assistant", content: "During your Movement this turn, Advance Guard may move you one additional Position." }
+    ];
+    const question = "Separate issue: a printed Territory effect is slowing my Ranger. How long does Fieldcraft shut that effect off?";
+    expect(contextualQuery(question, history)).toBe(question);
+
+    const sources = augmentedSources(question, history);
+    expect(sourceTitles(sources).some((title) => /Fieldcraft/i.test(title))).toBe(true);
+    const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, history);
+    expect(reminder).not.toContain("Advance Guard");
+  });
+
   test("puts direct Occupation authority into a battle-win versus control question", () => {
     const question = "I win an attack on an enemy-controlled Territory and remain there. Does that battle win itself give me control of the Territory?";
     const sources = augmentedSources(question);
