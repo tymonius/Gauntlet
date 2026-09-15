@@ -1,4 +1,4 @@
-name: Temporary Complete Rules sync
+name: Temporary Complete Rules cleanup
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  sync:
+  cleanup:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -18,22 +18,24 @@ jobs:
         with:
           ref: rules/complete-rules-core-readability
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Render Complete Rules
-        run: node scripts/render-comprehensive-rules.mjs --write
-
-      - name: Commit generated publication
+      - name: Remove temporary debug output and workflow
         run: |
-          if git diff --quiet -- packages/rules/comprehensive/comprehensive-rules.md; then
-            echo "Complete Rules already synchronized."
-            exit 0
-          fi
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'scripts/render-comprehensive-rules.mjs';
+          let source = fs.readFileSync(path, 'utf8');
+          const noisy = `    console.error('Comprehensive Rules are stale. Run: node scripts/render-comprehensive-rules.mjs --write');\n    console.error('---BEGIN EXPECTED COMPREHENSIVE RULES---');\n    console.error(output);\n    console.error('---END EXPECTED COMPREHENSIVE RULES---');`;
+          const quiet = `    console.error('Comprehensive Rules are stale. Run: node scripts/render-comprehensive-rules.mjs --write');`;
+          if (!source.includes(noisy)) throw new Error('Expected temporary debug block was not found.');
+          source = source.replace(noisy, quiet);
+          fs.writeFileSync(path, source);
+          NODE
+          git rm .github/workflows/sync-comprehensive-rules-pr.yml
+
+      - name: Commit cleanup
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add packages/rules/comprehensive/comprehensive-rules.md
-          git commit -m "Regenerate Complete Rules player-facing core"
+          git add scripts/render-comprehensive-rules.mjs .github/workflows/sync-comprehensive-rules-pr.yml
+          git commit -m "Remove temporary Complete Rules sync tooling"
           git push origin HEAD:rules/complete-rules-core-readability
