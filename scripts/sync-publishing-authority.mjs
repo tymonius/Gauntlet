@@ -8,6 +8,7 @@ const authority = await loadPublishingAuthority();
 const websiteFooterTargets = [
   'index.html',
   'apps/rules/index.html',
+  'legacy/rulebook-browser/index.html',
   'rules-arbiter/index.html',
   'apps/card-reference/index.html',
   'apps/deckbuilder/index.html',

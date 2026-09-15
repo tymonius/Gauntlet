@@ -7,6 +7,7 @@ on:
       - 'packages/game-data/current-game.json'
       - 'packages/game-data/current-game-validation.mjs'
       - 'packages/rules/**'
+      - 'config/release-lifecycle.json'
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
       - 'config/publication-boundary.json'
@@ -42,6 +43,7 @@ jobs:
         with:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /config/release-lifecycle.json
             /config/rules-surface-contract.json
             /config/rules-publication-sources.json
             /config/publication-boundary.json
@@ -63,7 +65,11 @@ jobs:
             /scripts/validate-legacy-rulebook-retirement.mjs
             /rulebook/player-facing/rule-facts.js
             /rulebook/player-facing/current-rulebook.md
+            /legacy/rulebook-browser/index.html
+            /legacy/rulebook-browser/app.js
             /legacy/public-compatibility/rulebook/index.html
+            /releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md
+            /releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf
 
       - name: Set up Node
         uses: actions/setup-node@v4

@@ -1,12 +1,12 @@
 # Legacy materials
 
-This directory contains historical implementation material retained for provenance, compatibility, or reconstruction value.
+This directory contains historical implementation material retained for provenance, compatibility, reconstruction value, or an explicitly temporary release-transition bridge.
 
 Nothing under `legacy/` is current gameplay authority. New game behavior, current card/rule data, production applications, and active engine work must not be implemented here.
 
-Current gameplay authority lives in `packages/game-data/current-game.json`. Maintained active rules source and shared rules-publication support live under `packages/rules/`; the monolithic Browser Rulebook is retired and its source is archived here for provenance and historical publication support.
+Current gameplay authority lives in `packages/game-data/current-game.json`. Maintained active rules source and shared rules-publication support live under `packages/rules/`. The monolithic Browser Rulebook source has been archived under `legacy/rulebook-browser/`, but that archived source still materializes the stable `/rulebook/` release surface until the v0.7.2 cutover so Released v0.7.1 and the current release candidate remain available through the existing toggle.
 
-A legacy subtree may be removed later when its provenance value is no longer needed and no supported compatibility surface depends on it.
+A legacy subtree may be removed later when its provenance value is no longer needed and no supported compatibility or release-transition surface depends on it.
 
 ## Archived subtrees
 
@@ -15,8 +15,8 @@ A legacy subtree may be removed later when its provenance value is no longer nee
 - `digital-engine-reconstruction/` — clean v0.6.2/v0.6.3 digital-engine reconstruction snapshots and co-located historical regression tests moved out of the active `src/` typecheck boundary.
 - `digital-engine-migration/` — superseded versioned engine-migration implementations moved out of the active `src/` boundary after their relevant behavior was promoted or otherwise retired.
 - `digital-engine-v06/` — earlier playable v0.6-era cards/effects/state/types/dev architecture with its explicitly opt-in historical CLI/GUI runners; preserved outside the active `src/` authority and default test/typecheck boundary.
-- `public-compatibility/` — source for retired browser compatibility surfaces that still publish at stable public URLs.
+- `public-compatibility/` — source for retired browser compatibility surfaces and prepared compatibility landings; the Rulebook redirect stored here is dormant until the v0.7.2 cutover.
 - `public-versions/` — source for historical versioned browser surfaces that still publish at stable public URLs.
-- `rulebook-browser/` — retired Browser Rulebook application source retained for provenance and historical Rulebook publication adapters.
+- `rulebook-browser/` — archived Browser Rulebook application source retained for provenance and historical publication adapters; temporarily still staged at `/rulebook/` as the v0.7.1 release bridge.
 - `v0.6.1-rulebook-publication/` — preserved v0.6.1 Rulebook proof/production system used for historical reproduction and later publication adapters.
 - `v0.6.4-candidate/` — historical candidate inputs and review records retained for provenance.

@@ -21,7 +21,7 @@ describe('public route and Pages publication boundary', () => {
     expect(mappings.get('apps/factions')).toBe('/factions/');
     expect(mappings.get('apps/press')).toBe('/press/');
     expect(mappings.get('apps/privacy')).toBe('/privacy/');
-    expect(mappings.get('legacy/public-compatibility/rulebook')).toBe('/rulebook/');
+    expect(mappings.get('legacy/rulebook-browser')).toBe('/rulebook/');
     expect(mappings.has('apps/rulebook')).toBe(false);
     expect(mappings.get('apps/rules')).toBe('/rules/');
     expect(mappings.get('apps/start')).toBe('/start/');
@@ -37,7 +37,7 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).toContain('config');
   });
 
-  it('publishes only the retired compatibility landing and declared active rules sources', () => {
+  it('keeps the archived Browser Rulebook live as the v0.7.1 release bridge until v0.7.2 cutover', () => {
     expect(existsSync('apps/rulebook')).toBe(false);
     expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);
     expect(existsSync('legacy/public-compatibility/rulebook/index.html')).toBe(true);
@@ -47,11 +47,12 @@ describe('public route and Pages publication boundary', () => {
     expect(existsSync('packages/rules/comprehensive/comprehensive-rules.md')).toBe(true);
 
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
-    expect([...files.keys()].some((publicPath) => String(publicPath).startsWith('/rulebook/'))).toBe(false);
+    expect(files.get('/rulebook/player-facing/current-rulebook.md')).toBe('rulebook/player-facing/current-rulebook.md');
+    expect(files.get('/rulebook/player-guide/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
     expect(files.get('/rules/sources/player-guide.md')).toBe('packages/rules/player-guide/player-guide.md');
     expect(files.get('/rules/sources/comprehensive-rules.md')).toBe('packages/rules/comprehensive/comprehensive-rules.md');
     expect(contract.managedRoutes).toContain('/rulebook/');
-    expect(contract.managedRoutes).not.toContain('/rulebook/player-guide-review/');
+    expect(contract.managedRoutes).toContain('/rulebook/player-guide-review/');
     expect(contract.managedRoutes).toContain('/rules/player-guide/');
     expect(contract.managedRoutes).toContain('/rules/comprehensive/');
   });
@@ -69,8 +70,8 @@ describe('public route and Pages publication boundary', () => {
     expect(pagesValidator).toContain('materializedTopLevelDirectories');
     expect(publicationWorkflow).toContain('/config/publication-boundary.json');
     expect(publicationWorkflow).toContain('/rulebook/player-facing/current-rulebook.md');
+    expect(publicationWorkflow).toContain('/legacy/rulebook-browser/');
     expect(publicationWorkflow).toContain('/packages/rules/**');
-    expect(publicationWorkflow).not.toContain('/rulebook/player-guide/player-guide.md');
     expect(publicationWorkflow).not.toContain('/rulebook/index.html');
     expect(publicationWorkflow).toContain('node scripts/validate-publication-boundary.mjs');
     expect(pagesWorkflow).toContain("'config/publication-boundary.json'");

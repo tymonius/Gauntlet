@@ -22,137 +22,27 @@
     "legacy"
   ],
   "root_directories": {
-    ".github": {
-      "role": "production_tooling",
-      "target_groups": ["root"],
-      "transitional": false,
-      "note": "GitHub-native automation boundary; remains at repository root by platform contract."
-    },
-    "apps": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
-    },
-    "artifacts": {
-      "role": "generated_evidence",
-      "target_groups": ["legacy"],
-      "transitional": true,
-      "note": "Build/reconstruction/QA evidence pending retention audit."
-    },
-    "assets": {
-      "role": "assets_shared_presentation",
-      "target_groups": ["assets"],
-      "transitional": false,
-      "note": "Shared site/component assets."
-    },
-    "card-design": {
-      "role": "production_tooling",
-      "target_groups": ["packages", "tools"],
-      "transitional": true,
-      "note": "Rendering/authoring system; target split between shared rendering package and production tools."
-    },
-    "config": {
-      "role": "authority",
-      "target_groups": ["root"],
-      "transitional": false,
-      "note": "Maintained cross-system configuration; root placement is deliberate."
-    },
-    "docs": {
-      "role": "documentation",
-      "target_groups": ["docs"],
-      "transitional": false,
-      "note": "Maintained documentation and explicitly archived development records."
-    },
-    "governance": {
-      "role": "authority",
-      "target_groups": ["tools"],
-      "transitional": true,
-      "note": "Decision provenance, schemas, traceability, and audit records."
-    },
-    "images": {
-      "role": "assets_shared_presentation",
-      "target_groups": ["assets"],
-      "transitional": true,
-      "note": "Source and derived visual assets remain mixed pending asset-lifecycle audit."
-    },
-    "legacy": {
-      "role": "historical_compatibility",
-      "target_groups": ["legacy"],
-      "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance, including the retired Browser Rulebook source and stable /rulebook/ compatibility landing."
-    },
-    "media": {
-      "role": "production_tooling",
-      "target_groups": ["assets", "tools"],
-      "transitional": true,
-      "note": "Current reproducible media/composition configuration and export tooling."
-    },
-    "packages": {
-      "role": "authority",
-      "target_groups": ["packages"],
-      "transitional": false,
-      "note": "Canonical container for maintained shared packages and authorities; contains the complete current game-data authority plus the maintained active rules source, publication support, and current rule-fact synchronization helper."
-    },
-    "releases": {
-      "role": "frozen_release",
-      "target_groups": ["releases"],
-      "transitional": false,
-      "note": "Immutable published release packages."
-    },
-    "rulebook": {
-      "role": "historical_compatibility",
-      "target_groups": ["assets", "legacy"],
-      "transitional": true,
-      "note": "Legacy monolithic Rulebook and version-specific compatibility support plus Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json, active rules and maintained current rules support live at packages/rules/, and the retired Browser Rulebook source is archived under legacy/rulebook-browser/."
-    },
-    "rules-arbiter": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Current static Rules Arbiter browser shell."
-    },
-    "rules-assistant": {
-      "role": "active_application",
-      "target_groups": ["apps", "packages"],
-      "transitional": true,
-      "note": "Rules Arbiter implementation, retrieval, tests, and deployable endpoint."
-    },
-    "scripts": {
-      "role": "production_tooling",
-      "target_groups": ["tools"],
-      "transitional": true,
-      "note": "Cross-project generation, validation, release, migration, and maintenance tooling."
-    },
-    "src": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Active rules-aware digital engine."
-    },
-    "tests": {
-      "role": "production_tooling",
-      "target_groups": ["root"],
-      "transitional": false,
-      "note": "Repository-wide contract/regression harness; root placement is deliberate."
-    },
-    "tts": {
-      "role": "production_tooling",
-      "target_groups": ["tools", "releases"],
-      "transitional": true,
-      "note": "TTS generation/packaging plus versioned release evidence."
-    },
-    "v0.7.1": {
-      "role": "historical_compatibility",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Lifecycle-selected current versioned public entrypoint; transitions to legacy when historical."
-    },
-    "workers": {
-      "role": "active_application",
-      "target_groups": ["apps"],
-      "transitional": true,
-      "note": "Deployed support services."
-    }
+    ".github": {"role": "production_tooling", "target_groups": ["root"], "transitional": false, "note": "GitHub-native automation boundary; remains at repository root by platform contract."},
+    "apps": {"role": "active_application", "target_groups": ["apps"], "transitional": false, "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."},
+    "artifacts": {"role": "generated_evidence", "target_groups": ["legacy"], "transitional": true, "note": "Build/reconstruction/QA evidence pending retention audit."},
+    "assets": {"role": "assets_shared_presentation", "target_groups": ["assets"], "transitional": false, "note": "Shared site/component assets."},
+    "card-design": {"role": "production_tooling", "target_groups": ["packages", "tools"], "transitional": true, "note": "Rendering/authoring system; target split between shared rendering package and production tools."},
+    "config": {"role": "authority", "target_groups": ["root"], "transitional": false, "note": "Maintained cross-system configuration; root placement is deliberate."},
+    "docs": {"role": "documentation", "target_groups": ["docs"], "transitional": false, "note": "Maintained documentation and explicitly archived development records."},
+    "governance": {"role": "authority", "target_groups": ["tools"], "transitional": true, "note": "Decision provenance, schemas, traceability, and audit records."},
+    "images": {"role": "assets_shared_presentation", "target_groups": ["assets"], "transitional": true, "note": "Source and derived visual assets remain mixed pending asset-lifecycle audit."},
+    "legacy": {"role": "historical_compatibility", "target_groups": ["legacy"], "transitional": false, "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The archived Browser Rulebook is temporarily materialized at /rulebook/ as the v0.7.1 release-transition bridge; its prepared redirect remains dormant until the v0.7.2 cutover."},
+    "media": {"role": "production_tooling", "target_groups": ["assets", "tools"], "transitional": true, "note": "Current reproducible media/composition configuration and export tooling."},
+    "packages": {"role": "authority", "target_groups": ["packages"], "transitional": false, "note": "Canonical container for maintained shared packages and authorities; contains the complete current game-data authority plus the maintained active rules source, publication support, and current rule-fact synchronization helper."},
+    "releases": {"role": "frozen_release", "target_groups": ["releases"], "transitional": false, "note": "Immutable published release packages."},
+    "rulebook": {"role": "historical_compatibility", "target_groups": ["assets", "legacy"], "transitional": true, "note": "Legacy monolithic Rulebook and version-specific compatibility support plus Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json and maintained rules support lives at packages/rules/. The Browser Rulebook application source is archived under legacy/rulebook-browser/ but remains the deployed /rulebook/ release bridge until v0.7.2 cuts over."},
+    "rules-arbiter": {"role": "active_application", "target_groups": ["apps"], "transitional": true, "note": "Current static Rules Arbiter browser shell."},
+    "rules-assistant": {"role": "active_application", "target_groups": ["apps", "packages"], "transitional": true, "note": "Rules Arbiter implementation, retrieval, tests, and deployable endpoint."},
+    "scripts": {"role": "production_tooling", "target_groups": ["tools"], "transitional": true, "note": "Cross-project generation, validation, release, migration, and maintenance tooling."},
+    "src": {"role": "active_application", "target_groups": ["apps"], "transitional": true, "note": "Active rules-aware digital engine."},
+    "tests": {"role": "production_tooling", "target_groups": ["root"], "transitional": false, "note": "Repository-wide contract/regression harness; root placement is deliberate."},
+    "tts": {"role": "production_tooling", "target_groups": ["tools", "releases"], "transitional": true, "note": "TTS generation/packaging plus versioned release evidence."},
+    "v0.7.1": {"role": "historical_compatibility", "target_groups": ["apps"], "transitional": true, "note": "Lifecycle-selected current versioned public entrypoint; transitions to legacy when historical."},
+    "workers": {"role": "active_application", "target_groups": ["apps"], "transitional": true, "note": "Deployed support services."}
   }
 }
