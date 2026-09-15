@@ -5,6 +5,8 @@ export const QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const MAX_REQUIRED_CRITERIA = 16;
 const MAX_FORBIDDEN_CRITERIA = 12;
+const MAX_CRITERION_ID_LENGTH = 120;
+const MAX_CRITERION_STATEMENT_LENGTH = 1200;
 const MAX_HISTORY_ITEMS = 8;
 
 const EVALUATOR_PROMPT = `You are a strict semantic equivalence evaluator for Gauntlet Rules Arbiter QA.
@@ -44,7 +46,7 @@ const RESULT_SCHEMA = {
         type: "object",
         additionalProperties: false,
         properties: {
-          id: { type: "string", minLength: 1, maxLength: 120 },
+          id: { type: "string", minLength: 1, maxLength: MAX_CRITERION_ID_LENGTH },
           status: { type: "string", enum: ["satisfied", "contradicted", "missing", "unclear"] },
           reason: { type: "string", minLength: 1, maxLength: 500 }
         },
@@ -58,7 +60,7 @@ const RESULT_SCHEMA = {
         type: "object",
         additionalProperties: false,
         properties: {
-          id: { type: "string", minLength: 1, maxLength: 120 },
+          id: { type: "string", minLength: 1, maxLength: MAX_CRITERION_ID_LENGTH },
           status: { type: "string", enum: ["absent", "present", "unclear"] },
           reason: { type: "string", minLength: 1, maxLength: 500 }
         },
@@ -105,26 +107,55 @@ function sanitizeHistory(value) {
   })).filter((item) => item.content);
 }
 
-function sanitizeCriteria(value, { maximum }) {
-  if (!Array.isArray(value)) return [];
-  return value.slice(0, maximum).map((item) => ({
-    id: String(item?.id || "").trim().slice(0, 120),
-    statement: String(item?.statement || "").trim().slice(0, 1200)
-  }));
+function validateCriteriaInput(value, { label, maximum, required = false }, failures) {
+  if (!Array.isArray(value)) {
+    if (required) failures.push("at least one semantic criterion is required");
+    else if (value !== undefined) failures.push(`${label} semantic criteria must be an array`);
+    return [];
+  }
+  if (required && !value.length) failures.push("at least one semantic criterion is required");
+  if (value.length > maximum) failures.push(`${label} semantic criteria exceed maximum of ${maximum}`);
+
+  const normalized = [];
+  for (const item of value) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      failures.push(`${label} semantic criterion must be an object`);
+      continue;
+    }
+    const id = typeof item.id === "string" ? item.id.trim() : "";
+    const statement = typeof item.statement === "string" ? item.statement.trim() : "";
+    if (!id) failures.push(`${label} semantic criterion is missing an id`);
+    if (id.length > MAX_CRITERION_ID_LENGTH) {
+      failures.push(`${label} semantic criterion id exceeds ${MAX_CRITERION_ID_LENGTH} characters`);
+    }
+    if (!statement) failures.push(`${label} semantic criterion ${id || "<missing>"} is missing a statement`);
+    if (statement.length > MAX_CRITERION_STATEMENT_LENGTH) {
+      failures.push(`${label} semantic criterion ${id || "<missing>"} statement exceeds ${MAX_CRITERION_STATEMENT_LENGTH} characters`);
+    }
+    normalized.push({ id, statement });
+  }
+  return normalized;
 }
 
 export function validateSemanticEvaluationPayload(payload) {
   const failures = [];
   const question = String(payload?.question || "").trim();
   const answer = String(payload?.answer || "").trim();
-  const semanticCriteria = sanitizeCriteria(payload?.semanticCriteria, { maximum: MAX_REQUIRED_CRITERIA });
-  const forbiddenSemanticClaims = sanitizeCriteria(payload?.forbiddenSemanticClaims, { maximum: MAX_FORBIDDEN_CRITERIA });
+  const semanticCriteria = validateCriteriaInput(
+    payload?.semanticCriteria,
+    { label: "required", maximum: MAX_REQUIRED_CRITERIA, required: true },
+    failures
+  );
+  const forbiddenSemanticClaims = validateCriteriaInput(
+    payload?.forbiddenSemanticClaims,
+    { label: "forbidden", maximum: MAX_FORBIDDEN_CRITERIA },
+    failures
+  );
 
   if (!question) failures.push("question is required");
   if (question.length > 1200) failures.push("question exceeds 1200 characters");
   if (!answer) failures.push("answer is required");
   if (answer.length > 6000) failures.push("answer exceeds 6000 characters");
-  if (!semanticCriteria.length) failures.push("at least one semantic criterion is required");
 
   const all = [
     ...semanticCriteria.map((item) => ({ ...item, kind: "required" })),
@@ -132,8 +163,6 @@ export function validateSemanticEvaluationPayload(payload) {
   ];
   const seen = new Set();
   for (const item of all) {
-    if (!item.id) failures.push(`${item.kind} semantic criterion is missing an id`);
-    if (!item.statement) failures.push(`${item.kind} semantic criterion ${item.id || "<missing>"} is missing a statement`);
     if (item.id && seen.has(item.id)) failures.push(`duplicate semantic criterion id ${item.id}`);
     if (item.id) seen.add(item.id);
   }
