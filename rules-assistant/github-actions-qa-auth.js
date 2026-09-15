@@ -5,7 +5,8 @@ const QA_REPOSITORY = "tymonius/Gauntlet";
 const QA_REPOSITORY_ID = "375950579";
 const QA_WORKFLOW_REFS = Object.freeze([
   "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
-  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
+  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
+  "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main"
 ]);
 const QA_EVENT_NAME = "workflow_dispatch";
 const QA_REF = "refs/heads/main";
