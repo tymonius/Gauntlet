@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import {
   ROOT,
@@ -22,6 +23,7 @@ const compatibleFiles = (contract.materializedFiles || []).filter((file) => {
   if (!inPlace) return true;
   const source = path.resolve(ROOT, file.source);
   const destination = path.resolve(publicFileTarget(destinationRoot, file.publicPath));
+  if (fs.existsSync(destination)) return false;
   return source !== destination;
 });
 

@@ -83,6 +83,8 @@
     {"source": "packages/rules/faction-guides/mystics.md", "publicPath": "/rulebook/sources/factions/mystics.md", "kind": "release-transition-source"},
     {"source": "packages/rules/faction-guides/inquisition.md", "publicPath": "/rulebook/sources/factions/inquisition.md", "kind": "release-transition-source"},
     {"source": "packages/rules/comprehensive/comprehensive-rules.md", "publicPath": "/rulebook/sources/complete-rules.md", "kind": "release-transition-source"},
+    {"source": "packages/rendering/face-authority.mjs", "publicPath": "/card-design/face-authority.mjs", "kind": "shared-browser-contract"},
+    {"source": "packages/rendering/production-surface.mjs", "publicPath": "/card-design/production-surface.mjs", "kind": "shared-browser-contract"},
     {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.html", "publicPath": "/card-design/long-card-render.html", "kind": "historical-card-review"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.js", "publicPath": "/card-design/long-card-render.js", "kind": "historical-card-review"},

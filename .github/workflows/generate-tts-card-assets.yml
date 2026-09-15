@@ -6,6 +6,7 @@ on:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
       - 'packages/game-data/**'
+      - 'packages/rendering/**'
       - 'packages/rules/rule-facts.js'
       - 'docs/v0.6.4-*.json'
       - 'config/release-lifecycle.json'
@@ -91,6 +92,7 @@ jobs:
             package.json
             design-tokens.css
             packages/game-data
+            packages/rendering
             packages/rules/rule-facts.js
             docs/v0.6.4-card-additions.json
             docs/v0.6.4-rules.json

@@ -17,7 +17,7 @@ import {
   surfaceCssPixels,
   surfaceDeviceScale,
   surfaceRasterPixels,
-} from '../card-design/production-surface.mjs';
+} from '../packages/rendering/production-surface.mjs';
 
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
 const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
