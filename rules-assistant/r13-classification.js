@@ -82,18 +82,24 @@ function namedAuthoritySubjects(source) {
 }
 
 export function shouldPromoteNamedDirectAuthority(question, sources = []) {
-  const current = ` ${normalizePhrase(question)} `;
+  const rawQuestion = String(question || "").trim();
+  const current = ` ${normalizePhrase(rawQuestion)} `;
   if (!current.trim()) return false;
+  if (/\b(?:if|unless|except|versus|vs\.?|interact|interaction|override|same as|different from)\b/i.test(rawQuestion)) {
+    return false;
+  }
+
   const generic = new Set([
     "battle", "complete rules", "rules", "timing", "movement", "action", "territory",
     "gambit", "tactic", "aftermath", "opening", "denouement"
   ]);
-
-  return (Array.isArray(sources) ? sources : []).some((source) =>
+  const matchingSources = (Array.isArray(sources) ? sources : []).filter((source) =>
     namedAuthoritySubjects(source).some((subject) =>
       !generic.has(subject) && current.includes(` ${subject} `)
     )
   );
+
+  return matchingSources.length === 1;
 }
 
 function phaseLegalityActionTokens(question) {
