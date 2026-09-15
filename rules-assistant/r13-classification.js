@@ -30,6 +30,14 @@ function sourceText(source) {
     .toLowerCase();
 }
 
+function normalizePhrase(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/^(?:card|leader|faction|order|rulebook):\s*/i, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
 function directOverviewSubjectTokens(question) {
   const current = String(question || "").trim().replace(/[?!.]+$/, "");
   const match = current.match(/^how\s+(?:do|does)\s+(.+?)\s+work$/i)
@@ -58,6 +66,34 @@ export function shouldPromoteExpandedDirectOverview(question, sources = []) {
     const titleTokens = new Set(tokens(source?.title));
     return subjectTokens.every((token) => titleTokens.has(token));
   });
+}
+
+function namedAuthoritySubjects(source) {
+  const subjects = new Set();
+  for (const value of [source?.heading, source?.title]) {
+    const normalized = normalizePhrase(value);
+    if (!normalized) continue;
+    subjects.add(normalized);
+    const separators = String(value || "").split(/\s+[—–]\s+|:\s+/);
+    const tail = normalizePhrase(separators.at(-1));
+    if (tail) subjects.add(tail);
+  }
+  return [...subjects].filter((subject) => subject.length >= 4);
+}
+
+export function shouldPromoteNamedDirectAuthority(question, sources = []) {
+  const current = ` ${normalizePhrase(question)} `;
+  if (!current.trim()) return false;
+  const generic = new Set([
+    "battle", "complete rules", "rules", "timing", "movement", "action", "territory",
+    "gambit", "tactic", "aftermath", "opening", "denouement"
+  ]);
+
+  return (Array.isArray(sources) ? sources : []).some((source) =>
+    namedAuthoritySubjects(source).some((subject) =>
+      !generic.has(subject) && current.includes(` ${subject} `)
+    )
+  );
 }
 
 function phaseLegalityActionTokens(question) {
@@ -141,7 +177,47 @@ export function hasNamedCardBattleCollateralTimingConflict(sources = []) {
   );
 }
 
+function transformedStateSubject(question) {
+  const current = String(question || "").trim();
+  const transformation = current.match(/\b(?:turn|turns|turned|become|becomes|became|transform|transforms|transformed)\b[\s\S]{0,80}?\b(?:into\s+)?(?:an?\s+|the\s+)?([A-Z][A-Za-z0-9'’-]*(?:\s+[A-Z][A-Za-z0-9'’-]*){0,3})\b/);
+  if (!transformation) return "";
+  const subject = normalizePhrase(transformation[1]);
+  if (!subject || new Set(["overlay", "card", "territory", "asset", "gambit", "tactic"]).has(subject)) return "";
+  return subject;
+}
+
+function sourceDirectlyDefinesSubject(source, subject) {
+  const title = normalizePhrase(source?.title);
+  const heading = normalizePhrase(source?.heading);
+  if (title === subject || heading === subject || title.endsWith(` ${subject}`) || heading.endsWith(` ${subject}`)) {
+    return true;
+  }
+  const escaped = subject.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  const text = sourceText(source);
+  return new RegExp(`(?:^|[.\\n;:]\\s*)${escaped}\\s+(?:is|are|means|does|has|causes|counts as)\\b`, "i").test(text)
+    || new RegExp(`\\b${escaped}\\s*:`, "i").test(text);
+}
+
+export function shouldForceUndefinedTransformationGap(question, sources = []) {
+  const subject = transformedStateSubject(question);
+  if (!subject) return false;
+  const current = String(question || "").toLowerCase();
+  if (!/\b(?:what|which|how)\b/.test(current) || !/\b(?:do|does|rules?|effect|after|mean|means|work|works)\b/.test(current)) {
+    return false;
+  }
+  const sourceList = Array.isArray(sources) ? sources : [];
+  const referenced = sourceList.some((source) => sourceText(source).includes(subject));
+  if (!referenced) return false;
+  return !sourceList.some((source) => sourceDirectlyDefinesSubject(source, subject));
+}
+
 export function normalizeR13RulingStatus(value, question, sources = []) {
+  if (value === "out_of_scope") return value;
+
+  if (shouldForceUndefinedTransformationGap(question, sources)) {
+    return "provisional";
+  }
+
   if (!["explicit", "inferred"].includes(value)) return value;
 
   if (hasNamedCardBattleCollateralTimingConflict(sources)) {
@@ -153,6 +229,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
     && (
       shouldPromoteExpandedDirectOverview(question, sources)
       || shouldPromoteDirectPhaseLegality(question, sources)
+      || shouldPromoteNamedDirectAuthority(question, sources)
     )
   ) {
     return "explicit";
