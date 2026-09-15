@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import {
   ROOT,
@@ -8,7 +9,6 @@ import {
 } from './publication-boundary.mjs';
 
 const destinationRoot = process.argv[2] ? path.resolve(process.argv[2]) : ROOT;
-const contract = loadPublicationBoundary();
 const inPlace = path.resolve(destinationRoot) === path.resolve(ROOT);
 const sourceOnlyRoots = new Set(contract.pages?.sourceOnlyRepositoryRoots || []);
 
@@ -22,6 +22,7 @@ const compatibleFiles = (contract.materializedFiles || []).filter((file) => {
   if (!inPlace) return true;
   const source = path.resolve(ROOT, file.source);
   const destination = path.resolve(publicFileTarget(destinationRoot, file.publicPath));
+  if (fs.existsSync(destination)) return false;
   return source !== destination;
 });
 
