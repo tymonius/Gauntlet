@@ -1,5 +1,5 @@
 import { validateCurrentGameAuthority } from '../current-game-authority.mjs';
-import { FACE_TEMPLATES, listFaces } from '../../card-design/face-authority.mjs';
+import { FACE_TEMPLATES, listFaces } from '../../packages/rendering/face-authority.mjs';
 import { FACE_TEMPLATE_CONTRACTS, resolveAllFaceSpecs } from '../../card-design/face-spec.mjs';
 import { FACE_TEMPLATE_RENDERERS } from '../../card-design/face-template-registry.mjs';
 
