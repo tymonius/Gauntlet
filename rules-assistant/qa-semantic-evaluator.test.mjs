@@ -42,6 +42,35 @@ describe("semantic QA payload validation", () => {
     });
     expect(duplicate.failures).toContain("duplicate semantic criterion id same");
   });
+
+  test("rejects oversized criteria instead of silently truncating them", () => {
+    const longStatement = "x".repeat(1201);
+    const result = validateSemanticEvaluationPayload({
+      question: "Question",
+      answer: "Answer",
+      semanticCriteria: Array.from({ length: 17 }, (_, index) => ({
+        id: `required-${index}`,
+        statement: index === 0 ? longStatement : `Required proposition ${index}`
+      })),
+      forbiddenSemanticClaims: [{ id: "f".repeat(121), statement: "Forbidden proposition" }]
+    });
+    expect(result.failures).toContain("required semantic criteria exceed maximum of 16");
+    expect(result.failures).toContain("required semantic criterion required-0 statement exceeds 1200 characters");
+    expect(result.failures).toContain("forbidden semantic criterion id exceeds 120 characters");
+    expect(result.value.semanticCriteria).toHaveLength(17);
+    expect(result.value.semanticCriteria[0].statement).toHaveLength(1201);
+  });
+
+  test("rejects malformed semantic criterion types", () => {
+    const result = validateSemanticEvaluationPayload({
+      question: "Question",
+      answer: "Answer",
+      semanticCriteria: [{ id: 42, statement: "Rule" }],
+      forbiddenSemanticClaims: "not-an-array"
+    });
+    expect(result.failures).toContain("required semantic criterion is missing an id");
+    expect(result.failures).toContain("forbidden semantic criteria must be an array");
+  });
 });
 
 describe("semantic QA verdict derivation", () => {
