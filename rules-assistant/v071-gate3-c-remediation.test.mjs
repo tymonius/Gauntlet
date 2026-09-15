@@ -16,10 +16,13 @@ describe("v0.7.1 Gate 3 tranche C remediation helpers", () => {
   test("keeps a natural long referential follow-up in immediate context", () => {
     const advanceGuard = "If that extra step is the one that starts the fight, can I still put down a Gambit?";
     const confession = "After I peek at theirs, can I pull this one back into Reserve and pick a different Tactic?";
+    const forcedMarch = "Could that extra step be the one that starts a battle?";
     expect(hasReferentialFollowupCue(advanceGuard)).toBe(true);
     expect(hasReferentialFollowupCue(confession)).toBe(true);
+    expect(hasReferentialFollowupCue(forcedMarch)).toBe(true);
     expect(shouldCarryImmediateHistory(advanceGuard)).toBe(true);
     expect(shouldCarryImmediateHistory(confession)).toBe(true);
+    expect(shouldCarryImmediateHistory(forcedMarch)).toBe(true);
   });
 
   test("does not treat a relative clause in a self-contained long question as conversation context", () => {
