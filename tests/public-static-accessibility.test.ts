@@ -19,7 +19,6 @@ const PUBLIC_ROOTS = [
   "apps/privacy",
   "apps/rules",
   "apps/start",
-  "legacy/public-compatibility/rulebook",
   "rules-arbiter",
 ];
 
