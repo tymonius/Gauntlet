@@ -9,6 +9,7 @@ import {
 } from './publication-boundary.mjs';
 
 const destinationRoot = process.argv[2] ? path.resolve(process.argv[2]) : ROOT;
+const contract = loadPublicationBoundary();
 const inPlace = path.resolve(destinationRoot) === path.resolve(ROOT);
 const sourceOnlyRoots = new Set(contract.pages?.sourceOnlyRepositoryRoots || []);
 
