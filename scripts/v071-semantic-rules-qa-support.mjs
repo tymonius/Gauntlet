@@ -1,17 +1,40 @@
 export const SEMANTIC_GRADING_MODE = "semantic-v1";
 
+const MAX_REQUIRED_CRITERIA = 16;
+const MAX_FORBIDDEN_CRITERIA = 12;
+const MAX_CRITERION_ID_LENGTH = 120;
+const MAX_CRITERION_STATEMENT_LENGTH = 1200;
+
 function nonemptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function validateCriteria(caseId, criteria, label, failures) {
-  if (!Array.isArray(criteria)) return;
+function validateCriteria(caseId, criteria, label, failures, maximum) {
+  if (!Array.isArray(criteria)) {
+    failures.push(`${caseId}: ${label} criteria must be an array`);
+    return;
+  }
+  if (criteria.length > maximum) {
+    failures.push(`${caseId}: ${label} criteria exceed maximum of ${maximum}`);
+  }
+
   const seen = new Set();
   for (const criterion of criteria) {
-    const id = String(criterion?.id || "").trim();
-    const statement = String(criterion?.statement || "").trim();
+    if (!criterion || typeof criterion !== "object" || Array.isArray(criterion)) {
+      failures.push(`${caseId}: ${label} criterion must be an object`);
+      continue;
+    }
+
+    const id = typeof criterion.id === "string" ? criterion.id.trim() : "";
+    const statement = typeof criterion.statement === "string" ? criterion.statement.trim() : "";
     if (!id) failures.push(`${caseId}: ${label} criterion is missing an id`);
+    if (id.length > MAX_CRITERION_ID_LENGTH) {
+      failures.push(`${caseId}: ${label} criterion id exceeds ${MAX_CRITERION_ID_LENGTH} characters`);
+    }
     if (!statement) failures.push(`${caseId}: ${label} criterion ${id || "<missing>"} is missing a statement`);
+    if (statement.length > MAX_CRITERION_STATEMENT_LENGTH) {
+      failures.push(`${caseId}: ${label} criterion ${id || "<missing>"} statement exceeds ${MAX_CRITERION_STATEMENT_LENGTH} characters`);
+    }
     if (id && seen.has(id)) failures.push(`${caseId}: duplicate ${label} criterion id ${id}`);
     if (id) seen.add(id);
   }
@@ -34,19 +57,26 @@ export function validateSemanticBenchmark(benchmark) {
     if (!Array.isArray(item?.semanticCriteria) || !item.semanticCriteria.length) {
       failures.push(`${caseId}: semantic-v1 case requires at least one semanticCriteria entry`);
     }
-    validateCriteria(caseId, item?.semanticCriteria, "required", failures);
-    validateCriteria(caseId, item?.forbiddenSemanticClaims, "forbidden", failures);
+    validateCriteria(caseId, item?.semanticCriteria, "required", failures, MAX_REQUIRED_CRITERIA);
 
-    const requiredIds = new Set((item?.semanticCriteria || []).map((criterion) => String(criterion?.id || "").trim()).filter(Boolean));
+    if (item?.forbiddenSemanticClaims !== undefined && !Array.isArray(item.forbiddenSemanticClaims)) {
+      failures.push(`${caseId}: forbidden criteria must be an array`);
+    } else {
+      validateCriteria(caseId, item?.forbiddenSemanticClaims || [], "forbidden", failures, MAX_FORBIDDEN_CRITERIA);
+    }
+
+    const requiredIds = new Set((item?.semanticCriteria || [])
+      .map((criterion) => typeof criterion?.id === "string" ? criterion.id.trim() : "")
+      .filter(Boolean));
     for (const criterion of item?.forbiddenSemanticClaims || []) {
-      const id = String(criterion?.id || "").trim();
+      const id = typeof criterion?.id === "string" ? criterion.id.trim() : "";
       if (id && requiredIds.has(id)) failures.push(`${caseId}: semantic criterion id ${id} is reused across required and forbidden criteria`);
     }
 
-    if (Array.isArray(item?.expectedAnswerPatterns) && item.expectedAnswerPatterns.length) {
+    if (Object.prototype.hasOwnProperty.call(item || {}, "expectedAnswerPatterns")) {
       failures.push(`${caseId}: semantic-v1 forbids expectedAnswerPatterns; use semanticCriteria instead`);
     }
-    if (Array.isArray(item?.forbiddenAnswerPatterns) && item.forbiddenAnswerPatterns.length) {
+    if (Object.prototype.hasOwnProperty.call(item || {}, "forbiddenAnswerPatterns")) {
       failures.push(`${caseId}: semantic-v1 forbids forbiddenAnswerPatterns; use forbiddenSemanticClaims instead`);
     }
   }
