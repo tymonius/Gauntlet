@@ -86,11 +86,11 @@ function renderLeaders(faction, heading) {
       if (Array.isArray(ability.items)) {
         const items = ability.items.map(item => {
           const itemDescriptor = [item.cost, item.descriptor].filter(Boolean).join(' · ');
-          return `##### ${item.name}\n\n${itemDescriptor ? `**${itemDescriptor}**\n\n` : ''}${item.text || ''}`;
+          return `###### ${item.name}\n\n${itemDescriptor ? `**${itemDescriptor}**\n\n` : ''}${item.text || ''}`;
         }).join('\n\n');
-        return `#### ${ability.name}\n\n${descriptor ? `**${descriptor}**\n\n` : ''}${items}`;
+        return `##### ${ability.name}\n\n${descriptor ? `**${descriptor}**\n\n` : ''}${items}`;
       }
-      return `#### ${ability.name}\n\n${descriptor ? `**${descriptor}**\n\n` : ''}${ability.text || ''}`;
+      return `##### ${ability.name}\n\n${descriptor ? `**${descriptor}**\n\n` : ''}${ability.text || ''}`;
     }).join('\n\n');
     return `#### ${leader.name}\n\n${leader.note ? `*${leader.note}*\n\n` : ''}${blocks || 'This Leader has no separate Leader Ability.'}`;
   }).join('\n\n');
@@ -100,7 +100,15 @@ function renderLeaders(faction, heading) {
 
 function factionIntro(faction) {
   const resource = faction.resource ? ` Its principal resource or progression is **${faction.resource}**.` : '';
-  return `${faction.name} can always win by running the Gauntlet. ${faction.victory}${resource}`;
+  const victory = faction.victory.trim();
+  let additional = '';
+  if (victory !== 'Run the Gauntlet.') {
+    const sharedPrefix = 'Run the Gauntlet or ';
+    additional = victory.startsWith(sharedPrefix)
+      ? ` An additional victory route is to ${victory.slice(sharedPrefix.length, -1)}.`
+      : ` An additional victory route is: ${victory}`;
+  }
+  return `${faction.name} can always win by running the Gauntlet.${additional}${resource}`;
 }
 
 function renderMilitary(authority, part) {
@@ -127,7 +135,7 @@ This Command trigger can occur on either player's turn, but only on the first ba
 
 ${p.orders}
 
-Orders do not spend an Action. To use an Order, pay its listed Command at its stated timing and resolve it immediately. The chosen Leader determines which Orders are available.
+The chosen Leader determines which Orders are available.
 
 ### X.3 Fortify
 
@@ -202,7 +210,7 @@ ${terms.procedure}
 
 **If refused:** ${terms.refused}
 
-**If the battle ends without a winner:** ${terms.no_winner}
+**No winner:** ${terms.no_winner}
 
 ### XI.3 Ratification and Peace Treaty
 
@@ -273,7 +281,7 @@ ${factionIntro(faction)}
 
 Capital begins at **${capital.starting}** and cannot fall below **${capital.minimum}**.
 
-The Capital Limit is **${capital.limit_formula}**. Recalculate that limit immediately whenever its inputs change. Capital may temporarily exceed the limit, but ${capital.limit_enforcement}
+The Capital Limit is **${capital.limit_formula}**. Recalculate that limit immediately whenever its inputs change. Capital may temporarily exceed the limit. ${capital.limit_enforcement}
 
 ### XII.2 Treasury and Income
 
@@ -384,13 +392,13 @@ The qualifying Denouement uses are: ${(p.operational_capacity_qualifying_feature
 
 ### XIII.3 Mission slot and normal Missions
 
-The Mission / Special Operation slot holds at most **${slot.maximum}** active card. A normal Mission and a Special Operation share that slot. ${slot.eligible_card}
+The Mission / Special Operation slot holds at most **${slot.maximum}** active card. A normal Mission and a Special Operation share that slot. **Eligibility:** ${slot.eligible_card}
 
-**Start — ${missions.start.timing}, ${missions.start.action_cost} Action.** ${missions.start.text} A Mission cannot complete on the turn it was started.
+**Start (${missions.start.action_cost} Action).** ${missions.start.timing} ${missions.start.text} A Mission cannot complete on the turn it was started.
 
-**Complete — ${missions.complete.timing}, ${missions.complete.action_cost} Action.** ${missions.complete.text}
+**Complete (${missions.complete.action_cost} Action).** ${missions.complete.timing} ${missions.complete.text}
 
-**Abort — ${missions.abort.timing}, ${missions.abort.action_cost} Action.** ${missions.abort.text}
+**Abort (${missions.abort.action_cost} Action).** ${missions.abort.timing} ${missions.abort.text}
 
 **Failure.** ${missions.fail.text}
 
@@ -402,13 +410,13 @@ While a Mission is active, its owner may inspect it and the opponent knows the s
 
 Readiness must continue while the Special Operation remains active. ${special.readiness_failure}
 
-**Start — ${special.start.timing}, ${special.start.action_cost} Action.** ${special.start.text}
+**Start (${special.start.action_cost} Action).** ${special.start.timing} ${special.start.text}
 
 Requirements:
 
 ${numbered(special.start.requirements)}
 
-**Complete — ${special.complete.timing}, ${special.complete.action_cost} Action.** Intel cost: **${special.complete.intel_cost_formula}**. ${special.complete.text}
+**Complete (${special.complete.action_cost} Action).** ${special.complete.timing} Intel cost: **${special.complete.intel_cost_formula}**. ${special.complete.text}
 
 Completing a Special Operation does not increase Operation Progress and does not grant the normal Mission Intel reward.
 
@@ -426,7 +434,7 @@ ${interference.timing}
 
 Spend ${interference.cost}. A removed Gambit goes to **${interference.gambit_destination}**; a removed Tactic goes to **${interference.tactic_destination}**. Removal is optional.
 
-The opponent may replace a removed card from ${interference.replacement_source}; the replacement is ${interference.replacement_face_state}. Replacement is optional. ${interference.replacement_does_not_reopen_surveillance_or_interference ? 'A replacement does not reopen Surveillance or Interference at that stage.' : ''}
+The opponent may replace a removed card. Replacement source: ${interference.replacement_source}. The replacement is ${interference.replacement_face_state}. Replacement is optional. ${interference.replacement_does_not_reopen_surveillance_or_interference ? 'A replacement does not reopen Surveillance or Interference at that stage.' : ''}
 
 ${interference.revise_own_choice}
 
@@ -478,7 +486,7 @@ ${factionIntro(faction)}
 
 ### XIV.1 Rite selection and general rules
 
-Choose exactly **${selection.selectedCount}** different Rites from the **${selection.poolSize}**-Rite pool at ${selection.timing}. ${selection.rule} Visibility: ${selection.visibility}.
+${selection.rule}
 
 ${generalText}
 
@@ -550,7 +558,7 @@ ${factionIntro(faction)}
 
 Conviction begins at **${conviction.starting}**, cannot fall below **${conviction.minimum}**, and cannot exceed **${conviction.maximum}**.
 
-${conviction.timing}
+**Timing:** ${conviction.timing}
 
 ${conviction.text}
 
@@ -564,7 +572,7 @@ This normal Aftermath gain occurs at most once per turn, may trigger on either p
 
 ### XV.3 Purge
 
-Purge costs **${purge.action_cost} Action** and may be used during ${p.purge_phases.join(' or ')}. The normal Action use of Purge is limited to ${purge.action_purge_limit}.
+Purge costs **${purge.action_cost} Action** and may be used during ${p.purge_phases.join(' or ')}. The normal Action use of Purge is limited to once per turn.
 
 ${purge.two_phase_permission}
 
@@ -578,7 +586,7 @@ ${purgeOptions}
 
 ### XV.4 Purification
 
-${purification.timing}
+**Timing:** ${purification.timing}
 
 ${purification.text}
 
