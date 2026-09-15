@@ -46,6 +46,18 @@ const TITLE_CASE = new Map([
   ['aftermath', 'Aftermath'],
 ]);
 
+const INTERNAL_TREE_FIELDS = new Set([
+  'normalization',
+  'id',
+  'artwork',
+  'cardBack',
+  'completedArtwork',
+  'headerLines',
+  'style',
+  'bank_procedure_source',
+  'removal_classification_source',
+]);
+
 function title(value) {
   return TITLE_CASE.get(value) || String(value)
     .replaceAll('_', ' ')
@@ -71,29 +83,17 @@ function formatPrimitive(value) {
   return String(value);
 }
 
-function formatFieldPrimitive(key, value) {
-  if (value == null && key === 'maximum') return 'No fixed maximum';
-  if (value == null && key === 'requirement') return 'No additional requirement';
-  return formatPrimitive(value);
-}
-
 function partHeader(id, partTitle, covers) {
   const markers = covers.map(ruleId => `<!-- RULES-COVER:${ruleId} -->`).join('\n');
   return `<!-- RULES-PART:${id} -->\n## ${partTitle}${markers ? `\n${markers}` : ''}`;
 }
 
-function stagedPart(id, partTitle, covers, note) {
-  return `${partHeader(id, partTitle, covers)}\n\n> **Projection staged.** ${note}`;
-}
-
 function renderTree(value, level = 4, options = {}) {
-  const { omit = new Set(['normalization']), arrayLabel = 'Entry' } = options;
+  const { omit = INTERNAL_TREE_FIELDS, arrayLabel = 'Entry' } = options;
   if (value == null || typeof value !== 'object') return formatPrimitive(value);
 
   if (Array.isArray(value)) {
-    if (value.every(item => item == null || typeof item !== 'object')) {
-      return ordered(value);
-    }
+    if (value.every(item => item == null || typeof item !== 'object')) return ordered(value);
     return value.map((item, index) => {
       const preferred = item && typeof item === 'object' && (item.name || item.id);
       return `${'#'.repeat(Math.min(level, 6))} ${preferred || `${arrayLabel} ${index + 1}`}\n\n${renderTree(item, Math.min(level + 1, 6), options)}`;
@@ -105,13 +105,9 @@ function renderTree(value, level = 4, options = {}) {
   for (const [key, child] of Object.entries(value)) {
     if (omit.has(key)) continue;
     if (child == null || typeof child !== 'object') {
-      primitiveLines.push(`- **${title(key)}:** ${formatFieldPrimitive(key, child)}`);
+      primitiveLines.push(`- **${title(key)}:** ${formatPrimitive(child)}`);
     } else if (Array.isArray(child) && child.every(item => item == null || typeof item !== 'object')) {
-      if (child.length === 0) {
-        primitiveLines.push(`- **${title(key)}:** None`);
-      } else {
-        nested.push(`${'#'.repeat(Math.min(level, 6))} ${title(key)}\n\n${ordered(child)}`);
-      }
+      if (child.length) nested.push(`${'#'.repeat(Math.min(level, 6))} ${title(key)}\n\n${ordered(child)}`);
     } else {
       nested.push(`${'#'.repeat(Math.min(level, 6))} ${title(key)}\n\n${renderTree(child, Math.min(level + 1, 6), options)}`);
     }
@@ -127,11 +123,11 @@ function getFaction(authority, id) {
 
 function renderFeatureMetadata(authority, factionId) {
   const features = authority.factionFeatures?.[factionId] || [];
-  if (!features.length) return 'No shared Faction Feature metadata is registered.';
+  if (!features.length) return 'No shared Faction Features are registered.';
   return features.map(feature => {
     const profile = [feature.profile, feature.timing, feature.cost].filter(Boolean).join(' · ');
     const details = Object.entries(feature)
-      .filter(([key]) => !['name', 'profile', 'timing', 'cost'].includes(key))
+      .filter(([key]) => !['name', 'profile', 'timing', 'cost'].includes(key) && !INTERNAL_TREE_FIELDS.has(key))
       .map(([key, value]) => `- **${title(key)}:** ${formatPrimitive(value)}`)
       .join('\n');
     return `#### ${feature.name}\n\n${profile ? `**${profile}**\n\n` : ''}${details}`.trim();
@@ -152,8 +148,7 @@ function renderLeaderAbilities(faction) {
       }
       return `#### ${ability.name}\n\n${descriptor ? `**${descriptor}**\n\n` : ''}${ability.text || ''}`;
     }).join('\n\n');
-
-    return `### ${leader.name}\n\n${leader.note ? `*${leader.note}*\n\n` : ''}${blocks || 'No Leader Ability is registered.'}`;
+    return `### ${leader.name}\n\n${leader.note ? `*${leader.note}*\n\n` : ''}${blocks || 'This Leader has no separate Leader Ability.'}`;
   }).join('\n\n');
 }
 
@@ -162,30 +157,18 @@ function renderFactionPart(authority, partIndex, factionId, extras = []) {
   const procedures = authority.gameplay.faction_rules?.[factionId];
   if (!procedures) throw new Error(`Missing canonical faction procedures: ${factionId}`);
 
-  const identity = bullets([
-    `**Faction:** ${faction.name}`,
-    `**Color:** ${faction.color}`,
-    faction.resource ? `**Resource / progression:** ${faction.resource}` : null,
-    `**Playable faction cards in authority:** ${faction.card_count}`,
-  ]);
-
+  const resource = faction.resource ? ` Its principal resource or progression is **${faction.resource}**.` : '';
   const extraText = extras.map(({ heading, value }) => `### ${heading}\n\n${renderTree(value, 4)}`).join('\n\n');
 
   return `${partHeader(...PARTS[partIndex])}
 
-### Faction identity
+${faction.name} can always win by running the Gauntlet. ${faction.victory}${resource}
 
-${identity}
-
-### Victory route summary
-
-${faction.victory}
-
-### Shared Faction Feature metadata
+### Faction Features
 
 ${renderFeatureMetadata(authority, factionId)}
 
-### Canonical faction procedures
+### Procedures
 
 ${renderTree(procedures, 4)}
 
@@ -199,25 +182,31 @@ function renderFoundations(authority) {
   const components = authority.componentContract;
   if (!taxonomy || !components) throw new Error('Foundations authority is incomplete.');
 
-  const families = Object.entries(components.canonicalFamilies || {}).map(([id, family]) =>
-    `- **${title(id)}:** ${family.orientation || 'unspecified orientation'}; back policy ${family.backPolicy || 'unspecified'}.`
-  );
-
   const shared = (components.sharedComponents || []).map(component => {
-    const quantity = component.quantityPerPlayer != null ? `${component.quantityPerPlayer} per player` :
-      component.quantity != null ? `${component.quantity}` : 'quantity not specified';
-    return `- **${component.name}:** ${quantity}${component.shareable ? '; shareable' : ''}.`;
+    const quantity = component.quantityPerPlayer != null
+      ? `${component.quantityPerPlayer} per player`
+      : component.quantity != null ? `${component.quantity}` : null;
+    return `**${component.name}**${quantity ? ` — ${quantity}` : ''}${component.shareable ? ' (shareable)' : ''}`;
   });
 
-  const factionComponents = (components.components || []).map(component => {
-    const quantity = component.quantity != null ? `quantity ${component.quantity}` : 'quantity not specified';
-    const tracked = component.trackedValue
-      ? `; tracks ${component.trackedValue.name} from ${component.trackedValue.starting} with minimum ${component.trackedValue.minimum}${component.trackedValue.maximum == null ? ' and no fixed maximum' : ` and maximum ${component.trackedValue.maximum}`}`
-      : '';
-    return `- **${component.name}:** ${component.faction || 'shared'} ${component.family || 'component'}, ${quantity}${tracked}.`;
-  });
+  const byFaction = new Map();
+  for (const component of components.components || []) {
+    const faction = component.faction || 'shared';
+    if (!byFaction.has(faction)) byFaction.set(faction, []);
+    const quantity = component.quantity != null && component.quantity !== 1 ? ` ×${component.quantity}` : '';
+    byFaction.get(faction).push(`${component.name}${quantity}`);
+  }
+
+  const factionComponentLines = authority.gameplay.factions
+    .map(faction => {
+      const names = byFaction.get(faction.id) || [];
+      return names.length ? `- **${faction.name}:** ${names.join(', ')}.` : null;
+    })
+    .filter(Boolean);
 
   return `${partHeader(...PARTS[0])}
+
+The rules in this document describe the game as players use it at the table. Component-production details, file formats, rendering policies, and other implementation metadata are not gameplay rules and are intentionally omitted.
 
 ### I.1 Faction Features and Leader Abilities
 
@@ -225,25 +214,19 @@ ${taxonomy.factionFeature}
 
 ${taxonomy.leaderAbility}
 
-Action profiles:
+When a Feature or Ability is marked **1 Action**, using it spends an Action at the stated legal timing. **No Action** means it may be used at its stated timing without spending an Action; it does not grant another Action. **Automatic** means it applies when its condition and timing occur without spending an Action.
 
-${bullets(Object.entries(taxonomy.actionProfiles).map(([profile, text]) => `**${profile}:** ${text}`))}
+### I.2 Shared play components
 
-### I.2 Canonical component families
+Each player uses the normal shared play components listed below in addition to their Deck, Leader, three Territories, and faction-specific materials.
 
-${bullets(families.map(line => line.replace(/^- /, '')))}
+${bullets(shared)}
 
-${components.standardBack?.note || ''}
+### I.3 Faction-specific materials
 
-### I.3 Shared components
+Faction trackers, references, Deeds, Proposals, Rites, and similar materials are part of the player's game package, not ordinary cards in the Deck. Their own faction rules control how they enter play, move, or are used.
 
-${bullets(shared.map(line => line.replace(/^- /, '')))}
-
-### I.4 Faction and supplemental components
-
-${bullets(factionComponents.map(line => line.replace(/^- /, '')))}
-
-${components.effectiveBackPolicy?.note || ''}`;
+${factionComponentLines.join('\n')}`;
 }
 
 function renderConstructionSetup(authority) {
@@ -252,48 +235,48 @@ function renderConstructionSetup(authority) {
   const starting = authority.gameplay.battlefield.starting_position;
   if (!deck || !setup) throw new Error('Construction/setup authority is incomplete.');
 
-  const supplemental = deck.supplemental_components || {};
   const steps = setup.sequence.map((id, index) => `${index + 1}. ${setup.steps[id]}`).join('\n');
+  const opening = setup.opening_selection;
 
   return `${partHeader(...PARTS[1])}
 
 ### II.1 Deck construction
 
-- A Deck contains at least **${deck.minimum_cards} playable cards** and no more than **${deck.maximum_deckbuilding_value} total deckbuilding value**.
-- A Deck uses exactly **${deck.factions_per_deck} faction** and **${deck.leaders_per_deck} Leader**.
-- ${deck.allowed_playable_cards}
-- A Unique card is limited to **${deck.unique_copy_limit} copy**. ${deck.non_unique_copy_rule}
-- Choose exactly **${deck.territories_per_player} different Territories**, with at most **${deck.maximum_arenas} Arena**. Territories ${deck.territories_must_be_different ? 'must' : 'need not'} be different.
-- Territories ${deck.territories_are_part_of_deck ? 'are' : 'are not'} part of the Deck, ${deck.territories_count_toward_minimum_cards ? 'do' : 'do not'} count toward the minimum card count, and ${deck.territories_count_toward_deckbuilding_value ? 'do' : 'do not'} count toward deckbuilding value.
-- Opponents ${deck.opponents_may_choose_same_territory_titles ? 'may' : 'may not'} choose the same Territory titles.
-- The chosen Leader ${deck.leader_begins_face_up ? 'begins face up' : 'does not begin face up'}.
+A legal Deck contains at least **${deck.minimum_cards} playable cards** and no more than **${deck.maximum_deckbuilding_value} total deckbuilding value**. Choose exactly **${deck.factions_per_deck} faction** and **${deck.leaders_per_deck} Leader**. ${deck.allowed_playable_cards}
+
+A card marked Unique is limited to **${deck.unique_copy_limit} copy**. ${deck.non_unique_copy_rule}
+
+Each player also chooses exactly **${deck.territories_per_player} different Territories**, with at most **${deck.maximum_arenas} Arena**. Territories are not part of the Deck and do not count toward either the minimum card count or deckbuilding value. Opponents may choose the same Territory titles. The chosen Leader begins face up.
 
 ### II.2 Supplemental components
 
-${bullets(Object.entries(supplemental)
-    .map(([key, value]) => `**${title(key)}:** ${formatPrimitive(value)}`))}
+Faction trackers, reference cards, Proposal cards, Deeds, Rites, Ritual cards, and other supplemental components remain outside the Deck by default. They are not shuffled into the Draw Pile, drawn as ordinary cards, played as ordinary playable cards, banked as Assets, discarded, or sent to the Graveyard unless a specific rule says to do so. They do not count toward Deck size or deckbuilding value.
+
+A specific faction, Leader, card, or component rule overrides these defaults when it expressly gives a supplemental component another procedure.
 
 ### II.3 Setup sequence
+
+Set up the game in this order:
 
 ${steps}
 
 ### II.4 Opening selection
 
-${renderTree(setup.opening_selection, 4)}
+Each player draws **${opening.draw}** cards, chooses **${opening.discard}** of them, and places the chosen card face up in their Discard Pile. The other **${opening.keep}** cards form that player's opening Hand. This choice is mandatory.
+
+The opening discard creates the Discard Pile before the first turn, but it does **not** count as discarding a card for another cost, trigger, or effect unless a rule expressly refers to the opening discard.
 
 ### II.5 Territory arrangement and reveal
 
-${renderTree(setup.territory_arrangement, 4)}
+Players arrange Territories only after seeing their opening Hand and opening discard, and before the first-player roll. Each player secretly orders their three Territories. When both players are ready, join the two lines and reveal all six Territories simultaneously. They remain face up unless an effect says otherwise.
 
-${renderTree(setup.territory_reveal, 4)}
-
-### II.6 Starting Positions and first player
+### II.6 Starting positions and first player
 
 ${starting}
 
-${renderTree(setup.starting_position, 4)}
+Setup placement is not movement, does not count as entering a Position, and does not trigger effects that care about entering.
 
-${renderTree(setup.initiative, 4)}`;
+After both players have completed opening selection and Territory arrangement, each player rolls one die. The higher result takes the first turn; reroll ties.`;
 }
 
 function renderTurn(authority) {
@@ -315,7 +298,7 @@ Legal normal Action uses:
 
 ${bullets(Object.values(actions.legal_uses))}
 
-Action-card procedure:
+To play a card for its Action effect:
 
 ${ordered(actions.action_card_play.steps)}
 
@@ -391,6 +374,8 @@ ${movement.new_sequence_after_battle}
 
 ### IV.3 Entering the opponent's Position
 
+When movement enters the opponent's Position:
+
 ${ordered(movement.entering_opponent_position)}
 
 ${battle.movement}
@@ -409,8 +394,9 @@ function renderBattles(authority) {
   const advantage = battle.advantage_disadvantage;
   const result = battle.normal_result;
   const aftermath = battle.aftermath;
-  const aftermathSteps = aftermath.sequence.map((id, index) => `${index + 1}. ${aftermath.steps[id]}`).join('\n');
   const noWinner = authority.gameplay.card_rules.battle_ends_without_winner;
+  const aftermathSteps = aftermath.sequence.map((id, index) => `${index + 1}. ${aftermath.steps[id]}`).join('\n');
+  const withdrawal = battle.withdrawal_procedure;
 
   return `${partHeader(...PARTS[4])}
 
@@ -428,10 +414,9 @@ Each player may normally set ${battle.normal_gambits} Gambit${battle.normal_gamb
 
 ### V.2 Commitment sources and Reserve
 
-- **Gambit source:** ${battle.commitment_sources.gambit}
-- **Tactic source:** ${battle.commitment_sources.tactic}
+A normal Gambit comes from **${battle.commitment_sources.gambit}**. After Gambits are set, each player physically sets their Hand aside without changing its zone, then draws the applicable number of cards from the **Draw Pile** to form a private **Reserve**. The owner may inspect and arrange their Reserve.
 
-${renderTree(battle.reserve, 4)}
+A normal Tactic comes from the **${battle.commitment_sources.tactic}**. A rule that names another source overrides that default. Reserve cards are not part of the Hand merely because the Hand is set aside during the battle.
 
 ### V.3 Onset
 
@@ -479,13 +464,27 @@ ${bullets([
 
 ${battle.retreat}
 
-${battle.withdrawal}
+Withdrawal is different from retreat: ${withdrawal.result_semantics} ${withdrawal.classification}
 
-${renderTree(battle.withdrawal_procedure, 4)}
+By default, a withdrawing attacker returns to the Position from which they entered the contested Position, and a withdrawing defender moves one Position toward their own end. If only the attacker withdraws, the defender stays in the contested Position. If only the defender withdraws, the attacker stays and becomes the occupier when applicable. If both withdraw, move the attacker first and then the defender; neither becomes the occupier because of that withdrawal.
+
+${withdrawal.onset}
+
+${withdrawal.after_onset}
 
 ### V.9 Battle ending without a winner
 
-${renderTree(noWinner, 4)}
+A battle that ends without a winner produces neither a winner nor a loser. Effects already applied remain applied, but unresolved effects that depend on a battle result do not apply.
+
+${noWinner.onset}
+
+${noWinner.after_onset_unresolved_battle_effects}
+
+${noWinner.after_onset_clear_cards}
+
+${noWinner.position_and_occupation}
+
+When applicable, continue the remaining non-result Aftermath and cleanup procedures. Victory, loss, and retreat triggers do not occur merely because the battle sequence ended.
 
 ### V.10 Aftermath
 
@@ -536,42 +535,73 @@ function renderCardsAndZones(authority) {
   const headings = rules.effect_headings;
   const assets = rules.assets;
   const removal = rules.asset_removal;
+  const bind = rules.bind;
 
   return `${partHeader(...PARTS[6])}
 
 ### VII.1 Card zones
 
-${renderTree(zones, 4)}
+**Draw Pile.** ${zones.draw_pile.text}
+
+**Hand.** ${zones.hand.text}
+
+**Discard Pile.** ${zones.discard_pile.text} ${zones.discard_pile.circulation ? `It is ${zones.discard_pile.circulation}.` : ''}
+
+**Graveyard.** ${zones.graveyard.text} ${zones.graveyard.circulation ? `It is ${zones.graveyard.circulation}.` : ''}
+
+**Asset Bank.** ${zones.asset_bank.text}
+
+**Gambit Area.** ${zones.gambit_area.text}
+
+**Reserve.** ${zones.reserve.text}
+
+**Tactic Area.** ${zones.tactic_area.text}
+
+**Leader and Faction Area.** ${zones.leader_and_faction_area.text}
 
 ### VII.2 Effect headings
 
-Supported printed effect headings are:
+An effect heading tells you which printed effect is being used and, usually, when or how it is used. The supported headings are ${headings.supported.map(heading => `**${heading}**`).join(', ')}.
 
-${bullets(headings.supported.map(heading => `**${heading}**`))}
+The ordinary card-role headings are ${headings.ordinary_role_headings.join(', ')}. ${headings.gambit_tactic_default_timing}
 
-${headings.gambit_tactic_default_timing}
-
-The ordinary role headings are ${headings.ordinary_role_headings.join(', ')}. The special or procedural headings are ${headings.special_or_procedural_headings.join(', ')}.
+Mission, Overlay, Terms, Sanctions, and Reaction are special or procedural headings. Their own rules determine the relevant timing, source, and destination. Using one printed effect does not cause the card's other printed effects to apply unless a rule says so.
 
 ### VII.3 Banking Assets
 
 ${rules.inherent_bank_action.text}
 
-A special banking procedure ${rules.inherent_bank_action.special_banking_procedure_overrides_default ? 'overrides' : 'does not override'} the inherent Bank Action.
+The normal Asset limit is **${assets.normal_limit}**. ${assets.forced_discard_when_over_limit}
 
-${renderTree(assets, 4)}
+${assets.replace_at_limit}
+
+If the Asset chosen to make room cannot leave play, the replacement cannot be completed. Consequences of that Asset leaving play still occur normally. Banking the replacement does not require a second Action.
+
+${assets.ability_action_rule}
+
+A special banking procedure printed by another rule overrides the inherent Bank Action when the two differ.
 
 ### VII.4 Directly permitted card procedures
 
-A directly permitted card procedure ${rules.directly_permitted_card_procedures.spend_additional_action_by_default ? 'spends' : 'does not spend'} an additional Action by default. ${rules.directly_permitted_card_procedures.exception}
+A card or rule that directly permits a procedure at a stated timing does not spend an additional Action by default. If that instruction expressly identifies an Action, it still uses the applicable Action permission.
 
 ### VII.5 Asset Removal
 
-Removal is a defined event for Assets. Involuntary Asset loss ${removal.involuntary_asset_loss ? 'is' : 'is not'} Removal. Voluntary use or discard ${removal.voluntary_use_or_discard_is_removal ? 'is' : 'is not'} Removal. Normal self-expiration ${removal.normal_self_expiration_is_removal ? 'is' : 'is not'} Removal. A forced discard caused by a reduced Asset limit ${removal.reduced_asset_limit_forced_discard_is_removal ? 'is' : 'is not'} Removal. Removal itself ${removal.assigns_destination ? 'assigns' : 'does not assign'} a destination.
+Removal is a defined event for Assets. Involuntary Asset loss ${removal.involuntary_asset_loss ? 'is' : 'is not'} Removal. Voluntary use or discard ${removal.voluntary_use_or_discard_is_removal ? 'is' : 'is not'} Removal. Normal self-expiration ${removal.normal_self_expiration_is_removal ? 'is' : 'is not'} Removal. A forced discard caused by a reduced Asset limit ${removal.reduced_asset_limit_forced_discard_is_removal ? 'is' : 'is not'} Removal.
+
+Removal itself ${removal.assigns_destination ? 'assigns' : 'does not assign'} a destination. Follow the effect or normal card procedure that caused the Asset to leave for its destination.
 
 ### VII.6 Bound cards
 
-${renderTree(rules.bind, 4)}
+A bound card sits outside the normal card zones and is unavailable for ordinary play, movement, or effects except as instructed by the effect to which it is bound. Face-up bound cards are public; the owner may inspect their own face-down bound cards.
+
+${bind.binding_end}
+
+${bind.default_host_departure_destination}
+
+${bind.excess_bound_cards_after_limit_reduction}
+
+A card-specific destination or resolution overrides the shared bound-card default.
 
 ### VII.7 Revealing cards and zones
 
@@ -584,7 +614,11 @@ function renderEffectsTiming(authority) {
   const rules = authority.gameplay.card_rules;
   const tactics = rules.additional_tactics;
   const movement = rules.effect_granted_movement;
+  const interference = rules.reveal_stage_interference;
+  const negation = rules.negation;
+  const replacement = rules.replacement;
   const repeat = rules.applying_and_repeating_effects;
+  const shorthand = rules.compact_shorthand;
 
   return `${partHeader(...PARTS[7])}
 
@@ -600,7 +634,7 @@ ${bullets([
 
 ### VIII.2 Choices
 
-${renderTree(rules.choices, 4)}
+A player may choose only an option that is actually available. ${rules.choices.no_valid_option}
 
 ### VIII.3 Shared timing
 
@@ -616,15 +650,35 @@ The default source for an additional Tactic is ${tactics.default_source}. Eligib
 
 ### VIII.5 Reveal-stage interference
 
-${renderTree(rules.reveal_stage_interference, 4)}
+${interference.definition}
+
+Resolve reveal-stage interference before ordinary effects at the same reveal stage. If multiple interference effects remain at that timing, use the shared-timing rule among them. After interference is complete, resolve the remaining ordinary effects normally.
+
+${interference.ordinary_reveal_effect_exclusion}
+
+An interference effect cannot cancel an effect that has already been applied.
 
 ### VIII.6 Negation
 
-${renderTree(rules.negation, 4)}
+${negation.effect}
+
+${negation.gambit_destination}
+
+${negation.tactic_destination}
+
+${negation.too_late}
 
 ### VIII.7 Replacement
 
-${renderTree(rules.replacement, 4)}
+${replacement.same_role}
+
+${replacement.eligibility}
+
+${replacement.face_state}
+
+${replacement.no_reopen}
+
+${replacement.remaining_timing}
 
 ### VIII.8 Revising a choice
 
@@ -634,11 +688,21 @@ ${rules.revising_choice.no_implicit_window}
 
 ### VIII.9 Compact shorthand
 
-${renderTree(rules.compact_shorthand, 4)}
+Rules text may use the following compact forms when their meaning is unambiguous:
+
+${bullets(Object.values(shorthand.meanings))}
+
+Reserve is the default source for a Tactic unless another source is named. Rerolls use the new result by default. Multiple Reserve-size and Tactic-count modifiers add together unless a more specific rule says otherwise.
 
 ### VIII.10 Applying, copying, and repeating effects
 
-${renderTree(repeat, 4)}
+Applying, copying, or repeating an effect creates a new application at the current legal timing. The printed conditions and legal targets still apply, and choices and costs are made again for that application. The source card does not move merely because its effect is being applied again.
+
+${repeat.controller}
+
+${repeat.source_play_trigger_rule}
+
+${repeat.repeat_chain}
 
 ### VIII.11 Effect-granted movement
 
@@ -656,19 +720,27 @@ function renderPersistentShared(authority) {
 
 ### IX.1 Overlays
 
-${renderTree(overlay, 4)}
+An Overlay is a persistent card attached to a Territory. ${overlay.active_layer}
+
+${overlay.covered_layer}
+
+${overlay.dormant_timer} ${overlay.dormant_removal_conditions}
+
+Control of an Overlay follows control of its Territory, but ownership does not change. ${overlay.orientation}
+
+An Overlay is not an Asset. ${overlay.default_removal_destination}
+
+${overlay.you_reference}
 
 ### IX.2 Cards becoming Territories
 
-${renderTree(rules.cards_becoming_territories, 4)}`;
+${rules.cards_becoming_territories.manifest_destiny}`;
 }
 
 function resolveAuthorityPath(authority, path) {
   let value = authority;
   for (const segment of path) {
-    if (value == null || !(segment in value)) {
-      throw new Error(`Part XVI term source does not resolve: ${path.join('.')}`);
-    }
+    if (value == null || !(segment in value)) throw new Error(`Part XVI term source does not resolve: ${path.join('.')}`);
     value = value[segment];
   }
   return value;
@@ -676,28 +748,20 @@ function resolveAuthorityPath(authority, path) {
 
 function renderDefinitionsIndex(authority, contract) {
   const registry = contract?.publicationArchitecture?.comprehensiveRules?.termRegistry;
-  if (!Array.isArray(registry) || registry.length === 0) {
-    throw new Error('Part XVI requires a non-empty Comprehensive Rules termRegistry.');
-  }
+  if (!Array.isArray(registry) || registry.length === 0) throw new Error('Part XVI requires a non-empty Comprehensive Rules termRegistry.');
 
   const byId = new Map(registry.map(entry => [entry.id, entry]));
   const definitionEntries = [];
   const indexEntries = [];
 
   for (const entry of registry) {
-    const sourceValue = entry.definitionSource
-      ? resolveAuthorityPath(authority, entry.definitionSource.path)
-      : null;
-    if (sourceValue != null && typeof sourceValue !== 'string') {
-      throw new Error(`Part XVI definition source must resolve to a string: ${entry.id}`);
-    }
+    const sourceValue = entry.definitionSource ? resolveAuthorityPath(authority, entry.definitionSource.path) : null;
+    if (sourceValue != null && typeof sourceValue !== 'string') throw new Error(`Part XVI definition source must resolve to a string: ${entry.id}`);
 
     const reference = entry.sections.join('; ');
     const sourceBody = sourceValue && /[.!?]$/.test(sourceValue.trim()) ? sourceValue : sourceValue ? `${sourceValue}.` : null;
     const body = sourceBody || `See ${reference}.`;
-    const related = (entry.seeAlso || [])
-      .map(id => byId.get(id)?.term)
-      .filter(Boolean);
+    const related = (entry.seeAlso || []).map(id => byId.get(id)?.term).filter(Boolean);
     const relatedText = related.length ? ` See also ${related.map(term => `**${term}**`).join(', ')}.` : '';
     definitionEntries.push({ term: entry.term, text: `**${entry.term}.** ${body}${relatedText}` });
     indexEntries.push({ term: entry.term, text: `- **${entry.term}:** ${reference}` });
@@ -717,9 +781,7 @@ function renderDefinitionsIndex(authority, contract) {
 
 function validateArchitecture(contract) {
   const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;
-  if (!comprehensive || comprehensive.dependencyMode !== 'direct') {
-    throw new Error('Comprehensive Rules renderer requires dependencyMode "direct".');
-  }
+  if (!comprehensive || comprehensive.dependencyMode !== 'direct') throw new Error('Comprehensive Rules renderer requires dependencyMode "direct".');
   const expectedIds = PARTS.map(([id]) => id);
   const contractIds = (comprehensive.parts || []).map(part => part.id);
   if (JSON.stringify(expectedIds) !== JSON.stringify(contractIds)) {
@@ -741,14 +803,10 @@ export function renderComprehensiveRules(authority, contract) {
     renderEffectsTiming(authority),
     renderPersistentShared(authority),
     renderFactionPart(authority, 9, 'military'),
-    renderFactionPart(authority, 10, 'diplomats', [
-      { heading: 'Proposal corpus', value: authority.proposals },
-    ]),
+    renderFactionPart(authority, 10, 'diplomats', [{ heading: 'Proposal corpus', value: authority.proposals }]),
     renderFactionPart(authority, 11, 'financiers'),
     renderFactionPart(authority, 12, 'intelligence'),
-    renderFactionPart(authority, 13, 'mystics', [
-      { heading: 'Rites and Ritual of Ascension', value: authority.mystics },
-    ]),
+    renderFactionPart(authority, 13, 'mystics', [{ heading: 'Rites and Ritual of Ascension', value: authority.mystics }]),
     renderFactionPart(authority, 14, 'inquisition'),
     renderDefinitionsIndex(authority, contract),
   ];
@@ -760,9 +818,9 @@ export function renderComprehensiveRules(authority, contract) {
 
 # Comprehensive Gauntlet Rules
 
-> **Direct authority projection.** This file is generated from \`game-data/current-game.json\`. Parts I–XVI are active generated projections. Part XVI uses publication-only term metadata from the rules-surface contract while all mechanical definitions remain direct projections of canonical gameplay authority.
+> **Player-facing technical rules.** This publication is generated from \`game-data/current-game.json\` through explicit rules-writing templates. It is intended for players resolving exact rules questions, not for exposing the structure of the underlying data model.
 
-The Comprehensive Rules are the single technical rules corpus. The Player's Guide and Faction Guides are teaching surfaces and may simplify wording without changing mechanics.
+The Comprehensive Rules are the complete technical rules corpus for the current game. The Player's Guide and Faction Guides are teaching surfaces and may simplify presentation, but they do not override these rules or the underlying gameplay authority.
 
 ${sections.join('\n\n')}
 `;
@@ -781,6 +839,6 @@ if (mode === 'write') {
     console.error('Comprehensive Rules are stale. Run: node scripts/render-comprehensive-rules.mjs --write');
     process.exitCode = 1;
   } else {
-    console.log('Comprehensive Rules match the direct authority projection.');
+    console.log('Comprehensive Rules match the player-facing direct authority projection.');
   }
 }
