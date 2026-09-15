@@ -185,7 +185,9 @@ export function hasNamedCardBattleCollateralTimingConflict(sources = []) {
 
 function transformedStateSubject(question) {
   const current = String(question || "").trim();
-  const transformation = current.match(/\b(?:turn|turns|turned|become|becomes|became|transform|transforms|transformed)\b[\s\S]{0,80}?\b(?:into\s+)?(?:an?\s+|the\s+)?([A-Z][A-Za-z0-9'’-]*(?:\s+[A-Z][A-Za-z0-9'’-]*){0,3})\b/);
+  const explicitTarget = current.match(/\b(?:turn|turns|turned|become|becomes|became|transform|transforms|transformed)\b[\s\S]{0,80}?\binto\s+(?:an?\s+|the\s+)?([A-Z][A-Za-z0-9'’-]*(?:\s+[A-Z][A-Za-z0-9'’-]*){0,3})\b/);
+  const directTarget = current.match(/\b(?:become|becomes|became)\s+(?:an?\s+|the\s+)?([A-Z][A-Za-z0-9'’-]*(?:\s+[A-Z][A-Za-z0-9'’-]*){0,3})\b/);
+  const transformation = explicitTarget || directTarget;
   if (!transformation) return "";
   const subject = normalizePhrase(transformation[1]);
   if (!subject || new Set(["overlay", "card", "territory", "asset", "gambit", "tactic"]).has(subject)) return "";
