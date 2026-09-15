@@ -65,8 +65,8 @@ if (new Set(expectedSections.map(section => section.id)).size !== expectedSectio
 
 const registryById = new Map((contract.ruleRegistry || []).map(rule => [rule.id, rule]));
 const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;
-if (!comprehensive || comprehensive.id !== 'comprehensive-rules' || comprehensive.status !== 'active' || comprehensive.dependencyMode !== 'direct') {
-  fail('The Comprehensive Rules must remain the active direct technical successor before the legacy Rulebook can retire.');
+if (!comprehensive || comprehensive.id !== 'comprehensive-rules' || comprehensive.status !== 'active' || comprehensive.dependencyMode !== 'reviewedTechnical') {
+  fail('The Comprehensive Rules must remain the active reviewed-technical successor before the legacy Rulebook can retire.');
 }
 const comprehensiveCoverIds = (comprehensive?.parts || []).flatMap(part => part.covers || []);
 for (const ruleId of registryById.keys()) {
