@@ -27,52 +27,58 @@ GitHub/current `main` is authoritative. This file is only the compact repository
 
 Earlier application, public-route, game-data, asset, release-automation, and rules-source cleanup remains represented by the linked tracker and architecture documents. The most recent structural state is:
 
-- [#1735](https://github.com/tymonius/Gauntlet/pull/1735) archived the Browser Rulebook source under `legacy/rulebook-browser/` while deliberately keeping `/rulebook/` materialized from it as the v0.7.1 release-transition bridge. The post-v0.7.2 redirect is prepared but dormant.
+- [#1735](https://github.com/tymonius/Gauntlet/pull/1735) archived the Browser Rulebook source under `legacy/rulebook-browser/` while deliberately keeping `/rulebook/` materialized from it as the v0.7.1 release-transition bridge.
 - [#1736](https://github.com/tymonius/Gauntlet/pull/1736) moved maintained current rule-fact derivation/synchronization into `packages/rules/rule-facts.js`; the old `rulebook/player-facing/rule-facts.js` path is compatibility-only.
-- [#1740](https://github.com/tymonius/Gauntlet/pull/1740) repaired the TTS sparse checkout so the packaged rule-facts dependency is available to TTS validation.
-- [#1739](https://github.com/tymonius/Gauntlet/pull/1739) moved the explicitly historical v0.6.3 long-card review source to `legacy/card-design-v0.6.3/` while preserving its stable `/card-design/...` URLs through the publication contract.
-- [#1741](https://github.com/tymonius/Gauntlet/pull/1741) moved superseded Deed and Military design-study pages to `legacy/card-design-studies/`, again preserving their established public review URLs.
+- [#1740](https://github.com/tymonius/Gauntlet/pull/1740) repaired the TTS sparse checkout for the packaged rule-facts dependency.
+- [#1739](https://github.com/tymonius/Gauntlet/pull/1739) archived the v0.6.3 long-card review source while preserving its `/card-design/...` URLs.
+- [#1741](https://github.com/tymonius/Gauntlet/pull/1741) archived superseded Deed/Military design-study pages while preserving their public review URLs.
+- [#1742](https://github.com/tymonius/Gauntlet/pull/1742) moved maintained card-design standards to `docs/card-design/` while preserving their public URLs.
+- [#1749](https://github.com/tymonius/Gauntlet/pull/1749) archived the version-specific Capital Ledger review and tracker design notes after confirming they were historical evidence rather than current authority.
+- [#1752](https://github.com/tymonius/Gauntlet/pull/1752) archived the complete v0.6.3 reference-copy subtree after verifying current component authority points only at v0.7.0 reference copy. The old public v0.6.3 paths remain materialized for provenance.
 
-## Current tranche — card-design documentation boundary
+## Current tranche — shared rendering model package
 
-Current PR: [#1742](https://github.com/tymonius/Gauntlet/pull/1742)
+Current PR: [#1753](https://github.com/tymonius/Gauntlet/pull/1753)
 
-`card-design/` is still a transitional mixed production root, but historical review evidence and maintained documentation should not masquerade as executable rendering/authoring source.
+The first genuine `packages/rendering/` boundary is now narrow enough to implement without moving browser-specific rendering code mechanically.
 
-This tranche moves two clearly maintained standards, content-identically, to `docs/card-design/`:
+Verified environment-neutral authority moving into the package:
 
-- `PARCHMENT_BACKGROUND_MAPPING.md` — current parchment source/rendering implementation documentation;
-- `faction-feature-taxonomy.md` — current production-card component-language standard.
+- `packages/rendering/production-surface.mjs` — production card geometry and raster scale;
+- `packages/rendering/face-authority.mjs` — canonical physical-face catalog, template identity, pairing, and back-policy model.
 
-Their existing `/card-design/*.md` URLs remain materialized by `config/publication-boundary.json`.
+The established repository-root browser/TTS paths remain as thin compatibility adapters:
 
-`config/repository-architecture.json` now states the intended split explicitly:
-
-- maintained runtime/rendering/authoring source remains under `card-design/` for now;
-- maintained card-design documentation belongs under `docs/card-design/`;
-- historical design studies belong under `legacy/`;
-- the unresolved architectural target is the split between a true shared rendering package and production tooling.
-
-## Verified shared-rendering seam
-
-The repository already contains a genuine shared model boundary, not merely browser-page implementation:
-
-- `card-design/face-authority.mjs`
-- `card-design/face-spec.mjs`
 - `card-design/production-surface.mjs`
-- `card-design/face-template-registry.mjs`
-- `card-design/face-templates/*.mjs`
+- `card-design/face-authority.mjs`
 
-`scripts/card-authority/model.mjs` directly consumes the face authority/spec/template registry, while browser rendering consumes the same family through `card-design/`.
+Because `packages/` remains source-only for GitHub Pages, `config/publication-boundary.json` materializes the package authority directly at the stable public URLs `/card-design/production-surface.mjs` and `/card-design/face-authority.mjs`. The in-place compatibility materializer deliberately preserves tracked adapters instead of overwriting repository source.
 
-Do **not** move this family mechanically into `packages/rendering/` yet. `packages/` is source-only in the publication contract, while browsers currently import rendering modules from `/card-design/`. A package move therefore needs an explicit development/publication import contract rather than a simple path rename.
+TTS and card-media sparse checkouts, plus Card Authority render scope, include `packages/rendering/` in the same tranche. `tests/rendering-package-boundary.test.ts` locks the ownership, adapter, publication, and CI contracts together.
 
-## Deliberately unresolved card-design material
+## Rendering boundary still deliberately unresolved
 
-- `tracker-card-design-notes.md` mixes current physical/layout guidance with version-specific and mechanically specific rationale. Audit those mechanics against current gameplay authority before classifying it as maintained documentation or historical evidence.
-- `capital-ledger-review.md` is explicitly version-specific production-review material and needs a consumer/lifecycle check before archival.
-- `capital-ledger-preview.html` needs the same consumer/lifecycle classification before being treated as current tooling or historical review evidence.
-- The remaining renderer/authoring implementation should be classified by dependency role before any `packages/rendering/` or `tools/` move.
+Do **not** interpret `packages/rendering/` as permission to move the rest of `card-design/` wholesale.
+
+The following remain environment- or presentation-specific and require their own dependency/consumer audit before any move:
+
+- `card-design/face-spec.mjs` — mixes canonical face identity with browser/public asset dependencies and Node/browser authority routing;
+- `card-design/face-template-registry.mjs`;
+- `card-design/face-templates/*.mjs`;
+- renderer pages/styles and authoring/compositor implementation.
+
+The current package extraction is intentionally limited to the pure shared model layer.
+
+## Card-design lifecycle state
+
+`card-design/` remains a transitional production-tooling root, but its non-runtime material is now classified:
+
+- maintained design standards live under `docs/card-design/`;
+- historical design studies/review notes live under `legacy/card-design-studies/`;
+- v0.6.3 long-review and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
+- current v0.7.0 reference copy remains under `card-design/reference-copy/v0.7.0/`;
+- pure shared rendering model authority is moving under `packages/rendering/`;
+- browser-specific rendering and authoring implementation remains under `card-design/` pending further classification.
 
 ## Rules boundary state
 
@@ -80,22 +86,21 @@ Do **not** move this family mechanically into `packages/rendering/` yet. `packag
 - Maintained active rules source/support lives under `packages/rules/`.
 - The monolithic Browser Rulebook source is archived under `legacy/rulebook-browser/`, but `/rulebook/` intentionally remains a release-transition route until the v0.7.2 lifecycle cutover.
 - `rulebook/` is residual historical compatibility/publication support, not current rules authority.
-- Rulebook QR assets were verified during #1736 as active Player Guide publication support; do not classify them as dead merely because the surrounding root is transitional.
+- Rulebook QR assets remain active Player Guide publication support.
 
 ## Known documentation drift
 
-`docs/Repository_Architecture.md` still contains some pre-#1735 examples that describe Browser Rulebook source under `apps/rulebook/`. The machine contracts and current repository state are authoritative; align that human document in a follow-up rather than using its stale examples as premises for new moves.
+`docs/Repository_Architecture.md` still contains some pre-#1735 Browser Rulebook examples that describe source under `apps/rulebook/`. The machine contracts and current repository state are authoritative; align that human document in a follow-up rather than using its stale examples as premises for new moves.
 
 ## Next top-down queue
 
-1. Finish [#1742](https://github.com/tymonius/Gauntlet/pull/1742) and prove the documentation/publication split through CI and Pages staging.
-2. Classify the remaining non-runtime material in `card-design/`, especially tracker notes and Capital Ledger review/preview artifacts, using current mechanics and actual consumers rather than filenames alone.
-3. Design the source/publication contract required for a genuine `packages/rendering/` boundary; only then move the shared face/render model if the dependency graph still supports that split.
-4. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances to v0.7.2; do not collapse the transition early.
-5. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-6. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-7. Audit governance/traceability and CI paths that still encode transitional locations.
-8. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Finish [#1753](https://github.com/tymonius/Gauntlet/pull/1753) and prove the package/adapters/publication/CI contract through repository tests, Card Authority, TTS, and Pages staging.
+2. Audit the remaining `card-design/` renderer/template/authoring implementation by dependency role; do not move environment-specific code merely to reduce the root.
+3. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances to v0.7.2; do not collapse the transition early.
+4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+5. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+6. Audit governance/traceability and CI paths that still encode transitional locations.
+7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
