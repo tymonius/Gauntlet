@@ -10,6 +10,7 @@ A legacy subtree may be removed later when its provenance value is no longer nee
 
 ## Archived subtrees
 
+- `card-design-v0.6.3/` — historical v0.6.3 long-card review surface and generated review catalog; stable `/card-design/...` compatibility URLs are materialized from this source by the publication contract.
 - `digital-prototype-data/` — early machine-readable prototype data.
 - `digital-engine-dev-runners/` — retired generic pre-faction/v0.5.6 CLI and GUI development runners, preserved as non-executable provenance.
 - `digital-engine-reconstruction/` — clean v0.6.2/v0.6.3 digital-engine reconstruction snapshots and co-located historical regression tests moved out of the active `src/` typecheck boundary.

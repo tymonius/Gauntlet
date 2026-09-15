@@ -37,6 +37,22 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).toContain('config');
   });
 
+  it('archives the v0.6.3 long-card review source without changing its public URLs', () => {
+    const activeCardDesignRoot = ['card', 'design'].join('-');
+    const publicCardDesignRoot = `/${activeCardDesignRoot}`;
+    expect(existsSync('legacy/card-design-v0.6.3/long-card-render.html')).toBe(true);
+    expect(existsSync('legacy/card-design-v0.6.3/long-card-render.js')).toBe(true);
+    expect(existsSync('legacy/card-design-v0.6.3/generated/long-card-review-catalog.js')).toBe(true);
+    expect(existsSync(`${activeCardDesignRoot}/long-card-render.html`)).toBe(false);
+    expect(existsSync(`${activeCardDesignRoot}/long-card-render.js`)).toBe(false);
+    expect(existsSync(`${activeCardDesignRoot}/generated/v0.6.3/long-card-review-catalog.js`)).toBe(false);
+
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(files.get(`${publicCardDesignRoot}/long-card-render.html`)).toBe('legacy/card-design-v0.6.3/long-card-render.html');
+    expect(files.get(`${publicCardDesignRoot}/long-card-render.js`)).toBe('legacy/card-design-v0.6.3/long-card-render.js');
+    expect(files.get(`${publicCardDesignRoot}/generated/v0.6.3/long-card-review-catalog.js`)).toBe('legacy/card-design-v0.6.3/generated/long-card-review-catalog.js');
+  });
+
   it('keeps the archived Browser Rulebook live as the v0.7.1 release bridge until v0.7.2 cutover', () => {
     expect(existsSync('apps/rulebook')).toBe(false);
     expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);

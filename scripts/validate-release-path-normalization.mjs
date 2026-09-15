@@ -42,7 +42,7 @@ const frozenOrHistorical = (filePath) =>
   filePath === 'governance/traceability.json';
 
 const frozenCandidateSurfaces = new Set([
-  'card-design/generated/v0.6.3/long-card-review-catalog.js',
+  'legacy/card-design-v0.6.3/generated/long-card-review-catalog.js',
 ]);
 
 // These scripts enforce phase-specific reconstruction/candidate states that
