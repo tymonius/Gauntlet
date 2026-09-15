@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { renderPlayerFacingFactionPart } from './comprehensive-rules-factions.mjs';
 
 const CONTRACT_PATH = resolve(ROOT, 'config/rules-surface-contract.json');
 const SOURCES_PATH = resolve(ROOT, 'config/rules-publication-sources.json');
@@ -802,12 +803,12 @@ export function renderComprehensiveRules(authority, contract) {
     renderCardsAndZones(authority),
     renderEffectsTiming(authority),
     renderPersistentShared(authority),
-    renderFactionPart(authority, 9, 'military'),
-    renderFactionPart(authority, 10, 'diplomats', [{ heading: 'Proposal corpus', value: authority.proposals }]),
-    renderFactionPart(authority, 11, 'financiers'),
-    renderFactionPart(authority, 12, 'intelligence'),
-    renderFactionPart(authority, 13, 'mystics', [{ heading: 'Rites and Ritual of Ascension', value: authority.mystics }]),
-    renderFactionPart(authority, 14, 'inquisition'),
+    renderPlayerFacingFactionPart(authority, PARTS[9], 'military'),
+    renderPlayerFacingFactionPart(authority, PARTS[10], 'diplomats'),
+    renderPlayerFacingFactionPart(authority, PARTS[11], 'financiers'),
+    renderPlayerFacingFactionPart(authority, PARTS[12], 'intelligence'),
+    renderPlayerFacingFactionPart(authority, PARTS[13], 'mystics'),
+    renderPlayerFacingFactionPart(authority, PARTS[14], 'inquisition'),
     renderDefinitionsIndex(authority, contract),
   ];
 

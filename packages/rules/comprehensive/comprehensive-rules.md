@@ -593,87 +593,81 @@ Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Ter
 <!-- RULES-COVER:faction.military.definition -->
 <!-- RULES-COVER:faction.military.features -->
 
-Military can always win by running the Gauntlet. Run the Gauntlet. Its principal resource or progression is **Command (maximum 2)**.
+Military can always win by running the Gauntlet. Its principal resource or progression is **Command (maximum 2)**.
 
-### Faction Features
+### X.1 Command
+
+Command begins at **0**, cannot fall below **0**, and normally cannot exceed **2**.
+
+The first time each turn you win a battle, gain 1 Command.
+
+After a battle has a winner and before later effects caused by that victory. Command gained this way is available for later Aftermath Orders.
+
+This Command trigger can occur on either player's turn, but only on the first battle you win during that turn. If that first win occurs while you are already at the Command maximum, the trigger is still used for that turn. A withdrawal has no winner and does not generate Command.
+
+### X.2 Orders
+
+Orders are the Military Faction Feature. The chosen Leader supplies that player’s available Orders as Leader Abilities. Spend the listed Command and resolve the Order at its stated timing without spending an Action.
+
+The chosen Leader determines which Orders are available.
+
+### X.3 Fortify
+
+During the Aftermath of a battle you won while occupying an enemy-controlled Territory, spend 2 Command to capture the Territory you occupy, if able.
+
+Fortify is still subject to the normal Front Line and Capture rules; "if able" prevents it from creating non-contiguous control.
+
+### X.4 Faction Features
 
 #### Orders
 
 **No Action · At each Order's stated timing · Listed Command**
 
-### Procedures
+### X.5 Leaders
 
-- **Resource:** Command, maximum 2
-- **Fortify:** During the Aftermath of a battle you won while occupying an enemy-controlled Territory, spend 2 Command to capture the Territory you occupy, if able.
-- **Orders:** Orders are the Military Faction Feature. The chosen Leader supplies that player’s available Orders as Leader Abilities. Spend the listed Command and resolve the Order at its stated timing without spending an Action.
-
-#### Leader Abilities
-
-1. Onward
-2. Rally
-3. Rout
-4. Entrench
-5. Repel
-6. Fortify
-
-#### Command
-
-- **Starting:** 0
-- **Minimum:** 0
-- **Maximum:** 2
-- **Gain:** The first time each turn you win a battle, gain 1 Command.
-- **First Win Only Each Turn:** Yes
-- **Available Immediately:** Yes
-- **May Trigger On Either Players Turn:** Yes
-- **First Win At Cap Consumes Trigger:** Yes
-- **Gain Timing:** After a battle has a winner and before later effects caused by that victory. Command gained this way is available for later Aftermath Orders.
-- **Withdrawal Does Not Trigger:** Yes
-
-### Leaders
-
-### General
+#### General
 
 *Movement and attack*
 
-#### Orders
+##### Orders
 
-##### Onward
+###### Onward
 
 **1 Command · No Action · During Movement**
 
 During your Movement, move one additional Position. This may start a Battle.
 
-##### Rally
+###### Rally
 
 **1 Command · No Action · Before dice · Attacking**
 
 Add +1 to your battle total in a battle you initiated.
 
-##### Rout
+###### Rout
 
 **2 Command · No Action · End of Aftermath · Win as attacker**
 
 Advance one Position. This movement may initiate a battle.
 
-### Commandant
+#### Commandant
 
 *Defense and control*
 
-#### Orders
+##### Orders
 
-##### Entrench
+###### Entrench
 
 **1 Command · No Action · Before dice · Defending**
 
 Add +1 to your battle total in a battle you did not initiate.
 
-##### Repel
+###### Repel
 
 **1 Command · No Action · Aftermath · Win as defender**
 
 After the opponent's normal retreat, they retreat one additional Position, if able.
 
-##### Fortify
+###### Fortify
 
 **2 Command · No Action · Aftermath · Win while occupying enemy Territory**
 
@@ -685,9 +679,135 @@ Capture the Territory you occupy, if able.
 <!-- RULES-COVER:faction.diplomats.features -->
 <!-- RULES-COVER:faction.diplomats.proposals -->
 
-Diplomats can always win by running the Gauntlet. Peace Treaty: after the Capture step, have six different ratified Proposals. Its principal resource or progression is **Influence (0–10)**.
+Diplomats can always win by running the Gauntlet. An additional victory route is: Peace Treaty: after the Capture step, have six different ratified Proposals. Its principal resource or progression is **Influence (0–10)**.
 
-### Faction Features
+### XI.1 Influence
+
+Influence begins at **1**, cannot fall below **0**, and cannot exceed **10**.
+
+Influence staked for Terms is not spent, but it is unavailable while staked. Influence spent on Leverage is spent normally and does not return when a stake is returned.
+
+### XI.2 Terms
+
+During Onset, before Gambits.
+
+The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.
+
+A Proposal is eligible only if its printed Requirement is satisfied and the Diplomat can stake its listed Influence.
+
+Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.
+
+**If accepted:** Return the stake. Apply the Proposal’s Accepted effect. Accepted Terms end the battle sequence during Onset. If the Proposal was unratified, ratify it and normally gain 1 Influence.
+
+**If refused:** Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, the Diplomat may impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.
+
+**No winner:** If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result.
+
+### XI.3 Ratification and Peace Treaty
+
+An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article.
+
+Imposition after a qualifying win is optional. Ratifying a new Proposal through accepted Terms normally grants **1 Influence**; ratifying a new Proposal by imposition normally grants **2 Influence**. A Proposal already ratified remains usable but grants **0** normal ratification Influence and counts only once toward Peace Treaty.
+
+At the start of the Diplomat’s turn, after Capture and before Draw.
+
+If six different Proposals are ratified at this check, the Diplomat wins immediately.
+
+### XI.4 Leverage
+
+After refused Terms and before battle dice are rolled.
+
+Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence.
+
+- **+1:** 1 Influence
+- **+2:** 3 Influence
+- **+3:** 6 Influence
+- **+4:** 10 Influence
+
+### XI.5 Proposal corpus
+
+#### De-escalation
+
+**Stake:** 0 Influence  
+**Requirement:** None
+
+**Accepted:** Both players withdraw. Accepting player: +1 Card.
+
+**Refused:** Diplomat: +1 Card.
+
+#### Orderly Withdrawal
+
+**Stake:** 0 Influence  
+**Requirement:** The Diplomat must be the attacker.
+
+**Accepted:** The Diplomat withdraws. Accepting player: +1 Card.
+
+**Refused:** Diplomat: +1 Battle Total.
+
+#### Capitulation
+
+**Stake:** 0 Influence  
+**Requirement:** The Diplomat must be the defender.
+
+**Accepted:** The Diplomat withdraws. Accepting player: +1 Card.
+
+**Refused:** If the Diplomat loses, +2 Cards.
+
+#### Open Channels
+
+**Stake:** 1 Influence  
+**Requirement:** The Diplomat must have a card in Hand.
+
+**Accepted:** Both players reveal their Hands, then both withdraw. Accepting player: +1 Card.
+
+**Refused:** Refusing player reveals their Hand. Diplomat: +1 Reserve.
+
+#### Mutual Disarmament
+
+**Stake:** 1 Influence  
+**Requirement:** Both players must have a card in Hand.
+
+**Accepted:** Each player discards 1 from Hand. Accepting player: +1 Card. Then both withdraw.
+
+**Refused:** Diplomat may discard 1 from Hand. If they do: +1 Reserve.
+
+#### Prisoner Exchange
+
+**Stake:** 1 Influence  
+**Requirement:** Each player must have a card in their Graveyard.
+
+**Accepted:** Each player may move 1 card from their Graveyard to their Discard Pile. Then both withdraw.
+
+**Refused:** If the Diplomat loses, they may move 1 card from their Graveyard to their Discard Pile.
+
+#### Rebuilding Pact
+
+**Stake:** 1 Influence  
+**Requirement:** The Diplomat must have a card in Hand that can be banked as an Asset.
+
+**Accepted:** Each player may bank 1 Asset from Hand. Then both withdraw.
+
+**Refused:** In the Aftermath, the Diplomat may bank 1 Asset from Hand.
+
+#### Ultimatum
+
+**Stake:** 2 Influence  
+**Requirement:** None
+
+**Accepted:** The accepting player withdraws.
+
+**Refused:** Diplomat: +1 Battle Total.
+
+#### Diplomatic Recognition
+
+**Stake:** 2 Influence  
+**Requirement:** The Diplomat must be defending a Counterattack.
+
+**Accepted:** Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.
+
+**Refused:** If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal.
+
+### XI.6 Faction Features
 
 #### Terms
 
@@ -697,159 +817,23 @@ Diplomats can always win by running the Gauntlet. Peace Treaty: after the Captur
 
 **No Action · Before dice after refused Terms · Triangular Influence cost**
 
-### Procedures
+### XI.7 Leaders
 
-- **Starting Influence:** 1
-- **Peace Treaty Threshold:** 6
-- **Terms Timing:** During Onset
-- **Accepted Reward:** Ratify an unratified Proposal and gain 1 Influence.
-- **Imposed Reward:** After winning following refused Terms, ratify an unratified Proposal and gain 2 Influence.
-
-#### Leverage Costs
-
-- **1:** 1
-- **2:** 3
-- **3:** 6
-- **4:** 10
-
-#### Influence
-
-- **Starting:** 1
-- **Minimum:** 0
-- **Maximum:** 10
-- **Staked Is Spent:** No
-- **Staked Is Available:** No
-- **Leverage Spending Returns With Stake:** No
-
-#### Terms
-
-- **Timing:** During Onset, before Gambits.
-- **Opportunity:** The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.
-- **Procedure:** Choose one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses.
-- **Accepted:** Return the stake. Apply the Proposal’s Accepted effect. Accepted Terms end the battle sequence during Onset. If the Proposal was unratified, ratify it and normally gain 1 Influence.
-- **Refused:** Apply the Proposal’s Refused effect and continue the battle unless that effect ends the sequence. Before dice, the Diplomat may use Leverage. If the Diplomat wins, return the stake and, if the Proposal was unratified, the Diplomat may impose and ratify it and normally gain 2 Influence unless that Proposal says otherwise. If the Diplomat loses, lose the stake.
-- **No Winner:** If the battle ends without a winner after Terms were refused, return the stake. Do not impose the Proposal from that battle result.
-- **Eligibility:** A Proposal is eligible only if its printed Requirement is satisfied and the Diplomat can stake its listed Influence.
-
-#### Ratification
-
-- **Accepted New Reward:** 1
-- **Imposed New Reward:** 2
-- **Already Ratified Reward:** 0
-- **Already Ratified Reusable:** Yes
-- **Counts Each Proposal Once:** Yes
-- **Text:** An unratified Proposal becomes a Treaty Article when accepted or when imposed after the Diplomat wins following refused Terms. A ratified Proposal remains usable, but ratifying it again gives no normal ratification reward and does not add another Treaty Article.
-- **Imposition Optional:** Yes
-
-#### Leverage
-
-- **Timing:** After refused Terms and before battle dice are rolled.
-- **Text:** Spend available Influence to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Influence.
-
-##### Costs
-
-- **1:** 1
-- **2:** 3
-- **3:** 6
-- **4:** 10
-
-#### Peace Treaty
-
-- **Threshold:** 6
-- **Timing:** At the start of the Diplomat’s turn, after Capture and before Draw.
-- **Text:** If six different Proposals are ratified at this check, the Diplomat wins immediately.
-
-### Proposal corpus
-
-#### De-escalation
-
-- **Name:** De-escalation
-- **Stake:** 0
-- **Requirement:** None
-- **Accepted:** Both players withdraw. Accepting player: +1 Card.
-- **Refused:** Diplomat: +1 Card.
-
-#### Orderly Withdrawal
-
-- **Name:** Orderly Withdrawal
-- **Stake:** 0
-- **Requirement:** The Diplomat must be the attacker.
-- **Accepted:** The Diplomat withdraws. Accepting player: +1 Card.
-- **Refused:** Diplomat: +1 Battle Total.
-
-#### Capitulation
-
-- **Name:** Capitulation
-- **Stake:** 0
-- **Requirement:** The Diplomat must be the defender.
-- **Accepted:** The Diplomat withdraws. Accepting player: +1 Card.
-- **Refused:** If the Diplomat loses, +2 Cards.
-
-#### Open Channels
-
-- **Name:** Open Channels
-- **Stake:** 1
-- **Requirement:** The Diplomat must have a card in Hand.
-- **Accepted:** Both players reveal their Hands, then both withdraw. Accepting player: +1 Card.
-- **Refused:** Refusing player reveals their Hand. Diplomat: +1 Reserve.
-
-#### Mutual Disarmament
-
-- **Name:** Mutual Disarmament
-- **Stake:** 1
-- **Requirement:** Both players must have a card in Hand.
-- **Accepted:** Each player discards 1 from Hand. Accepting player: +1 Card. Then both withdraw.
-- **Refused:** Diplomat may discard 1 from Hand. If they do: +1 Reserve.
-
-#### Prisoner Exchange
-
-- **Name:** Prisoner Exchange
-- **Stake:** 1
-- **Requirement:** Each player must have a card in their Graveyard.
-- **Accepted:** Each player may move 1 card from their Graveyard to their Discard Pile. Then both withdraw.
-- **Refused:** If the Diplomat loses, they may move 1 card from their Graveyard to their Discard Pile.
-
-#### Rebuilding Pact
-
-- **Name:** Rebuilding Pact
-- **Stake:** 1
-- **Requirement:** The Diplomat must have a card in Hand that can be banked as an Asset.
-- **Accepted:** Each player may bank 1 Asset from Hand. Then both withdraw.
-- **Refused:** In the Aftermath, the Diplomat may bank 1 Asset from Hand.
-
-#### Ultimatum
-
-- **Name:** Ultimatum
-- **Stake:** 2
-- **Requirement:** None
-- **Accepted:** The accepting player withdraws.
-- **Refused:** Diplomat: +1 Battle Total.
-
-#### Diplomatic Recognition
-
-- **Name:** Diplomatic Recognition
-- **Stake:** 2
-- **Requirement:** The Diplomat must be defending a Counterattack.
-- **Accepted:** Diplomat: Capture the Territory you occupy, if able. Accepting player withdraws, then +2 Cards.
-- **Refused:** If the Diplomat wins: Capture the Territory you occupy during the Aftermath, if able. No Influence for imposing this Proposal.
-
-### Leaders
-
-### Ambassador
+#### Ambassador
 
 *Agreement and card flow*
 
-#### Cordiality
+##### Cordiality
 
 **No Action · Once per turn · After accepted Terms**
 
 After the opponent accepts your Terms, draw one card.
 
-### Senator
+#### Senator
 
 *Risk management and resilience*
 
-#### Political Capital
+##### Political Capital
 
 **No Action · Once per turn · After losing following refused Terms**
 
@@ -860,9 +844,77 @@ When you would lose staked Influence, put up to that many cards from Hand in you
 <!-- RULES-COVER:faction.financiers.definition -->
 <!-- RULES-COVER:faction.financiers.features -->
 
-Financiers can always win by running the Gauntlet. Run the Gauntlet or achieve Controlling Interest. Its principal resource or progression is **Capital (dynamic limit)**.
+Financiers can always win by running the Gauntlet. An additional victory route is to achieve Controlling Interest. Its principal resource or progression is **Capital (dynamic limit)**.
 
-### Faction Features
+### XII.1 Capital and Capital Limit
+
+Capital begins at **2** and cannot fall below **0**.
+
+The Capital Limit is **Territories you control + total card value in your Treasury**. Recalculate that limit immediately whenever its inputs change. Capital may temporarily exceed the limit. At the end of every turn, including the opponent’s turn, if Capital exceeds the current Capital Limit, reduce Capital to that limit.
+
+### XII.2 Treasury and Income
+
+**Treasury — Denouement, 1 Action.** Place one card from your Hand face up in your Treasury.
+
+The Treasury is public, is not an Asset, and its cards are unavailable to normal play or effect access while there. Each Treasury card's value contributes to the Capital Limit.
+
+**Income.** Gain 1 Capital for each Deed you own. Timing: After Capture at the start of your turn.
+
+### XII.3 Financial Capacity
+
+After Capture and before Draw.
+
+**Qualification:** Treasury value is greater than the number of Territories you control.
+
+If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.
+
+Determine qualification once at that timing for the turn. The qualifying 1-Action Financier Faction Features are: Treasury, Deeds, Play the Market.
+
+### XII.4 Deeds
+
+Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.
+
+Deed ownership is independent of Territory control and occupation.
+
+The current Deed cost is:
+
+**max(1, min(Deeds you own + 1, 6) + position modifier + buyout premium)**
+
+Base cost: min(Deeds you own + 1, 6). If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0. The minimum cost is 1. Recalculate sequentially after each purchase or buyout.
+
+Position modifier:
+
+- **Control:** -1
+- **Occupy:** +0
+- **Neither:** +1
+
+### XII.5 Play the Market
+
+**Denouement, 1 Action.** Cost: Discard one card from your Hand.
+
+- **1:** Put the discarded card in your Graveyard; gain 0 Capital.
+- **6:** Gain Capital equal to twice the discarded card’s value.
+- **2-3:** Gain 1 Capital.
+- **4-5:** Gain Capital equal to the discarded card’s value.
+
+### XII.6 Subsidize
+
+Before dice are rolled.
+
+Spend Capital to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Capital.
+
+- **+1:** 1 Capital
+- **+2:** 3 Capital
+- **+3:** 6 Capital
+- **+4:** 10 Capital
+
+### XII.7 Controlling Interest
+
+If you own the Deeds to every Territory currently in the Gauntlet, you win immediately.
+
+This victory is immediate when its condition becomes true.
+
+### XII.8 Faction Features
 
 #### Treasury
 
@@ -888,119 +940,23 @@ Financiers can always win by running the Gauntlet. Run the Gauntlet or achieve C
 
 **Automatic · After Capture**
 
-### Procedures
+### XII.9 Leaders
 
-- **Starting Capital:** 2
-- **Financial Capacity:** After Capture and before Draw, if Treasury value exceeds Territories controlled, the Financier may take one Action during both Opening and Denouement that turn, provided at least one Action is spent on a Financier Faction Feature marked 1 Action.
-- **Faction Feature Action Phase:** Denouement
-
-#### Capital
-
-- **Starting:** 2
-- **Minimum:** 0
-- **Limit Formula:** Territories you control + total card value in your Treasury
-- **May Exceed Limit Temporarily:** Yes
-- **Limit Enforcement:** At the end of every turn, including the opponent’s turn, if Capital exceeds the current Capital Limit, reduce Capital to that limit.
-- **Limit Recalculates Immediately:** Yes
-
-#### Treasury
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Text:** Place one card from your Hand face up in your Treasury.
-- **Public:** Yes
-- **Is Asset:** No
-- **Normal Play Or Effect Access:** No
-- **Value Contributes To Capital Limit:** Yes
-
-#### Income
-
-- **Timing:** After Capture at the start of your turn.
-- **Text:** Gain 1 Capital for each Deed you own.
-
-#### Financial Capacity Rules
-
-- **Timing:** After Capture and before Draw.
-- **Qualification:** Treasury value is greater than the number of Territories you control.
-- **Determine Once:** Yes
-- **Text:** If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.
-
-##### Qualifying Features
-
-1. Treasury
-2. Deeds
-3. Play the Market
-
-#### Deeds
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Ownership Independent Of Control:** Yes
-- **Ownership Independent Of Occupation:** Yes
-- **Text:** Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.
-
-##### Cost
-
-- **Base:** min(Deeds you own + 1, 6)
-- **Buyout Premium:** If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0.
-- **Minimum:** 1
-- **Sequential Recalculation:** Yes
-- **Formula:** max(1, min(Deeds you own + 1, 6) + position modifier + buyout premium)
-
-###### Position Modifiers
-
-- **Control:** -1
-- **Occupy:** 0
-- **Neither:** 1
-
-#### Play The Market
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Cost:** Discard one card from your Hand.
-
-##### Roll
-
-- **1:** Put the discarded card in your Graveyard; gain 0 Capital.
-- **6:** Gain Capital equal to twice the discarded card’s value.
-- **2 3:** Gain 1 Capital.
-- **4 5:** Gain Capital equal to the discarded card’s value.
-
-#### Subsidize
-
-- **Timing:** Before dice are rolled.
-- **Action Cost:** 0
-- **Text:** Spend Capital to increase your battle total. The total cost for +N is triangular: 1 + 2 + … + N Capital.
-
-##### Costs
-
-- **1:** 1
-- **2:** 3
-- **3:** 6
-- **4:** 10
-
-#### Controlling Interest
-
-- **Text:** If you own the Deeds to every Territory currently in the Gauntlet, you win immediately.
-- **Immediate:** Yes
-
-### Leaders
-
-### Banker
+#### Banker
 
 *Collateral and flexible financing*
 
-#### Line of Credit
+##### Line of Credit
 
 **No Action · First Deed purchase each turn · Collateral**
 
 Use one card from Hand or Treasury as collateral. It contributes up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral.
 
-### Executive
+#### Executive
 
 *Offensive acquisition and control*
 
-#### Hostile Takeover
+##### Hostile Takeover
 
 **1 Action · Denouement · After winning as attacker**
 
@@ -1011,9 +967,75 @@ While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as
 <!-- RULES-COVER:faction.intelligence.definition -->
 <!-- RULES-COVER:faction.intelligence.features -->
 
-Intelligence can always win by running the Gauntlet. Run the Gauntlet or complete a Special Operation. Its principal resource or progression is **Intel (no maximum)**.
+Intelligence can always win by running the Gauntlet. An additional victory route is to complete a Special Operation. Its principal resource or progression is **Intel (no maximum)**.
 
-### Faction Features
+### XIII.1 Intel and Operation Progress
+
+Intel begins at **0**, cannot fall below **0**, and has no maximum.
+
+At the start of your turn, gain Intel equal to your Operation Progress.
+
+Operation Progress is the number of normal Missions you have completed. Increase it by 1 whenever you complete a normal Mission. It is not normally spent. Operation Progress begins at **0**, cannot fall below **0**, and has no maximum.
+
+### XIII.2 Operational Capacity
+
+If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.
+
+The qualifying Denouement uses are: Start Mission, Complete Mission, Start Special Operation, Complete Special Operation. Abort Mission does not qualify.
+
+### XIII.3 Mission slot and normal Missions
+
+The Mission / Special Operation slot holds at most **1** active card. A normal Mission and a Special Operation share that slot. **Eligibility:** An Intelligence card with a printed Mission requirement.
+
+**Start (1 Action).** Denouement Choose an eligible Intelligence card in your Hand with a printed Mission requirement and place it face down near your Leader as your Active Mission. A Mission cannot complete on the turn it was started.
+
+**Complete (1 Action).** A later Denouement after the printed Mission requirement has been satisfied. Reveal the Active Mission, increase Operation Progress by 1, gain Intel equal to the card’s value, then put the completed Mission in your Discard Pile.
+
+**Abort (1 Action).** Denouement Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
+
+**Failure.** If a rule, effect, or continuing requirement causes a Mission to fail, reveal it and put it in your Graveyard.
+
+While a Mission is active, its owner may inspect it and the opponent knows the slot is occupied, but the printed requirement remains hidden. The requirement counts only while the card is active. Its other printed effects cannot be used while active, and starting it is not playing the card for another effect.
+
+### XIII.4 Special Operations
+
+**Readiness:** Operation Progress exceeds the number of Territories the opponent controls.
+
+Readiness must continue while the Special Operation remains active. If Operation Progress stops exceeding the number of Territories the opponent controls while a Special Operation is active, reveal it and put it in your Graveyard.
+
+**Start (1 Action).** Denouement Place the eligible card face down as your Special Operation.
+
+Requirements:
+
+1. Readiness is true.
+2. The Mission / Special Operation slot is empty.
+3. You have an eligible Intelligence card with a printed Mission requirement in Hand.
+
+**Complete (1 Action).** Denouement after its printed Mission requirement has been satisfied while readiness remains true. Intel cost: **max(1, Territories currently in the Gauntlet - Special Operation card value)**. Reveal the Special Operation and pay its Intel cost. If you can pay, win immediately through Special Operation.
+
+Completing a Special Operation does not increase Operation Progress and does not grant the normal Mission Intel reward.
+
+While active, the owner may inspect the Special Operation and the opponent knows the slot is occupied, but its printed requirement remains hidden and its other printed effects cannot be used.
+
+### XIII.5 Surveillance
+
+**Gambit:** After the opponent sets a face-down Gambit. Spend 1 Intel. Reveal that Gambit. Limit: Once per battle.
+
+**Tactic:** After the opponent chooses face-down Tactics. Spend 1 Intel per opposing Tactic revealed. Reveal the chosen opposing Tactics you pay to reveal. Limit: Once per battle.
+
+### XIII.6 Interference
+
+Immediately after an opposing Gambit or Tactic is revealed through Surveillance.
+
+Spend 2 additional Intel per revealed card removed. A removed Gambit goes to **Hand**; a removed Tactic goes to **Reserve**. Removal is optional.
+
+The opponent may replace a removed card. Replacement source: The same source as the removed card. The replacement is face down. Replacement is optional. A replacement does not reopen Surveillance or Interference at that stage.
+
+If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information already gained.
+
+If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use.
+
+### XIII.7 Faction Features
 
 #### Missions
 
@@ -1037,172 +1059,23 @@ Intelligence can always win by running the Gauntlet. Run the Gauntlet or complet
 
 **Automatic · Denouement after using your normal Action during Opening**
 
-### Procedures
+### XIII.8 Leaders
 
-- **Faction Feature Action Phase:** Denouement
-- **Mission Control Classification:** Leader Ability
-- **Turn Start Intel:** At the start of your turn, gain Intel equal to your Operation Progress.
-- **Operational Capacity:** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.
-
-#### Faction Features 1 Action
-
-1. Start Mission
-2. Complete Mission
-3. Abort Mission
-4. Start Special Operation
-5. Complete Special Operation
-
-#### Operational Capacity Qualifying Features
-
-1. Start Mission
-2. Complete Mission
-3. Start Special Operation
-4. Complete Special Operation
-
-#### Operational Capacity Excluded Features
-
-1. Abort Mission
-
-#### Intel
-
-- **Starting:** 0
-- **Minimum:** 0
-- **Maximum:** None
-- **Turn Start Gain:** At the start of your turn, gain Intel equal to your Operation Progress.
-
-#### Operation Progress
-
-- **Starting:** 0
-- **Minimum:** 0
-- **Maximum:** None
-- **Text:** Operation Progress is the number of normal Missions you have completed. Increase it by 1 whenever you complete a normal Mission. It is not normally spent.
-
-#### Mission Slot
-
-- **Maximum:** 1
-- **Active Mission And Special Operation Share Slot:** Yes
-- **Eligible Card:** An Intelligence card with a printed Mission requirement.
-
-#### Missions
-
-##### Start
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Text:** Choose an eligible Intelligence card in your Hand with a printed Mission requirement and place it face down near your Leader as your Active Mission.
-- **Cannot Complete Turn Started:** Yes
-
-##### Complete
-
-- **Action Cost:** 1
-- **Timing:** A later Denouement after the printed Mission requirement has been satisfied.
-- **Text:** Reveal the Active Mission, increase Operation Progress by 1, gain Intel equal to the card’s value, then put the completed Mission in your Discard Pile.
-- **Destination:** Discard Pile
-
-##### Abort
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Cost:** Intel equal to the Mission card’s value
-- **Text:** Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
-- **Destination:** Discard Pile
-- **Qualifies For Operational Capacity:** No
-
-##### Fail
-
-- **Text:** If a rule, effect, or continuing requirement causes a Mission to fail, reveal it and put it in your Graveyard.
-- **Destination:** Graveyard
-
-##### Active State
-
-- **Owner May Inspect:** Yes
-- **Opponent Knows Slot Is Occupied:** Yes
-- **Requirement Hidden From Opponent:** Yes
-- **Requirement Counts Only While Active:** Yes
-- **Cannot Use Other Printed Effects While Active:** Yes
-- **Starting Is Not Playing Card For Another Effect:** Yes
-
-#### Special Operations
-
-- **Readiness:** Operation Progress exceeds the number of Territories the opponent controls.
-- **Readiness Must Continue:** Yes
-- **Readiness Failure:** If Operation Progress stops exceeding the number of Territories the opponent controls while a Special Operation is active, reveal it and put it in your Graveyard.
-
-##### Start
-
-- **Action Cost:** 1
-- **Timing:** Denouement
-- **Text:** Place the eligible card face down as your Special Operation.
-
-###### Requirements
-
-1. Readiness is true.
-2. The Mission / Special Operation slot is empty.
-3. You have an eligible Intelligence card with a printed Mission requirement in Hand.
-
-##### Complete
-
-- **Action Cost:** 1
-- **Timing:** Denouement after its printed Mission requirement has been satisfied while readiness remains true.
-- **Intel Cost Formula:** max(1, Territories currently in the Gauntlet - Special Operation card value)
-- **Text:** Reveal the Special Operation and pay its Intel cost. If you can pay, win immediately through Special Operation.
-- **Increases Operation Progress:** No
-- **Grants Normal Mission Intel:** No
-
-##### Active State
-
-- **Owner May Inspect:** Yes
-- **Opponent Knows Slot Is Occupied:** Yes
-- **Requirement Hidden From Opponent:** Yes
-- **Cannot Use Other Printed Effects While Active:** Yes
-
-#### Surveillance
-
-##### Gambit
-
-- **Timing:** After the opponent sets a face-down Gambit.
-- **Cost:** 1 Intel
-- **Limit:** Once per battle
-- **Text:** Reveal that Gambit.
-
-##### Tactic
-
-- **Timing:** After the opponent chooses face-down Tactics.
-- **Cost:** 1 Intel per opposing Tactic revealed
-- **Limit:** Once per battle
-- **Text:** Reveal the chosen opposing Tactics you pay to reveal.
-
-#### Interference
-
-- **Timing:** Immediately after an opposing Gambit or Tactic is revealed through Surveillance.
-- **Cost:** 2 additional Intel per revealed card removed
-- **Gambit Destination:** Hand
-- **Tactic Destination:** Reserve
-- **Replacement Source:** The same source as the removed card
-- **Replacement Face State:** face down
-- **Replacement Optional:** Yes
-- **Replacement Does Not Reopen Surveillance Or Interference:** Yes
-- **Revise Own Choice:** If you had already made your own Gambit or Tactic choice at that stage, after the opponent makes any replacement you may revise your own choice using the information already gained.
-- **Direct Interference:** If an opposing Gambit or Tactic is chosen face up, there is nothing to reveal. At that stage’s normal response timing, you may spend 2 Intel to use Direct Interference. It uses that stage’s Interference opportunity and does not create an additional Interference use.
-- **Removal Optional:** Yes
-
-### Leaders
-
-### Ranger
+#### Ranger
 
 *Terrain and field operations*
 
-#### Fieldcraft
+##### Fieldcraft
 
 **1 Intel · No Action · Once per turn · Territory effect**
 
 When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn.
 
-### Spymaster
+#### Spymaster
 
 *Mission tempo and coordination*
 
-#### Mission Control
+##### Mission Control
 
 **No Action · Once per turn · After completing a normal Mission**
 
@@ -1214,9 +1087,101 @@ Immediately start another eligible Mission from Hand. It cannot complete that tu
 <!-- RULES-COVER:faction.mystics.features -->
 <!-- RULES-COVER:faction.mystics.rites -->
 
-Mystics can always win by running the Gauntlet. Run the Gauntlet or complete the Ritual of Ascension.
+Mystics can always win by running the Gauntlet. An additional victory route is to complete the Ritual of Ascension.
 
-### Faction Features
+### XIV.1 Rite selection and general rules
+
+Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route.
+
+- If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.
+- You may have only one begun but incomplete Rite at a time.
+- A Rite cannot complete during the turn it begins.
+- Only one Rite may be completed per turn.
+- If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.
+- Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.
+- When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default.
+- You may begin your three selected Rites in any order.
+- A begun Rite completes automatically when its printed completion condition occurs, subject to the later-turn and one-completion-per-turn rules.
+
+### XIV.2 The six Rites
+
+#### Rite of Echoes
+
+**Begin:** Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.
+
+**Complete:** On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.
+
+**Interrupted:** If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite.
+
+#### Rite of Blood
+
+**Begin:** Put one card from your Hand in your Graveyard.
+
+**Complete:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
+
+**Interrupted:** If you lose a battle before completion, reset this Rite.
+
+**Reminder:** Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion.
+
+#### Rite of Crossing
+
+**Begin:** You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
+
+**Complete:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.
+
+**Interrupted:** If before then you cease to occupy that Territory, reset this Rite.
+
+#### Rite of Shattering
+
+**Begin:** Put one banked Asset in your Graveyard.
+
+**Complete:** In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.
+
+**Interrupted:** If you lose that battle, Retreat +1 and reset this Rite.
+
+#### Rite of Consecration
+
+**Begin:** Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.
+
+**Complete:** On a later turn, complete this Rite after you win a battle on the consecrated Territory.
+
+**Interrupted:** If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite.
+
+#### Rite of Equivalence
+
+**Begin:** Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.
+
+**Complete:** Complete when you play the exchanged card for one of its printed effects.
+
+**Interrupted:** If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite.
+
+### XIV.3 Unlocks
+
+- **1 Rite — Invocation:** Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
+- **2 Rites — Transmutation:** Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
+- **3 Rites — Convergence:** While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.
+- **Ritual — Ritual of Ascension:** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game.
+
+### XIV.4 Ritual of Ascension
+
+**Begin:** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.
+
+**Convergence:** While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.
+
+**Complete:** Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.
+
+**Interrupted:** If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual.
+
+### XIV.5 Guardians of the Circle protection values
+
+When Guardians of the Circle is used, its Arcane-card value threshold follows the current number of completed Rites:
+
+- **First Rite:** minimum value 1
+- **Second Rite:** minimum value 2
+- **Third Rite:** minimum value 3
+- **Ritual:** minimum value 4
+
+### XIV.6 Faction Features
 
 #### Rites
 
@@ -1242,143 +1207,23 @@ Mystics can always win by running the Gauntlet. Run the Gauntlet or complete the
 
 **Automatic · During a Ritual battle you initiated**
 
-### Procedures
+### XIV.7 Leaders
 
-- **Faction Feature Action Phase:** Denouement
-
-#### Guardians Protection Values
-
-- **First Rite:** 1
-- **Second Rite:** 2
-- **Third Rite:** 3
-- **Ritual:** 4
-
-#### Faction Features 1 Action
-
-1. Begin a Rite
-2. Begin Ritual
-
-### Rites and Ritual of Ascension
-
-#### Rites
-
-##### Rite of Echoes
-
-- **Name:** Rite of Echoes
-- **Begin:** Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.
-- **Complete:** On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.
-- **Interrupted:** If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite.
-
-##### Rite of Blood
-
-- **Name:** Rite of Blood
-- **Begin:** Put one card from your Hand in your Graveyard.
-- **Complete:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
-- **Interrupted:** If you lose a battle before completion, reset this Rite.
-
-###### Reminder
-
-- **Text:** Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion.
-
-##### Rite of Crossing
-
-- **Name:** Rite of Crossing
-- **Begin:** You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
-- **Complete:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.
-- **Interrupted:** If before then you cease to occupy that Territory, reset this Rite.
-
-##### Rite of Shattering
-
-- **Name:** Rite of Shattering
-- **Begin:** Put one banked Asset in your Graveyard.
-- **Complete:** In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.
-- **Interrupted:** If you lose that battle, Retreat +1 and reset this Rite.
-
-##### Rite of Consecration
-
-- **Name:** Rite of Consecration
-- **Begin:** Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.
-- **Complete:** On a later turn, complete this Rite after you win a battle on the consecrated Territory.
-- **Interrupted:** If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite.
-
-##### Rite of Equivalence
-
-- **Name:** Rite of Equivalence
-- **Begin:** Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.
-- **Complete:** Complete when you play the exchanged card for one of its printed effects.
-- **Interrupted:** If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite.
-
-#### Ritual
-
-- **Name:** Ritual of Ascension
-- **Begin:** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.
-- **Convergence:** While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.
-- **Complete:** Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.
-- **Interrupted:** If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual.
-
-#### Unlocks
-
-##### Invocation
-
-- **Count:** 1 Rite
-- **Name:** Invocation
-- **Text:** Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
-
-##### Transmutation
-
-- **Count:** 2 Rites
-- **Name:** Transmutation
-- **Text:** Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
-
-##### Convergence
-
-- **Count:** 3 Rites
-- **Name:** Convergence
-- **Text:** While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.
-
-##### Ritual of Ascension
-
-- **Count:** Ritual
-- **Name:** Ritual of Ascension
-- **Text:** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game.
-
-#### SelectionPolicy
-
-- **PoolSize:** 6
-- **SelectedCount:** 3
-- **Timing:** game-package construction
-- **Visibility:** disclosure optional until begun
-- **Rule:** Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route.
-
-#### GeneralRules
-
-- **ImpossibleCompletion:** If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.
-- **One Active Rite:** You may have only one begun but incomplete Rite at a time.
-- **Completion Delay:** A Rite cannot complete during the turn it begins.
-- **Completion Limit:** Only one Rite may be completed per turn.
-- **Interruption:** If a Rite is interrupted, it resets and costs already paid are not returned unless the Rite says otherwise.
-- **Completed Rites Persist:** Completed Rites remain complete. Interrupting a later Rite or the Ritual of Ascension does not erase Rites already completed.
-- **Bound Card Default:** When a Rite or Ritual binding ends without another destination instruction, its bound cards go to their owners’ Graveyards. A more specific Rite or Ritual destination overrides this default.
-- **Selection Order:** You may begin your three selected Rites in any order.
-- **Completion:** A begun Rite completes automatically when its printed completion condition occurs, subject to the later-turn and one-completion-per-turn rules.
-
-### Leaders
-
-### Alchemist
+#### Alchemist
 
 *Sacrifice sequencing and conversion*
 
-#### Materia Prima
+##### Materia Prima
 
 **No Action · Once per turn · First qualifying sacrifice from Hand**
 
 Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath.
 
-### Spirit Walker
+#### Spirit Walker
 
 *Ritual endurance and protection*
 
-#### Guardians of the Circle
+##### Guardians of the Circle
 
 **No Action · Once per turn · Battle loss would interrupt Rite or Ritual**
 
@@ -1389,9 +1234,64 @@ Put one Arcane card from Hand in your Graveyard whose value is at least 1 plus y
 <!-- RULES-COVER:faction.inquisition.definition -->
 <!-- RULES-COVER:faction.inquisition.features -->
 
-Inquisition can always win by running the Gauntlet. Run the Gauntlet or achieve Purification. Its principal resource or progression is **Conviction (maximum 4)**.
+Inquisition can always win by running the Gauntlet. An additional victory route is to achieve Purification. Its principal resource or progression is **Conviction (maximum 4)**.
 
-### Faction Features
+### XV.1 Conviction
+
+Conviction begins at **0**, cannot fall below **0**, and cannot exceed **4**.
+
+**Timing:** First qualifying Aftermath each turn.
+
+The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.
+
+This normal Aftermath gain occurs at most once per turn, may trigger on either player's turn, and does not require the Inquisition to win the battle.
+
+### XV.2 Condemnation and Blasphemy
+
+**Condemnation — During the Aftermath.** Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile. Cards remaining in Reserve are unaffected.
+
+**Blasphemy — Opposing Arcane Action or reveal.** Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control. This gain is separate from the normal Conviction gain during Aftermath.
+
+### XV.3 Purge
+
+Purge costs **1 Action** and may be used during Opening or Denouement. The normal Action use of Purge is limited to once per turn.
+
+If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.
+
+A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself.
+
+The top of a Discard Pile is its most recently placed card. When a Purge lets you choose cards with a combined value, cards not chosen keep their existing order.
+
+Purge options:
+
+- **1 Conviction:** Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.
+- **2 Conviction:** Choose one opposing Asset and put it in its owner’s Graveyard.
+- **3 Conviction:** The opponent chooses one card from their Hand and puts it in their Graveyard.
+- **4 Conviction:** Reveal the opponent’s Hand; choose one card and put it in their Graveyard.
+
+### XV.4 Purification
+
+**Timing:** After the opponent’s normal start-of-turn draw attempt.
+
+If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.
+
+Other failed draws do not trigger Purification.
+
+### XV.5 Leader-specific technical procedures
+
+#### Final Judgment
+
+**After winning a battle, after battle cards are cleared. · Once per turn.** Immediately Purge. Reduce that Purge’s Conviction cost by 1, to a minimum of 1.
+
+When applicable, the normal Conviction gain from that Aftermath occurs before Final Judgment. The Purge granted by Final Judgment is directly permitted rather than an Action use of Purge.
+
+#### Relentless Pursuit
+
+**2 Conviction · After defeating an attacking opponent · Once per turn.** Finish that battle’s Aftermath, end the defeated attacker’s turn, resolve that turn’s Cleanup, then before your normal turn begins Advance one Position toward their end. If that movement initiates a battle, you are the attacker. Resolve that battle completely, then begin your normal turn with Capture if the game has not ended.
+
+This is a separate movement sequence between turns and does not replace the Inquisition player's normal Movement. Terms apply normally if it initiates a battle. A withdrawal does not satisfy its defeat trigger.
+
+### XV.6 Faction Features
 
 #### Purge
 
@@ -1415,104 +1315,23 @@ Inquisition can always win by running the Gauntlet. Run the Gauntlet or achieve 
 
 **Automatic · Opponent's start-of-turn Draw**
 
-### Procedures
+### XV.7 Leaders
 
-- **Purge Once Per Turn:** Yes
-- **Purge Two Phase Permission:** Yes
-- **Final Judgment Classification:** Leader Ability
-
-#### Purge Phases
-
-1. Opening
-2. Denouement
-
-#### Conviction
-
-- **Starting:** 0
-- **Minimum:** 0
-- **Maximum:** 4
-- **Timing:** First qualifying Aftermath each turn.
-- **Text:** The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.
-- **Per Qualifying Aftermath Gain:** 1
-- **Once Per Turn:** Yes
-- **May Trigger On Either Players Turn:** Yes
-- **Does Not Require Win:** Yes
-
-#### Condemnation
-
-- **Timing:** During the Aftermath.
-- **Text:** Opposing Tactics go to their owner’s Graveyard instead of their Discard Pile.
-- **Remaining Reserve Unchanged:** Yes
-
-#### Blasphemy
-
-- **Timing:** Opposing Arcane Action or reveal.
-- **Text:** Gain 1 Conviction whenever the opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control.
-- **Separate From Normal Conviction Gain:** Yes
-
-#### Purge
-
-- **Action Cost:** 1
-- **Action Purge Limit:** Once per turn
-- **Discard Pile Top:** The top of the Discard Pile is its most recently placed card.
-- **Combined Value Choice Preserves Remaining Order:** Yes
-- **Two Phase Permission:** If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.
-- **Directly Permitted Purge:** A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself.
-
-##### Timings
-
-1. Opening
-2. Denouement
-
-##### Options
-
-- **1:** Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.
-- **2:** Choose one opposing Asset and put it in its owner’s Graveyard.
-- **3:** The opponent chooses one card from their Hand and puts it in their Graveyard.
-- **4:** Reveal the opponent’s Hand; choose one card and put it in their Graveyard.
-
-#### Purification
-
-- **Timing:** After the opponent’s normal start-of-turn draw attempt.
-- **Text:** If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately.
-- **Other Failed Draws Do Not Trigger:** Yes
-
-#### Final Judgment
-
-- **Timing:** After winning a battle, after battle cards are cleared.
-- **Limit:** Once per turn
-- **Text:** Immediately Purge. Reduce that Purge’s Conviction cost by 1, to a minimum of 1.
-- **Normal Conviction Gain Precedes When Applicable:** Yes
-- **Directly Permitted Purge:** Yes
-
-#### Relentless Pursuit
-
-- **Cost:** 2 Conviction
-- **Timing:** After defeating an attacking opponent
-- **Limit:** Once per turn
-- **Text:** Finish that battle’s Aftermath, end the defeated attacker’s turn, resolve that turn’s Cleanup, then before your normal turn begins Advance one Position toward their end. If that movement initiates a battle, you are the attacker. Resolve that battle completely, then begin your normal turn with Capture if the game has not ended.
-- **Separate Movement Sequence Between Turns:** Yes
-- **Does Not Replace Normal Movement:** Yes
-- **Terms Apply Normally To Pursuit Battle:** Yes
-- **Withdrawal Does Not Trigger:** Yes
-
-### Leaders
-
-### Grand Inquisitor
+#### Grand Inquisitor
 
 *Judgment and efficient Purges*
 
-#### Final Judgment
+##### Final Judgment
 
 **No Action · Once per turn · After winning a battle**
 
 After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
-### Witch Hunter
+#### Witch Hunter
 
 *Defense, retaliation, and pursuit*
 
-#### Relentless Pursuit
+##### Relentless Pursuit
 
 **2 Conviction · No Action · Once per turn · After defeating an attacking opponent**
 
