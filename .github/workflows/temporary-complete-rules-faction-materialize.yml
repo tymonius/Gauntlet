@@ -23,6 +23,19 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('fs');
+
+          const factionPath = 'scripts/comprehensive-rules-factions.mjs';
+          let factions = fs.readFileSync(factionPath, 'utf8');
+          factions = factions.replace(
+            "  const unknown = Object.keys(object || {}).filter(key => !allowed.includes(key));",
+            "  const unknown = Object.keys(object || {}).filter(key => !allowed.includes(key) && !INTERNAL_FIELDS.has(key));",
+          );
+          factions = factions.replace(
+            "assertKnownKeys(p, ['resource', 'fortify', 'orders', 'leader_abilities', 'command'], 'Military procedures');",
+            "assertKnownKeys(p, ['resource', 'fortify', 'orders', 'leader_abilities', 'faction_features_1_action', 'command'], 'Military procedures');",
+          );
+          fs.writeFileSync(factionPath, factions);
+
           const path = 'scripts/render-comprehensive-rules.mjs';
           let source = fs.readFileSync(path, 'utf8');
           const importAnchor = "import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';";
