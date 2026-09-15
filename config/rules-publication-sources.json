@@ -17,7 +17,8 @@
       "path": "packages/rules/comprehensive/comprehensive-rules.md",
       "marker": "RULES-SURFACE:comprehensive-rules",
       "sectionMarker": "RULES-PART",
-      "coverageMarker": "RULES-COVER"
+      "coverageMarker": "RULES-COVER",
+      "reviewMarker": "RULES-REVIEW-MODE:reviewed-technical"
     },
     "faction-guide-template": {
       "path": "packages/rules/faction-guides/template.md",
