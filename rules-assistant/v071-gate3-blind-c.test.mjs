@@ -19,7 +19,7 @@ const rulebook = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebo
 const canonical = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
-const EXPECTED_BEHAVIOR = "v071-qa-20260914-13";
+const EXPECTED_BEHAVIOR = "v071-qa-20260915-14";
 const EXPECTED_AUTHORITY = "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339";
 
 test("Gate 3 blind tranche C is frozen to the merged r13 candidate", () => {
