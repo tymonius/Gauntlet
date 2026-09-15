@@ -26,6 +26,7 @@ describe("Rules Arbiter Worker deployment gate", () => {
   it("still deploys for direct Worker input changes and manual runs", () => {
     expect(workflow).toContain('github.event_name }}\" == \"workflow_dispatch');
     expect(workflow).toContain("rules-assistant/worker-entry.js|rules-assistant/worker-v*.js");
+    expect(workflow).toContain("rules-assistant/github-actions-qa-auth.js");
     expect(workflow).toContain("reason=worker_inputs_changed");
     expect(workflow).toContain("if: steps.scope.outputs.worker == 'true'");
     expect(workflow).toContain("npx wrangler deploy --config rules-assistant/wrangler.toml");
