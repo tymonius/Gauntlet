@@ -2,8 +2,10 @@ import { describe, expect, test } from "vitest";
 import {
   hasNamedCardBattleCollateralTimingConflict,
   normalizeR13RulingStatus,
+  shouldForceUndefinedTransformationGap,
   shouldPromoteDirectPhaseLegality,
-  shouldPromoteExpandedDirectOverview
+  shouldPromoteExpandedDirectOverview,
+  shouldPromoteNamedDirectAuthority
 } from "./r13-classification.js";
 
 function source(title, excerpt = "") {
@@ -52,6 +54,22 @@ describe("v0.7.1 r13 classification boundary", () => {
     expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("explicit");
   });
 
+  test("promotes a named direct authority instead of treating surrounding context as inference", () => {
+    const sources = [
+      source(
+        "7. Battles › Terms and Onset › Complete rules › Terms › Accepted Terms",
+        "When Terms are accepted during Onset, apply effects that occur after acceptance."
+      ),
+      source(
+        "Faction: Cordiality",
+        "After the opponent accepts your Terms, draw one card. Classification: Leader Ability"
+      )
+    ];
+    const question = "The opponent accepts the Ambassador's Terms. What card-flow benefit does Cordiality give, assuming it has not been used this turn?";
+    expect(shouldPromoteNamedDirectAuthority(question, sources)).toBe(true);
+    expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("explicit");
+  });
+
   test("does not promote a cross-authority interaction just because both subjects are retrieved", () => {
     const sources = [
       source("7. Battles › Withdrawal and Retreat › Complete rules › Withdrawal"),
@@ -97,5 +115,32 @@ describe("v0.7.1 r13 classification boundary", () => {
     ];
     expect(hasNamedCardBattleCollateralTimingConflict(sources)).toBe(false);
     expect(normalizeR13RulingStatus("explicit", "How does Example work?", sources)).toBe("explicit");
+  });
+
+  test("forces a referenced but undefined transformed state to provisional", () => {
+    const sources = [
+      source(
+        "Card: Bombardment",
+        "Overlay: This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins."
+      ),
+      source(
+        "12. Overlays and Other Shared Card Rules › Complete rules",
+        "An Overlay is a persistent card attached to a Territory. The top exposed Overlay is active."
+      )
+    ];
+    const question = "Bombardment can tell me to turn its Overlay into Ruins. What rules does published v0.7.1 give for what a Ruins Overlay actually does after that transformation?";
+    expect(shouldForceUndefinedTransformationGap(question, sources)).toBe(true);
+    expect(normalizeR13RulingStatus("explicit", question, sources)).toBe("provisional");
+    expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("provisional");
+  });
+
+  test("does not force provisional when the transformed state is directly defined", () => {
+    const sources = [
+      source("Card: Example", "Turn this card into a Fortress."),
+      source("Fortress", "Fortress is an Overlay. Fortress has +1 defense while exposed.")
+    ];
+    const question = "This card turns into a Fortress. What does the Fortress do after that transformation?";
+    expect(shouldForceUndefinedTransformationGap(question, sources)).toBe(false);
+    expect(normalizeR13RulingStatus("explicit", question, sources)).toBe("explicit");
   });
 });

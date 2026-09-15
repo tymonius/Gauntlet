@@ -8,9 +8,15 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 import { normalizeR13RulingStatus } from "./r13-classification.js";
+import {
+  buildGate3CAdjudicationReminder,
+  hasTerseSurveillanceLanguage,
+  isOccupationControlQuestion,
+  shouldCarryImmediateHistory
+} from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260914-13";
+export const BEHAVIOR_REVISION = "v071-qa-20260915-14";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -58,6 +64,11 @@ const FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS = [
 const DEED_CONTIGUITY_AUTHORITY_IDS = [
   "rulebook:deeds",
   "rulebook:front-line"
+];
+const OCCUPATION_CONTROL_AUTHORITY_IDS = [
+  "rulebook:occupation",
+  "rulebook:front-line",
+  "rulebook:normal-capture"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -530,11 +541,13 @@ async function reserveModelRequest(request, env) {
   return reserveBudgetCounters(env, counters, timestamp, "public");
 }
 
-export function buildQuestionSpecificAdjudicationReminder(question, sources = []) {
+export function buildQuestionSpecificAdjudicationReminder(question, sources = [], history = []) {
   const current = String(question || "").trim().toLowerCase();
   const sourceList = Array.isArray(sources) ? sources : [];
   const canonicalIds = new Set(sourceList.map((source) => String(source?.canonicalId || "")));
   const reminders = [];
+  const gate3CReminder = buildGate3CAdjudicationReminder(question, sourceList, history);
+  if (gate3CReminder) reminders.push(gate3CReminder);
 
   const namedAuthoritySubjects = currentNamedAuthoritySubjects(question, sourceList);
   if (namedAuthoritySubjects.length === 1) {
@@ -601,7 +614,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
 }
 
 async function askOpenAI({ env, request, question, history, sources }) {
-  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources);
+  const adjudicationReminder = buildQuestionSpecificAdjudicationReminder(question, sources, history);
   const questionText = adjudicationReminder
     ? `${question}\n\nQUESTION-SPECIFIC ADJUDICATION CHECK — apply before final classification\n${adjudicationReminder}`
     : question;
@@ -705,13 +718,11 @@ function classifyUpstreamFailure(status, providerError) {
 function isContextDependentQuestion(question) {
   const current = String(question || "").trim().toLowerCase();
   const words = current.match(/[a-z0-9']+/g) || [];
-  if (!words.length || words.length > 10) return false;
+  if (!words.length) return false;
 
-  const referentCue = /\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\b/.test(current);
-  const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(current);
   const shortCounterfactualCue = words.length <= 6 && /^(?:what if|and what if|but what if)\b/.test(current);
   const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\b/.test(current);
-  return referentCue || continuationCue || shortCounterfactualCue || bareQuestionCue;
+  return shouldCarryImmediateHistory(question) || shortCounterfactualCue || bareQuestionCue;
 }
 
 export function contextualQuery(question, history = []) {
@@ -859,8 +870,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const immediateRecentNormalized = normalizeReferentSubject(immediateRecent);
-  const recentCardFollowupCue = currentWordCount <= 14
-    && /\b(?:it|its|that|this|those|these|same|one|extra|again|another)\b/.test(current);
+  const recentCardFollowupCue = shouldCarryImmediateHistory(question);
   const recentCardAuthorityIds = recentCardFollowupCue
     ? documents
         .filter((document) => String(document?.id || "").startsWith("card:"))
@@ -929,11 +939,13 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     ? [namedCardSource.canonicalId, namedCardRuleReference.canonicalId, ...SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS]
     : [];
   const genericBattleCardDestinationFocus = destinationFocus && battleCardFocus && !namedCardSource;
+  const occupationControlFocus = isOccupationControlQuestion(question);
   const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
   const intelligenceInterferenceFocus = (
     intelligenceTopic.test(current)
+    || hasTerseSurveillanceLanguage(question)
     || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
   ) && intelligenceProcedureSubject;
   const shockAndAweTopic = /\bshock\s+and\s+awe\b/;
@@ -991,8 +1003,10 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     fieldcraftTopic.test(current)
     || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
   ) && fieldcraftTerritoryStateCue.test(combined);
-  const topicAuthorityIds = deedContiguityFocus
-    ? DEED_CONTIGUITY_AUTHORITY_IDS
+  const topicAuthorityIds = occupationControlFocus
+    ? OCCUPATION_CONTROL_AUTHORITY_IDS
+    : deedContiguityFocus
+      ? DEED_CONTIGUITY_AUTHORITY_IDS
     : fieldcraftFocus
       ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
     : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !genericBattleCardDestinationFocus && !battleCardQuantityFocus && !acceptedTermsFocus
