@@ -1,0 +1,42 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "D",
+  "behaviorRevision": "v071-qa-20260915-14",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche D ambiguous-follow-up cases that must request clarification instead of guessing.",
+  "cases": [
+    {
+      "id": "blind-d-clarify-rally-entrench",
+      "question": "Can I use that one if I started the battle?",
+      "history": [
+        { "role": "user", "content": "Compare Rally and Entrench for me." },
+        { "role": "assistant", "content": "Rally helps the General before dice while attacking; Entrench helps the Commandant before dice while defending." }
+      ]
+    },
+    {
+      "id": "blind-d-clarify-two-rites",
+      "question": "Does that Rite reset if I lose a battle?",
+      "history": [
+        { "role": "user", "content": "I'm deciding between Rite of Crossing and Rite of Consecration." },
+        { "role": "assistant", "content": "Crossing tracks continued occupation or later control; Consecration tracks a specific Overlay and a battle on its Territory." }
+      ]
+    },
+    {
+      "id": "blind-d-clarify-two-financier-cards",
+      "question": "If I replace that Asset, does it default?",
+      "history": [
+        { "role": "user", "content": "I'm comparing Margin Loan and Tariffs in my Asset Bank." },
+        { "role": "assistant", "content": "Margin Loan can hold collateral until it is settled; Tariffs has restrictions on leaving play during the turn it is banked." }
+      ]
+    },
+    {
+      "id": "blind-d-clarify-proposals",
+      "question": "Does that one make both of us withdraw?",
+      "history": [
+        { "role": "user", "content": "Compare Open Channels and Diplomatic Recognition as Proposals." },
+        { "role": "assistant", "content": "Open Channels involves revealing Hands; Diplomatic Recognition applies while defending a Counterattack and can advance the Diplomat's Front Line." }
+      ]
+    }
+  ]
+}
