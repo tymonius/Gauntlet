@@ -1,4 +1,4 @@
-import { renderMarkdown } from '/rulebook/markdown.js';
+import { renderMarkdown } from '/rules/markdown.js';
 import { loadCurrentGame } from '/game-data/current-game.mjs';
 
 const page = document.body;

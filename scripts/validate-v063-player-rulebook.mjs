@@ -101,21 +101,23 @@ for (const required of [
   if (!published.includes(required)) fail(`Player-facing Rulebook lost approved readthrough wording: ${JSON.stringify(required)}`);
 }
 
-const app = read('apps/rulebook/app.js');
+// The Browser Rulebook is retired. Keep validating the archived implementation
+// as historical v0.7.1 publication evidence without treating it as a current app.
+const app = read('legacy/rulebook-browser/app.js');
 if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';")) {
-  fail('Current Browser Rulebook is not bound to the published v0.7.1 release manifest.');
+  fail('Archived Browser Rulebook is not bound to the published v0.7.1 release manifest.');
 }
 if (app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';") || app.includes('publicRulebookSource')) {
-  fail('Current Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.0 release.');
+  fail('Archived Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.1 release.');
 }
 if (!app.includes('if (actualHash !== rulebook.sha256)')) {
-  fail('Current Browser Rulebook does not verify its published Rulebook binding.');
+  fail('Archived Browser Rulebook does not verify its published Rulebook binding.');
 }
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
 }
 if (!read('rules-assistant/v063-last-stand-language.js').includes('applyV063PlayerFacingRulebookCorrections')) {
-  fail('Browser and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
+  fail('Archived Browser Rulebook and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
 }
 
 const bookletWorkflow = read('.github/workflows/build-clean-v063-booklet.yml');
@@ -152,4 +154,4 @@ if (failures) {
   process.exit(1);
 }
 
-console.log('Validated certified Rulebook integrity, reviewed Chapter 11, full player-facing readthrough corrections, and booklet routing.');
+console.log('Validated certified Rulebook integrity, reviewed Chapter 11, archived Browser Rulebook binding, full player-facing readthrough corrections, and booklet routing.');

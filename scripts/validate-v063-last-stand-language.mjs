@@ -106,18 +106,18 @@ for (const [relativePath, required] of [
   failures += requireText(relativePath, required, `PR #171 terminology: ${JSON.stringify(required)}`);
 }
 
-// The current Browser Rulebook consumes its published release authority
-// directly. Historical v0.6.3 publication transforms remain confined to the
-// archived v0.6.3 corpus and publication tooling.
-failures += requireText('apps/rulebook/app.js', 'RELEASE_MANIFEST_URL', 'published release-manifest binding');
-failures += requireText('apps/rulebook/app.js', 'manifest?.binding_sources?.rulebook', 'manifest Rulebook binding');
+// The retired Browser Rulebook archive preserves the implementation that consumed
+// its published release authority directly. Historical v0.6.3 publication
+// transforms remain confined to the archived v0.6.3 corpus and publication tooling.
+failures += requireText('legacy/rulebook-browser/app.js', 'RELEASE_MANIFEST_URL', 'published release-manifest binding');
+failures += requireText('legacy/rulebook-browser/app.js', 'manifest?.binding_sources?.rulebook', 'manifest Rulebook binding');
 failures += requireOrder(
-  'apps/rulebook/app.js',
+  'legacy/rulebook-browser/app.js',
   'const { rulebook, sourceUrl } = await loadReleaseManifest();',
   'if (actualHash !== rulebook.sha256)',
   'Rulebook must load its published binding before verifying the published source hash.',
 );
-failures += requireText('apps/rulebook/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
+failures += requireText('legacy/rulebook-browser/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
 failures += requireText('rules-assistant/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
 failures += requireOrder(
   'rules-assistant/v063-public-corpus.js',
@@ -147,4 +147,4 @@ if (failures) {
   process.exit(1);
 }
 
-console.log('Validated PR #171 Last Stand terminology, certified authority integrity, post-verification publication transforms, and live-UI publication boundaries.');
+console.log('Validated PR #171 Last Stand terminology, certified authority integrity, post-verification publication transforms, and retired Browser Rulebook archive boundaries.');

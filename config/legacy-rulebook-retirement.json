@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "status": "cutover-pending",
+  "legacySource": "rulebook/player-facing/current-rulebook.md",
+  "coverageProof": "config/legacy-rulebook-retirement-crosswalk.json",
+  "archivedBrowserSource": "legacy/rulebook-browser",
+  "publicRoute": "/rulebook/",
+  "currentPublicSource": "legacy/rulebook-browser",
+  "postCutoverCompatibilitySource": "legacy/public-compatibility/rulebook",
+  "successorRoute": "/rules/",
+  "releasedVersionUntilCutover": "v0.7.1",
+  "cutoverRelease": "v0.7.2",
+  "historicalRelease": {
+    "version": "v0.7.1",
+    "landingRoute": "/v0.7.1/",
+    "rulebookSource": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md",
+    "booklet": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf"
+  },
+  "transitionalPublicSourceAliases": [
+    {
+      "source": "rulebook/player-facing/current-rulebook.md",
+      "publicPath": "/rulebook/player-facing/current-rulebook.md"
+    },
+    {
+      "source": "packages/rules/player-guide/player-guide.md",
+      "publicPath": "/rulebook/player-guide/player-guide.md"
+    }
+  ]
+}

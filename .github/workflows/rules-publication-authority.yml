@@ -7,10 +7,13 @@ on:
       - 'packages/game-data/current-game.json'
       - 'packages/game-data/current-game-validation.mjs'
       - 'packages/rules/**'
+      - 'config/release-lifecycle.json'
       - 'config/rules-surface-contract.json'
       - 'config/rules-publication-sources.json'
+      - 'config/publication-boundary.json'
       - 'config/legacy-rulebook-retirement-crosswalk.json'
       - 'config/legacy-rulebook-retirement-crosswalk.sha256'
+      - 'config/legacy-rulebook-retirement.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/render-comprehensive-rules.mjs'
       - 'scripts/validate-rules-term-registry.mjs'
@@ -19,7 +22,12 @@ on:
       - 'scripts/validate-rules-publication-contract.mjs'
       - 'scripts/validate-rules-publication-scaffolds.mjs'
       - 'scripts/validate-legacy-rulebook-retirement-crosswalk.mjs'
+      - 'scripts/validate-legacy-rulebook-retirement.mjs'
       - 'rulebook/player-facing/current-rulebook.md'
+      - 'apps/rules/**'
+      - 'apps/rulebook/**'
+      - 'legacy/rulebook-browser/**'
+      - 'legacy/public-compatibility/rulebook/**'
   workflow_dispatch:
 
 permissions:
@@ -35,10 +43,13 @@ jobs:
         with:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /config/release-lifecycle.json
             /config/rules-surface-contract.json
             /config/rules-publication-sources.json
+            /config/publication-boundary.json
             /config/legacy-rulebook-retirement-crosswalk.json
             /config/legacy-rulebook-retirement-crosswalk.sha256
+            /config/legacy-rulebook-retirement.json
             /packages/game-data/current-game.json
             /packages/game-data/current-game-validation.mjs
             /packages/game-data/art-direction.mjs
@@ -51,8 +62,14 @@ jobs:
             /scripts/validate-rules-publication-contract.mjs
             /scripts/validate-rules-publication-scaffolds.mjs
             /scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
+            /scripts/validate-legacy-rulebook-retirement.mjs
             /rulebook/player-facing/rule-facts.js
             /rulebook/player-facing/current-rulebook.md
+            /legacy/rulebook-browser/index.html
+            /legacy/rulebook-browser/app.js
+            /legacy/public-compatibility/rulebook/index.html
+            /releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md
+            /releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -67,4 +84,5 @@ jobs:
           node scripts/validate-shared-rules-authority.mjs
           node scripts/validate-rules-term-registry.mjs
           node scripts/validate-legacy-rulebook-retirement-crosswalk.mjs
+          node scripts/validate-legacy-rulebook-retirement.mjs
           node scripts/render-comprehensive-rules.mjs

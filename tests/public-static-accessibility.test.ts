@@ -17,8 +17,9 @@ const PUBLIC_ROOTS = [
   "apps/playtest",
   "apps/press",
   "apps/privacy",
-  "apps/rulebook",
+  "apps/rules",
   "apps/start",
+  "legacy/public-compatibility/rulebook",
   "rules-arbiter",
 ];
 

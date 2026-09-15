@@ -46,6 +46,7 @@ jobs:
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /index.html
             /legacy/public-versions/
+            /legacy/rulebook-browser/
             /v*/index.html
             /apps/
             /packages/game-data/**

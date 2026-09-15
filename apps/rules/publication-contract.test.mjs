@@ -40,13 +40,21 @@ describe('active rules publication routes', () => {
   it('keeps active readers indexable and independent of repository source layout', async () => {
     const player = await read('apps/rules/player-guide/index.html');
     const comprehensive = await read('apps/rules/comprehensive/index.html');
+    const sharedReader = await read('apps/rules/reader.js');
     const factionReader = await read('apps/rules/factions/guide.js');
 
     expect(player).toContain('data-rules-source="/rules/sources/player-guide.md"');
     expect(player).not.toContain('noindex');
+    expect(player).toContain('href="/rules/card-anatomy.css"');
+    expect(player).toContain('src="/rules/card-anatomy.js"');
+    expect(player).not.toContain('/rulebook/');
     expect(comprehensive).toContain('data-rules-source="/rules/sources/comprehensive-rules.md"');
     expect(comprehensive).not.toContain('noindex');
+    expect(sharedReader).toContain("from '/rules/markdown.js'");
+    expect(sharedReader).not.toContain("from '/rulebook/");
     expect(factionReader).toContain('/rules/sources/factions/');
+    expect(factionReader).toContain("from '/rules/markdown.js'");
+    expect(factionReader).not.toContain("from '/rulebook/");
 
     for (const id of factionIds) {
       const html = await read(`apps/rules/factions/${id}/index.html`);
@@ -56,14 +64,17 @@ describe('active rules publication routes', () => {
     }
   });
 
-  it('makes the active architecture primary without retiring the legacy Rulebook', async () => {
+  it('keeps the new architecture available in parallel while v0.7.1 remains the released Browser Rulebook surface', async () => {
     const hub = await read('apps/rules/index.html');
     expect(hub).toContain('href="/rules/player-guide/"');
     expect(hub).toContain('href="/rules/factions/"');
     expect(hub).toContain('href="/rules/comprehensive/"');
     expect(hub).toContain('href="/rules-arbiter/"');
     expect(hub).toContain('href="/rulebook/"');
-    expect(hub).toMatch(/legacy Rulebook remains available/i);
+    expect(hub).toContain('v0.7.1 remains the public release until the v0.7.2 cutover.');
+    expect(hub).toContain('switch between Released v0.7.1 and the current release candidate');
+    expect(hub).toContain('href="/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf"');
+    expect(hub).not.toContain('The monolithic Browser Rulebook has been retired.');
   });
 
   it('retains print-friendly reader contracts', async () => {

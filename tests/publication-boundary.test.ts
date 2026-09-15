@@ -21,7 +21,8 @@ describe('public route and Pages publication boundary', () => {
     expect(mappings.get('apps/factions')).toBe('/factions/');
     expect(mappings.get('apps/press')).toBe('/press/');
     expect(mappings.get('apps/privacy')).toBe('/privacy/');
-    expect(mappings.get('apps/rulebook')).toBe('/rulebook/');
+    expect(mappings.get('legacy/rulebook-browser')).toBe('/rulebook/');
+    expect(mappings.has('apps/rulebook')).toBe(false);
     expect(mappings.get('apps/rules')).toBe('/rules/');
     expect(mappings.get('apps/start')).toBe('/start/');
     expect(mappings.get('apps/playtest')).toBe('/playtest/');
@@ -36,15 +37,14 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).toContain('config');
   });
 
-  it('publishes only declared legacy Rulebook and active rules source files', () => {
-    expect(existsSync('apps/rulebook/index.html')).toBe(true);
-    expect(existsSync('apps/rulebook/app.js')).toBe(true);
-    expect(existsSync('apps/rulebook/player-guide-review/index.html')).toBe(true);
+  it('keeps the archived Browser Rulebook live as the v0.7.1 release bridge until v0.7.2 cutover', () => {
+    expect(existsSync('apps/rulebook')).toBe(false);
+    expect(existsSync('legacy/rulebook-browser/index.html')).toBe(true);
+    expect(existsSync('legacy/public-compatibility/rulebook/index.html')).toBe(true);
     expect(existsSync('rulebook/index.html')).toBe(false);
     expect(existsSync('rulebook/player-facing/current-rulebook.md')).toBe(true);
     expect(existsSync('packages/rules/player-guide/player-guide.md')).toBe(true);
     expect(existsSync('packages/rules/comprehensive/comprehensive-rules.md')).toBe(true);
-    expect(existsSync('rulebook/publication/editorial-policy.md')).toBe(true);
 
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/rulebook/player-facing/current-rulebook.md')).toBe('rulebook/player-facing/current-rulebook.md');
@@ -70,8 +70,8 @@ describe('public route and Pages publication boundary', () => {
     expect(pagesValidator).toContain('materializedTopLevelDirectories');
     expect(publicationWorkflow).toContain('/config/publication-boundary.json');
     expect(publicationWorkflow).toContain('/rulebook/player-facing/current-rulebook.md');
+    expect(publicationWorkflow).toContain('/legacy/rulebook-browser/');
     expect(publicationWorkflow).toContain('/packages/rules/**');
-    expect(publicationWorkflow).not.toContain('/rulebook/player-guide/player-guide.md');
     expect(publicationWorkflow).not.toContain('/rulebook/index.html');
     expect(publicationWorkflow).toContain('node scripts/validate-publication-boundary.mjs');
     expect(pagesWorkflow).toContain("'config/publication-boundary.json'");

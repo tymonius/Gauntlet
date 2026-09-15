@@ -7,7 +7,8 @@ const authority = await loadPublishingAuthority();
 
 const websiteFooterTargets = [
   'index.html',
-  'apps/rulebook/index.html',
+  'apps/rules/index.html',
+  'legacy/rulebook-browser/index.html',
   'rules-arbiter/index.html',
   'apps/card-reference/index.html',
   'apps/deckbuilder/index.html',
@@ -85,7 +86,6 @@ for (const relativePath of websiteFooterTargets) {
     process.exitCode = 1;
   }
 }
-
 
 const currentRulebookPath = path.join(ROOT, 'rulebook/player-facing/current-rulebook.md');
 const currentRulebook = fs.readFileSync(currentRulebookPath, 'utf8');
