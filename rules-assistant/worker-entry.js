@@ -12,6 +12,7 @@ import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
 import { handleLiveReviewExport } from "./review-export.js";
 import { handleReviewIntelligence } from "./review-intelligence.js";
 import { handleClientSourceLookupReview } from "./source-lookup-review.js";
+import { handleQaSemanticEvaluation } from "./qa-semantic-evaluator.js";
 
 const ADMIN_PAGE = ADMIN_PAGE_WITH_RULES_INTELLIGENCE || ADMIN_PAGE_WITH_INCREMENTAL_EXPORT;
 const DEFAULT_SITE_ORIGIN = "https://gauntlet.run";
@@ -161,6 +162,10 @@ function rewriteCandidatePath(request) {
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/qa/semantic-evaluate") {
+      return handleQaSemanticEvaluation(request, env);
+    }
 
     if (url.pathname === "/api/source-lookup-review") {
       return handleClientSourceLookupReview(request, env);
