@@ -10,7 +10,7 @@ A legacy subtree may be removed later when its provenance value is no longer nee
 
 ## Archived subtrees
 
-- `card-design-studies/` — superseded visual design/review studies removed from the maintained `card-design/` production and authoring surface; their established `/card-design/...` study URLs are materialized from this source for compatibility.
+- `card-design-studies/` — superseded card-design studies, review notes, and design rationale removed from the maintained `card-design/` production and authoring surface; their established `/card-design/...` URLs are materialized from this source for compatibility.
 - `card-design-v0.6.3/` — historical v0.6.3 long-card review surface and generated review catalog; stable `/card-design/...` compatibility URLs are materialized from this source by the publication contract.
 - `digital-prototype-data/` — early machine-readable prototype data.
 - `digital-engine-dev-runners/` — retired generic pre-faction/v0.5.6 CLI and GUI development runners, preserved as non-executable provenance.
