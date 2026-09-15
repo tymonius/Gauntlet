@@ -162,6 +162,11 @@ if (!comprehensive?.path || !comprehensiveContract) {
 } else {
   const markdown = await requireSource(errors, comprehensive.path, 'Comprehensive Rules');
   requireLiteral(errors, markdown, comprehensive.marker, 'Comprehensive Rules');
+  if (!comprehensive.reviewMarker) {
+    errors.push('Comprehensive Rules source manifest must declare a reviewed-technical reviewMarker.');
+  } else {
+    requireLiteral(errors, markdown, comprehensive.reviewMarker, 'Comprehensive Rules');
+  }
   requireLiteral(errors, markdown, authorityMarker, 'Comprehensive Rules');
 
   const actualParts = markerValues(markdown, comprehensive.sectionMarker);

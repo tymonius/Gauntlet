@@ -11,6 +11,7 @@
   "dependencyModes": {
     "direct": "Mechanical copy is rendered or assembled directly from registered authority rules.",
     "reviewedTeaching": "Human-authored copy declares registered rule dependencies and must be re-reviewed when those dependencies change.",
+    "reviewedTechnical": "Human-maintained technical prose declares registered rule dependencies and must be re-reviewed when those dependencies change.",
     "procedural": "Compact at-table copy is derived from authority; bespoke phrasing must retain declared dependencies."
   },
   "ruleRegistry": [
@@ -1125,7 +1126,7 @@
     "comprehensiveRules": {
       "id": "comprehensive-rules",
       "kind": "technical",
-      "dependencyMode": "direct",
+      "dependencyMode": "reviewedTechnical",
       "scope": "all-gameplay",
       "status": "active",
       "parts": [
@@ -1135,7 +1136,12 @@
           "covers": [
             "core.factions.framework",
             "core.components"
-          ]
+          ],
+          "dependsOn": [
+            "core.factions.framework",
+            "core.components"
+          ],
+          "reviewFingerprint": "be895f1979fc7c80175b46e5e0445ae0bf25281e9e625ecfa8764a5f126d1880"
         },
         {
           "id": "construction-setup",
@@ -1144,7 +1150,13 @@
             "core.deck-construction",
             "core.setup",
             "core.battlefield.starting-position"
-          ]
+          ],
+          "dependsOn": [
+            "core.deck-construction",
+            "core.setup",
+            "core.battlefield.starting-position"
+          ],
+          "reviewFingerprint": "bd79412a02ace0d82d21717dda44b7922dd718919fa667df46145fa0243e896a"
         },
         {
           "id": "turn-structure",
@@ -1155,7 +1167,15 @@
             "core.turn.draw",
             "core.turn.actions",
             "core.turn.cleanup"
-          ]
+          ],
+          "dependsOn": [
+            "core.turn",
+            "core.turn.sequence",
+            "core.turn.draw",
+            "core.turn.actions",
+            "core.turn.cleanup"
+          ],
+          "reviewFingerprint": "3d61324c96500a76a32a700f53e1329f7021b4c4d0b3c876a0c872be0bdc8ecc"
         },
         {
           "id": "movement-battlefield",
@@ -1167,7 +1187,16 @@
             "core.battlefield.occupation",
             "core.battlefield.counterattack",
             "core.battle.movement-initiation"
-          ]
+          ],
+          "dependsOn": [
+            "core.battlefield",
+            "core.battlefield.position",
+            "core.battlefield.movement",
+            "core.battlefield.occupation",
+            "core.battlefield.counterattack",
+            "core.battle.movement-initiation"
+          ],
+          "reviewFingerprint": "d641c4cf787393ed7baf483bfcbf9567fca4bdfc7e9c08c1be913e16bad57e3e"
         },
         {
           "id": "battles",
@@ -1181,7 +1210,18 @@
             "core.battle.reserve",
             "core.battle.withdrawal-procedure",
             "core.cards.no-winner"
-          ]
+          ],
+          "dependsOn": [
+            "core.battle",
+            "core.battle.battle-total",
+            "core.battle.advantage-disadvantage",
+            "core.battle.normal-result",
+            "core.battle.aftermath",
+            "core.battle.reserve",
+            "core.battle.withdrawal-procedure",
+            "core.cards.no-winner"
+          ],
+          "reviewFingerprint": "f0ec4405e11465cb71f0b01201bb8f192f4eff17451ec24b6435f39954757fdb"
         },
         {
           "id": "territory-victory",
@@ -1191,7 +1231,14 @@
             "core.battlefield.front-line",
             "core.battlefield.last-stand",
             "core.battlefield.victory"
-          ]
+          ],
+          "dependsOn": [
+            "core.battlefield.capture",
+            "core.battlefield.front-line",
+            "core.battlefield.last-stand",
+            "core.battlefield.victory"
+          ],
+          "reviewFingerprint": "b4c00bae14e9406233a69446f53d3d74b5303301dcb1b2a2c1c49ec9e056f049"
         },
         {
           "id": "cards-zones",
@@ -1202,7 +1249,15 @@
             "core.card-zones",
             "core.cards.assets",
             "core.cards.bind"
-          ]
+          ],
+          "dependsOn": [
+            "core.cards",
+            "core.cards.reveal",
+            "core.card-zones",
+            "core.cards.assets",
+            "core.cards.bind"
+          ],
+          "reviewFingerprint": "19891d3b70dfea64c42471cac1d063557747aec122b78c98cb8b594dee6a1b43"
         },
         {
           "id": "effects-timing",
@@ -1218,7 +1273,20 @@
             "core.cards.choices",
             "core.cards.shorthand",
             "core.cards.repeat"
-          ]
+          ],
+          "dependsOn": [
+            "core.cards.golden-rules",
+            "core.cards.shared-timing",
+            "core.cards.reveal",
+            "core.cards.negation",
+            "core.cards.replacement",
+            "core.cards.revising-choice",
+            "core.battle",
+            "core.cards.choices",
+            "core.cards.shorthand",
+            "core.cards.repeat"
+          ],
+          "reviewFingerprint": "ba791ceae7b2f107e3ecce8a1022f2b029acd2935bff68699e38588ed34feb40"
         },
         {
           "id": "persistent-shared",
@@ -1226,7 +1294,12 @@
           "covers": [
             "core.cards.overlay",
             "core.cards.becoming-territories"
-          ]
+          ],
+          "dependsOn": [
+            "core.cards.overlay",
+            "core.cards.becoming-territories"
+          ],
+          "reviewFingerprint": "a5df19caf18d14596dba325f3569eef5bc1e28f50a83ce4b1a874cef81baa957"
         },
         {
           "id": "military",
@@ -1234,7 +1307,12 @@
           "covers": [
             "faction.military.definition",
             "faction.military.features"
-          ]
+          ],
+          "dependsOn": [
+            "faction.military.definition",
+            "faction.military.features"
+          ],
+          "reviewFingerprint": "9a168af06df878d029da991e72516bc94e146e51c1d0663c3983980361d21824"
         },
         {
           "id": "diplomats",
@@ -1243,7 +1321,13 @@
             "faction.diplomats.definition",
             "faction.diplomats.features",
             "faction.diplomats.proposals"
-          ]
+          ],
+          "dependsOn": [
+            "faction.diplomats.definition",
+            "faction.diplomats.features",
+            "faction.diplomats.proposals"
+          ],
+          "reviewFingerprint": "17bbf704a056429038c90142188e682ad09d11b5fd3700ae0ad34a8d56771a47"
         },
         {
           "id": "financiers",
@@ -1251,7 +1335,12 @@
           "covers": [
             "faction.financiers.definition",
             "faction.financiers.features"
-          ]
+          ],
+          "dependsOn": [
+            "faction.financiers.definition",
+            "faction.financiers.features"
+          ],
+          "reviewFingerprint": "60e98f4d573ad8f624dadc7f7d8ddd0ff2a914adeae97603ac329458e07604ac"
         },
         {
           "id": "intelligence",
@@ -1259,7 +1348,12 @@
           "covers": [
             "faction.intelligence.definition",
             "faction.intelligence.features"
-          ]
+          ],
+          "dependsOn": [
+            "faction.intelligence.definition",
+            "faction.intelligence.features"
+          ],
+          "reviewFingerprint": "5577bf64b82d05d1ef0f4a258126c0c0b436f0af6826412200d1e8a033e79af4"
         },
         {
           "id": "mystics",
@@ -1268,7 +1362,13 @@
             "faction.mystics.definition",
             "faction.mystics.features",
             "faction.mystics.rites"
-          ]
+          ],
+          "dependsOn": [
+            "faction.mystics.definition",
+            "faction.mystics.features",
+            "faction.mystics.rites"
+          ],
+          "reviewFingerprint": "67de651f449e98ae3152629b9a30bc42433f51df8242033146f5f37e9f09372b"
         },
         {
           "id": "inquisition",
@@ -1276,12 +1376,87 @@
           "covers": [
             "faction.inquisition.definition",
             "faction.inquisition.features"
-          ]
+          ],
+          "dependsOn": [
+            "faction.inquisition.definition",
+            "faction.inquisition.features"
+          ],
+          "reviewFingerprint": "1220e2cd6da51eec732b220eeab2b42a1b4f91a3bb7609859f50a1dc255e6c0b"
         },
         {
           "id": "definitions-index",
           "title": "Definitions and Index",
-          "covers": []
+          "covers": [],
+          "dependsOn": [
+            "core.deck-construction",
+            "core.setup",
+            "core.turn",
+            "core.battlefield",
+            "core.battlefield.capture",
+            "core.battlefield.front-line",
+            "core.battlefield.last-stand",
+            "core.battlefield.starting-position",
+            "core.battlefield.victory",
+            "core.battle",
+            "core.battle.sequence",
+            "core.battle.commitment-order",
+            "core.battle.onset",
+            "core.battle.gambit-count",
+            "core.battle.tactic-count",
+            "core.battle.reserve-size",
+            "core.battle.defensive-edge",
+            "core.battle.tiebreak",
+            "core.battle.withdrawal",
+            "core.battle.retreat",
+            "core.battle.movement-initiation",
+            "core.cards",
+            "core.factions.framework",
+            "core.components",
+            "core.turn.sequence",
+            "core.turn.draw",
+            "core.turn.actions",
+            "core.turn.cleanup",
+            "core.battlefield.position",
+            "core.battlefield.movement",
+            "core.battlefield.occupation",
+            "core.battlefield.counterattack",
+            "core.battle.battle-total",
+            "core.battle.advantage-disadvantage",
+            "core.battle.normal-result",
+            "core.battle.aftermath",
+            "core.cards.golden-rules",
+            "core.cards.shared-timing",
+            "core.cards.reveal",
+            "core.cards.negation",
+            "core.cards.replacement",
+            "core.cards.revising-choice",
+            "core.cards.overlay",
+            "core.card-zones",
+            "core.cards.choices",
+            "core.cards.assets",
+            "core.cards.bind",
+            "core.cards.shorthand",
+            "core.cards.repeat",
+            "core.cards.no-winner",
+            "core.cards.becoming-territories",
+            "core.battle.reserve",
+            "core.battle.withdrawal-procedure",
+            "faction.military.definition",
+            "faction.military.features",
+            "faction.diplomats.definition",
+            "faction.diplomats.features",
+            "faction.financiers.definition",
+            "faction.financiers.features",
+            "faction.intelligence.definition",
+            "faction.intelligence.features",
+            "faction.mystics.definition",
+            "faction.mystics.features",
+            "faction.inquisition.definition",
+            "faction.inquisition.features",
+            "faction.diplomats.proposals",
+            "faction.mystics.rites"
+          ],
+          "reviewFingerprint": "13be0298f0399c86155275d14d6df18dd19b22dc6b703d0c660c294edd65cc48"
         }
       ],
       "termRegistry": [

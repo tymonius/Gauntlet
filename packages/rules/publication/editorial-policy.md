@@ -108,7 +108,7 @@ A callout should carry information that is genuinely easier to absorb outside th
 
 - **Player's Guide:** natural player language is the default; introduce a defined term only when knowing the term helps the player read cards, references, or later rules. Optimize for first-read comprehension and use diagrams/examples aggressively where they remove conceptual reconstruction.
 - **Faction Guides:** teach faction mechanics in ordinary language while preserving the exact rule meaning. Reuse faction components and state diagrams when they make resource/progression systems visible.
-- **Comprehensive Rules:** use precise definitions and timing, but keep sentences grammatical and action-oriented. Diagrams may clarify difficult timing or state relationships but never substitute for the exact rule text.
+- **Comprehensive Rules:** use precise definitions and timing, but keep sentences grammatical and action-oriented. The prose is maintained and reviewed rather than regenerated wholesale; each technical Part is bound to registered gameplay dependencies by a review fingerprint that must be refreshed only after the affected prose is re-reviewed. Diagrams may clarify difficult timing or state relationships but never substitute for the exact rule text.
 - **Reference Cards:** compression may shorten grammar, but labels should still describe recognizable player actions and procedures. Visual hierarchy should support rapid lookup rather than tutorial reading.
 - **Rules Arbiter:** answer in normal conversational English by default, even when grounding the ruling in formal technical rules.
 
