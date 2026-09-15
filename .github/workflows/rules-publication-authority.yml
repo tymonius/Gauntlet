@@ -16,6 +16,7 @@ on:
       - 'config/legacy-rulebook-retirement.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/render-comprehensive-rules.mjs'
+      - 'scripts/comprehensive-rules-factions.mjs'
       - 'scripts/validate-rules-term-registry.mjs'
       - 'scripts/validate-faction-rules-authority.mjs'
       - 'scripts/validate-shared-rules-authority.mjs'
@@ -57,6 +58,7 @@ jobs:
             /apps/rules/
             /scripts/current-game-authority.mjs
             /scripts/render-comprehensive-rules.mjs
+            /scripts/comprehensive-rules-factions.mjs
             /scripts/validate-rules-term-registry.mjs
             /scripts/validate-faction-rules-authority.mjs
             /scripts/validate-shared-rules-authority.mjs
