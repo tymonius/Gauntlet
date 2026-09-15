@@ -64,15 +64,17 @@ describe('active rules publication routes', () => {
     }
   });
 
-  it('makes the active architecture primary and identifies the Browser Rulebook as retired', async () => {
+  it('keeps the new architecture available in parallel while v0.7.1 remains the released Browser Rulebook surface', async () => {
     const hub = await read('apps/rules/index.html');
     expect(hub).toContain('href="/rules/player-guide/"');
     expect(hub).toContain('href="/rules/factions/"');
     expect(hub).toContain('href="/rules/comprehensive/"');
     expect(hub).toContain('href="/rules-arbiter/"');
-    expect(hub).toContain('The monolithic Browser Rulebook has been retired.');
+    expect(hub).toContain('href="/rulebook/"');
+    expect(hub).toContain('v0.7.1 remains the public release until the v0.7.2 cutover.');
+    expect(hub).toContain('switch between Released v0.7.1 and the current release candidate');
     expect(hub).toContain('href="/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf"');
-    expect(hub).not.toMatch(/legacy Rulebook remains available while we prove retirement coverage/i);
+    expect(hub).not.toContain('The monolithic Browser Rulebook has been retired.');
   });
 
   it('retains print-friendly reader contracts', async () => {
