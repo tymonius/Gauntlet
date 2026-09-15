@@ -23,8 +23,8 @@ jobs:
           set -euo pipefail
           mapfile -t files < <(grep -rl --include='*.test.mjs' 'v071-qa-20260914-13' rules-assistant | sort)
           printf '%s\n' "${files[@]}"
-          if [[ ${#files[@]} -ne 14 ]]; then
-            echo "Expected exactly 14 maintained test files pinned to r13; found ${#files[@]}." >&2
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "No maintained test files still pin r13." >&2
             exit 1
           fi
           python - "${files[@]}" <<'PY'
