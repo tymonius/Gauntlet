@@ -31,7 +31,6 @@ jobs:
           const markdownPath = 'packages/rules/comprehensive/comprehensive-rules.md';
           const validatorPath = 'scripts/validate-rules-publication-contract.mjs';
           const scaffoldPath = 'scripts/validate-rules-publication-scaffolds.mjs';
-          const workflowPath = '.github/workflows/rules-publication-authority.yml';
           const policyPath = 'packages/rules/publication/editorial-policy.md';
 
           const contract = JSON.parse(await readFile(contractPath, 'utf8'));
@@ -88,7 +87,7 @@ jobs:
           const comprehensiveStart = validator.indexOf(`const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;`);
           const referenceCardsStart = validator.indexOf(`\nconst referenceCards = contract?.otherSurfaces?.referenceCards;`, comprehensiveStart);
           if (comprehensiveStart < 0 || referenceCardsStart < 0) throw new Error('Comprehensive validator block anchors not found.');
-          const comprehensiveBlock = `const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;\nif (!comprehensive || comprehensive.kind !== 'technical' || comprehensive.dependencyMode !== 'reviewedTechnical') {\n  fail(errors, 'Comprehensive Rules must be the reviewedTechnical technical surface.');\n} else {\n  const active = comprehensive.status === 'active';\n  const coverIds = [];\n  const partIds = new Set();\n  for (const part of comprehensive.parts || []) {\n    if (partIds.has(part.id)) fail(errors, \`Duplicate Comprehensive Rules part id: \${part.id}.\`);\n    partIds.add(part.id);\n    validateDependencies(errors, registryById, part.covers, \`Comprehensive Rules / \${part.id} coverage\`);\n    validateReviewedTechnicalPart(\n      errors,\n      authority,\n      registryById,\n      part,\n      \`Comprehensive Rules / \${part.id}\`,\n      active,\n    );\n    for (const coverId of part.covers || []) {\n      if (!(part.dependsOn || []).some(dependency => coveredBy(coverId, dependency))) {\n        fail(\n          errors,\n          \`Comprehensive Rules / \${part.id} covers \${coverId} without a matching review dependency.\`,\n        );\n      }\n    }\n    coverIds.push(...(part.covers || []));\n  }\n  for (const ruleId of registryById.keys()) {\n    if (!coverIds.some(coverId => coveredBy(ruleId, coverId))) {\n      fail(errors, \`Registered rule \${ruleId} is not assigned to the Comprehensive Rules.\`);\n    }\n  }\n  for (const factionId of authorityFactionIds) {\n    if (!partIds.has(factionId)) {\n      fail(errors, \`Comprehensive Rules are missing a dedicated \${factionId} faction part.\`);\n    }\n  }\n}\n`;
+          const comprehensiveBlock = `const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;\nif (!comprehensive || comprehensive.kind !== 'technical' || comprehensive.dependencyMode !== 'reviewedTechnical') {\n  fail(errors, 'Comprehensive Rules must be the reviewedTechnical technical surface.');\n} else {\n  const active = comprehensive.status === 'active';\n  const coverIds = [];\n  const partIds = new Set();\n  for (const part of comprehensive.parts || []) {\n    if (partIds.has(part.id)) fail(errors, \`Duplicate Comprehensive Rules part id: \${part.id}.\`);\n    partIds.add(part.id);\n    validateDependencies(errors, registryById, part.covers, \`Comprehensive Rules / \${part.id} coverage\`);\n    validateReviewedTechnicalPart(\n      errors,\n      authority,\n      registryById,\n      part,\n      \`Comprehensive Rules / \${part.id}\`,\n      active,\n    );\n    for (const coverId of part.covers || []) {\n      if (!(part.dependsOn || []).some(dependency => coveredBy(coverId, dependency))) {\n        fail(errors, \`Comprehensive Rules / \${part.id} covers \${coverId} without a matching review dependency.\`);\n      }\n    }\n    coverIds.push(...(part.covers || []));\n  }\n  for (const ruleId of registryById.keys()) {\n    if (!coverIds.some(coverId => coveredBy(ruleId, coverId))) {\n      fail(errors, \`Registered rule \${ruleId} is not assigned to the Comprehensive Rules.\`);\n    }\n  }\n  for (const factionId of authorityFactionIds) {\n    if (!partIds.has(factionId)) {\n      fail(errors, \`Comprehensive Rules are missing a dedicated \${factionId} faction part.\`);\n    }\n  }\n}\n`;
           validator = validator.slice(0, comprehensiveStart) + comprehensiveBlock + validator.slice(referenceCardsStart);
           await writeFile(validatorPath, validator);
 
@@ -105,15 +104,6 @@ jobs:
           if (!policy.includes(policyAnchor)) throw new Error('Editorial policy Comprehensive Rules anchor not found.');
           policy = policy.replace(policyAnchor, policyReplacement);
           await writeFile(policyPath, policy);
-
-          let workflow = await readFile(workflowPath, 'utf8');
-          workflow = workflow
-            .replaceAll("      - 'scripts/render-comprehensive-rules.mjs'\n", '')
-            .replaceAll("      - 'scripts/comprehensive-rules-factions.mjs'\n", '')
-            .replaceAll('            /scripts/render-comprehensive-rules.mjs\n', '')
-            .replaceAll('            /scripts/comprehensive-rules-factions.mjs\n', '')
-            .replaceAll('          node scripts/render-comprehensive-rules.mjs\n', '');
-          await writeFile(workflowPath, workflow);
           NODE
 
           rm scripts/render-comprehensive-rules.mjs
