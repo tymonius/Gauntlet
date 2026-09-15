@@ -64,6 +64,7 @@
     {"source": "apps/start", "publicPath": "/start/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/playtest", "publicPath": "/playtest/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "packages/game-data", "publicPath": "/game-data/", "kind": "shared-browser-contract", "manageIndexRoutes": false},
+    {"source": "legacy/card-design-v0.6.3/reference-copy", "publicPath": "/card-design/reference-copy/v0.6.3/", "kind": "historical-card-review", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.6.2", "publicPath": "/v0.6.2/", "kind": "historical-version", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.6.3", "publicPath": "/v0.6.3/", "kind": "historical-version", "manageIndexRoutes": false},
     {"source": "legacy/public-versions/v0.7.0", "publicPath": "/v0.7.0/", "kind": "historical-version", "manageIndexRoutes": false},
