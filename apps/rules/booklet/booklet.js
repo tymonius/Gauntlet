@@ -62,13 +62,25 @@ function selectedPublication() {
   return [requested, PUBLICATIONS[requested] || PUBLICATIONS['player-guide']];
 }
 
+function numberedHeading(label) {
+  const match = label.trim().match(/^(\d+)\.\s+(.+)$/);
+  return match ? { number: match[1], title: match[2] } : null;
+}
+
 function decorateContent(content, documentId) {
   const openingTitle = content.querySelector(':scope > h1:first-child');
   openingTitle?.remove();
 
-  content.querySelectorAll('h2').forEach((heading, index) => {
+  content.querySelectorAll('h2').forEach((heading) => {
+    const numbered = numberedHeading(heading.textContent || '');
+    if (numbered) {
+      heading.textContent = numbered.title;
+      heading.style.setProperty('--section-number', `'${numbered.number.padStart(2, '0')}'`);
+    } else {
+      heading.classList.add('booklet-section-opener');
+      heading.style.setProperty('--section-number', "''");
+    }
     heading.classList.add('booklet-section-heading');
-    heading.style.setProperty('--section-number', `'${String(index + 1).padStart(2, '0')}'`);
   });
 
   content.querySelectorAll('h3').forEach(heading => heading.classList.add('booklet-subheading'));
@@ -93,14 +105,15 @@ function decorateContent(content, documentId) {
 function buildContents(headings) {
   const list = document.querySelector('[data-booklet-contents]');
   const sections = headings.filter(({ level }) => level === 2);
-  list.replaceChildren(...sections.map(({ id, label }, index) => {
+  list.replaceChildren(...sections.map(({ id, label }) => {
+    const numbered = numberedHeading(label);
     const item = document.createElement('li');
     const number = document.createElement('span');
     number.className = 'contents-number';
-    number.textContent = String(index + 1).padStart(2, '0');
+    number.textContent = numbered ? numbered.number.padStart(2, '0') : '—';
     const title = document.createElement('span');
     title.className = 'contents-title';
-    title.textContent = label;
+    title.textContent = numbered?.title || label;
     item.dataset.target = id;
     item.append(number, title);
     return item;
@@ -111,7 +124,12 @@ function buildContents(headings) {
 
 async function main() {
   const [documentId, publication] = selectedPublication();
-  const response = await fetch(`../sources/${encodeURIComponent(documentId === 'complete-rules' ? 'complete-rules' : documentId === 'player-guide' ? 'player-guide' : `factions/${documentId}`)}.md`, { cache: 'no-store' });
+  const sourcePath = documentId === 'complete-rules'
+    ? 'complete-rules'
+    : documentId === 'player-guide'
+      ? 'player-guide'
+      : `factions/${documentId}`;
+  const response = await fetch(`../sources/${encodeURIComponent(sourcePath)}.md`, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Unable to load ${publication.title}: HTTP ${response.status}`);
   const source = await response.text();
   const rendered = renderMarkdown(source);
