@@ -13,7 +13,7 @@ const COLUMNS = 3;
 const MAX_QUANTITY = 99;
 const RENDER_TIMEOUT_MS = 30000;
 const BACK_VARIANTS = new Set(["military", "diplomats", "financiers", "intelligence", "mystics", "inquisition"]);
-const CATEGORY_ORDER = ["Playable card", "Territory", "Leader", "Reference", "Tracker", "Capital Ledger", "Deed", "Proposal / Treaty", "Rite", "Ritual", "Supplemental card"];
+const CATEGORY_ORDER = ["Playable card", "Card back", "Territory", "Leader", "Reference", "Tracker", "Capital Ledger", "Deed", "Proposal / Treaty", "Rite", "Ritual", "Supplemental card"];
 
 let installed = false;
 let catalog = [];
@@ -34,7 +34,7 @@ export function installCustomPrintMode() {
   toggleSection.className = "custom-print-toggle-card";
   toggleSection.innerHTML = `
     <h3>Custom printing</h3>
-    <p class="muted">Build print sheets from any current card without creating or validating a playable Deck.</p>
+    <p class="muted">Build print sheets from any current card or canonical card back without creating or validating a playable Deck.</p>
     <button id="customPrintModeToggle" type="button" class="secondary">Enable custom printing</button>`;
   grid.append(toggleSection);
 
@@ -46,7 +46,7 @@ export function installCustomPrintMode() {
     <div class="custom-print-workspace-header">
       <div>
         <h3>Custom print sheets</h3>
-        <p class="muted">Choose any physical cards in any quantities. Deck construction and validation rules do not apply. Intrinsically double-sided cards automatically receive their real reverse face.</p>
+        <p class="muted">Choose any physical card face or canonical card back in any quantity. Deck construction and validation rules do not apply. Intrinsically double-sided cards automatically receive their real reverse face.</p>
       </div>
       <button id="customPrintDisable" type="button" class="secondary">Close custom printing</button>
     </div>
@@ -80,7 +80,7 @@ export function installCustomPrintMode() {
       </label>
       <button id="customPrintOpen" type="button" disabled>Print custom sheets</button>
     </div>
-    <p id="customPrintSummary" class="custom-print-summary">0 physical cards selected.</p>
+    <p id="customPrintSummary" class="custom-print-summary">0 faces selected.</p>
     <p id="customPrintStatus" class="custom-print-summary custom-print-status" aria-live="polite"></p>`;
   details.append(workspace);
 
@@ -167,6 +167,10 @@ function buildCatalog(game) {
   for (const card of game.cards || []) {
     const faction = slugify(card.allegiance || "neutral") || "neutral";
     entries.push(makeEntry(`card:${card.id}`, card.name, "Playable card", faction, factionNames.get(faction) || card.allegiance || faction, "portrait", "standardBack", { surface: "card", id: card.id }));
+  }
+  for (const faction of BACK_VARIANTS) {
+    const factionLabel = factionNames.get(faction) || faction;
+    entries.push(makeEntry(`back:${faction}`, `${factionLabel} card back`, "Card back", faction, factionLabel, "portrait", "none", { surface: "back", id: faction }));
   }
   for (const territory of game.territories || []) {
     entries.push(makeEntry(`territory:${territory.id}`, territory.name, "Territory", "neutral", "Neutral", "landscape", "standardBack", { surface: "territory", id: territory.id }));
@@ -339,7 +343,7 @@ function updateSummary() {
   }
   const pages = frontSheets + backSheets;
   ui.customPrintOpen.disabled = cards.length === 0;
-  ui.customPrintSummary.textContent = cards.length ? `${cards.length} physical card${cards.length === 1 ? "" : "s"} · ${frontSheets} front sheet${frontSheets === 1 ? "" : "s"} · ${pages} print page${pages === 1 ? "" : "s"}${backSheets ? ` (${backSheets} reverse)` : ""}.` : "0 physical cards selected.";
+  ui.customPrintSummary.textContent = cards.length ? `${cards.length} selected face${cards.length === 1 ? "" : "s"} · ${frontSheets} sheet${frontSheets === 1 ? "" : "s"} · ${pages} print page${pages === 1 ? "" : "s"}${backSheets ? ` (${backSheets} reverse)` : ""}.` : "0 faces selected.";
 }
 
 function openCustomPrintSheets() {
@@ -372,7 +376,7 @@ function buildCustomPrintDocument(cards, includeStandardBacks, backStyle) {
 <style>
 *{box-sizing:border-box;font-synthesis:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}body{margin:0;background:#eee;color:#111;font-family:Arial,Helvetica,sans-serif}.print-toolbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 1rem;background:#fff;border-bottom:1px solid #ccc;font-size:14px}.print-toolbar-copy{display:grid;gap:.12rem}.print-toolbar-note{font-size:12px;color:#555}.print-toolbar button{padding:.45rem .8rem;border:1px solid #222;border-radius:.25rem;background:#222;color:#fff;font:inherit;font-weight:800;cursor:pointer}.print-toolbar button:disabled{opacity:.5;cursor:wait}.card-page{width:7.5in;height:10.5in;margin:.25in auto;background:#fff;break-after:page;page-break-after:always;overflow:hidden}.card-page.last-page{break-after:auto;page-break-after:auto}.card-table{width:7.5in;height:10.5in;border-collapse:collapse;border-spacing:0;table-layout:fixed}.card-table td{width:2.5in;height:3.5in;padding:0;border:0;vertical-align:top;overflow:hidden}.custom-card-slot{position:relative;width:2.5in;height:3.5in;overflow:hidden}.custom-render-frame,.custom-back-frame{display:block;width:2.5in;height:3.5in;margin:0;padding:0;border:0;overflow:hidden;background:transparent}.custom-landscape-rotate{position:absolute;top:0;left:2.5in;width:3.5in;height:2.5in;transform:rotate(90deg);transform-origin:top left}.custom-landscape-rotate .custom-render-frame{width:3.5in;height:2.5in}@page{size:letter portrait;margin:.25in}@media print{body{background:#fff}.print-toolbar{display:none!important}.card-page{margin:0 auto}}
 </style></head><body>
-<div class="print-toolbar"><div class="print-toolbar-copy"><strong>${cards.length} physical cards · ${frontCount} front sheets · ${sheets.length} print pages</strong><span id="customSheetStatus" class="print-toolbar-note">Loading finalized production card faces…</span></div><button id="customSheetPrintButton" type="button" disabled>Print / Save PDF</button></div>
+<div class="print-toolbar"><div class="print-toolbar-copy"><strong>${cards.length} selected face${cards.length === 1 ? "" : "s"} · ${frontCount} sheet${frontCount === 1 ? "" : "s"} · ${sheets.length} print page${sheets.length === 1 ? "" : "s"}</strong><span id="customSheetStatus" class="print-toolbar-note">Loading finalized production card faces…</span></div><button id="customSheetPrintButton" type="button" disabled>Print / Save PDF</button></div>
 ${pages}
 <script>
 (() => {
@@ -402,6 +406,8 @@ function reverseCellHtml(entry, includeStandardBacks, backStyle) {
 }
 
 function cardFrameHtml(entry, side) {
+  if (entry.render.surface === "back") return backFrameHtml(entry.render.id);
+
   const renderer = productionPrint();
   let src;
   if (entry.render.surface === "card") {
