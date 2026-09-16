@@ -4,66 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gauntlet Rules Booklet</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="./booklet.css" />
-  <style>
-    .booklet-content > blockquote:first-child { display: none !important; }
-    .booklet-content h2.booklet-section-opener { padding-left: 0; }
-    .booklet-content h2.booklet-section-opener::before { display: none; }
-  </style>
 </head>
 <body data-booklet-ready="false">
-  <main class="booklet-publication" data-booklet-publication>
-    <section class="booklet-cover" aria-label="Publication cover">
-      <div class="cover-rule"></div>
-      <div class="cover-kicker">The rules of Gauntlet</div>
-      <img class="cover-wordmark" src="/images/Gauntlet.svg" alt="Gauntlet" />
-      <div class="cover-title-row">
-        <div>
-          <div class="cover-title" data-booklet-title>Rules</div>
-          <div class="cover-version">Version 0.7.2</div>
-        </div>
-        <span class="cover-faction-symbol" data-booklet-faction-symbol aria-hidden="true"></span>
-      </div>
-      <div class="cover-divider"></div>
-      <img class="cover-art" data-booklet-cover-art src="/images/woodcuts/hero compositions/hero 1.png" alt="" />
-      <div class="cover-footer">
-        <span>Tactical card-and-territory game</span>
-        <span>2026</span>
-      </div>
-    </section>
-
-    <section class="booklet-front-matter" data-booklet-front-matter>
-      <header class="front-matter-header">
-        <span data-booklet-running-title>Gauntlet</span>
-        <span>Contents</span>
-      </header>
-      <div class="front-matter-rule"></div>
-      <div class="front-matter-script">Begin here</div>
-      <h1>Contents</h1>
-      <ol class="booklet-contents" data-booklet-contents></ol>
-    </section>
-
-    <article class="booklet-content rulebook-content candidate-publication" data-booklet-content></article>
-
-    <section class="booklet-back-cover" aria-label="Publication back cover">
-      <div class="back-cover-band">
-        <div class="back-cover-script">Run the Gauntlet</div>
-        <div class="back-cover-tagline">Build. Advance. Contend.<br />Capture.</div>
-      </div>
-      <div class="back-cover-body">
-        <p data-booklet-description>Gauntlet is a two-player tactical card-and-territory game of institutional power, battlefield pressure, and competing paths to victory.</p>
-        <div class="back-cover-url">GAUNTLET.RUN</div>
-        <div class="back-cover-accounting">
-          <img src="/images/branding/tds-games-mark.svg" alt="TDS Games" />
-          <div>
-            <strong data-booklet-back-title>Gauntlet Rules</strong>
-            <span>Published by TDS Games, an imprint of Misty Hollow Enterprises.</span>
-            <span>Copyright © 2026 Tymon Scott. All rights reserved.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+  <main id="booklet-pages" class="booklet-publication rulebook-content candidate-publication" data-booklet-pages aria-label="Gauntlet rules publication"></main>
+  <div class="booklet-source" data-booklet-source aria-hidden="true"></div>
   <script type="module" src="./booklet.js"></script>
 </body>
 </html>
