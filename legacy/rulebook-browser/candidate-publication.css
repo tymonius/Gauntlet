@@ -299,6 +299,11 @@
 }
 
 @media print {
+  .analytics-consent,
+  .skip-link {
+    display: none !important;
+  }
+
   .candidate-masthead {
     break-after: avoid;
     margin-top: 0;
