@@ -72,7 +72,7 @@ function localCompatibleReferentCountR15(current, match, noun, retrieval = []) {
     : [noun];
   let count = 0;
   for (const pattern of patterns) {
-    const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = pattern;
     count += (normalized.match(new RegExp("\\b" + escaped + "s?\\b", "g")) || []).length;
   }
   return count;
