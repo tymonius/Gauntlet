@@ -1,4 +1,4 @@
-name: Rules Arbiter r15 one-shot patch
+name: Rules Arbiter r15 semantic QA patch
 
 on:
   push:
@@ -11,32 +11,46 @@ permissions:
   contents: write
 
 jobs:
-  apply-patch:
+  apply-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out remediation branch
         uses: actions/checkout@v4
         with:
           ref: rules-arbiter-gate3-d-remediation
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Apply guarded Worker patch
+      - name: Apply guarded semantic QA patch
         run: node scripts/apply-rules-arbiter-r15-worker-patch.mjs
 
       - name: Validate patched JavaScript
         run: |
+          node --check rules-assistant/qa-semantic-evaluator.js
           node --check rules-assistant/worker-v071.js
           git diff --check
 
-      - name: Commit r15 Worker changes
+      - name: Install test dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run Rules Arbiter r15 regressions
+        run: >-
+          npx vitest run
+          rules-assistant/v071-gate3-d-remediation.test.mjs
+          rules-assistant/v071-ambiguous-referent-clarification.test.mjs
+          rules-assistant/v071-gate3-c-worker-integration.test.mjs
+          rules-assistant/v071-r13-classification-boundary.test.mjs
+          rules-assistant/local-search.test.mjs
+          rules-assistant/qa-semantic-evaluator.test.mjs
+          rules-assistant/qa-semantic-evaluator-v2.test.mjs
+
+      - name: Commit semantic QA v2 changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rules-assistant/worker-v071.js \
-                  rules-assistant/v071-ambiguous-referent-clarification.test.mjs \
-                  rules-assistant/v071-gate3-c-worker-integration.test.mjs
+          git add rules-assistant/qa-semantic-evaluator.js \
+                  rules-assistant/qa-semantic-evaluator.test.mjs
           git diff --cached --quiet && exit 0
-          git commit -m "Harden tranche D ambiguity handling"
+          git commit -m "Treat semantic extra claims as telemetry"
           git push origin HEAD:rules-arbiter-gate3-d-remediation
 
 # One-shot workflow; remove before opening the remediation PR.
