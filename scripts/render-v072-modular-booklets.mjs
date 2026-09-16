@@ -10,6 +10,7 @@ import {
   V072_BOOKLET_OUTPUT_ROOT,
   V072_BOOKLET_RELEASE_VERSION,
   V072_MODULAR_BOOKLETS,
+  v072BookletImposition,
 } from '../packages/rules/publication/v072-modular-booklets.mjs';
 import {
   loadPublicationBoundary,
@@ -24,6 +25,20 @@ const MANIFEST_PATH = path.join(OUTPUT_ROOT, V072_BOOKLET_MANIFEST);
 const HALF_LETTER = Object.freeze({ width: 396, height: 612 });
 const LETTER_LANDSCAPE = Object.freeze({ width: 792, height: 612 });
 const BUILD_EPOCH = new Date('2000-01-01T00:00:00.000Z');
+const REQUIRED_PUBLIC_DIRECTORIES = Object.freeze([
+  'assets',
+  'card-design',
+  'images',
+  'rules-assistant',
+]);
+const REQUIRED_MATERIALIZED_ROUTES = new Set([
+  '/game-data/',
+  '/rulebook/',
+]);
+const REQUIRED_MATERIALIZED_FILES = new Set([
+  '/card-design/face-authority.mjs',
+  '/card-design/production-surface.mjs',
+]);
 
 const hashBytes = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const hashFile = file => hashBytes(fs.readFileSync(file));
@@ -43,9 +58,15 @@ function requireCandidateAuthority() {
 }
 
 function copyPublishedRootDependencies(destinationRoot, contract) {
-  for (const name of contract.pages?.publishedDirectories || []) {
+  const publishedDirectories = new Set(contract.pages?.publishedDirectories || []);
+  for (const name of REQUIRED_PUBLIC_DIRECTORIES) {
+    if (!publishedDirectories.has(name)) {
+      throw new Error(`Required booklet runtime directory is outside the public publication boundary: ${name}.`);
+    }
     const source = path.join(ROOT, name);
-    if (!fs.existsSync(source)) continue;
+    if (!fs.existsSync(source) || !fs.statSync(source).isDirectory()) {
+      throw new Error(`Missing booklet runtime directory: ${name}.`);
+    }
     fs.cpSync(source, path.join(destinationRoot, name), { recursive: true });
   }
 
@@ -59,12 +80,23 @@ function copyPublishedRootDependencies(destinationRoot, contract) {
   }
 }
 
+function bookletPublicationContract(contract) {
+  return {
+    ...contract,
+    materializedRoutes: (contract.materializedRoutes || [])
+      .filter(route => REQUIRED_MATERIALIZED_ROUTES.has(route.publicPath)),
+    materializedFiles: (contract.materializedFiles || [])
+      .filter(file => file.publicPath.startsWith('/rulebook/') || REQUIRED_MATERIALIZED_FILES.has(file.publicPath)),
+  };
+}
+
 function materializeCandidateSite() {
   const destinationRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'gauntlet-v072-booklets-'));
   const contract = loadPublicationBoundary();
+  const bookletContract = bookletPublicationContract(contract);
   copyPublishedRootDependencies(destinationRoot, contract);
-  materializePublicRoutes({ root: ROOT, destinationRoot, contract, skipMissingSources: false });
-  materializePublicFiles({ root: ROOT, destinationRoot, contract, skipMissingSources: false });
+  materializePublicRoutes({ root: ROOT, destinationRoot, contract: bookletContract, skipMissingSources: false });
+  materializePublicFiles({ root: ROOT, destinationRoot, contract: bookletContract, skipMissingSources: false });
   return destinationRoot;
 }
 
@@ -153,11 +185,18 @@ async function waitForPublication(page, publication, baseUrl) {
   }
 
   await page.evaluate(async () => {
-    await document.fonts?.ready;
+    const timeout = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+    await Promise.race([document.fonts?.ready || Promise.resolve(), timeout(10000)]);
     const images = [...document.images];
     await Promise.all(images.map(image => image.complete
       ? Promise.resolve()
-      : new Promise(resolve => image.addEventListener('load', resolve, { once: true }))));
+      : Promise.race([
+          new Promise(resolve => {
+            image.addEventListener('load', resolve, { once: true });
+            image.addEventListener('error', resolve, { once: true });
+          }),
+          timeout(10000),
+        ])));
   });
 
   const diagnostics = await page.evaluate(() => {
@@ -241,17 +280,14 @@ async function imposeBooklet(readerPath, bookletPath, publication) {
   const embedded = await booklet.embedPdf(paddedBytes, Array.from({ length: paddedPages }, (_, index) => index));
   const sheets = paddedPages / 4;
   for (let sheet = 0; sheet < sheets; sheet += 1) {
+    const order = v072BookletImposition(paddedPages, sheet);
     const front = booklet.addPage([LETTER_LANDSCAPE.width, LETTER_LANDSCAPE.height]);
-    const frontLeft = paddedPages - (2 * sheet) - 1;
-    const frontRight = 2 * sheet;
-    front.drawPage(embedded[frontLeft], { x: 0, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
-    front.drawPage(embedded[frontRight], { x: HALF_LETTER.width, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
+    front.drawPage(embedded[order.front[0] - 1], { x: 0, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
+    front.drawPage(embedded[order.front[1] - 1], { x: HALF_LETTER.width, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
 
     const back = booklet.addPage([LETTER_LANDSCAPE.width, LETTER_LANDSCAPE.height]);
-    const backLeft = (2 * sheet) + 1;
-    const backRight = paddedPages - (2 * sheet) - 2;
-    back.drawPage(embedded[backLeft], { x: 0, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
-    back.drawPage(embedded[backRight], { x: HALF_LETTER.width, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
+    back.drawPage(embedded[order.back[0] - 1], { x: 0, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
+    back.drawPage(embedded[order.back[1] - 1], { x: HALF_LETTER.width, y: 0, width: HALF_LETTER.width, height: HALF_LETTER.height });
   }
 
   const bytes = await booklet.save({ useObjectStreams: false });
