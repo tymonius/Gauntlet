@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import {
+  V072_BOOKLET_HERO_WOODCUTS,
   V072_BOOKLET_MANIFEST,
   V072_BOOKLET_OUTPUT_ROOT,
   V072_BOOKLET_RELEASE_VERSION,
@@ -28,6 +29,17 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(new Set(V072_MODULAR_BOOKLETS.map(publication => publication.source)).size).toBe(8);
   });
 
+  it('uses the approved hero woodcut compositions for semantic padding pages', () => {
+    expect(V072_BOOKLET_HERO_WOODCUTS).toHaveLength(4);
+    expect(V072_BOOKLET_HERO_WOODCUTS.map(hero => hero.source)).toEqual([
+      'images/woodcuts/hero compositions/hero 1.png',
+      'images/woodcuts/hero compositions/hero 2.png',
+      'images/woodcuts/hero compositions/hero 3.png',
+      'images/woodcuts/hero compositions/hero 4.png',
+    ]);
+    expect(V072_BOOKLET_HERO_WOODCUTS.every(hero => hero.publicUrl.startsWith('/images/woodcuts/hero compositions/'))).toBe(true);
+  });
+
   it('uses standard saddle-stitch imposition order', () => {
     expect(v072BookletImposition(4, 0)).toEqual({ front: [4, 1], back: [2, 3] });
     expect(v072BookletImposition(8, 0)).toEqual({ front: [8, 1], back: [2, 7] });
@@ -45,8 +57,12 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
     expect(renderer).toContain('player-facing language');
+    expect(renderer).toContain('booklet-woodcut-interstitial');
+    expect(renderer).toContain('booklet-interstitial-anchor');
+    expect(renderer).toContain('semantic anchors');
     expect(validator).toContain("await import('pdf-lib')");
     expect(validator).toContain('paddedPages % 4');
+    expect(validator).toContain('interstitials.length');
     expect(workflow).toContain('Render all eight modular booklets');
     expect(workflow).toContain('pdftoppm');
     expect(workflow).toContain('pdftotext');
