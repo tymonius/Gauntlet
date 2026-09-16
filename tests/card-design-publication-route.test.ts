@@ -29,8 +29,8 @@ describe('card-design publication route boundary', () => {
   });
 
   it('materializes whole routes before file overrides during off-tree Pages staging', () => {
-    const routesIndex = stager.indexOf('materializePublicRoutes');
-    const filesIndex = stager.indexOf('materializePublicFiles');
+    const routesIndex = stager.indexOf('materializePublicRoutes({');
+    const filesIndex = stager.indexOf('materializePublicFiles({');
     expect(routesIndex).toBeGreaterThan(-1);
     expect(filesIndex).toBeGreaterThan(routesIndex);
   });
