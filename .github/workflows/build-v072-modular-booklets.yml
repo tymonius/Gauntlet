@@ -1,0 +1,70 @@
+name: Build v0.7.2 modular rules booklets
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/build-v072-modular-booklets.yml'
+      - 'config/publication-boundary.json'
+      - 'legacy/rulebook-browser/**'
+      - 'packages/game-data/current-game.json'
+      - 'packages/rules/**'
+      - 'scripts/publication-boundary.mjs'
+      - 'scripts/render-v072-modular-booklets.mjs'
+      - 'scripts/validate-v072-modular-booklets.mjs'
+      - 'tests/v072-modular-booklet-pipeline.test.mjs'
+
+jobs:
+  build-booklets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out publication sources
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
+
+      - name: Install Chromium and PDF inspection tools
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Check modular booklet scripts
+        run: |
+          node --check packages/rules/publication/v072-modular-booklets.mjs
+          node --check scripts/render-v072-modular-booklets.mjs
+          node --check scripts/validate-v072-modular-booklets.mjs
+
+      - name: Render all eight modular booklets
+        run: node scripts/render-v072-modular-booklets.mjs
+
+      - name: Validate booklet contract and imposition
+        run: node scripts/validate-v072-modular-booklets.mjs
+
+      - name: Render PDF review previews
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/rules-booklets/v0.7.2/previews
+          for pdf in artifacts/rules-booklets/v0.7.2/*_Booklet.pdf; do
+            stem="$(basename "$pdf" .pdf)"
+            pdfinfo "$pdf"
+            pdftotext "$pdf" - | grep -q '[[:alnum:]]'
+            pdftoppm -f 1 -singlefile -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side-1"
+          done
+
+      - name: Upload modular booklet review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v0.7.2-modular-rules-booklets
+          path: artifacts/rules-booklets/v0.7.2/
+          if-no-files-found: error
