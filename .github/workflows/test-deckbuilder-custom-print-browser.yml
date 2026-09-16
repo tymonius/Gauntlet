@@ -72,7 +72,7 @@ jobs:
           await page.waitForFunction(() => Number(document.querySelector('#customPrintCatalogCount')?.textContent || 0) > 0);
 
           const typeOptions = await page.locator('#customPrintTypeFilter option').allTextContents();
-          for (const required of ['Playable card', 'Territory', 'Leader', 'Reference', 'Tracker', 'Capital Ledger', 'Deed', 'Proposal / Treaty', 'Rite', 'Ritual']) {
+          for (const required of ['Playable card', 'Card back', 'Territory', 'Leader', 'Reference', 'Tracker', 'Capital Ledger', 'Deed', 'Proposal / Treaty', 'Rite', 'Ritual']) {
             if (!typeOptions.includes(required)) throw new Error(`Custom print selector is missing card type: ${required}`);
           }
 
@@ -98,7 +98,7 @@ jobs:
           const selectedRows = page.locator('#customPrintSelection .custom-print-row');
           if (await selectedRows.count() !== 8) throw new Error(`Expected 8 selected physical cards, found ${await selectedRows.count()}`);
           const summary = await page.locator('#customPrintSummary').textContent();
-          if (!summary?.includes('8 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
+          if (!summary?.includes('8 selected faces') || !summary.includes('1 sheet') || !summary.includes('2 print pages')) {
             throw new Error(`Unexpected custom print summary: ${summary}`);
           }
 
