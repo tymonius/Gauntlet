@@ -105,7 +105,7 @@ describe("semantic QA verdict derivation", () => {
     expect(verdict.hardFailures).toHaveLength(3);
   });
 
-  test("requires review for ambiguity, extra material claims, or malformed evaluator output", () => {
+  test("requires review for ambiguity or malformed evaluator output while retaining extra-claim telemetry", () => {
     const verdict = deriveSemanticVerdict(expected(), {
       required_results: [
         { id: "movement-ends", status: "satisfied", reason: "Equivalent meaning." },
@@ -120,6 +120,7 @@ describe("semantic QA verdict derivation", () => {
     expect(verdict.verdict).toBe("review");
     expect(verdict.contractIssues).toContain("unexpected required result unexpected");
     expect(verdict.contractIssues).toContain("missing forbidden result resume-movement");
-    expect(verdict.reviewReasons.some((item) => item.startsWith("extra material claim:"))).toBe(true);
+    expect(verdict.reviewReasons.some((item) => item.startsWith("extra material claim:"))).toBe(false);
+    expect(verdict.extraMaterialClaims).toHaveLength(1);
   });
 });

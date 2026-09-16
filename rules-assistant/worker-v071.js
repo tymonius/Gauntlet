@@ -53,6 +53,9 @@ const PEACE_TREATY_AUTHORITY_IDS = [
 const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
   "rulebook:transmutation"
 ];
+const INQUISITION_CONDEMNATION_AUTHORITY_IDS = [
+  "rulebook:condemnation"
+];
 const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
   "rulebook:golden-rules"
 ];
@@ -156,6 +159,7 @@ Requirements:
 16. When a direct phase restriction itself answers a legality question, keep the ruling explicit even if another supplied rule explains why the player has an additional Action at that time. Cite the timing restriction and the additional-Action rule when both are material to the explanation.
 17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
 18. When an effect grants Actions in multiple phases and requires at least one of those Actions to be a phase-limited Feature, treat that requirement as constraining which granted Action must be used for the Feature, not as permission to change the Feature's timing. If only one granted phase is legal for that Feature, the Feature must be used in that phase; another legal Action must fill any other granted phase.
+19. Do not classify a terse gameplay-rules question out_of_scope merely because it uses an inflected or colloquial form of a supplied named mechanic. When retrieved authority directly matches the gameplay term or procedure being asked about, treat the question as in scope and adjudicate it from that authority.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -1044,7 +1048,9 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         ...(/\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\b/.test(combined) ? ["rulebook:refused-terms"] : [])
       ]
     : PEACE_TREATY_AUTHORITY_IDS;
-  const mysticsTransmutationTopic = /\btransmutation\b/;
+  const mysticsTransmutationTopic = /\btransmut(?:ation|e|es|ed|ing)\b/;
+  const inquisitionCondemnationFocus = /\bcondemn(?:ation|s|ed|ing)?\b/.test(current)
+    || (currentWordCount <= 8 && /\bcondemn(?:ation|s|ed|ing)?\b/.test(recent));
   const mysticsSecondRiteCue = /\b(?:second|2nd|two|2)\b[^.!?]{0,50}\brites?\b|\brites?\b[^.!?]{0,50}\b(?:second|2nd|two|2)\b/;
   const mysticsProcedureCue = /\b(?:ability|feature|unlock(?:s|ed|ing)?|before dice|dice|hand|graveyard|value|spirit walker|alchemist)\b/.test(combined);
   const mysticsFollowupCue = /\b(?:it|that|same|ability|feature|unlock(?:s|ed|ing)?|before|dice|hand|graveyard|value)\b/.test(current);
@@ -1084,10 +1090,12 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
       ? DEED_CONTIGUITY_AUTHORITY_IDS
     : fieldcraftFocus
       ? FIELDCRAFT_TERRITORY_STATE_AUTHORITY_IDS
-    : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !genericBattleCardDestinationFocus && !battleCardQuantityFocus && !acceptedTermsFocus
+    : namedCardSpecificityFocus && !specificRulePrecedenceFocus && !inquisitionCondemnationFocus && !mysticsTransmutationFocus && !peaceTreatyFocus && !shockAndAweFocus && !intelligenceInterferenceFocus && !battleCardReplacementFocus && !genericBattleCardDestinationFocus && !battleCardQuantityFocus && !acceptedTermsFocus
       ? namedCardSpecificityAuthorityIds
     : specificRulePrecedenceFocus
       ? specificRulePrecedenceAuthorityIds
+    : inquisitionCondemnationFocus
+      ? INQUISITION_CONDEMNATION_AUTHORITY_IDS
     : mysticsTransmutationFocus
       ? mysticsTransmutationAuthorityIds
     : peaceTreatyFocus

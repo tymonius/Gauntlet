@@ -85,7 +85,8 @@ export function shouldPromoteNamedDirectAuthority(question, sources = []) {
   const rawQuestion = String(question || "").trim();
   const current = ` ${normalizePhrase(rawQuestion)} `;
   if (!current.trim()) return false;
-  if (/\b(?:unless|except|versus|vs\.?|interact|interaction|override|same as|different from)\b/i.test(rawQuestion)) {
+  const conditionalQuestion = rawQuestion.replace(/\bif able\b/gi, "");
+  if (/\b(?:if|unless|except|versus|vs\.?|interact|interaction|override|same as|different from)\b/i.test(conditionalQuestion)) {
     return false;
   }
 
@@ -141,8 +142,8 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
   const noWinnerContext = /\b(?:no\s+winner|withdraw\w*)\b/.test(current);
   if (asksBattleCardDestination) {
     const hasDirectDestinations = texts.some((text) =>
-      /\bgambit\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owners?['’]?\s+graveyard\b/.test(text)
-      && /\btactic\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owners?['’]?\s+discard\s+pile\b/.test(text)
+      /\bgambit\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owner(?:['’]s|s['’]?)?\s+graveyard\b/.test(text)
+      && /\btactic\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owner(?:['’]s|s['’]?)?\s+discard\s+pile\b/.test(text)
     );
     const hasApplicableNoWinnerRule = !noWinnerContext || texts.some((text) =>
       /(?:after\s+onset|proceeded\s+to\s+gambits?)/.test(text)
@@ -157,7 +158,7 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
     defensiveEdgeTieQuestion
     && texts.some((text) =>
       /defensive\s+edge/.test(text)
-      && /defender\s+wins?\s+tied\s+battle\s+totals?/.test(text)
+      && /defender[\s\S]{0,80}\bwins?\s+tied\s+battle\s+totals?/.test(text)
     )
   ) {
     return true;

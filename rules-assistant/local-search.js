@@ -460,6 +460,7 @@ function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, 
 
   const rawTitle = stripKindPrefix(title);
   if (rawTitle.length > 2 && normalizedQuery.includes(rawTitle)) score += 95;
+  if (rawTitle.length > 4 && !rawTitle.includes(" ") && queryTokens.includes(rawTitle)) score += 80;
   if (heading.length > 2 && normalizedQuery.includes(heading)) score += 90;
 
   for (const token of queryTokens) {
