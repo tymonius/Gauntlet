@@ -47,7 +47,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(() => v072BookletImposition(6, 0)).toThrow(/multiple of four/i);
   });
 
-  it('renders a dedicated print publication instead of printing Browser Rulebook chrome', async () => {
+  it('uses the approved fixed-page publication design instead of generic browser flow', async () => {
     const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const renderer = await readFile('scripts/render-v072-modular-booklets.mjs', 'utf8');
     const html = await readFile('apps/rules/booklet/index.html', 'utf8');
@@ -59,27 +59,37 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(renderer).toContain('/rulebook/?rules=candidate&doc=');
     expect(adapter).toContain("'/rulebook/booklet/?doc='");
     expect(adapter).toContain("'displayHeaderFooter: false,'");
-    expect(adapter).toContain('addPublicationFurniture');
-    expect(adapter).toContain('dedicated print-only booklet composition');
-    expect(html).toContain('class="booklet-cover"');
-    expect(html).toContain('class="booklet-back-cover"');
-    expect(html).toContain('data-booklet-content');
+    expect(adapter).toContain("'preferCSSPageSize: true,'");
+    expect(adapter).toContain("top: '0'");
+    expect(adapter).toContain('Fixed-page booklet composition already owns pagination');
+    expect(adapter).toContain('approved PR #357 publication template');
+
+    expect(html).toContain('data-booklet-pages');
+    expect(html).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(html).not.toContain('Start</');
     expect(html).not.toContain('Playtest</');
-    expect(css).toContain('--paper: #f4efe4');
-    expect(css).toContain('--crimson: #9c2026');
-    expect(css).toContain('.back-cover-band');
-    expect(css).toContain('.cover-wordmark');
+
+    expect(css).toContain('@page { size: 5.5in 8.5in; margin: 0; }');
+    expect(css).toContain('--body: "adobe-caslon-pro"');
+    expect(css).toContain('--heritage: "p22-1722-pro"');
+    expect(css).toContain('--flavor: "p22-declaration-pro"');
+    expect(css).toContain('.page.left .page-inner');
+    expect(css).toContain('.chapter-title-row');
+    expect(css).toContain('.faction-opener');
+    expect(css).toContain('.digital-tools-grid');
+    expect(css).toContain('.back-cover::before');
+
+    expect(client).toContain('createPage');
+    expect(client).toContain('newContinuationPage');
+    expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
+
     expect(renderer).toContain("width: '5.5in'");
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
-    expect(renderer).toContain('booklet-woodcut-interstitial');
-    expect(renderer).toContain('booklet-interstitial-anchor');
     expect(validator).toContain("await import('pdf-lib')");
     expect(validator).toContain('paddedPages % 4');
-    expect(validator).toContain('interstitials.length');
     expect(workflow).toContain('Render all eight modular booklets');
     expect(workflow).toContain('render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('Browser Rulebook chrome leaked');
