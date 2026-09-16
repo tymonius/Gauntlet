@@ -52,4 +52,9 @@ describe('Browser Rulebook candidate publication', () => {
     expect(css).toContain('.rulebook-content h4,');
     expect(css).toContain('font-family: var(--rulebook-body);');
   });
+
+  it('keeps browser-only consent and skip controls out of print output', async () => {
+    const css = await read('legacy/rulebook-browser/candidate-publication.css');
+    expect(css).toMatch(/@media print[\s\S]*\.analytics-consent,[\s\S]*\.skip-link[\s\S]*display: none !important;/);
+  });
 });
