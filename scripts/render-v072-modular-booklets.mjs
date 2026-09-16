@@ -6,6 +6,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import {
   V072_BOOKLET_AUTHORITY_PREFIX,
+  V072_BOOKLET_HERO_WOODCUTS,
   V072_BOOKLET_MANIFEST,
   V072_BOOKLET_OUTPUT_ROOT,
   V072_BOOKLET_RELEASE_VERSION,
@@ -39,6 +40,7 @@ const REQUIRED_MATERIALIZED_FILES = new Set([
   '/card-design/face-authority.mjs',
   '/card-design/production-surface.mjs',
 ]);
+const MAX_INTERSTITIAL_PAGES = 3;
 
 const hashBytes = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const hashFile = file => hashBytes(fs.readFileSync(file));
@@ -55,6 +57,18 @@ function requireCandidateAuthority() {
     throw new Error(`v0.7.2 booklet rendering is not allowed from authority status ${status || 'missing'}.`);
   }
   return authority;
+}
+
+function validateHeroWoodcuts() {
+  if (V072_BOOKLET_HERO_WOODCUTS.length < MAX_INTERSTITIAL_PAGES) {
+    throw new Error(`Expected at least ${MAX_INTERSTITIAL_PAGES} hero woodcuts for booklet interstitials.`);
+  }
+  for (const hero of V072_BOOKLET_HERO_WOODCUTS) {
+    const source = path.join(ROOT, hero.source);
+    if (!fs.existsSync(source) || !fs.statSync(source).isFile()) {
+      throw new Error(`Missing booklet hero woodcut: ${hero.source}.`);
+    }
+  }
 }
 
 function copyPublishedRootDependencies(destinationRoot, contract) {
@@ -254,42 +268,221 @@ function footerTemplate(publication) {
   return `<div style="width:100%;padding:0 0.42in;display:flex;justify-content:space-between;align-items:center;color:#5f5a53;font:600 7px/1.2 Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;"><span>${safeTitle} · ${V072_BOOKLET_RELEASE_VERSION}</span><span>Page <span class="pageNumber"></span></span></div>`;
 }
 
+function balancedSubset(items, count) {
+  if (count <= 0 || items.length === 0) return [];
+  if (count >= items.length) return items.slice(0, count);
+  if (count === 1) return [items[Math.floor(items.length / 2)]];
+  if (count === 2) return [items[0], items.at(-1)];
+  return items.slice(0, count);
+}
+
+async function prepareInterstitialAnchors(page, publication) {
+  const anchors = await page.evaluate(({ publicationId, maximum }) => {
+    const content = document.querySelector('.rulebook-content.candidate-publication');
+    if (!content) return [];
+
+    let candidates;
+    if (publicationId === 'complete-rules') {
+      candidates = [...content.querySelectorAll('h1.part-heading')];
+    } else if (publicationId === 'player-guide') {
+      candidates = [...content.querySelectorAll('h2[id]')]
+        .filter(heading => !heading.classList.contains('how-it-works-heading'));
+    } else {
+      const preferred = [
+        ...content.querySelectorAll('h2.leader-heading'),
+        ...content.querySelectorAll('h2.complete-rules-heading'),
+      ];
+      const preferredSet = new Set(preferred);
+      candidates = [
+        ...preferred,
+        ...[...content.querySelectorAll('h2[id]')].filter(heading => !preferredSet.has(heading)),
+      ];
+    }
+
+    const unique = [...new Set(candidates)].filter(heading => heading.id);
+    if (unique.length === 0) return [];
+
+    const indexes = [];
+    const desired = Math.min(maximum, unique.length);
+    for (let slot = 1; slot <= desired; slot += 1) {
+      const rawIndex = Math.round((slot * (unique.length + 1)) / (desired + 1)) - 1;
+      let index = Math.max(0, Math.min(unique.length - 1, rawIndex));
+      while (indexes.includes(index) && index + 1 < unique.length) index += 1;
+      while (indexes.includes(index) && index - 1 >= 0) index -= 1;
+      if (!indexes.includes(index)) indexes.push(index);
+    }
+
+    return indexes.sort((a, b) => a - b).map((index, order) => {
+      const heading = unique[index];
+      heading.classList.add('booklet-interstitial-anchor');
+      heading.dataset.bookletInterstitialAnchor = String(order + 1);
+      return {
+        id: heading.id,
+        label: heading.textContent.trim().replace(/#$/, '').trim(),
+      };
+    });
+  }, { publicationId: publication.id, maximum: MAX_INTERSTITIAL_PAGES });
+
+  await page.addStyleTag({ content: `
+    @media print {
+      .booklet-interstitial-anchor { break-before: page !important; }
+      .booklet-woodcut-interstitial {
+        height: 7.35in;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0.28in 0.08in 0.2in;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        break-before: page;
+        break-after: page;
+        break-inside: avoid;
+        border-top: 2px solid #a37338;
+        border-bottom: 1px solid #b9b2a7;
+        background: #fbf7ee;
+      }
+      .rulebook-content .booklet-woodcut-interstitial img {
+        width: 100%;
+        max-width: 4.45in;
+        height: auto;
+        max-height: 6.55in;
+        margin: 0 auto;
+        object-fit: contain;
+        filter: grayscale(1) contrast(1.12);
+        mix-blend-mode: multiply;
+        break-inside: avoid;
+      }
+      .booklet-interstitial-mark {
+        margin-top: 0.12in;
+        color: #69645d;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+    }
+  ` });
+
+  return anchors;
+}
+
+async function insertWoodcutInterstitials(page, publication, anchors, count) {
+  const selectedAnchors = balancedSubset(anchors, count);
+  const publicationIndex = Math.max(0, V072_MODULAR_BOOKLETS.findIndex(item => item.id === publication.id));
+  const placements = selectedAnchors.map((anchor, index) => {
+    const hero = V072_BOOKLET_HERO_WOODCUTS[(publicationIndex + index) % V072_BOOKLET_HERO_WOODCUTS.length];
+    return { ...anchor, heroId: hero.id, heroUrl: hero.publicUrl, heroSource: hero.source };
+  });
+
+  await page.evaluate((entries) => {
+    for (const entry of entries) {
+      const anchor = document.getElementById(entry.id);
+      if (!anchor) throw new Error(`Missing interstitial anchor #${entry.id}.`);
+      const section = document.createElement('section');
+      section.className = 'booklet-woodcut-interstitial';
+      section.dataset.bookletHero = entry.heroId;
+      section.dataset.bookletAnchor = entry.id;
+      section.setAttribute('aria-label', 'Gauntlet woodcut interstitial');
+
+      const image = document.createElement('img');
+      image.src = entry.heroUrl;
+      image.alt = '';
+      image.loading = 'eager';
+      image.decoding = 'sync';
+
+      const mark = document.createElement('div');
+      mark.className = 'booklet-interstitial-mark';
+      mark.textContent = 'Gauntlet';
+
+      section.append(image, mark);
+      anchor.before(section);
+    }
+  }, placements);
+
+  await page.waitForFunction(expected => {
+    const interstitials = [...document.querySelectorAll('.booklet-woodcut-interstitial')];
+    return interstitials.length === expected
+      && interstitials.every(section => {
+        const image = section.querySelector('img');
+        return image?.complete && image.naturalWidth > 0;
+      });
+  }, placements.length, { timeout: 30000 });
+
+  return placements.map(({ heroUrl, ...placement }) => placement);
+}
+
+async function pdfPageCount(file) {
+  const { PDFDocument } = await import('pdf-lib');
+  const pdf = await PDFDocument.load(fs.readFileSync(file));
+  return pdf.getPageCount();
+}
+
+async function printReaderPdf(page, publication, destination) {
+  await page.pdf({
+    path: destination,
+    width: '5.5in',
+    height: '8.5in',
+    printBackground: true,
+    preferCSSPageSize: false,
+    displayHeaderFooter: true,
+    headerTemplate: '<div></div>',
+    footerTemplate: footerTemplate(publication),
+    margin: {
+      top: '0.45in',
+      bottom: '0.52in',
+      left: '0.42in',
+      right: '0.42in',
+    },
+  });
+}
+
 async function renderReaderPdf(browser, publication, baseUrl, destination) {
   const page = await browser.newPage({ viewport: { width: 1056, height: 1632 }, deviceScaleFactor: 1 });
+  const baselinePath = `${destination}.baseline.pdf`;
   try {
     await waitForPublication(page, publication, baseUrl);
     await page.emulateMedia({ media: 'print' });
-    await page.pdf({
-      path: destination,
-      width: '5.5in',
-      height: '8.5in',
-      printBackground: true,
-      preferCSSPageSize: false,
-      displayHeaderFooter: true,
-      headerTemplate: '<div></div>',
-      footerTemplate: footerTemplate(publication),
-      margin: {
-        top: '0.45in',
-        bottom: '0.52in',
-        left: '0.42in',
-        right: '0.42in',
-      },
-    });
+    const anchors = await prepareInterstitialAnchors(page, publication);
+    await printReaderPdf(page, publication, baselinePath);
+    const logicalPages = await pdfPageCount(baselinePath);
+    const interstitialCount = (4 - (logicalPages % 4)) % 4;
+
+    if (interstitialCount === 0) {
+      fs.copyFileSync(baselinePath, destination);
+      return { logicalPages, paddedPages: logicalPages, interstitials: [] };
+    }
+    if (anchors.length < interstitialCount) {
+      throw new Error(`${publication.title} needs ${interstitialCount} interstitial pages but exposes only ${anchors.length} semantic anchors.`);
+    }
+
+    const interstitials = await insertWoodcutInterstitials(page, publication, anchors, interstitialCount);
+    await printReaderPdf(page, publication, destination);
+    const paddedPages = await pdfPageCount(destination);
+    if (paddedPages !== logicalPages + interstitialCount || paddedPages % 4 !== 0) {
+      throw new Error(
+        `${publication.title} interstitial pagination drifted: ${logicalPages} logical + ${interstitialCount} interstitials produced ${paddedPages} pages.`,
+      );
+    }
+    return { logicalPages, paddedPages, interstitials };
   } finally {
+    fs.rmSync(baselinePath, { force: true });
     await page.close();
   }
 }
 
-async function imposeBooklet(readerPath, bookletPath, publication) {
+async function imposeBooklet(readerPath, bookletPath, publication, readerPagination) {
   const { PDFDocument } = await import('pdf-lib');
   const readerBytes = fs.readFileSync(readerPath);
   const reader = await PDFDocument.load(readerBytes);
-  const logicalPages = reader.getPageCount();
-  if (logicalPages < 1) throw new Error(`${publication.title} reader PDF has no pages.`);
-
-  while (reader.getPageCount() % 4 !== 0) reader.addPage([HALF_LETTER.width, HALF_LETTER.height]);
   const paddedPages = reader.getPageCount();
-  const paddedBytes = await reader.save({ useObjectStreams: false });
+  if (paddedPages < 4 || paddedPages % 4 !== 0) {
+    throw new Error(`${publication.title} reader PDF must already be padded to a multiple of four; found ${paddedPages}.`);
+  }
+  if (paddedPages !== readerPagination.paddedPages) {
+    throw new Error(`${publication.title} reader pagination changed before imposition.`);
+  }
+
   const booklet = await PDFDocument.create();
   booklet.setTitle(`Gauntlet ${V072_BOOKLET_RELEASE_VERSION} ${publication.title}`);
   booklet.setSubject('Gauntlet modular rules booklet');
@@ -299,7 +492,7 @@ async function imposeBooklet(readerPath, bookletPath, publication) {
   booklet.setCreationDate(BUILD_EPOCH);
   booklet.setModificationDate(BUILD_EPOCH);
 
-  const embedded = await booklet.embedPdf(paddedBytes, Array.from({ length: paddedPages }, (_, index) => index));
+  const embedded = await booklet.embedPdf(readerBytes, Array.from({ length: paddedPages }, (_, index) => index));
   const sheets = paddedPages / 4;
   for (let sheet = 0; sheet < sheets; sheet += 1) {
     const order = v072BookletImposition(paddedPages, sheet);
@@ -315,8 +508,7 @@ async function imposeBooklet(readerPath, bookletPath, publication) {
   const bytes = await booklet.save({ useObjectStreams: false });
   fs.writeFileSync(bookletPath, bytes);
   return {
-    logicalPages,
-    paddedPages,
+    ...readerPagination,
     bookletSides: booklet.getPageCount(),
     physicalSheets: sheets,
   };
@@ -336,6 +528,7 @@ function publicationSourceMetadata(publication) {
 }
 
 const authority = requireCandidateAuthority();
+validateHeroWoodcuts();
 fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
 fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
 const publicRoot = materializeCandidateSite();
@@ -348,8 +541,8 @@ try {
   for (const publication of V072_MODULAR_BOOKLETS) {
     const readerPath = path.join(temporaryReaders, `${publication.id}.pdf`);
     const bookletPath = path.join(OUTPUT_ROOT, publication.filename);
-    await renderReaderPdf(browser, publication, server.baseUrl, readerPath);
-    const pagination = await imposeBooklet(readerPath, bookletPath, publication);
+    const readerPagination = await renderReaderPdf(browser, publication, server.baseUrl, readerPath);
+    const pagination = await imposeBooklet(readerPath, bookletPath, publication, readerPagination);
     const bytes = fs.statSync(bookletPath).size;
     if (bytes < 10000) throw new Error(`${publication.title} booklet is unexpectedly small: ${bytes} bytes.`);
     outputs.push({
@@ -361,7 +554,9 @@ try {
       bytes,
       ...pagination,
     });
-    console.log(`Rendered ${publication.title}: ${relative(bookletPath)} (${pagination.logicalPages} reader pages, ${pagination.physicalSheets} sheets).`);
+    console.log(
+      `Rendered ${publication.title}: ${relative(bookletPath)} (${pagination.logicalPages} logical pages + ${pagination.interstitials.length} woodcut interstitials, ${pagination.physicalSheets} sheets).`,
+    );
   }
 
   const manifest = {
@@ -378,7 +573,7 @@ try {
       readerPage: 'half-letter portrait (5.5 x 8.5 in)',
       bookletSheet: 'letter landscape (11 x 8.5 in)',
       duplexInstruction: 'Print double-sided, flip on the short edge, then fold and saddle stitch.',
-      pagePadding: 'Reader page count is padded with blank pages to a multiple of four before imposition.',
+      pagePadding: 'Reader page count is padded to a multiple of four with deterministic hero-woodcut pages placed preferentially at semantic section boundaries.',
     },
     outputs,
   };
