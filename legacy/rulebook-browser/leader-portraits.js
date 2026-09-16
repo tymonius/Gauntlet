@@ -8,8 +8,8 @@ if (heroArt) {
 }
 
 // Keep the frozen released-v0.7.1 presentation exactly on its established
-// woodcut assets. Candidate publications use the separately reviewed sketch
-// assets registered in publication-assets.mjs.
+// woodcut assets. Candidate publications reuse the same approved woodcut
+// Leader art through the modular publication asset registry.
 const RELEASED_FACTION_LEADERS = [
   ['Military', [
     ['General', '../images/woodcuts/general.png'],
@@ -68,7 +68,7 @@ function buildGallery(faction, leaders, { candidate = false } = {}) {
     const image = document.createElement('img');
     image.className = 'leader-portrait';
     image.src = src;
-    image.alt = `${name} Leader portrait`;
+    image.alt = `${name} Leader woodcut`;
     image.loading = 'lazy';
     image.decoding = 'async';
 
