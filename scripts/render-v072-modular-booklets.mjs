@@ -186,8 +186,14 @@ async function waitForPublication(page, publication, baseUrl) {
 
   await page.evaluate(async () => {
     const timeout = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+    const content = document.querySelector('.rulebook-content.candidate-publication');
+    content?.querySelectorAll('img[loading="lazy"], iframe[loading="lazy"]').forEach(element => {
+      element.loading = 'eager';
+    });
+
     await Promise.race([document.fonts?.ready || Promise.resolve(), timeout(10000)]);
-    const images = [...document.images];
+
+    const images = [...(content?.querySelectorAll('img') || [])];
     await Promise.all(images.map(image => image.complete
       ? Promise.resolve()
       : Promise.race([
@@ -197,7 +203,23 @@ async function waitForPublication(page, publication, baseUrl) {
           }),
           timeout(10000),
         ])));
+
+    const frames = [...(content?.querySelectorAll('iframe') || [])];
+    await Promise.all(frames.map(frame => frame.contentDocument?.readyState === 'complete'
+      ? Promise.resolve()
+      : Promise.race([
+          new Promise(resolve => frame.addEventListener('load', resolve, { once: true })),
+          timeout(10000),
+        ])));
   });
+
+  await page.waitForFunction(() => {
+    const section = document.querySelector('.card-anatomy-guide');
+    if (!section) return true;
+    const frames = [...section.querySelectorAll('iframe')];
+    return section.classList.contains('markers-positioned')
+      && frames.every(frame => frame.contentDocument?.body?.dataset.renderReady === 'true');
+  }, null, { timeout: 30000 });
 
   const diagnostics = await page.evaluate(() => {
     const content = document.querySelector('.rulebook-content.candidate-publication');
