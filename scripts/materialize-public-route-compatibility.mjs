@@ -17,10 +17,10 @@ const sourceOnlyRoots = new Set(contract.pages?.sourceOnlyRepositoryRoots || [])
 const compatibleRoutes = (contract.materializedRoutes || []).filter((route) => {
   if (!inPlace) return true;
   const topLevel = route.publicPath.replace(/^\/+|\/+$/g, '').split('/', 1)[0];
-  if (sourceOnlyRoots.has(topLevel)) return false;
   const source = path.resolve(ROOT, route.source);
   const destination = path.resolve(publicPathTarget(destinationRoot, route.publicPath));
-  return source !== destination;
+  if (source === destination) return false;
+  return !sourceOnlyRoots.has(topLevel);
 });
 
 const compatibleFiles = (contract.materializedFiles || []).filter((file) => {
