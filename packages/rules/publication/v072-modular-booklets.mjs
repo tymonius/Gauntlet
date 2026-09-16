@@ -61,3 +61,17 @@ export function v072BookletOutputPath(publication) {
 export function v072BookletManifestPath() {
   return `${V072_BOOKLET_OUTPUT_ROOT}/${V072_BOOKLET_MANIFEST}`;
 }
+
+export function v072BookletImposition(paddedPages, sheetIndex) {
+  if (!Number.isInteger(paddedPages) || paddedPages < 4 || paddedPages % 4 !== 0) {
+    throw new Error(`Booklet page count must be a positive multiple of four; received ${paddedPages}.`);
+  }
+  const sheets = paddedPages / 4;
+  if (!Number.isInteger(sheetIndex) || sheetIndex < 0 || sheetIndex >= sheets) {
+    throw new Error(`Booklet sheet index ${sheetIndex} is outside 0-${sheets - 1}.`);
+  }
+  return Object.freeze({
+    front: Object.freeze([paddedPages - (2 * sheetIndex), 1 + (2 * sheetIndex)]),
+    back: Object.freeze([2 + (2 * sheetIndex), paddedPages - 1 - (2 * sheetIndex)]),
+  });
+}
