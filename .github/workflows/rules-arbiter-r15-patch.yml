@@ -38,3 +38,5 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Harden tranche D ambiguity handling"
           git push origin HEAD:rules-arbiter-gate3-d-remediation
+
+# One-shot workflow; remove before opening the remediation PR.
