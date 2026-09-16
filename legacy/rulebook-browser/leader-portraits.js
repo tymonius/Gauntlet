@@ -1,3 +1,4 @@
+import './candidate-publication.js';
 import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
 
 const content = document.querySelector('[data-rulebook-content]');
