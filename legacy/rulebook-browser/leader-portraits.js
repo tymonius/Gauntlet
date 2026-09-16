@@ -184,6 +184,7 @@ function inferredRenderContext() {
 
 if (content) {
   const observer = new MutationObserver(() => {
+    if (content.classList.contains('candidate-publication')) return;
     if (!content.querySelector('h1')) return;
     observer.disconnect();
     decorateForRender(inferredRenderContext());
