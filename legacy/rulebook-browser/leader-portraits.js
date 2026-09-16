@@ -1,3 +1,4 @@
+import './candidate-publication.js';
 import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
 
 const content = document.querySelector('[data-rulebook-content]');
@@ -183,6 +184,7 @@ function inferredRenderContext() {
 
 if (content) {
   const observer = new MutationObserver(() => {
+    if (content.classList.contains('candidate-publication')) return;
     if (!content.querySelector('h1')) return;
     observer.disconnect();
     decorateForRender(inferredRenderContext());

@@ -1,0 +1,321 @@
+.rulebook-content.candidate-publication {
+  --candidate-accent: var(--rulebook-crimson);
+}
+
+.candidate-masthead {
+  margin: -12px 0 50px;
+  padding: 34px 0 32px;
+  border-top: 5px solid var(--candidate-accent, var(--rulebook-crimson));
+  border-bottom: 1px solid var(--rulebook-line);
+}
+
+.candidate-masthead-wordmark {
+  width: min(100%, 360px) !important;
+  max-height: 115px !important;
+  margin: 0 0 24px !important;
+  object-fit: contain;
+  object-position: left center;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+.candidate-masthead-kicker {
+  margin: 0 0 10px !important;
+  color: var(--candidate-accent, var(--rulebook-crimson)) !important;
+  font-family: var(--rulebook-ui) !important;
+  font-size: .74rem !important;
+  font-weight: 850 !important;
+  letter-spacing: .16em;
+  line-height: 1.2 !important;
+  text-transform: uppercase;
+}
+
+.candidate-masthead-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rulebook-content .candidate-document-title {
+  flex: 1;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  color: var(--rulebook-ink) !important;
+  background: none !important;
+  font-family: var(--rulebook-title) !important;
+  font-size: clamp(3rem, 7vw, 5.2rem) !important;
+  font-weight: 500 !important;
+  letter-spacing: -.045em !important;
+  line-height: .94 !important;
+  text-align: left !important;
+}
+
+.candidate-faction-masthead .candidate-document-title {
+  font-family: var(--rulebook-heritage) !important;
+  font-size: clamp(3.4rem, 8vw, 5.8rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+.candidate-faction-symbol {
+  width: 1.05em;
+  height: 1.05em;
+  flex: 0 0 auto;
+  background: var(--candidate-accent, var(--rulebook-crimson));
+  -webkit-mask: var(--candidate-symbol) center / contain no-repeat;
+  mask: var(--candidate-symbol) center / contain no-repeat;
+}
+
+.candidate-faction-masthead .candidate-faction-symbol {
+  width: clamp(3.15rem, 7vw, 5.4rem);
+  height: clamp(3.15rem, 7vw, 5.4rem);
+}
+
+.rulebook-content .candidate-section-opener {
+  margin: 54px 0 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--candidate-accent, var(--rulebook-line-dark));
+  color: var(--rulebook-ink);
+  font-family: var(--rulebook-title);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.rulebook-content .candidate-chapter-heading {
+  margin: 58px 0 22px;
+  padding-top: 23px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  column-gap: 13px;
+  align-items: baseline;
+  border-top: 4px solid var(--candidate-accent, var(--rulebook-crimson));
+}
+
+.candidate-chapter-number {
+  color: var(--candidate-accent, var(--rulebook-crimson));
+  font-family: var(--rulebook-ui);
+  font-size: 2.35rem;
+  font-weight: 850;
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: .88;
+}
+
+.candidate-chapter-title {
+  color: var(--rulebook-ink);
+  font-family: var(--rulebook-title);
+  font-size: clamp(2.15rem, 4.5vw, 3.25rem);
+  font-weight: 500;
+  letter-spacing: -.025em;
+  line-height: 1;
+}
+
+.candidate-chapter-heading .heading-anchor {
+  grid-column: 3;
+}
+
+.candidate-publication blockquote {
+  margin: 28px 0 32px;
+  padding: 18px 21px;
+  border: 1px solid color-mix(in srgb, var(--candidate-accent, var(--rulebook-bronze)) 72%, var(--rulebook-line));
+  border-left: 5px solid var(--candidate-accent, var(--rulebook-bronze));
+  background: color-mix(in srgb, var(--candidate-accent, var(--rulebook-bronze)) 7%, var(--rulebook-paper-deep));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .44);
+}
+
+.candidate-publication blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.candidate-player-guide .candidate-faction-overview {
+  margin: 26px 0 34px;
+  padding: 20px 24px 8px;
+  border-top: 1px solid color-mix(in srgb, var(--candidate-accent) 48%, var(--rulebook-line));
+  border-right: 1px solid var(--rulebook-line);
+  border-bottom: 1px solid var(--rulebook-line);
+  border-left: 5px solid var(--candidate-accent);
+  background: color-mix(in srgb, var(--candidate-accent) 4%, var(--rulebook-paper));
+}
+
+.candidate-player-guide .candidate-faction-overview > h3:first-child {
+  margin-top: 0;
+  color: var(--candidate-accent);
+  font-size: 1.58rem;
+}
+
+.candidate-player-guide .candidate-faction-overview .publication-faction-heading {
+  background-size: 1.2em 1.2em;
+  background-position-y: .03em;
+  padding-left: 1.55em;
+}
+
+.candidate-faction-guide {
+  --candidate-accent: var(--chapter-accent, var(--rulebook-crimson));
+}
+
+.candidate-faction-guide .candidate-featured-leaders {
+  margin: -18px 0 46px;
+  padding: 4px 0 26px;
+  border-top: 0;
+  border-bottom: 1px solid var(--rulebook-line);
+  gap: 34px;
+}
+
+.candidate-faction-guide .candidate-featured-leaders .leader-portrait-figure img.leader-portrait {
+  max-height: 430px;
+}
+
+.candidate-faction-guide .candidate-featured-leaders figcaption {
+  color: var(--candidate-accent, var(--rulebook-ink));
+  font-size: 1.6rem;
+}
+
+.candidate-faction-guide .candidate-section-opener,
+.candidate-faction-guide .candidate-chapter-heading {
+  --candidate-accent: inherit;
+}
+
+.rulebook-content .candidate-part-heading {
+  margin: 76px 0 28px;
+  padding: 42px 0 24px;
+  display: grid;
+  gap: 9px;
+  border-top: 5px solid var(--candidate-accent, var(--rulebook-line-dark));
+}
+
+.candidate-part-label {
+  color: var(--candidate-accent, var(--rulebook-crimson));
+  font-family: var(--rulebook-heritage);
+  font-size: 1.85rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.candidate-part-title,
+.candidate-part-title-row {
+  color: var(--rulebook-ink);
+  font-family: var(--rulebook-title);
+  font-size: clamp(2.8rem, 6vw, 4.35rem);
+  font-weight: 500;
+  letter-spacing: -.04em;
+  line-height: .96;
+}
+
+.candidate-part-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.candidate-part-title-row .candidate-part-title {
+  font: inherit;
+}
+
+.candidate-faction-part-heading .candidate-faction-symbol {
+  width: .92em;
+  height: .92em;
+}
+
+.rulebook-content .candidate-technical-heading {
+  margin-top: 42px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rulebook-line);
+  font-size: 1.42rem;
+}
+
+.candidate-publication table {
+  margin-top: 28px;
+  border-top-width: 3px;
+}
+
+.candidate-publication th {
+  font-family: var(--rulebook-ui);
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.candidate-publication > p:first-of-type {
+  font-size: 1.08rem;
+}
+
+@media (max-width: 620px) {
+  .candidate-masthead {
+    margin-top: 0;
+    padding-top: 26px;
+  }
+
+  .candidate-masthead-wordmark {
+    width: min(100%, 285px) !important;
+  }
+
+  .candidate-masthead-title-row {
+    gap: 11px;
+  }
+
+  .rulebook-content .candidate-document-title {
+    font-size: 3rem !important;
+  }
+
+  .candidate-faction-masthead .candidate-document-title {
+    font-size: 3.4rem !important;
+  }
+
+  .candidate-faction-masthead .candidate-faction-symbol {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .rulebook-content .candidate-chapter-heading {
+    grid-template-columns: 42px minmax(0, 1fr);
+    column-gap: 9px;
+  }
+
+  .candidate-chapter-number {
+    font-size: 1.9rem;
+  }
+
+  .candidate-chapter-title {
+    font-size: 2.15rem;
+  }
+
+  .candidate-chapter-heading .heading-anchor {
+    display: none;
+  }
+
+  .candidate-player-guide .candidate-faction-overview {
+    padding-inline: 18px;
+  }
+
+  .candidate-faction-guide .candidate-featured-leaders {
+    gap: 14px;
+  }
+
+  .candidate-part-title,
+  .candidate-part-title-row {
+    font-size: 2.75rem;
+  }
+}
+
+@media print {
+  .candidate-masthead {
+    break-after: avoid;
+    margin-top: 0;
+  }
+
+  .candidate-masthead-wordmark {
+    filter: grayscale(1) contrast(1.15) !important;
+  }
+
+  .candidate-chapter-heading,
+  .candidate-part-heading,
+  .candidate-section-opener {
+    break-after: avoid;
+  }
+
+  .candidate-faction-overview,
+  .candidate-featured-leaders {
+    break-inside: avoid;
+  }
+}
