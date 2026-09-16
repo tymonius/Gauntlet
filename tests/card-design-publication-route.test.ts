@@ -25,7 +25,7 @@ describe('card-design publication route boundary', () => {
   it('skips same-path route materialization only for in-place compatibility runs', () => {
     expect(materializer).toContain('if (!inPlace) return true;');
     expect(materializer).toContain('publicPathTarget(destinationRoot, route.publicPath)');
-    expect(materializer).toContain('return source !== destination;');
+    expect(materializer).toContain('if (source === destination) return false;');
   });
 
   it('materializes whole routes before file overrides during off-tree Pages staging', () => {
