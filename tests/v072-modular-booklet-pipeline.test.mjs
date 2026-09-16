@@ -47,23 +47,42 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(() => v072BookletImposition(6, 0)).toThrow(/multiple of four/i);
   });
 
-  it('renders the integrated Browser Rulebook candidate surfaces and validates PDFs', async () => {
+  it('renders a dedicated print publication instead of printing Browser Rulebook chrome', async () => {
+    const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const renderer = await readFile('scripts/render-v072-modular-booklets.mjs', 'utf8');
+    const html = await readFile('apps/rules/booklet/index.html', 'utf8');
+    const css = await readFile('apps/rules/booklet/booklet.css', 'utf8');
+    const client = await readFile('apps/rules/booklet/booklet.js', 'utf8');
     const validator = await readFile('scripts/validate-v072-modular-booklets.mjs', 'utf8');
     const workflow = await readFile('.github/workflows/build-v072-modular-booklets.yml', 'utf8');
 
     expect(renderer).toContain('/rulebook/?rules=candidate&doc=');
+    expect(adapter).toContain("'/rulebook/booklet/?doc='");
+    expect(adapter).toContain("'displayHeaderFooter: false,'");
+    expect(adapter).toContain('addPublicationFurniture');
+    expect(adapter).toContain('dedicated print-only booklet composition');
+    expect(html).toContain('class="booklet-cover"');
+    expect(html).toContain('class="booklet-back-cover"');
+    expect(html).toContain('data-booklet-content');
+    expect(html).not.toContain('Start</');
+    expect(html).not.toContain('Playtest</');
+    expect(css).toContain('--paper: #f4efe4');
+    expect(css).toContain('--crimson: #9c2026');
+    expect(css).toContain('.back-cover-band');
+    expect(css).toContain('.cover-wordmark');
+    expect(client).toContain("document.body.dataset.bookletReady = 'true'");
+    expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
     expect(renderer).toContain("width: '5.5in'");
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
-    expect(renderer).toContain('player-facing language');
     expect(renderer).toContain('booklet-woodcut-interstitial');
     expect(renderer).toContain('booklet-interstitial-anchor');
-    expect(renderer).toContain('semantic anchors');
     expect(validator).toContain("await import('pdf-lib')");
     expect(validator).toContain('paddedPages % 4');
     expect(validator).toContain('interstitials.length');
     expect(workflow).toContain('Render all eight modular booklets');
+    expect(workflow).toContain('render-v072-dedicated-booklets.mjs');
+    expect(workflow).toContain('Browser Rulebook chrome leaked');
     expect(workflow).toContain('pdftoppm');
     expect(workflow).toContain('pdftotext');
     expect(workflow).toContain('upload-artifact@v4');
