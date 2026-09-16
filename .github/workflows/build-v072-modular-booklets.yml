@@ -69,7 +69,7 @@ jobs:
               echo "Browser Rulebook chrome leaked into $pdf" >&2
               exit 1
             fi
-            pdftoppm -f 1 -singlefile -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side-1"
+            pdftoppm -f 1 -l 4 -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side"
           done
 
       - name: Upload modular booklet review artifact
