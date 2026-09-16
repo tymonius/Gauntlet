@@ -306,10 +306,6 @@ function appendNodeAcrossPages(node, page, context) {
 
   let current = page;
   const clone = cloneNode(node);
-  const flow = flowOf(current);
-  if (/^H[34]$/.test(clone.tagName) && flow.clientHeight - flow.scrollHeight < 80) {
-    current = newContinuationPage(context);
-  }
   flowOf(current).append(clone);
   if (!overflows(current)) return current;
   clone.remove();
