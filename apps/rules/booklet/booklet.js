@@ -62,7 +62,7 @@ function selectedPublication() {
   return [requested, PUBLICATIONS[requested] || PUBLICATIONS['player-guide']];
 }
 
-function decorateContent(content) {
+function decorateContent(content, documentId) {
   const openingTitle = content.querySelector(':scope > h1:first-child');
   openingTitle?.remove();
 
@@ -73,6 +73,21 @@ function decorateContent(content) {
 
   content.querySelectorAll('h3').forEach(heading => heading.classList.add('booklet-subheading'));
   content.querySelectorAll('img[loading="lazy"]').forEach(image => { image.loading = 'eager'; });
+
+  if (!['player-guide', 'complete-rules'].includes(documentId)) {
+    const portraits = [...content.querySelectorAll('img')].slice(0, 2);
+    if (portraits.length > 0) {
+      const gallery = document.createElement('div');
+      gallery.className = 'candidate-featured-leaders booklet-featured-leaders';
+      const first = portraits[0];
+      first.before(gallery);
+      portraits.forEach(image => {
+        image.classList.add('leader-portrait');
+        const figure = image.closest('figure');
+        gallery.append(figure || image);
+      });
+    }
+  }
 }
 
 function buildContents(headings) {
@@ -96,17 +111,19 @@ function buildContents(headings) {
 
 async function main() {
   const [documentId, publication] = selectedPublication();
-  const response = await fetch(`./sources/${encodeURIComponent(documentId)}.md`, { cache: 'no-store' });
+  const response = await fetch(`../sources/${encodeURIComponent(documentId === 'complete-rules' ? 'complete-rules' : documentId === 'player-guide' ? 'player-guide' : `factions/${documentId}`)}.md`, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Unable to load ${publication.title}: HTTP ${response.status}`);
   const source = await response.text();
   const rendered = renderMarkdown(source);
   const content = document.querySelector('[data-booklet-content]');
   content.innerHTML = rendered.html;
-  decorateContent(content);
+  decorateContent(content, documentId);
   buildContents(rendered.headings);
 
   document.documentElement.style.setProperty('--booklet-accent', publication.accent);
   document.body.dataset.bookletDocument = documentId;
+  document.body.dataset.rulesetMode = 'candidate';
+  document.body.dataset.candidateDocument = documentId;
   document.querySelector('[data-booklet-title]').textContent = publication.title;
   document.querySelector('[data-booklet-running-title]').textContent = publication.title;
   document.querySelector('[data-booklet-back-title]').textContent = `Gauntlet v0.7.2 · ${publication.title}`;
