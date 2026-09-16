@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-09-15
+Last updated: 2026-09-16
 
 ## Governing objective
 
@@ -36,6 +36,7 @@ Earlier application, public-route, game-data, asset, release-automation, and rul
 - [#1749](https://github.com/tymonius/Gauntlet/pull/1749) archived the version-specific Capital Ledger review and tracker design notes after confirming they were historical evidence rather than current authority.
 - DOC-HISTORICAL: [#1752](https://github.com/tymonius/Gauntlet/pull/1752) archived the complete v0.6.3 reference-copy subtree after verifying the then-current component authority pointed only at v0.7.0 reference copy. The old public v0.6.3 paths remain materialized for provenance.
 - [#1753](https://github.com/tymonius/Gauntlet/pull/1753) established `packages/rendering/` as the environment-neutral physical-face model authority while preserving the established browser/TTS compatibility paths and public URLs.
+- [#1757](https://github.com/tymonius/Gauntlet/pull/1757) closed the post-extraction dependency audit: the remaining canonical face pipeline is browser-specific production tooling, while authoring/review/compositor surfaces are a separate production-tooling role.
 
 ## Completed tranche — shared rendering model package
 
@@ -70,6 +71,20 @@ Verified classifications:
 
 Do **not** move these modules into `packages/rendering/` merely to reduce the root. Any future physical move must target an appropriate browser/tooling boundary and preserve the deployed `/card-design/` import/publication contract.
 
+## Current tranche — card-design publication-route decoupling
+
+The remaining physical split is blocked by a source/publication coupling: `card-design/` has historically been published directly as the `/card-design/` Pages directory. Before moving browser runtime or authoring/tooling files, source placement must be independent from the deployed route.
+
+This tranche makes that boundary explicit without moving renderer code:
+
+- `card-design` leaves `pages.publishedDirectories`;
+- `config/publication-boundary.json` materializes source `card-design` onto the stable `/card-design/` public route during off-tree staging;
+- explicit package-owned `/card-design/face-authority.mjs` and `/card-design/production-surface.mjs` file mappings continue to override the route copy after materialization;
+- in-place compatibility materialization skips a route when source and destination resolve to the same repository directory, avoiding destructive self-materialization;
+- `tests/card-design-publication-route.test.ts` locks the route, override ordering, and same-path guard.
+
+This is a publication-boundary prerequisite only. Browser runtime, authoring/compositor tooling, gameplay data, and rendering behavior remain unchanged.
+
 ## Card-design lifecycle state
 
 `card-design/` remains a transitional production-tooling root, but its major roles are now classified:
@@ -79,7 +94,7 @@ Do **not** move these modules into `packages/rendering/` merely to reduce the ro
 - v0.6.3 long-review and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
 - the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
 - pure shared rendering model authority lives under `packages/rendering/`;
-- browser rendering runtime remains under `card-design/` pending a deliberate tooling/public-path relocation strategy;
+- browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - authoring, review, compositor, and family-specific presentation tooling remains under `card-design/` pending a separate tools-boundary audit.
 
 ## Rules boundary state
@@ -96,12 +111,13 @@ Do **not** move these modules into `packages/rendering/` merely to reduce the ro
 
 ## Next top-down queue
 
-1. Separate the remaining `card-design/` browser-render runtime from authoring/review/compositor tooling conceptually, then design any physical relocation around the established public/import contract instead of moving files mechanically.
-2. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances to v0.7.2; do not collapse the transition early.
-3. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-4. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-5. Audit governance/traceability and CI paths that still encode transitional locations.
-6. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Finish the card-design publication-route decoupling and prove staged Pages output preserves the stable `/card-design/` contract.
+2. With source/public paths decoupled, design the first physical separation between browser-render runtime and authoring/review/compositor tooling based on verified consumer dependencies.
+3. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances; do not collapse the transition early.
+4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+5. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+6. Audit governance/traceability and CI paths that still encode transitional locations.
+7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 

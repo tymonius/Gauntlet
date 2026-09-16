@@ -6,6 +6,7 @@ import {
   materializePublicFiles,
   materializePublicRoutes,
   publicFileTarget,
+  publicPathTarget,
 } from './publication-boundary.mjs';
 
 const destinationRoot = process.argv[2] ? path.resolve(process.argv[2]) : ROOT;
@@ -16,6 +17,9 @@ const sourceOnlyRoots = new Set(contract.pages?.sourceOnlyRepositoryRoots || [])
 const compatibleRoutes = (contract.materializedRoutes || []).filter((route) => {
   if (!inPlace) return true;
   const topLevel = route.publicPath.replace(/^\/+|\/+$/g, '').split('/', 1)[0];
+  const source = path.resolve(ROOT, route.source);
+  const destination = path.resolve(publicPathTarget(destinationRoot, route.publicPath));
+  if (source === destination) return false;
   return !sourceOnlyRoots.has(topLevel);
 });
 
