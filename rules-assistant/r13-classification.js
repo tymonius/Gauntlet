@@ -85,7 +85,7 @@ export function shouldPromoteNamedDirectAuthority(question, sources = []) {
   const rawQuestion = String(question || "").trim();
   const current = ` ${normalizePhrase(rawQuestion)} `;
   if (!current.trim()) return false;
-  if (/\b(?:if|unless|except|versus|vs\.?|interact|interaction|override|same as|different from)\b/i.test(rawQuestion)) {
+  if (/\b(?:unless|except|versus|vs\.?|interact|interaction|override|same as|different from)\b/i.test(rawQuestion)) {
     return false;
   }
 
@@ -100,6 +100,70 @@ export function shouldPromoteNamedDirectAuthority(question, sources = []) {
   );
 
   return matchingSources.length === 1;
+}
+
+function sourceListText(sources = []) {
+  return (Array.isArray(sources) ? sources : []).map(sourceText);
+}
+
+export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const onsetWithdrawalQuestion = /\bwithdraw\w*\b/.test(current)
+    && /\bonset\b/.test(current)
+    && /\b(?:aftermath|gambits?|battle\s+cards?)\b/.test(current);
+  if (
+    onsetWithdrawalQuestion
+    && texts.some((text) =>
+      /withdraw\w*\s+during\s+onset/.test(text)
+      && /no\s+aftermath|without\s+an?\s+aftermath/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const refusedNoWinnerQuestion = /\brefus\w*\b/.test(current)
+    && /\b(?:withdraw\w*|no\s+winner)\b/.test(current)
+    && /\b(?:stake|proposal|deal)\b/.test(current);
+  if (
+    refusedNoWinnerQuestion
+    && texts.some((text) =>
+      /(?:no\s+winner|ends?\s+without\s+a\s+winner)/.test(text)
+      && /return\s+the\s+stake/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const asksBattleCardDestination = /\b(?:gambits?|tactics?|battle\s+cards?|cards?)\b/.test(current)
+    && /\b(?:where|destination|go|clear\w*)\b/.test(current);
+  const noWinnerContext = /\b(?:no\s+winner|withdraw\w*)\b/.test(current);
+  if (asksBattleCardDestination) {
+    const hasDirectDestinations = texts.some((text) =>
+      /gambits?\s+go\s+to\s+their\s+owners?['’]?\s+graveyards?/.test(text)
+      && /tactics?\s+go\s+to\s+their\s+owners?['’]?\s+discard\s+piles?/.test(text)
+    );
+    const hasApplicableNoWinnerRule = !noWinnerContext || texts.some((text) =>
+      /(?:after\s+onset|proceeded\s+to\s+gambits?)/.test(text)
+      && /clear\s+(?:committed\s+)?(?:battle\s+)?cards?.*normally/.test(text)
+    );
+    if (hasDirectDestinations && hasApplicableNoWinnerRule) return true;
+  }
+
+  const defensiveEdgeTieQuestion = /\b(?:tie|tied|ties)\b/.test(current)
+    && /\bdefend\w*\b/.test(current);
+  if (
+    defensiveEdgeTieQuestion
+    && texts.some((text) =>
+      /defensive\s+edge/.test(text)
+      && /defender\s+wins?\s+tied\s+battle\s+totals?/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 function phaseLegalityActionTokens(question) {
@@ -238,6 +302,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       shouldPromoteExpandedDirectOverview(question, sources)
       || shouldPromoteDirectPhaseLegality(question, sources)
       || shouldPromoteNamedDirectAuthority(question, sources)
+      || shouldPromoteDirectEnumeratedProcedure(question, sources)
     )
   ) {
     return "explicit";
