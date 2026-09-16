@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
+  V072_BOOKLET_HERO_WOODCUTS,
   V072_BOOKLET_MANIFEST,
   V072_BOOKLET_OUTPUT_ROOT,
   V072_BOOKLET_RELEASE_VERSION,
@@ -29,6 +30,17 @@ if (manifest.releaseVersion !== V072_BOOKLET_RELEASE_VERSION) {
 }
 if (manifest.status !== 'candidate-review-artifact') throw new Error(`Unexpected modular booklet manifest status: ${manifest.status}.`);
 if (manifest.authority?.sha256 !== hashFile(AUTHORITY_PATH)) throw new Error('Modular booklet authority hash is stale.');
+if (!/hero-woodcut pages placed preferentially at semantic section boundaries/i.test(manifest.renderContract?.pagePadding || '')) {
+  throw new Error('Modular booklet manifest does not declare semantic hero-woodcut padding.');
+}
+
+const heroById = new Map(V072_BOOKLET_HERO_WOODCUTS.map(hero => [hero.id, hero]));
+for (const hero of V072_BOOKLET_HERO_WOODCUTS) {
+  const heroPath = path.join(ROOT, hero.source);
+  if (!fs.existsSync(heroPath) || !fs.statSync(heroPath).isFile()) {
+    throw new Error(`Missing registered booklet hero woodcut: ${hero.source}.`);
+  }
+}
 
 const outputById = new Map((manifest.outputs || []).map(output => [output.id, output]));
 if (outputById.size !== V072_MODULAR_BOOKLETS.length) {
@@ -56,6 +68,22 @@ for (const publication of V072_MODULAR_BOOKLETS) {
   if (!Number.isInteger(output.paddedPages) || output.paddedPages < output.logicalPages || output.paddedPages % 4 !== 0) {
     throw new Error(`${publication.id} has invalid padded page count ${output.paddedPages}.`);
   }
+  if (!Array.isArray(output.interstitials)) throw new Error(`${publication.id} is missing interstitial metadata.`);
+  if (output.interstitials.length !== output.paddedPages - output.logicalPages) {
+    throw new Error(`${publication.id} interstitial count does not match its booklet padding.`);
+  }
+  if (output.interstitials.length > 3) throw new Error(`${publication.id} uses more than three padding interstitials.`);
+  for (const interstitial of output.interstitials) {
+    if (!interstitial.anchorId && !interstitial.id) {
+      throw new Error(`${publication.id} interstitial is missing its semantic anchor.`);
+    }
+    const hero = heroById.get(interstitial.heroId);
+    if (!hero) throw new Error(`${publication.id} interstitial uses unregistered hero ${interstitial.heroId}.`);
+    if (interstitial.heroSource !== hero.source) {
+      throw new Error(`${publication.id} interstitial hero source drifted for ${interstitial.heroId}.`);
+    }
+  }
+
   if (output.bookletSides !== output.paddedPages / 2) throw new Error(`${publication.id} booklet side count is inconsistent with imposition.`);
   if (output.physicalSheets !== output.paddedPages / 4) throw new Error(`${publication.id} physical sheet count is inconsistent with imposition.`);
 
@@ -69,7 +97,9 @@ for (const publication of V072_MODULAR_BOOKLETS) {
       throw new Error(`${publication.id} side ${index + 1} is ${width}x${height}pt; expected Letter landscape.`);
     }
   }
-  console.log(`Validated ${publication.title}: ${output.logicalPages} reader pages -> ${output.bookletSides} booklet sides on ${output.physicalSheets} sheets.`);
+  console.log(
+    `Validated ${publication.title}: ${output.logicalPages} logical pages + ${output.interstitials.length} woodcut interstitials -> ${output.bookletSides} booklet sides on ${output.physicalSheets} sheets.`,
+  );
 }
 
 const expectedIds = new Set(V072_MODULAR_BOOKLETS.map(publication => publication.id));
