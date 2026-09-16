@@ -2,6 +2,12 @@
 
 `card-design/` is the maintained browser-facing rendering and authoring boundary for physical Gauntlet components. It is **not** the canonical home of environment-neutral rendering model authority.
 
+## Public route boundary
+
+The repository directory is no longer directly published wholesale by GitHub Pages. `config/publication-boundary.json` materializes the maintained source directory onto the stable `/card-design/` public route during off-tree Pages staging. This deliberately separates repository placement from deployed URLs so later browser-runtime and authoring/tooling moves can preserve the public contract instead of inheriting the current source path.
+
+In-place compatibility materialization skips the `card-design` route because its source and destination are already the same repository directory. Off-tree staging still copies the route, then applies explicit `materializedFiles` overrides afterward.
+
 ## Shared authority
 
 Environment-neutral physical-face authority lives under [`packages/rendering/`](../packages/rendering/):
