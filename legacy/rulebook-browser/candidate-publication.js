@@ -105,9 +105,9 @@ function buildMasthead(documentId) {
   const titleRow = document.createElement('div');
   titleRow.className = 'candidate-masthead-title-row';
   if (faction) titleRow.append(createFactionSymbol(faction));
-  titleRow.append(title);
 
   title.before(masthead);
+  titleRow.append(title);
   masthead.append(wordmark, kicker, titleRow);
   return masthead;
 }
