@@ -34,7 +34,8 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
       workflowRef: "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
       workflowRefs: [
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
-        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
+        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main"
       ],
       eventName: "workflow_dispatch",
       ref: "refs/heads/main",
@@ -44,10 +45,10 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
     expect(claimsAreAuthorized(validClaims(), now)).toBe(true);
   });
 
-  test("authorizes the dedicated Gate 3 blind workflow on main", () => {
-    expect(claimsAreAuthorized(validClaims({
-      workflow_ref: githubActionsQaAuthContract.workflowRefs[1]
-    }), now)).toBe(true);
+  test("authorizes the dedicated Gate 3 blind workflows on main", () => {
+    for (const workflow_ref of githubActionsQaAuthContract.workflowRefs.slice(1)) {
+      expect(claimsAreAuthorized(validClaims({ workflow_ref }), now)).toBe(true);
+    }
   });
 
   test.each([
