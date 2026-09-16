@@ -3,6 +3,29 @@ export const V072_BOOKLET_AUTHORITY_PREFIX = 'v0.7.2';
 export const V072_BOOKLET_OUTPUT_ROOT = 'artifacts/rules-booklets/v0.7.2';
 export const V072_BOOKLET_MANIFEST = 'Gauntlet_v0.7.2_Modular_Rules_Manifest.json';
 
+export const V072_BOOKLET_HERO_WOODCUTS = Object.freeze([
+  Object.freeze({
+    id: 'hero-1',
+    source: 'images/woodcuts/hero compositions/hero 1.png',
+    publicUrl: '/images/woodcuts/hero compositions/hero 1.png',
+  }),
+  Object.freeze({
+    id: 'hero-2',
+    source: 'images/woodcuts/hero compositions/hero 2.png',
+    publicUrl: '/images/woodcuts/hero compositions/hero 2.png',
+  }),
+  Object.freeze({
+    id: 'hero-3',
+    source: 'images/woodcuts/hero compositions/hero 3.png',
+    publicUrl: '/images/woodcuts/hero compositions/hero 3.png',
+  }),
+  Object.freeze({
+    id: 'hero-4',
+    source: 'images/woodcuts/hero compositions/hero 4.png',
+    publicUrl: '/images/woodcuts/hero compositions/hero 4.png',
+  }),
+]);
+
 export const V072_MODULAR_BOOKLETS = Object.freeze([
   Object.freeze({
     id: 'player-guide',
