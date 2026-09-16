@@ -5,7 +5,7 @@ let worker = readFileSync(workerPath, "utf8");
 
 const oldRevision = 'export const BEHAVIOR_REVISION = "v071-qa-20260915-14";';
 const newRevision = 'export const BEHAVIOR_REVISION = "v071-qa-20260916-15";';
-if ((worker.match(new RegExp(oldRevision.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length !== 1) {
+if (worker.split(oldRevision).length - 1 !== 1) {
   throw new Error("Expected exactly one r14 behavior revision marker.");
 }
 worker = worker.replace(oldRevision, newRevision);
@@ -39,9 +39,9 @@ const replacement = String.raw`function referentSourceAliasesR15(source) {
 }
 
 function recentReferentSubjectsR15(history = [], retrieval = []) {
-  const recent = \\` \\${normalizeReferentSubject(
+  const recent = " " + normalizeReferentSubject(
     history.slice(-2).map((item) => String(item?.content || "")).join(" ")
-  )} \\`;
+  ) + " ";
   if (!recent.trim()) return [];
 
   const generic = new Set([
@@ -51,7 +51,7 @@ function recentReferentSubjectsR15(history = [], retrieval = []) {
   const subjects = new Set();
   for (const source of retrieval.slice(0, 10)) {
     const matching = referentSourceAliasesR15(source)
-      .filter((alias) => !generic.has(alias) && recent.includes(\\` \\${alias} \\`))
+      .filter((alias) => !generic.has(alias) && recent.includes(" " + alias + " "))
       .sort((a, b) => b.length - a.length);
     if (matching.length) subjects.add(matching[0]);
   }
@@ -73,7 +73,7 @@ function localCompatibleReferentCountR15(current, match, noun, retrieval = []) {
   let count = 0;
   for (const pattern of patterns) {
     const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    count += (normalized.match(new RegExp(\\`\\b\\${escaped}s?\\b\\`, "g")) || []).length;
+    count += (normalized.match(new RegExp("\\b" + escaped + "s?\\b", "g")) || []).length;
   }
   return count;
 }
@@ -119,7 +119,7 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
     ? "Which card do you mean? Give me its name or exact text, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation."
     : noun === "one"
       ? "Which one do you mean? Give me the name of the card, Rite, Proposal, Order, Mission, Leader ability, Faction feature, or other game object you mean, plus any relevant game state that is not already clear from the conversation."
-      : \\`Which \\${noun} do you mean? Give me its name or exact text, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.\\`;
+      : "Which " + noun + " do you mean? Give me its name or exact text, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation.";
 
   return {
     answer,
