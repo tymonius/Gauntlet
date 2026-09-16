@@ -130,7 +130,7 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
     refusedNoWinnerQuestion
     && texts.some((text) =>
       /(?:no\s+winner|ends?\s+without\s+a\s+winner)/.test(text)
-      && /return\s+the\s+stake/.test(text)
+      && /return(?:s|ed|ing)?\s+the\s+stake/.test(text)
     )
   ) {
     return true;
@@ -141,12 +141,12 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
   const noWinnerContext = /\b(?:no\s+winner|withdraw\w*)\b/.test(current);
   if (asksBattleCardDestination) {
     const hasDirectDestinations = texts.some((text) =>
-      /gambits?\s+go\s+to\s+their\s+owners?['’]?\s+graveyards?/.test(text)
-      && /tactics?\s+go\s+to\s+their\s+owners?['’]?\s+discard\s+piles?/.test(text)
+      /\bgambit\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owners?['’]?\s+graveyard\b/.test(text)
+      && /\btactic\b[\s\S]{0,100}\bgo(?:es)?\s+to\s+its?\s+owners?['’]?\s+discard\s+pile\b/.test(text)
     );
     const hasApplicableNoWinnerRule = !noWinnerContext || texts.some((text) =>
       /(?:after\s+onset|proceeded\s+to\s+gambits?)/.test(text)
-      && /clear\s+(?:committed\s+)?(?:battle\s+)?cards?.*normally/.test(text)
+      && /clear\s+(?:the\s+)?(?:committed\s+)?(?:battle\s+)?cards?.*normally/.test(text)
     );
     if (hasDirectDestinations && hasApplicableNoWinnerRule) return true;
   }
