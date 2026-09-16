@@ -34,7 +34,14 @@ const QUERY_ALIASES = {
   rout: ["after you win", "additional battle", "order"],
   action: ["action opportunity", "action effect"],
   asset: ["asset bank", "banked asset"],
-  win: ["victory", "last stand", "run the gauntlet"]
+  win: ["victory", "last stand", "run the gauntlet"],
+  transmute: ["transmutation"],
+  transmuted: ["transmutation"],
+  transmuting: ["transmutation"],
+  condemn: ["condemnation"],
+  condemns: ["condemnation"],
+  condemned: ["condemnation"],
+  condemning: ["condemnation"]
 };
 
 const QUERY_PHRASE_ALIASES = [
