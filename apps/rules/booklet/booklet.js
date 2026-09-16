@@ -56,6 +56,8 @@ const FACTION_DECORATION = Object.freeze({
   'Inquisition —': ['#9a6e21', '/images/faction-symbols/inquisition.svg'],
 });
 
+const CARD_ANATOMY_CARD_ID = 'military-unbroken-ranks';
+const ARCANE_CARD_ID = 'mystics-witchcraft';
 const pagesRoot = document.querySelector('[data-booklet-pages]');
 const sourceRoot = document.querySelector('[data-booklet-source]');
 const pages = [];
@@ -74,6 +76,10 @@ function numberedHeading(label) {
 function partHeading(label) {
   const match = label.trim().match(/^Part\s+([IVXLCDM]+)\s+[—-]\s+(.+)$/i);
   return match ? { numeral: match[1], title: match[2] } : null;
+}
+
+function normalizedText(node) {
+  return (node?.textContent || '').replace(/\s+/g, ' ').trim();
 }
 
 function pageFurniture(number, label) {
@@ -96,6 +102,11 @@ function createPage({ className = '', runningLeft = '', runningRight = '', label
   return page;
 }
 
+function applyPublicationIdentity(page, publication) {
+  page.style.setProperty('--page-accent', publication.accent);
+  if (publication.symbol) page.style.setProperty('--booklet-symbol', `url("${publication.symbol}")`);
+}
+
 function flowOf(page) { return page.querySelector('.page-flow'); }
 function overflows(page) {
   const flow = flowOf(page);
@@ -108,7 +119,7 @@ function hasBodyContent(page) {
 
 function createCover(publication) {
   const page = createPage({ className: `cover front-cover${publication.name ? ' faction-cover' : ''}`, furniture: false });
-  page.style.setProperty('--page-accent', publication.accent);
+  applyPublicationIdentity(page, publication);
   const flow = flowOf(page);
   flow.outerHTML = `
     <div class="cover-rule"></div>
@@ -128,7 +139,7 @@ function createCover(publication) {
 
 function createContentsPage(publication, headings) {
   const page = createPage({ className: 'contents-page', runningLeft: publication.title, runningRight: 'Contents', label: `${publication.title.toUpperCase()} · V0.7.2` });
-  page.style.setProperty('--page-accent', publication.accent);
+  applyPublicationIdentity(page, publication);
   const flow = flowOf(page);
   flow.innerHTML = '<p class="flavor-overline">Begin here</p><h2 class="page-title">Contents</h2><div class="contents-grid"><div class="contents-column"></div><div class="contents-column"></div></div><div class="reading-guide"><strong>Reading guide.</strong> Start with the opening sections, then use chapter headings to find the procedure you need. Exact edge cases belong in the Complete Rules.</div>';
   const columns = [...flow.querySelectorAll('.contents-column')];
@@ -147,34 +158,42 @@ function createContentsPage(publication, headings) {
 
 function createBackCover(publication) {
   const page = createPage({ className: 'back-cover', furniture: false });
-  page.style.setProperty('--page-accent', publication.accent);
+  applyPublicationIdentity(page, publication);
   const flow = flowOf(page);
   flow.outerHTML = `
-    <p class="back-flavor">Run the Gauntlet</p>
-    <h2>Build. Advance. Contend. Capture.</h2>
-    <p class="back-copy">${publication.description}</p>
-    <div class="back-url">GAUNTLET.RUN</div>
-    <div class="back-accounting">
-      <img src="/images/branding/tds-games-mark.svg" alt="TDS Games" />
-      <div><strong>Gauntlet v0.7.2 · ${publication.title}</strong><span>Published by TDS Games, an imprint of Misty Hollow Enterprises.</span><span>Copyright © 2026 Tymon Scott. All rights reserved.</span></div>
+    <div class="back-band">
+      <p class="back-flavor">Run the Gauntlet</p>
+      <h2>Build. Advance. Contend. Capture.</h2>
+    </div>
+    <div class="back-body">
+      <p class="back-copy">${publication.description}</p>
+      <div class="back-url">GAUNTLET.RUN</div>
+      <div class="back-accounting">
+        <img src="/images/branding/tds-games-mark.svg" alt="TDS Games" />
+        <div><strong>Gauntlet v0.7.2 · ${publication.title}</strong><span>Published by TDS Games, an imprint of Misty Hollow Enterprises.</span><span>Copyright © 2026 Tymon Scott. All rights reserved.</span></div>
+      </div>
     </div>`;
 }
 
 function createWoodcutPage(publication, index) {
   const page = createPage({ className: 'woodcut-page', furniture: false });
-  page.style.setProperty('--page-accent', publication.accent);
+  applyPublicationIdentity(page, publication);
   const hero = ((index % 4) + 1);
   flowOf(page).outerHTML = `<img src="/images/woodcuts/hero compositions/hero ${hero}.png" alt="" /><div class="woodcut-mark">Gauntlet</div>`;
 }
 
 function newContinuationPage(context) {
+  const classNames = ['continuation-page'];
+  if (context.symbol) classNames.push('faction-page');
+  if (context.leader) classNames.push('leader-continuation');
   const page = createPage({
-    className: 'continuation-page',
+    className: classNames.join(' '),
     runningLeft: context.runningLeft,
     runningRight: context.runningRight,
     label: context.label,
   });
   page.style.setProperty('--page-accent', context.accent);
+  if (context.symbol) page.style.setProperty('--booklet-symbol', `url("${context.symbol}")`);
   flowOf(page).innerHTML = `<div class="continuation-label">${context.runningRight} · continued</div>`;
   return page;
 }
@@ -202,6 +221,7 @@ function splitSections(content) {
 function cloneNode(node) {
   const clone = node.cloneNode(true);
   clone.querySelectorAll?.('img[loading="lazy"]').forEach(image => { image.loading = 'eager'; });
+  clone.querySelectorAll?.('iframe[loading="lazy"]').forEach(frame => { frame.loading = 'eager'; });
   return clone;
 }
 
@@ -314,6 +334,24 @@ function appendNodeAcrossPages(node, page, context) {
   return current;
 }
 
+function appendHeadingAndFollower(heading, follower, page, context) {
+  const group = document.createElement('div');
+  group.className = 'keep-heading';
+  group.append(cloneNode(heading), cloneNode(follower));
+  flowOf(page).append(group);
+  if (!overflows(page)) return page;
+
+  group.remove();
+  let current = page;
+  if (hasBodyContent(current)) current = newContinuationPage(context);
+  flowOf(current).append(group);
+  if (!overflows(current)) return current;
+
+  group.remove();
+  current = appendNodeAcrossPages(heading, current, context);
+  return appendNodeAcrossPages(follower, current, context);
+}
+
 function digitalToolsGrid(tableWrapper) {
   const grid = document.createElement('div');
   grid.className = 'digital-tools-grid';
@@ -334,26 +372,6 @@ function digitalToolsGrid(tableWrapper) {
   return grid;
 }
 
-function leaderGallery(publication) {
-  if (!publication.leaders?.length) return null;
-  const gallery = document.createElement('section');
-  gallery.className = 'candidate-featured-leaders';
-  gallery.setAttribute('aria-label', `${publication.name} Leaders`);
-  publication.leaders.forEach(([name, src]) => {
-    const figure = document.createElement('figure');
-    const image = document.createElement('img');
-    image.className = 'leader-portrait';
-    image.src = src;
-    image.alt = `${name} Leader woodcut`;
-    image.loading = 'eager';
-    const caption = document.createElement('figcaption');
-    caption.textContent = name;
-    figure.append(image, caption);
-    gallery.append(figure);
-  });
-  return gallery;
-}
-
 function decorateFactionOverviewHeading(node) {
   const label = node.textContent.trim();
   const entry = Object.entries(FACTION_DECORATION).find(([prefix]) => label.startsWith(prefix));
@@ -364,6 +382,66 @@ function decorateFactionOverviewHeading(node) {
   clone.style.setProperty('--overview-accent', accent);
   clone.style.setProperty('--overview-symbol', `url("${symbol}")`);
   return clone;
+}
+
+function cardAnatomyMarkers() {
+  return [
+    ['1', 'left m1'], ['2', 'right m2'], ['3', 'left m3'], ['4', 'right m4'],
+    ['5', 'left m5'], ['6', 'right m6'], ['7', 'right m7'],
+  ].map(([number, classes]) => `<span class="booklet-card-marker ${classes}" aria-hidden="true">${number}</span>`).join('');
+}
+
+function buildCardAnatomyBlock(nodes, startIndex) {
+  let endIndex = startIndex + 1;
+  while (endIndex < nodes.length) {
+    const candidate = nodes[endIndex];
+    if (candidate.tagName === 'H3' && /^Effect headings$/i.test(normalizedText(candidate))) break;
+    endIndex += 1;
+  }
+  const anatomyNodes = nodes.slice(startIndex, endIndex);
+  const heading = anatomyNodes[0];
+  const intro = anatomyNodes.find(node => node.tagName === 'P');
+  const key = anatomyNodes.find(node => node.tagName === 'OL');
+  const arcaneHeadingIndex = anatomyNodes.findIndex(node => node.tagName === 'H4' && /Arcane trait mark/i.test(normalizedText(node)));
+  const arcaneHeading = arcaneHeadingIndex >= 0 ? anatomyNodes[arcaneHeadingIndex] : null;
+  const arcaneCopy = arcaneHeadingIndex >= 0 && anatomyNodes[arcaneHeadingIndex + 1]?.tagName === 'P'
+    ? anatomyNodes[arcaneHeadingIndex + 1]
+    : null;
+
+  const block = document.createElement('section');
+  block.className = 'booklet-card-anatomy-guide';
+  const title = cloneNode(heading);
+  if (intro) intro.removeAttribute?.('id');
+  block.append(title);
+  if (intro) {
+    const introClone = cloneNode(intro);
+    introClone.classList.add('booklet-card-anatomy-intro');
+    block.append(introClone);
+  }
+
+  const layout = document.createElement('div');
+  layout.className = 'booklet-card-anatomy-layout';
+  const figure = document.createElement('figure');
+  figure.className = 'booklet-card-figure';
+  figure.innerHTML = `<div class="booklet-card-frame-wrap"><iframe class="booklet-card-frame" src="/card-design/card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}" title="Production render of Unbroken Ranks with numbered anatomy callouts" loading="eager" tabindex="-1"></iframe>${cardAnatomyMarkers()}</div>`;
+  layout.append(figure);
+  if (key) {
+    const keyClone = cloneNode(key);
+    keyClone.classList.add('booklet-card-anatomy-key');
+    layout.append(keyClone);
+  }
+  block.append(layout);
+
+  if (arcaneHeading && arcaneCopy) {
+    const aside = document.createElement('aside');
+    aside.className = 'booklet-arcane-example';
+    aside.innerHTML = `<div class="booklet-arcane-crop" aria-hidden="true"><iframe class="booklet-arcane-frame" src="/card-design/card-print-render.html?fit=production&card=${ARCANE_CARD_ID}" title="Cropped Witchcraft card header showing the Arcane trait mark" loading="eager" tabindex="-1"></iframe></div><div class="booklet-arcane-copy"></div>`;
+    const copy = aside.querySelector('.booklet-arcane-copy');
+    copy.append(cloneNode(arcaneHeading), cloneNode(arcaneCopy));
+    block.append(aside);
+  }
+
+  return { block, nextIndex: endIndex };
 }
 
 function createSectionPage(section, publication, documentId) {
@@ -377,21 +455,26 @@ function createSectionPage(section, publication, documentId) {
     runningRight,
     label: numbered ? `CHAPTER ${numbered.number}` : part ? `PART ${part.numeral}` : publication.title.toUpperCase(),
     accent: publication.accent,
+    symbol: publication.symbol || null,
   };
+  const classNames = [];
+  if (part) classNames.push('part-page');
+  if (publication.name) classNames.push('faction-page');
+  if (isFactionOpener) classNames.push('faction-opener');
   const page = createPage({
-    className: `${part ? 'part-page' : ''} ${isFactionOpener ? 'faction-opener' : ''}`.trim(),
+    className: classNames.join(' '),
     runningLeft: context.runningLeft,
     runningRight: context.runningRight,
     label: context.label,
   });
-  page.style.setProperty('--page-accent', publication.accent);
+  applyPublicationIdentity(page, publication);
   const flow = flowOf(page);
 
   if (section.heading.id) anchors.set(section.heading.id, page);
   if (part) {
     flow.innerHTML = `<div class="part-rule"></div><div class="part-label">PART ${part.numeral}</div><h2 id="${section.heading.id}" class="part-title">${part.title}</h2>`;
   } else if (isFactionOpener) {
-    flow.innerHTML = `<div class="faction-rule"></div><span class="faction-symbol-large" style="--booklet-symbol:url(&quot;${publication.symbol}&quot;)" aria-hidden="true"></span><div class="faction-name">${publication.name}</div><h2 id="${section.heading.id}" class="faction-claim">${publication.claim}</h2>`;
+    flow.innerHTML = `<div class="faction-rule"></div><div class="faction-opener-heading"><div><div class="faction-name">${publication.name}</div><h2 id="${section.heading.id}" class="faction-claim">${publication.claim}</h2></div><span class="faction-symbol-badge" aria-hidden="true"></span></div>`;
   } else if (numbered) {
     flow.innerHTML = `<div class="chapter-title-row"><div class="chapter-number">${numbered.number}</div><h2 id="${section.heading.id}">${numbered.title}</h2></div>`;
   } else {
@@ -400,23 +483,81 @@ function createSectionPage(section, publication, documentId) {
   return { page, context };
 }
 
-function paginateSection(section, publication, documentId) {
-  let { page, context } = createSectionPage(section, publication, documentId);
-  const sectionLabel = section.heading.textContent.trim();
-
-  if (publication.leaders && /Your Leaders$/i.test(sectionLabel.replace(/^\d+\.\s*/, ''))) {
-    const gallery = leaderGallery(publication);
-    if (gallery) {
-      flowOf(page).append(gallery);
-      if (overflows(page)) {
-        gallery.remove();
-        page = newContinuationPage(context);
-        flowOf(page).append(gallery);
-      }
+function splitLeaderGroups(section, publication) {
+  const leaders = new Map(publication.leaders.map(([name, src]) => [name, src]));
+  const prelude = [];
+  const groups = [];
+  let current = null;
+  for (const node of section.nodes) {
+    const label = normalizedText(node);
+    if (node.tagName === 'H3' && leaders.has(label)) {
+      if (current) groups.push(current);
+      current = { name: label, src: leaders.get(label), heading: node, nodes: [] };
+    } else if (current) {
+      current.nodes.push(node);
+    } else {
+      prelude.push(node);
     }
   }
+  if (current) groups.push(current);
+  return { prelude, groups };
+}
 
-  for (const original of section.nodes) {
+function paginateLeaderSection(section, publication) {
+  const sectionLabel = normalizedText(section.heading);
+  const numbered = numberedHeading(sectionLabel);
+  const { prelude, groups } = splitLeaderGroups(section, publication);
+  if (!groups.length) return false;
+
+  groups.forEach((group, groupIndex) => {
+    const context = {
+      runningLeft: publication.title,
+      runningRight: group.name,
+      label: numbered ? `CHAPTER ${numbered.number}` : 'LEADER',
+      accent: publication.accent,
+      symbol: publication.symbol,
+      leader: group.name,
+    };
+    const page = createPage({
+      className: 'faction-page leader-page',
+      runningLeft: context.runningLeft,
+      runningRight: 'Your Leaders',
+      label: context.label,
+    });
+    applyPublicationIdentity(page, publication);
+    if (groupIndex === 0 && section.heading.id) anchors.set(section.heading.id, page);
+    if (group.heading.id) anchors.set(group.heading.id, page);
+    const flow = flowOf(page);
+    flow.innerHTML = `<div class="leader-section-label">${numbered ? `${numbered.number} · ` : ''}YOUR LEADERS</div><div class="leader-title-row"><div class="leader-name" id="${group.heading.id || ''}">${group.name}</div><span class="faction-symbol-badge" aria-hidden="true"></span></div><figure class="leader-woodcut-wrap"><img src="${group.src}" alt="${group.name} Leader woodcut" loading="eager" /></figure>`;
+
+    let current = page;
+    const prefixNodes = groupIndex === 0 ? prelude : [];
+    for (const node of [...prefixNodes, ...group.nodes]) {
+      const clone = cloneNode(node);
+      if (clone.tagName === 'P' && /^Playstyle:/i.test(normalizedText(clone))) clone.classList.add('leader-playstyle');
+      current = appendNodeAcrossPages(clone, current, context);
+    }
+  });
+  return true;
+}
+
+function paginateSection(section, publication, documentId) {
+  const sectionLabel = section.heading.textContent.trim();
+  if (publication.leaders && /Your Leaders$/i.test(sectionLabel.replace(/^\d+\.\s*/, ''))) {
+    if (paginateLeaderSection(section, publication)) return;
+  }
+
+  let { page, context } = createSectionPage(section, publication, documentId);
+  for (let index = 0; index < section.nodes.length;) {
+    const original = section.nodes[index];
+
+    if (documentId === 'player-guide' && /^Card anatomy$/i.test(normalizedText(original)) && original.tagName === 'H3') {
+      const { block, nextIndex } = buildCardAnatomyBlock(section.nodes, index);
+      page = appendNodeAcrossPages(block, page, context);
+      index = nextIndex;
+      continue;
+    }
+
     let node = original;
     if (documentId === 'player-guide' && sectionLabel === '9. The Six Factions' && original.tagName === 'H3') {
       node = decorateFactionOverviewHeading(original);
@@ -425,9 +566,19 @@ function paginateSection(section, publication, documentId) {
       const grid = digitalToolsGrid(original);
       page.classList.add('digital-tools-page');
       page = appendNodeAcrossPages(grid, page, context);
+      index += 1;
       continue;
     }
+
+    const next = section.nodes[index + 1];
+    if (['H3', 'H4'].includes(node.tagName) && next && !['H3', 'H4'].includes(next.tagName)) {
+      page = appendHeadingAndFollower(node, next, page, context);
+      index += 2;
+      continue;
+    }
+
     page = appendNodeAcrossPages(node, page, context);
+    index += 1;
   }
 }
 
@@ -438,6 +589,24 @@ function fillContents() {
   });
 }
 
+async function ensurePublicationFonts() {
+  if (!document.fonts) return;
+  const required = [
+    ['Inter', '700 10px Inter'],
+    ['Adobe Caslon Pro', '400 10px "adobe-caslon-pro"'],
+    ['P22 1722 Pro', '400 10px "p22-1722-pro"'],
+    ['P22 Declaration Pro', '400 10px "p22-declaration-pro"'],
+  ];
+  for (const [name, spec] of required) {
+    const faces = await Promise.race([
+      document.fonts.load(spec),
+      new Promise((_, reject) => setTimeout(() => reject(new Error(`Timed out loading ${name}.`)), 15000)),
+    ]);
+    if (!faces.length) throw new Error(`Required publication font did not load: ${name}.`);
+  }
+  await document.fonts.ready;
+}
+
 async function waitForImages() {
   const images = [...pagesRoot.querySelectorAll('img')];
   await Promise.all(images.map(image => image.complete && image.naturalWidth > 0
@@ -446,6 +615,30 @@ async function waitForImages() {
         image.addEventListener('load', resolve, { once: true });
         image.addEventListener('error', resolve, { once: true });
       })));
+}
+
+async function waitForFrames() {
+  const frames = [...pagesRoot.querySelectorAll('iframe')];
+  await Promise.all(frames.map(frame => new Promise((resolve, reject) => {
+    const deadline = Date.now() + 20000;
+    const check = () => {
+      try {
+        if (frame.contentDocument?.body?.dataset.renderReady === 'true') {
+          resolve();
+          return;
+        }
+      } catch {
+        // Same-origin publication frames should be readable; keep polling until timeout for a useful failure.
+      }
+      if (Date.now() >= deadline) {
+        reject(new Error(`Timed out waiting for booklet figure frame: ${frame.title || frame.src}`));
+        return;
+      }
+      setTimeout(check, 50);
+    };
+    frame.addEventListener('load', check, { once: true });
+    check();
+  })));
 }
 
 async function main() {
@@ -465,10 +658,7 @@ async function main() {
   const rendered = renderMarkdown(await response.text());
   sourceRoot.innerHTML = rendered.html;
 
-  await Promise.race([
-    document.fonts?.ready || Promise.resolve(),
-    new Promise(resolve => setTimeout(resolve, 10000)),
-  ]);
+  await ensurePublicationFonts();
 
   createCover(publication);
   createContentsPage(publication, rendered.headings);
@@ -485,7 +675,7 @@ async function main() {
   for (let index = 0; index < fillerCount; index += 1) createWoodcutPage(publication, index);
   createBackCover(publication);
   fillContents();
-  await waitForImages();
+  await Promise.all([waitForImages(), waitForFrames(), ensurePublicationFonts()]);
 
   document.title = `${publication.title} — Gauntlet v0.7.2`;
   document.body.dataset.bookletReady = 'true';
