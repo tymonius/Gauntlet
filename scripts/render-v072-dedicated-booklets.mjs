@@ -30,10 +30,15 @@ function prepareDedicatedRuntime() {
   const original = fs.readFileSync(BASE_RENDERER, 'utf8');
   const browserUrl = '/rulebook/?rules=candidate&doc=';
   const printUrl = '/rulebook/booklet/?doc=';
+  const browserLeaderWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });\n  }\n\n`;
   if (!original.includes(browserUrl)) {
     throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook candidate URL; review the dedicated print adapter.');
   }
+  if (!original.includes(browserLeaderWait)) {
+    throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook leader-gallery wait; review the dedicated print adapter.');
+  }
   let runtime = original.replace(browserUrl, printUrl);
+  runtime = runtime.replace(browserLeaderWait, '');
   runtime = runtime.replace('displayHeaderFooter: true,', 'displayHeaderFooter: false,');
   fs.writeFileSync(RUNTIME_RENDERER, runtime);
 }
