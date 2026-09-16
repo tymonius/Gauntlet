@@ -1,3 +1,5 @@
+import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
+
 const content = document.querySelector('[data-rulebook-content]');
 
 const heroArt = document.querySelector('.hero-art img');
@@ -5,7 +7,10 @@ if (heroArt) {
   heroArt.src = '../images/woodcuts/hero compositions/hero 1.png';
 }
 
-const FACTION_LEADERS = [
+// Keep the frozen released-v0.7.1 presentation exactly on its established
+// woodcut assets. Candidate publications use the separately reviewed sketch
+// assets registered in publication-assets.mjs.
+const RELEASED_FACTION_LEADERS = [
   ['Military', [
     ['General', '../images/woodcuts/general.png'],
     ['Commandant', '../images/woodcuts/commandant.png'],
@@ -32,28 +37,38 @@ const FACTION_LEADERS = [
   ]],
 ];
 
-function findFactionHeading(faction) {
+const CANDIDATE_FACTION_DOCUMENTS = new Set(Object.keys(RULES_PUBLICATION_ASSETS.factions));
+
+function headingLabel(heading) {
+  return heading.textContent.replace(/#\s*$/, '').trim();
+}
+
+function findReleasedFactionHeading(faction) {
   return [...content.querySelectorAll('h1')].find((heading) => {
     if (heading.dataset.chapterTitle === faction) return true;
-    const label = heading.textContent.replace(/#\s*$/, '').trim();
+    const label = headingLabel(heading);
     return label === faction || new RegExp(`^\\d+\\.\\s*${faction}$`, 'i').test(label);
   });
 }
 
-function buildGallery(faction, leaders) {
+function buildGallery(faction, leaders, { candidate = false } = {}) {
   const gallery = document.createElement('section');
   gallery.className = 'leader-portrait-gallery';
+  if (candidate) gallery.classList.add('candidate-leader-portrait-gallery');
   gallery.dataset.leaderPortraitGallery = faction;
   gallery.setAttribute('aria-label', `${faction} Leaders`);
 
-  for (const [name, src] of leaders) {
+  for (const leader of leaders) {
+    const [name, src] = Array.isArray(leader)
+      ? leader
+      : [leader.name, leader.publicUrl];
     const figure = document.createElement('figure');
     figure.className = 'leader-portrait-figure';
 
     const image = document.createElement('img');
     image.className = 'leader-portrait';
     image.src = src;
-    image.alt = `${name} Leader woodcut`;
+    image.alt = `${name} Leader portrait`;
     image.loading = 'lazy';
     image.decoding = 'async';
 
@@ -67,33 +82,121 @@ function buildGallery(faction, leaders) {
   return gallery;
 }
 
-function injectLeaderPortraits() {
-  if (!content) return true;
-
-  let completed = 0;
-  for (const [faction, leaders] of FACTION_LEADERS) {
-    if (content.querySelector(`[data-leader-portrait-gallery="${faction}"]`)) {
-      completed += 1;
-      continue;
-    }
-
-    const heading = findFactionHeading(faction);
+function injectReleasedLeaderPortraits() {
+  if (!content) return;
+  for (const [faction, leaders] of RELEASED_FACTION_LEADERS) {
+    if (content.querySelector(`[data-leader-portrait-gallery="${faction}"]`)) continue;
+    const heading = findReleasedFactionHeading(faction);
     if (!heading) continue;
     heading.insertAdjacentElement('afterend', buildGallery(faction, leaders));
-    completed += 1;
+  }
+}
+
+function applyFactionSymbol(heading, factionId) {
+  const asset = RULES_PUBLICATION_ASSETS.factions[factionId];
+  if (!heading || !asset) return;
+  heading.classList.add('publication-faction-heading');
+  heading.dataset.publicationFaction = factionId;
+  heading.style.setProperty('--publication-faction-symbol', `url("${asset.symbol.publicUrl}")`);
+}
+
+function decoratePlayerGuideFactions() {
+  for (const [factionId, asset] of Object.entries(RULES_PUBLICATION_ASSETS.factions)) {
+    const heading = [...content.querySelectorAll('h3')]
+      .find(candidate => headingLabel(candidate).startsWith(`${asset.name} —`));
+    applyFactionSymbol(heading, factionId);
+  }
+}
+
+function decorateCompleteRulesFactions() {
+  const technicalTitles = {
+    military: 'Military Rules',
+    diplomats: 'Diplomat Rules',
+    financiers: 'Financier Rules',
+    intelligence: 'Intelligence Rules',
+    mystics: 'Mystics Rules',
+    inquisition: 'Inquisition Rules',
+  };
+  for (const [factionId, title] of Object.entries(technicalTitles)) {
+    const heading = [...content.querySelectorAll('h2')]
+      .find(candidate => headingLabel(candidate).endsWith(`— ${title}`));
+    applyFactionSymbol(heading, factionId);
+  }
+}
+
+function decorateFactionGuide(factionId) {
+  const asset = RULES_PUBLICATION_ASSETS.factions[factionId];
+  if (!asset) return;
+
+  const title = [...content.querySelectorAll('h1')]
+    .find(heading => headingLabel(heading) === `${asset.name} Guide`);
+  applyFactionSymbol(title, factionId);
+
+  if (content.querySelector(`[data-leader-portrait-gallery="${asset.name}"]`)) return;
+  const leadersHeading = [...content.querySelectorAll('h2')]
+    .find(heading => /(?:^|\s)Your Leaders$/.test(headingLabel(heading).replace(/^\d+\.\s*/, '')));
+  if (!leadersHeading) return;
+  leadersHeading.insertAdjacentElement('afterend', buildGallery(asset.name, asset.leaders, { candidate: true }));
+}
+
+function clearInjectedPublicationAssets() {
+  content?.querySelectorAll('[data-leader-portrait-gallery]').forEach(node => node.remove());
+  content?.querySelectorAll('.publication-faction-heading').forEach((heading) => {
+    heading.classList.remove('publication-faction-heading');
+    heading.removeAttribute('data-publication-faction');
+    heading.style.removeProperty('--publication-faction-symbol');
+  });
+}
+
+function decorateForRender({ mode = 'released', document: documentId = 'released-rulebook' } = {}) {
+  if (!content) return;
+  clearInjectedPublicationAssets();
+
+  if (mode !== 'candidate') {
+    injectReleasedLeaderPortraits();
+    return;
   }
 
-  return completed === FACTION_LEADERS.length;
+  if (documentId === 'player-guide') {
+    decoratePlayerGuideFactions();
+    return;
+  }
+  if (documentId === 'complete-rules') {
+    decorateCompleteRulesFactions();
+    return;
+  }
+  if (CANDIDATE_FACTION_DOCUMENTS.has(documentId)) {
+    decorateFactionGuide(documentId);
+  }
+}
+
+function inferredRenderContext() {
+  const url = new URL(window.location.href);
+  const mode = document.body.dataset.rulesetMode === 'candidate' || url.searchParams.get('rules') === 'candidate'
+    ? 'candidate'
+    : 'released';
+  return {
+    mode,
+    document: mode === 'candidate' ? (url.searchParams.get('doc') || 'player-guide') : 'released-rulebook',
+  };
 }
 
 if (content) {
   const observer = new MutationObserver(() => {
-    if (injectLeaderPortraits()) observer.disconnect();
+    if (!content.querySelector('h1')) return;
+    observer.disconnect();
+    decorateForRender(inferredRenderContext());
+    observer.observe(content, { childList: true, subtree: true });
   });
   observer.observe(content, { childList: true, subtree: true });
-  if (injectLeaderPortraits()) observer.disconnect();
 
-  document.addEventListener('gauntlet:rulebook-rendered', () => {
-    injectLeaderPortraits();
+  document.addEventListener('gauntlet:rulebook-rendered', (event) => {
+    observer.disconnect();
+    decorateForRender(event.detail || inferredRenderContext());
+    observer.observe(content, { childList: true, subtree: true });
+  });
+
+  queueMicrotask(() => {
+    if (content.querySelector('h1')) decorateForRender(inferredRenderContext());
   });
 }
