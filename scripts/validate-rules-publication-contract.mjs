@@ -66,6 +66,30 @@ function validateReviewedSection(errors, authority, registryById, section, conte
   }
 }
 
+
+function validateReviewedTechnicalPart(errors, authority, registryById, part, context, active) {
+  const dependencies = part.dependsOn || [];
+  validateDependencies(errors, registryById, dependencies, context);
+
+  if (!dependencies.length) {
+    fail(errors, `${context} is reviewed technical copy but declares no rule dependencies.`);
+    return;
+  }
+  if (!active) return;
+
+  if (!/^[0-9a-f]{64}$/.test(part.reviewFingerprint || '')) {
+    fail(errors, `${context} is active reviewed technical copy but has no valid reviewFingerprint.`);
+    return;
+  }
+  const expected = fingerprintRuleDependencies(authority, registryById, dependencies);
+  if (part.reviewFingerprint !== expected) {
+    fail(
+      errors,
+      `${context} is stale against its authority dependencies. Review the technical prose and refresh its reviewFingerprint.`,
+    );
+  }
+}
+
 const contract = JSON.parse(await readFile(resolve(ROOT, CONTRACT_PATH), 'utf8'));
 const sources = JSON.parse(await readFile(resolve(ROOT, SOURCES_PATH), 'utf8'));
 const authority = await loadCurrentGameAuthority();
@@ -220,15 +244,29 @@ for (const faction of contract.factions || []) {
 }
 
 const comprehensive = contract?.publicationArchitecture?.comprehensiveRules;
-if (!comprehensive || comprehensive.kind !== 'technical' || comprehensive.dependencyMode !== 'direct') {
-  fail(errors, 'Comprehensive Rules must be the direct technical surface.');
+if (!comprehensive || comprehensive.kind !== 'technical' || comprehensive.dependencyMode !== 'reviewedTechnical') {
+  fail(errors, 'Comprehensive Rules must be the reviewedTechnical technical surface.');
 } else {
+  const active = comprehensive.status === 'active';
   const coverIds = [];
   const partIds = new Set();
   for (const part of comprehensive.parts || []) {
     if (partIds.has(part.id)) fail(errors, `Duplicate Comprehensive Rules part id: ${part.id}.`);
     partIds.add(part.id);
-    validateDependencies(errors, registryById, part.covers, `Comprehensive Rules / ${part.id}`);
+    validateDependencies(errors, registryById, part.covers, `Comprehensive Rules / ${part.id} coverage`);
+    validateReviewedTechnicalPart(
+      errors,
+      authority,
+      registryById,
+      part,
+      `Comprehensive Rules / ${part.id}`,
+      active,
+    );
+    for (const coverId of part.covers || []) {
+      if (!(part.dependsOn || []).some(dependency => coveredBy(coverId, dependency))) {
+        fail(errors, `Comprehensive Rules / ${part.id} covers ${coverId} without a matching review dependency.`);
+      }
+    }
     coverIds.push(...(part.covers || []));
   }
   for (const ruleId of registryById.keys()) {

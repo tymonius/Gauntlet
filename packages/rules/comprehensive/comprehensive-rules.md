@@ -1,11 +1,10 @@
-<!-- GENERATED FILE: scripts/render-comprehensive-rules.mjs -->
-<!-- DO NOT EDIT DIRECTLY. Change game-data/current-game.json or the renderer, then regenerate. -->
 <!-- RULES-SURFACE:comprehensive-rules -->
+<!-- RULES-REVIEW-MODE:reviewed-technical -->
 <!-- AUTHORITY:game-data/current-game.json -->
 
 # Comprehensive Gauntlet Rules
 
-> **Player-facing technical rules.** This publication is generated from `game-data/current-game.json` through explicit rules-writing templates. It is intended for players resolving exact rules questions, not for exposing the structure of the underlying data model.
+> **Player-facing technical rules.** This is maintained technical prose for players resolving exact rules questions. Each Part declares registered gameplay dependencies in the rules-surface contract, and CI requires re-review whenever those authority dependencies change.
 
 The Comprehensive Rules are the complete technical rules corpus for the current game. The Player's Guide and Faction Guides are teaching surfaces and may simplify presentation, but they do not override these rules or the underlying gameplay authority.
 
