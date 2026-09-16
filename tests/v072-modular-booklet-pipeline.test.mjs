@@ -66,6 +66,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
 
     expect(html).toContain('data-booklet-pages');
     expect(html).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(html).toContain('family=Inter');
     expect(html).not.toContain('Start</');
     expect(html).not.toContain('Playtest</');
 
@@ -73,14 +74,27 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(css).toContain('--body: "adobe-caslon-pro"');
     expect(css).toContain('--heritage: "p22-1722-pro"');
     expect(css).toContain('--flavor: "p22-declaration-pro"');
+    expect(css).toContain('--ui: Inter');
     expect(css).toContain('.page.left .page-inner');
     expect(css).toContain('.chapter-title-row');
-    expect(css).toContain('.faction-opener');
-    expect(css).toContain('.digital-tools-grid');
-    expect(css).toContain('.back-cover::before');
+    expect(css).toContain('.faction-page::before');
+    expect(css).toContain('.leader-page .page-flow');
+    expect(css).toContain('.booklet-card-anatomy-guide');
+    expect(css).toContain('.booklet-arcane-example');
+    expect(css).toContain('.digital-tool img');
+    expect(css).toContain('background: #fff;');
+    expect(css).toContain('.back-band');
+    expect(css).toContain('background: var(--page-accent);');
 
     expect(client).toContain('createPage');
     expect(client).toContain('newContinuationPage');
+    expect(client).toContain('buildCardAnatomyBlock');
+    expect(client).toContain('paginateLeaderSection');
+    expect(client).toContain('appendHeadingAndFollower');
+    expect(client).toContain('waitForFrames');
+    expect(client).toContain('ensurePublicationFonts');
+    expect(client).toContain("CARD_ANATOMY_CARD_ID = 'military-unbroken-ranks'");
+    expect(client).toContain("ARCANE_CARD_ID = 'mystics-witchcraft'");
     expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
@@ -93,6 +107,9 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(workflow).toContain('Render all eight modular booklets');
     expect(workflow).toContain('render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('Browser Rulebook chrome leaked');
+    expect(workflow).toContain('DejaVuSans|LiberationSans');
+    expect(workflow).toContain('Inter was not embedded');
+    expect(workflow).toContain('pdffonts');
     expect(workflow).toContain('pdftoppm');
     expect(workflow).toContain('pdftotext');
     expect(workflow).toContain('upload-artifact@v4');
