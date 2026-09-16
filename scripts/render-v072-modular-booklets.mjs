@@ -283,7 +283,8 @@ async function prepareInterstitialAnchors(page, publication) {
 
     let candidates;
     if (publicationId === 'complete-rules') {
-      candidates = [...content.querySelectorAll('h1.part-heading')];
+      candidates = [...content.querySelectorAll('h2[id]')]
+        .filter(heading => /^Part\s+[IVX]+\b/.test(heading.textContent.trim()));
     } else if (publicationId === 'player-guide') {
       candidates = [...content.querySelectorAll('h2[id]')]
         .filter(heading => !heading.classList.contains('how-it-works-heading'));
