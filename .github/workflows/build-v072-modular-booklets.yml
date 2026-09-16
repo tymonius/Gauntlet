@@ -64,12 +64,23 @@ jobs:
             stem="$(basename "$pdf" .pdf)"
             pdfinfo "$pdf"
             text="$(pdftotext "$pdf" -)"
+            fonts="$(pdffonts "$pdf")"
             grep -q '[[:alnum:]]' <<< "$text"
             if grep -Eiq 'Official Browser Rulebook|Release candidate rules|Start[[:space:]]+Playtest[[:space:]]+Rules[[:space:]]+Factions[[:space:]]+Deckbuilder' <<< "$text"; then
               echo "Browser Rulebook chrome leaked into $pdf" >&2
               exit 1
             fi
-            pdftoppm -f 1 -l 4 -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side"
+            if grep -Eiq 'DejaVuSans|LiberationSans' <<< "$fonts"; then
+              echo "Sans-serif fallback font leaked into $pdf" >&2
+              printf '%s\n' "$fonts" >&2
+              exit 1
+            fi
+            if ! grep -Eiq 'Inter' <<< "$fonts"; then
+              echo "Inter was not embedded in $pdf" >&2
+              printf '%s\n' "$fonts" >&2
+              exit 1
+            fi
+            pdftoppm -f 1 -l 6 -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side"
           done
 
       - name: Upload modular booklet review artifact
