@@ -40,4 +40,16 @@ describe('Browser Rulebook candidate publication', () => {
     expect(app).toContain('The current production Rules Arbiter remains bound to released v0.7.1');
     expect(app).toContain('rulesAssistantButton.hidden = candidate');
   });
+
+  it('renders faction symbols as inset faction-colored masks and avoids bold Georgia for secondary hierarchy', async () => {
+    const css = await read('legacy/rulebook-browser/leader-portraits.css');
+
+    expect(css).not.toContain('background-image: var(--publication-faction-symbol)');
+    expect(css).toContain('-webkit-mask: var(--publication-faction-symbol) center / 84% 84% no-repeat');
+    expect(css).toContain('mask: var(--publication-faction-symbol) center / 84% 84% no-repeat');
+    expect(css).toContain('background: var(--candidate-accent, var(--chapter-accent, var(--rulebook-crimson)))');
+    expect(css).toContain('.rulebook-content h3,');
+    expect(css).toContain('.rulebook-content h4,');
+    expect(css).toContain('font-family: var(--rulebook-body);');
+  });
 });
