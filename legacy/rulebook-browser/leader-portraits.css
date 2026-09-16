@@ -12,21 +12,64 @@
   mask-image: none;
 }
 
+/* Faction symbols are masks rather than background images so they can inherit
+   the publication's faction accent. The inset mask leaves breathing room around
+   the SVG viewBox and prevents fine extremities from being clipped in print. */
 .publication-faction-heading {
-  background-image: var(--publication-faction-symbol);
-  background-repeat: no-repeat;
-  background-position: left 0.12em;
-  background-size: 1.35em 1.35em;
-  padding-left: 1.75em;
+  position: relative;
+  background-image: none;
+  padding-left: 1.78em;
+}
+
+.publication-faction-heading::before {
+  content: "";
+  position: absolute;
+  top: -0.02em;
+  left: 0;
+  width: 1.42em;
+  height: 1.42em;
+  background: var(--candidate-accent, var(--chapter-accent, var(--rulebook-crimson)));
+  -webkit-mask: var(--publication-faction-symbol) center / 84% 84% no-repeat;
+  mask: var(--publication-faction-symbol) center / 84% 84% no-repeat;
 }
 
 .rulebook-content h1.publication-faction-heading {
-  background-size: 1.5em 1.5em;
-  padding-left: 1.9em;
+  padding-left: 1.95em;
 }
 
-.rulebook-content h3.publication-faction-heading {
-  background-position-y: 0.05em;
+.rulebook-content h1.publication-faction-heading::before {
+  top: -0.04em;
+  width: 1.52em;
+  height: 1.52em;
+}
+
+.rulebook-content h3.publication-faction-heading::before {
+  top: -0.04em;
+}
+
+/* Georgia remains useful for large regular-weight display type, but its heavy
+   face is too blunt for the smaller rulebook hierarchy. Secondary headings and
+   TOC primaries use the book body family instead of synthetic/bold Georgia. */
+.rulebook-content h3,
+.rulebook-content h4,
+.rulebook-toc .toc-primary,
+.loading-card strong {
+  font-family: var(--rulebook-body);
+}
+
+/* Candidate Player's Guide faction cards previously sized a literal SVG
+   background. Override that legacy treatment with the colored mask above. */
+.candidate-player-guide .candidate-faction-overview .publication-faction-heading {
+  background-image: none;
+  background-position: initial;
+  background-size: auto;
+  padding-left: 1.72em;
+}
+
+.candidate-player-guide .candidate-faction-overview .publication-faction-heading::before {
+  top: -0.03em;
+  width: 1.34em;
+  height: 1.34em;
 }
 
 .leader-portrait-gallery {
@@ -75,13 +118,30 @@
 
 @media (max-width: 620px) {
   .publication-faction-heading {
-    background-size: 1.2em 1.2em;
-    padding-left: 1.55em;
+    padding-left: 1.58em;
+  }
+
+  .publication-faction-heading::before {
+    width: 1.24em;
+    height: 1.24em;
   }
 
   .rulebook-content h1.publication-faction-heading {
-    background-size: 1.3em 1.3em;
-    padding-left: 1.65em;
+    padding-left: 1.72em;
+  }
+
+  .rulebook-content h1.publication-faction-heading::before {
+    width: 1.36em;
+    height: 1.36em;
+  }
+
+  .candidate-player-guide .candidate-faction-overview .publication-faction-heading {
+    padding-left: 1.58em;
+  }
+
+  .candidate-player-guide .candidate-faction-overview .publication-faction-heading::before {
+    width: 1.24em;
+    height: 1.24em;
   }
 
   .leader-portrait-gallery {
