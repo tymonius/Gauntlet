@@ -53,6 +53,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
     const html = await readFile('apps/rules/booklet/index.html', 'utf8');
     const css = await readFile('apps/rules/booklet/booklet.css', 'utf8');
     const parityCss = await readFile('apps/rules/booklet/v071-parity.css', 'utf8');
+    const componentsCss = await readFile('apps/rules/booklet/v071-components.css', 'utf8');
     const v071PublicationCss = await readFile('apps/rules/booklet/v071-publication.css', 'utf8');
     const client = await readFile('apps/rules/booklet/booklet.js', 'utf8');
     const validator = await readFile('scripts/validate-v072-modular-booklets.mjs', 'utf8');
@@ -70,18 +71,23 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(html).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(html).toContain('family=Inter');
     expect(html).toContain('./v071-parity.css');
+    expect(html).toContain('./v071-components.css');
     expect(html).toContain('./v071-publication.css');
     expect(html.indexOf('./v071-parity.css')).toBeGreaterThan(html.indexOf('./booklet.css'));
-    expect(html.indexOf('./v071-publication.css')).toBeGreaterThan(html.indexOf('./v071-parity.css'));
+    expect(html.indexOf('./v071-components.css')).toBeGreaterThan(html.indexOf('./v071-parity.css'));
+    expect(html.indexOf('./v071-publication.css')).toBeGreaterThan(html.indexOf('./v071-components.css'));
     expect(html).not.toContain('Start</');
     expect(html).not.toContain('Playtest</');
 
-    /* The base compositor may contain implementation defaults, but the loaded
-       compatibility layers are the publication authority. */
+    /* The compositor shell must not become a second publication design. */
+    expect(css).toContain('this file is NOT the publication design authority');
+    expect(css).toContain('genuinely new modular-only surfaces');
     expect(css).toContain('@page { size: 5.5in 8.5in; margin: 0; }');
     expect(css).toContain('.booklet-card-anatomy-guide');
     expect(css).toContain('.booklet-arcane-example');
     expect(css).toContain('.digital-tool img');
+    expect(css).not.toContain('width: 3.25in');
+    expect(css).not.toContain('height: 3.25in');
 
     /* PR #357 + v0.7.1 production tokens and page geometry. */
     expect(parityCss).toContain('DESIGN CONTRACT');
@@ -115,6 +121,17 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(parityCss).toContain('border-bottom: 2px solid #333');
     expect(parityCss).toContain('.faction-symbol-badge');
     expect(parityCss).toContain('display: none !important');
+
+    /* Existing component families are direct old-production adaptations too. */
+    expect(componentsCss).toContain('direct selector adaptations of the approved PR #357 proof system');
+    expect(componentsCss).toContain('.glance-grid');
+    expect(componentsCss).toContain('.victory-band');
+    expect(componentsCss).toContain('.battle-step');
+    expect(componentsCss).toContain('.ability-strip');
+    expect(componentsCss).toContain('grid-template-columns: 1.02fr 1.32fr');
+    expect(componentsCss).toContain('.destination-grid');
+    expect(componentsCss).toContain('.timing-table');
+    expect(componentsCss).toContain('.colophon-block');
 
     /* Back cover is the approved PR #357 geometry, not a new compact design. */
     expect(parityCss).toContain('.back-cover .page-inner');
