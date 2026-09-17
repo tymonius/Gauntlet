@@ -1,0 +1,308 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "E",
+  "behaviorRevision": "v071-qa-20260916-15",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche E player-language benchmark for terse ordinary table questions, authored only after r15 and semantic-v2 were merged.",
+  "blindnessPolicy": [
+    "Do not edit or retroactively regrade this tranche after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-E case may become a regression after diagnosis, but it may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche E, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D questions."
+  ],
+  "cases": [
+    {
+      "id": "blind-e-player-onward-battle-stops-move",
+      "category": "player-language",
+      "question": "used onward, ran into them. do i still get the extra step after fight?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Onward",
+        "Movement and Position"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-leftover-step",
+          "statement": "When Onward movement enters the opponent's Position and initiates a battle, that movement sequence ends; there is no leftover Onward movement to use after the battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-command-cap-first-win",
+      "category": "player-language",
+      "question": "im at 2 command, win first fight, spend one later. do i get the missed command then?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Command and Orders"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-later-catchup",
+          "statement": "The first win still counts as the turn's normal Command trigger even while already at the 2 Command maximum, so a later win does not generate a delayed replacement Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-accepted-terms-no-aftermath",
+      "category": "player-language",
+      "question": "they accepted my terms. do we still do aftermath stuff?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Accepted Terms"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-aftermath",
+          "statement": "Accepted Terms end the sequence during Onset, so no Aftermath is resolved."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-stake-not-leverage",
+      "category": "player-language",
+      "question": "stake is 2. can i spend that on leverage too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Leverage"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "stake-unavailable",
+          "statement": "Staked Influence cannot be spent on Leverage."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-financial-capacity-two-phases",
+      "category": "player-language",
+      "question": "treasury 5, i control 3 after capture. can i act opening and denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Financial Capacity"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "two-phases-with-condition",
+          "statement": "Because Treasury value exceeds controlled Territories at the Financial Capacity check, the Financier may take one Action in Opening and one in Denouement that turn, provided at least one is a Financier Faction Feature marked 1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-new-mission-same-turn",
+      "category": "player-language",
+      "question": "started the mission this turn and its already done. can i finish it now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Starting a Mission"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-same-turn",
+          "statement": "A Mission cannot complete during the turn it begins even if its requirement is already satisfied."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-prevented-surveillance-refund",
+      "category": "player-language",
+      "question": "they stopped my surveillance. do i get the intel back?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Interference after Surveillance"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-refund",
+          "statement": "If Surveillance is prevented, the Intel remains spent."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-guardians-two-rites",
+      "category": "player-language",
+      "question": "two rites complete. what value arcane do guardians need?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Guardians of the Circle"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "value-three",
+          "statement": "With two completed Rites, Guardians of the Circle requires an Arcane card from Hand with value at least 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-transmutation-once-turn",
+      "category": "player-language",
+      "question": "already transmuted this turn. second battle, can i do it again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Transmutation"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-second-use",
+          "statement": "Transmutation is once per turn, so it cannot be used again in a second battle that same turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-conviction-many-cards",
+      "category": "player-language",
+      "question": "three of their cards hit graveyard in one aftermath. thats 3 conviction right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Conviction"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "only-one",
+          "statement": "Several qualifying opposing cards entering the Graveyard in the same battle's Aftermath produce only 1 normal Conviction gain."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-final-judgment-minimum",
+      "category": "player-language",
+      "question": "final judgment on a 1 conviction purge makes it free?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Final Judgment"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "minimum-one",
+          "statement": "Final Judgment's cost reduction has a minimum of 1, so a 1-Conviction Purge does not become free."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-pursuit-once-turn",
+      "category": "player-language",
+      "question": "i beat their attack but already used pursuit this turn. pursuit again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Relentless Pursuit"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "once-turn",
+          "statement": "Relentless Pursuit is limited to once per turn, so it cannot be used again that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-line-credit-cost-five",
+      "category": "player-language",
+      "question": "line of credit on a 5 cost deed, 4 value collateral. how much capital left to pay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Line of Credit"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "pay-three",
+          "statement": "For a 5-Capital purchase, Line of Credit can make the collateral contribute at most 2, leaving 3 Capital to pay."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-mission-control-special-op",
+      "category": "player-language",
+      "question": "mission control can start a special op?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Mission Control"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "no-special-op",
+          "statement": "Mission Control can start another eligible normal Mission, not a Special Operation."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-capture-two-territories",
+      "category": "player-language",
+      "question": "im past two enemy lands at capture. i take both?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Normal Capture"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "only-one",
+          "statement": "Normal Capture advances the Front Line by at most one Territory per turn, even if the token is beyond two enemy Territories."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-tiebreak-tied-again",
+      "category": "player-language",
+      "question": "tiebreak roll tied again. roll again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Tiebreak Roll"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "yes-reroll",
+          "statement": "A tied Tiebreak Roll is rerolled."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-reembodiment-transmute",
+      "category": "player-language",
+      "question": "reembodiment is banked and i transmute an arcane from hand. can it pull a lower card back?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": [
+        "Reembodiment",
+        "Transmutation"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "yes",
+          "statement": "If the Arcane card from Hand is the first qualifying Reembodiment event that turn, using it for Transmutation can let Reembodiment return one other lower-value card from Graveyard to Hand after Transmutation resolves."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-player-anathema-necromancy",
+      "category": "player-language",
+      "question": "they use necromancy to pull cards out of grave. can anathema keep them there?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": [
+        "Anathema",
+        "Necromancy"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "yes",
+          "statement": "Anathema may be discarded when the opponent's Necromancy would move cards from their Graveyard to another zone, causing those cards to remain in the Graveyard."
+        }
+      ]
+    }
+  ]
+}

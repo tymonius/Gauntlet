@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "E",
+  "behaviorRevision": "v071-qa-20260916-15",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche E ambiguous-follow-up cases that must request clarification instead of guessing.",
+  "cases": [
+    {
+      "id": "blind-e-clarify-onward-rout",
+      "question": "Can I use that one now?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Compare Onward and Rout for the General."
+        },
+        {
+          "role": "assistant",
+          "content": "Onward spends 1 Command during Movement for one additional Position. Rout spends 2 Command at the end of the Aftermath after a win as attacker to advance one Position."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-clarify-two-missions",
+      "question": "Does that Mission fail if I lose the battle?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm choosing between Reconnaissance and Spies as Missions."
+        },
+        {
+          "role": "assistant",
+          "content": "Reconnaissance looks for a defensive win while occupying enemy-controlled Territory. Spies looks for an early reveal of an opposing face-down battle card followed by a win."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-clarify-two-assets",
+      "question": "If I replace that Asset, where does it go?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Compare War Bonds and Tariffs in my Asset Bank."
+        },
+        {
+          "role": "assistant",
+          "content": "War Bonds can move a card from Hand into Treasury after the first battle each turn. Tariffs modifies the opponent's Capital gain and has a same-turn restriction on voluntarily leaving play."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-clarify-two-proposals",
+      "question": "Does that Proposal give me Influence?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm deciding between Ultimatum and Open Channels for Terms."
+        },
+        {
+          "role": "assistant",
+          "content": "Ultimatum can make the accepting player withdraw. Open Channels involves revealing Hands and has different accepted and refused effects."
+        }
+      ]
+    },
+    {
+      "id": "blind-e-clarify-two-rites",
+      "question": "Can that Rite finish this turn?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Compare Rite of Echoes and Rite of Shattering."
+        },
+        {
+          "role": "assistant",
+          "content": "Echoes binds cards and later checks for a qualifying applied card effect after a win. Shattering sacrifices an Asset and later grants advantage in its first battle that reaches dice."
+        }
+      ]
+    }
+  ]
+}
