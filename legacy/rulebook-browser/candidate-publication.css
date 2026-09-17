@@ -324,3 +324,177 @@
     break-inside: avoid;
   }
 }
+
+
+/* -------------------------------------------------------------------------
+ * v0.7.1 publication parity for the release-candidate Browser Rulebook.
+ *
+ * The browser keeps web-native navigation/search, but the publication itself
+ * inherits the approved Rulebook language: faction watermark, heritage titles,
+ * woodcut Leader plates, parchment callouts, and the same top-packed Leader
+ * identity composition used by the v0.7.2 booklets.
+ * ---------------------------------------------------------------------- */
+.candidate-faction-masthead {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.candidate-faction-masthead::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: -4.2rem;
+  bottom: -5.2rem;
+  width: min(23rem, 58vw);
+  aspect-ratio: 1;
+  background: var(--candidate-accent, var(--rulebook-crimson));
+  opacity: .09;
+  -webkit-mask: var(--candidate-symbol) center / contain no-repeat;
+  mask: var(--candidate-symbol) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.candidate-faction-masthead > * {
+  position: relative;
+  z-index: 1;
+}
+
+.candidate-masthead-claim {
+  max-width: 32rem;
+  margin: 14px 0 0 !important;
+  color: var(--rulebook-ink) !important;
+  font-family: var(--rulebook-title) !important;
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem) !important;
+  font-weight: 500;
+  line-height: 1.05 !important;
+}
+
+.candidate-leader-profile {
+  margin: 62px 0 70px;
+  padding-top: 22px;
+  border-top: 2px solid color-mix(in srgb, var(--candidate-accent, var(--rulebook-crimson)) 72%, var(--rulebook-line));
+}
+
+.rulebook-content .candidate-leader-name {
+  margin: 0 0 20px !important;
+  color: var(--candidate-accent, var(--rulebook-crimson)) !important;
+  font-family: var(--rulebook-heritage) !important;
+  font-size: clamp(2.85rem, 6vw, 4.25rem) !important;
+  font-weight: 400 !important;
+  line-height: .95 !important;
+}
+
+.candidate-leader-hero {
+  display: grid;
+  grid-template-columns: minmax(250px, 1.05fr) minmax(240px, .8fr);
+  gap: clamp(24px, 4vw, 38px);
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.candidate-leader-figure {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border-bottom: 2px solid #333;
+  background: transparent;
+  mix-blend-mode: multiply;
+}
+
+.rulebook-content .candidate-leader-figure img.candidate-leader-art-source {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  max-width: 1px;
+  max-height: 1px;
+  margin: 0;
+  opacity: 0;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.candidate-leader-art-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  mix-blend-mode: multiply;
+}
+
+.candidate-leader-identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-leader-identity .candidate-leader-playstyle {
+  margin: 0 !important;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--rulebook-line);
+  color: var(--rulebook-ink);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.candidate-leader-identity .candidate-leader-ability {
+  margin: 18px 0 0;
+  padding: 18px 18px 18px 34px;
+  border-left: 4px solid var(--candidate-accent, var(--rulebook-crimson));
+  background: #efe5d4;
+}
+
+.candidate-leader-identity .candidate-leader-ability li {
+  margin-bottom: .35rem;
+  line-height: 1.48;
+}
+
+.candidate-leader-profile > p {
+  max-width: 49rem;
+}
+
+.candidate-publication .card-anatomy-guide {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.candidate-publication .card-anatomy-arcane {
+  border-left-color: var(--candidate-accent, var(--rulebook-bronze));
+  background: #efe5d4;
+}
+
+.candidate-publication .card-anatomy-kicker {
+  color: var(--candidate-accent, var(--rulebook-crimson));
+  font-family: var(--rulebook-ui);
+}
+
+@media (max-width: 760px) {
+  .candidate-faction-masthead::after {
+    right: -5rem;
+    bottom: -4.5rem;
+    width: 18rem;
+  }
+
+  .candidate-leader-profile {
+    margin-top: 50px;
+  }
+
+  .candidate-leader-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .candidate-leader-figure {
+    width: min(100%, 25rem);
+    justify-self: center;
+  }
+
+  .candidate-leader-identity .candidate-leader-ability {
+    margin-top: 14px;
+  }
+}
