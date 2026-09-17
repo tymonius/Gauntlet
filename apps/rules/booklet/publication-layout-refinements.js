@@ -57,10 +57,11 @@
       const flow = page.querySelector('.page-flow');
       const titleRow = flow?.querySelector('.leader-title-row');
       const figure = flow?.querySelector(':scope > .leader-woodcut-wrap');
+      const image = figure?.querySelector('img');
       const playstyle = flow?.querySelector(':scope > .leader-playstyle');
       const ability = [...(flow?.children || [])].find(node => /^(UL|OL)$/.test(node.tagName));
 
-      if (!flow || !titleRow || !figure || !playstyle || !ability) {
+      if (!flow || !titleRow || !figure || !image || !playstyle || !ability) {
         fail(`Leader page ${page.dataset.page || '?'} is missing the expected hero-layout pieces.`);
         return;
       }
@@ -70,6 +71,8 @@
       const identity = document.createElement('div');
       identity.className = 'leader-identity-column';
 
+      figure.style.setProperty('--leader-art', `url("${image.getAttribute('src')}")`);
+      image.classList.add('leader-art-source');
       figure.remove();
       playstyle.remove();
       ability.remove();
