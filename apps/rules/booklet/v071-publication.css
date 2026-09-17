@@ -1,0 +1,39 @@
+/*
+ * v0.7.1 faction watermark treatment, copied from the production Rulebook
+ * publication layer introduced in PR #1198.  The only adaptations here are
+ * the booklet compositor selector/variable names and root-relative asset URLs.
+ * Geometry, opacity, mirroring, and stacking are intentionally unchanged.
+ */
+
+.faction-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--page-accent);
+  opacity: .05;
+  -webkit-mask-image: var(--booklet-symbol);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 2.55in 2.55in;
+  mask-image: var(--booklet-symbol);
+  mask-repeat: no-repeat;
+  mask-size: 2.55in 2.55in;
+  pointer-events: none;
+}
+
+.faction-page.right::before {
+  -webkit-mask-position: right -.44in bottom -.48in;
+  mask-position: right -.44in bottom -.48in;
+}
+
+.faction-page.left::before {
+  -webkit-mask-position: left -.44in bottom -.48in;
+  mask-position: left -.44in bottom -.48in;
+}
+
+.faction-page .page-inner,
+.faction-page .footer-rule,
+.faction-page .folio {
+  position: relative;
+  z-index: 1;
+}
