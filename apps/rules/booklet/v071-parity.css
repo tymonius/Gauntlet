@@ -1,0 +1,290 @@
+/*
+ * v0.7.1 publication-parity corrections.
+ *
+ * The modular booklets deliberately reuse the approved v0.7.1 publication
+ * language instead of inventing a second print design system.  This file is
+ * loaded after booklet.css so the historical print geometry remains explicit
+ * and reviewable while the modular compositor stays separate from the browser
+ * rulebook.
+ */
+
+/* -------------------------------------------------------------------------
+ * Typography roles from the approved v0.7.1 publication system
+ * ---------------------------------------------------------------------- */
+.part-label,
+.faction-name,
+.leader-name,
+.card-name {
+  font-family: var(--heritage);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Principal titles remain the restrained Georgia display face. */
+.page-title,
+.chapter-title-row h2,
+.part-title,
+.faction-claim,
+.back-band h2 {
+  font-family: var(--title);
+  font-weight: 500;
+}
+
+/* Functional furniture remains Inter; do not substitute a generic sans. */
+.running-head,
+.folio,
+.continuation-label,
+.cover-subtitle,
+.cover-version,
+.cover-bottom,
+.back-url,
+.leader-section-label,
+.page-flow h4 {
+  font-family: var(--ui);
+}
+
+/* -------------------------------------------------------------------------
+ * Faction identity: integrated mark + restrained watermark
+ * ---------------------------------------------------------------------- */
+
+/* The old publication did not put a detached icon "badge" in a corner. */
+.faction-symbol-badge {
+  display: none !important;
+}
+
+/* Do not stamp a huge off-page symbol on every faction page. */
+.faction-page::before {
+  content: none !important;
+}
+
+/* The faction opener carries the identity as part of the composition. */
+.faction-opener {
+  overflow: hidden;
+}
+.faction-opener::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: .94in;
+  right: .30in;
+  width: 1.34in;
+  height: 1.34in;
+  background: var(--page-accent);
+  opacity: .075;
+  pointer-events: none;
+  -webkit-mask: var(--booklet-symbol) center / contain no-repeat;
+  mask: var(--booklet-symbol) center / contain no-repeat;
+}
+.faction-opener .page-inner {
+  position: relative;
+  z-index: 1;
+}
+.faction-opener-heading {
+  display: block;
+}
+.faction-opener .faction-name {
+  margin: 0 0 6px;
+  color: var(--page-accent);
+  font-family: var(--heritage);
+  font-size: 31pt;
+  font-weight: 400;
+  line-height: .95;
+}
+
+/* Continuation/leader pages use a much quieter lower-corner watermark, clear
+   of the running head and primary copy column. */
+.faction-page:not(.faction-opener)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: .28in;
+  bottom: .66in;
+  width: 1.15in;
+  height: 1.15in;
+  background: var(--page-accent);
+  opacity: .032;
+  pointer-events: none;
+  -webkit-mask: var(--booklet-symbol) center / contain no-repeat;
+  mask: var(--booklet-symbol) center / contain no-repeat;
+}
+.faction-page:not(.faction-opener) .page-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------------------
+ * Leader plates: one leader per page means the art should actually dominate
+ * the plate rather than retain the old two-up thumbnail dimensions.
+ * ---------------------------------------------------------------------- */
+.leader-page .page-flow {
+  font-size: 8.8pt;
+  line-height: 1.28;
+}
+.leader-title-row {
+  display: block;
+  margin-bottom: 4px;
+}
+.leader-name {
+  margin: 0;
+  color: var(--page-accent);
+  font-family: var(--heritage);
+  font-size: 34pt;
+  font-weight: 400;
+  line-height: .90;
+}
+.leader-woodcut-wrap {
+  float: none;
+  width: 100%;
+  height: 3.55in;
+  margin: .02in 0 .13in;
+  border: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.page-flow .leader-woodcut-wrap img {
+  width: auto;
+  height: 100%;
+  max-width: 3.25in;
+  max-height: 3.52in;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: grayscale(1) contrast(1.1);
+  mix-blend-mode: multiply;
+}
+.leader-page .leader-playstyle {
+  margin-top: 0;
+}
+
+/* -------------------------------------------------------------------------
+ * Card anatomy and Arcane trait plates.
+ * Never use a clipped iframe as a diagram: the user must be able to see the
+ * complete card to which numbered callouts refer.
+ * ---------------------------------------------------------------------- */
+.booklet-card-anatomy-guide {
+  padding: 8px 9px 9px;
+}
+.booklet-card-anatomy-layout {
+  grid-template-columns: 2.18in minmax(0, 1fr);
+  gap: .17in;
+  align-items: start;
+}
+.booklet-card-frame-wrap {
+  width: 2.18in;
+  min-height: 3.10in;
+}
+.booklet-card-frame {
+  width: 2.02in;
+  height: 2.83in;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+}
+.booklet-card-marker.left { left: 0; }
+.booklet-card-marker.right { right: 0; }
+.booklet-card-anatomy-key {
+  font-size: 6.35pt;
+  line-height: 1.16;
+}
+
+.booklet-arcane-example {
+  margin-top: 8px;
+  padding: 8px 9px;
+  grid-template-columns: 1.56in minmax(0, 1fr);
+  gap: .13in;
+  align-items: start;
+}
+.booklet-arcane-crop {
+  width: 1.56in;
+  height: 2.19in;
+  overflow: visible;
+  background: transparent;
+}
+.booklet-arcane-frame {
+  width: 1.56in;
+  height: 2.19in;
+  border: 0;
+  transform: none;
+  transform-origin: initial;
+  pointer-events: none;
+}
+.booklet-arcane-copy {
+  align-self: center;
+}
+
+/* -------------------------------------------------------------------------
+ * Back cover: reproduce the compact v0.7.1 production geometry instead of
+ * the proof-era 2.12in block / .48in inset treatment.
+ * ---------------------------------------------------------------------- */
+.back-cover .page-inner {
+  padding: .34in .32in .28in;
+}
+.back-band {
+  min-height: 0;
+  margin: -.34in -.32in .16in;
+  padding: .24in .32in .32in;
+  color: #fff;
+  background: var(--page-accent);
+}
+.back-flavor {
+  margin: 0 0 .04in;
+  color: #fff;
+  font-family: var(--flavor);
+  font-size: 13pt;
+  font-weight: 400;
+  line-height: 1;
+}
+.back-band h2 {
+  width: 2.75in;
+  max-width: 2.75in;
+  margin: 0;
+  color: #fff;
+  font-size: 14.5pt;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.back-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.back-copy {
+  max-width: 3.72in;
+  margin: .11in 0 0;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 6.2pt;
+  line-height: 1.28;
+}
+.back-url {
+  align-self: flex-start;
+  margin-top: .17in;
+  padding: .05in .08in .04in;
+  border: 1px solid #555;
+  color: #111;
+  font-size: 5.2pt;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.back-accounting {
+  margin-top: auto;
+  padding-top: .08in;
+  grid-template-columns: .34in 1fr;
+  gap: .07in;
+  border-top: 1px solid var(--line-dark);
+  color: #555;
+  font-family: var(--ui);
+  font-size: 5.15pt;
+  line-height: 1.28;
+}
+.back-accounting img {
+  width: .30in;
+  max-height: .30in;
+}
+
+/* Preserve faction color on faction-guide back covers; general publications
+   naturally resolve --page-accent to Gauntlet crimson. */
