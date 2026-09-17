@@ -125,6 +125,187 @@ function decorateCompleteRulesFactions() {
   }
 }
 
+const candidateLeaderArtwork = new Map();
+
+async function measureCandidateLeaderBounds(image) {
+  if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+    try { await image.decode(); } catch { return { left: 0, top: 0, right: 1, bottom: 1 }; }
+  }
+  if (!image.naturalWidth || !image.naturalHeight) return { left: 0, top: 0, right: 1, bottom: 1 };
+
+  const maxSample = 512;
+  const sampleScale = Math.min(1, maxSample / image.naturalWidth, maxSample / image.naturalHeight);
+  const width = Math.max(1, Math.round(image.naturalWidth * sampleScale));
+  const height = Math.max(1, Math.round(image.naturalHeight * sampleScale));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) return { left: 0, top: 0, right: 1, bottom: 1 };
+  context.drawImage(image, 0, 0, width, height);
+
+  const pixels = context.getImageData(0, 0, width, height).data;
+  const corners = [0, (width - 1) * 4, ((height - 1) * width) * 4, ((height * width) - 1) * 4];
+  const background = corners.reduce((sum, offset) => {
+    sum.r += pixels[offset];
+    sum.g += pixels[offset + 1];
+    sum.b += pixels[offset + 2];
+    sum.a += pixels[offset + 3];
+    return sum;
+  }, { r: 0, g: 0, b: 0, a: 0 });
+  for (const channel of ['r', 'g', 'b', 'a']) background[channel] /= corners.length;
+  const transparentBackground = background.a < 48;
+
+  let minX = width, minY = height, maxX = -1, maxY = -1;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = ((y * width) + x) * 4;
+      if (pixels[offset + 3] < 24) continue;
+      let artwork = transparentBackground;
+      if (!transparentBackground) {
+        const distance = Math.abs(pixels[offset] - background.r)
+          + Math.abs(pixels[offset + 1] - background.g)
+          + Math.abs(pixels[offset + 2] - background.b);
+        artwork = distance > 42;
+      }
+      if (!artwork) continue;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+
+  if (maxX < minX || maxY < minY) return { left: 0, top: 0, right: 1, bottom: 1 };
+
+  const artworkWidth = maxX - minX + 1;
+  const artworkHeight = maxY - minY + 1;
+  const padX = Math.max(2, Math.ceil(artworkWidth * 0.025));
+  const padY = Math.max(2, Math.ceil(artworkHeight * 0.02));
+  minX = Math.max(0, minX - padX);
+  minY = Math.max(0, minY - padY);
+  maxX = Math.min(width - 1, maxX + padX);
+  maxY = Math.min(height - 1, maxY + padY);
+
+  return {
+    left: minX / width,
+    top: minY / height,
+    right: (maxX + 1) / width,
+    bottom: (maxY + 1) / height,
+  };
+}
+
+function paintCandidateLeaderArtwork(figure, image, canvas, bounds) {
+  if (!figure.isConnected || !image.naturalWidth || !image.naturalHeight) return;
+  const boxWidth = figure.clientWidth;
+  const boxHeight = figure.clientHeight;
+  if (!boxWidth || !boxHeight) return;
+
+  const sourceX = bounds.left * image.naturalWidth;
+  const sourceY = bounds.top * image.naturalHeight;
+  const sourceWidth = (bounds.right - bounds.left) * image.naturalWidth;
+  const sourceHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
+  if (!sourceWidth || !sourceHeight) return;
+
+  const rasterScale = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
+  canvas.width = Math.max(1, Math.round(boxWidth * rasterScale));
+  canvas.height = Math.max(1, Math.round(boxHeight * rasterScale));
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+
+  const scale = Math.min(canvas.width / sourceWidth, canvas.height / sourceHeight);
+  const destinationWidth = sourceWidth * scale;
+  const destinationHeight = sourceHeight * scale;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    (canvas.width - destinationWidth) / 2,
+    (canvas.height - destinationHeight) / 2,
+    destinationWidth,
+    destinationHeight,
+  );
+}
+
+async function fitCandidateLeaderArtwork(figure, image, canvas) {
+  const bounds = await measureCandidateLeaderBounds(image);
+  const artworkWidth = (bounds.right - bounds.left) * image.naturalWidth;
+  const artworkHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
+  if (artworkWidth > 0 && artworkHeight > 0) {
+    figure.style.aspectRatio = `${artworkWidth} / ${artworkHeight}`;
+  }
+  candidateLeaderArtwork.set(figure, { image, canvas, bounds });
+  paintCandidateLeaderArtwork(figure, image, canvas, bounds);
+  figure.dataset.leaderArtworkFitted = 'true';
+}
+
+function buildCandidateLeaderFigure(name, src) {
+  const figure = document.createElement('figure');
+  figure.className = 'candidate-leader-figure';
+
+  const image = document.createElement('img');
+  image.className = 'candidate-leader-art-source';
+  image.src = src;
+  image.alt = `${name} Leader woodcut`;
+  image.loading = 'eager';
+  image.decoding = 'async';
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'candidate-leader-art-canvas';
+  canvas.setAttribute('aria-hidden', 'true');
+
+  figure.append(image, canvas);
+  return { figure, image, canvas };
+}
+
+function buildCandidateLeaderProfile(name, src) {
+  const heading = [...content.querySelectorAll(':scope > h3')]
+    .find(candidate => headingLabel(candidate) === name);
+  if (!heading || heading.closest('.candidate-leader-profile')) return;
+
+  const profile = document.createElement('section');
+  profile.className = 'candidate-leader-profile';
+  profile.dataset.leaderProfile = name;
+  heading.before(profile);
+
+  let node = heading;
+  while (node && (node === heading || !['H2', 'H3'].includes(node.tagName))) {
+    const next = node.nextElementSibling;
+    profile.append(node);
+    node = next;
+  }
+
+  heading.classList.add('candidate-leader-name');
+
+  const playstyle = [...profile.children]
+    .find(element => element.tagName === 'P' && /^Playstyle:/i.test(element.textContent.trim()));
+  const ability = [...profile.children]
+    .find(element => /^(UL|OL)$/.test(element.tagName));
+
+  const hero = document.createElement('div');
+  hero.className = 'candidate-leader-hero';
+  const identity = document.createElement('div');
+  identity.className = 'candidate-leader-identity';
+  if (playstyle) {
+    playstyle.classList.add('candidate-leader-playstyle');
+    identity.append(playstyle);
+  }
+  if (ability) {
+    ability.classList.add('candidate-leader-ability');
+    identity.append(ability);
+  }
+
+  const artwork = buildCandidateLeaderFigure(name, src);
+  hero.append(artwork.figure, identity);
+  heading.insertAdjacentElement('afterend', hero);
+  fitCandidateLeaderArtwork(artwork.figure, artwork.image, artwork.canvas);
+}
+
 function decorateFactionGuide(factionId) {
   const asset = RULES_PUBLICATION_ASSETS.factions[factionId];
   if (!asset) return;
@@ -133,11 +314,9 @@ function decorateFactionGuide(factionId) {
     .find(heading => headingLabel(heading) === `${asset.name} Guide`);
   applyFactionSymbol(title, factionId);
 
-  if (content.querySelector(`[data-leader-portrait-gallery="${asset.name}"]`)) return;
-  const leadersHeading = [...content.querySelectorAll('h2')]
-    .find(heading => /(?:^|\s)Your Leaders$/.test(headingLabel(heading).replace(/^\d+\.\s*/, '')));
-  if (!leadersHeading) return;
-  leadersHeading.insertAdjacentElement('afterend', buildGallery(asset.name, asset.leaders, { candidate: true }));
+  for (const leader of asset.leaders) {
+    buildCandidateLeaderProfile(leader.name, leader.publicUrl);
+  }
 }
 
 function clearInjectedPublicationAssets() {
@@ -181,6 +360,16 @@ function inferredRenderContext() {
     document: mode === 'candidate' ? (url.searchParams.get('doc') || 'player-guide') : 'released-rulebook',
   };
 }
+
+window.addEventListener('resize', () => {
+  for (const [figure, entry] of candidateLeaderArtwork) {
+    if (!figure.isConnected) {
+      candidateLeaderArtwork.delete(figure);
+      continue;
+    }
+    paintCandidateLeaderArtwork(figure, entry.image, entry.canvas, entry.bounds);
+  }
+});
 
 if (content) {
   const observer = new MutationObserver(() => {

@@ -1,12 +1,12 @@
 const content = document.querySelector('[data-rulebook-content]');
 
 const FACTIONS = Object.freeze({
-  military: Object.freeze({ name: 'Military', color: '#8f1f25', symbol: 'url("/images/faction-symbols/military.svg")' }),
-  diplomats: Object.freeze({ name: 'Diplomats', color: '#244b8f', symbol: 'url("/images/faction-symbols/diplomats.svg")' }),
-  financiers: Object.freeze({ name: 'Financiers', color: '#276744', symbol: 'url("/images/faction-symbols/financiers.svg")' }),
-  intelligence: Object.freeze({ name: 'Intelligence', color: '#34373b', symbol: 'url("/images/faction-symbols/intelligence.svg")' }),
-  mystics: Object.freeze({ name: 'Mystics', color: '#603d78', symbol: 'url("/images/faction-symbols/mystics.svg")' }),
-  inquisition: Object.freeze({ name: 'Inquisition', color: '#9a6e21', symbol: 'url("/images/faction-symbols/inquisition.svg")' }),
+  military: Object.freeze({ name: 'Military', claim: 'Command the advance.', color: '#8f1f25', symbol: 'url("/images/faction-symbols/military.svg")' }),
+  diplomats: Object.freeze({ name: 'Diplomats', claim: 'Make the enemy agree.', color: '#244b8f', symbol: 'url("/images/faction-symbols/diplomats.svg")' }),
+  financiers: Object.freeze({ name: 'Financiers', claim: 'Own what others contest.', color: '#276744', symbol: 'url("/images/faction-symbols/financiers.svg")' }),
+  intelligence: Object.freeze({ name: 'Intelligence', claim: 'Know before they act.', color: '#34373b', symbol: 'url("/images/faction-symbols/intelligence.svg")' }),
+  mystics: Object.freeze({ name: 'Mystics', claim: 'Transform the hidden world.', color: '#603d78', symbol: 'url("/images/faction-symbols/mystics.svg")' }),
+  inquisition: Object.freeze({ name: 'Inquisition', claim: 'Condemn what cannot endure.', color: '#9a6e21', symbol: 'url("/images/faction-symbols/inquisition.svg")' }),
 });
 
 const COMPLETE_RULES_FACTION_TITLES = Object.freeze({
@@ -76,6 +76,7 @@ function buildMasthead(documentId) {
     masthead.classList.add('candidate-faction-masthead');
     masthead.dataset.faction = faction.name;
     masthead.style.setProperty('--candidate-accent', faction.color);
+    masthead.style.setProperty('--candidate-symbol', faction.symbol);
   }
 
   const wordmark = document.createElement('img');
@@ -109,6 +110,12 @@ function buildMasthead(documentId) {
   title.before(masthead);
   titleRow.append(title);
   masthead.append(wordmark, kicker, titleRow);
+  if (faction?.claim) {
+    const claim = document.createElement('p');
+    claim.className = 'candidate-masthead-claim';
+    claim.textContent = faction.claim;
+    masthead.append(claim);
+  }
   return masthead;
 }
 
@@ -216,6 +223,8 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   if (!content) return;
   content.classList.remove(...CANDIDATE_CLASSES);
   delete content.dataset.candidateDocument;
+  content.style.removeProperty('--candidate-accent');
+  content.style.removeProperty('--candidate-symbol');
 
   if (mode !== 'candidate') return;
   const normalizedDocument = documentId || 'player-guide';
@@ -223,6 +232,10 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   content.dataset.candidateDocument = normalizedDocument;
 
   const faction = factionForDocument(normalizedDocument);
+  if (faction) {
+    content.style.setProperty('--candidate-accent', faction.color);
+    content.style.setProperty('--candidate-symbol', faction.symbol);
+  }
   if (normalizedDocument === 'player-guide') content.classList.add('candidate-player-guide');
   else if (normalizedDocument === 'complete-rules') content.classList.add('candidate-complete-rules');
   else if (faction) content.classList.add('candidate-faction-guide');

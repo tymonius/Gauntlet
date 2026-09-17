@@ -1,0 +1,51 @@
+name: Build v0.7.2 browser rulebook review
+
+on:
+  pull_request:
+    paths:
+      - 'legacy/rulebook-browser/**'
+      - 'packages/rules/**'
+      - 'config/publication-boundary.json'
+      - 'scripts/render-v072-browser-rulebooks.mjs'
+      - 'scripts/stage-pages-publication.mjs'
+      - '.github/workflows/render-v072-browser-rulebooks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v072-browser-rulebook-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-browser-rulebooks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out publication sources
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JavaScript dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Check Browser Rulebook review renderer
+        run: node --check scripts/render-v072-browser-rulebooks.mjs
+
+      - name: Render desktop and mobile review surfaces
+        run: node scripts/render-v072-browser-rulebooks.mjs
+
+      - name: Upload Browser Rulebook review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v0.7.2-browser-rulebook-review
+          path: /tmp/v072-browser-rulebook-review/**
+          if-no-files-found: error
