@@ -260,8 +260,7 @@ function buildCandidateLeaderFigure(name, src) {
   canvas.setAttribute('aria-hidden', 'true');
 
   figure.append(image, canvas);
-  fitCandidateLeaderArtwork(figure, image, canvas);
-  return figure;
+  return { figure, image, canvas };
 }
 
 function buildCandidateLeaderProfile(name, src) {
@@ -301,8 +300,10 @@ function buildCandidateLeaderProfile(name, src) {
     identity.append(ability);
   }
 
-  hero.append(buildCandidateLeaderFigure(name, src), identity);
+  const artwork = buildCandidateLeaderFigure(name, src);
+  hero.append(artwork.figure, identity);
   heading.insertAdjacentElement('afterend', hero);
+  fitCandidateLeaderArtwork(artwork.figure, artwork.image, artwork.canvas);
 }
 
 function decorateFactionGuide(factionId) {
