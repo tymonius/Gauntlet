@@ -26,7 +26,7 @@ function sources(cardTitle, rulebookTitle, rulebookExcerpt) {
 
 describe("v0.7.1 Gate 2 r8 named-card conflict discipline", () => {
   test("pins the current behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260915-14");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260916-15");
   });
 
   test("does not equate compatible card and Rulebook coverage with a conflict", () => {

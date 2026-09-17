@@ -1,6 +1,6 @@
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
-export const QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v1";
+export const QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2";
 
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const MAX_REQUIRED_CRITERIA = 16;
@@ -30,7 +30,7 @@ Semantic evaluation rules:
 3. Do not mark a proposition missing merely because the answer adds harmless grammar such as "your", "their", "normal", or a possessive, unless that addition changes the rule.
 4. Do not infer an unstated proposition from topical similarity. The candidate must actually communicate the required rule.
 5. A concise answer may satisfy a proposition without reproducing its rationale.
-6. List an extra material claim only when the candidate asserts an additional gameplay rule, permission, prohibition, timing, zone, cost, quantity, trigger, ownership/control rule, or outcome that is not already equivalent to or logically contained in a supplied proposition. Do not list restatements, rhetorical explanation, or non-gameplay prose.
+6. List an extra material claim only when the candidate asserts an additional gameplay rule, permission, prohibition, timing, zone, cost, quantity, trigger, ownership/control rule, or outcome that is not already equivalent to or logically contained in a supplied proposition. Do not list restatements, rhetorical explanation, or non-gameplay prose. Extra material claims are telemetry only: because the cited rules authority is not supplied to you, do not assume an extra claim is unsupported merely because it falls outside the benchmark propositions.
 7. Evaluate only the supplied candidate answer. Source selection, ruling classification, citations, style, and infrastructure are graded separately.
 
 Return only the required JSON object.`;
@@ -247,9 +247,6 @@ export function deriveSemanticVerdict(expected, modelResult) {
   const extraMaterialClaims = Array.isArray(modelResult?.extra_material_claims)
     ? modelResult.extra_material_claims.filter((item) => String(item?.claim || "").trim())
     : [];
-  for (const item of extraMaterialClaims) {
-    reviewReasons.push(`extra material claim: ${String(item.claim).trim()}`);
-  }
   for (const issue of contractIssues) reviewReasons.push(`evaluator contract: ${issue}`);
 
   const verdict = hardFailures.length

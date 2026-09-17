@@ -34,7 +34,14 @@ const QUERY_ALIASES = {
   rout: ["after you win", "additional battle", "order"],
   action: ["action opportunity", "action effect"],
   asset: ["asset bank", "banked asset"],
-  win: ["victory", "last stand", "run the gauntlet"]
+  win: ["victory", "last stand", "run the gauntlet"],
+  transmute: ["transmutation"],
+  transmuted: ["transmutation"],
+  transmuting: ["transmutation"],
+  condemn: ["condemnation"],
+  condemns: ["condemnation"],
+  condemned: ["condemnation"],
+  condemning: ["condemnation"]
 };
 
 const QUERY_PHRASE_ALIASES = [
@@ -453,6 +460,7 @@ function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, 
 
   const rawTitle = stripKindPrefix(title);
   if (rawTitle.length > 2 && normalizedQuery.includes(rawTitle)) score += 95;
+  // Only boost single-word titles introduced by alias expansion; boosting literal query tokens destabilizes established retrieval ordering.\n  if (rawTitle.length > 4 && !rawTitle.includes(" ") && queryTokens.includes(rawTitle) && !baseQueryTokens.includes(rawTitle)) score += 80;
   if (heading.length > 2 && normalizedQuery.includes(heading)) score += 90;
 
   for (const token of queryTokens) {
