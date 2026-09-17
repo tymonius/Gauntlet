@@ -131,26 +131,28 @@
   height: 3.78in;
   float: none;
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   overflow: hidden;
   border-bottom: 2px solid #333;
+  background-image: var(--leader-art);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: auto 112%;
+  mix-blend-mode: multiply;
 }
 
-.leader-page .page-flow .leader-woodcut-wrap img {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
+/* The source <img> remains in the DOM for accessibility/load verification, but
+   the plate itself is painted as a background so enlarging/cropping the art does
+   not create scrollable overflow inside the figure. */
+.leader-page .page-flow .leader-woodcut-wrap img.leader-art-source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  max-width: 1px;
+  max-height: 1px;
   margin: 0;
-  object-fit: contain;
-  object-position: center;
-  transform: scale(1.18);
-  transform-origin: center center;
-  filter: none;
-  mix-blend-mode: multiply;
-  opacity: 1;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .leader-page .leader-identity-column {
