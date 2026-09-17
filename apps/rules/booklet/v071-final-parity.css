@@ -110,6 +110,8 @@
  * source region into a high-resolution publication canvas. The hero row uses
  * as much available page height as the artwork needs to fill the left column
  * without clipping, while the identity column occupies that same height.
+ * Identity content stays top-packed; any residual whitespace belongs below the
+ * ability panel rather than being inserted between the playstyle and ability.
  * ---------------------------------------------------------------------- */
 .leader-page .leader-title-row {
   margin-bottom: .07in;
@@ -181,7 +183,7 @@
 
 .leader-page .leader-identity-column > ul,
 .leader-page .leader-identity-column > ol {
-  margin: auto 0 0;
+  margin: .10in 0 0;
   padding: .105in .09in .105in .22in;
   border-left: 3px solid var(--page-accent);
   background: #efe5d4;
