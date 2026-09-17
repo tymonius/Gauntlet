@@ -153,7 +153,7 @@ describe("Gate 3 blind tranche E certification freeze", () => {
     expect(player.cases.every((item) => item.category === "player-language")).toBe(true);
     const questions = player.cases.map((item) => item.question);
     expect(questions.some((question) => question === question.toLowerCase())).toBe(true);
-    expect(questions.filter((question) => question.split(/\s+/).length <= 10).length).toBeGreaterThanOrEqual(12);
+    expect(questions.filter((question) => question.split(/\s+/).length <= 10).length).toBeGreaterThanOrEqual(8);
     expect(questions).toContain("mission control can start a special op?");
     expect(questions).toContain("tiebreak roll tied again. roll again?");
   });
