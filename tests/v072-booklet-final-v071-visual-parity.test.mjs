@@ -44,7 +44,8 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
 
     // Dedicated Leader pages use an explicit hero/identity block. Publication
     // fitting measures visible ink rather than treating whitespace in the PNG
-    // canvas as artwork, then balances the two columns to the same hero height.
+    // canvas as artwork, paints that crop into a bounded high-resolution canvas,
+    // and balances the two columns to the same hero height.
     expect(finalCss).toContain('.leader-page .leader-hero-layout');
     expect(finalCss).toContain('grid-template-columns: 2.55in minmax(0, 1fr)');
     expect(finalCss).toContain('align-items: stretch');
@@ -52,7 +53,7 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(finalCss).toContain('position: relative');
     expect(finalCss).toContain('overflow: hidden');
     expect(finalCss).toContain('img.leader-art-source');
-    expect(finalCss).toContain('max-width: none');
+    expect(finalCss).toContain('.leader-page .leader-art-canvas');
     expect(finalCss).toContain('display: flex');
     expect(finalCss).toContain('flex-direction: column');
     expect(finalCss).toContain('margin: auto 0 0');
@@ -60,7 +61,9 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(refinements).toContain('getImageData');
     expect(refinements).toContain('desiredHeroHeight');
     expect(refinements).toContain('flow.clientHeight - flow.scrollHeight');
-    expect(refinements).toContain('positionLeaderArtwork');
+    expect(refinements).toContain('paintLeaderArtwork');
+    expect(refinements).toContain('const rasterScale = 4');
+    expect(refinements).toContain("artworkCanvas.className = 'leader-art-canvas'");
     expect(refinements).toContain("page.dataset.leaderArtworkFitted = 'true'");
     expect(refinements).toContain("hero.className = 'leader-hero-layout'");
     expect(refinements).toContain("identity.className = 'leader-identity-column'");
