@@ -83,19 +83,19 @@
 }
 
 /*
- * The modular Faction Guides give each Leader an entire page. Keep the same
- * production woodcut treatment but use the available one-Leader composition
- * rather than the undersized first-pass float.
+ * The modular Faction Guides give each Leader an entire page. Preserve the
+ * production woodcut treatment, but scale the plate to use the page rather than
+ * leaving the large dead field produced by the first modular adaptation.
  */
 .leader-woodcut-wrap {
-  width: 2.28in;
-  height: 3.05in;
-  margin: 2px .22in .12in 0;
+  width: 2.62in;
+  height: 3.85in;
+  margin: 2px .20in .12in 0;
 }
 .page-flow .leader-woodcut-wrap img {
   width: 100%;
   height: 100%;
-  max-height: 3.05in;
+  max-height: 3.85in;
   object-fit: contain;
   object-position: center bottom;
   filter: none;
@@ -132,6 +132,12 @@
   transform-origin: top left;
   background: transparent;
   overflow: hidden;
+}
+.booklet-card-marker {
+  opacity: 0;
+}
+.booklet-card-anatomy-guide.markers-positioned .booklet-card-marker {
+  opacity: 1;
 }
 
 /*
