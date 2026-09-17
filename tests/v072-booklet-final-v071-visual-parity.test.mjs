@@ -2,10 +2,11 @@ import { readFile, stat } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
-  it('uses the released v0.7.1 publication treatments instead of reconstructing them', async () => {
+  it('uses released publication figures and deliberate modular page composition', async () => {
     const css = await readFile('apps/rules/booklet/v071-publication.css', 'utf8');
     const finalCss = await readFile('apps/rules/booklet/v071-final-parity.css', 'utf8');
     const html = await readFile('apps/rules/booklet/index.html', 'utf8');
+    const refinements = await readFile('apps/rules/booklet/publication-layout-refinements.js', 'utf8');
     const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const playerGuide = await readFile('packages/rules/player-guide/player-guide.md', 'utf8');
 
@@ -22,7 +23,7 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(css).toContain('.back-cover');
     expect(css).toContain('background: #fbf7ee !important');
 
-    // The exact final v0.7.1 Card Anatomy and Arcane figures are publication assets.
+    // Exact final v0.7.1 Card Anatomy and Arcane figures are publication assets.
     const anatomyPath = 'apps/rules/booklet/assets/Gauntlet_v0.7.1_Card_Anatomy.png';
     const arcanePath = 'apps/rules/booklet/assets/Gauntlet_v0.7.1_Arcane_Trait_Mark.png';
     expect((await stat(anatomyPath)).size).toBeGreaterThan(1000000);
@@ -32,22 +33,31 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(finalCss).toContain('grid-template-columns: 2.30in minmax(0, 1fr)');
     expect(finalCss).toContain('font-size: 8.15pt');
     expect(finalCss).toContain('height: .58in');
-    expect(finalCss).toContain('.booklet-card-marker');
     expect(finalCss).toContain('display: none !important');
 
-    // One-Leader modular pages use the dedicated page, not the old undersized float.
-    expect(finalCss).toContain('width: 2.82in');
-    expect(finalCss).toContain('height: 5.20in');
-    expect(finalCss).toContain('max-height: 5.20in');
+    // Arcane is relocated after the complete Effect headings section, before Assets.
+    expect(html).toContain('./publication-layout-refinements.js');
+    expect(refinements).toContain("/^Effect headings$/i");
+    expect(refinements).toContain("/^Assets$/i");
+    expect(refinements).toContain("assetsBlock.parentElement.insertBefore(callout, assetsBlock)");
+    expect(refinements).toContain("booklet-arcane-relocated");
 
-    // The final parity layer must load last so inherited historical values cannot
-    // override the released figures or the one-Leader-per-page adaptation.
+    // Dedicated Leader pages use an explicit hero/identity block rather than float wrapping.
+    expect(finalCss).toContain('.leader-page .leader-hero-layout');
+    expect(finalCss).toContain('grid-template-columns: 2.55in minmax(0, 1fr)');
+    expect(finalCss).toContain('height: 3.78in');
+    expect(finalCss).toContain('transform: scale(1.18)');
+    expect(refinements).toContain("hero.className = 'leader-hero-layout'");
+    expect(refinements).toContain("identity.className = 'leader-identity-column'");
+    expect(finalCss).toContain('There is no float boundary');
+
+    // The final parity layer must load last so inherited historical values cannot override it.
     expect(html.indexOf('./v071-final-parity.css')).toBeGreaterThan(html.indexOf('./v071-publication.css'));
 
-    // The hidden live Card Anatomy renderer remains only as a build-readiness fallback.
-    expect(html).toContain('./card-anatomy-positioning.js');
+    // The render adapter waits until post-pagination refinements complete.
     expect(adapter).toContain("document.body.dataset.bookletMarkersReady === 'true'");
-    expect(finalCss).toContain('clip-path: inset(50%)');
+    expect(refinements).toContain("document.body.dataset.bookletMarkersReady = 'true'");
+    expect(refinements).toContain("document.body.dataset.bookletLayoutRefined = 'true'");
 
     // Opening copy describes the game directly instead of using the weak "game about" construction.
     expect(playerGuide).toContain('Gauntlet is a two-player tactical card-and-territory game played across a line of six Territories.');
