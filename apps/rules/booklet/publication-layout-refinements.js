@@ -153,30 +153,48 @@
     };
   }
 
-  function positionLeaderArtwork(image, figure, bounds) {
+  function paintLeaderArtwork(image, figure, canvas, bounds) {
     const boxWidth = figure.clientWidth;
     const boxHeight = figure.clientHeight;
-    const artworkWidth = (bounds.right - bounds.left) * image.naturalWidth;
-    const artworkHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
-    if (!boxWidth || !boxHeight || !artworkWidth || !artworkHeight) {
+    const sourceX = bounds.left * image.naturalWidth;
+    const sourceY = bounds.top * image.naturalHeight;
+    const sourceWidth = (bounds.right - bounds.left) * image.naturalWidth;
+    const sourceHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
+    if (!boxWidth || !boxHeight || !sourceWidth || !sourceHeight) {
       fail(`Could not size Leader woodcut ${image.getAttribute('src') || '?'}.`);
     }
 
-    const scale = Math.min(boxWidth / artworkWidth, boxHeight / artworkHeight);
-    const renderedWidth = image.naturalWidth * scale;
-    const renderedHeight = image.naturalHeight * scale;
-    const visibleWidth = artworkWidth * scale;
-    const visibleHeight = artworkHeight * scale;
-    const left = ((boxWidth - visibleWidth) / 2) - (bounds.left * renderedWidth);
-    const top = ((boxHeight - visibleHeight) / 2) - (bounds.top * renderedHeight);
+    // Paint the fitted crop into a high-resolution canvas whose CSS box never
+    // exceeds the publication column. This preserves source detail without
+    // making the figure itself report horizontal DOM overflow to preflight.
+    const rasterScale = 4;
+    canvas.width = Math.max(1, Math.round(boxWidth * rasterScale));
+    canvas.height = Math.max(1, Math.round(boxHeight * rasterScale));
+    const context = canvas.getContext('2d');
+    if (!context) fail('Could not create the Leader artwork publication canvas.');
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
 
-    image.style.width = `${renderedWidth}px`;
-    image.style.height = `${renderedHeight}px`;
-    image.style.left = `${left}px`;
-    image.style.top = `${top}px`;
+    const scale = Math.min(canvas.width / sourceWidth, canvas.height / sourceHeight);
+    const destinationWidth = sourceWidth * scale;
+    const destinationHeight = sourceHeight * scale;
+    const destinationX = (canvas.width - destinationWidth) / 2;
+    const destinationY = (canvas.height - destinationHeight) / 2;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(
+      image,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      destinationX,
+      destinationY,
+      destinationWidth,
+      destinationHeight,
+    );
   }
 
-  async function optimizeLeaderHero(page, flow, hero, figure, image, identity) {
+  async function optimizeLeaderHero(page, flow, hero, figure, image, canvas, identity) {
     const bounds = await measureLeaderArtworkBounds(image);
     const initialHeroHeight = hero.getBoundingClientRect().height;
     const columnWidth = figure.getBoundingClientRect().width;
@@ -201,7 +219,7 @@
 
     hero.style.height = `${targetHeroHeight}px`;
     figure.style.height = '100%';
-    positionLeaderArtwork(image, figure, bounds);
+    paintLeaderArtwork(image, figure, canvas, bounds);
     page.dataset.leaderArtworkFitted = 'true';
   }
 
@@ -225,8 +243,12 @@
       hero.className = 'leader-hero-layout';
       const identity = document.createElement('div');
       identity.className = 'leader-identity-column';
+      const artworkCanvas = document.createElement('canvas');
+      artworkCanvas.className = 'leader-art-canvas';
+      artworkCanvas.setAttribute('aria-hidden', 'true');
 
       image.classList.add('leader-art-source');
+      figure.append(artworkCanvas);
       figure.remove();
       playstyle.remove();
       ability.remove();
@@ -234,7 +256,7 @@
       hero.append(figure, identity);
       titleRow.insertAdjacentElement('afterend', hero);
       page.classList.add('leader-layout-refined');
-      optimizations.push(optimizeLeaderHero(page, flow, hero, figure, image, identity));
+      optimizations.push(optimizeLeaderHero(page, flow, hero, figure, image, artworkCanvas, identity));
     }
     await Promise.all(optimizations);
   }
