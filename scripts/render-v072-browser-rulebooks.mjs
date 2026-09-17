@@ -183,9 +183,12 @@ try {
 
         if (document.faction) {
           const leaders = page.locator('.candidate-leader-profile');
-          await leaders.screenshot({
-            path: path.join(directory, `${document.id}-leaders.png`),
-          });
+          const leaderCount = await leaders.count();
+          for (let index = 0; index < leaderCount; index += 1) {
+            await leaders.nth(index).screenshot({
+              path: path.join(directory, `${document.id}-leader-${index + 1}.png`),
+            });
+          }
         }
 
         const anatomy = page.locator('.card-anatomy-guide');
