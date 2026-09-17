@@ -31,6 +31,28 @@ export function cleanPublicFilePath(publicPath) {
   return value;
 }
 
+function normalizedRelativePath(value) {
+  return String(value || '')
+    .replaceAll('\\', '/')
+    .replace(/^\.\//, '')
+    .replace(/^\/+|\/+$/g, '');
+}
+
+function excludedSourceSubpaths(mapping) {
+  return (mapping.excludeSourceSubpaths || []).map(value => {
+    const normalized = normalizedRelativePath(value);
+    if (!normalized || normalized === '.' || normalized.includes('..')) {
+      throw new Error(`Invalid excluded source subpath for ${mapping.source}: ${value}`);
+    }
+    return normalized;
+  });
+}
+
+function sourcePathIsExcluded(relativePath, mapping) {
+  const normalized = normalizedRelativePath(relativePath);
+  return excludedSourceSubpaths(mapping).some(excluded => normalized === excluded || normalized.startsWith(`${excluded}/`));
+}
+
 export function publicPathTarget(destinationRoot, publicPath) {
   const clean = cleanPublicPath(publicPath).replace(/^\/+|\/+$/g, '');
   return clean ? path.join(destinationRoot, clean) : destinationRoot;
@@ -61,7 +83,10 @@ export function materializePublicRoutes({
     }
     if (cleanTargets) fs.rmSync(destination, { recursive: true, force: true });
     fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.cpSync(source, destination, { recursive: true });
+    fs.cpSync(source, destination, {
+      recursive: true,
+      filter: sourcePath => !sourcePathIsExcluded(path.relative(source, sourcePath), route),
+    });
     materialized.push(route.publicPath);
   }
   return materialized;
@@ -107,6 +132,7 @@ export function sourcePathForPublicPath(contract, urlPath) {
     const prefix = mapping.publicPath.replace(/^\/+/, '');
     if (clean === prefix.replace(/\/$/, '') || clean.startsWith(prefix)) {
       const remainder = clean.slice(prefix.length);
+      if (sourcePathIsExcluded(remainder, mapping)) return clean;
       return path.join(mapping.source, remainder);
     }
   }
@@ -120,6 +146,8 @@ export function discoverIndexRoutes(root, mapping) {
   function visit(directory) {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const target = path.join(directory, entry.name);
+      const relativeTarget = path.relative(sourceRoot, target).replaceAll('\\', '/');
+      if (sourcePathIsExcluded(relativeTarget, mapping)) continue;
       if (entry.isDirectory()) visit(target);
       else if (entry.isFile() && entry.name === 'index.html') {
         const relativeDirectory = path.relative(sourceRoot, path.dirname(target)).replaceAll('\\', '/');
