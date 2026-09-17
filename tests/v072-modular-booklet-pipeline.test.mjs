@@ -71,40 +71,74 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(html).toContain('family=Inter');
     expect(html).toContain('./v071-parity.css');
     expect(html).toContain('./v071-publication.css');
+    expect(html.indexOf('./v071-parity.css')).toBeGreaterThan(html.indexOf('./booklet.css'));
     expect(html.indexOf('./v071-publication.css')).toBeGreaterThan(html.indexOf('./v071-parity.css'));
     expect(html).not.toContain('Start</');
     expect(html).not.toContain('Playtest</');
 
+    /* The base compositor may contain implementation defaults, but the loaded
+       compatibility layers are the publication authority. */
     expect(css).toContain('@page { size: 5.5in 8.5in; margin: 0; }');
-    expect(css).toContain('--body: "adobe-caslon-pro"');
-    expect(css).toContain('--heritage: "p22-1722-pro"');
-    expect(css).toContain('--flavor: "p22-declaration-pro"');
-    expect(css).toContain('--ui: Inter');
-    expect(css).toContain('.page.left .page-inner');
-    expect(css).toContain('.chapter-title-row');
-    expect(css).toContain('.leader-page .page-flow');
     expect(css).toContain('.booklet-card-anatomy-guide');
     expect(css).toContain('.booklet-arcane-example');
     expect(css).toContain('.digital-tool img');
-    expect(css).toContain('background: #fff;');
-    expect(css).toContain('.back-band');
-    expect(css).toContain('background: var(--page-accent);');
 
+    /* PR #357 + v0.7.1 production tokens and page geometry. */
     expect(parityCss).toContain('DESIGN CONTRACT');
     expect(parityCss).toContain('approved production Rulebook is the visual authority');
     expect(parityCss).toContain('PR #357');
+    expect(parityCss).toContain('rulebook-production/production.css');
+    expect(parityCss).toContain('rulebook-production/publication-corrections.css');
+    expect(parityCss).toContain('--paper: #f5f2ea');
+    expect(parityCss).toContain('--paper-deep: #e7e3da');
+    expect(parityCss).toContain('--body: "adobe-caslon-pro"');
+    expect(parityCss).toContain('--heritage: "p22-1722-pro"');
+    expect(parityCss).toContain('--flavor: "p22-declaration-pro"');
+    expect(parityCss).toContain('--ui: Inter');
+    expect(parityCss).toContain('padding: .44in .46in .46in .58in');
+    expect(parityCss).toContain('padding: .44in .58in .46in .46in');
+    expect(parityCss).toContain('font-size: 9pt');
+
+    /* Running furniture, contents, and chapter hierarchy inherit production. */
+    expect(parityCss).toContain('bottom: .235in');
+    expect(parityCss).toContain('grid-template-columns: 14px 1fr auto');
+    expect(parityCss).toContain('grid-template-columns: 42px minmax(0, 1fr)');
+    expect(parityCss).toContain('font-variant-numeric: lining-nums tabular-nums');
     expect(parityCss).toContain('font-size: 27pt');
+    expect(parityCss).toContain('font-size: 34pt');
+    expect(parityCss).toContain('font-size: 42pt');
+
+    /* Artwork and Leader treatment match the old physical publication scale. */
+    expect(parityCss).toContain('contrast(1.32) brightness(1.12)');
+    expect(parityCss).toContain('width: 1.87in');
     expect(parityCss).toContain('max-height: 2.4in');
+    expect(parityCss).toContain('border-bottom: 2px solid #333');
+    expect(parityCss).toContain('.faction-symbol-badge');
+    expect(parityCss).toContain('display: none !important');
+
+    /* Back cover is the approved PR #357 geometry, not a new compact design. */
+    expect(parityCss).toContain('.back-cover .page-inner');
     expect(parityCss).toContain('padding: .48in');
     expect(parityCss).toContain('min-height: 2.12in');
+    expect(parityCss).toContain('margin: -.48in -.48in .42in');
+    expect(parityCss).toContain('padding: .44in .48in .34in');
     expect(parityCss).toContain('font-size: 25pt');
 
+    /* PR #1198 is the exact v0.7.1 faction watermark layer. */
     expect(v071PublicationCss).toContain('PR #1198');
     expect(v071PublicationCss).toContain('opacity: .05');
     expect(v071PublicationCss).toContain('mask-size: 2.55in 2.55in');
     expect(v071PublicationCss).toContain('right -.44in bottom -.48in');
     expect(v071PublicationCss).toContain('left -.44in bottom -.48in');
     expect(v071PublicationCss).toContain('.faction-page:not(.faction-opener)::after');
+
+    /* Only genuinely new surfaces keep purpose-built modular composition. */
+    expect(parityCss).toContain('genuinely new instructional surfaces');
+    expect(parityCss).toContain('.booklet-card-frame');
+    expect(parityCss).toContain('width: 2.02in');
+    expect(parityCss).toContain('height: 2.83in');
+    expect(parityCss).toContain('.booklet-arcane-frame');
+    expect(parityCss).toContain('transform: none');
 
     expect(client).toContain('createPage');
     expect(client).toContain('newContinuationPage');
