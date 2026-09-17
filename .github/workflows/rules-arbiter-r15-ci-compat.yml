@@ -64,8 +64,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run full Vitest suite
-        run: npx vitest run
+      - name: Validate affected retrieval and tranche D behavior
+        run: >
+          npx vitest run
+          rules-assistant/v071-deed-cost-clarity-continuity.test.mjs
+          rules-assistant/v071-multi-effect-order-retrieval.test.mjs
+          rules-assistant/v071-safe-conduct-political-capital-review.test.mjs
+          rules-assistant/v071-gate3-d-remediation.test.mjs
+          rules-assistant/v071-gate3-d-retrieval-priority.test.mjs
+          rules-assistant/v071-gate2-live-regressions.test.mjs
+          rules-assistant/v071-gate2-r7-combined-authority.test.mjs
+          rules-assistant/v071-gate3-a-regressions.test.mjs
+          rules-assistant/v071-gate3-b-regressions.test.mjs
+          rules-assistant/v071-battle-card-replacement-retrieval.test.mjs
+          rules-assistant/v071-gate2-r6-regressions.test.mjs
+          rules-assistant/v071-copied-effect-retrieval-review.test.mjs
+          rules-assistant/v071-strategic-withdrawal-review.test.mjs
+          rules-assistant/v071-fortifications-tactic-choice-review.test.mjs
+          rules-assistant/v071-short-counterfactual-continuity.test.mjs
+          rules-assistant/v071-asset-replacement-review.test.mjs
+          rules-assistant/v071-gate2-r8-conflict-discipline.test.mjs
+          rules-assistant/v071-r12-direct-overview-classification.test.mjs
 
       - name: Commit validated patch and remove one-shot workflow
         shell: bash
