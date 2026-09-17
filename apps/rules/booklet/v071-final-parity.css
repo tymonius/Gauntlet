@@ -105,14 +105,11 @@
 /* -------------------------------------------------------------------------
  * Leader pages — explicit publication composition.
  *
- * The previous modular treatment used a tall float. Because the source PNGs
- * include generous white fields, the visible figure occupied only part of that
- * float; prose then wrapped in a narrow column until the invisible float ended
- * and suddenly jumped to full width. This replaces that accidental behavior
- * with a deliberate hero area containing the woodcut and Leader identity,
- * followed by full-width explanatory prose. The woodcut itself is fit inside
- * the available hero height rather than zoomed and cropped, so the full figure
- * remains visible from top to bottom.
+ * The source woodcuts carry substantial unused canvas around the visible ink.
+ * The post-pagination refinement measures that ink and fits it to the column,
+ * cropping only empty source-canvas whitespace. The hero row then uses as much
+ * available page height as the artwork needs to fill the left column without
+ * clipping, while the identity column deliberately occupies the same height.
  * ---------------------------------------------------------------------- */
 .leader-page .leader-title-row {
   margin-bottom: .07in;
@@ -122,51 +119,55 @@
   display: grid;
   grid-template-columns: 2.55in minmax(0, 1fr);
   gap: .20in;
-  align-items: start;
-  min-height: 4.35in;
+  align-items: stretch;
+  min-height: 3.80in;
   margin: 0 0 .13in;
 }
 
 .leader-page .leader-woodcut-wrap {
+  position: relative;
   width: auto;
-  height: 4.35in;
+  height: 3.80in;
+  min-width: 0;
   float: none;
   margin: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  overflow: visible;
+  display: block;
+  overflow: hidden;
   border-bottom: 2px solid #333;
   background: none;
+  mix-blend-mode: multiply;
 }
 
-/* Keep the real production woodcut in flow and scale it to the largest size
-   that preserves the complete image. Bottom alignment keeps the figure planted
-   on the publication plate without sacrificing headgear, weapons, or feet. */
+/* The real source image is deliberately larger than the visible plate when its
+   source canvas contains blank margins. JavaScript positions it so the measured
+   artwork bounds — not the PNG canvas bounds — fill the available column while
+   every actual mark remains inside the frame. */
 .leader-page .page-flow .leader-woodcut-wrap img.leader-art-source {
-  position: static;
+  position: absolute;
   display: block;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 4.35in;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  left: 0;
+  top: 0;
   margin: 0;
   opacity: 1;
   pointer-events: auto;
-  object-fit: contain;
-  object-position: center bottom;
   filter: none;
   mix-blend-mode: multiply;
 }
 
 .leader-page .leader-identity-column {
-  align-self: start;
+  align-self: stretch;
   min-width: 0;
-  padding-top: .015in;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .leader-page .leader-identity-column .leader-playstyle {
-  margin: 0 0 .10in;
+  margin: 0;
   padding-bottom: .08in;
   border-bottom: 1px solid var(--line);
   font-size: 9pt;
@@ -175,7 +176,7 @@
 
 .leader-page .leader-identity-column > ul,
 .leader-page .leader-identity-column > ol {
-  margin: 0;
+  margin: auto 0 0;
   padding: .105in .09in .105in .22in;
   border-left: 3px solid var(--page-accent);
   background: #efe5d4;
