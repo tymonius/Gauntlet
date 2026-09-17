@@ -45,7 +45,8 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     // Dedicated Leader pages use an explicit hero/identity block. Publication
     // fitting measures visible ink rather than treating whitespace in the PNG
     // canvas as artwork, paints that crop into a bounded high-resolution canvas,
-    // and balances the two columns to the same hero height.
+    // and balances the two columns to the same hero height without forcing
+    // the ability panel down to the bottom of the identity column.
     expect(finalCss).toContain('.leader-page .leader-hero-layout');
     expect(finalCss).toContain('grid-template-columns: 2.55in minmax(0, 1fr)');
     expect(finalCss).toContain('align-items: stretch');
@@ -56,7 +57,8 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(finalCss).toContain('.leader-page .leader-art-canvas');
     expect(finalCss).toContain('display: flex');
     expect(finalCss).toContain('flex-direction: column');
-    expect(finalCss).toContain('margin: auto 0 0');
+    expect(finalCss).toContain('margin: .10in 0 0');
+    expect(finalCss).not.toContain('margin: auto 0 0');
     expect(refinements).toContain('measureLeaderArtworkBounds');
     expect(refinements).toContain('getImageData');
     expect(refinements).toContain('desiredHeroHeight');
