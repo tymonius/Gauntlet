@@ -52,6 +52,8 @@ describe('v0.7.2 modular booklet pipeline', () => {
     const renderer = await readFile('scripts/render-v072-modular-booklets.mjs', 'utf8');
     const html = await readFile('apps/rules/booklet/index.html', 'utf8');
     const css = await readFile('apps/rules/booklet/booklet.css', 'utf8');
+    const parityCss = await readFile('apps/rules/booklet/v071-parity.css', 'utf8');
+    const v071PublicationCss = await readFile('apps/rules/booklet/v071-publication.css', 'utf8');
     const client = await readFile('apps/rules/booklet/booklet.js', 'utf8');
     const validator = await readFile('scripts/validate-v072-modular-booklets.mjs', 'utf8');
     const workflow = await readFile('.github/workflows/build-v072-modular-booklets.yml', 'utf8');
@@ -67,6 +69,9 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(html).toContain('data-booklet-pages');
     expect(html).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(html).toContain('family=Inter');
+    expect(html).toContain('./v071-parity.css');
+    expect(html).toContain('./v071-publication.css');
+    expect(html.indexOf('./v071-publication.css')).toBeGreaterThan(html.indexOf('./v071-parity.css'));
     expect(html).not.toContain('Start</');
     expect(html).not.toContain('Playtest</');
 
@@ -77,7 +82,6 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(css).toContain('--ui: Inter');
     expect(css).toContain('.page.left .page-inner');
     expect(css).toContain('.chapter-title-row');
-    expect(css).toContain('.faction-page::before');
     expect(css).toContain('.leader-page .page-flow');
     expect(css).toContain('.booklet-card-anatomy-guide');
     expect(css).toContain('.booklet-arcane-example');
@@ -85,6 +89,14 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(css).toContain('background: #fff;');
     expect(css).toContain('.back-band');
     expect(css).toContain('background: var(--page-accent);');
+
+    expect(parityCss).toContain('v0.7.1 publication-parity corrections');
+    expect(v071PublicationCss).toContain('PR #1198');
+    expect(v071PublicationCss).toContain('opacity: .05');
+    expect(v071PublicationCss).toContain('mask-size: 2.55in 2.55in');
+    expect(v071PublicationCss).toContain('right -.44in bottom -.48in');
+    expect(v071PublicationCss).toContain('left -.44in bottom -.48in');
+    expect(v071PublicationCss).toContain('.faction-page:not(.faction-opener)::after');
 
     expect(client).toContain('createPage');
     expect(client).toContain('newContinuationPage');
