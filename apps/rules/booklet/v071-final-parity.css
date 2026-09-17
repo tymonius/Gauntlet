@@ -106,10 +106,10 @@
  * Leader pages — explicit publication composition.
  *
  * The source woodcuts carry substantial unused canvas around the visible ink.
- * The post-pagination refinement measures that ink and fits it to the column,
- * cropping only empty source-canvas whitespace. The hero row then uses as much
- * available page height as the artwork needs to fill the left column without
- * clipping, while the identity column deliberately occupies the same height.
+ * The post-pagination refinement measures that ink and paints only the useful
+ * source region into a high-resolution publication canvas. The hero row uses
+ * as much available page height as the artwork needs to fill the left column
+ * without clipping, while the identity column occupies that same height.
  * ---------------------------------------------------------------------- */
 .leader-page .leader-title-row {
   margin-bottom: .07in;
@@ -138,23 +138,28 @@
   mix-blend-mode: multiply;
 }
 
-/* The real source image is deliberately larger than the visible plate when its
-   source canvas contains blank margins. JavaScript positions it so the measured
-   artwork bounds — not the PNG canvas bounds — fill the available column while
-   every actual mark remains inside the frame. */
+/* The source image stays available for decoding and accessibility, but the
+   visible publication plate is the bounded canvas. This lets the compositor
+   discard empty PNG margins without creating scrollable/diagnostic overflow. */
 .leader-page .page-flow .leader-woodcut-wrap img.leader-art-source {
   position: absolute;
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: none;
-  max-height: none;
+  width: 1px;
+  height: 1px;
+  max-width: 1px;
+  max-height: 1px;
   left: 0;
   top: 0;
   margin: 0;
-  opacity: 1;
-  pointer-events: auto;
-  filter: none;
+  opacity: 0;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.leader-page .leader-art-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   mix-blend-mode: multiply;
 }
 
