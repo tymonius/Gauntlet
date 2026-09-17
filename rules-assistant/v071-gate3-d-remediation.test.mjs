@@ -6,7 +6,7 @@ import {
   shouldPromoteDirectEnumeratedProcedure,
   shouldPromoteNamedDirectAuthority
 } from "./r13-classification.js";
-import { buildAmbiguousReferentClarification } from "./worker-v071.js";
+import { augmentRetrievalForContext, buildAmbiguousReferentClarification } from "./worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
@@ -25,7 +25,8 @@ const corpus = buildRulesCorpus({
 });
 
 function titlesFor(query) {
-  return retrieveRules(corpus, query, { limit: 10, excerptLength: 1200 })
+  const retrieval = retrieveRules(corpus, query, { limit: 10, excerptLength: 1200 });
+  return augmentRetrievalForContext(corpus, query, [], retrieval)
     .map((source) => String(source.title || source.heading || ""));
 }
 
@@ -37,7 +38,7 @@ function clarification(question, history, retrieval) {
   return buildAmbiguousReferentClarification(question, history, retrieval);
 }
 
-describe("Gate 3 tranche D player-language retrieval regressions", () => {
+describe("Gate 3 tranche D player-language production retrieval regressions", () => {
   test("transmuted retrieves Transmutation authority", () => {
     const titles = titlesFor("i transmuted a card. do i get the text on the card too");
     expect(titles.some((title) => /Transmutation/i.test(title))).toBe(true);
