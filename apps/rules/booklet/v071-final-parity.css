@@ -5,7 +5,7 @@
  * that already exist in the released v0.7.1 rulebook. The frozen v0.7.1
  * Card Anatomy and Arcane figures are the rendering authority for those
  * instructional graphics. Leader pages keep the established woodcut language
- * but use the full one-Leader-per-page space provided by the modular guides.
+ * but use an explicit hero/identity composition instead of float wrapping.
  */
 
 /* -------------------------------------------------------------------------
@@ -69,10 +69,12 @@
 
 /* -------------------------------------------------------------------------
  * Arcane trait mark — use the exact final v0.7.1 production crop.
- * The frozen figure includes the intentional lower-edge fade.
+ * The frozen figure includes the intentional lower-edge fade. The DOM
+ * refinement pass moves this callout to the following page, after the complete
+ * Effect headings section and immediately before Assets.
  * ---------------------------------------------------------------------- */
 .booklet-arcane-example {
-  margin-top: .09in;
+  margin: .08in 0 .12in;
   padding: .075in .09in;
   grid-template-columns: 1.72in minmax(0, 1fr);
   gap: .13in;
@@ -101,46 +103,93 @@
 }
 
 /* -------------------------------------------------------------------------
- * Leader pages — the modular guides give each Leader a dedicated page.
- * Use that page. A tall, substantially larger floated plate lets the rules
- * text run beside the woodcut and then naturally expand to full width below it,
- * eliminating the dead lower half produced by the earlier small float.
+ * Leader pages — explicit publication composition.
+ *
+ * The previous modular treatment used a tall float. Because the source PNGs
+ * include generous white fields, the visible figure occupied only part of that
+ * float; prose then wrapped in a narrow column until the invisible float ended
+ * and suddenly jumped to full width. This replaces that accidental behavior
+ * with the same semantic structure as the approved proof: a deliberate hero
+ * area containing the woodcut and Leader identity, followed by full-width
+ * explanatory prose.
  * ---------------------------------------------------------------------- */
 .leader-page .leader-title-row {
-  margin-bottom: .08in;
+  margin-bottom: .07in;
 }
+
+.leader-page .leader-hero-layout {
+  display: grid;
+  grid-template-columns: 2.55in minmax(0, 1fr);
+  gap: .20in;
+  align-items: stretch;
+  min-height: 3.78in;
+  margin: 0 0 .13in;
+}
+
 .leader-page .leader-woodcut-wrap {
-  width: 2.82in;
-  height: 5.20in;
-  float: left;
-  margin: .02in .20in .10in 0;
+  width: auto;
+  height: 3.78in;
+  float: none;
+  margin: 0;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-bottom: 2px solid #333;
 }
+
 .leader-page .page-flow .leader-woodcut-wrap img {
   width: 100%;
   height: 100%;
   max-width: none;
-  max-height: 5.20in;
+  max-height: none;
   margin: 0;
   object-fit: contain;
-  object-position: center top;
+  object-position: center;
+  transform: scale(1.18);
+  transform-origin: center center;
   filter: none;
   mix-blend-mode: multiply;
   opacity: 1;
 }
-.leader-page .leader-playstyle {
-  margin-top: 0;
-  font-size: 8.9pt;
+
+.leader-page .leader-identity-column {
+  align-self: start;
+  min-width: 0;
+  padding-top: .015in;
+}
+
+.leader-page .leader-identity-column .leader-playstyle {
+  margin: 0 0 .10in;
+  padding-bottom: .08in;
+  border-bottom: 1px solid var(--line);
+  font-size: 9pt;
   line-height: 1.28;
 }
-.leader-page .page-flow > ul {
-  font-size: 8.65pt;
+
+.leader-page .leader-identity-column > ul,
+.leader-page .leader-identity-column > ol {
+  margin: 0;
+  padding: .105in .09in .105in .22in;
+  border-left: 3px solid var(--page-accent);
+  background: #efe5d4;
+  font-size: 8.35pt;
   line-height: 1.24;
 }
+
+.leader-page .leader-identity-column li {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+/* Explanatory commentary is intentionally full width below the hero block.
+   There is no float boundary and therefore no arbitrary column-width switch. */
 .leader-page .page-flow > p:not(.leader-playstyle) {
+  margin-bottom: .065in;
   font-size: 8.8pt;
-  line-height: 1.29;
+  line-height: 1.30;
+}
+
+.leader-page .page-flow::after {
+  content: none;
 }
