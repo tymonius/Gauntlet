@@ -8,9 +8,9 @@
 <!-- RULES-SECTION:welcome -->
 ## Welcome to Gauntlet
 
-Gauntlet is a two-player game about crossing a battlefield while stopping your opponent from doing the same.
+Gauntlet is a two-player tactical card-and-territory game played across a line of six Territories.
 
-You begin at opposite ends of a line of six Territories. On your turn, you can play cards, move toward or away from your opponent, and fight when you meet. Winning battles pushes your opponent back. Hold enemy ground long enough and you capture it.
+You begin at opposite ends of the battlefield. On your turn, you can play cards, move toward or away from your opponent, and fight when you meet. Winning battles pushes your opponent back. Hold enemy ground long enough and you capture it.
 
 Keep advancing until you **run the Gauntlet**: take control of the entire battlefield by capturing all of your opponent's Territories, or push your opponent beyond the battlefield, force them to make a **Last Stand**, and win the resulting battle.
 
