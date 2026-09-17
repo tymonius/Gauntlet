@@ -223,6 +223,8 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   if (!content) return;
   content.classList.remove(...CANDIDATE_CLASSES);
   delete content.dataset.candidateDocument;
+  content.style.removeProperty('--candidate-accent');
+  content.style.removeProperty('--candidate-symbol');
 
   if (mode !== 'candidate') return;
   const normalizedDocument = documentId || 'player-guide';
@@ -230,6 +232,10 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   content.dataset.candidateDocument = normalizedDocument;
 
   const faction = factionForDocument(normalizedDocument);
+  if (faction) {
+    content.style.setProperty('--candidate-accent', faction.color);
+    content.style.setProperty('--candidate-symbol', faction.symbol);
+  }
   if (normalizedDocument === 'player-guide') content.classList.add('candidate-player-guide');
   else if (normalizedDocument === 'complete-rules') content.classList.add('candidate-complete-rules');
   else if (faction) content.classList.add('candidate-faction-guide');
