@@ -6,6 +6,9 @@
    */
   document.body.dataset.bookletMarkersReady = 'false';
 
+  let finishing = false;
+  let finished = false;
+
   function normalizedText(node) {
     return (node?.textContent || '').replace(/\s+/g, ' ').trim();
   }
@@ -14,6 +17,10 @@
     document.body.dataset.bookletMarkersReady = 'error';
     document.body.dataset.bookletMarkersError = message;
     throw new Error(message);
+  }
+
+  function afterTwoFrames() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
   function relocateArcaneCallout() {
@@ -51,8 +58,156 @@
     }
   }
 
-  function rebuildLeaderPages() {
+  async function measureLeaderArtworkBounds(image) {
+    if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+      try {
+        await image.decode();
+      } catch {
+        fail(`Could not decode Leader woodcut ${image.getAttribute('src') || '?'}.`);
+      }
+    }
+
+    const naturalWidth = image.naturalWidth;
+    const naturalHeight = image.naturalHeight;
+    if (!naturalWidth || !naturalHeight) {
+      fail(`Leader woodcut ${image.getAttribute('src') || '?'} has no intrinsic dimensions.`);
+    }
+
+    // Measure a downsampled copy so even the largest source plates are cheap to
+    // inspect. We are finding the ink bounds, not modifying the source artwork.
+    const maxSample = 512;
+    const sampleScale = Math.min(1, maxSample / naturalWidth, maxSample / naturalHeight);
+    const width = Math.max(1, Math.round(naturalWidth * sampleScale));
+    const height = Math.max(1, Math.round(naturalHeight * sampleScale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) fail('Could not create the Leader artwork measurement canvas.');
+    context.drawImage(image, 0, 0, width, height);
+
+    const pixels = context.getImageData(0, 0, width, height).data;
+    const cornerOffsets = [
+      0,
+      (width - 1) * 4,
+      ((height - 1) * width) * 4,
+      ((height * width) - 1) * 4,
+    ];
+    const background = cornerOffsets.reduce((sum, offset) => {
+      sum.r += pixels[offset];
+      sum.g += pixels[offset + 1];
+      sum.b += pixels[offset + 2];
+      sum.a += pixels[offset + 3];
+      return sum;
+    }, { r: 0, g: 0, b: 0, a: 0 });
+    for (const channel of ['r', 'g', 'b', 'a']) background[channel] /= cornerOffsets.length;
+    const transparentBackground = background.a < 48;
+
+    let minX = width;
+    let minY = height;
+    let maxX = -1;
+    let maxY = -1;
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const offset = ((y * width) + x) * 4;
+        const alpha = pixels[offset + 3];
+        if (alpha < 24) continue;
+
+        let isArtwork = transparentBackground;
+        if (!transparentBackground) {
+          const distance = Math.abs(pixels[offset] - background.r)
+            + Math.abs(pixels[offset + 1] - background.g)
+            + Math.abs(pixels[offset + 2] - background.b);
+          isArtwork = distance > 42;
+        }
+        if (!isArtwork) continue;
+
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+
+    if (maxX < minX || maxY < minY) {
+      return { left: 0, top: 0, right: 1, bottom: 1 };
+    }
+
+    // Retain a small safety field around every detected mark. This crops only
+    // unused source-canvas whitespace while protecting antlers, weapons, feet,
+    // and other fine extremities from touching the publication frame.
+    const artworkWidth = maxX - minX + 1;
+    const artworkHeight = maxY - minY + 1;
+    const padX = Math.max(2, Math.ceil(artworkWidth * 0.025));
+    const padY = Math.max(2, Math.ceil(artworkHeight * 0.02));
+    minX = Math.max(0, minX - padX);
+    minY = Math.max(0, minY - padY);
+    maxX = Math.min(width - 1, maxX + padX);
+    maxY = Math.min(height - 1, maxY + padY);
+
+    return {
+      left: minX / width,
+      top: minY / height,
+      right: (maxX + 1) / width,
+      bottom: (maxY + 1) / height,
+    };
+  }
+
+  function positionLeaderArtwork(image, figure, bounds) {
+    const boxWidth = figure.clientWidth;
+    const boxHeight = figure.clientHeight;
+    const artworkWidth = (bounds.right - bounds.left) * image.naturalWidth;
+    const artworkHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
+    if (!boxWidth || !boxHeight || !artworkWidth || !artworkHeight) {
+      fail(`Could not size Leader woodcut ${image.getAttribute('src') || '?'}.`);
+    }
+
+    const scale = Math.min(boxWidth / artworkWidth, boxHeight / artworkHeight);
+    const renderedWidth = image.naturalWidth * scale;
+    const renderedHeight = image.naturalHeight * scale;
+    const visibleWidth = artworkWidth * scale;
+    const visibleHeight = artworkHeight * scale;
+    const left = ((boxWidth - visibleWidth) / 2) - (bounds.left * renderedWidth);
+    const top = ((boxHeight - visibleHeight) / 2) - (bounds.top * renderedHeight);
+
+    image.style.width = `${renderedWidth}px`;
+    image.style.height = `${renderedHeight}px`;
+    image.style.left = `${left}px`;
+    image.style.top = `${top}px`;
+  }
+
+  async function optimizeLeaderHero(page, flow, hero, figure, image, identity) {
+    const bounds = await measureLeaderArtworkBounds(image);
+    const initialHeroHeight = hero.getBoundingClientRect().height;
+    const columnWidth = figure.getBoundingClientRect().width;
+    const artworkWidth = (bounds.right - bounds.left) * image.naturalWidth;
+    const artworkHeight = (bounds.bottom - bounds.top) * image.naturalHeight;
+    const desiredHeroHeight = artworkWidth > 0
+      ? columnWidth * (artworkHeight / artworkWidth)
+      : initialHeroHeight;
+
+    // Spend otherwise-dead vertical room on the hero before reducing the art.
+    // The target height is the amount required for the detected artwork to fill
+    // the left column at full width, bounded by the actual space remaining on
+    // this specific page. This keeps every Leader page efficient without a
+    // one-size-fits-all crop or magic zoom percentage.
+    const sparePageHeight = Math.max(0, flow.clientHeight - flow.scrollHeight);
+    const maximumHeroHeight = initialHeroHeight + sparePageHeight;
+    const minimumHeroHeight = Math.max(identity.scrollHeight, 0);
+    const targetHeroHeight = Math.min(
+      maximumHeroHeight,
+      Math.max(minimumHeroHeight, desiredHeroHeight),
+    );
+
+    hero.style.height = `${targetHeroHeight}px`;
+    figure.style.height = '100%';
+    positionLeaderArtwork(image, figure, bounds);
+    page.dataset.leaderArtworkFitted = 'true';
+  }
+
+  async function rebuildLeaderPages() {
     const leaderPages = [...document.querySelectorAll('.leader-page')];
+    const optimizations = [];
     for (const page of leaderPages) {
       const flow = page.querySelector('.page-flow');
       const titleRow = flow?.querySelector('.leader-title-row');
@@ -71,7 +226,6 @@
       const identity = document.createElement('div');
       identity.className = 'leader-identity-column';
 
-      figure.style.setProperty('--leader-art', `url("${image.getAttribute('src')}")`);
       image.classList.add('leader-art-source');
       figure.remove();
       playstyle.remove();
@@ -80,7 +234,9 @@
       hero.append(figure, identity);
       titleRow.insertAdjacentElement('afterend', hero);
       page.classList.add('leader-layout-refined');
+      optimizations.push(optimizeLeaderHero(page, flow, hero, figure, image, identity));
     }
+    await Promise.all(optimizations);
   }
 
   function assertNoFlowOverflow() {
@@ -91,18 +247,23 @@
     }
   }
 
-  function finishBooklet() {
-    if (document.body.dataset.bookletReady !== 'true') return;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
+  async function finishBooklet() {
+    if (document.body.dataset.bookletReady !== 'true' || finishing || finished) return;
+    finishing = true;
+    try {
+      await afterTwoFrames();
       relocateArcaneCallout();
-      rebuildLeaderPages();
+      await rebuildLeaderPages();
       assertNoFlowOverflow();
       document.body.dataset.bookletMarkersReady = 'true';
       document.body.dataset.bookletLayoutRefined = 'true';
-    }));
+      finished = true;
+    } finally {
+      finishing = false;
+    }
   }
 
-  const observer = new MutationObserver(finishBooklet);
+  const observer = new MutationObserver(() => { void finishBooklet(); });
   observer.observe(document.body, { attributes: true, attributeFilter: ['data-booklet-ready'] });
-  finishBooklet();
+  void finishBooklet();
 })();
