@@ -77,6 +77,9 @@
  * Leader pages: preserve the approved production scale/typographic hierarchy.
  * The compositor may have different source grouping, but should not invent a
  * different visual system simply because Leaders are in separate booklets.
+ *
+ * The old 1.02fr / 1.32fr Leader grid resolves to ~1.87in for the portrait
+ * column inside the approved half-letter text box; keep that physical scale.
  * ---------------------------------------------------------------------- */
 .leader-page .page-flow {
   font-size: 8.7pt;
@@ -95,7 +98,7 @@
   line-height: .95;
 }
 .leader-woodcut-wrap {
-  width: 1.02fr;
+  width: 1.87in;
   height: 2.4in;
   float: left;
   margin: 0 .18in .10in 0;
