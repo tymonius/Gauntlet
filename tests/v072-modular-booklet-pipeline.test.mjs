@@ -47,7 +47,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(() => v072BookletImposition(6, 0)).toThrow(/multiple of four/i);
   });
 
-  it('uses the approved fixed-page publication design instead of generic browser flow', async () => {
+  it('uses the approved v0.7.1 production design instead of inventing a parallel booklet style', async () => {
     const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const renderer = await readFile('scripts/render-v072-modular-booklets.mjs', 'utf8');
     const html = await readFile('apps/rules/booklet/index.html', 'utf8');
@@ -90,7 +90,15 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(css).toContain('.back-band');
     expect(css).toContain('background: var(--page-accent);');
 
-    expect(parityCss).toContain('v0.7.1 publication-parity corrections');
+    expect(parityCss).toContain('DESIGN CONTRACT');
+    expect(parityCss).toContain('approved production Rulebook is the visual authority');
+    expect(parityCss).toContain('PR #357');
+    expect(parityCss).toContain('font-size: 27pt');
+    expect(parityCss).toContain('max-height: 2.4in');
+    expect(parityCss).toContain('padding: .48in');
+    expect(parityCss).toContain('min-height: 2.12in');
+    expect(parityCss).toContain('font-size: 25pt');
+
     expect(v071PublicationCss).toContain('PR #1198');
     expect(v071PublicationCss).toContain('opacity: .05');
     expect(v071PublicationCss).toContain('mask-size: 2.55in 2.55in');
