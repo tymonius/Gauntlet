@@ -164,8 +164,14 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('appendHeadingAndFollower');
     expect(client).toContain('waitForFrames');
     expect(client).toContain('ensurePublicationFonts');
-    expect(client).toContain("CARD_ANATOMY_CARD_ID = 'military-unbroken-ranks'");
-    expect(client).toContain("ARCANE_CARD_ID = 'mystics-witchcraft'");
+    // Verify the publication compositor keeps explicit card-render constants without
+    // naming released card ids in this regression file. The v0.7.0 behavior audit
+    // intentionally scans tests for card ids as behavioral evidence; publication
+    // tests must not masquerade as gameplay regression coverage.
+    expect(client).toMatch(/const CARD_ANATOMY_CARD_ID = '[^']+';/);
+    expect(client).toMatch(/const ARCANE_CARD_ID = '[^']+';/);
+    expect(client).toContain('card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}');
+    expect(client).toContain('card-print-render.html?fit=production&card=${ARCANE_CARD_ID}');
     expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
