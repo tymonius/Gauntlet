@@ -1,34 +1,42 @@
 /*
  * v0.7.1 faction watermark treatment, copied from the production Rulebook
- * publication layer introduced in PR #1198.  The only adaptations here are
- * the booklet compositor selector/variable names and root-relative asset URLs.
- * Geometry, opacity, mirroring, and stacking are intentionally unchanged.
+ * publication layer introduced in PR #1198. The booklet compositor uses
+ * different selectors/variable names, but the production geometry is kept
+ * exactly: 2.55in field, 5% opacity, mirrored lower outside-corner crop.
  */
 
 .faction-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--page-accent);
-  opacity: .05;
-  -webkit-mask-image: var(--booklet-symbol);
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 2.55in 2.55in;
-  mask-image: var(--booklet-symbol);
-  mask-repeat: no-repeat;
-  mask-size: 2.55in 2.55in;
-  pointer-events: none;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  z-index: 0 !important;
+  background: var(--page-accent) !important;
+  opacity: .05 !important;
+  -webkit-mask-image: var(--booklet-symbol) !important;
+  -webkit-mask-repeat: no-repeat !important;
+  -webkit-mask-size: 2.55in 2.55in !important;
+  mask-image: var(--booklet-symbol) !important;
+  mask-repeat: no-repeat !important;
+  mask-size: 2.55in 2.55in !important;
+  pointer-events: none !important;
 }
 
 .faction-page.right::before {
-  -webkit-mask-position: right -.44in bottom -.48in;
-  mask-position: right -.44in bottom -.48in;
+  -webkit-mask-position: right -.44in bottom -.48in !important;
+  mask-position: right -.44in bottom -.48in !important;
 }
 
 .faction-page.left::before {
-  -webkit-mask-position: left -.44in bottom -.48in;
-  mask-position: left -.44in bottom -.48in;
+  -webkit-mask-position: left -.44in bottom -.48in !important;
+  mask-position: left -.44in bottom -.48in !important;
+}
+
+/* Retire the experimental continuation pseudo-element so every faction page
+   uses the single v0.7.1 production watermark treatment above. */
+.faction-page:not(.faction-opener)::after {
+  content: none !important;
 }
 
 .faction-page .page-inner,
