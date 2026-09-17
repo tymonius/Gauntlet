@@ -4,20 +4,161 @@
  * DESIGN CONTRACT
  * ---------------
  * The approved production Rulebook is the visual authority for the v0.7.2
- * modular booklets.  Do not redesign an existing publication treatment here.
+ * modular booklets. Do not redesign an existing publication treatment here.
  * Reuse the approved values/roles from PR #357 and the later v0.7.1 production
- * system, adapting selectors only where the modular compositor's DOM differs.
+ * system, adapting selectors only where the modular compositor DOM differs.
  *
- * This layer exists only for selector/markup compatibility and genuinely new
- * modular surfaces.  Page geometry, typography roles, running furniture,
- * contents, chapter/Part treatment, faction identity, Leader presentation,
- * callouts/tables, artwork treatment, and covers should inherit the old
- * production decisions rather than acquire a parallel design language.
+ * Sources ported here:
+ *   - PR #357 rulebook-design/proof.css
+ *   - v0.7.1 rulebook-production/production.css
+ *   - v0.7.1 rulebook-production/publication-corrections.css
+ *   - PR #1198 watermark layer (loaded separately after this file)
+ *
+ * New styling is permitted only for genuinely new modular-only surfaces.
  */
+
+/* -------------------------------------------------------------------------
+ * Production tokens and finished half-letter page geometry
+ * ---------------------------------------------------------------------- */
+:root {
+  --paper: #f5f2ea;
+  --paper-deep: #e7e3da;
+  --ink: #151515;
+  --muted: #5d5d5b;
+  --line: #b9b6ae;
+  --line-dark: #66645f;
+  --soft: #e8e5dd;
+  --crimson: #8f1f25;
+  --bronze: #a37338;
+  --title: Georgia, "Times New Roman", serif;
+  --body: "adobe-caslon-pro", Georgia, "Times New Roman", serif;
+  --heritage: "p22-1722-pro", Georgia, "Times New Roman", serif;
+  --flavor: "p22-declaration-pro", Georgia, "Times New Roman", serif;
+  --ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background: #d1cfca;
+  color: var(--ink);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 5.5in;
+  height: 8.5in;
+  overflow: hidden;
+  background: #fbf7ee;
+}
+.page-inner {
+  height: 100%;
+  padding: .44in .46in .46in .58in;
+}
+.page.left .page-inner {
+  padding: .44in .58in .46in .46in;
+}
+.page-flow {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  font-family: var(--body);
+  font-size: 9pt;
+  line-height: 1.31;
+}
+
+/* -------------------------------------------------------------------------
+ * Running furniture - exact approved geometry
+ * ---------------------------------------------------------------------- */
+.running-head,
+.folio,
+.eyebrow,
+.label,
+.toc-page,
+.contents-number,
+.continuation-label,
+.cover-subtitle,
+.cover-version,
+.cover-bottom,
+.back-url,
+.digital-tool-url,
+.leader-section-label,
+.page-flow h4 {
+  font-family: var(--ui);
+}
+.running-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+  color: #4f4e4b;
+  font-size: 7.2pt;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.footer-rule {
+  position: absolute;
+  left: .46in;
+  right: .46in;
+  bottom: .38in;
+  border-top: 1px solid var(--line);
+}
+.folio {
+  position: absolute;
+  right: .42in;
+  bottom: .235in;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 18px;
+  font-size: 6.8pt;
+  font-weight: 800;
+}
+.page.left .folio {
+  right: auto;
+  left: .42in;
+  justify-content: flex-start;
+}
+.folio-label { letter-spacing: .035em; }
+.folio-number {
+  min-width: 10px;
+  font-size: 7.8pt;
+  font-variant-numeric: tabular-nums;
+}
 
 /* -------------------------------------------------------------------------
  * Approved typography roles
  * ---------------------------------------------------------------------- */
+.flavor-overline,
+.cover-flavor,
+.back-flavor {
+  position: relative;
+  top: .15em;
+  font-family: var(--flavor);
+  font-weight: 400;
+}
+.flavor-overline {
+  margin: 0 0 11px;
+  color: var(--page-accent);
+  font-size: 20pt;
+  line-height: 1.02;
+}
+h1, h2, h3, h4 {
+  font-family: var(--title);
+  font-weight: 500;
+}
+.page-title {
+  margin: 0 0 12px;
+  font-size: 29pt;
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+.subhead {
+  margin: 0 0 7px;
+  font-size: 12.5pt;
+}
 .part-label,
 .faction-name,
 .leader-name,
@@ -27,35 +168,392 @@
   letter-spacing: 0;
 }
 
-.page-title,
-.chapter-title-row h2,
-.part-title,
-.faction-claim,
-.back-band h2 {
-  font-family: var(--title);
-  font-weight: 500;
+/* -------------------------------------------------------------------------
+ * Rule boxes and callouts
+ * ---------------------------------------------------------------------- */
+.rule-box {
+  padding: 10px 11px;
+  border: 1px solid color-mix(in srgb, var(--page-accent) 58%, #a37338);
+  background: #f1e3c8;
 }
-
-.running-head,
-.folio,
-.continuation-label,
-.cover-subtitle,
-.cover-version,
-.cover-bottom,
-.back-url,
-.leader-section-label,
-.page-flow h4 {
-  font-family: var(--ui);
+.rule-box .label,
+.callout .label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 6.7pt;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.callout {
+  padding: 10px 11px;
+  border-left: 4px solid var(--page-accent);
+  background: #efe5d4;
+}
+.callout h3 {
+  margin: 0 0 5px;
+  font-size: 14pt;
+}
+.callout p {
+  margin: 0;
+  font-size: 8.8pt;
+  line-height: 1.3;
 }
 
 /* -------------------------------------------------------------------------
- * Faction identity
+ * Covers - approved PR #357 composition plus the later production art blend
  * ---------------------------------------------------------------------- */
-/* Detached icon badges were not part of the production Rulebook page design. */
+.cover .page-inner {
+  padding: .42in .45in .28in;
+}
+.cover-rule {
+  width: 34px;
+  height: 5px;
+  margin-bottom: 14px;
+  background: var(--page-accent);
+}
+.cover-flavor {
+  margin: 0 0 12px;
+  font-size: 21pt;
+  line-height: 1;
+}
+.cover-wordmark {
+  width: 3.62in;
+  max-width: 100%;
+  max-height: .92in;
+  object-fit: contain;
+  object-position: left center;
+  filter: none;
+}
+.cover-publication-row {
+  margin-top: 8px;
+}
+.cover-publication-title {
+  margin: 0;
+  font-family: var(--title);
+  font-size: 25pt;
+  font-weight: 500;
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+.cover.faction-cover .cover-publication-title {
+  color: var(--page-accent);
+  font-family: var(--heritage);
+  font-size: 27pt;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: .95;
+}
+.cover-subtitle {
+  margin: 8px 0 5px;
+  font-size: 10pt;
+  font-weight: 700;
+}
+.cover-version {
+  margin: 0;
+  font-size: 6.8pt;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.cover-art {
+  flex: 1;
+  min-height: 0;
+  margin: 16px 0 0;
+  padding: 12px 18px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  isolation: isolate;
+  background: #fbf7ee;
+}
+.cover-art img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: grayscale(1) contrast(1.32) brightness(1.12);
+  mix-blend-mode: multiply;
+  opacity: .94;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+}
+.cover-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #4c4c4a;
+  font-size: 6.7pt;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* The per-faction booklet cover is a genuinely new surface. Keep its mark,
+   but use the same unboxed faction-symbol language as the production book. */
+.cover-faction-symbol {
+  background: var(--page-accent);
+  -webkit-mask: var(--booklet-symbol) center / contain no-repeat;
+  mask: var(--booklet-symbol) center / contain no-repeat;
+}
+
+/* -------------------------------------------------------------------------
+ * Contents - approved two-column publication treatment
+ * ---------------------------------------------------------------------- */
+.contents-page .page-flow {
+  display: flex;
+  flex-direction: column;
+}
+.contents-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 8px;
+}
+.contents-entry {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 5px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px dotted #d0ccc3;
+  font-size: 7.1pt;
+  line-height: 1.15;
+}
+.contents-number {
+  color: #5f5d58;
+  font-family: var(--ui);
+  font-size: 6.6pt;
+  font-weight: 700;
+}
+.toc-page {
+  font-size: 6.6pt;
+  font-weight: 800;
+}
+.reading-guide {
+  margin-top: auto;
+  padding: 9px 10px;
+  border-top: 2px solid var(--page-accent);
+  background: var(--soft);
+  font-size: 7.3pt;
+  line-height: 1.3;
+}
+
+/* -------------------------------------------------------------------------
+ * Long-form production flow - ported from v0.7.1 production.css
+ * ---------------------------------------------------------------------- */
+.page-flow > *:first-child { margin-top: 0; }
+.page-flow p { margin: 0 0 7px; }
+.page-flow strong { font-weight: 700; }
+.page-flow em { font-style: italic; }
+.page-flow code {
+  font-family: var(--ui);
+  font-size: .88em;
+}
+.page-flow a {
+  color: inherit;
+  text-decoration: none;
+}
+.page-flow h2,
+.page-flow h3,
+.page-flow h4,
+.page-flow h5 {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+.page-flow h2 {
+  margin: 14px 0 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line-dark);
+  font-size: 15pt;
+  line-height: 1.05;
+}
+.page-flow h3 {
+  margin: 11px 0 5px;
+  font-size: 11.8pt;
+  line-height: 1.08;
+}
+.page-flow h4 {
+  margin: 9px 0 4px;
+  font-size: 7.4pt;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.page-flow h5 {
+  margin: 7px 0 3px;
+  font-size: 8.6pt;
+  font-weight: 700;
+}
+.page-flow ul,
+.page-flow ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.page-flow li {
+  margin: 0 0 3px;
+  padding-left: 2px;
+}
+.page-flow li::marker {
+  font-family: var(--ui);
+  font-size: .78em;
+  font-weight: 700;
+}
+.page-flow blockquote {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-left: 4px solid var(--page-accent);
+  background: #efe5d4;
+  font-size: 8.6pt;
+  line-height: 1.3;
+  break-inside: avoid;
+}
+.page-flow blockquote p { margin: 0 0 5px; }
+.page-flow blockquote p:last-child { margin-bottom: 0; }
+.page-flow hr {
+  height: 1px;
+  margin: 9px 0;
+  border: 0;
+  background: var(--line);
+}
+.page-flow img {
+  max-height: 3.1in;
+  margin: 8px auto;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.08);
+  mix-blend-mode: multiply;
+  break-inside: avoid;
+}
+.page-flow .table-scroll {
+  margin: 7px 0 10px;
+  overflow: visible;
+}
+.page-flow table {
+  width: 100%;
+  margin: 7px 0 10px;
+  border-collapse: collapse;
+  font-family: var(--ui);
+  font-size: 6.6pt;
+  line-height: 1.2;
+}
+.page-flow th,
+.page-flow td {
+  padding: 4px 5px;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+  text-align: left;
+}
+.page-flow th {
+  font-size: 6pt;
+  font-weight: 800;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+.page-flow tbody tr:last-child td {
+  border-bottom: 1px solid var(--line);
+}
+
+/* Production continuation rhythm. */
+.continuation-page .page-flow {
+  line-height: 1.28;
+}
+.continuation-page .page-flow p { margin-bottom: 4px; }
+.continuation-page .page-flow h2 {
+  margin: 11px 0 5px;
+  padding-top: 6px;
+}
+.continuation-page .page-flow h3 { margin: 8px 0 3px; }
+.continuation-page .page-flow h4 { margin: 7px 0 3px; }
+.continuation-page .page-flow h5 { margin: 6px 0 2px; }
+.continuation-page .page-flow ul,
+.continuation-page .page-flow ol { margin-bottom: 5px; }
+.continuation-page .page-flow li { margin-bottom: 2px; }
+.continuation-label {
+  margin: 0 0 8px;
+  color: #5c5a55;
+  font-size: 6.4pt;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------------------
+ * Chapter hierarchy - production correction establishes a real baseline
+ * ---------------------------------------------------------------------- */
+.chapter-title-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  column-gap: 11px;
+  align-items: baseline;
+  margin: 0 0 10px;
+}
+.chapter-number {
+  align-self: baseline;
+  color: var(--page-accent);
+  font-family: var(--ui);
+  font-size: 24pt;
+  font-weight: 800;
+  line-height: .88;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.chapter-title-row h2 {
+  align-self: baseline;
+  margin: 0;
+  font-family: var(--title);
+  font-size: 27pt;
+  font-weight: 500;
+  line-height: .95;
+  letter-spacing: -.035em;
+}
+.section-opening-note {
+  margin-bottom: 10px;
+  font-size: 10.1pt;
+  line-height: 1.37;
+}
+
+/* -------------------------------------------------------------------------
+ * Part openers - approved PR #357 treatment, mapped to modular .part-page
+ * ---------------------------------------------------------------------- */
+.part-page .page-inner {
+  padding-top: .65in;
+  padding-bottom: .65in;
+}
+.part-page .part-rule {
+  display: none;
+}
+.part-page .part-label {
+  margin: 0 0 8px;
+  color: var(--page-accent);
+  font-family: var(--heritage);
+  font-size: 34pt;
+  font-weight: 400;
+  line-height: 1;
+}
+.part-page .part-title {
+  margin: 0 0 16px;
+  font-family: var(--title);
+  font-size: 42pt;
+  font-weight: 500;
+  line-height: .9;
+  letter-spacing: -.045em;
+}
+
+/* -------------------------------------------------------------------------
+ * Faction identity - same opener language; watermark itself is #1198 layer
+ * ---------------------------------------------------------------------- */
 .faction-symbol-badge {
   display: none !important;
 }
-
+.faction-opener .faction-rule {
+  height: 5px;
+  margin: 0 0 13px;
+  background: var(--page-accent);
+}
 .faction-opener-heading {
   display: block;
 }
@@ -69,21 +567,51 @@
 }
 .faction-opener .faction-claim {
   margin: 0 0 12px;
+  font-family: var(--title);
   font-size: 25pt;
+  font-weight: 500;
   line-height: .98;
+  letter-spacing: 0;
 }
+.faction-summary-grid {
+  display: grid;
+  grid-template-columns: 1.4fr .8fr;
+  gap: 14px;
+  margin: 8px 0 11px;
+}
+.faction-stats {
+  border-top: 1px solid var(--line-dark);
+  font-size: 6.8pt;
+}
+.faction-stats div {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 6px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+.faction-stats dt {
+  font-family: var(--ui);
+  font-size: 6.4pt;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.faction-stats dd { margin: 0; }
 
 /* -------------------------------------------------------------------------
- * Leader pages: preserve the approved production scale/typographic hierarchy.
- * The compositor may have different source grouping, but should not invent a
- * different visual system simply because Leaders are in separate booklets.
- *
- * The old 1.02fr / 1.32fr Leader grid resolves to ~1.87in for the portrait
- * column inside the approved half-letter text box; keep that physical scale.
+ * Leader pages - old production physical scale, not one-up poster treatment
  * ---------------------------------------------------------------------- */
 .leader-page .page-flow {
   font-size: 8.7pt;
   line-height: 1.3;
+}
+.leader-section-label {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 6.4pt;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
 }
 .leader-title-row {
   display: block;
@@ -120,6 +648,7 @@
 }
 .leader-page .leader-playstyle {
   margin-top: 0;
+  font-size: 8.7pt;
 }
 .leader-page .page-flow::after {
   content: "";
@@ -128,9 +657,50 @@
 }
 
 /* -------------------------------------------------------------------------
- * Card anatomy / Arcane: use production card renders without clipped browser
- * windows.  This is a new instructional surface, so only this figure-specific
- * composition is new; surrounding publication styling remains inherited.
+ * Reference/utility structures already present in modular sources
+ * ---------------------------------------------------------------------- */
+.reference-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+.reference-columns h3 {
+  margin: 0 0 5px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line-dark);
+  font-size: 12pt;
+}
+.reference-step {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 7px;
+  padding: 4px 0;
+}
+.reference-step .num {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--page-accent);
+  font-family: var(--ui);
+  font-size: 6.4pt;
+  font-weight: 800;
+}
+.reference-step h4 {
+  margin: 0 0 1px;
+  font-size: 8.1pt;
+}
+.reference-step p {
+  margin: 0;
+  font-size: 6.7pt;
+  line-height: 1.2;
+}
+
+/* -------------------------------------------------------------------------
+ * Card anatomy / Arcane - genuinely new instructional surfaces.
+ * Use complete production card renders; never crop browser iframes.
  * ---------------------------------------------------------------------- */
 .booklet-card-anatomy-guide {
   padding: 8px 9px 9px;
@@ -157,7 +727,6 @@
   font-size: 6.35pt;
   line-height: 1.16;
 }
-
 .booklet-arcane-example {
   margin-top: 8px;
   padding: 8px 9px;
@@ -179,13 +748,37 @@
   transform-origin: initial;
   pointer-events: none;
 }
-.booklet-arcane-copy {
-  align-self: center;
+.booklet-arcane-copy { align-self: center; }
+
+/* -------------------------------------------------------------------------
+ * Artwork plates - port the approved production treatment
+ * ---------------------------------------------------------------------- */
+.woodcut-page .page-inner {
+  padding: .35in;
+  align-items: center;
+  justify-content: center;
+}
+.woodcut-page img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2) brightness(1.08);
+  mix-blend-mode: multiply;
+  opacity: .9;
+  -webkit-mask-image: radial-gradient(ellipse 90% 94% at 50% 50%, #000 0 70%, rgba(0,0,0,.92) 80%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 94% at 50% 50%, #000 0 70%, rgba(0,0,0,.92) 80%, transparent 100%);
+}
+.woodcut-mark,
+.woodcut-page .footer-rule,
+.woodcut-page .folio {
+  display: none;
 }
 
 /* -------------------------------------------------------------------------
- * Back cover: use the approved production geometry from PR #357.  The modular
- * compositor supplies different copy/accounting content, not a new layout.
+ * Back cover - approved PR #357 geometry. Modular accounting copy is new,
+ * but the page composition is not.
  * ---------------------------------------------------------------------- */
 .back-cover {
   color: var(--ink);
@@ -203,7 +796,7 @@
 }
 .back-flavor {
   margin: 0 0 15px;
-  color: #fff;
+  color: #ddd;
   font-family: var(--flavor);
   font-size: 25pt;
   font-weight: 400;
@@ -213,7 +806,9 @@
   max-width: 4.15in;
   margin: 0 0 13px;
   color: #fff;
+  font-family: var(--title);
   font-size: 25pt;
+  font-weight: 500;
   line-height: .98;
 }
 .back-body {
@@ -245,7 +840,8 @@
 .back-accounting {
   margin-top: auto;
   padding-top: 11px;
-  grid-template-columns: .42in 1fr;
+  display: grid;
+  grid-template-columns: .42in minmax(0, 1fr);
   gap: 9px;
   border-top: 1px solid var(--line-dark);
   color: #555;
@@ -256,4 +852,14 @@
 .back-accounting img {
   width: .36in;
   max-height: .36in;
+  margin: 0;
+  object-fit: contain;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+@media print {
+  body { background: #fff; }
+  .booklet-publication { margin: 0; }
+  .page { margin: 0; box-shadow: none; }
 }
