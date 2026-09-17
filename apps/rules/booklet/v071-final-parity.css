@@ -1,0 +1,146 @@
+/*
+ * Final visual-parity corrections for the v0.7.2 modular booklets.
+ *
+ * These overrides intentionally stop reconstructing publication treatments
+ * that already exist in the released v0.7.1 rulebook. The frozen v0.7.1
+ * Card Anatomy and Arcane figures are the rendering authority for those
+ * instructional graphics. Leader pages keep the established woodcut language
+ * but use the full one-Leader-per-page space provided by the modular guides.
+ */
+
+/* -------------------------------------------------------------------------
+ * Card Anatomy — use the exact final v0.7.1 production figure.
+ * ---------------------------------------------------------------------- */
+.booklet-card-anatomy-guide {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.booklet-card-anatomy-layout {
+  grid-template-columns: 2.30in minmax(0, 1fr);
+  gap: .18in;
+  align-items: start;
+}
+
+.booklet-card-figure {
+  width: 2.30in;
+  height: 3.42in;
+  margin: 0;
+  background: url("./assets/Gauntlet_v0.7.1_Card_Anatomy.png") center top / contain no-repeat;
+}
+
+/* The final production figure already contains the correct card rendering,
+   marker positions, connector lines, and caption. Keep the live renderer only
+   as a non-visible readiness fallback for the existing build adapter. */
+.booklet-card-frame-wrap {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.booklet-card-marker {
+  display: none !important;
+}
+
+.booklet-card-anatomy-key {
+  margin: 0 !important;
+  padding-left: .16in !important;
+  font-size: 8.15pt;
+  line-height: 1.24;
+}
+.booklet-card-anatomy-key li {
+  margin: 0 0 .055in;
+  padding-left: .01in;
+}
+.booklet-card-anatomy-key li::marker {
+  font-size: .9em;
+  font-weight: 700;
+}
+.booklet-card-anatomy-key strong {
+  font-size: 8.25pt;
+  line-height: 1.15;
+}
+
+/* -------------------------------------------------------------------------
+ * Arcane trait mark — use the exact final v0.7.1 production crop.
+ * The frozen figure includes the intentional lower-edge fade.
+ * ---------------------------------------------------------------------- */
+.booklet-arcane-example {
+  margin-top: .09in;
+  padding: .075in .09in;
+  grid-template-columns: 1.72in minmax(0, 1fr);
+  gap: .13in;
+  align-items: center;
+}
+.booklet-arcane-crop {
+  width: 1.72in;
+  height: .58in;
+  overflow: hidden;
+  background: url("./assets/Gauntlet_v0.7.1_Arcane_Trait_Mark.png") left center / contain no-repeat;
+}
+.booklet-arcane-frame {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.booklet-arcane-copy h4 {
+  margin-bottom: .025in;
+  font-size: 7.8pt;
+}
+.booklet-arcane-copy p {
+  font-size: 8pt;
+  line-height: 1.24;
+}
+
+/* -------------------------------------------------------------------------
+ * Leader pages — the modular guides give each Leader a dedicated page.
+ * Use that page. A tall, substantially larger floated plate lets the rules
+ * text run beside the woodcut and then naturally expand to full width below it,
+ * eliminating the dead lower half produced by the earlier small float.
+ * ---------------------------------------------------------------------- */
+.leader-page .leader-title-row {
+  margin-bottom: .08in;
+}
+.leader-page .leader-woodcut-wrap {
+  width: 2.82in;
+  height: 5.20in;
+  float: left;
+  margin: .02in .20in .10in 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-bottom: 2px solid #333;
+}
+.leader-page .page-flow .leader-woodcut-wrap img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: 5.20in;
+  margin: 0;
+  object-fit: contain;
+  object-position: center top;
+  filter: none;
+  mix-blend-mode: multiply;
+  opacity: 1;
+}
+.leader-page .leader-playstyle {
+  margin-top: 0;
+  font-size: 8.9pt;
+  line-height: 1.28;
+}
+.leader-page .page-flow > ul {
+  font-size: 8.65pt;
+  line-height: 1.24;
+}
+.leader-page .page-flow > p:not(.leader-playstyle) {
+  font-size: 8.8pt;
+  line-height: 1.29;
+}
