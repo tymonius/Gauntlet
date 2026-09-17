@@ -1,8 +1,17 @@
 @page { size: 5.5in 8.5in; margin: 0; }
 
+/*
+ * Modular booklet compositor shell.
+ *
+ * IMPORTANT: this file is NOT the publication design authority. Established
+ * Rulebook presentation is supplied by v071-parity.css and the PR #1198
+ * watermark layer loaded after this file. Keep only compositor mechanics and
+ * genuinely new modular-only surfaces here.
+ */
+
 :root {
-  --paper: #fbf7ee;
-  --paper-deep: #efe9dd;
+  --paper: #f5f2ea;
+  --paper-deep: #e7e3da;
   --ink: #151515;
   --muted: #5d5d5b;
   --line: #b9b6ae;
@@ -22,7 +31,7 @@
 html, body { margin: 0; padding: 0; }
 body {
   color: var(--ink);
-  background: #cfcdc7;
+  background: #d1cfca;
   font-family: var(--body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -40,13 +49,14 @@ p, h1, h2, h3, h4 { margin-top: 0; }
   pointer-events: none;
 }
 
+/* Fixed-page compositor mechanics. Physical geometry is restated and governed
+   by the loaded production compatibility layer. */
 .booklet-publication { width: 5.5in; margin: 0 auto; }
 .page {
   position: relative;
   width: 5.5in;
   height: 8.5in;
   overflow: hidden;
-  background: var(--paper);
   break-after: page;
   page-break-after: always;
   --page-accent: var(--booklet-accent);
@@ -54,277 +64,34 @@ p, h1, h2, h3, h4 { margin-top: 0; }
 .page:last-child { break-after: auto; page-break-after: auto; }
 .page-inner {
   height: 100%;
-  padding: .44in .46in .46in .58in;
   display: flex;
   flex-direction: column;
 }
-.page.left .page-inner { padding: .44in .58in .46in .46in; }
 .page-flow {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  font-family: var(--body);
-  font-size: 9.15pt;
-  line-height: 1.31;
 }
+.keep-heading { break-inside: avoid; }
+.contents-column,
+.contents-title { min-width: 0; }
 
-.running-head, .folio, .eyebrow, .label, .toc-page, .contents-number, .continuation-label,
-.cover-subtitle, .cover-version, .cover-bottom, .back-url, .digital-tool-url, .leader-section-label {
-  font-family: var(--ui);
-}
-.running-head {
+/* Modular covers add a publication-specific title and, for faction booklets,
+   a cover mark. The surrounding cover composition comes from production. */
+.cover-publication-row {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 9px;
-  border-bottom: 1px solid var(--line);
-  color: #4f4e4b;
-  font-size: 7.2pt;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  gap: .18in;
 }
-.footer-rule {
-  position: absolute;
-  left: .46in;
-  right: .46in;
-  bottom: .38in;
-  border-top: 1px solid var(--line);
-}
-.folio {
-  position: absolute;
-  right: .42in;
-  bottom: .235in;
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 18px;
-  font-size: 6.8pt;
-  font-weight: 800;
-}
-.page.left .folio { right: auto; left: .42in; justify-content: flex-start; }
-.folio-label { letter-spacing: .035em; }
-.folio-number { min-width: 10px; font-size: 7.8pt; font-variant-numeric: tabular-nums; }
-
-.flavor-overline, .cover-flavor, .back-flavor {
-  position: relative;
-  top: .15em;
-  font-family: var(--flavor);
-  font-weight: 400;
-}
-.flavor-overline { margin: 0 0 11px; color: var(--page-accent); font-size: 20pt; line-height: 1.02; }
-h1, h2, h3, h4 { font-family: var(--title); font-weight: 500; }
-.page-title { margin: 0 0 12px; font-size: 29pt; line-height: .98; letter-spacing: -.035em; }
-.subhead { margin: 0 0 7px; font-size: 12.5pt; }
-.part-label, .faction-name, .leader-name, .card-name {
-  font-family: var(--heritage);
-  font-weight: 400;
-}
-
-/* Cover — derived from the approved PR #357 publication system. */
-.cover .page-inner { padding: .42in .45in .28in; }
-.cover-rule { width: 34px; height: 5px; margin-bottom: 14px; background: var(--page-accent); }
-.cover-flavor { margin: 0 0 9px; font-size: 21pt; line-height: 1; }
-.cover-wordmark { width: 4.25in; max-height: .92in; object-fit: contain; object-position: left center; filter: grayscale(1) contrast(1.25); }
-.cover-publication-row { display: flex; align-items: flex-end; justify-content: space-between; gap: .18in; margin-top: 9px; }
-.cover-publication-title { margin: 0; font-family: var(--title); font-size: 25pt; line-height: .98; letter-spacing: -.035em; }
-.cover.faction-cover .cover-publication-title { font-family: var(--heritage); font-size: 30pt; letter-spacing: 0; color: var(--page-accent); }
-.cover-subtitle { margin: 7px 0 4px; font-size: 9.2pt; font-weight: 700; }
-.cover-version { margin: 0; font-size: 6.8pt; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .cover-faction-symbol {
   width: .58in;
   height: .58in;
   flex: 0 0 auto;
-  background: var(--page-accent);
-  -webkit-mask: var(--booklet-symbol) center / 94% 94% no-repeat;
-  mask: var(--booklet-symbol) center / 94% 94% no-repeat;
-}
-.cover-art {
-  flex: 1;
-  min-height: 0;
-  margin: 16px 0 0;
-  padding: 12px 18px 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.cover-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  filter: grayscale(1) contrast(1.08);
-  mix-blend-mode: multiply;
-}
-.cover-bottom {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  color: #4c4c4a;
-  font-size: 6.7pt;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
 }
 
-/* Contents */
-.contents-page .page-flow { display: flex; flex-direction: column; }
-.contents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 7px; }
-.contents-column { min-width: 0; }
-.contents-entry {
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) auto;
-  gap: 5px;
-  align-items: baseline;
-  padding: 5px 0 4px;
-  border-bottom: 1px dotted #d0ccc3;
-  font-size: 7.35pt;
-  line-height: 1.16;
-}
-.contents-number { color: var(--page-accent); font-size: 6.6pt; font-weight: 800; }
-.contents-title { min-width: 0; }
-.toc-page { font-size: 6.6pt; font-weight: 800; }
-.reading-guide {
-  margin-top: auto;
-  padding: 9px 10px;
-  border-top: 2px solid var(--page-accent);
-  background: var(--soft);
-  font-size: 7.3pt;
-  line-height: 1.3;
-}
-
-/* Shared long-form flow */
-.page-flow > *:first-child { margin-top: 0; }
-.page-flow p { margin: 0 0 7px; }
-.page-flow strong { font-weight: 700; }
-.page-flow em { font-style: italic; }
-.page-flow code { font-family: var(--ui); font-size: .88em; }
-.page-flow a { color: inherit; text-decoration-color: var(--page-accent); text-underline-offset: .08em; }
-.page-flow h3 { margin: 11px 0 5px; font-size: 12.2pt; line-height: 1.08; break-after: avoid; }
-.page-flow h4 { margin: 9px 0 4px; font-family: var(--ui); font-size: 7.4pt; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; break-after: avoid; }
-.page-flow ul, .page-flow ol { margin: 0 0 8px; padding-left: 18px; }
-.page-flow li { margin: 0 0 3px; padding-left: 2px; }
-.page-flow li::marker { font-family: var(--ui); font-size: .78em; font-weight: 700; }
-.page-flow blockquote {
-  margin: 9px 0 10px;
-  padding: 8px 10px;
-  border-left: 4px solid var(--page-accent);
-  background: #efe5d4;
-  font-size: 8.65pt;
-  line-height: 1.3;
-  break-inside: avoid;
-}
-.page-flow blockquote p { margin: 0 0 5px; }
-.page-flow blockquote p:last-child { margin-bottom: 0; }
-.page-flow hr { height: 1px; margin: 9px 0; border: 0; background: var(--line); }
-.page-flow img {
-  max-height: 3.25in;
-  margin: 8px auto;
-  object-fit: contain;
-  filter: grayscale(.04) contrast(1.05);
-  mix-blend-mode: multiply;
-  break-inside: avoid;
-}
-.page-flow .table-scroll { margin: 8px 0 10px; overflow: visible; }
-.page-flow table { width: 100%; border-collapse: collapse; font-family: var(--ui); font-size: 6.7pt; line-height: 1.2; }
-.page-flow th, .page-flow td { padding: 4px 5px; border-top: 1px solid var(--line); vertical-align: top; text-align: left; }
-.page-flow th { font-size: 6pt; font-weight: 800; letter-spacing: .045em; text-transform: uppercase; }
-.page-flow tbody tr:last-child td { border-bottom: 1px solid var(--line); }
-.keep-heading { break-inside: avoid; }
-
-.chapter-title-row { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: end; margin: 0 0 11px; }
-.chapter-number { color: var(--page-accent); font-family: var(--ui); font-size: 24pt; font-weight: 800; line-height: 1; }
-.chapter-title-row h2 { margin: 0; font-size: 29pt; line-height: .95; letter-spacing: -.035em; }
-.section-opening-note { margin-bottom: 10px; font-size: 10.1pt; line-height: 1.37; }
-.continuation-label { margin: 0 0 8px; color: #5c5a55; font-size: 6.4pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-
-/* Comprehensive Rules Part opening treatment */
-.part-page .part-label { margin: 0 0 7px; color: var(--page-accent); font-size: 29pt; line-height: 1; }
-.part-page .part-title { margin: 0 0 15px; font-size: 35pt; line-height: .92; letter-spacing: -.045em; }
-.part-page .part-rule { height: 4px; width: .54in; margin: 0 0 14px; background: var(--page-accent); }
-
-/* Faction publication treatment and old-rulebook watermark language. */
-.faction-page::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 1.12in;
-  right: -.42in;
-  width: 3.25in;
-  height: 3.25in;
-  background: var(--page-accent);
-  opacity: .045;
-  pointer-events: none;
-  -webkit-mask: var(--booklet-symbol) center / contain no-repeat;
-  mask: var(--booklet-symbol) center / contain no-repeat;
-}
-.faction-page .page-inner { position: relative; z-index: 1; }
-.faction-opener .faction-rule { width: .72in; height: 5px; margin: 0 0 13px; background: var(--page-accent); }
-.faction-opener-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) .62in;
-  gap: .16in;
-  align-items: start;
-}
-.faction-opener .faction-name { margin: 0 0 6px; color: var(--page-accent); font-size: 31pt; line-height: .95; }
-.faction-opener .faction-claim { margin: 0 0 14px; font-family: var(--title); font-size: 23pt; line-height: .98; letter-spacing: -.025em; }
-.faction-symbol-badge {
-  width: .54in;
-  height: .54in;
-  justify-self: end;
-  background: var(--page-accent);
-  -webkit-mask: var(--booklet-symbol) center / 88% 88% no-repeat;
-  mask: var(--booklet-symbol) center / 88% 88% no-repeat;
-}
-
-/* One Leader per page. */
-.leader-page .page-flow { font-size: 8.85pt; line-height: 1.29; }
-.leader-section-label {
-  margin: 0 0 5px;
-  color: var(--muted);
-  font-size: 6.4pt;
-  font-weight: 800;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-}
-.leader-title-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) .58in;
-  gap: .14in;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.leader-name { margin: 0; color: var(--page-accent); font-size: 30pt; line-height: .92; }
-.leader-woodcut-wrap {
-  width: 1.88in;
-  height: 3.08in;
-  float: left;
-  margin: 2px .22in .12in 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  border-bottom: 1px solid var(--line-dark);
-}
-.page-flow .leader-woodcut-wrap img {
-  width: 100%;
-  height: 100%;
-  max-height: none;
-  margin: 0;
-  object-fit: contain;
-  object-position: center bottom;
-  filter: grayscale(1) contrast(1.1);
-  mix-blend-mode: multiply;
-}
-.leader-page .leader-playstyle { font-size: 9.25pt; }
-.leader-page .page-flow > ul,
-.leader-page .page-flow > ol { padding-left: 17px; }
-.leader-page .page-flow::after { content: ""; display: table; clear: both; }
-
-/* Player Guide faction overview headings */
+/* Player Guide faction overview headings do not have a direct old-Rulebook
+   counterpart; they borrow the established unboxed symbol language. */
 .faction-overview-heading {
   display: grid;
   grid-template-columns: .24in 1fr;
@@ -344,37 +111,27 @@ h1, h2, h3, h4 { font-family: var(--title); font-weight: 500; }
   mask: var(--overview-symbol) center / contain no-repeat;
 }
 
-/* Card anatomy plate for print. */
+/* Card Anatomy and Arcane are new v0.7.2 instructional surfaces. Their card
+   dimensions are governed by v071-parity.css; this file only provides the
+   figure/callout mechanics. */
 .booklet-card-anatomy-guide {
   margin: 7px 0 10px;
-  padding: 9px 10px 10px;
   border: 1px solid var(--line);
   background: rgba(255, 253, 248, .64);
   break-inside: avoid;
 }
 .booklet-card-anatomy-guide > h3 { margin-top: 0; }
 .booklet-card-anatomy-intro { margin-bottom: 7px !important; }
-.booklet-card-anatomy-layout {
-  display: grid;
-  grid-template-columns: 1.78in minmax(0, 1fr);
-  gap: .16in;
-  align-items: start;
-}
+.booklet-card-anatomy-layout { display: grid; }
 .booklet-card-figure { margin: 0; }
 .booklet-card-frame-wrap {
   position: relative;
-  width: 1.78in;
-  min-height: 2.42in;
   display: grid;
   place-items: center;
 }
 .booklet-card-frame {
-  width: 1.52in;
-  height: 2.13in;
   display: block;
-  border: 0;
   border-radius: .035in;
-  background: transparent;
   pointer-events: none;
 }
 .booklet-card-marker {
@@ -400,11 +157,10 @@ h1, h2, h3, h4 { font-family: var(--title); font-weight: 500; }
   width: .19in;
   border-top: .6px solid rgba(95, 20, 24, .72);
 }
-.booklet-card-marker.left { left: 0; }
 .booklet-card-marker.left::after { left: 100%; }
-.booklet-card-marker.right { right: 0; }
 .booklet-card-marker.right::after { right: 100%; }
-.booklet-card-marker.m1, .booklet-card-marker.m2 { top: 7%; }
+.booklet-card-marker.m1,
+.booklet-card-marker.m2 { top: 7%; }
 .booklet-card-marker.m3 { top: 23%; }
 .booklet-card-marker.m4 { top: 35%; }
 .booklet-card-marker.m5 { top: 60%; }
@@ -413,42 +169,34 @@ h1, h2, h3, h4 { font-family: var(--title); font-weight: 500; }
 .booklet-card-anatomy-key {
   margin: 0 !important;
   padding-left: 16px !important;
-  font-size: 6.6pt;
-  line-height: 1.17;
 }
 .booklet-card-anatomy-key li { margin-bottom: 3px; }
 .booklet-card-anatomy-key strong { font-size: 7pt; }
 .booklet-arcane-example {
-  margin-top: 8px;
-  padding: 7px 8px;
   display: grid;
-  grid-template-columns: 1.48in minmax(0, 1fr);
-  gap: 9px;
-  align-items: center;
   border-left: 3px solid #603d78;
   background: #efe7dc;
 }
-.booklet-arcane-crop {
-  width: 1.48in;
-  height: .64in;
-  overflow: hidden;
-  background: var(--paper);
+.booklet-arcane-frame { display: block; }
+.booklet-arcane-copy h4 {
+  margin: 0 0 3px;
+  color: #603d78;
 }
-.booklet-arcane-frame {
-  width: 1.48in;
-  height: 2.07in;
-  display: block;
-  border: 0;
-  transform: translateY(-.03in);
-  transform-origin: top left;
-  pointer-events: none;
+.booklet-arcane-copy p {
+  margin: 0;
+  font-size: 7.2pt;
+  line-height: 1.22;
 }
-.booklet-arcane-copy h4 { margin: 0 0 3px; color: #603d78; }
-.booklet-arcane-copy p { margin: 0; font-size: 7.2pt; line-height: 1.22; }
 
-/* Digital tools page */
+/* Digital Tools is modular-only content. Keep the publication typography and
+   open-rule visual language, but there is no historical page to copy. */
 .digital-tools-page .page-flow { font-size: 8.6pt; }
-.digital-tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-top: 8px; }
+.digital-tools-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+  margin-top: 8px;
+}
 .digital-tool {
   min-height: 1.73in;
   padding: 7px 8px;
@@ -467,59 +215,46 @@ h1, h2, h3, h4 { font-family: var(--title); font-weight: 500; }
   filter: none;
   mix-blend-mode: normal;
 }
-.digital-tool-copy { min-width: 0; font-size: 6.45pt; line-height: 1.22; }
-.digital-tool-copy strong { display: block; margin-bottom: 2px; font-family: var(--title); font-size: 8.6pt; line-height: 1.05; }
-.digital-tool-copy strong + strong { font-family: var(--ui); font-size: 5.65pt; letter-spacing: .01em; overflow-wrap: anywhere; }
+.digital-tool-copy {
+  min-width: 0;
+  font-size: 6.45pt;
+  line-height: 1.22;
+}
+.digital-tool-copy strong {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--title);
+  font-size: 8.6pt;
+  line-height: 1.05;
+}
+.digital-tool-copy strong + strong {
+  font-family: var(--ui);
+  font-size: 5.65pt;
+  letter-spacing: .01em;
+  overflow-wrap: anywhere;
+}
 .digital-tool-copy br { display: none; }
 
-/* Semantic woodcut padding pages */
-.woodcut-page .page-inner { padding: .5in; align-items: center; justify-content: center; }
-.woodcut-page img { width: 100%; max-width: 4.35in; max-height: 6.6in; object-fit: contain; filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
-.woodcut-mark { margin-top: .12in; color: #6a6660; font-family: var(--heritage); font-size: 13pt; letter-spacing: .06em; }
-.woodcut-page .footer-rule, .woodcut-page .folio { display: none; }
-
-/* Back cover — same geometry as the old rulebook, using publication accent. */
-.back-cover { color: var(--ink); background: var(--paper); }
-.back-cover .page-inner { padding: 0; }
-.back-band {
-  min-height: 2.12in;
-  padding: .48in .48in .34in;
-  color: #fffaf0;
-  background: var(--page-accent);
-}
-.back-flavor { margin: 0 0 15px; color: #fff5e9; font-size: 25pt; line-height: 1; }
-.back-band h2 { max-width: 4.15in; margin: 0; color: #fff; font-size: 25pt; line-height: .98; }
-.back-body {
-  flex: 1;
-  min-height: 0;
-  padding: .38in .48in .48in;
-  display: flex;
-  flex-direction: column;
-}
-.back-copy { max-width: 3.85in; margin: 0; color: var(--ink); font-size: 9pt; line-height: 1.38; }
-.back-url { align-self: flex-start; margin-top: 18px; padding: 7px 9px; border: 1px solid #555; color: #111; font-size: 7.2pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.back-accounting {
-  margin-top: auto;
-  padding-top: 11px;
-  display: grid;
-  grid-template-columns: .42in 1fr;
-  gap: 9px;
-  border-top: 1px solid var(--line-dark);
-  color: #555;
-  font-family: var(--ui);
-  font-size: 6.3pt;
-  line-height: 1.38;
-}
-.back-accounting img { width: .36in; max-height: .36in; filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; }
-.back-accounting strong, .back-accounting span { display: block; }
+/* Modular publication accounting content is new; back-cover geometry itself
+   comes from the production compatibility layer. */
+.back-accounting strong,
+.back-accounting span { display: block; }
 .back-accounting strong { color: var(--ink); }
 
 @media screen {
-  .page { margin: 0 auto 18px; box-shadow: 0 8px 28px rgba(0,0,0,.16); }
+  .page {
+    margin: 0 auto 18px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .16);
+  }
 }
 
 @media print {
   html, body { background: transparent !important; }
   .booklet-publication { width: auto; margin: 0; }
-  .page { margin: 0; box-shadow: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .page {
+    margin: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }
