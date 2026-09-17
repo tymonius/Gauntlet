@@ -26,6 +26,8 @@ function prepareDedicatedRuntime() {
   const browserUrl = '/rulebook/?rules=candidate&doc=';
   const printUrl = '/rulebook/booklet/?doc=';
   const browserLeaderWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });\n  }\n\n`;
+  const browserReadyPredicate = `      && document.querySelector('.rulebook-content.candidate-publication'),`;
+  const printReadyPredicate = `      && document.body.dataset.bookletReady === 'true'\n      && document.querySelector('.rulebook-content.candidate-publication'),`;
   const defaultMargins = `    margin: {\n      top: '0.45in',\n      bottom: '0.52in',\n      left: '0.42in',\n      right: '0.42in',\n    },`;
   const zeroMargins = `    margin: {\n      top: '0',\n      bottom: '0',\n      left: '0',\n      right: '0',\n    },`;
 
@@ -35,12 +37,16 @@ function prepareDedicatedRuntime() {
   if (!original.includes(browserLeaderWait)) {
     throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook leader-gallery wait; review the dedicated print adapter.');
   }
+  if (!original.includes(browserReadyPredicate)) {
+    throw new Error('Base modular renderer no longer exposes the expected publication-ready predicate; review the dedicated print adapter.');
+  }
   if (!original.includes(defaultMargins)) {
     throw new Error('Base modular renderer no longer exposes the expected reader margins; review the fixed-page print adapter.');
   }
 
   let runtime = original.replace(browserUrl, printUrl);
   runtime = runtime.replace(browserLeaderWait, '');
+  runtime = runtime.replace(browserReadyPredicate, printReadyPredicate);
   runtime = runtime.replace('displayHeaderFooter: true,', 'displayHeaderFooter: false,');
   runtime = runtime.replace('preferCSSPageSize: false,', 'preferCSSPageSize: true,');
   runtime = runtime.replace(defaultMargins, zeroMargins);
