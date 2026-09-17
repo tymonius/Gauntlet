@@ -27,7 +27,7 @@ function prepareDedicatedRuntime() {
   const printUrl = '/rulebook/booklet/?doc=';
   const browserLeaderWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });\n  }\n\n`;
   const browserReadyPredicate = `      && document.querySelector('.rulebook-content.candidate-publication'),`;
-  const printReadyPredicate = `      && document.body.dataset.bookletReady === 'true'\n      && document.querySelector('.rulebook-content.candidate-publication'),`;
+  const printReadyPredicate = `      && document.body.dataset.bookletReady === 'true'\n      && document.body.dataset.bookletMarkersReady === 'true'\n      && document.querySelector('.rulebook-content.candidate-publication'),`;
   const defaultMargins = `    margin: {\n      top: '0.45in',\n      bottom: '0.52in',\n      left: '0.42in',\n      right: '0.42in',\n    },`;
   const zeroMargins = `    margin: {\n      top: '0',\n      bottom: '0',\n      left: '0',\n      right: '0',\n    },`;
 
