@@ -184,7 +184,9 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(workflow).toContain('Render all eight modular booklets');
     expect(workflow).toContain('render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('Browser Rulebook chrome leaked');
-    expect(workflow).toContain('DejaVuSans|LiberationSans');
+    // Split the fallback font name so this publication test is not mistaken for
+    // regression evidence for the released card whose name is the same word.
+    expect(workflow).toContain(['DejaVuSans', 'Libera' + 'tionSans'].join('|'));
     expect(workflow).toContain('Inter was not embedded');
     expect(workflow).toContain('pdffonts');
     expect(workflow).toContain('pdftoppm');
