@@ -122,7 +122,7 @@ async function waitForCandidate(page, document) {
       () => !document.querySelector('.card-anatomy-guide')
         || document.querySelector('.card-anatomy-guide')?.classList.contains('markers-positioned'),
       null,
-      { timeout: 30000 },
+      { timeout: 15000 },
     );
   }
 
@@ -162,6 +162,7 @@ try {
     fs.mkdirSync(directory, { recursive: true });
 
     for (const document of DOCUMENTS) {
+      console.log(`Rendering ${viewport.id} ${document.id}...`);
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
       try {
         await page.goto(
@@ -171,8 +172,13 @@ try {
         await page.addStyleTag({ content: '.analytics-consent { display:none !important; }' });
         const diagnostics = await waitForCandidate(page, document);
         await page.screenshot({
-          path: path.join(directory, `${document.id}-full.png`),
-          fullPage: true,
+          path: path.join(directory, `${document.id}-viewport.png`),
+          fullPage: false,
+        });
+
+        const masthead = page.locator('.candidate-masthead');
+        await masthead.screenshot({
+          path: path.join(directory, `${document.id}-masthead.png`),
         });
 
         if (document.faction) {
@@ -182,10 +188,36 @@ try {
           });
         }
 
-        const masthead = page.locator('.candidate-masthead');
-        await masthead.screenshot({
-          path: path.join(directory, `${document.id}-masthead.png`),
-        });
+        const anatomy = page.locator('.card-anatomy-guide');
+        if (await anatomy.count()) {
+          await anatomy.screenshot({
+            path: path.join(directory, `${document.id}-card-anatomy.png`),
+          });
+        }
+
+        if (document.id === 'player-guide') {
+          const factionOverview = page.locator('.candidate-faction-overview').first();
+          if (await factionOverview.count()) {
+            await factionOverview.screenshot({
+              path: path.join(directory, 'player-guide-faction-overview.png'),
+            });
+          }
+        }
+
+        if (document.id === 'complete-rules') {
+          const part = page.locator('.candidate-part-heading').first();
+          if (await part.count()) {
+            await part.screenshot({
+              path: path.join(directory, 'complete-rules-part-heading.png'),
+            });
+          }
+          const factionPart = page.locator('.candidate-faction-part-heading').first();
+          if (await factionPart.count()) {
+            await factionPart.screenshot({
+              path: path.join(directory, 'complete-rules-faction-part.png'),
+            });
+          }
+        }
 
         report.push({
           document: document.id,
