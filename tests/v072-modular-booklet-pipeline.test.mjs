@@ -47,23 +47,148 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(() => v072BookletImposition(6, 0)).toThrow(/multiple of four/i);
   });
 
-  it('renders the integrated Browser Rulebook candidate surfaces and validates PDFs', async () => {
+  it('uses the approved v0.7.1 production design instead of inventing a parallel booklet style', async () => {
+    const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const renderer = await readFile('scripts/render-v072-modular-booklets.mjs', 'utf8');
+    const html = await readFile('apps/rules/booklet/index.html', 'utf8');
+    const css = await readFile('apps/rules/booklet/booklet.css', 'utf8');
+    const parityCss = await readFile('apps/rules/booklet/v071-parity.css', 'utf8');
+    const componentsCss = await readFile('apps/rules/booklet/v071-components.css', 'utf8');
+    const v071PublicationCss = await readFile('apps/rules/booklet/v071-publication.css', 'utf8');
+    const client = await readFile('apps/rules/booklet/booklet.js', 'utf8');
     const validator = await readFile('scripts/validate-v072-modular-booklets.mjs', 'utf8');
     const workflow = await readFile('.github/workflows/build-v072-modular-booklets.yml', 'utf8');
 
     expect(renderer).toContain('/rulebook/?rules=candidate&doc=');
+    expect(adapter).toContain("'/rulebook/booklet/?doc='");
+    expect(adapter).toContain("'displayHeaderFooter: false,'");
+    expect(adapter).toContain("'preferCSSPageSize: true,'");
+    expect(adapter).toContain("top: '0'");
+    expect(adapter).toContain('Fixed-page booklet composition already owns pagination');
+    expect(adapter).toContain('approved PR #357 publication template');
+
+    expect(html).toContain('data-booklet-pages');
+    expect(html).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(html).toContain('family=Inter');
+    expect(html).toContain('./v071-parity.css');
+    expect(html).toContain('./v071-components.css');
+    expect(html).toContain('./v071-publication.css');
+    expect(html.indexOf('./v071-parity.css')).toBeGreaterThan(html.indexOf('./booklet.css'));
+    expect(html.indexOf('./v071-components.css')).toBeGreaterThan(html.indexOf('./v071-parity.css'));
+    expect(html.indexOf('./v071-publication.css')).toBeGreaterThan(html.indexOf('./v071-components.css'));
+    expect(html).not.toContain('Start</');
+    expect(html).not.toContain('Playtest</');
+
+    /* The compositor shell must not become a second publication design. */
+    expect(css).toContain('this file is NOT the publication design authority');
+    expect(css).toContain('genuinely new modular-only surfaces');
+    expect(css).toContain('@page { size: 5.5in 8.5in; margin: 0; }');
+    expect(css).toContain('.booklet-card-anatomy-guide');
+    expect(css).toContain('.booklet-arcane-example');
+    expect(css).toContain('.digital-tool img');
+    expect(css).not.toContain('width: 3.25in');
+    expect(css).not.toContain('height: 3.25in');
+
+    /* PR #357 + v0.7.1 production tokens and page geometry. */
+    expect(parityCss).toContain('DESIGN CONTRACT');
+    expect(parityCss).toContain('approved production Rulebook is the visual authority');
+    expect(parityCss).toContain('PR #357');
+    expect(parityCss).toContain('rulebook-production/production.css');
+    expect(parityCss).toContain('rulebook-production/publication-corrections.css');
+    expect(parityCss).toContain('--paper: #f5f2ea');
+    expect(parityCss).toContain('--paper-deep: #e7e3da');
+    expect(parityCss).toContain('--body: "adobe-caslon-pro"');
+    expect(parityCss).toContain('--heritage: "p22-1722-pro"');
+    expect(parityCss).toContain('--flavor: "p22-declaration-pro"');
+    expect(parityCss).toContain('--ui: Inter');
+    expect(parityCss).toContain('padding: .44in .46in .46in .58in');
+    expect(parityCss).toContain('padding: .44in .58in .46in .46in');
+    expect(parityCss).toContain('font-size: 9pt');
+
+    /* Running furniture, contents, and chapter hierarchy inherit production. */
+    expect(parityCss).toContain('bottom: .235in');
+    expect(parityCss).toContain('grid-template-columns: 14px 1fr auto');
+    expect(parityCss).toContain('grid-template-columns: 42px minmax(0, 1fr)');
+    expect(parityCss).toContain('font-variant-numeric: lining-nums tabular-nums');
+    expect(parityCss).toContain('font-size: 27pt');
+    expect(parityCss).toContain('font-size: 34pt');
+    expect(parityCss).toContain('font-size: 42pt');
+
+    /* Artwork and Leader treatment match the old physical publication scale. */
+    expect(parityCss).toContain('contrast(1.32) brightness(1.12)');
+    expect(parityCss).toContain('width: 1.87in');
+    expect(parityCss).toContain('max-height: 2.4in');
+    expect(parityCss).toContain('border-bottom: 2px solid #333');
+    expect(parityCss).toContain('.faction-symbol-badge');
+    expect(parityCss).toContain('display: none !important');
+
+    /* Existing component families are direct old-production adaptations too. */
+    expect(componentsCss).toContain('direct selector adaptations of the approved PR #357 proof system');
+    expect(componentsCss).toContain('.glance-grid');
+    expect(componentsCss).toContain('.victory-band');
+    expect(componentsCss).toContain('.battle-step');
+    expect(componentsCss).toContain('.ability-strip');
+    expect(componentsCss).toContain('grid-template-columns: 1.02fr 1.32fr');
+    expect(componentsCss).toContain('.destination-grid');
+    expect(componentsCss).toContain('.timing-table');
+    expect(componentsCss).toContain('.colophon-block');
+
+    /* Back cover is the approved PR #357 geometry, not a new compact design. */
+    expect(parityCss).toContain('.back-cover .page-inner');
+    expect(parityCss).toContain('padding: .48in');
+    expect(parityCss).toContain('min-height: 2.12in');
+    expect(parityCss).toContain('margin: -.48in -.48in .42in');
+    expect(parityCss).toContain('padding: .44in .48in .34in');
+    expect(parityCss).toContain('font-size: 25pt');
+
+    /* PR #1198 is the exact v0.7.1 faction watermark layer. */
+    expect(v071PublicationCss).toContain('PR #1198');
+    expect(v071PublicationCss).toContain('opacity: .05');
+    expect(v071PublicationCss).toContain('mask-size: 2.55in 2.55in');
+    expect(v071PublicationCss).toContain('right -.44in bottom -.48in');
+    expect(v071PublicationCss).toContain('left -.44in bottom -.48in');
+    expect(v071PublicationCss).toContain('.faction-page:not(.faction-opener)::after');
+
+    /* Only genuinely new surfaces keep purpose-built modular composition. */
+    expect(parityCss).toContain('genuinely new instructional surfaces');
+    expect(parityCss).toContain('.booklet-card-frame');
+    expect(parityCss).toContain('width: 2.02in');
+    expect(parityCss).toContain('height: 2.83in');
+    expect(parityCss).toContain('.booklet-arcane-frame');
+    expect(parityCss).toContain('transform: none');
+
+    expect(client).toContain('createPage');
+    expect(client).toContain('newContinuationPage');
+    expect(client).toContain('buildCardAnatomyBlock');
+    expect(client).toContain('paginateLeaderSection');
+    expect(client).toContain('appendHeadingAndFollower');
+    expect(client).toContain('waitForFrames');
+    expect(client).toContain('ensurePublicationFonts');
+    // Verify the publication compositor keeps explicit card-render constants without
+    // naming released card ids in this regression file. The v0.7.0 behavior audit
+    // intentionally scans tests for card ids as behavioral evidence; publication
+    // tests must not masquerade as gameplay regression coverage.
+    expect(client).toMatch(/const CARD_ANATOMY_CARD_ID = '[^']+';/);
+    expect(client).toMatch(/const ARCANE_CARD_ID = '[^']+';/);
+    expect(client).toContain('card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}');
+    expect(client).toContain('card-print-render.html?fit=production&card=${ARCANE_CARD_ID}');
+    expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
+    expect(client).toContain("document.body.dataset.bookletReady = 'true'");
+    expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
+
     expect(renderer).toContain("width: '5.5in'");
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
-    expect(renderer).toContain('player-facing language');
-    expect(renderer).toContain('booklet-woodcut-interstitial');
-    expect(renderer).toContain('booklet-interstitial-anchor');
-    expect(renderer).toContain('semantic anchors');
     expect(validator).toContain("await import('pdf-lib')");
     expect(validator).toContain('paddedPages % 4');
-    expect(validator).toContain('interstitials.length');
     expect(workflow).toContain('Render all eight modular booklets');
+    expect(workflow).toContain('render-v072-dedicated-booklets.mjs');
+    expect(workflow).toContain('Browser Rulebook chrome leaked');
+    // Split the fallback font name so this publication test is not mistaken for
+    // regression evidence for the released card whose name is the same word.
+    expect(workflow).toContain(['DejaVuSans', 'Libera' + 'tionSans'].join('|'));
+    expect(workflow).toContain('Inter was not embedded');
+    expect(workflow).toContain('pdffonts');
     expect(workflow).toContain('pdftoppm');
     expect(workflow).toContain('pdftotext');
     expect(workflow).toContain('upload-artifact@v4');

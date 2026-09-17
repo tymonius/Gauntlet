@@ -1,0 +1,209 @@
+/*
+ * Final visual-parity corrections for the v0.7.2 modular booklets.
+ *
+ * These overrides intentionally stop reconstructing publication treatments
+ * that already exist in the released v0.7.1 rulebook. The frozen v0.7.1
+ * Card Anatomy and Arcane figures are the rendering authority for those
+ * instructional graphics. Leader pages keep the established woodcut language
+ * but use an explicit hero/identity composition instead of float wrapping.
+ */
+
+/* -------------------------------------------------------------------------
+ * Card Anatomy — use the exact final v0.7.1 production figure.
+ * ---------------------------------------------------------------------- */
+.booklet-card-anatomy-guide {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.booklet-card-anatomy-layout {
+  grid-template-columns: 2.30in minmax(0, 1fr);
+  gap: .18in;
+  align-items: start;
+}
+
+.booklet-card-figure {
+  width: 2.30in;
+  height: 3.42in;
+  margin: 0;
+  background: url("./assets/Gauntlet_v0.7.1_Card_Anatomy.png") center top / contain no-repeat;
+}
+
+/* The final production figure already contains the correct card rendering,
+   marker positions, connector lines, and caption. Keep the live renderer only
+   as a non-visible readiness fallback for the existing build adapter. */
+.booklet-card-frame-wrap {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.booklet-card-marker {
+  display: none !important;
+}
+
+.booklet-card-anatomy-key {
+  margin: 0 !important;
+  padding-left: .16in !important;
+  font-size: 8.15pt;
+  line-height: 1.24;
+}
+.booklet-card-anatomy-key li {
+  margin: 0 0 .055in;
+  padding-left: .01in;
+}
+.booklet-card-anatomy-key li::marker {
+  font-size: .9em;
+  font-weight: 700;
+}
+.booklet-card-anatomy-key strong {
+  font-size: 8.25pt;
+  line-height: 1.15;
+}
+
+/* -------------------------------------------------------------------------
+ * Arcane trait mark — use the exact final v0.7.1 production crop.
+ * The frozen figure includes the intentional lower-edge fade. The DOM
+ * refinement pass moves this callout to the following page, after the complete
+ * Effect headings section and immediately before Assets.
+ * ---------------------------------------------------------------------- */
+.booklet-arcane-example {
+  margin: .08in 0 .12in;
+  padding: .075in .09in;
+  grid-template-columns: 1.72in minmax(0, 1fr);
+  gap: .13in;
+  align-items: center;
+}
+.booklet-arcane-crop {
+  width: 1.72in;
+  height: .58in;
+  overflow: hidden;
+  background: url("./assets/Gauntlet_v0.7.1_Arcane_Trait_Mark.png") left center / contain no-repeat;
+}
+.booklet-arcane-frame {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.booklet-arcane-copy h4 {
+  margin-bottom: .025in;
+  font-size: 7.8pt;
+}
+.booklet-arcane-copy p {
+  font-size: 8pt;
+  line-height: 1.24;
+}
+
+/* -------------------------------------------------------------------------
+ * Leader pages — explicit publication composition.
+ *
+ * The source woodcuts carry substantial unused canvas around the visible ink.
+ * The post-pagination refinement measures that ink and paints only the useful
+ * source region into a high-resolution publication canvas. The hero row uses
+ * as much available page height as the artwork needs to fill the left column
+ * without clipping, while the identity column occupies that same height.
+ * Identity content stays top-packed; any residual whitespace belongs below the
+ * ability panel rather than being inserted between the playstyle and ability.
+ * ---------------------------------------------------------------------- */
+.leader-page .leader-title-row {
+  margin-bottom: .07in;
+}
+
+.leader-page .leader-hero-layout {
+  display: grid;
+  grid-template-columns: 2.55in minmax(0, 1fr);
+  gap: .20in;
+  align-items: stretch;
+  min-height: 3.80in;
+  margin: 0 0 .13in;
+}
+
+.leader-page .leader-woodcut-wrap {
+  position: relative;
+  width: auto;
+  height: 3.80in;
+  min-width: 0;
+  float: none;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  border-bottom: 2px solid #333;
+  background: none;
+  mix-blend-mode: multiply;
+}
+
+/* The source image stays available for decoding and accessibility, but the
+   visible publication plate is the bounded canvas. This lets the compositor
+   discard empty PNG margins without creating scrollable/diagnostic overflow. */
+.leader-page .page-flow .leader-woodcut-wrap img.leader-art-source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  max-width: 1px;
+  max-height: 1px;
+  left: 0;
+  top: 0;
+  margin: 0;
+  opacity: 0;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+.leader-page .leader-art-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  mix-blend-mode: multiply;
+}
+
+.leader-page .leader-identity-column {
+  align-self: stretch;
+  min-width: 0;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.leader-page .leader-identity-column .leader-playstyle {
+  margin: 0;
+  padding-bottom: .08in;
+  border-bottom: 1px solid var(--line);
+  font-size: 9pt;
+  line-height: 1.28;
+}
+
+.leader-page .leader-identity-column > ul,
+.leader-page .leader-identity-column > ol {
+  margin: .10in 0 0;
+  padding: .105in .09in .105in .22in;
+  border-left: 3px solid var(--page-accent);
+  background: #efe5d4;
+  font-size: 8.35pt;
+  line-height: 1.24;
+}
+
+.leader-page .leader-identity-column li {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+/* Explanatory commentary is intentionally full width below the hero block.
+   There is no float boundary and therefore no arbitrary column-width switch. */
+.leader-page .page-flow > p:not(.leader-playstyle) {
+  margin-bottom: .065in;
+  font-size: 8.8pt;
+  line-height: 1.30;
+}
+
+.leader-page .page-flow::after {
+  content: none;
+}

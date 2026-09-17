@@ -60,7 +60,7 @@
     {"source": "apps/press", "publicPath": "/press/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/privacy", "publicPath": "/privacy/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "legacy/rulebook-browser", "publicPath": "/rulebook/", "kind": "release-transition-app", "manageIndexRoutes": true},
-    {"source": "apps/rules", "publicPath": "/rules/", "kind": "compatibility-route", "manageIndexRoutes": true},
+    {"source": "apps/rules", "publicPath": "/rules/", "kind": "compatibility-route", "manageIndexRoutes": true, "excludeSourceSubpaths": ["booklet"]},
     {"source": "apps/start", "publicPath": "/start/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "apps/playtest", "publicPath": "/playtest/", "kind": "current-app", "manageIndexRoutes": true},
     {"source": "packages/game-data", "publicPath": "/game-data/", "kind": "shared-browser-contract", "manageIndexRoutes": false},

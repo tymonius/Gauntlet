@@ -5,11 +5,14 @@ on:
   pull_request:
     paths:
       - '.github/workflows/build-v072-modular-booklets.yml'
+      - 'apps/rules/booklet/**'
+      - 'apps/rules/markdown.js'
       - 'config/publication-boundary.json'
       - 'legacy/rulebook-browser/**'
       - 'packages/game-data/current-game.json'
       - 'packages/rules/**'
       - 'scripts/publication-boundary.mjs'
+      - 'scripts/render-v072-dedicated-booklets.mjs'
       - 'scripts/render-v072-modular-booklets.mjs'
       - 'scripts/validate-v072-modular-booklets.mjs'
       - 'tests/v072-modular-booklet-pipeline.test.mjs'
@@ -41,11 +44,13 @@ jobs:
       - name: Check modular booklet scripts
         run: |
           node --check packages/rules/publication/v072-modular-booklets.mjs
+          node --check scripts/render-v072-dedicated-booklets.mjs
           node --check scripts/render-v072-modular-booklets.mjs
           node --check scripts/validate-v072-modular-booklets.mjs
+          node --check apps/rules/booklet/booklet.js
 
       - name: Render all eight modular booklets
-        run: node scripts/render-v072-modular-booklets.mjs
+        run: node scripts/render-v072-dedicated-booklets.mjs
 
       - name: Validate booklet contract and imposition
         run: node scripts/validate-v072-modular-booklets.mjs
@@ -58,8 +63,24 @@ jobs:
           for pdf in artifacts/rules-booklets/v0.7.2/*_Booklet.pdf; do
             stem="$(basename "$pdf" .pdf)"
             pdfinfo "$pdf"
-            pdftotext "$pdf" - | grep -q '[[:alnum:]]'
-            pdftoppm -f 1 -singlefile -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side-1"
+            text="$(pdftotext "$pdf" -)"
+            fonts="$(pdffonts "$pdf")"
+            grep -q '[[:alnum:]]' <<< "$text"
+            if grep -Eiq 'Official Browser Rulebook|Release candidate rules|Start[[:space:]]+Playtest[[:space:]]+Rules[[:space:]]+Factions[[:space:]]+Deckbuilder' <<< "$text"; then
+              echo "Browser Rulebook chrome leaked into $pdf" >&2
+              exit 1
+            fi
+            if grep -Eiq 'DejaVuSans|LiberationSans' <<< "$fonts"; then
+              echo "Sans-serif fallback font leaked into $pdf" >&2
+              printf '%s\n' "$fonts" >&2
+              exit 1
+            fi
+            if ! grep -Eiq 'Inter' <<< "$fonts"; then
+              echo "Inter was not embedded in $pdf" >&2
+              printf '%s\n' "$fonts" >&2
+              exit 1
+            fi
+            pdftoppm -f 1 -l 6 -png -r 140 "$pdf" "artifacts/rules-booklets/v0.7.2/previews/${stem}-side"
           done
 
       - name: Upload modular booklet review artifact
