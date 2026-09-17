@@ -1,47 +1,165 @@
 /*
- * v0.7.1 faction watermark treatment, copied from the production Rulebook
- * publication layer introduced in PR #1198. The booklet compositor uses
- * different selectors/variable names, but the production geometry is kept
- * exactly: 2.55in field, 5% opacity, mirrored lower outside-corner crop.
+ * v0.7.1 publication inheritance for the modular booklet compositor.
+ *
+ * The first block preserves the original PR #1198 watermark layer that was
+ * initially ported into the v0.7.2 compositor. PR #1210 subsequently changed
+ * the production v0.7.1 treatment after visual review; the final production
+ * values are applied below and are the rendering authority.
  */
 
+/* Historical PR #1198 base. */
 .faction-page::before {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  width: auto !important;
-  height: auto !important;
-  z-index: 0 !important;
-  background: var(--page-accent) !important;
-  opacity: .05 !important;
-  -webkit-mask-image: var(--booklet-symbol) !important;
-  -webkit-mask-repeat: no-repeat !important;
-  -webkit-mask-size: 2.55in 2.55in !important;
-  mask-image: var(--booklet-symbol) !important;
-  mask-repeat: no-repeat !important;
-  mask-size: 2.55in 2.55in !important;
-  pointer-events: none !important;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--page-accent);
+  opacity: .05;
+  -webkit-mask-image: var(--booklet-symbol);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 2.55in 2.55in;
+  mask-image: var(--booklet-symbol);
+  mask-repeat: no-repeat;
+  mask-size: 2.55in 2.55in;
+  pointer-events: none;
 }
-
 .faction-page.right::before {
-  -webkit-mask-position: right -.44in bottom -.48in !important;
-  mask-position: right -.44in bottom -.48in !important;
+  -webkit-mask-position: right -.44in bottom -.48in;
+  mask-position: right -.44in bottom -.48in;
+}
+.faction-page.left::before {
+  -webkit-mask-position: left -.44in bottom -.48in;
+  mask-position: left -.44in bottom -.48in;
 }
 
+/*
+ * FINAL v0.7.1 PRODUCTION WATERMARK — PR #1210.
+ * The released booklet enlarged the mark to 3.9in at 9% opacity and moved it
+ * farther into the lower outside corner. It also isolated the page and put the
+ * pseudo-element behind the page contents instead of creating a page-inner
+ * stacking context. These are the values visible in the final v0.7.1 booklet.
+ */
+.faction-page {
+  isolation: isolate;
+}
+.faction-page::before {
+  z-index: -1;
+  opacity: .09;
+  -webkit-mask-size: 3.9in 3.9in;
+  mask-size: 3.9in 3.9in;
+}
+.faction-page.right::before {
+  -webkit-mask-position: right -.62in bottom -.72in;
+  mask-position: right -.62in bottom -.72in;
+}
 .faction-page.left::before {
-  -webkit-mask-position: left -.44in bottom -.48in !important;
-  mask-position: left -.44in bottom -.48in !important;
+  -webkit-mask-position: left -.62in bottom -.72in;
+  mask-position: left -.62in bottom -.72in;
+}
+
+/* Do not reintroduce the stacking context that PR #1210 removed. */
+.faction-page .page-inner {
+  position: static;
+  z-index: auto;
+}
+.faction-page .footer-rule,
+.faction-page .folio {
+  z-index: auto;
 }
 
 /* Retire the experimental continuation pseudo-element so every faction page
-   uses the single v0.7.1 production watermark treatment above. */
+   uses the single final-production watermark treatment above. */
 .faction-page:not(.faction-opener)::after {
   content: none !important;
 }
 
-.faction-page .page-inner,
-.faction-page .footer-rule,
-.faction-page .folio {
+/*
+ * The approved color-edition Rulebook used #fbf7ee on every page. The modular
+ * back cover had accidentally fallen back to --paper (#f5f2ea), producing the
+ * visible front/back color mismatch.
+ */
+.back-cover {
+  background: #fbf7ee !important;
+}
+
+/*
+ * The modular Faction Guides give each Leader an entire page. Keep the same
+ * production woodcut treatment but use the available one-Leader composition
+ * rather than the undersized first-pass float.
+ */
+.leader-woodcut-wrap {
+  width: 2.28in;
+  height: 3.05in;
+  margin: 2px .22in .12in 0;
+}
+.page-flow .leader-woodcut-wrap img {
+  width: 100%;
+  height: 100%;
+  max-height: 3.05in;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: none;
+  mix-blend-mode: multiply;
+  opacity: 1;
+}
+
+/*
+ * Card Anatomy: reuse the live production renderer with the same 15rem x 21rem
+ * viewport used by the established Browser Rulebook. The prior compositor made
+ * the iframe itself smaller, which changed its viewport and clipped the card.
+ * Scale the proven viewport visually instead.
+ */
+.booklet-card-anatomy-guide {
+  border: 0;
+  background: transparent;
+}
+.booklet-card-frame-wrap {
   position: relative;
-  z-index: 1;
+  width: 2.18in;
+  height: 3.10in;
+  min-height: 3.10in;
+  display: block;
+  overflow: visible;
+}
+.booklet-card-frame {
+  position: absolute;
+  left: .08in;
+  top: .135in;
+  width: 15rem;
+  height: 21rem;
+  border: 0;
+  transform: scale(.808);
+  transform-origin: top left;
+  background: transparent;
+  overflow: hidden;
+}
+
+/*
+ * Arcane trait mark: the established component intentionally shows only the
+ * Witchcraft header crop. Preserve its 15rem x 21rem renderer viewport and the
+ * old 4.5rem crop, scaled to the booklet column, instead of displaying a
+ * truncated full card.
+ */
+.booklet-arcane-example {
+  grid-template-columns: 1.56in minmax(0, 1fr);
+  align-items: center;
+}
+.booklet-arcane-crop {
+  position: relative;
+  width: 1.56in;
+  height: .468in;
+  overflow: hidden;
+  background: transparent;
+}
+.booklet-arcane-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 15rem;
+  height: 21rem;
+  border: 0;
+  transform: scale(.624);
+  transform-origin: top left;
+  background: transparent;
+  pointer-events: none;
 }
