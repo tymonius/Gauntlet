@@ -94,14 +94,18 @@ async function waitForCandidate(page, document) {
   );
 
   await page.evaluate(async () => {
-    await document.fonts?.ready;
+    const timeout = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+    await Promise.race([document.fonts?.ready || Promise.resolve(), timeout(5000)]);
     const images = [...document.images];
     await Promise.all(images.map(image => image.complete
       ? Promise.resolve()
-      : new Promise(resolve => {
-          image.addEventListener('load', resolve, { once: true });
-          image.addEventListener('error', resolve, { once: true });
-        })));
+      : Promise.race([
+          new Promise(resolve => {
+            image.addEventListener('load', resolve, { once: true });
+            image.addEventListener('error', resolve, { once: true });
+          }),
+          timeout(5000),
+        ])));
   });
 
   if (document.faction) {
