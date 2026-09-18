@@ -596,7 +596,7 @@ export function shouldPromoteR22DirectProcedure(question, sources = []) {
     )
   ) return true;
 
-  const additionalTactic = /\b(?:\+\s*\d+\s+tactic|additional tactic|extra tactic)\b/.test(current)
+  const additionalTactic = /(?:\+\s*\d+\s+tactics?\b|\b(?:additional|extra)\s+tactics?\b)/.test(current)
     && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
   if (
     additionalTactic
