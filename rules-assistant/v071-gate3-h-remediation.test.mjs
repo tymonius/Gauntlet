@@ -34,7 +34,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche H r19 remediation", () => {
   test("bumps production behavior to r19", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-26");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-27");
   });
 
   test("does not ask which Proposal for the universal Stake/Leverage rule", () => {
