@@ -64,6 +64,7 @@ function markDedicatedPublicationSurface() {
   manifest.renderContract.publicationSurface = 'fixed half-letter print composition derived from the approved PR #357 publication template; Browser Rulebook chrome is not part of the PDF surface';
   manifest.renderContract.runningFurniture = 'Running heads, rules, and outside-edge folios are composed inside each fixed half-letter reader page before saddle-stitch imposition.';
   manifest.renderContract.pagination = 'Every publication section begins on a designed fixed page; continuation pages are measured in-browser and the reader is padded to a multiple of four before imposition.';
+  manifest.renderContract.pagePadding = 'When padding is required, the first hero-woodcut filler occupies the inside front cover; any additional fillers are spread across semantic section boundaries, and filler pages are never adjacent.';
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
