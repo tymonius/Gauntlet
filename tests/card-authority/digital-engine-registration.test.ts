@@ -12,6 +12,22 @@ const OUTPUT = path.join(
   process.cwd(),
   'artifacts/card-authority/digital-engine-registration.json',
 );
+const BASELINE = path.join(
+  process.cwd(),
+  'config/v070-digital-engine-registration-authority.json',
+);
+
+interface V070DigitalEngineRegistrationBaseline {
+  schemaVersion: 1;
+  releaseVersion: string;
+  actionSurfaces: number;
+  executableActionSurfaces: number;
+  battleSurfaces: number;
+  registeredBattleSurfaces: number;
+  unsupportedActionSurfaceIds: string[];
+  unsupportedBattleSurfaceKeys: string[];
+  note: string;
+}
 
 function battleEffects(cardId: string) {
   const card = v070CanonicalContent.cardsById.get(cardId);
@@ -22,10 +38,32 @@ function battleEffects(cardId: string) {
   ) ?? [];
 }
 
+function battleSurfaceKey(
+  cardId: string,
+  index: number,
+  label: string,
+): string {
+  return `${cardId}::${index}::${label}`;
+}
+
+function registrationBaseline(): V070DigitalEngineRegistrationBaseline {
+  return JSON.parse(
+    fs.readFileSync(BASELINE, 'utf8'),
+  ) as V070DigitalEngineRegistrationBaseline;
+}
+
 describe('v0.7.0 digital engine effect registration', () => {
-  test('inventories Action and battle registrations against frozen released surfaces', () => {
+  test('locks Action and battle registration against the reviewed parity baseline', () => {
+    const baseline = registrationBaseline();
     const executableActions = new Set<string>(V070_EXECUTABLE_ACTION_CARD_IDS);
     const supportedBattle = new Set<string>(V070_SUPPORTED_REVEAL_EFFECT_IDS);
+
+    expect(baseline.schemaVersion).toBe(1);
+    expect(v070CanonicalContent.rulesVersion).toBe(baseline.releaseVersion);
+    expect(
+      supportedBattle.size,
+      'Battle registration must not contain duplicate card IDs.',
+    ).toBe(V070_SUPPORTED_REVEAL_EFFECT_IDS.length);
 
     for (const cardId of executableActions) {
       const card = v070CanonicalContent.cardsById.get(cardId);
@@ -74,10 +112,13 @@ describe('v0.7.0 digital engine effect registration', () => {
             }
           : null,
         battle: battles.map(({ effect, index }) => ({
+          key: battleSurfaceKey(card.id, index, effect.label),
           index,
           label: effect.label,
           text: effect.text,
-          registered: supportedBattle.has(card.id),
+          registered:
+            supportedBattle.has(card.id)
+            && handler?.expectedText === effect.text,
           handlerExpectedTextMatches: handler?.expectedText === effect.text,
         })),
       };
@@ -85,32 +126,61 @@ describe('v0.7.0 digital engine effect registration', () => {
 
     const actionSurfaces = cards.filter(card => card.action);
     const battleSurfaces = cards.flatMap(card => card.battle);
-    const report = {
-      schemaVersion: 1,
-      releaseVersion: v070CanonicalContent.rulesVersion,
-      actionSurfaces: actionSurfaces.length,
-      executableActionSurfaces: actionSurfaces.filter(card => card.action?.executable).length,
-      unsupportedActionSurfaces: actionSurfaces
-        .filter(card => !card.action?.executable)
-        .map(card => card.id),
-      battleSurfaces: battleSurfaces.length,
-      registeredBattleSurfaces: battleSurfaces.filter(effect => effect.registered).length,
-      unsupportedBattleSurfaces: cards.flatMap(card => card.battle
+    const unsupportedActionSurfaces = actionSurfaces
+      .filter(card => !card.action?.executable)
+      .map(card => card.id)
+      .sort();
+    const unsupportedBattleSurfaces = cards
+      .flatMap(card => card.battle
         .filter(effect => !effect.registered)
         .map(effect => ({
+          key: effect.key,
           cardId: card.id,
           cardName: card.name,
           index: effect.index,
           label: effect.label,
           text: effect.text,
-        }))),
+        })))
+      .sort((left, right) => left.key.localeCompare(right.key));
+    const unsupportedBattleSurfaceKeys = unsupportedBattleSurfaces
+      .map(effect => effect.key);
+
+    const report = {
+      schemaVersion: 2,
+      releaseVersion: v070CanonicalContent.rulesVersion,
+      actionSurfaces: actionSurfaces.length,
+      executableActionSurfaces: actionSurfaces.filter(card => card.action?.executable).length,
+      unsupportedActionSurfaces,
+      battleSurfaces: battleSurfaces.length,
+      registeredBattleSurfaces: battleSurfaces.filter(effect => effect.registered).length,
+      unsupportedBattleSurfaceKeys,
+      unsupportedBattleSurfaces,
       cards,
     };
+
+    expect(report.actionSurfaces).toBe(baseline.actionSurfaces);
+    expect(report.executableActionSurfaces).toBe(
+      baseline.executableActionSurfaces,
+    );
+    expect(report.unsupportedActionSurfaces).toEqual(
+      baseline.unsupportedActionSurfaceIds,
+    );
+    expect(report.battleSurfaces).toBe(baseline.battleSurfaces);
+    expect(report.registeredBattleSurfaces).toBe(
+      baseline.registeredBattleSurfaces,
+    );
+    expect(report.unsupportedBattleSurfaceKeys).toEqual(
+      baseline.unsupportedBattleSurfaceKeys,
+    );
+    expect(
+      report.registeredBattleSurfaces
+        + report.unsupportedBattleSurfaceKeys.length,
+    ).toBe(report.battleSurfaces);
 
     fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
     fs.writeFileSync(OUTPUT, `${JSON.stringify(report, null, 2)}\n`);
     console.log(
-      `v0.7.0 engine registration: ${report.executableActionSurfaces}/${report.actionSurfaces} Action surfaces executable; ${report.registeredBattleSurfaces}/${report.battleSurfaces} battle surfaces registered.`,
+      `v0.7.0 engine registration: ${report.executableActionSurfaces}/${report.actionSurfaces} Action surfaces executable; ${report.registeredBattleSurfaces}/${report.battleSurfaces} battle surfaces registered; ${report.unsupportedBattleSurfaceKeys.length} battle surfaces explicitly queued.`,
     );
   });
 });
