@@ -1068,15 +1068,15 @@
       ]
     },
     {
-      "id": "blind-h-out-of-scope-release-date",
+      "id": "blind-h-out-of-scope-card-writing",
       "category": "out-of-scope",
-      "question": "When is Gauntlet v0.7.2 going to be released?",
+      "question": "Can you write flavor text for a new Financier card?",
       "expectedClassification": "out_of_scope",
       "classificationBasis": "out-of-scope",
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "This asks about project/release scheduling rather than v0.7.1 gameplay rules and should be treated as out of scope."
+          "statement": "This is a creative game-design/writing request rather than a v0.7.1 gameplay-rules ruling and should be treated as out of scope."
         }
       ]
     }
