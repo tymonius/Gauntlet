@@ -1,0 +1,297 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "P",
+  "behaviorRevision": "v071-qa-20260918-26",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche P benchmark authored only after r26 production deployment and current-live-publication verification succeeded; it was not used to construct r26.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r26 and was not used to construct r26.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-p-player-normal-action",
+      "category": "player-language",
+      "question": "normally just one action total for the turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The active player normally takes one Action total during the turn",
+          "Normal Action limit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-tiebreak-clean",
+      "category": "player-language",
+      "question": "tiebreak roll ignores advantage, modifiers, and old battle totals?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals",
+          "Tiebreak Roll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-forced-march",
+      "category": "player-language",
+      "question": "forced march extra move can't start a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This additional movement cannot initiate a battle",
+          "Forced March"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-hold-line",
+      "category": "player-language",
+      "question": "hold the line and i lose: after retreat they capture that territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If you lose, after you retreat, the attacker captures that Territory",
+          "Hold the Line"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-insurrection",
+      "category": "player-language",
+      "question": "insurrection action: dump hand, both recycle discard, then i get 3 cards +1 action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. +3 Cards. +1 Action",
+          "Insurrection"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-intercepted-orders",
+      "category": "player-language",
+      "question": "intercepted orders can reveal their reserve and lock one card out for the battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "reveal that Reserve and choose 1 card they cannot choose this battle",
+          "Intercepted Orders"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you discard the banked Asset when they form their Reserve before Tactics are chosen."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-invasion",
+      "category": "player-language",
+      "question": "invasion gives up to 2 extra positions but only advancing?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "advance up to two additional Positions",
+          "may only be used to advance",
+          "Invasion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-martyrdom",
+      "category": "player-language",
+      "question": "martyrdom after i lose: remaining enemy reserve goes grave and my conviction becomes 4?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile",
+          "Conviction = 4",
+          "Martyrdom"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, when Martyrdom is legally played as its Aftermath Reaction."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-palisade",
+      "category": "player-language",
+      "question": "palisade wall on defense: discard it in onset to shut off their assets for the battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During Onset while you are the defender, you may discard this card to make the opponent's Assets inactive during that battle",
+          "Palisade Wall"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-reconnaissance",
+      "category": "player-language",
+      "question": "reconnaissance on my attack: reveal their hand, then i can withdraw or keep going?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "reveal the opponent's Hand. You may then withdraw or continue the attack",
+          "Reconnaissance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, by discarding banked Reconnaissance during Onset."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-reserve-force",
+      "category": "player-language",
+      "question": "reserve force bound tactic gets played after tactics reveal and goes grave in aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "play the bound card as a Tactic. Put it in your Graveyard in the Aftermath",
+          "Reserve Force"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you discard Reserve Force to use the bound card."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-revolution",
+      "category": "player-language",
+      "question": "revolution: i ditch 4, they ditch 2, so i draw 2 and they draw 4?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "draws cards equal to the number of cards the other player discarded",
+          "Revolution"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-reinforcements-current-phase",
+      "category": "player-language",
+      "question": "discard reinforcements in denouement for +1 action, so that extra action is usable right there in denouement?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "During Opening or Denouement, discard this card: +1 Action",
+          "Reinforcements"
+        ],
+        [
+          "+N Action grants N additional Actions during the current phase",
+          "Actions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The +1 Action is available in the current Denouement phase."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-player-decoys-sedition",
+      "category": "player-language",
+      "question": "sedition forces one of my assets out. decoys can save it because that's Removal?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent discards 1 Asset",
+          "Sedition"
+        ],
+        [
+          "If an opposing effect would Remove one or more of your other Assets, you may discard this card to keep one of them in play",
+          "Decoys"
+        ],
+        [
+          "An Asset is Removed whenever a rule or effect forces it to leave play",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Sedition's forced discard is Removal, so Decoys can be discarded to keep that other Asset in play."
+        }
+      ]
+    }
+  ]
+}
