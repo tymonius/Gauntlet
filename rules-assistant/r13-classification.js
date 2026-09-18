@@ -467,6 +467,16 @@ export function shouldDemoteNamedMovementInteraction(question, sources = []) {
 
 export function shouldForceAbsentProcedureGap(question, sources = []) {
   const current = String(question || "").toLowerCase();
+  const sourceList = Array.isArray(sources) ? sources : [];
+
+  const missedTriggerRewind = /\b(?:missed|forgot|forgotten|forget)\b[\s\S]{0,80}\btrigger\b/.test(current)
+    && /\b(?:rewind|procedure|remedy|official|rules?|ruleset)\b/.test(current);
+  if (missedTriggerRewind) {
+    return !sourceList.some((source) =>
+      /\b(?:missed trigger|rewind|rewinding|forgotten trigger|forgot a mandatory trigger)\b/.test(sourceText(source))
+    );
+  }
+
   if (!/\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(current)) {
     return false;
   }
@@ -474,7 +484,7 @@ export function shouldForceAbsentProcedureGap(question, sources = []) {
     return false;
   }
 
-  return !(Array.isArray(sources) ? sources : []).some((source) =>
+  return !sourceList.some((source) =>
     /\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(sourceText(source))
   );
 }
@@ -495,6 +505,82 @@ export function shouldPromoteDirectDeedOwnershipChange(question, sources = []) {
       && /changing\s+territory\s+control\s+does\s+not\s+transfer\s+its\s+deed/.test(text)
     );
   });
+}
+
+export function shouldPromoteR21DirectProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const guardians = /\bguardians of the circle\b/.test(current)
+    && /\b(?:rite|ritual|interrupt|interruption|battle loss|lose|loses|lost)\b/.test(current);
+  if (
+    guardians
+    && texts.some((text) =>
+      /guardians of the circle/.test(text)
+      && /battle loss would interrupt rite or ritual/.test(text)
+      && /prevent that interruption/.test(text)
+    )
+  ) return true;
+
+  const fieldcraftCost = /\bfieldcraft\b/.test(current)
+    && /\b(?:cost|costs|spend|spends|pay|pays|intel|how much)\b/.test(current);
+  if (
+    fieldcraftCost
+    && texts.some((text) => /fieldcraft\s+[—-]\s+1 intel/.test(text))
+  ) return true;
+
+  const capitalLimit = /\bcapital\b/.test(current) && /\blimit\b/.test(current);
+  if (
+    capitalLimit
+    && texts.some((text) =>
+      /capital limit/.test(text)
+      && /territories you control plus total card value in treasury/.test(text)
+    )
+  ) return true;
+
+  return false;
+}
+
+export function shouldResolveR21CombinedInteraction(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const exfiltration = /\bexfiltration\b/.test(current)
+    && /\b(?:lose|loses|lost|loss|winner|trigger|effect|withdraw)\b/.test(current);
+  if (
+    exfiltration
+    && texts.some((text) => /exfiltration/.test(text) && /may discard this card to withdraw/.test(text))
+    && texts.some((text) => /withdrawal is not a loss/.test(text))
+  ) return true;
+
+  const assimilationSiege = /\bassimilation\b/.test(current)
+    && /\bprotracted siege\b/.test(current);
+  if (
+    assimilationSiege
+    && texts.some((text) => /assimilation/.test(text) && /advance front line 1/.test(text))
+    && texts.some((text) => /protracted siege/.test(text) && /prevent that capture/.test(text))
+    && texts.some((text) =>
+      /front line/.test(text)
+      && (
+        /capture it by rotating it/.test(text)
+        || /immediate capture effects/.test(text)
+        || /advances the player's front line to include it/.test(text)
+      )
+    )
+  ) return true;
+
+  const rearguardRout = /\brearguard\b/.test(current) && /\brout\b/.test(current);
+  if (
+    rearguardRout
+    && texts.some((text) =>
+      /rearguard/.test(text)
+      && /prevent that movement/.test(text)
+      && /no command is spent/.test(text)
+    )
+    && texts.some((text) => /rout/.test(text) && /2 command/.test(text))
+  ) return true;
+
+  return false;
 }
 
 export function shouldPromoteR18DirectProcedure(question, sources = []) {
@@ -574,9 +660,17 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
 
   if (
     value === "provisional"
+    && shouldResolveR21CombinedInteraction(question, sources)
+  ) {
+    return "inferred";
+  }
+
+  if (
+    value === "provisional"
     && (
       shouldPromoteDirectDeedOwnershipChange(question, sources)
       || shouldPromoteR18DirectProcedure(question, sources)
+      || shouldPromoteR21DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
@@ -586,6 +680,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
 
   if (
     hasNamedCardBattleCollateralTimingConflict(sources)
+    || (value === "explicit" && shouldResolveR21CombinedInteraction(question, sources))
     || (value === "explicit" && shouldDemoteCombinedAuthorityInteraction(question, sources))
     || (value === "explicit" && shouldDemoteNamedMovementInteraction(question, sources))
   ) {
@@ -601,6 +696,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteDirectEnumeratedProcedure(question, sources)
       || shouldPromoteDirectDeedOwnershipChange(question, sources)
       || shouldPromoteR18DirectProcedure(question, sources)
+      || shouldPromoteR21DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
