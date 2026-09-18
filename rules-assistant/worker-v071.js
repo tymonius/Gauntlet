@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-23";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-24";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -177,6 +177,19 @@ const MONASTERY_INVOCATION_AUTHORITY_IDS = [
 ];
 const RITE_BOUND_DESTINATION_AUTHORITY_IDS = [
   "rulebook:bound-cards-3"
+];
+const DIPLOMAT_MIRROR_AUTHORITY_IDS = [
+  "rulebook:diplomat-mirrors"
+];
+const DIPLOMATIC_RECOGNITION_AUTHORITY_IDS = [
+  "proposal:diplomats-proposal-diplomatic-recognition",
+  "rulebook:diplomatic-recognition"
+];
+const SMUGGLERS_RUN_AUTHORITY_IDS = [
+  "territory:territory-smuggler-s-pass"
+];
+const ASSET_REPLACEMENT_AUTHORITY_IDS = [
+  "rulebook:replacing-an-asset"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -816,6 +829,17 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
+  if (
+    canonicalIds.has("rulebook:replacing-an-asset")
+    && /\basset\b/.test(current)
+    && /\b(?:cap|limit)\b/.test(current)
+    && /\b(?:bank|banking|banked)\b/.test(current)
+  ) {
+    reminders.push(
+      "When banking a new Asset at the Asset limit, discarding one controlled Asset to make room is part of the replacement procedure and is not a separate Action. Do not substitute the ordinary 'Discarding an Asset as an Action' procedure for this replacement discard."
+    );
+  }
+
   const terseConfirmationQuestion = /\?\s*$/.test(String(question || ""))
     && current.split(/\s+/).filter(Boolean).length <= 10
     && !/^\s*(?:who|what|where|when|why|how|is|are|am|was|were|do|does|did|can|could|will|would|should|may|must|has|have|had)\b/.test(current);
@@ -988,7 +1012,7 @@ function normalizeReferentSubject(value) {
 
 function canonicalAuthoritySubject(source) {
   const canonicalId = String(source?.canonicalId || "");
-  const match = canonicalId.match(/^(?:card|leader|faction):(.+)$/i);
+  const match = canonicalId.match(/^(?:card|leader|faction|proposal|rite|order|mission|deed|territory|component):(.+)$/i);
   if (!match) return "";
   return normalizeReferentSubject(
     match[1]
@@ -1023,7 +1047,7 @@ function currentNamedAuthoritySubjects(question, retrieval = []) {
 
   for (const source of retrieval.slice(0, 10)) {
     const canonicalId = String(source?.canonicalId || "");
-    if (!/^(?:card|leader|faction):/i.test(canonicalId)) continue;
+    if (!/^(?:card|leader|faction|proposal|rite|order|mission|deed|territory|component):/i.test(canonicalId)) continue;
 
     const canonicalSubject = canonicalAuthoritySubject(source);
     if (
@@ -1534,7 +1558,28 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const riteBoundDestinationFocus = /\brite\b/.test(current)
     && /\bbound cards?\b/.test(current)
     && /\b(?:grave|graveyard|destination|go|goes|binding ends?)\b/.test(current);
-  const topicAuthorityIds = counterintelligenceFocus
+  const diplomatMirrorFocus = /\bdiplomat\b/.test(current)
+    && /\bterms?\b/.test(current)
+    && /\b(?:attacker|defender)\b/.test(current)
+    && /\b(?:offer|offers|offered|offering|pass|passes|passed)\b/.test(current)
+    && /\b(?:same battle|battle sequence|refus(?:e|ed|al)|other)\b/.test(current);
+  const diplomaticRecognitionFocus = /\bdiplomatic recognition\b/.test(current)
+    && /\b(?:refus(?:e|ed|al)|influence|impos(?:e|ed|ing)|win|wins|won|proposal)\b/.test(current);
+  const smugglersRunFocus = /\bsmuggler[’']?s run\b/.test(current)
+    && /\b(?:stash|stashed|stashing|control|lose|loses|lost|hand|discard|card)\b/.test(current);
+  const assetReplacementFocus = /\basset\b/.test(current)
+    && /\b(?:cap|limit)\b/.test(current)
+    && /\b(?:bank|banking|banked)\b/.test(current)
+    && /\b(?:ditch|discard|replace|replacing|replacement|room|new)\b/.test(current);
+  const topicAuthorityIds = diplomatMirrorFocus
+    ? DIPLOMAT_MIRROR_AUTHORITY_IDS
+    : diplomaticRecognitionFocus
+      ? DIPLOMATIC_RECOGNITION_AUTHORITY_IDS
+    : smugglersRunFocus
+      ? SMUGGLERS_RUN_AUTHORITY_IDS
+    : assetReplacementFocus
+      ? ASSET_REPLACEMENT_AUTHORITY_IDS
+    : counterintelligenceFocus
     ? COUNTERINTELLIGENCE_AUTHORITY_IDS
     : poisonousGasFocus
       ? POISONOUS_GAS_AUTHORITY_IDS
