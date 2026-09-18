@@ -162,6 +162,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('buildCardAnatomyBlock');
     expect(client).toContain("symbolMark.className = 'faction-overview-symbol booklet-inline-faction-symbol'");
     expect(client).toContain("block.className = 'booklet-faction-overview'");
+    expect(client).toContain("if (node.matches?.('ul, ol')) break;");
     expect(client).toContain('hydrateFactionSymbols');
     expect(client).toContain('addFactionWatermarkPlaceholders');
     expect(css).toContain('.booklet-faction-overview');
