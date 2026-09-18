@@ -1,0 +1,292 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "O",
+  "behaviorRevision": "v071-qa-20260918-25",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche O benchmark authored only after r25 production deployment and current-live-publication verification succeeded; it was not used to construct r25.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r25 and was not used to construct r25.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-o-player-armistice",
+      "category": "player-language",
+      "question": "armistice banked = nobody can start a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Neither player can start a battle",
+          "Armistice"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-assassins-no-gambit",
+      "category": "player-language",
+      "question": "assassins and they set no gambit = they get disadvantage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If the opponent set no Gambit, the opponent gains Disadvantage",
+          "Assassins"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-attrition-asset",
+      "category": "player-language",
+      "question": "attrition asset, they lose: their tactics go grave not discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put each opposing Tactic from this battle in their Graveyard instead of their Discard Pile",
+          "Attrition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-brothers-in-arms",
+      "category": "player-language",
+      "question": "no gambit, brothers in arms can give +1 tactic from hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Tactic from Hand",
+          "Brothers in Arms"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-circle-bones",
+      "category": "player-language",
+      "question": "circle of bones reroll costs a hand card to grave and is once per battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once during each battle here",
+          "put one card from your Hand in your Graveyard to make either player reroll",
+          "Circle of Bones"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-counterworks",
+      "category": "player-language",
+      "question": "counterworks stops an opposing overlay and discards the overlay card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "prevent that Overlay. The card that would become that Overlay is discarded",
+          "Counterworks"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you discard Counterworks for its Asset effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-entrenchment",
+      "category": "player-language",
+      "question": "entrenchment trigger ends their move and blocks card-action in denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "their movement ends and they cannot play a card for its Action effect during their Denouement that turn",
+          "Entrenchment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-fealty",
+      "category": "player-language",
+      "question": "fealty banked means opposing card effects can't give me disadvantage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Opposing card effects cannot give you Disadvantage",
+          "Fealty"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-good-faith",
+      "category": "player-language",
+      "question": "good faith refused: set-aside card comes back before gambits?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Refused — Return it to your Hand before Gambits are set",
+          "Good Faith"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-supplies",
+      "category": "player-language",
+      "question": "supplies after normal draw: discard it for +2 cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After your normal Draw, you may discard this card for +2 Cards",
+          "Supplies"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-tactical-planning",
+      "category": "player-language",
+      "question": "tactical planning gambit = +1 reserve but tactic limit unchanged?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Reserve. Tactic limit unchanged",
+          "Tactical Planning"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-war-crimes",
+      "category": "player-language",
+      "question": "war crimes win means no move, capture, or order from that victory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You cannot move, capture a Territory, or use an Order as a result of that victory",
+          "War Crimes"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-counterworks-bombardment",
+      "category": "player-language",
+      "question": "counterworks into their bombardment overlay: bombardment gets discarded?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "The card that would become that Overlay is discarded",
+          "Counterworks"
+        ],
+        [
+          "place this Overlay face up there",
+          "Bombardment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Counterworks prevents the Overlay and the Bombardment card is discarded."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-player-fealty-entrenchment",
+      "category": "player-language",
+      "question": "my fealty blocks their entrenchment card from giving me disadvantage?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Opposing card effects cannot give you Disadvantage",
+          "Fealty"
+        ],
+        [
+          "opponent gains Disadvantage",
+          "Entrenchment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    }
+  ]
+}
