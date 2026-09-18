@@ -1,0 +1,359 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "I",
+  "behaviorRevision": "v071-qa-20260918-19",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche I benchmark authored after r19 deployment and not used to construct r19.",
+  "blindnessPolicy": [
+    "This tranche was authored after production health reported r19 and was not used to construct r19.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-i-player-draw-recycle",
+      "category": "player-language",
+      "question": "deck short. shuffle discard to finish draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a Draw Pile cannot complete a draw, shuffle the Discard Pile",
+          "Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Shuffle the Discard Pile into a new Draw Pile and complete the draw."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-plus-action-same-phase",
+      "category": "player-language",
+      "question": "+1 action in opening = another opening action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+N Action",
+          "increases the number of Actions permitted in that phase"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. +1 Action during Opening permits another Action in that current phase."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-negated-tactic-destination",
+      "category": "player-language",
+      "question": "negated tactic goes discard still?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Tactic still goes to its owner's Discard Pile",
+          "Negation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Unless another effect changes the destination, a negated Tactic goes to its owner's Discard Pile in the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-retreat-not-movement",
+      "category": "player-language",
+      "question": "retreat counts as movement trigger?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Retreat does not count as ordinary movement",
+          "Retreat"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Retreat is not ordinary movement for effects unless a rule says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-command-cap",
+      "category": "player-language",
+      "question": "already 2 command, normal win gives 3?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Command, maximum 2",
+          "Command cannot exceed the current maximum"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Without a maximum-increasing effect, Command remains capped at 2."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-ratified-terms-reward",
+      "category": "player-language",
+      "question": "already ratified terms accepted. +1 influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "already-ratified Proposal grants no default ratification reward",
+          "Treaty Articles and Peace Treaty"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Reaccepting an already-ratified Proposal does not grant the normal new-ratification reward."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-treasury-asset-limit",
+      "category": "player-language",
+      "question": "treasury cards use asset slots?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treasury is not the Asset Bank and uses no Asset capacity",
+          "Treasury"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Treasury cards do not use Asset capacity."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-mission-not-auto",
+      "category": "player-language",
+      "question": "mission condition met. auto complete?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Satisfying the requirement does not complete it automatically",
+          "Completing a Mission"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Completing the Mission requires its Denouement Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-special-op-equal",
+      "category": "player-language",
+      "question": "progress 4, they control 4. special op ready?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Operation Progress exceeds the number of Territories the opponent controls",
+          "Special Operations"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Operation Progress must be greater than the opponent's controlled Territories."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-two-active-rites",
+      "category": "player-language",
+      "question": "one rite active. can start another?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You may have only one begun but incomplete Rite",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Only one begun but incomplete Rite may exist at a time."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-ritual-defensive-win",
+      "category": "player-language",
+      "question": "ritual bound, i defend and win. ritual victory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The Mystic must initiate the final battle",
+          "Ritual of Ascension"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Mystic must initiate and win the final Ritual battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-purge-asset-cost",
+      "category": "player-language",
+      "question": "purge an asset costs 2 conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose one opposing Asset and put it in its owner's Graveyard",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The opposing-Asset Purge costs 2 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-rout-defending",
+      "category": "player-language",
+      "question": "general won defense. rout now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rout — 2 Command",
+          "Win as attacker"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Rout requires winning as the attacker."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-banker-second-credit",
+      "category": "player-language",
+      "question": "line of credit twice same turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "First Deed purchase each turn",
+          "Line of Credit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Line of Credit applies only to the first Deed purchase that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-materia-twice",
+      "category": "player-language",
+      "question": "materia already drew. second sacrifice draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once per turn · First qualifying sacrifice from Hand",
+          "Materia Prima"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Materia Prima triggers only once per turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-final-judgment-normal-purge",
+      "category": "player-language",
+      "question": "final judgment used. normal purge still available?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not consume the once-per-turn permission to spend an Action on Purge",
+          "Final Judgment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Final Judgment does not consume the normal once-per-turn Action Purge permission."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-deep-cover-mission",
+      "category": "player-language",
+      "question": "mission would fail, deep cover sends it hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "return that Mission to your Hand instead",
+          "Deep Cover"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Deep Cover can return the failing Active Mission to Hand instead."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-player-disruption-tactic-repeat",
+      "category": "player-language",
+      "question": "disruption sent tactic reserve. can pick same one again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "That specific card cannot be set or chosen again during this battle",
+          "Disruption"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. That same card cannot be chosen again during the battle."
+        }
+      ]
+    }
+  ]
+}
