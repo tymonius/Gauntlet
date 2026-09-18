@@ -74,7 +74,7 @@ function namedAuthoritySubjects(source) {
     const normalized = normalizePhrase(value);
     if (!normalized) continue;
     subjects.add(normalized);
-    const separators = String(value || "").split(/\s+[—–]\s+|:\s+/);
+    const separators = String(value || "").split(/\s+[—–]\s+|\s+›\s+|:\s+/);
     const tail = normalizePhrase(separators.at(-1));
     if (tail) subjects.add(tail);
   }
@@ -206,7 +206,11 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
   if (
     acceptedTermsAftermathQuestion
     && texts.some((text) =>
-      /accepted\s+terms[\s\S]{0,300}(?:no\s+aftermath|aftermath\s+does\s+not\s+occur)/.test(text)
+      (
+        /accepted\s+terms[\s\S]{0,500}(?:no\s+aftermath|aftermath\s+does\s+not\s+occur)/.test(text)
+        || /accepted\s+terms\s+end\s+the\s+(?:battle\s+)?sequence\s+during\s+onset/.test(text)
+        || /no\s+battle\s+is\s+fought[\s\S]{0,160}no\s+aftermath/.test(text)
+      )
     )
   ) {
     return true;
