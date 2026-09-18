@@ -1,0 +1,291 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "R",
+  "behaviorRevision": "v071-qa-20260918-28",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche R benchmark authored only after r28 production deployment and current-live-publication verification succeeded; it stresses replacement wording, activation conditions, and declarative yes/no polarity with authorities not used to construct r28.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r28 and was not used to construct r28.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-r-player-assimilation",
+      "category": "player-language",
+      "question": "assimilation win on their territory = front line +1 instead of occupying it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Assimilation",
+          "instead of occupying it"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-battlefield-promotion",
+      "category": "player-language",
+      "question": "battlefield promotion win = one other tactic back to hand instead of discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Battlefield Promotion",
+          "return one other Tactic you chose to your Hand instead of putting it in your Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-capital-gains",
+      "category": "player-language",
+      "question": "capital gains win lets another battle card go faceup treasury instead of normal destination?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Capital Gains",
+          "Place it face up in your Treasury instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-deep-cover",
+      "category": "player-language",
+      "question": "deep cover mission failing: grave deep cover and mission returns to hand instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Deep Cover",
+          "return that Mission to your Hand instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-field-command",
+      "category": "player-language",
+      "question": "field command banked: discard it after a 1-command order to use the other one free later?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Field Command",
+          "discard this card",
+          "other 1-Command Order",
+          "without spending Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, at that other Order's next legal timing that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-spectral-surveillance",
+      "category": "player-language",
+      "question": "spectral surveillance can grave itself instead of intel then reveal all gambits OR all tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Spectral Surveillance",
+          "instead of spending Intel",
+          "Gambits OR Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-anathema",
+      "category": "player-language",
+      "question": "anathema discard means their grave cards stay put instead of moving out?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Anathema",
+          "If you do, those cards remain in their Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-war-witch",
+      "category": "player-language",
+      "question": "war witch has to go grave first before i get +1 tactic from my grave?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "War Witch",
+          "put this card in your Graveyard. If you do, +1 Tactic from your Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-court-martial",
+      "category": "player-language",
+      "question": "court martial banked only works after they lose and normal retreat, then discard it for retreat +1?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Court Martial",
+          "after their normal retreat",
+          "discard this card",
+          "Retreat +1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-forced-march",
+      "category": "player-language",
+      "question": "forced march extra movement can start a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Forced March",
+          "This additional movement cannot initiate a battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-general-rout",
+      "category": "player-language",
+      "question": "general rout advance can start another battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rout",
+          "This movement may initiate a battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-setup-enter",
+      "category": "player-language",
+      "question": "setup token placement counts as entering my starting territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not count as entering"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-onset-withdrawal",
+      "category": "player-language",
+      "question": "withdraw during onset before gambits still counts as a fought battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A battle sequence that ends during Onset is not a battle fought"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-player-field-command-general",
+      "category": "player-language",
+      "question": "general used rally; field command's other 1-command order is onward?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Field Command",
+          "other 1-Command Order"
+        ],
+        [
+          "General",
+          "Rally",
+          "Onward"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "R",
+  "behaviorRevision": "v071-qa-20260918-28",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche R ambiguous-follow-up cases authored after r28 production verification; each must request clarification rather than guess among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-r-clarify-assimilation-promotion",
+      "question": "Does that one replace the normal Aftermath destination?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Assimilation and Battlefield Promotion."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can change what normally happens after a battle, but in different ways."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-clarify-field-command-war-witch",
+      "question": "Does that one have to go to the Graveyard first?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Field Command and War Witch are both banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Each can create an extra tactical benefit, but their activation procedures differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-clarify-deep-cover-exfiltration",
+      "question": "Does that one return the Mission to my Hand?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Deep Cover and Exfiltration."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can protect you from a bad Intelligence outcome, but they do different things."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-clarify-circle-fates-toll",
+      "question": "Can that one reroll either player's die?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Circle of Bones and Fate's Toll can both cause rerolls."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, but their costs and the dice they can affect are not identical."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-clarify-rout-repel",
+      "question": "Can that one start another battle?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing the General's Rout and the Commandant's Repel."
+        },
+        {
+          "role": "assistant",
+          "content": "Both move a player after a battle, but the movement belongs to different players."
+        }
+      ]
+    }
+  ]
+}
