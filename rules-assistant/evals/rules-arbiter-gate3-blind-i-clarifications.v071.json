@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "I",
+  "behaviorRevision": "v071-qa-20260918-19",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche I ambiguous-follow-up cases that must request clarification rather than guessing among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-i-clarify-detente-plenipotentiary",
+      "question": "Does that one give Influence immediately?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Détente and Plenipotentiary."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Diplomat cards that care about accepted or refused Terms."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-clarify-counterworks-redemption",
+      "question": "Can that one save the card?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Counterworks and Redemption banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Assets with reaction-like effects, but they respond to different opposing effects."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-clarify-high-field-command",
+      "question": "Does that one get discarded when I use it?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My Military Assets are High Command and Field Command."
+        },
+        {
+          "role": "assistant",
+          "content": "High Command changes maximum Command; Field Command can enable another Order."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-clarify-deep-cover-spectral",
+      "question": "Does that one go to the Graveyard when I use it?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Deep Cover and Spectral Surveillance banked."
+        },
+        {
+          "role": "assistant",
+          "content": "They are separate Intelligence Assets with different triggers."
+        }
+      ]
+    },
+    {
+      "id": "blind-i-clarify-circle-spirit-hollow",
+      "question": "Does that one leave when the Territory is captured?",
+      "history": [
+        {
+          "role": "user",
+          "content": "There is a Circle of Bones and a Spirit Hollow in this game."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Mystics Overlay cards with different ongoing effects."
+        }
+      ]
+    }
+  ]
+}
