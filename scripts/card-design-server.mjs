@@ -4,9 +4,11 @@ import { readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { updateArtDirectionMap } from './art-direction-overrides.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from './publication-boundary.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json');
+const AUTHORITY_FILE = join(ROOT, 'packages', 'game-data', 'current-game.json');
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const HOST = '127.0.0.1';
 const PORT = Number(process.env.PORT || 4173);
 
@@ -89,7 +91,7 @@ async function handleArtDirectionApi(request, response) {
     saved: true,
     id: String(payload?.id || ''),
     direction: after[String(payload?.id || '')] || null,
-    file: 'game-data/current-game.json#artDirection',
+    file: 'packages/game-data/current-game.json#artDirection',
   });
   return true;
 }
@@ -100,8 +102,9 @@ async function serveStatic(request, response, url) {
     return;
   }
 
-  const decoded = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-  let requested = resolve(ROOT, decoded || 'card-design/index.html');
+  const publicPath = url.pathname === '/' ? '/card-design/' : url.pathname;
+  const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+  let requested = resolve(ROOT, sourcePath);
   if (!requested.startsWith(`${ROOT}${sep}`) && requested !== ROOT) {
     response.writeHead(403).end('Forbidden');
     return;
@@ -146,6 +149,6 @@ const server = createServer(async (request, response) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`Gauntlet card-design compositor: http://${HOST}:${PORT}/card-design/`);
-  console.log('Save position writes game-data/current-game.json#artDirection directly.');
+  console.log('Save position writes packages/game-data/current-game.json#artDirection directly.');
   console.log('When the compositing pass is finished, run: npm run card-authority:check && npm run card-authority:render');
 });
