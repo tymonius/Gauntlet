@@ -141,13 +141,13 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(parityCss).toContain('padding: .44in .48in .34in');
     expect(parityCss).toContain('font-size: 25pt');
 
-    /* PR #1198 is the exact v0.7.1 faction watermark layer. */
-    expect(v071PublicationCss).toContain('PR #1198');
-    expect(v071PublicationCss).toContain('opacity: .05');
-    expect(v071PublicationCss).toContain('mask-size: 2.55in 2.55in');
-    expect(v071PublicationCss).toContain('right -.44in bottom -.48in');
-    expect(v071PublicationCss).toContain('left -.44in bottom -.48in');
-    expect(v071PublicationCss).toContain('.faction-page:not(.faction-opener)::after');
+    /* Preserve final production watermark placement without relying on external masks. */
+    expect(v071PublicationCss).toContain('.faction-page-watermark');
+    expect(v071PublicationCss).toContain('opacity: .09');
+    expect(v071PublicationCss).toContain('width: 3.9in');
+    expect(v071PublicationCss).toContain('right: -.62in');
+    expect(v071PublicationCss).toContain('left: -.62in');
+    expect(v071PublicationCss).not.toContain('mask-image: var(--booklet-symbol)');
 
     /* Only genuinely new surfaces keep purpose-built modular composition. */
     expect(parityCss).toContain('genuinely new instructional surfaces');
@@ -160,8 +160,11 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('createPage');
     expect(client).toContain('newContinuationPage');
     expect(client).toContain('buildCardAnatomyBlock');
-    expect(client).toContain("symbolMark.className = 'faction-overview-symbol'");
-    expect(client).toContain("clone.prepend(symbolMark)");
+    expect(client).toContain("symbolMark.className = 'faction-overview-symbol booklet-inline-faction-symbol'");
+    expect(client).toContain("block.className = 'booklet-faction-overview'");
+    expect(client).toContain('hydrateFactionSymbols');
+    expect(client).toContain('addFactionWatermarkPlaceholders');
+    expect(css).toContain('.booklet-faction-overview');
     expect(css).toContain('.faction-overview-symbol');
     expect(css).not.toContain('.faction-overview-heading::before');
     expect(client).toContain('paginateLeaderSection');
