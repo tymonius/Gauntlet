@@ -1,0 +1,1213 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "J",
+  "behaviorRevision": "v071-qa-20260918-20",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche J certification benchmark authored only after r20 was merged, automatically deployed, and production health verified r20. It was not used to construct r20 and stresses fresh adjacent mechanics, card interactions, conversation state discipline, polarity, source fit, ambiguity, unsupported gaps, and out-of-scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production health verified v071-qa-20260918-20 and was not used to construct r20.",
+    "Do not edit or retroactively regrade tranche J after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-J case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche J, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-j-core-opening-discard-already-zone",
+      "category": "core",
+      "question": "Before the first turn begins, is the card I discarded from my opening four already part of my Discard Pile?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The discarded card forms the player's Discard Pile before the first turn begins",
+          "Opening selection and Territory arrangement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The mandatory opening discard forms the player's Discard Pile before the first turn begins."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-start-territory-continuous-first-turn",
+      "category": "core",
+      "question": "My starting Territory has a continuous effect whose requirement is already true. Does setup placement prevent that effect from applying on turn one?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "An effect that applies continuously",
+          "Starting Territory"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Setup placement is not movement or entering, but a continuous effect may apply normally on the first turn when its requirements are satisfied."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-no-valid-choice-ignore",
+      "category": "core",
+      "question": "An effect tells me to choose one of several options, but none of those options is currently legal. Do I have to invent a substitute choice?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If no valid option is available, that choice is ignored",
+          "Choosing among options"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. If no listed option is actually available, that choice is ignored."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-replacement-keeps-role",
+      "category": "core",
+      "question": "A Tactic gets replaced by another card. Can the replacement be a Gambit-only card because it entered through a replacement effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A replacement Tactic must be Tactic-eligible",
+          "Replacing a Gambit or Tactic"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A replacement takes the same role, so a replacement for a Tactic must itself be Tactic-eligible."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-interference-before-ordinary-reveal",
+      "category": "core",
+      "question": "At the Tactic reveal stage, one revealed effect would negate another Tactic while a different revealed effect simply adds Battle Total. Which kind resolves first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "resolve reveal-stage interference before ordinary effects",
+          "Reveal-stage interference"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Resolve the reveal-stage interference first; ordinary revealed effects at that stage resolve after interference is complete."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-gambit-heading-not-tactic",
+      "category": "core",
+      "question": "A card has a printed Gambit effect but no Tactic or Gambit/Tactic heading. Can I choose it as a Tactic and use that Gambit text?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gambit means the effect is available only when the card is committed as a Gambit",
+          "Gambit and Tactic effect roles"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A Gambit-only printed effect is not available when the card is chosen as a Tactic."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-bound-limit-drops",
+      "category": "core",
+      "question": "An effect lowers the maximum number of cards that may remain bound beneath my card. What happens to bound cards above the new limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately choose and discard excess bound cards until the limit is satisfied",
+          "Bound cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Immediately choose and discard enough excess bound cards to satisfy the new maximum."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-self-expiration-not-removed",
+      "category": "core",
+      "question": "One of my Assets reaches its normal printed expiration and leaves play by its own rule. Does that count as the defined Removed event?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "normal resolution, expiration, or self-removal condition does not count as Removal",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Normal self-expiration is not the defined Removed event unless a rule expressly says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-dormant-overlay-timer-pauses",
+      "category": "core",
+      "question": "A second Overlay covers the first one. Does the lower Overlay keep counting down an expiration timer while it is covered?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a dormant Overlay's effect and expiration timer pause",
+          "Overlays and Other Shared Card Rules"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A covered lower Overlay is dormant, and its effect and expiration timer pause."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-dormant-overlay-removal-condition-active",
+      "category": "core",
+      "question": "If a covered Overlay has a printed condition that removes it, can that removal condition still happen while the Overlay is dormant?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a printed removal condition remains active while dormant",
+          "Overlays and Other Shared Card Rules"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. A dormant Overlay's ordinary effect pauses, but a printed removal condition remains active."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-both-withdraw-order",
+      "category": "core",
+      "question": "An effect makes both players withdraw from the same battle. Whose withdrawal movement is resolved first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if both players withdraw, move the attacker first, then the defender",
+          "Withdrawal and Retreat"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Move the attacker first, then the defender."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-core-no-winner-clears-committed",
+      "category": "core",
+      "question": "A battle ends without a winner after Gambits and Tactics were already committed. Unless the ending effect says otherwise, do those cards still clear normally?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after Onset, clear committed cards and cards remaining in Reserve normally",
+          "Battles ending without a winner"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. After Onset, committed battle cards and remaining Reserve cards clear normally unless the battle-ending effect gives another destination."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-military-high-command-allows-third",
+      "category": "military",
+      "question": "High Command is banked and Military is at 2 Command. Their first battle victory of the turn grants normal Command. Can the tracker rise to 3?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Your maximum Command is 3",
+          "High Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. High Command raises the maximum to 3, so the normal victory gain can raise Command from 2 to 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-military-field-command-timing-not-waived",
+      "category": "military",
+      "question": "Field Command lets me use my Leader's other 1-Command Order without spending Command. Does it also let me ignore that other Order's printed timing?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "at its next legal timing this turn without spending Command",
+          "Field Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Field Command waives the Command cost but not the Order's printed timing."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-military-repel-after-normal-retreat",
+      "category": "military",
+      "question": "Commandant wins as defender and pays for Repel. Does Repel replace the attacker's normal retreat or add to it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent's normal retreat, they retreat one additional Position",
+          "Repel"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It adds to the normal retreat: after the attacker's normal retreat, Repel makes them retreat one additional Position if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-military-fortify-no-token-move",
+      "category": "military",
+      "question": "Commandant uses Fortify after winning while occupying enemy Territory. Does Fortify itself advance the Commandant's Player Token?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Advance your Front Line by one Territory, if able",
+          "Fortify"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Fortify advances the Front Line by one Territory if able; it does not itself move the Player Token."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-diplomats-influence-cap",
+      "category": "diplomats",
+      "question": "My Diplomat is at 9 Influence and an effect grants 3 more. What does the tracker end at?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Diplomats begin with 1 Influence and may have up to 10",
+          "Influence gained above 10 is lost"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The tracker ends at 10; Influence gained above 10 is lost."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-diplomats-latitude-refusal-selection",
+      "category": "diplomats",
+      "question": "Diplomatic Latitude offered two Proposals with one Stake, and the opponent refused. Do both Refused effects apply?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose one Proposal before applying its Refused effect",
+          "Diplomatic Latitude"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. After refusal, choose one of the offered Proposals; only that Proposal's Refused effect applies and only it may later be imposed."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-diplomats-detente-old-proposal",
+      "category": "diplomats",
+      "question": "Détente is banked. The opponent accepts one of my Proposals that was already ratified when I offered it, and this is the first such acceptance this turn. Do I gain Influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, +1 Influence",
+          "Détente"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Détente grants +1 Influence for the first such acceptance each turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-diplomats-sanction-default-expiration",
+      "category": "diplomats",
+      "question": "A Sanction remains in play against the opponent who originally refused my Terms. Later that opponent accepts my Terms. If the Sanction gives no special exception, where does it go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile",
+          "Sanctions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put the Sanction in its owner's Discard Pile unless that Sanction says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-financiers-capital-limit-formula",
+      "category": "financiers",
+      "question": "I control 3 Territories and my Treasury contains cards totaling value 5. What is my current Capital limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Capital limit = Territories you control + total card value of cards in your Treasury",
+          "Capital and Capital Ledger"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The Capital limit is 8."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-financiers-treasury-no-income-by-itself",
+      "category": "financiers",
+      "question": "A value-4 card sits in my Treasury. Does that card automatically generate 4 Capital at Income?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treasury cards do not generate Capital by themselves",
+          "Treasury"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Treasury value raises the Capital limit, but Treasury cards do not generate Capital by themselves."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-financiers-subsidize-plus-three",
+      "category": "financiers",
+      "question": "How much Capital does Subsidize cost for a +3 Battle Total bonus?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+3",
+          "6 Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A +3 Subsidize bonus costs 6 Capital."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-financiers-buyout-premium-owner-count",
+      "category": "financiers",
+      "question": "I am buying out a Deed from an opposing Financier who owns four Deeds. I personally own one. What buyout premium is added before the other cost modifiers?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Buyout premium = min(Deeds the opposing owner owns, 6)",
+          "Buying and buying out Deeds"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The buyout premium is 4, based on the opposing owner's Deed count, not the buyer's."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-intelligence-intel-no-maximum",
+      "category": "intelligence",
+      "question": "Can Intelligence ever lose excess Intel just because the Intel tracker gets too high?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Intel begins at 0, cannot fall below 0, and has no maximum",
+          "Intel"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Intel has no maximum."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-intelligence-operation-progress-not-spent",
+      "category": "intelligence",
+      "question": "When I start or complete a Special Operation, do I spend Operation Progress as a resource?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Operation Progress begins at 0 and is not normally spent",
+          "Operation Progress"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Operation Progress is not normally spent; it is a threshold for Special Operation readiness."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-intelligence-interference-spent-if-prevented",
+      "category": "intelligence",
+      "question": "I pay to use Interference, but an effect prevents that Interference. Do I get the Intel back and keep the once-per-battle opportunity?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If an effect prevents Surveillance or Interference, the Intel remains spent and the relevant once-per-battle opportunity is still used",
+          "Interference after Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Intel remains spent and that stage's once-per-battle opportunity is still used."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-intelligence-special-op-min-payment",
+      "category": "intelligence",
+      "question": "My Special Operation's calculated completion cost would be 0 because the card value equals the number of Territories. How much Intel must I actually pay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Minimum payment is 1 Intel",
+          "Readiness and completion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Pay 1 Intel; the Special Operation completion payment has a minimum of 1."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-mystics-rite-order-free",
+      "category": "mystics",
+      "question": "I selected three Rites during construction. Must I complete them in the order printed on my reference card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You may begin any uncompleted selected Rite; there is no required order",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Any incomplete selected Rite may be begun when legal; there is no required order."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-mystics-interrupted-costs-not-refunded",
+      "category": "mystics",
+      "question": "My active Rite is interrupted after I already paid cards or other costs to begin it. Do those costs come back automatically?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If interrupted, it resets and paid costs are not returned unless stated",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. An interrupted Rite resets and paid costs are not returned unless a rule says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-mystics-ritual-bound-zones",
+      "category": "mystics",
+      "question": "To begin the Ritual of Ascension, can all three bound Arcane cards come from my Hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard",
+          "Beginning the Ritual"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Beginning the Ritual requires one Arcane card from each of Hand, Discard Pile, and Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-mystics-convergence-count-two-bound",
+      "category": "mystics",
+      "question": "During a Ritual battle I initiated, only two Ritual cards remain bound. How much Battle Total does Convergence add?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "add +1 to your battle total for each card bound to the Ritual",
+          "Convergence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Convergence adds +2 if exactly two cards remain bound."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-inquisition-conviction-on-opponent-turn",
+      "category": "inquisition",
+      "question": "The first qualifying opposing card enters a Graveyard during a battle Aftermath on the opponent's turn. Can Inquisition gain normal Conviction then?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This may occur during either player's turn",
+          "Conviction"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The normal first qualifying Conviction gain may occur during either player's turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-inquisition-blasphemy-separate-from-normal",
+      "category": "inquisition",
+      "question": "Blasphemy gives me Conviction earlier in the turn. Does that consume the normal once-per-turn Conviction gain from a later qualifying battle Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This gain is outside the normal once-per-turn Conviction gain",
+          "Blasphemy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Blasphemy's gain is outside the normal once-per-turn Conviction gain, though both remain subject to the maximum of 4."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-inquisition-purge-three-hand-choice",
+      "category": "inquisition",
+      "question": "What exactly happens when I spend 3 Conviction on Purge?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent chooses one card from their Hand and puts it in their Graveyard",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses one card from their Hand and puts it in their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-inquisition-discard-order-preserved",
+      "category": "inquisition",
+      "question": "I choose a card from the opponent's Discard Pile for an Inquisition effect. Does that choice let me reorder the other cards in their Discard Pile?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choosing cards from a Discard Pile does not reorder the rest",
+          "Discard Pile order"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Choosing a card from a Discard Pile does not reorder the remaining cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-general-onward-can-start-battle",
+      "category": "leaders",
+      "question": "General uses Onward during Movement and the extra Position enters the opponent's Position. Can that extra Position initiate a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This may start a Battle",
+          "Onward"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Onward's extra Position may initiate a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-commandant-repel-if-able-edge",
+      "category": "leaders",
+      "question": "Commandant uses Repel, but the defeated attacker cannot legally retreat another Position. Is Repel's extra retreat mandatory anyway?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "retreat one additional Position, if able",
+          "Repel"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The additional retreat occurs only if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-ambassador-cordiality-draw-after-acceptance",
+      "category": "leaders",
+      "question": "Ambassador's Terms are accepted, but the accepted Proposal gives no card draw. Can Cordiality still draw a card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent accepts your Terms, draw one card",
+          "Cordiality"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Cordiality independently draws one card after accepted Terms, once per turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-senator-political-capital-zero-hand",
+      "category": "leaders",
+      "question": "Senator loses a refused-Terms battle with 2 Influence staked but has no cards in Hand. How much can Political Capital recover?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Recover 1 staked Influence per card; lose the rest",
+          "Political Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "None. With no Hand cards available, Political Capital recovers 0 and the full Stake is lost."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-banker-line-credit-treasury-collateral",
+      "category": "leaders",
+      "question": "Can Banker use a card from Treasury, rather than Hand, as Line of Credit collateral?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Use one card from Hand or Treasury as collateral",
+          "Line of Credit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Line of Credit collateral may come from either Hand or Treasury."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-executive-takeover-cost-occupier",
+      "category": "leaders",
+      "question": "Executive legally uses Hostile Takeover while occupying the enemy Territory. For the Deed cost, is Executive treated as merely neither-control-nor-occupier?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treat yourself as occupier for cost",
+          "Hostile Takeover"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Hostile Takeover expressly treats Executive as the occupier for the purchase cost."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-ranger-fieldcraft-cost",
+      "category": "leaders",
+      "question": "How much Intel does Ranger spend to use Fieldcraft?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fieldcraft — 1 Intel",
+          "Fieldcraft"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Fieldcraft costs 1 Intel."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-spymaster-new-mission-immediate-start",
+      "category": "leaders",
+      "question": "Spymaster completes a normal Mission and uses Mission Control. Does the next eligible Mission have to wait until another Denouement to start?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately start another eligible Mission from Hand",
+          "Mission Control"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Mission Control immediately starts another eligible Mission from Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-alchemist-materia-nonqualifying-gambit",
+      "category": "leaders",
+      "question": "A card from my Hand became a Gambit and later went to the Graveyard in the Aftermath. Is that alone a qualifying Materia Prima sacrifice?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Gambit does not trigger Materia Prima merely because it moves from battle to your Graveyard",
+          "Materia Prima"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A Gambit going from battle to the Graveyard in the Aftermath does not by itself trigger Materia Prima."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-spirit-walker-guardians-on-ritual-loss",
+      "category": "leaders",
+      "question": "Spirit Walker is in the Ritual of Ascension and would lose a battle, interrupting the Ritual. Can Guardians of the Circle prevent that interruption if its sacrifice requirement is met?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Battle loss would interrupt Rite or Ritual",
+          "Guardians of the Circle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Guardians of the Circle can prevent a battle-loss interruption of an active Rite or Ritual if its Arcane sacrifice requirement is met."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-grand-inquisitor-final-judgment-cost-floor",
+      "category": "leaders",
+      "question": "Grand Inquisitor's Final Judgment selects a Purge that normally costs 1 Conviction. What is its cost after the reduction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Reduce that Purge's Conviction cost by 1, to a minimum of 1",
+          "Final Judgment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It still costs 1 Conviction because Final Judgment's reduction has a minimum cost of 1."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-witch-hunter-pursuit-new-battle-attacker",
+      "category": "leaders",
+      "question": "Relentless Pursuit advances Witch Hunter into the opponent and a battle starts. Is Witch Hunter the attacker in that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If this movement initiates a battle, you are the attacker",
+          "Relentless Pursuit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Witch Hunter is the attacker in the battle started by Relentless Pursuit."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-card-extraordinary-rendition-bound-card-protected",
+      "category": "cards",
+      "question": "Extraordinary Rendition has an opponent's card bound beneath it. Can another effect move that bound card while Rendition remains in play?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The bound card cannot be played, moved, or affected except by this card",
+          "Extraordinary Rendition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. While bound to Extraordinary Rendition, that card cannot be played, moved, or affected except by Rendition itself."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-card-forced-march-extra-step-no-battle",
+      "category": "cards",
+      "question": "Forced March gives me an additional Position of movement. Can that specific extra Position initiate a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This additional movement cannot initiate a battle",
+          "Forced March"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Forced March's additional movement cannot initiate a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-card-tariffs-turn-banked-no-voluntary-leave",
+      "category": "cards",
+      "question": "I bank Tariffs this turn. May I voluntarily discard it later in the same turn to make room for another Asset?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You cannot voluntarily cause it to leave play during the turn it is banked",
+          "Tariffs"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Tariffs cannot voluntarily leave play during the turn it is banked, including replacement to make room."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-interaction-protracted-siege-assimilation",
+      "category": "interaction",
+      "question": "I win as attacker on an enemy-controlled Territory and use Assimilation to advance my Front Line instead of occupying. The defender has Protracted Siege ready to prevent that capture. Can Protracted Siege stop the Front Line advance?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "advance Front Line 1, if able, instead of occupying it",
+          "Assimilation"
+        ],
+        [
+          "When the opponent would capture a Territory you control, put this card in your Graveyard to prevent that capture",
+          "Protracted Siege"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Assimilation's Front Line advance is a capture of the next opposing Territory if it would advance control there, so Protracted Siege can prevent that capture when its trigger is satisfied."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-interaction-exfiltration-no-winner-effects",
+      "category": "interaction",
+      "question": "Intelligence uses Exfiltration to withdraw after opposing Tactics are revealed. Does an opposing effect that triggers only when Intelligence loses the battle still trigger?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "you may discard this card to withdraw",
+          "Exfiltration"
+        ],
+        [
+          "withdrawal is not a loss",
+          "Battles ending without a winner"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Exfiltration causes withdrawal; withdrawal has no loser, so an effect conditioned on Intelligence losing does not trigger."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-interaction-rearguard-rout",
+      "category": "interaction",
+      "question": "Military loses, retreats, and banks Rearguard. Later that turn the opposing General uses Rout to enter Military's Position. Can Rearguard prevent that movement without the General spending the Command anyway?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "prevent that movement. No Command is spent; return any card used to its owner's Hand",
+          "Rearguard"
+        ],
+        [
+          "Rout — 2 Command",
+          "Rout"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Rearguard can prevent the later Order movement after the retreat; its text says no Command is spent when it does so."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-conversation-special-op-fails-on-tie",
+      "category": "conversation",
+      "question": "Now they control 6 too. Is it still just waiting, or is it gone?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My Special Operation is already face down. Operation Progress is 6 and they currently control 5 Territories."
+        },
+        {
+          "role": "assistant",
+          "content": "It is ready while 6 exceeds 5, assuming its Mission requirement is otherwise satisfied."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If readiness is lost, it immediately fails and goes to the Graveyard",
+          "Readiness and completion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It is gone: once the opponent's controlled Territories rise to equal Operation Progress, readiness is lost and the Special Operation immediately fails to the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-conversation-plus-action-negative-polarity",
+      "category": "conversation",
+      "question": "So that doesn't force me to wait until Denouement for the extra Action?",
+      "history": [
+        {
+          "role": "user",
+          "content": "The card literally says +1 Action and I resolved it during Opening after taking an Action."
+        },
+        {
+          "role": "assistant",
+          "content": "That literal shorthand is governed by the +N Action notation rule."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+N Action",
+          "current phase"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct: it does not force a wait. A literal +1 Action during Opening grants another Action in Opening because +N Action increases the number of Actions permitted in the current phase."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-conversation-ratified-proposal-default-only",
+      "category": "conversation",
+      "question": "No other cards are involved. Is there any normal +1 for accepting it again?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm offering a Proposal that was already ratified earlier."
+        },
+        {
+          "role": "assistant",
+          "content": "It can still be offered for its tactical effect, but it cannot be ratified again."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "already-ratified Proposal grants no default ratification reward",
+          "Treaty Articles and Peace Treaty"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. With no other card or effect involved, accepting an already-ratified Proposal again grants no normal ratification reward."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-conversation-reveal-reserve-stays-zone",
+      "category": "conversation",
+      "question": "And while it's face up for them to see, is it still my Reserve?",
+      "history": [
+        {
+          "role": "user",
+          "content": "An effect tells me to reveal my whole Reserve."
+        },
+        {
+          "role": "assistant",
+          "content": "Reveal the Reserve by showing the entire zone to the opponent."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The cards remain in that zone",
+          "Revealing cards and zones"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Revealing the Reserve shows it to the opponent but does not move the cards out of the Reserve zone."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-unsupported-missed-trigger-rewind",
+      "category": "unsupported",
+      "question": "We both forgot a mandatory start-of-turn trigger and only noticed after several later actions. Does v0.7.1 define an official rewind procedure?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not establish a general missed-trigger or rewind procedure. The Arbiter should identify the gap rather than claim a written tournament remedy; it may give a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-out-of-scope-balance-buff",
+      "category": "out-of-scope",
+      "question": "Should Détente be buffed for the next balance patch?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is game-design/balance advice rather than a v0.7.1 gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary rather than recommend a balance change."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-out-of-scope-write-lore",
+      "category": "out-of-scope",
+      "question": "Write a short backstory for the Witch Hunter.",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is creative lore writing rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary rather than write the backstory."
+        }
+      ]
+    }
+  ]
+}
