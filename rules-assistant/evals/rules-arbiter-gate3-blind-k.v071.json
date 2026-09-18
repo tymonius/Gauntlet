@@ -1,0 +1,896 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "K",
+  "behaviorRevision": "v071-qa-20260918-21",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche K certification benchmark authored only after r21 was merged, deployed, and the current-live-publication verification succeeded. It was not used to construct r21 and stresses generalization across adjacent shared procedures, direct-permission semantics, card interactions, source fit, follow-up context, polarity, unsupported gaps, and out-of-scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-21; it was not used to construct r21.",
+    "Do not edit or retroactively regrade tranche K after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-K case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche K, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-k-core-one-printed-effect-only",
+      "category": "core",
+      "question": "A card has both an Action effect and an Asset effect. If I play it from Hand for its Action effect, does its Asset text also apply just because it is printed on the same card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Only the printed effect being used applies",
+          "Printed card effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Using one printed effect does not also apply the card's other printed effects unless a rule says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-direct-procedure-no-extra-action",
+      "category": "core",
+      "question": "A card effect directly tells me to bank another card immediately. Do I also spend a separate Action for that banking unless the instruction says so?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A directly instructed banking procedure is part of resolving the effect and does not consume another Action unless the instruction expressly requires one."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-effect-movement-new-sequence",
+      "category": "core",
+      "question": "An effect grants me movement after my normal Movement sequence has already ended. Does that granted movement begin a new movement sequence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence",
+          "Movement granted by effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Effect-granted movement starts a new movement sequence when no movement sequence is already in progress."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-late-additional-tactic-faceup",
+      "category": "core",
+      "question": "A card gives me an additional Tactic after Tactics have already been revealed. Is that added Tactic played face down and does it reopen the reveal window?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after Tactics are revealed, play it face up",
+          "does not reopen an earlier choice, reveal, or response window",
+          "Additional Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. An additional Tactic added after reveal is played face up, and choosing it does not reopen an earlier choice, reveal, or response window."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-negated-tactic-still-discard",
+      "category": "core",
+      "question": "My Tactic is negated but no effect gives it a different destination. Does it still go to my Discard Pile in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Tactic still goes to its owner's Discard Pile during the Aftermath",
+          "Negation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Negation removes the effect, not the normal Tactic destination; it still goes to its owner's Discard Pile unless another effect says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-end-aftermath-after-clearing",
+      "category": "core",
+      "question": "An effect says it happens at the end of the Aftermath. Does that timing come before or after battle cards clear and their zone-entry triggers resolve?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Effects at the end of the Aftermath occur after the battle cards are cleared and effects triggered by those moves are applied",
+          "Result and card-movement triggers"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After. End-of-Aftermath effects occur after battle cards clear and after effects triggered by those card movements are applied."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-bound-facedown-private",
+      "category": "core",
+      "question": "A card is bound face down beneath another card. May the opponent inspect that bound card just because it is on the table?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A face-down bound card may be inspected only by its owner",
+          "Bound cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A face-down bound card may be inspected only by its owner."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-condition-prefix-one-clause",
+      "category": "core",
+      "question": "A printed effect reads 'Defender — gain Advantage. +1 Battle Total.' Does the Defender condition automatically apply to the later +1 Battle Total clause too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A condition prefix applies only to the clause that immediately follows it",
+          "Condition prefixes"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A condition prefix applies only to the clause immediately following it unless the text separately conditions the later clause."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-repeat-pays-costs-again",
+      "category": "core",
+      "question": "An effect tells me to repeat another effect that normally requires a cost and a choice. On the repeated application, do I reuse the old choice and avoid paying again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Make all choices again and pay all costs again for each new application",
+          "Applying and repeating another effect"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Each repeated application makes its choices again and pays its costs again."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-repeat-source-does-not-move",
+      "category": "core",
+      "question": "I apply the effect of a card in my Graveyard without actually playing that card. Does applying its effect move the source card out of the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not play, set, choose, or otherwise move the source card",
+          "The source card remains in its current zone",
+          "Applying and repeating another effect"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Applying another card's effect does not move the source card unless the instruction expressly says so; it remains in its current zone."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-final-capture-immediate-win",
+      "category": "core",
+      "question": "I legally capture the Territory at my opponent's end, and another voluntary procedure would normally be available later in the phase. Do I wait to resolve that later procedure before winning?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately runs the Gauntlet and wins the game",
+          "before proceeding to a later phase or voluntary procedure",
+          "Final-Territory Capture Victory"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Capturing the opponent's final Territory wins immediately after the capture and its required immediate consequences, before later voluntary procedures."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-core-counterattack-controller-vs-occupier",
+      "category": "core",
+      "question": "I control a Territory and my opponent is occupying it. If I initiate a battle against them there, is that battle a Counterattack?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "battle initiated by the controller of a Territory against an opponent who is the occupier of that Territory",
+          "Counterattack"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. That is the definition of a Counterattack."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-diplomats-accepted-default-position",
+      "category": "diplomats",
+      "question": "My Terms are accepted and the Proposal itself gives no special movement. By default, who withdraws and who remains at the contested Position?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Unless the Proposal says otherwise, the attacker withdraws and the defender remains at the contested Position",
+          "Accepted Terms"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "By default, the attacker withdraws and the defender remains at the contested Position."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-diplomats-stake-not-leverage",
+      "category": "diplomats",
+      "question": "After my Terms are refused, I have 2 Influence tied up as the Stake and no free Influence. Can I spend that Stake for Leverage before dice?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage",
+          "Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Influence committed as the Stake cannot be spent for Leverage."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-financiers-capacity-locked-for-turn",
+      "category": "financiers",
+      "question": "Financial Capacity was active after Capture. Later in the same turn my Treasury value drops below the number of Territories I control. Do I lose the two-Action permission for that turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Determine eligibility once at this timing; later Treasury or control changes do not grant or remove the permission that turn",
+          "Financial Capacity"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Financial Capacity eligibility is determined once after Capture; later Treasury or control changes do not remove the permission that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-financiers-income-can-exceed-limit",
+      "category": "financiers",
+      "question": "My Income gain would put my Capital above my current Capital limit. Is the excess immediately lost?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Income may temporarily exceed the Capital limit",
+          "Income"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Income may temporarily raise Capital above the Capital limit."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-intelligence-mission-not-auto-complete",
+      "category": "intelligence",
+      "question": "My Active Mission's requirement becomes satisfied during a battle. Does the Mission complete automatically at that moment?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Satisfying the requirement does not complete it automatically",
+          "Completing a Mission"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A satisfied Active Mission still requires its Denouement completion Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-intelligence-special-op-no-mission-reward",
+      "category": "intelligence",
+      "question": "When a Special Operation is completed, does it also give the normal Mission reward of 1 Operation Progress plus Intel equal to the card's value?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Special Operation uses the printed Mission requirement but is not a normal Mission. It grants no Mission reward",
+          "Starting a Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A Special Operation is not a normal Mission and grants no normal Mission reward."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-intelligence-abort-not-failure",
+      "category": "intelligence",
+      "question": "I pay to abort my Active Mission during Denouement. Does that count as the Mission failing and send it to the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put it in the Discard Pile. Aborting is not failure",
+          "Aborting and failing"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Aborting is not failure; the aborted Mission goes to the Discard Pile after the abort cost is paid."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-mystics-invocation-copy-no-trigger",
+      "category": "mystics",
+      "question": "I copy the effect of an Arcane card without playing, setting, or choosing that Arcane card again. Does the copied application trigger Invocation?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again",
+          "Invocation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A copied effect alone does not trigger Invocation unless the Arcane card itself is played, set, or chosen again and its printed effect is applied."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-mystics-transmutation-card-text-off",
+      "category": "mystics",
+      "question": "I put a card from Hand into my Graveyard for Transmutation. Do any of that card's printed effects resolve because I used its value?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The card is not played and none of its printed effects apply",
+          "Transmutation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Transmutation card is not played and none of its printed effects apply."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-mystics-blood-allows-transmutation",
+      "category": "mystics",
+      "question": "Rite of Blood is active. I win a later battle without setting a Gambit or choosing a Tactic, but I did use Transmutation. Can Rite of Blood still complete?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Using Transmutation",
+          "does not by itself prevent completion",
+          "Rite of Blood"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Using Transmutation does not by itself prevent Rite of Blood from completing when the battle is won without setting a Gambit or choosing a Tactic."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-inquisition-condemnation-reserve-normal",
+      "category": "inquisition",
+      "question": "Condemnation applies in the Aftermath. Do the opponent's cards that remained in Reserve also go to the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Cards remaining in the opponent's Reserve are discarded normally",
+          "Condemnation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Condemnation changes opposing Tactic destinations; cards remaining in Reserve are discarded normally."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-inquisition-no-martyrs-retreat-still-happens",
+      "category": "inquisition",
+      "question": "No Martyrs applies after the opponent loses. Does it prevent the opponent's required retreat itself?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It does not prevent harmful consequences, the retreat itself",
+          "No Martyrs"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. No Martyrs prevents the losing opponent from benefiting from their own loss/retreat triggers, but it does not prevent the retreat itself."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-conscription-immediate-bank",
+      "category": "cards",
+      "question": "Conscription resolves its Action and then lets me immediately play a card from Hand whose Action effect banks it. Does that immediate bank require me to spend another Action?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "You may immediately play one card from your Hand whose Action effect banks it",
+          "Conscription"
+        ],
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Conscription directly permits the immediate play/bank as part of its resolution, so it does not require another Action unless the instruction says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-black-covenant-added-tactic-destination",
+      "category": "cards",
+      "question": "I use Black Covenant as my Tactic and take its +1 Tactic from Hand. Where do Black Covenant and that added Tactic go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "In the Aftermath, put this card and that card in your Graveyard",
+          "Black Covenant"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Both Black Covenant and the Tactic it added from Hand go to your Graveyard in the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-trade-concessions-refused-return",
+      "category": "cards",
+      "question": "I reveal Trade Concessions while offering Terms and the opponent refuses. Does Trade Concessions stay set aside until the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Refused — Return this card to your Hand before Gambits are set",
+          "Trade Concessions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. On refusal, Trade Concessions returns to your Hand before Gambits are set."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-plenipotentiary-no-influence",
+      "category": "cards",
+      "question": "Plenipotentiary ratifies an unratified Proposal immediately after the opponent refuses it. Do I gain the normal Influence for that ratification, and does the Proposal's Refused effect still happen?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gain no Influence for ratifying it this way. Its Refused effect still applies",
+          "Plenipotentiary"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain no Influence for the Plenipotentiary ratification, and the Proposal's Refused effect still applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-war-bonds-first-battle",
+      "category": "cards",
+      "question": "War Bonds is banked. After the first battle of the turn, I put a card from Hand into my Treasury. What resource gain comes with that placement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the first battle each turn, you may place one card from your Hand face up in your Treasury. If you do, +1 Capital",
+          "War Bonds"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain 1 Capital when War Bonds places the Hand card face up in your Treasury after the first battle that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-actuarial-alchemy-tiebreak-margin",
+      "category": "cards",
+      "question": "I lose a battle on a Tiebreak Roll while Actuarial Alchemy is banked. Can its Capital gain use the amount by which the opponent's Tiebreak Roll beat mine?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "gain Capital equal to the amount by which your opponent's Battle Total or Tiebreak Roll exceeded yours",
+          "Actuarial Alchemy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Actuarial Alchemy expressly permits the Capital gain to use the Tiebreak Roll margin."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-card-scouting-report-replacement-faceup",
+      "category": "cards",
+      "question": "I use Scouting Report as a battle card and choose to replace it with an eligible card from my Reserve. Is the replacement face down, and where does Scouting Report go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "replace this card with an eligible card from your Reserve, face up. If you replace it, put this card in your Graveyard",
+          "Scouting Report"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The replacement is face up, and Scouting Report goes to your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-interaction-stand-ground-normal-retreat",
+      "category": "interaction",
+      "question": "I control Stand Ground and lose a battle. Can I discard Stand Ground to ignore the normal retreat caused by losing?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing card effect would move you",
+          "Stand Ground"
+        ],
+        [
+          "A player retreats because they lost a battle",
+          "Retreat"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Stand Ground responds to movement caused by an opposing card effect; the normal retreat is caused by the battle result, not an opposing card effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-interaction-stand-ground-court-martial-extra",
+      "category": "interaction",
+      "question": "I lose and make my normal retreat. The opponent's Court Martial then adds Retreat +1. Can Stand Ground ignore that extra card-effect movement without undoing my normal retreat?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing card effect would move you, you may discard this card to ignore that movement",
+          "Stand Ground"
+        ],
+        [
+          "after their normal retreat",
+          "Retreat +1",
+          "Court Martial"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Stand Ground can ignore Court Martial's additional card-effect movement, while the normal retreat already caused by the loss remains."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-interaction-fieldcraft-quicksand",
+      "category": "interaction",
+      "question": "Ranger begins Movement on Quicksand and has not used Fieldcraft this turn. Can Ranger spend 1 Intel to ignore Quicksand's printed movement restriction for the turn?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn",
+          "Fieldcraft"
+        ],
+        [
+          "cannot Advance or Fall Back more than one Position or use an effect to increase their movement that turn",
+          "Quicksand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Fieldcraft may ignore Quicksand's printed Territory effect because it affects Ranger's movement."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-interaction-countercharge-can-start-battle",
+      "category": "interaction",
+      "question": "Countercharge advances me one Position at the end of the Aftermath after I win while defending. If that Position enters the opponent's Position, may it initiate a new battle?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "advance one Position",
+          "Countercharge"
+        ],
+        [
+          "Effect-granted movement may initiate a battle",
+          "Movement granted by effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Countercharge grants movement, and effect-granted movement may initiate a battle unless expressly prohibited."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-interaction-trade-concessions-bank-no-action",
+      "category": "interaction",
+      "question": "The opponent accepts my Trade Concessions and chooses 'Bank one eligible card from Hand.' Does banking that chosen card consume my normal Action for the turn?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Bank one eligible card from Hand",
+          "Trade Concessions"
+        ],
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Trade Concessions directly instructs the banking as part of the Accepted effect, so it does not consume the player's normal Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-conversation-conscription-action-followup",
+      "category": "conversation",
+      "question": "So that second card doesn't use another Action?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I played Conscription for its Action, drew the card, and I'm using its instruction to immediately play a card whose Action effect banks it."
+        },
+        {
+          "role": "assistant",
+          "content": "Conscription directly permits that immediate play during its own resolution."
+        }
+      ],
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately play one card from your Hand whose Action effect banks it",
+          "Conscription"
+        ],
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. The immediately played banking card does not consume another Action; it is directly permitted by Conscription's resolving effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-conversation-special-op-no-progress",
+      "category": "conversation",
+      "question": "And that doesn't give me another Operation Progress when I finish it?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My Special Operation is ready and I can pay its completion cost in Denouement."
+        },
+        {
+          "role": "assistant",
+          "content": "If its requirement remains satisfied, you can complete it and win by paying the Special Operation cost."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "not a normal Mission. It grants no Mission reward",
+          "Starting a Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. Completing a Special Operation does not award the normal Mission reward, including Operation Progress."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-conversation-trade-concessions-return",
+      "category": "conversation",
+      "question": "So it's back in my Hand before I choose a Gambit?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I revealed Trade Concessions with my Terms and the opponent refused."
+        },
+        {
+          "role": "assistant",
+          "content": "Trade Concessions follows its Refused clause."
+        }
+      ],
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Return this card to your Hand before Gambits are set",
+          "Trade Concessions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Trade Concessions returns to your Hand before Gambits are set."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-conversation-court-martial-normal-retreat-preserved",
+      "category": "conversation",
+      "question": "But my original retreat still happened, right?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I lost, retreated normally, then Court Martial tried to make me retreat one more Position. I discarded Stand Ground against that extra movement."
+        },
+        {
+          "role": "assistant",
+          "content": "Stand Ground can address movement caused by the opposing card effect."
+        }
+      ],
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing card effect would move you",
+          "Stand Ground"
+        ],
+        [
+          "A player retreats because they lost a battle",
+          "Retreat"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Stand Ground can stop the extra Court Martial movement, but it does not undo the normal retreat already caused by losing the battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-unsupported-extra-reserve-repair",
+      "category": "unsupported",
+      "question": "We accidentally drew four Reserve cards instead of three and saw all four before noticing. Does published v0.7.1 define an official repair procedure for that mistake?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define a general official repair procedure for accidentally drawing and seeing an extra Reserve card; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-out-of-scope-card-balance",
+      "category": "out-of-scope",
+      "question": "Is Black Covenant too strong and should its cost be increased in the next release?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for game-design and balance judgment rather than a v0.7.1 gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary rather than recommend a balance change."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-out-of-scope-flavor-text",
+      "category": "out-of-scope",
+      "question": "Write new flavor text for War Bonds.",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is creative writing rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary instead of writing flavor text."
+        }
+      ]
+    }
+  ]
+}
