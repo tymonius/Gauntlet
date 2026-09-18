@@ -29,6 +29,11 @@ on:
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
       - 'legacy/public-versions/v0.7.0/**'
+      - 'legacy/rulebook-browser/**'
+      - 'packages/rules/publication/v072-modular-booklets.mjs'
+      - 'scripts/render-v072-dedicated-booklets.mjs'
+      - 'scripts/render-v072-modular-booklets.mjs'
+      - 'scripts/validate-v072-modular-booklets.mjs'
       - 'scripts/publication-boundary.mjs'
       - 'scripts/stage-pages-publication.mjs'
       - 'scripts/validate-publication-boundary.mjs'
@@ -125,10 +130,55 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
+      - name: Install PDF publication tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ghostscript poppler-utils
+
+      - name: Stage current modular Rulebook booklets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/render-v072-dedicated-booklets.mjs
+          node scripts/validate-v072-modular-booklets.mjs
+
+          source_root="artifacts/rules-booklets/v0.7.2"
+          target_root="$SITE_DIR/rulebook/booklets/v0.7.2"
+          rm -rf "$target_root"
+          mkdir -p "$target_root"
+
+          for source in "$source_root"/*_Booklet.pdf; do
+            output="$target_root/$(basename "$source")"
+            gs -q -dNOPAUSE -dBATCH \
+              -sDEVICE=pdfwrite \
+              -dCompatibilityLevel=1.7 \
+              -dPDFSETTINGS=/printer \
+              -dDetectDuplicateImages=true \
+              -dCompressFonts=true \
+              -sOutputFile="$output" \
+              "$source"
+            pdfinfo "$output" >/dev/null
+          done
+
+          test "$(find "$target_root" -maxdepth 1 -type f -name '*_Booklet.pdf' | wc -l | tr -d ' ')" -eq 8
+          for filename in \
+            Gauntlet_v0.7.2_Player_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Military_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf; do
+            test -s "$target_root/$filename"
+          done
 
       - name: Render canonical website media
         run: npm run media:build -- --profile=website --strict-art
@@ -253,8 +303,8 @@ jobs:
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
           # Keep a bounded guard below the 1 GB Pages target while allowing the approved
-          # production Chief Justice assets to ship with the site.
-          test "$bytes" -lt 970000000
+          # production Chief Justice assets and compressed current Rulebook booklets to ship.
+          test "$bytes" -lt 990000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           for image in \
@@ -278,6 +328,18 @@ jobs:
             "grand inquisitor.png" \
             "witch hunter.png"; do
             test -s "$SITE_DIR/images/sketches/$image"
+          done
+
+          for filename in \
+            Gauntlet_v0.7.2_Player_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Military_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf \
+            Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf; do
+            test -s "$SITE_DIR/rulebook/booklets/v0.7.2/$filename"
           done
 
           test -s "$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE"

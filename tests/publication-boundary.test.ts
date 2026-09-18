@@ -110,7 +110,10 @@ describe('public route and Pages publication boundary', () => {
     expect(publicationWorkflow).not.toContain('/rulebook/index.html');
     expect(publicationWorkflow).toContain('node scripts/validate-publication-boundary.mjs');
     expect(pagesWorkflow).toContain("'config/publication-boundary.json'");
+    expect(pagesWorkflow).toContain("'legacy/rulebook-browser/**'");
     expect(pagesWorkflow).toContain('node scripts/stage-pages-publication.mjs "$site"');
+    expect(pagesWorkflow).toContain('Stage current modular Rulebook booklets');
+    expect(pagesWorkflow).toContain('$SITE_DIR/rulebook/booklets/v0.7.2');
     expect(pagesWorkflow).toContain('node scripts/validate-publication-boundary.mjs --site "$SITE_DIR"');
   });
 });

@@ -8,12 +8,14 @@ const FALLBACK_PDF_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pd
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';
+const CANDIDATE_BOOKLET_BASE_URL = './booklets/v0.7.2/';
 
 const CANDIDATE_DOCUMENTS = new Map([
   ['player-guide', {
     label: "Player's Guide",
     title: "Player's Guide",
     sourceUrl: './sources/player-guide.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Player_Guide_Booklet.pdf',
     marker: 'RULES-SURFACE:player-guide',
     lede: "Learn Gauntlet's shared game before adding the operating rules for your chosen faction.",
     tocLevels: new Set([2]),
@@ -22,6 +24,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Military Guide',
     title: 'Military Guide',
     sourceUrl: './sources/factions/military.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Military_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:military',
     lede: 'The operating guide for Command, Orders, Military Leaders, and first-game priorities.',
     tocLevels: new Set([2]),
@@ -30,6 +33,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Diplomats Guide',
     title: 'Diplomats Guide',
     sourceUrl: './sources/factions/diplomats.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:diplomats',
     lede: 'The operating guide for Influence, Proposals, Diplomat Leaders, and diplomatic victory play.',
     tocLevels: new Set([2]),
@@ -38,6 +42,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Financiers Guide',
     title: 'Financiers Guide',
     sourceUrl: './sources/factions/financiers.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:financiers',
     lede: 'The operating guide for Capital, Deeds, Financier Leaders, and economic control of the Gauntlet.',
     tocLevels: new Set([2]),
@@ -46,6 +51,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Intelligence Guide',
     title: 'Intelligence Guide',
     sourceUrl: './sources/factions/intelligence.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:intelligence',
     lede: 'The operating guide for Intel, Operations, Intelligence Leaders, and covert progress.',
     tocLevels: new Set([2]),
@@ -54,6 +60,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Mystics Guide',
     title: 'Mystics Guide',
     sourceUrl: './sources/factions/mystics.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:mystics',
     lede: 'The operating guide for Rites, Rituals, Mystic Leaders, and Arcane play.',
     tocLevels: new Set([2]),
@@ -62,6 +69,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Inquisition Guide',
     title: 'Inquisition Guide',
     sourceUrl: './sources/factions/inquisition.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf',
     marker: 'RULES-FACTION:inquisition',
     lede: 'The operating guide for Conviction, Purges, Inquisition Leaders, and doctrinal control.',
     tocLevels: new Set([2]),
@@ -70,6 +78,7 @@ const CANDIDATE_DOCUMENTS = new Map([
     label: 'Complete Rules',
     title: 'Complete Rules',
     sourceUrl: './sources/complete-rules.md',
+    bookletFilename: 'Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf',
     marker: 'RULES-SURFACE:comprehensive-rules',
     lede: 'The complete player-facing technical rules reference for exact procedures, timing, interactions, and edge cases.',
     tocLevels: new Set([2, 3]),
@@ -97,7 +106,7 @@ const printHeading = document.querySelector('[data-rulebook-print-heading]');
 const printNote = document.querySelector('[data-rulebook-print-note]');
 const rulesAssistantButton = document.querySelector('[data-open-rules-assistant]');
 const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
-const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
+const rulebookBookletLinks = [...document.querySelectorAll('[data-rulebook-booklet]')];
 
 let sourcePromise = null;
 let releaseManifestPromise = null;
@@ -369,6 +378,19 @@ function writeModeToUrl(mode, replace = false, documentId = activeCandidateDocum
   window.history[method]({ ruleset: mode, document: documentId }, '', url);
 }
 
+function candidateBookletUrl(documentId = activeCandidateDocument) {
+  const documentConfig = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
+  return `${CANDIDATE_BOOKLET_BASE_URL}${documentConfig.bookletFilename}`;
+}
+
+function updateBookletLinks(mode, documentId = activeCandidateDocument) {
+  const href = mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl;
+  rulebookBookletLinks.forEach((link) => {
+    link.hidden = false;
+    link.href = href;
+  });
+}
+
 function setRulesetUi(mode, currentGame = null, distinctCandidate = false, documentId = activeCandidateDocument) {
   const candidate = mode === CANDIDATE_MODE && distinctCandidate;
   const candidateLabel = currentGame?.displayVersion || currentGame?.version || 'current development';
@@ -383,7 +405,7 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false, docum
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
   });
-  publishedBookletLinks.forEach((link) => { link.hidden = candidate; });
+  updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId);
 
   // The current production Rules Arbiter remains bound to released v0.7.1 until the
   // v0.7.2 corpus is cut over. Do not expose it as though it were candidate-aware.
@@ -401,7 +423,7 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false, docum
     if (heroLede) heroLede.textContent = documentConfig.lede;
     if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · ${documentConfig.label}.`;
     if (printHeading) printHeading.textContent = `${documentConfig.label} booklet`;
-    if (printNote) printNote.textContent = 'Printable candidate booklets are being prepared as part of the v0.7.2 publication cutover.';
+    if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
     document.title = `${documentConfig.title} — Gauntlet ${candidateLabel}`;
   } else {
     if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
@@ -529,7 +551,7 @@ async function loadReleaseManifest() {
 
         publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, rulebook.path));
         pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
-        publishedBookletLinks.forEach((link) => { link.href = pdfUrl; });
+        if (activeMode === RELEASED_MODE) updateBookletLinks(RELEASED_MODE);
 
         return { manifest, rulebook, sourceUrl: publishedSourceUrl };
       })

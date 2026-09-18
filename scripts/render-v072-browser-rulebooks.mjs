@@ -4,10 +4,12 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import { V072_MODULAR_BOOKLETS } from '../packages/rules/publication/v072-modular-booklets.mjs';
 
 const ROOT = process.cwd();
 const OUT = path.resolve(process.env.GAUNTLET_BROWSER_RULEBOOK_REVIEW || '/tmp/v072-browser-rulebook-review');
 const SITE = fs.mkdtempSync(path.join(os.tmpdir(), 'gauntlet-browser-rulebook-'));
+const BOOKLET_FILENAMES = new Map(V072_MODULAR_BOOKLETS.map(publication => [publication.id, publication.filename]));
 
 const DOCUMENTS = [
   { id: 'player-guide', label: 'Player Guide' },
@@ -141,10 +143,21 @@ async function waitForCandidate(page, document) {
       articleWidth: rect.width,
       scrollWidth: article.scrollWidth,
       leaderProfiles: document.querySelectorAll('.candidate-leader-profile').length,
+      bookletPaths: [...document.querySelectorAll('[data-rulebook-booklet]')]
+        .map(link => new URL(link.href, window.location.href).pathname),
     };
   });
   if (diagnostics.overflow) {
     throw new Error(`${document.label} has horizontal publication overflow: ${JSON.stringify(diagnostics)}`);
+  }
+
+  const expectedBooklet = BOOKLET_FILENAMES.get(document.id);
+  const expectedBookletPath = `/rulebook/booklets/v0.7.2/${expectedBooklet}`;
+  if (!expectedBooklet || diagnostics.bookletPaths.length !== 2
+    || diagnostics.bookletPaths.some(bookletPath => bookletPath !== expectedBookletPath)) {
+    throw new Error(
+      `${document.label} booklet action mismatch: expected ${expectedBookletPath}, found ${diagnostics.bookletPaths.join(', ') || 'none'}`,
+    );
   }
   return diagnostics;
 }
