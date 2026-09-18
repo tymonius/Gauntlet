@@ -36,7 +36,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche P r27 remediation", () => {
   test("bumps production behavior to r27", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-27");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-28");
   });
 
   test("wrong-first-player rollback request is a provisional gap", () => {

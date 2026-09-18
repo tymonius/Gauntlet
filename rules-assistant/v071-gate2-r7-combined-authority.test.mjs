@@ -35,7 +35,7 @@ function retrieved(doc, id = "S1") {
 
 describe("v0.7.1 Gate 2 r7 combined-authority regressions", () => {
   test("pins the current behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-27");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-28");
   });
 
   test("injects Deeds and Front Line together for contiguity comparisons", () => {
