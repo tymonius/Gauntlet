@@ -7,6 +7,15 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { effectiveV070AssetLimit } from './assets';
+import { v070CanonicalContent } from '../content/v070';
+import {
+  V070_REARGUARD_BATTLE_TEXT,
+  V070_REARGUARD_ID,
+} from './rearguard';
+import {
+  V070_SUPPORTED_REVEAL_EFFECT_IDS,
+  v070BattleEffectHandler,
+} from './battle-effects';
 
 function readyGame(): V070GameState {
   let state = createV070StarterGame({
@@ -159,6 +168,19 @@ function resolveOutcome(
 }
 
 describe('v0.7.0 Rearguard battle effect', () => {
+  test('binds exact released authority and registers the battle surface', () => {
+    expect(V070_REARGUARD_BATTLE_TEXT).toBe(
+      'In the Aftermath, if you lose and retreat, bank this card.',
+    );
+    expect(v070CanonicalContent.cardsById.get(V070_REARGUARD_ID)?.effects
+      .find(effect => effect.label === 'Gambit/Tactic')?.text)
+      .toBe(V070_REARGUARD_BATTLE_TEXT);
+    expect(v070BattleEffectHandler(V070_REARGUARD_ID)?.expectedText)
+      .toBe(V070_REARGUARD_BATTLE_TEXT);
+    expect(V070_SUPPORTED_REVEAL_EFFECT_IDS)
+      .toContain(V070_REARGUARD_ID);
+  });
+
   test('banks Rearguard in the Aftermath after its controller loses and retreats', () => {
     let state = startOrdinaryAttack();
     const rearguard = inject(
