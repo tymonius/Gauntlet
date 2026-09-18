@@ -1224,7 +1224,16 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   if (!preferred.length) return retrieval;
 
   const preferredIds = new Set(preferred.map((source) => source.canonicalId));
-  return [...preferred, ...retrieval.filter((source) => !preferredIds.has(source.canonicalId))]
+  const suppressedIds = militaryLateTacticFocus
+    ? new Set(INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS)
+    : new Set();
+  return [
+    ...preferred,
+    ...retrieval.filter((source) =>
+      !preferredIds.has(source.canonicalId)
+      && !suppressedIds.has(source.canonicalId)
+    )
+  ]
     .slice(0, 10)
     .map((source, index) => ({ ...source, id: `S${index + 1}` }));
 }
