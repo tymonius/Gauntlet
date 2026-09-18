@@ -401,8 +401,10 @@ function buildFactionOverviewCallout(nodes, startIndex) {
 
   let nextIndex = startIndex + 1;
   while (nextIndex < nodes.length && nodes[nextIndex].tagName !== 'H3') {
-    block.append(cloneNode(nodes[nextIndex]));
+    const node = nodes[nextIndex];
+    block.append(cloneNode(node));
     nextIndex += 1;
+    if (node.matches?.('ul, ol')) break;
   }
 
   return { block, nextIndex };
