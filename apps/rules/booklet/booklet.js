@@ -856,9 +856,11 @@ async function main() {
   // choose the smallest final composition that actually lands on a multiple of
   // four rather than assuming the baseline page count will remain stable.
   let fillerCount = null;
+  const fillerAttempts = [];
   for (let candidate = 0; candidate <= 3; candidate += 1) {
     resetPublicationPages();
     composePublication(publication, documentId, rendered.headings, prelude, sections, candidate);
+    fillerAttempts.push(`${candidate} filler(s) → ${pages.length} pages`);
     if (pages.length % 4 === 0) {
       fillerCount = candidate;
       break;
@@ -866,7 +868,7 @@ async function main() {
   }
 
   if (fillerCount === null) {
-    throw new Error('Could not compose booklet to a multiple of four pages with at most three fillers.');
+    throw new Error(`Could not compose booklet to a multiple of four pages with at most three fillers: ${fillerAttempts.join(', ')}.`);
   }
 
   assertFillerPlacement(fillerCount);
