@@ -765,6 +765,24 @@ export function shouldPromoteR24DirectProcedure(question, sources = []) {
   return false;
 }
 
+export function shouldPromoteR25DirectProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const safeConduct = /\bsafe conduct\b/.test(current)
+    && /\b(?:refus(?:e|ed|al)|lose|loss|withdraw|withdrawal)\b/.test(current);
+  if (
+    safeConduct
+    && texts.some((text) =>
+      /safe conduct/.test(text)
+      && /when you would lose a battle following refused terms/.test(text)
+      && /discard this card to withdraw instead/.test(text)
+    )
+  ) return true;
+
+  return false;
+}
+
 export function shouldPromoteR18DirectProcedure(question, sources = []) {
   const current = String(question || "").toLowerCase();
   const texts = sourceListText(sources);
@@ -859,6 +877,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteR21DirectProcedure(question, sources)
       || shouldPromoteR22DirectProcedure(question, sources)
       || shouldPromoteR24DirectProcedure(question, sources)
+      || shouldPromoteR25DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
@@ -889,6 +908,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteR21DirectProcedure(question, sources)
       || shouldPromoteR22DirectProcedure(question, sources)
       || shouldPromoteR24DirectProcedure(question, sources)
+      || shouldPromoteR25DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
