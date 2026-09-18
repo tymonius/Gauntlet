@@ -1,0 +1,303 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "Q",
+  "behaviorRevision": "v071-qa-20260918-27",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche Q benchmark authored only after r27 production deployment and current-live-publication verification succeeded; it was not used to construct r27.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r27 and was not used to construct r27.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-q-player-clemency-choice",
+      "category": "player-language",
+      "question": "clemency: they choose grave->discard for my +1 influence OR leave it for +1 card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Clemency",
+          "Move it to their Discard Pile; +1 Influence",
+          "Leave it there; +1 Card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-demilitarized-zone",
+      "category": "player-language",
+      "question": "demilitarized zone after accepted terms: both withdraw and nobody can enter there rest of turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Demilitarized Zone",
+          "Each player there withdraws",
+          "Neither player may enter there this turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-detente-once",
+      "category": "player-language",
+      "question": "detente only first already-ratified proposal acceptance each turn gives +1 influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Détente",
+          "The first time each turn",
+          "already ratified when you offered it, +1 Influence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-foreclosure-action",
+      "category": "player-language",
+      "question": "foreclosure: next enemy territory, deed mine + unoccupied = front line +1 in denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Foreclosure",
+          "During Denouement",
+          "Deed is yours and it is unoccupied",
+          "Advance Front Line 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if it is the next opposing Territory immediately beyond your Front Line."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-war-bonds",
+      "category": "player-language",
+      "question": "war bonds after first battle: hand card to treasury, +1 capital?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "War Bonds",
+          "After the first battle each turn",
+          "place one card from your Hand face up in your Treasury",
+          "If you do, +1 Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-disinformation-return",
+      "category": "player-language",
+      "question": "disinformation gambit comes back to hand in aftermath instead of grave?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Disinformation",
+          "return this card to your Hand instead of putting it in your Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-encampment-command",
+      "category": "player-language",
+      "question": "encampment end turn while i still occupy and control it = +1 command?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Encampment",
+          "At the end of this card's owner's turn",
+          "occupy and control this Territory, +1 Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-shock-consolidate",
+      "category": "player-language",
+      "question": "shock and awe consolidate = front line +1 and command set to 2?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Shock and Awe",
+          "Consolidate",
+          "Advance Front Line 1, if able; Command = 2"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-rearguard-card",
+      "category": "player-language",
+      "question": "rearguard stops their card entering my position and sends that card back to their hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rearguard",
+          "prevent that movement",
+          "return any card used to its owner's Hand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, and that card cannot be used again that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-witchcraft",
+      "category": "player-language",
+      "question": "witchcraft banked: hand card to grave to repeat another battle effect after tactics reveal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Witchcraft",
+          "put 1 card from your Hand in your Graveyard",
+          "repeat one other Gambit or Tactic effect you control in this battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, once per turn and only if the repeated effect can apply then."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-sequestration",
+      "category": "player-language",
+      "question": "sequestration action: each player keeps one asset and discards rest?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Sequestration",
+          "Each player keeps 1 Asset, if able, and discards the rest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-strategic-withdrawal",
+      "category": "player-language",
+      "question": "strategic withdrawal in denouement after movement ended starts a new 1-position movement sequence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Strategic Withdrawal",
+          "begin a new Movement sequence with up to one Position of movement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-plenipotentiary",
+      "category": "player-language",
+      "question": "plenipotentiary ratifies after refusal: refused effect still happens and no influence for that ratification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Plenipotentiary",
+          "Gain no Influence for ratifying it this way. Its Refused effect still applies"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-player-sequestration-contingency",
+      "category": "player-language",
+      "question": "sequestration forces contingency plan out, so its Removed trigger gives +1 card?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Sequestration",
+          "keeps 1 Asset",
+          "discards the rest"
+        ],
+        [
+          "Contingency Plan",
+          "If this card is Removed, +1 Card"
+        ],
+        [
+          "Removed Assets",
+          "forced to discard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The forced discard counts as Removal, so Contingency Plan gives +1 Card."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "Q",
+  "behaviorRevision": "v071-qa-20260918-27",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche Q ambiguous-follow-up cases authored after r27 production verification; each must request clarification rather than guess among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-q-clarify-clemency-divine-mercy",
+      "question": "Does that one let the opponent choose?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Clemency and Divine Mercy."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can move a card from the opponent's Graveyard, but their procedures differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-clarify-demilitarized-scorched",
+      "question": "Does that one become an Overlay after accepted Terms?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Demilitarized Zone and Scorched Earth are both relevant."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can become Overlays, but at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-clarify-foreclosure-war-bonds",
+      "question": "Does that one advance Front Line?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Foreclosure and War Bonds available."
+        },
+        {
+          "role": "assistant",
+          "content": "They both reward economic positioning, but with different effects."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-clarify-witchcraft-heresy",
+      "question": "Does that one spend Conviction?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Witchcraft and Heresy."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can reuse another battle-card effect, but their costs differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-clarify-salvage-second-line",
+      "question": "Does that one put a Reserve card on top of the Draw Pile?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Salvage and Second Line after a battle."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can change the destination of a Reserve card in the Aftermath."
+        }
+      ]
+    }
+  ]
+}
