@@ -104,7 +104,7 @@ function createPage({ className = '', runningLeft = '', runningRight = '', label
 
 function applyPublicationIdentity(page, publication) {
   page.style.setProperty('--page-accent', publication.accent);
-  if (publication.symbol) page.style.setProperty('--booklet-symbol', `url("${publication.symbol}")`);
+  if (publication.symbol) page.dataset.factionSymbolSrc = publication.symbol;
 }
 
 function flowOf(page) { return page.querySelector('.page-flow'); }
@@ -131,7 +131,7 @@ function createCover(publication) {
         <p class="cover-subtitle">Modular Rules Publication</p>
         <p class="cover-version">Version 0.7.2 · 2026</p>
       </div>
-      ${publication.symbol ? `<span class="cover-faction-symbol" style="--booklet-symbol:url(&quot;${publication.symbol}&quot;)" aria-hidden="true"></span>` : ''}
+      ${publication.symbol ? `<span class="cover-faction-symbol booklet-inline-faction-symbol" data-faction-symbol-src="${publication.symbol}" aria-hidden="true"></span>` : ''}
     </div>
     <div class="cover-art"><img src="/images/woodcuts/hero compositions/hero ${publication.hero}.png" alt="" /></div>
     <div class="cover-bottom"><span>Tactical card-and-territory game</span><span>gauntlet.run</span></div>`;
@@ -193,7 +193,7 @@ function newContinuationPage(context) {
     label: context.label,
   });
   page.style.setProperty('--page-accent', context.accent);
-  if (context.symbol) page.style.setProperty('--booklet-symbol', `url("${context.symbol}")`);
+  if (context.symbol) page.dataset.factionSymbolSrc = context.symbol;
   flowOf(page).innerHTML = `<div class="continuation-label">${context.runningRight} · continued</div>`;
   return page;
 }
@@ -372,18 +372,41 @@ function digitalToolsGrid(tableWrapper) {
   return grid;
 }
 
-function decorateFactionOverviewHeading(node) {
+function factionDecorationForHeading(node) {
   const label = node.textContent.trim();
   const entry = Object.entries(FACTION_DECORATION).find(([prefix]) => label.startsWith(prefix));
-  if (!entry) return node;
+  if (!entry) return null;
   const [, [accent, symbol]] = entry;
-  const clone = cloneNode(node);
-  clone.classList.add('faction-overview-heading');
-  clone.style.setProperty('--overview-accent', accent);
-  clone.style.setProperty('--overview-symbol', `url("${symbol}")`);
-  return clone;
+  return { accent, symbol };
 }
 
+function buildFactionOverviewCallout(nodes, startIndex) {
+  const heading = nodes[startIndex];
+  const decoration = factionDecorationForHeading(heading);
+  if (!decoration) return null;
+
+  const block = document.createElement('section');
+  block.className = 'booklet-faction-overview';
+  block.style.setProperty('--overview-accent', decoration.accent);
+
+  const title = cloneNode(heading);
+  title.classList.add('faction-overview-heading');
+
+  const symbolMark = document.createElement('span');
+  symbolMark.className = 'faction-overview-symbol booklet-inline-faction-symbol';
+  symbolMark.dataset.factionSymbolSrc = decoration.symbol;
+  symbolMark.setAttribute('aria-hidden', 'true');
+  title.prepend(symbolMark);
+  block.append(title);
+
+  let nextIndex = startIndex + 1;
+  while (nextIndex < nodes.length && nodes[nextIndex].tagName !== 'H3') {
+    block.append(cloneNode(nodes[nextIndex]));
+    nextIndex += 1;
+  }
+
+  return { block, nextIndex };
+}
 function cardAnatomyMarkers() {
   return [
     ['1', 'left m1'], ['2', 'right m2'], ['3', 'left m3'], ['4', 'right m4'],
@@ -562,10 +585,16 @@ function paginateSection(section, publication, documentId) {
       continue;
     }
 
-    let node = original;
     if (documentId === 'player-guide' && sectionLabel === '9. The Six Factions' && original.tagName === 'H3') {
-      node = decorateFactionOverviewHeading(original);
+      const factionOverview = buildFactionOverviewCallout(section.nodes, index);
+      if (factionOverview) {
+        page = appendNodeAcrossPages(factionOverview.block, page, context);
+        index = factionOverview.nextIndex;
+        continue;
+      }
     }
+
+    let node = original;
     if (sectionLabel === 'At the Table: Digital Tools' && original.classList?.contains('table-scroll')) {
       const grid = digitalToolsGrid(original);
       page.classList.add('digital-tools-page');
@@ -611,6 +640,85 @@ async function ensurePublicationFonts() {
   await document.fonts.ready;
 }
 
+const factionSymbolDefinitionCache = new Map();
+
+function symbolDefinitionsRoot() {
+  let root = document.querySelector('svg[data-booklet-symbol-definitions]');
+  if (root) return root;
+
+  root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  root.dataset.bookletSymbolDefinitions = 'true';
+  root.setAttribute('aria-hidden', 'true');
+  root.setAttribute('width', '0');
+  root.setAttribute('height', '0');
+  root.style.position = 'absolute';
+  root.style.width = '0';
+  root.style.height = '0';
+  root.style.overflow = 'hidden';
+  root.append(document.createElementNS('http://www.w3.org/2000/svg', 'defs'));
+  document.body.prepend(root);
+  return root;
+}
+
+async function ensureFactionSymbolDefinition(src) {
+  if (!factionSymbolDefinitionCache.has(src)) {
+    factionSymbolDefinitionCache.set(src, (async () => {
+      const response = await fetch(src, { cache: 'force-cache' });
+      if (!response.ok) throw new Error(`Unable to load faction symbol ${src}: HTTP ${response.status}`);
+      const parsed = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
+      const sourceSvg = parsed.documentElement;
+      if (!sourceSvg || sourceSvg.nodeName.toLowerCase() !== 'svg' || parsed.querySelector('parsererror')) {
+        throw new Error(`Invalid faction symbol SVG: ${src}`);
+      }
+
+      const id = `booklet-faction-symbol-${src.split('/').pop().replace(/\.svg$/i, '').replace(/[^a-z0-9_-]+/gi, '-')}`;
+      const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol');
+      symbol.id = id;
+      symbol.setAttribute('viewBox', sourceSvg.getAttribute('viewBox') || '0 0 1000 1000');
+      [...sourceSvg.childNodes].forEach(node => symbol.append(node.cloneNode(true)));
+      symbol.querySelectorAll('path, circle, ellipse, polygon, polyline, rect, line').forEach(shape => {
+        if (shape.getAttribute('fill') !== 'none') shape.setAttribute('fill', 'currentColor');
+        if (shape.hasAttribute('stroke') && shape.getAttribute('stroke') !== 'none') {
+          shape.setAttribute('stroke', 'currentColor');
+        }
+      });
+      symbolDefinitionsRoot().querySelector('defs').append(symbol);
+      return id;
+    })());
+  }
+  return factionSymbolDefinitionCache.get(src);
+}
+function addFactionWatermarkPlaceholders() {
+  pagesRoot.querySelectorAll('.faction-page[data-faction-symbol-src]').forEach(page => {
+    if (page.querySelector(':scope > .faction-page-watermark')) return;
+    const watermark = document.createElement('span');
+    watermark.className = 'faction-page-watermark booklet-inline-faction-symbol';
+    watermark.dataset.factionSymbolSrc = page.dataset.factionSymbolSrc;
+    watermark.setAttribute('aria-hidden', 'true');
+    page.prepend(watermark);
+  });
+}
+
+async function hydrateFactionSymbols() {
+  const targets = [...pagesRoot.querySelectorAll('.booklet-inline-faction-symbol[data-faction-symbol-src]')];
+  const symbolIds = new Map();
+  await Promise.all([...new Set(targets.map(target => target.dataset.factionSymbolSrc))].map(async src => {
+    symbolIds.set(src, await ensureFactionSymbolDefinition(src));
+  }));
+
+  targets.forEach(target => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', `#${symbolIds.get(target.dataset.factionSymbolSrc)}`);
+    use.setAttribute('width', '100%');
+    use.setAttribute('height', '100%');
+    svg.append(use);
+    target.replaceChildren(svg);
+  });
+  document.body.dataset.factionSymbolsReady = 'true';
+}
 async function waitForImages() {
   const images = [...pagesRoot.querySelectorAll('img')];
   await Promise.all(images.map(image => image.complete && image.naturalWidth > 0
@@ -679,6 +787,8 @@ async function main() {
   for (let index = 0; index < fillerCount; index += 1) createWoodcutPage(publication, index);
   createBackCover(publication);
   fillContents();
+  addFactionWatermarkPlaceholders();
+  await hydrateFactionSymbols();
   await Promise.all([waitForImages(), waitForFrames(), ensurePublicationFonts()]);
 
   document.title = `${publication.title} — Gauntlet v0.7.2`;
