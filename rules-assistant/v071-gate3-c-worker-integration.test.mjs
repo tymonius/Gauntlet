@@ -37,7 +37,7 @@ function sourceTitles(sources) {
 
 describe("v0.7.1 Gate 3 tranche C Worker integration", () => {
   test("uses the remediated behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-22");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-23");
   });
 
   test("carries the long Advance Guard follow-up and preserves the named card authority", () => {
