@@ -91,7 +91,7 @@ describe("Gate 3 tranche F r17 remediation", () => {
     ];
     const question = "What if I am the defender in the next battle instead?";
     const sources = augmented(question, history);
-    expect(sources.some((source) => /Rally/i.test(source.title))).toBe(true);
+    expect(sources.some((source) => /\bRally\b/i.test(String(source.body || source.excerpt || "")))).toBe(true);
     expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("explicit");
   });
 
