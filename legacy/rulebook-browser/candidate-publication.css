@@ -364,9 +364,9 @@
   max-width: 32rem;
   margin: 14px 0 0 !important;
   color: var(--rulebook-ink) !important;
-  font-family: var(--rulebook-title) !important;
+  font-family: var(--rulebook-flavor) !important;
   font-size: clamp(1.3rem, 2.8vw, 1.8rem) !important;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.05 !important;
 }
 
@@ -439,6 +439,30 @@
   color: var(--rulebook-ink);
   font-size: 1rem;
   line-height: 1.45;
+}
+
+.candidate-leader-identity .candidate-leader-motto {
+  margin: 16px 0 0 !important;
+  color: var(--rulebook-ink);
+  font-family: var(--rulebook-flavor) !important;
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.candidate-leader-identity .candidate-leader-motto strong {
+  display: block;
+  margin-bottom: 3px;
+  font-family: var(--rulebook-ui);
+  font-size: .7rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.candidate-leader-identity .candidate-leader-motto em {
+  font-style: normal;
 }
 
 .candidate-leader-identity .candidate-leader-ability {
