@@ -1,0 +1,284 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "M",
+  "behaviorRevision": "v071-qa-20260918-23",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche M benchmark authored only after r23 production deployment and current-live-publication verification succeeded; it was not used to construct r23.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r23 and was not used to construct r23.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-m-player-asset-bank-unprinted",
+      "category": "player-language",
+      "question": "asset card has no bank line. still bank it as an action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A card with an Asset effect has this inherent banking Action",
+          "Inherent Bank Action"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. An Asset has the inherent Bank Action even if the card does not print it."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-replace-asset-no-action",
+      "category": "player-language",
+      "question": "at asset cap, ditch one to bank new one. extra action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This replacement is not a separate Action",
+          "Replacing an Asset"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The replacement itself is not a separate Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-two-actions-split",
+      "category": "player-language",
+      "question": "generic +1 action means one opening one denouement, not both opening?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "must take one during Opening and one during Denouement",
+          "Additional Actions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. Without special same-phase permission, the two Actions are split between Opening and Denouement."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-sanction-accepted-clears",
+      "category": "player-language",
+      "question": "they refused, sanction is out, then later accept my terms. sanction discards by default?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile",
+          "Sanctions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, unless that Sanction says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-onward-after-battle",
+      "category": "player-language",
+      "question": "onward after battle is over?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Onward cannot be used after a battle",
+          "General"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-tariffs-replace-itself",
+      "category": "player-language",
+      "question": "banked tariffs this turn. can i replace it to make asset room?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cannot voluntarily cause it to leave play, including replacing it to make room",
+          "Tariffs and Asset replacement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-mission-progress-value",
+      "category": "player-language",
+      "question": "value 5 normal mission completed. still only 1 progress?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each completed normal Mission adds 1, regardless of card value",
+          "Operation Progress"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. It adds exactly 1 Operation Progress."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-direct-interference-surveillance",
+      "category": "player-language",
+      "question": "direct interference on faceup card uses interference slot but not surveillance?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not use Surveillance but does use the relevant stage's Interference opportunity",
+          "Direct Interference"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-watchtower-counterintel",
+      "category": "player-language",
+      "question": "watchtower makes attacker gambit faceup. counterintel can't stop that reveal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Counterintelligence does not prevent the reveal",
+          "Watchtower"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. Counterintelligence does not prevent that Watchtower reveal."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-rite-same-turn",
+      "category": "player-language",
+      "question": "started rite this turn and met condition already. can it finish?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Rite cannot complete during the turn it begins",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-ritual-withdraw",
+      "category": "player-language",
+      "question": "ritual running, i withdraw. no completion and no interruption?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Withdrawal neither completes nor interrupts the Ritual",
+          "Interruption"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-blasphemy-copy",
+      "category": "player-language",
+      "question": "copied arcane effect only. blasphemy conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Merely copying an Arcane card's effect",
+          "does not trigger Blasphemy",
+          "Blasphemy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-neutral-observers-order",
+      "category": "player-language",
+      "question": "neutral observers after refusal: they gambit faceup first, then mine facedown?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass",
+          "Neutral Observers"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-player-toll-bridge-cost",
+      "category": "player-language",
+      "question": "leaving toll bridge by voluntary advance costs a hand discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "must discard 1 card from Hand to voluntarily Advance",
+          "Toll Bridge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Discard 1 card from Hand."
+        }
+      ]
+    }
+  ]
+}
