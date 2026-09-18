@@ -1,0 +1,911 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "O",
+  "behaviorRevision": "v071-qa-20260918-25",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche O certification benchmark authored only after r25 was merged, deployed, and current-live-publication verification succeeded. It was not used to construct r25 and stresses unused card text, replacement-like battle effects, cross-authority interactions, rules gaps, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-25; it was not used to construct r25.",
+    "Do not edit or retroactively regrade tranche O after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-O case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche O, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-o-inquisition-accusation-action",
+      "category": "inquisition",
+      "question": "I play Accusation for its Action effect and choose a card in the opponent's Discard Pile. Who decides whether it goes on top of their Draw Pile or into their Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "They put it on top of their Draw Pile or in their Graveyard",
+          "Accusation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent decides whether the chosen card goes on top of their Draw Pile or into their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-inquisition-act-faith-action",
+      "category": "inquisition",
+      "question": "I use Act of Faith's Action effect. How many cards may I reveal from the top of the opponent's Draw Pile, and where do they go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Reveal up to three cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile",
+          "Act of Faith"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal up to three; put one in their Graveyard and the rest in their Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-armistice-asset",
+      "category": "cards",
+      "question": "Armistice is banked. Can either player start a battle while it remains active?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Neither player can start a battle",
+          "Armistice"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Neither player can start a battle while Armistice is active."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-armistice-battle",
+      "category": "cards",
+      "question": "Armistice is used as a Gambit or Tactic. What happens to the attacker and to the other Gambits and Tactics still in battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile",
+          "Armistice"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The attacker withdraws, and every other Gambit and Tactic still in battle goes to its owner's Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-intelligence-assassins-action",
+      "category": "intelligence",
+      "question": "What does Assassins do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Reveal the opponent's Hand. Choose one card there and discard it",
+          "Assassins"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal the opponent's Hand, choose one card there, and discard it."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-intelligence-assassins-no-gambit",
+      "category": "intelligence",
+      "question": "I use Assassins as a Gambit or Tactic, but the opponent set no Gambit. What happens?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If the opponent set no Gambit, the opponent gains Disadvantage",
+          "Assassins"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent gains Disadvantage."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-attrition-asset",
+      "category": "cards",
+      "question": "Attrition is banked and the opponent loses the battle. Where do their Tactics from that battle go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put each opposing Tactic from this battle in their Graveyard instead of their Discard Pile",
+          "Attrition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Their Tactics from that battle go to their Graveyard instead of their Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-attrition-battle",
+      "category": "cards",
+      "question": "I use Attrition as a Gambit or Tactic and the opponent loses. What happens to the cards from their initial Reserve?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put every card from their initial Reserve in their Graveyard",
+          "Attrition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Every card from the opponent's initial Reserve goes to their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-battlefield-promotion",
+      "category": "military",
+      "question": "When may I play Battlefield Promotion for its Action effect, and what card can it return?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Play only during Denouement if you won a battle this turn. Return one Tactic you chose during that battle from your Discard Pile to your Hand",
+          "Battlefield Promotion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Only during Denouement after you won a battle that turn; it returns one Tactic you chose during that battle from your Discard Pile to your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-bombardment-overlay",
+      "category": "cards",
+      "question": "Bombardment is an Overlay on a Territory. What happens to that Territory's printed effect while the Overlay remains there?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This Territory's printed effect is inactive",
+          "Bombardment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The Territory's printed effect is inactive."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-bombardment-capture",
+      "category": "cards",
+      "question": "I capture a Territory carrying my Bombardment Overlay without a battle. What happens to the Overlay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If you capture this Territory without a battle, turn this Overlay into Ruins",
+          "Bombardment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Turn the Bombardment Overlay into Ruins."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-brothers-asset",
+      "category": "military",
+      "question": "Brothers in Arms is banked. While choosing Tactics, I did not set a Gambit. What may I do with Brothers in Arms?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if you did not set a Gambit, you may discard this card for +1 Tactic from Hand",
+          "Brothers in Arms"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Brothers in Arms for +1 Tactic from Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-brothers-tactic",
+      "category": "military",
+      "question": "I choose Brothers in Arms as a Tactic without having set a Gambit, and use its +1 Tactic from Hand. Where does that added Tactic go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "In the Aftermath, put that card in your Graveyard instead of your Discard Pile",
+          "Brothers in Arms"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The added Tactic from Hand goes to your Graveyard instead of your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-inquisition-burning-tie",
+      "category": "inquisition",
+      "question": "Burning at the Stake reveals an opponent's Hand and two cards are tied for highest card value. Who chooses which tied card goes to the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put the card there with the highest card value in their Graveyard; choose among ties",
+          "Burning at the Stake"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The Inquisition player using Burning at the Stake chooses among the tied highest-value cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-capital-punishment",
+      "category": "cards",
+      "question": "I use Capital Punishment as a Gambit or Tactic and choose an opposing battle card whose effect has not happened yet. What happens now, and what happens to that chosen card if I win?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Negate one opposing Gambit or Tactic that has not taken effect. In the Aftermath, if you win, put the chosen card in its owner's Graveyard",
+          "Capital Punishment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Negate the chosen Gambit or Tactic; if you win, put that chosen card in its owner's Graveyard in the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-circle-bones",
+      "category": "mystics",
+      "question": "A battle is taking place on Circle of Bones. After dice are rolled, how often may its reroll effect be used and what is its cost?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once during each battle here, after dice are rolled, you may put one card from your Hand in your Graveyard to make either player reroll",
+          "Circle of Bones"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once during that battle; put one card from your Hand in your Graveyard to make either player reroll."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-consolidation",
+      "category": "cards",
+      "question": "When can I play Consolidation for its Action effect, and what does it give me?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Play only if you captured a Territory this turn. +2 Cards",
+          "Consolidation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Only if you captured a Territory that turn; it gives +2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-contraband-battle",
+      "category": "cards",
+      "question": "I use Contraband as a Gambit or Tactic and choose an eligible card in my Discard Pile. In what role and face state is that card placed, and what is its default Aftermath destination?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "place the chosen card face up in the same role. In the Aftermath, put the chosen card in your Graveyard unless its text says otherwise",
+          "Contraband"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Place the chosen card face up in Contraband's same role; by default it goes to your Graveyard in the Aftermath unless its own text says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-counterworks-asset",
+      "category": "cards",
+      "question": "Counterworks is banked and an opposing effect would place an Overlay on a Territory. What may Counterworks do to the Overlay and the card that would become it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "discard this card to prevent that Overlay. The card that would become that Overlay is discarded",
+          "Counterworks"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Counterworks to prevent the Overlay; the card that would have become the Overlay is discarded."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-decoys-asset",
+      "category": "cards",
+      "question": "An opposing effect would Remove two of my other Assets while Decoys is banked. What can Decoys save?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "you may discard this card to keep one of them in play",
+          "Decoys"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Decoys to keep one of those other Assets in play."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-disruption-battle",
+      "category": "cards",
+      "question": "Disruption negates an opposing battle card before it takes effect. Where is a Gambit returned, where is a Tactic returned, and can that same card be used again in this battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle",
+          "Disruption"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A Gambit returns to its owner's Hand, a Tactic returns to its owner's Reserve, and that specific card cannot be used again in the battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-inquisition-divine-mercy",
+      "category": "inquisition",
+      "question": "What does Divine Mercy do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose one card in the opponent's Graveyard and move it to their Discard Pile. Then +2 Conviction",
+          "Divine Mercy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Move one chosen card from the opponent's Graveyard to their Discard Pile, then gain 2 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-entrenchment-asset",
+      "category": "cards",
+      "question": "Entrenchment is banked and the opponent advances onto a Territory adjacent to my Player Token. What two restrictions hit that opponent?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "their movement ends and they cannot play a card for its Action effect during their Denouement that turn",
+          "Entrenchment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Their movement ends, and they cannot play a card for its Action effect during their Denouement that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-inquisition-excommunication",
+      "category": "inquisition",
+      "question": "I play Excommunication for its Action effect. What is the maximum combined card value I can move from the opponent's Discard Pile, and where do those cards go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "combined card value up to 5. Put them in their Graveyard",
+          "Excommunication"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Choose cards with combined value up to 5 and put them in the opponent's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-fates-toll-action",
+      "category": "mystics",
+      "question": "What is the cost and movement benefit of Fate's Toll's Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put one other card from your Hand in your Graveyard. Move one additional Position this turn",
+          "Fate's Toll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put one other Hand card in your Graveyard to gain one additional Position of movement that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-fates-toll-reroll",
+      "category": "mystics",
+      "question": "I use Fate's Toll as a Gambit or Tactic and have already rolled. What may I do to reroll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After you roll, you may put one other card from your Hand in your Graveyard to reroll",
+          "Fate's Toll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After you roll, you may put one other card from Hand in your Graveyard to reroll."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-fealty-asset",
+      "category": "cards",
+      "question": "Fealty is banked. Can an opposing card effect give me Disadvantage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Opposing card effects cannot give you Disadvantage",
+          "Fealty"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Opposing card effects cannot give you Disadvantage while Fealty is active."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-field-command",
+      "category": "military",
+      "question": "Field Command is banked. After I use one of my Leader's 1-Command Orders, what can Field Command let me do with the other 1-Command Order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "use your Leader's other 1-Command Order at its next legal timing this turn without spending Command",
+          "Field Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Field Command to use the other 1-Command Order at its next legal timing that turn without spending Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-diplomats-good-faith-refused",
+      "category": "diplomats",
+      "question": "I used Good Faith when offering Terms and set a Hand card aside. The Terms are refused. Where does that set-aside card go and when?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Refused — Return it to your Hand before Gambits are set",
+          "Good Faith"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Return the set-aside card to your Hand before Gambits are set."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-soul-for-soul",
+      "category": "mystics",
+      "question": "What two cards does Soul for Soul exchange when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose one card in your Hand and one card in your Graveyard. Exchange them",
+          "Soul for Soul"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Exchange one chosen card in your Hand with one chosen card in your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-spirit-hollow",
+      "category": "mystics",
+      "question": "After battle cards are cleared at Spirit Hollow, what optional exchange-like procedure may each player perform?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile",
+          "Spirit Hollow"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Each player may put one Hand card in their Graveyard; a player who does may move one other Graveyard card to their Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-supplies-asset",
+      "category": "cards",
+      "question": "Supplies is banked. When may I discard it for cards, and how many cards do I get?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After your normal Draw, you may discard this card for +2 Cards",
+          "Supplies"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After your normal Draw, you may discard Supplies to gain 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-tactical-planning-action",
+      "category": "cards",
+      "question": "What does Tactical Planning do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+2 Cards, then place one card from your Hand on the bottom of your Draw Pile",
+          "Tactical Planning"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 2 Cards, then place one card from your Hand on the bottom of your Draw Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-tactical-planning-gambit",
+      "category": "cards",
+      "question": "I set Tactical Planning as a Gambit. When Gambits reveal, what does it change about Reserve and Tactic limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When Gambits are revealed: +1 Reserve. Tactic limit unchanged",
+          "Tactical Planning"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain +1 Reserve, and your Tactic limit does not change."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-intelligence-treason",
+      "category": "intelligence",
+      "question": "Treason chooses an opposing Gambit or Tactic effect that has not taken effect yet. What does Treason do to that effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Negate it, then apply that effect",
+          "Treason"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Treason negates the chosen opposing effect, then applies that effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-inquisition-tyranny",
+      "category": "inquisition",
+      "question": "Tyranny is banked. How often per turn may I use its Asset effect, what does it cost, and what does it negate?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once per turn",
+          "spend 1 Conviction to negate one of them",
+          "Tyranny"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once per turn, when opposing Gambits or Tactics are revealed before their effects apply, spend 1 Conviction to negate one of them."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-unbroken-ranks",
+      "category": "military",
+      "question": "Unbroken Ranks is banked and I win a battle in which I used no Orders. What may I do and what do I gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "you may discard this card: +1 Command",
+          "Unbroken Ranks"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Unbroken Ranks to gain 1 Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-valor-asset",
+      "category": "cards",
+      "question": "Valor is banked and I lose a battle. When does it give me a card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Whenever you lose a battle, after you retreat, +1 Card",
+          "Valor"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After you retreat from the lost battle, gain 1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-war-crimes",
+      "category": "military",
+      "question": "I use War Crimes after winning. What three things am I forbidden to do as a result of that victory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You cannot move, capture a Territory, or use an Order as a result of that victory",
+          "War Crimes"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You cannot move, capture a Territory, or use an Order as a result of that victory."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-military-war-witch",
+      "category": "military",
+      "question": "War Witch is banked while I am choosing Tactics. What may I trade it for, and where does that chosen Tactic go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Tactic from your Graveyard. In the Aftermath, put that card in your Graveyard",
+          "War Witch"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put War Witch in your Graveyard for +1 Tactic from your Graveyard; that chosen Tactic goes to your Graveyard in the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-phantom-passage",
+      "category": "cards",
+      "question": "What does Phantom Passage do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put this card in your Graveyard. Move to any Territory you control",
+          "Phantom Passage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put Phantom Passage in your Graveyard, then move to any Territory you control."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-neutral-battlefield-plunder",
+      "category": "cards",
+      "question": "Battlefield Plunder is an Overlay and a player starts their Opening on its Territory. What may that player do to the Overlay, and what do they get?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "may put this card in its owner's Discard Pile. If they do, +2 Cards",
+          "Battlefield Plunder"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They may put Battlefield Plunder in its owner's Discard Pile; if they do, they gain 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-mystics-reembodiment",
+      "category": "mystics",
+      "question": "Reembodiment is banked. What event can trigger it, and what kind of card may it return from my Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time each turn you put an Arcane card from your Hand in your Graveyard as a cost or part of an effect you control",
+          "return one other lower-value card from your Graveyard to your Hand",
+          "Reembodiment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The first such Arcane Hand-to-Graveyard event each turn can trigger it; after that effect resolves, it may return one other lower-value Graveyard card to your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-interaction-counterworks-bombardment",
+      "category": "interaction",
+      "question": "The opponent's Bombardment effect would place its Overlay on a Territory while I have Counterworks banked. If I discard Counterworks, what happens to Bombardment?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing effect would place an Overlay on a Territory, you may discard this card to prevent that Overlay. The card that would become that Overlay is discarded",
+          "Counterworks"
+        ],
+        [
+          "place this Overlay face up there",
+          "Bombardment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Counterworks prevents the Bombardment Overlay from being placed, and the Bombardment card is discarded."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-interaction-fealty-entrenchment",
+      "category": "interaction",
+      "question": "The opponent uses Entrenchment as a Gambit or Tactic while I have Fealty banked. Can Entrenchment give me Disadvantage?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Opposing card effects cannot give you Disadvantage",
+          "Fealty"
+        ],
+        [
+          "Defender — opponent gains Disadvantage",
+          "Entrenchment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Fealty prevents the opposing Entrenchment card effect from giving you Disadvantage."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-unsupported-dropped-hidden-card",
+      "category": "unsupported",
+      "question": "A face-down card falls off the table and both players accidentally see it. Does published v0.7.1 define an official procedure to restore the hidden information?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official repair procedure for accidentally revealed hidden information; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-o-out-of-scope-deck-tier",
+      "category": "out-of-scope",
+      "question": "Which leader has the strongest tournament deck right now?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for competitive strategy or balance judgment rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
