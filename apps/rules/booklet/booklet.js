@@ -700,7 +700,7 @@ function addFactionWatermarkPlaceholders() {
 }
 
 async function hydrateFactionSymbols() {
-  const targets = [...pagesRoot.querySelectorAll('[data-faction-symbol-src]')];
+  const targets = [...pagesRoot.querySelectorAll('.booklet-inline-faction-symbol[data-faction-symbol-src]')];
   const symbolIds = new Map();
   await Promise.all([...new Set(targets.map(target => target.dataset.factionSymbolSrc))].map(async src => {
     symbolIds.set(src, await ensureFactionSymbolDefinition(src));
