@@ -36,7 +36,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche F r17 remediation", () => {
   test("bumps the production behavior revision", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-27");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-28");
   });
 
   test("Military first-victory-on-opponent-turn retrieval and classification are direct", () => {
