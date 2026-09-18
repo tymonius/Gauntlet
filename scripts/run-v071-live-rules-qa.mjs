@@ -205,7 +205,7 @@ function inspectAnswer(item, payload) {
     warnings.push("terminology: answer may contain retired or older-edition language");
   }
 
-  if (payload?.executionPath === "model") {
+  if (String(payload?.executionPath || "").startsWith("model")) {
     const voice = inspectChiefJusticeVoice(answer);
     failures.push(...voice.failures);
     warnings.push(...voice.warnings);
