@@ -130,7 +130,9 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
