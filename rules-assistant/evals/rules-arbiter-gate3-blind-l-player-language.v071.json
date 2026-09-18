@@ -1,0 +1,296 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "L",
+  "behaviorRevision": "v071-qa-20260918-22",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche L benchmark authored only after r22 production deployment and current-live-publication verification succeeded; it was not used to construct r22.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r22 and was not used to construct r22.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-l-player-advantage-cancel",
+      "category": "player-language",
+      "question": "2 advantage + 1 disadvantage = just 1 advantage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cancel opposing instances one-for-one",
+          "double advantage plus one disadvantage leaves one net advantage",
+          "Advantage and disadvantage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. One net Advantage remains."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-forced-asset-removed",
+      "category": "player-language",
+      "question": "asset cap drops and i have to pitch one. counts as Removed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Asset limit decreases",
+          "forced to discard",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. A forced discard caused by the Asset limit dropping counts as Removed."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-self-expire-not-removed",
+      "category": "player-language",
+      "question": "asset expires by its own text. Removed trigger?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "normal resolution, expiration, or self-removal condition does not count as Removal",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Normal self-expiration is not Removal unless expressly stated."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-counterintel-whole-effect",
+      "category": "player-language",
+      "question": "counterintel blocks the whole reveal effect, not just seeing the cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "prevents the entire opposing revealing effect",
+          "Counterintelligence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Counterintelligence prevents the entire opposing revealing effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-compound-interest-choice",
+      "category": "player-language",
+      "question": "compound interest peek: treasury or discard, my choice?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Place it face up in your Treasury or put it in your Discard Pile",
+          "Compound Interest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. You choose Treasury or Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-contingency-forced-trigger",
+      "category": "player-language",
+      "question": "contingency plan gets forced out by lower asset cap. +1 card?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "If this card is Removed, +1 Card",
+          "Contingency Plan"
+        ],
+        [
+          "forced to discard",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The forced discard is Removal, so Contingency Plan gives +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-poison-gas-gambit-no-tactics",
+      "category": "player-language",
+      "question": "poison gas: set gambit, so no tactics for me?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "may employ Gambits or Tactics, but not both",
+          "Poisonous Gas"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. If you use a Gambit there, you cannot also use Tactics."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-monastery-invocation",
+      "category": "player-language",
+      "question": "monastery active. invocation can't move my grave card out?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "cards cannot leave either player's Graveyard",
+          "Monastery"
+        ],
+        [
+          "move one card from your Graveyard to your Discard Pile",
+          "Invocation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. Monastery prevents Invocation from moving the card out of the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-command-tent-actions",
+      "category": "player-language",
+      "question": "command tent gives opening + denouement actions, but first in each has to be a card action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Action",
+          "take Actions during both Opening and Denouement",
+          "first Action in each phase must be used to play a card for its Action effect",
+          "Command Tent"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-field-hospital-gambit",
+      "category": "player-language",
+      "question": "field hospital can send my gambit to discard instead of grave?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put 1 of their cards from that battle in their Discard Pile instead of their Graveyard",
+          "Field Hospital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you control Field Hospital and the battle was there."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-regime-change",
+      "category": "player-language",
+      "question": "regime change means their leader abilities are off?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent cannot use their Leader abilities",
+          "Regime Change"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-malleus-duration",
+      "category": "player-language",
+      "question": "malleus calls it heretical. stays Arcane through end of turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Arcane trait for that play or reveal and until the end of the turn",
+          "Malleus Maleficarum"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-rite-bound-cards",
+      "category": "player-language",
+      "question": "rite binding ends with no special destination. bound cards go grave?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put its bound cards in their owners' Graveyards",
+          "Bound cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-player-reroll-replaces",
+      "category": "player-language",
+      "question": "reroll is worse. stuck with new die?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "reroll replaces the result it rerolls",
+          "Use the new result",
+          "Rerolls"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The new result replaces the old one unless the effect says otherwise."
+        }
+      ]
+    }
+  ]
+}
