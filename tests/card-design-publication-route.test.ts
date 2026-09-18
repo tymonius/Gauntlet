@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const contract = JSON.parse(readFileSync('config/publication-boundary.json', 'utf8'));
 const materializer = readFileSync('scripts/materialize-public-route-compatibility.mjs', 'utf8');
 const stager = readFileSync('scripts/stage-pages-publication.mjs', 'utf8');
+const localServer = readFileSync('scripts/card-design-server.mjs', 'utf8');
 
 describe('card-design publication route boundary', () => {
   it('decouples the repository source directory from the stable public route', () => {
@@ -33,5 +34,14 @@ describe('card-design publication route boundary', () => {
     const filesIndex = stager.indexOf('materializePublicFiles({');
     expect(routesIndex).toBeGreaterThan(-1);
     expect(filesIndex).toBeGreaterThan(routesIndex);
+  });
+
+  it('serves local card-design URLs through the same publication contract', () => {
+    expect(localServer).toContain("loadPublicationBoundary, sourcePathForPublicPath");
+    expect(localServer).toContain('const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);');
+    expect(localServer).toContain("const publicPath = url.pathname === '/' ? '/card-design/' : url.pathname;");
+    expect(localServer).toContain('sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath)');
+    expect(localServer).toContain("join(ROOT, 'packages', 'game-data', 'current-game.json')");
+    expect(localServer).toContain('packages/game-data/current-game.json#artDirection');
   });
 });
