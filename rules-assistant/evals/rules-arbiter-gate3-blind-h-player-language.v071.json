@@ -164,7 +164,7 @@
     {
       "id": "blind-h-player-general-rally-defense",
       "category": "player-language",
-      "question": "rally while defending?",
+      "question": "they attacked me. rally legal?",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
