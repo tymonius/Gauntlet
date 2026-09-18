@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
+import { V072_MODULAR_BOOKLETS } from '../packages/rules/publication/v072-modular-booklets.mjs';
 
 const read = (path) => readFile(path, 'utf8');
 const factionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
@@ -22,6 +23,33 @@ describe('Browser Rulebook candidate publication', () => {
     expect(app).toContain("sourceUrl: './sources/player-guide.md'");
     expect(app).toContain("sourceUrl: './sources/complete-rules.md'");
     for (const id of factionIds) expect(app).toContain(`sourceUrl: './sources/factions/${id}.md'`);
+
+    expect(html.match(/data-rulebook-booklet/g)).toHaveLength(2);
+    expect(app).toContain("const CANDIDATE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
+    expect(app).toContain('function updateBookletLinks(mode, documentId = activeCandidateDocument)');
+    expect(app).not.toContain('link.hidden = candidate');
+    for (const publication of V072_MODULAR_BOOKLETS) {
+      expect(app).toContain(`bookletFilename: '${publication.filename}'`);
+    }
+  });
+
+  it('routes Printable booklet to the document currently displayed', async () => {
+    const app = await read('legacy/rulebook-browser/app.js');
+    const workflow = await read('.github/workflows/deploy-pages.yml');
+
+    expect(app).toContain('mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl');
+    expect(app).toContain('updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId)');
+    expect(app).toContain('if (activeMode === RELEASED_MODE) updateBookletLinks(RELEASED_MODE)');
+    expect(app).toContain("printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'");
+
+    expect(workflow).toContain('Stage current modular Rulebook booklets');
+    expect(workflow).toContain('node scripts/render-v072-dedicated-booklets.mjs');
+    expect(workflow).toContain('node scripts/validate-v072-modular-booklets.mjs');
+    expect(workflow).toContain('target_root="$SITE_DIR/rulebook/booklets/v0.7.2"');
+    expect(workflow).toContain('-dPDFSETTINGS=/printer');
+    for (const publication of V072_MODULAR_BOOKLETS) {
+      expect(workflow).toContain(publication.filename);
+    }
   });
 
   it('materializes all candidate documents beneath /rulebook/', async () => {
