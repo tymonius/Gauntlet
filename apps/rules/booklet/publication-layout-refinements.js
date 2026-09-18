@@ -254,9 +254,10 @@
       playstyle.remove();
       motto.remove();
       ability.remove();
-      identity.append(playstyle, motto, ability);
+      identity.append(playstyle, ability);
       hero.append(figure, identity);
-      titleRow.insertAdjacentElement('afterend', hero);
+      titleRow.insertAdjacentElement('afterend', motto);
+      motto.insertAdjacentElement('afterend', hero);
       page.classList.add('leader-layout-refined');
       optimizations.push(optimizeLeaderHero(page, flow, hero, figure, image, artworkCanvas, identity));
     }
