@@ -27,7 +27,7 @@ function prepareDedicatedRuntime() {
   const printUrl = '/rulebook/booklet/?doc=';
   const browserLeaderWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });\n  }\n\n`;
   const browserReadyPredicate = `      && document.querySelector('.rulebook-content.candidate-publication'),`;
-  const printReadyPredicate = `      && document.body.dataset.bookletReady === 'true'\n      && document.body.dataset.bookletMarkersReady === 'true'\n      && document.querySelector('.rulebook-content.candidate-publication'),`;
+  const printReadyPredicate = `      && (\n        document.body.dataset.bookletReady === 'error'\n        || document.body.dataset.bookletMarkersReady === 'error'\n        || (\n          document.body.dataset.bookletReady === 'true'\n          && document.body.dataset.bookletMarkersReady === 'true'\n          && document.querySelector('.rulebook-content.candidate-publication')\n        )\n      ),`;
   const defaultMargins = `    margin: {\n      top: '0.45in',\n      bottom: '0.52in',\n      left: '0.42in',\n      right: '0.42in',\n    },`;
   const zeroMargins = `    margin: {\n      top: '0',\n      bottom: '0',\n      left: '0',\n      right: '0',\n    },`;
 
@@ -64,6 +64,7 @@ function markDedicatedPublicationSurface() {
   manifest.renderContract.publicationSurface = 'fixed half-letter print composition derived from the approved PR #357 publication template; Browser Rulebook chrome is not part of the PDF surface';
   manifest.renderContract.runningFurniture = 'Running heads, rules, and outside-edge folios are composed inside each fixed half-letter reader page before saddle-stitch imposition.';
   manifest.renderContract.pagination = 'Every publication section begins on a designed fixed page; continuation pages are measured in-browser and the reader is padded to a multiple of four before imposition.';
+  manifest.renderContract.pagePadding = 'When padding is required, the first hero-woodcut filler occupies the inside front cover; additional fillers are spread across semantic section boundaries, a single inside-back filler may make the final imposition adjustment, and filler pages are never adjacent.';
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 

@@ -180,6 +180,93 @@ function createWoodcutPage(publication, index) {
   applyPublicationIdentity(page, publication);
   const hero = ((index % 4) + 1);
   flowOf(page).outerHTML = `<img src="/images/woodcuts/hero compositions/hero ${hero}.png" alt="" /><div class="woodcut-mark">Gauntlet</div>`;
+  return page;
+}
+
+function resetPublicationPages() {
+  pagesRoot.replaceChildren();
+  pages.splice(0, pages.length);
+  anchors.clear();
+}
+
+function balancedFillerSectionIndexes(sections, count) {
+  if (count <= 0 || sections.length < 2) return [];
+
+  const eligible = sections
+    .map((_, index) => index)
+    .filter(index => index > 0);
+  const selected = [];
+
+  for (let slot = 1; slot <= Math.min(count, eligible.length); slot += 1) {
+    const desired = Math.round((slot * (sections.length - 1)) / (count + 1));
+    const choice = [...eligible]
+      .filter(index => !selected.includes(index))
+      .sort((a, b) => Math.abs(a - desired) - Math.abs(b - desired))[0];
+    if (choice !== undefined) selected.push(choice);
+  }
+
+  return selected.sort((a, b) => a - b);
+}
+
+function composePublication(publication, documentId, headings, prelude, sections, fillerCount = 0) {
+  createCover(publication);
+
+  // The inside front cover is the most useful padding position because it
+  // preserves the cover/contents transition and avoids a blank run at the end.
+  let fillerIndex = 0;
+  if (fillerCount > 0) createWoodcutPage(publication, fillerIndex++);
+
+  createContentsPage(publication, headings);
+
+  if (prelude.length) {
+    const synthetic = document.createElement('h2');
+    synthetic.id = 'introduction';
+    synthetic.textContent = 'Introduction';
+    paginateSection({ heading: synthetic, nodes: prelude }, publication, documentId);
+  }
+
+  const sectionFillers = new Set(
+    balancedFillerSectionIndexes(sections, Math.max(0, fillerCount - 1)),
+  );
+
+  sections.forEach((section, index) => {
+    if (sectionFillers.has(index)) createWoodcutPage(publication, fillerIndex++);
+    paginateSection(section, publication, documentId);
+  });
+
+  createBackCover(publication);
+}
+
+function insertInsideBackCoverFiller(publication, index) {
+  const backCover = pagesRoot.querySelector(':scope > .back-cover');
+  if (!backCover) throw new Error('Could not locate the back cover for final filler placement.');
+
+  const filler = createWoodcutPage(publication, index);
+  pagesRoot.insertBefore(filler, backCover);
+
+  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
+  pages.splice(0, pages.length, ...ordered);
+  return filler;
+}
+
+function assertFillerPlacement(fillerCount) {
+  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
+  const fillers = ordered.filter(page => page.classList.contains('woodcut-page'));
+
+  if (fillers.length !== fillerCount) {
+    throw new Error(`Booklet expected ${fillerCount} filler pages but composed ${fillers.length}.`);
+  }
+  if (fillerCount > 0 && !ordered[1]?.classList.contains('woodcut-page')) {
+    throw new Error('Booklet filler distribution must use the inside front cover first.');
+  }
+  for (let index = 1; index < ordered.length; index += 1) {
+    if (ordered[index].classList.contains('woodcut-page') && ordered[index - 1].classList.contains('woodcut-page')) {
+      throw new Error('Booklet filler pages may not appear back to back.');
+    }
+  }
+  if (ordered.length % 4 !== 0) {
+    throw new Error(`Booklet composition must end on a multiple of four pages; found ${ordered.length}.`);
+  }
 }
 
 function newContinuationPage(context) {
@@ -774,20 +861,49 @@ async function main() {
 
   await ensurePublicationFonts();
 
-  createCover(publication);
-  createContentsPage(publication, rendered.headings);
   const { prelude, sections } = splitSections(sourceRoot);
-  if (prelude.length) {
-    const synthetic = document.createElement('h2');
-    synthetic.id = 'introduction';
-    synthetic.textContent = 'Introduction';
-    paginateSection({ heading: synthetic, nodes: prelude }, publication, documentId);
-  }
-  sections.forEach(section => paginateSection(section, publication, documentId));
 
-  const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;
-  for (let index = 0; index < fillerCount; index += 1) createWoodcutPage(publication, index);
-  createBackCover(publication);
+  // Rebuild from source for each possible padding count. Filler insertion
+  // changes left/right page parity, which can itself change pagination by a page;
+  // choose the smallest final composition that actually lands on a multiple of
+  // four rather than assuming the baseline page count will remain stable.
+  let fillerCount = null;
+  const fillerAttempts = [];
+
+  // Do not add art pages to publications that already impose cleanly.
+  resetPublicationPages();
+  composePublication(publication, documentId, rendered.headings, prelude, sections, 0);
+  fillerAttempts.push(`0 filler(s) → ${pages.length} pages`);
+  if (pages.length % 4 === 0) {
+    fillerCount = 0;
+  } else {
+    // When padding is actually required, reserve the first filler for the
+    // inside front cover, spread the rest through section boundaries, and use
+    // the inside back cover as a final single-page adjustment when necessary.
+    for (let candidate = 1; candidate <= 7; candidate += 1) {
+      resetPublicationPages();
+      composePublication(publication, documentId, rendered.headings, prelude, sections, candidate);
+      fillerAttempts.push(`${candidate} distributed filler(s) → ${pages.length} pages`);
+
+      if (pages.length % 4 === 0) {
+        fillerCount = candidate;
+        break;
+      }
+
+      if ((pages.length + 1) % 4 === 0) {
+        insertInsideBackCoverFiller(publication, candidate);
+        fillerCount = candidate + 1;
+        fillerAttempts.push(`+ inside-back filler → ${pages.length} pages`);
+        break;
+      }
+    }
+  }
+
+  if (fillerCount === null || pages.length % 4 !== 0) {
+    throw new Error(`Could not compose booklet to a multiple of four pages with distributed fillers: ${fillerAttempts.join(', ')}.`);
+  }
+
+  assertFillerPlacement(fillerCount);
   fillContents();
   addFactionWatermarkPlaceholders();
   await hydrateFactionSymbols();
