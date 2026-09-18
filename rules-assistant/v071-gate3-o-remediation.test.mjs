@@ -7,7 +7,6 @@ import {
   buildQuestionSpecificAdjudicationReminder,
   contextualQuery
 } from "./worker-v071.js";
-import { normalizeR13RulingStatus } from "./r13-classification.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
@@ -37,36 +36,27 @@ function textOf(source) {
     .join("\n");
 }
 
-describe("Gate 3 tranche N r25 remediation", () => {
-  test("bumps production behavior to r25", () => {
+describe("Gate 3 tranche O r26 remediation", () => {
+  test("bumps production behavior to r26", () => {
     expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-26");
   });
 
-  test("Safe Conduct is direct explicit authority despite downstream withdrawal consequences", () => {
-    const question = "After refused Terms I would lose the battle. If I discard Safe Conduct, what does the battle result become?";
+  test("Counterworks terse Overlay questions preserve the discard activation condition", () => {
+    const question = "counterworks stops an opposing overlay and discards the overlay card?";
     const sources = augmented(question);
     expect(sources.some((source) =>
-      /Safe Conduct/i.test(textOf(source))
-      && /discard this card to withdraw instead/i.test(textOf(source))
-    )).toBe(true);
-    expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("explicit");
-  });
-
-  test("terse Safe Conduct is also explicit", () => {
-    const question = "safe conduct after refused terms turns my loss into withdrawal?";
-    const sources = augmented(question);
-    expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("explicit");
-  });
-
-  test("Retribution reminder assigns Conviction to the card controller, not the opponent", () => {
-    const question = "retribution fires and they have no assets. +2 conviction?";
-    const sources = augmented(question);
-    expect(sources.some((source) =>
-      /Card: Retribution/i.test(source?.title || "")
-      && /If they have no Assets, \+2 Conviction/i.test(textOf(source))
+      source.canonicalId === "card:neutral-counterworks"
+      && /you may discard this card to prevent that Overlay/i.test(textOf(source))
     )).toBe(true);
     const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, []);
-    expect(reminder).toContain("controller gains +2 Conviction");
-    expect(reminder).toContain("Do not say the opponent gains Conviction");
+    expect(reminder).toContain("requires discarding Counterworks");
+    expect(reminder).toContain("Do not describe the prevention as automatic or passive");
+  });
+
+  test("Counterworks into Bombardment keeps the same activation condition", () => {
+    const question = "counterworks into their bombardment overlay: bombardment gets discarded?";
+    const sources = augmented(question);
+    const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, []);
+    expect(reminder).toContain("the player may discard Counterworks to prevent the Overlay");
   });
 });

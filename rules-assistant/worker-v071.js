@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-25";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-26";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -847,6 +847,16 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   ) {
     reminders.push(
       "Retribution is controlled by the player who owns the card. After the opponent loses a battle they initiated, that controller may discard Retribution. If they do and the opponent has no Assets, the controller gains +2 Conviction. Do not say the opponent gains Conviction merely because the immediately preceding pronoun 'they' refers to the opponent's Assets."
+    );
+  }
+
+  if (
+    canonicalIds.has("card:neutral-counterworks")
+    && /\bcounterworks\b/.test(current)
+    && /\boverlays?\b/.test(current)
+  ) {
+    reminders.push(
+      "Counterworks' Asset prevention is optional and requires discarding Counterworks. When answering whether it stops an opposing Overlay, preserve that condition explicitly: the player may discard Counterworks to prevent the Overlay, and the card that would become that Overlay is discarded. Do not describe the prevention as automatic or passive."
     );
   }
 
