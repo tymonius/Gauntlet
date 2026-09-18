@@ -702,6 +702,45 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
+  if (
+    canonicalIds.has("rulebook:battles-ending-without-a-winner")
+    && /\b(?:no winner|without a winner|ends? without a winner)\b/.test(current)
+    && /\b(?:clear|committed|reserve|gambit|tactic|battle cards?)\b/.test(current)
+  ) {
+    reminders.push(
+      "For a battle that ends without a winner after Onset, preserve the complete clearing rule: both committed battle cards and cards remaining in Reserve clear normally unless the ending effect gives another destination. Do not omit the Reserve cards when the player asks whether already-committed cards clear."
+    );
+  }
+
+  if (
+    /\brearguard\b/.test(current)
+    && /\brout\b/.test(current)
+    && /\b(?:uses?|used)\s+rout\b/.test(current)
+  ) {
+    reminders.push(
+      "The question states as a game-state premise that the opposing General uses Rout later that turn. Unless the player asks whether that Rout use was legal, do not re-litigate Rout's earlier win prerequisite. Resolve the stated Rout movement against Rearguard. If Rearguard prevents that movement, apply Rearguard's printed consequence that no Command is spent."
+    );
+  }
+
+  if (
+    /\bassimilation\b/.test(current)
+    && /\bprotracted siege\b/.test(current)
+    && canonicalIds.has("rulebook:front-line")
+  ) {
+    reminders.push(
+      "Resolve the interaction through the Front Line control rules, not by treating 'advance Front Line' as a non-capture movement. A Front Line is the player's contiguous controlled Territories, and adding the next opposing Territory to it is the capture/control change. If Assimilation advances the Front Line to include the Territory Protracted Siege protects, evaluate Protracted Siege's capture-prevention trigger against that capture."
+    );
+  }
+
+  const terseConfirmationQuestion = /\?\s*$/.test(String(question || ""))
+    && current.split(/\s+/).filter(Boolean).length <= 10
+    && !/^\s*(?:who|what|where|when|why|how|is|are|am|was|were|do|does|did|can|could|will|would|should|may|must|has|have|had)\b/.test(current);
+  if (terseConfirmationQuestion) {
+    reminders.push(
+      "Treat this terse player-language sentence as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. Do not begin with No and then describe the proposition as true."
+    );
+  }
+
   const namedCardSource = sourceList.find((source) => {
     if (!String(source?.canonicalId || "").startsWith("card:")) return false;
     const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
