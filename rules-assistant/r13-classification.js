@@ -125,8 +125,8 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
   }
 
   const refusedNoWinnerQuestion = /\brefus\w*\b/.test(current)
-    && /\b(?:withdraw\w*|no\s+winner)\b/.test(current)
-    && /\b(?:stake|proposal|deal)\b/.test(current);
+    && /\b(?:withdraw\w*|no\s+winner|without\s+a\s+winner|ends?\s+without\s+a\s+winner)\b/.test(current)
+    && /\b(?:stake|proposal|deal|ratif\w*)\b/.test(current);
   if (
     refusedNoWinnerQuestion
     && texts.some((text) =>
@@ -211,6 +211,68 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
         || /accepted\s+terms\s+end\s+the\s+(?:battle\s+)?sequence\s+during\s+onset/.test(text)
         || /no\s+battle\s+is\s+fought[\s\S]{0,160}no\s+aftermath/.test(text)
       )
+    )
+  ) {
+    return true;
+  }
+
+
+  const commandOpponentTurnQuestion = /\bcommand\b/.test(current)
+    && /\bfirst\b/.test(current)
+    && /\b(?:win|won|winning|victory|battle|fight)\b/.test(current)
+    && /\b(?:opponent(?:['’]s)? turn|their turn|defend(?:ing|ed)?)\b/.test(current);
+  if (
+    commandOpponentTurnQuestion
+    && texts.some((text) =>
+      /first\s+time\s+each\s+turn[\s\S]{0,100}wins?\s+a\s+battle[\s\S]{0,100}gain\s+1\s+command/.test(text)
+      && /(?:either\s+player(?:['’]s)?\s+turn|during\s+either\s+player(?:['’]s)?\s+turn)/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    refusedNoWinnerQuestion
+    && texts.some((text) =>
+      /return(?:s|ed|ing)?\s+the\s+stake/.test(text)
+      && /do\s+not\s+(?:impose|ratify)/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const militaryLateTacticQuestion = /\bmilitary\b/.test(current)
+    && /\b(?:add|adds|added|additional)\b[\s\S]{0,40}\btactic\b/.test(current)
+    && /\b(?:reopen|surveillance|interference|reveal)\b/.test(current);
+  if (
+    militaryLateTacticQuestion
+    && texts.some((text) =>
+      /does\s+not\s+reopen\s+normal\s+tactic\s+choice,?\s+surveillance,?\s+interference,?\s+or\s+reveal\s+windows/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const relentlessPursuitQuestion = /\b(?:relentless\s+pursuit|witch\s+hunter)\b/.test(current)
+    && /\b(?:initiat(?:e|ed|es|ing)|attacker|attacking)\b/.test(current);
+  if (
+    relentlessPursuitQuestion
+    && texts.some((text) =>
+      /relentless\s+pursuit/.test(text)
+      && /after\s+defeating\s+an\s+attacking\s+opponent/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const rallyDefenderQuestion = /\bdefender\b/.test(current)
+    && /\b(?:next\s+battle|battle)\b/.test(current);
+  if (
+    rallyDefenderQuestion
+    && texts.some((text) =>
+      /\brally\b/.test(text)
+      && /attacking/.test(text)
+      && /battle\s+you\s+initiated/.test(text)
     )
   ) {
     return true;
@@ -417,6 +479,24 @@ export function shouldForceAbsentProcedureGap(question, sources = []) {
   );
 }
 
+export function shouldPromoteDirectDeedOwnershipChange(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  if (
+    !/\bdeeds?\b/.test(current)
+    || !/\b(?:capture|captured|control|controls|controlled|transfer|ownership)\b/.test(current)
+  ) {
+    return false;
+  }
+
+  return (Array.isArray(sources) ? sources : []).some((source) => {
+    const text = sourceText(source);
+    return (
+      /deed\s+ownership\s+is\s+independent\s+of\s+token\s+position\s+and\s+territory\s+control/.test(text)
+      && /changing\s+territory\s+control\s+does\s+not\s+transfer\s+its\s+deed/.test(text)
+    );
+  });
+}
+
 export function normalizeR13RulingStatus(value, question, sources = []) {
   if (value === "out_of_scope") return value;
 
@@ -425,6 +505,10 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
     || shouldForceAbsentProcedureGap(question, sources)
   ) {
     return "provisional";
+  }
+
+  if (value === "provisional" && shouldPromoteDirectDeedOwnershipChange(question, sources)) {
+    return "explicit";
   }
 
   if (!["explicit", "inferred"].includes(value)) return value;
@@ -444,6 +528,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteDirectPhaseLegality(question, sources)
       || shouldPromoteNamedDirectAuthority(question, sources)
       || shouldPromoteDirectEnumeratedProcedure(question, sources)
+      || shouldPromoteDirectDeedOwnershipChange(question, sources)
     )
   ) {
     return "explicit";
