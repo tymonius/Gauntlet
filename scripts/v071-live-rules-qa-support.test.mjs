@@ -39,9 +39,9 @@ test("v0.7.1 live QA corrections align the smoke classification boundary with pu
   expect(byId.get("live-deed-contiguity")).toMatchObject({
     expectedClassification: "inferred",
     classificationBasis: "combined-authority",
-    expectedSourcePatterns: ["Deeds", "Buying and buying out Deeds"]
+    expectedSourcePatterns: ["Deeds", "Front Line"]
   });
-  expect(byId.get("live-deed-contiguity").expectedSourcePatterns).not.toContain("Front Line");
+  expect(byId.get("live-deed-contiguity").expectedSourcePatterns).not.toContain("Buying and buying out Deeds");
 });
 
 test("corrected benchmark classification expectations are internally consistent", () => {
@@ -56,7 +56,7 @@ test("combined-authority classification metadata cannot silently collapse to one
       : item)
   };
   expect(validateClassificationExpectations(broken)).toContain(
-    "benchmark: live-deed-contiguity marks combined authority without multiple governing source patterns"
+    "benchmark: live-deed-contiguity marks combined authority without multiple governing source requirements"
   );
 });
 

@@ -54,6 +54,40 @@ export function applyBenchmarkCorrections(benchmark, corrections) {
   };
 }
 
+export function sourceRequirementGroups(item) {
+  const legacy = Array.isArray(item?.expectedSourcePatterns)
+    ? item.expectedSourcePatterns.map((pattern) => [pattern])
+    : [];
+  const alternatives = Array.isArray(item?.expectedSourceGroups)
+    ? item.expectedSourceGroups
+    : [];
+  return [...legacy, ...alternatives];
+}
+
+function validateSourceRequirementShape(item, failures) {
+  if (item.expectedSourcePatterns !== undefined && !Array.isArray(item.expectedSourcePatterns)) {
+    failures.push(`benchmark: ${item.id} expectedSourcePatterns must be an array`);
+  }
+  if (item.expectedSourceGroups !== undefined && !Array.isArray(item.expectedSourceGroups)) {
+    failures.push(`benchmark: ${item.id} expectedSourceGroups must be an array of nonempty pattern arrays`);
+    return;
+  }
+
+  for (const [index, group] of (item.expectedSourceGroups || []).entries()) {
+    if (!Array.isArray(group) || !group.length) {
+      failures.push(`benchmark: ${item.id} source group ${index + 1} must be a nonempty array`);
+      continue;
+    }
+    if (group.some((pattern) => typeof pattern !== "string" || !pattern.trim())) {
+      failures.push(`benchmark: ${item.id} source group ${index + 1} contains an empty or non-string pattern`);
+    }
+  }
+
+  if ((item.expectedSourcePatterns || []).some((pattern) => typeof pattern !== "string" || !pattern.trim())) {
+    failures.push(`benchmark: ${item.id} expectedSourcePatterns contains an empty or non-string pattern`);
+  }
+}
+
 export function validateClassificationExpectations(benchmark) {
   const failures = [];
   const seenIds = new Set();
@@ -70,8 +104,11 @@ export function validateClassificationExpectations(benchmark) {
       failures.push(`benchmark: ${item.id} has invalid expected classification ${item.expectedClassification || "missing"}`);
     }
 
-    if (["explicit", "inferred"].includes(item.expectedClassification) && !(item.expectedSourcePatterns || []).length) {
-      failures.push(`benchmark: ${item.id} expects ${item.expectedClassification} without a governing source pattern`);
+    validateSourceRequirementShape(item, failures);
+    const sourceGroups = sourceRequirementGroups(item);
+
+    if (["explicit", "inferred"].includes(item.expectedClassification) && !sourceGroups.length) {
+      failures.push(`benchmark: ${item.id} expects ${item.expectedClassification} without a governing source requirement`);
     }
 
     if (item.classificationBasis === "direct-authority" && item.expectedClassification !== "explicit") {
@@ -82,8 +119,8 @@ export function validateClassificationExpectations(benchmark) {
       if (item.expectedClassification !== "inferred") {
         failures.push(`benchmark: ${item.id} marks combined authority but does not expect inferred`);
       }
-      if ((item.expectedSourcePatterns || []).length < 2) {
-        failures.push(`benchmark: ${item.id} marks combined authority without multiple governing source patterns`);
+      if (sourceGroups.length < 2) {
+        failures.push(`benchmark: ${item.id} marks combined authority without multiple governing source requirements`);
       }
     }
   }
