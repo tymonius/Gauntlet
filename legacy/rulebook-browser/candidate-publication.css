@@ -444,11 +444,12 @@
 .candidate-leader-motto {
   max-width: none !important;
   margin: 0 0 24px !important;
+  padding-left: .08em;
   color: var(--rulebook-ink);
   font-family: var(--rulebook-flavor) !important;
-  font-size: clamp(2.15rem, 4vw, 2.85rem);
+  font-size: clamp(2.15rem, 4vw, 2.85rem) !important;
   font-weight: 400;
-  line-height: .96;
+  line-height: .96 !important;
 }
 
 .candidate-leader-motto em {
@@ -499,7 +500,7 @@
   }
 
   .candidate-leader-motto {
-    font-size: 2rem;
+    font-size: 2rem !important;
     margin-bottom: 18px !important;
   }
 
