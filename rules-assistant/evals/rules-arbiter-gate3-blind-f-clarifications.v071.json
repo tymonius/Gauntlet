@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "F",
+  "behaviorRevision": "v071-qa-20260917-16",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche F ambiguous-follow-up cases that must request clarification instead of guessing.",
+  "cases": [
+    {
+      "id": "blind-f-clarify-two-orders",
+      "question": "Can I use that Order now?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Onward and Rally available on the General."
+        },
+        {
+          "role": "assistant",
+          "content": "Onward costs 1 Command during Movement. Rally costs 1 Command before dice while attacking in a battle you initiated."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-clarify-two-neutral-cards",
+      "question": "Does that card stop the movement?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Stand Ground and Entrenchment."
+        },
+        {
+          "role": "assistant",
+          "content": "Stand Ground can ignore movement caused by an opposing card effect. Entrenchment can end opposing movement when they advance onto an adjacent Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-clarify-two-proposals-new",
+      "question": "Does that one make both players withdraw?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm deciding between Mutual Disarmament and Rebuilding Pact."
+        },
+        {
+          "role": "assistant",
+          "content": "Mutual Disarmament can make each player discard from Hand before both withdraw. Rebuilding Pact can let each player bank an Asset from Hand before both withdraw."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-clarify-two-rites-new",
+      "question": "If I lose there, does that Rite reset?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My selected Rites include Rite of Crossing and Rite of Consecration."
+        },
+        {
+          "role": "assistant",
+          "content": "Crossing tracks continued occupation of a specific Territory. Consecration tracks a battle on the consecrated Territory and the attached Overlay."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-clarify-two-assets-new",
+      "question": "Can that Asset stay banked after this?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I currently have High Command and Field Command banked."
+        },
+        {
+          "role": "assistant",
+          "content": "High Command raises maximum Command to 3. Field Command can be discarded after a 1-Command Order to enable the other 1-Command Order at its next legal timing."
+        }
+      ]
+    }
+  ]
+}
