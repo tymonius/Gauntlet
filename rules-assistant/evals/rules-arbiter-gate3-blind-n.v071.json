@@ -1,0 +1,906 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "N",
+  "behaviorRevision": "v071-qa-20260918-24",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche N certification benchmark authored only after r24 was merged, deployed, and current-live-publication verification succeeded. It was not used to construct r24 and stresses replacement/revision rules, unused faction cards, Territory effects, cross-authority interactions, rules gaps, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-24; it was not used to construct r24.",
+    "Do not edit or retroactively regrade tranche N after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-N case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche N, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-n-core-replacement-role",
+      "category": "core",
+      "question": "I replace a Tactic with another card. Does the replacement take the same Tactic role as the card it replaced?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A replacement takes the same role as the card it replaces",
+          "Replacing a Gambit or Tactic"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. A replacement takes the same role as the card it replaces."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-core-replacement-no-reopen",
+      "category": "core",
+      "question": "A revealed effect replaces my Gambit. Does that replacement reopen an earlier response or reveal window?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Replacing a card does not reopen an earlier timing window",
+          "Replacing a Gambit or Tactic"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Replacing the card does not reopen an earlier timing window."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-core-revise-no-reopen",
+      "category": "core",
+      "question": "An effect lets me revise a choice. Does revising it create another reveal, response, or replacement opportunity by itself?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Revising a choice does not create another reveal, response, or replacement opportunity",
+          "Revising a choice"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No, unless the effect says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-core-reveal-hand-remains",
+      "category": "core",
+      "question": "An effect tells me to reveal my Hand. Do those cards leave my Hand while they are being shown?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The cards remain in that zone",
+          "Revealing cards and zones"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Revealing a Hand shows the entire zone to the opponent, and the cards remain in Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-core-negate-too-late",
+      "category": "core",
+      "question": "A card's effect has already been applied. Can another effect negate that effect afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "An effect cannot be negated after it has been applied",
+          "Negation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. An effect cannot be negated after it has already been applied."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-good-faith-accepted",
+      "category": "diplomats",
+      "question": "I use Good Faith when offering Terms and set a Hand card aside. The Terms are accepted. What happens to that set-aside card and Influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accepted — Put that card in your Graveyard, then +1 Influence",
+          "Good Faith"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put the set-aside card in your Graveyard, then gain 1 Influence."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-gunboat-refused",
+      "category": "diplomats",
+      "question": "I reveal Gunboat Diplomacy with my Terms and the opponent refuses. How is Gunboat Diplomacy used in the resulting battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Refused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit",
+          "Gunboat Diplomacy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Set Gunboat Diplomacy face up as an additional Gambit; it does not count against your Gambit limit."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-nonbinding-accepted-choice",
+      "category": "diplomats",
+      "question": "Nonbinding Resolution is revealed and the offered Proposal is unratified when the opponent accepts. What choice does the opponent make before ratification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accepted — If the Proposal is unratified, the opponent chooses one before ratification",
+          "Ratify it normally",
+          "Leave it unratified; +2 Influence",
+          "Nonbinding Resolution"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses either to ratify it normally or leave it unratified, in which case the Diplomat gains 2 Influence."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-safe-conduct",
+      "category": "diplomats",
+      "question": "After refused Terms I would lose the battle. If I discard Safe Conduct, what does the battle result become?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When you would lose a battle following refused Terms, you may discard this card to withdraw instead",
+          "Safe Conduct"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You withdraw instead of losing."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-blockade-trigger",
+      "category": "diplomats",
+      "question": "Sanctions: Blockade is on a Territory. The associated opponent enters or leaves that Territory for the first time this turn. What choice do they make?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence",
+          "Sanctions: Blockade"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They choose either to discard one card or allow +1 Influence."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-censure-trigger",
+      "category": "diplomats",
+      "question": "Sanctions: Censure is banked. The associated opponent plays a card for its Action effect for the first time this turn. What choice do they make?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card",
+          "Sanctions: Censure"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They choose either to discard one card or allow +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-diplomats-embargo-limit",
+      "category": "diplomats",
+      "question": "Sanctions: Embargo is banked against an opponent. How does it change that opponent's Asset limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "That opponent's Asset limit is reduced by 1, to a minimum of 0",
+          "Sanctions: Embargo"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Their Asset limit is reduced by 1, to a minimum of 0."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-corner-market-sequential",
+      "category": "financiers",
+      "question": "Corner the Market lets me buy several Deeds. When do I recalculate the cost of each later Deed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Complete each purchase before calculating the next cost",
+          "Corner the Market"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Complete each purchase before calculating the next Deed's cost."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-liquidation-action",
+      "category": "financiers",
+      "question": "I play Liquidation for its Action effect and put a Treasury card in my Discard Pile. What do I gain and what may I do immediately afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gain Capital equal to its value, then you may immediately buy or buy out one Deed",
+          "Liquidation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain Capital equal to that Treasury card's value, then you may immediately buy or buy out one Deed."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-underwriting-loss",
+      "category": "financiers",
+      "question": "Underwriting is banked. I lose after using Subsidize. What may I do with Underwriting and how much Capital can it return?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if you lost after using Subsidize, you may discard this card to gain Capital equal to the bonus you purchased",
+          "Underwriting"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Underwriting to gain Capital equal to the Subsidize bonus you purchased."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-property-dues",
+      "category": "financiers",
+      "question": "Property Dues is banked. The opponent advances onto a Territory whose Deed I own for the first time this turn. What choice do they make?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time each turn your opponent advances onto a Territory whose Deed you own, they choose one: discard one card from Hand; or +2 Capital",
+          "Property Dues"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They choose either to discard one card from Hand or allow +2 Capital."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-speculation-action",
+      "category": "financiers",
+      "question": "I play Speculation for its Action effect beside a Territory I neither control nor occupy. At the start of my next turn, what happens if I now occupy or control that Territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "At the start of your next turn, if you occupy or control it, +2 Capital and discard this card",
+          "Speculation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 2 Capital and discard Speculation."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-financiers-leveraged-buyout-action",
+      "category": "financiers",
+      "question": "What sources of cards may Leveraged Buyout use as collateral when I play its Action effect to buy a Deed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Buy one Deed using any cards from your Hand or Treasury as collateral",
+          "Leveraged Buyout"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It may use any cards from your Hand or Treasury as collateral."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-deep-cover",
+      "category": "intelligence",
+      "question": "My Active Mission would fail while Deep Cover is banked. What can Deep Cover do instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When your Active Mission would fail, you may put this card in your Graveyard to return that Mission to your Hand instead",
+          "Deep Cover"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put Deep Cover in your Graveyard to return the Mission to your Hand instead of failing it."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-fog-overlay-order",
+      "category": "intelligence",
+      "question": "Fog of War is an Overlay on the Territory for the next battle. How does it change the controller's Gambit and Tactic choice order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the controller sets their Gambit and chooses their Tactics after the opponent",
+          "Fog of War"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The Territory's controller sets their Gambit and chooses their Tactics after the opponent."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-operational-reassessment",
+      "category": "intelligence",
+      "question": "I use Operational Reassessment's Action effect to replace my Active Mission. Can the newly placed Mission complete that same turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn",
+          "Operational Reassessment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The newly placed Active Mission cannot complete that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-sleeper-release",
+      "category": "intelligence",
+      "question": "I use Sleeper Network's banked Action to cash it in. What happens to its bound cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "reveal its bound cards. Play each bound card you can for its Action effect; discard the rest",
+          "Sleeper Network"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal the bound cards, play each one you can for its Action effect, and discard the rest."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-sleeper-removed",
+      "category": "intelligence",
+      "question": "Sleeper Network is Removed while it has several bound cards. What happens to those cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If this card is Removed, reveal its bound cards; immediately play 1 for its Action effect and discard the rest",
+          "Sleeper Network"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal the bound cards, immediately play one for its Action effect, and discard the rest."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-spies-action",
+      "category": "intelligence",
+      "question": "What does Spies do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Reveal the opponent's Hand. +1 Card, then discard one card",
+          "Spies"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal the opponent's Hand, gain 1 Card, then discard one card."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-subversion-asset",
+      "category": "intelligence",
+      "question": "Subversion is banked and an opposing Asset effect would apply. What may I do with Subversion?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "you may put this card in your Graveyard to negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play",
+          "Subversion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put Subversion in your Graveyard to negate that effect and, if the opposing Asset remains in play, put it in its owner's Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-intelligence-spectral-surveillance",
+      "category": "intelligence",
+      "question": "When I use Surveillance with Spectral Surveillance banked, what may I pay instead of Intel, and what does that reveal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "you may put this card in your Graveyard instead of spending Intel. If you do, reveal all opposing Gambits OR Tactics chosen for that battle",
+          "Spectral Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put Spectral Surveillance in your Graveyard instead of spending Intel, then reveal all opposing Gambits or all opposing Tactics chosen for that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-mystics-dark-omens-action",
+      "category": "mystics",
+      "question": "I play Dark Omens for its Action effect. What card movement follows the draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+2 Cards, then put one of them in your Graveyard",
+          "Dark Omens"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 2 Cards, then put one of those cards in your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-mystics-grave-ward-asset",
+      "category": "mystics",
+      "question": "Grave Ward is banked and a card enters my Graveyard. What may Grave Ward do?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a card enters your Graveyard, you may discard this card to move that card from your Graveyard to your Discard Pile",
+          "Grave Ward"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Grave Ward to move that card from your Graveyard to your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-mystics-natures-altar",
+      "category": "mystics",
+      "question": "I begin a Rite through Nature's Altar during Opening. May that Rite complete on the same turn it began?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Rite begun this way may complete this turn if you control this Territory when its completion condition and timing are satisfied",
+          "Nature's Altar"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you control the Nature's Altar Territory when the Rite's completion condition and timing are satisfied."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-mystics-necromancy-grave",
+      "category": "mystics",
+      "question": "Necromancy applies its Graveyard-return effect. In what order do I choose cards, move my Hand, and return the chosen cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose up to three non-Necromancy cards in your Graveyard. Put all cards in your Hand in your Graveyard, then return the chosen cards to your Hand",
+          "Necromancy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "First choose up to three non-Necromancy cards already in your Graveyard, then put all cards from Hand into the Graveyard, then return the chosen cards to Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-mystics-threefold-vision",
+      "category": "mystics",
+      "question": "Threefold Vision looks at the top three cards of my Draw Pile. Where must those three cards go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put one in your Hand, one in your Discard Pile, and one in your Graveyard",
+          "Threefold Vision"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put one in Hand, one in the Discard Pile, and one in the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-inquisition-confession-action",
+      "category": "inquisition",
+      "question": "I play Confession for its Action effect and choose an eligible Gambit in the opponent's Hand. What restriction applies if they set a Gambit later that turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Until the end of the turn, if they set a Gambit, they must set that card if able",
+          "Confession"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "If they set a Gambit that turn, they must set the chosen card if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-inquisition-confession-tactic",
+      "category": "inquisition",
+      "question": "I use Confession as a face-down Tactic. After it reveals an opposing face-down Tactic, may Confession replace itself?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You may return this card to your Reserve and choose another eligible Tactic from your Reserve face down",
+          "Confession"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. You may return Confession to Reserve and choose another eligible Tactic from Reserve face down."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-inquisition-guilt-action",
+      "category": "inquisition",
+      "question": "I use Guilt by Association's Action effect on one card in the opponent's Discard Pile. Which other cards move with it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put every card there with that title in their Graveyard",
+          "Guilt by Association"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Every card in that Discard Pile with the chosen card's title goes to the opponent's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-inquisition-hellfire-action",
+      "category": "inquisition",
+      "question": "I spend 3 Conviction on Hellfire's Action effect. How many cards move from the opponent's Draw Pile and where do they go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Spend any amount of Conviction. Put that many cards from the top of the opponent's Draw Pile in their Graveyard",
+          "Hellfire"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put the top 3 cards of the opponent's Draw Pile in their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-inquisition-retribution-no-assets",
+      "category": "inquisition",
+      "question": "Retribution triggers after the opponent loses a battle they initiated, but they have no Assets. If I discard Retribution, what happens?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If they have no Assets, +2 Conviction",
+          "Retribution"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 2 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-garrison",
+      "category": "territory",
+      "question": "I control Garrison and am defending there. What does the Territory add?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "While Garrison's controller is defending here: +1 Reserve",
+          "Garrison"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "+1 Reserve."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-high-ground",
+      "category": "territory",
+      "question": "A battle is taking place on High Ground. What does the defender gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During battles here, the defender gains Advantage",
+          "High Ground"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The defender gains Advantage."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-fortified-pass",
+      "category": "territory",
+      "question": "Fortified Pass's controller is defending there. What happens to the attacker's Assets during that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the attacker's Assets are inactive",
+          "Fortified Pass"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The attacker's Assets are inactive."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-difficult-terrain",
+      "category": "territory",
+      "question": "I enter Difficult Terrain during Movement. What happens to my movement, and what Action-effect restriction applies in Denouement that turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a player enters Difficult Terrain, their movement ends",
+          "cannot play a card for its Action effect during Denouement",
+          "Difficult Terrain"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Your movement ends, and because you entered Difficult Terrain that turn you cannot play a card for its Action effect during Denouement."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-disrupted-supply-lines",
+      "category": "territory",
+      "question": "I am on Disrupted Supply Lines with three banked Assets. How many of my Assets can be active while I remain there, and who chooses which one?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "only 1 of their Assets can be active. They choose which",
+          "Disrupted Supply Lines"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Only one Asset can be active, and you choose which one."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-territory-exposed-flank",
+      "category": "territory",
+      "question": "A Counterattack is taking place on Exposed Flank. Can the occupier set a Gambit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During a Counterattack here, the occupier cannot set a Gambit",
+          "Exposed Flank"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The occupier cannot set a Gambit."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-interaction-pathfinders-difficult-terrain",
+      "category": "interaction",
+      "question": "I played Pathfinders for its Action effect and chose Difficult Terrain, making that Territory's printed effect inactive during my movement this turn. When I enter Difficult Terrain during that movement, does its printed 'movement ends' effect stop me?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Its printed effect is inactive during your movement this turn",
+          "Pathfinders"
+        ],
+        [
+          "When a player enters Difficult Terrain, their movement ends",
+          "Difficult Terrain"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Pathfinders makes Difficult Terrain's printed effect inactive during your movement that turn, so that printed movement-ending effect does not stop you."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-interaction-fortified-pass-subversion",
+      "category": "interaction",
+      "question": "I am attacking on Fortified Pass while its controller is defending, and I have Subversion banked. An opposing Asset effect would apply during the battle. Can I use Subversion's Asset effect while Fortified Pass is suppressing the attacker's Assets?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "the attacker's Assets are inactive",
+          "Fortified Pass"
+        ],
+        [
+          "When an opposing Asset's effect would apply",
+          "Subversion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Fortified Pass makes the attacker's Assets inactive, so the attacking player's banked Subversion Asset effect cannot be used while that suppression applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-unsupported-mixed-decks",
+      "category": "unsupported",
+      "question": "We accidentally shuffled one player's Hand into the other player's Draw Pile and noticed only after another card was drawn. Does published v0.7.1 define an official repair procedure?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official repair procedure for this mixed-deck mistake; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-out-of-scope-art-priority",
+      "category": "out-of-scope",
+      "question": "Which existing card most needs new artwork before publication?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for art/design judgment rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-out-of-scope-faction-name",
+      "category": "out-of-scope",
+      "question": "Should the Intelligence faction be renamed before the next release?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for product/design naming judgment rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
