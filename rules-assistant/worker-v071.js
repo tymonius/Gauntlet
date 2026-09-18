@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-19";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-20";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -100,6 +100,12 @@ const MISSION_ABORT_AUTHORITY_IDS = [
 const FOLLOWUP_BATTLE_AUTHORITY_IDS = [
   "rulebook:initiating-battles"
 ];
+const SHORTHAND_ACTION_AUTHORITY_IDS = [
+  "rulebook:actions"
+];
+const REVEAL_ZONE_AUTHORITY_IDS = [
+  "rulebook:revealing-cards-and-zones"
+];
 let corpusPromise;
 let corpusLoadedAt = 0;
 
@@ -117,6 +123,8 @@ ADJUDICATION PRINCIPLES
 - Keep ownership and control attached to the game object the supplied authority names. Do not transfer the owner or controller of a card, Overlay, Deed, Territory, or other object onto another object it affects unless supplied authority expressly equates those roles.
 - Preserve printed effect labels and named game terminology exactly. Do not relabel an Asset, Use, Battle, Gambit/Tactic, Overlay, or other printed effect as an Action unless the supplied authority labels it Action; distinguish an Action that banks a card from a later ability of the banked Asset.
 - An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
+- Treat literal card shorthand such as "+1 Action" or "+2 Actions" as the defined +N Action notation, not as generic prose saying "one additional Action this turn." The shorthand grants those Actions in the current phase unless it names another phase.
+- Do not assume an optional card, Asset, Leader ability, Faction feature, or other modifier is active merely because it appears in retrieval. Apply optional game state only when the player or recent conversation states it is present, active, controlled, banked, used, or otherwise relevant. An unmentioned exception may be noted as a conditional caveat only when useful; it must not reverse the direct baseline answer.
 - Never treat an extra-Action grant as permission to use a phase-limited Feature in a different phase. When explaining a grant that supplies Actions in more than one phase, distinguish Action quantity from the Feature's legal timing.
 - When several granted Actions span different phases and at least one must be a phase-limited Feature, that requirement constrains which granted Action must satisfy the Feature requirement; it does not move the Feature into another phase. If only one granted phase is legal for that Feature, use the Feature in that phase and use another legal Action in the other granted phase.
 - A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
@@ -187,6 +195,8 @@ Requirements:
 17. For overview questions, summarize the directly supported mechanics without exposing retrieval coverage. Do not say that an "available passage", "available source", or retrieved excerpt omits the rest of a procedure; omit unsupported detail instead unless the player specifically asks about source coverage.
 18. When an effect grants Actions in multiple phases and requires at least one of those Actions to be a phase-limited Feature, treat that requirement as constraining which granted Action must be used for the Feature, not as permission to change the Feature's timing. If only one granted phase is legal for that Feature, the Feature must be used in that phase; another legal Action must fill any other granted phase.
 19. Do not classify a terse gameplay-rules question out_of_scope merely because it uses an inflected or colloquial form of a supplied named mechanic. When retrieved authority directly matches the gameplay term or procedure being asked about, treat the question as in scope and adjudicate it from that authority.
+20. For a yes/no question, make the first yes/no word agree with the literal proposition being asked and with the explanation that follows. Pay special attention to negative forms such as "does that stop/prevent/block...?" If the action remains legal, answer "No" to that negative proposition before explaining why.
+21. When the player asks for the normal, default, or baseline rule, do not apply an optional named card or effect that the player did not state is active. Answer the baseline first; any unmentioned exception is conditional only.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -618,6 +628,30 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   if (noQualifyingEventSource && dependentTriggerSource) {
     reminders.push(
       "This question links one authority that says the encounter does not produce the required battle/win/result with another authority whose effect triggers only from that required condition. The downstream trigger conclusion is a combined-authority inference unless one clean source directly states the final consequence. Classify that derived consequence inferred and cite the authorities establishing both premises."
+    );
+  }
+
+  const recentConversation = Array.isArray(history)
+    ? history.slice(-4).map((item) => String(item?.content || "")).join(" ").toLowerCase()
+    : "";
+  const statedGameState = `${recentConversation} ${current}`;
+  const asksBaselineRule = /\b(?:normal|normally|default|baseline|generally|usually)\b/.test(current);
+  const unmentionedOptionalCards = sourceList.filter((source) => {
+    if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+    const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
+    return title.length >= 3 && !statedGameState.includes(title);
+  });
+  if (asksBaselineRule && unmentionedOptionalCards.length) {
+    reminders.push(
+      "The player is asking for the normal/default rule. Do not apply a retrieved optional card or Asset that the player did not state is present or active. Answer the baseline rule first. You may mention an unmentioned modifier only as a clearly conditional caveat, and it must not reverse the direct yes/no answer."
+    );
+  }
+
+  const negativeYesNoQuestion = /^\s*(?:and\s+)?(?:does|do|did|can|could|will|would|is|are)\b/.test(current)
+    && /\b(?:stop|prevent|block|prohibit|bar|keep)\b/.test(current);
+  if (negativeYesNoQuestion) {
+    reminders.push(
+      "This is a negative-form yes/no question. Make the first yes/no word match the literal proposition and the explanation: if the stated effect does not stop/prevent/block the action, answer No before explaining that the action remains legal."
     );
   }
 
@@ -1256,8 +1290,17 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\bmission\b/.test(current);
   const routFollowupBattleFocus = /\brout\b/.test(current)
     && /\b(?:battle|follow-up|followup|continuation|new|gambit|reserve|tactic|once-per-battle)\b/.test(current);
-  const topicAuthorityIds = startingTerritoryFocus
-    ? STARTING_TERRITORY_AUTHORITY_IDS
+  const shorthandActionFocus = /\+\s*\d+\s+actions?\b/.test(current);
+  const revealZoneFocus = (
+    /\breveal(?:s|ed|ing)?\s+(?:(?:my|your|their|the|an?|opponent(?:['’]s)?|player(?:['’]s)?|its)\s+)?(?:entire\s+)?(?:hand|reserve)\b/.test(current)
+    || /\b(?:hand|reserve)\b[\s\S]{0,24}\b(?:is|was|gets?|be|being)?\s*reveal(?:ed|ing|s)?\b/.test(current)
+  );
+  const topicAuthorityIds = shorthandActionFocus
+    ? SHORTHAND_ACTION_AUTHORITY_IDS
+    : revealZoneFocus
+      ? REVEAL_ZONE_AUTHORITY_IDS
+    : startingTerritoryFocus
+      ? STARTING_TERRITORY_AUTHORITY_IDS
     : missionAbortFocus
       ? MISSION_ABORT_AUTHORITY_IDS
     : routFollowupBattleFocus
@@ -1335,9 +1378,11 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   if (!preferred.length) return retrieval;
 
   const preferredIds = new Set(preferred.map((source) => source.canonicalId));
-  const suppressedIds = militaryLateTacticFocus
-    ? new Set(INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS)
-    : new Set();
+  const suppressedIds = shorthandActionFocus
+    ? new Set(["rulebook:additional-actions"])
+    : militaryLateTacticFocus
+      ? new Set(INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS)
+      : new Set();
   return [
     ...preferred,
     ...retrieval.filter((source) =>
