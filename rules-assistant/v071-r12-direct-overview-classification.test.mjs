@@ -11,7 +11,7 @@ function source(title) {
 
 describe("v0.7.1 r12 direct-overview classification", () => {
   test("pins r12 behavior", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-21");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-22");
   });
 
   test("Withdrawal overview is explicit when a selected source directly covers Withdrawal", () => {
