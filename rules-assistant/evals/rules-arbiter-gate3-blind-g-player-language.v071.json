@@ -1,0 +1,305 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "G",
+  "behaviorRevision": "v071-qa-20260917-17",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche G benchmark authored after r17 deployment and not used to construct r17.",
+  "blindnessPolicy": [
+    "This tranche was authored after r17 was merged and deployed and was not used to construct r17.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-g-player-starting-territory-trigger",
+      "category": "player-language",
+      "question": "setup token placement triggers enter effects?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Starting Territory"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Setup placement is not entering the Territory, so enter triggers do not fire."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-extra-action-same-phase",
+      "category": "player-language",
+      "question": "+1 action means two denouement actions?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Additional Actions"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A generic additional Action does not permit two Actions in one phase unless an effect says so."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-negated-gambit-zone",
+      "category": "player-language",
+      "question": "negated gambit still goes graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Negation"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A negated Gambit normally still goes to its owner's Graveyard during the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-bound-facedown-info",
+      "category": "player-language",
+      "question": "can i look at their facedown bound card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "face-down bound card may be inspected only by its owner"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Only the owner may inspect a face-down bound card."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-onward-after-battle",
+      "category": "player-language",
+      "question": "battle ended. can i onward now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Onward cannot be used after a battle"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Onward cannot be used after a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-peace-six-now",
+      "category": "player-language",
+      "question": "six treaties during their turn. instant win?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "At the start of the Diplomat's turn"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Peace Treaty is checked at the start of the Diplomat's turn after Capture and before Draw, not immediately during the opponent's turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-treasury-asset-slot",
+      "category": "player-language",
+      "question": "treasury card uses asset slot?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Treasury is not the Asset Bank"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Treasury cards do not use Asset capacity."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-abort-mission-zone",
+      "category": "player-language",
+      "question": "abort mission goes graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Aborting is not failure"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "An aborted Mission goes to the Discard Pile; aborting is not failure."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-counterintel-rule-reveal",
+      "category": "player-language",
+      "question": "counterintel stops mandatory reveal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Rules-mandated reveals are unaffected"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Counterintelligence does not stop rules-mandated reveals."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-rite-echoes-loss",
+      "category": "player-language",
+      "question": "lose before echoes completes. bound cards where?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Rite of Echoes"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Both bound cards go to the Graveyard and the Rite resets."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-purge-two-opening-actions",
+      "category": "player-language",
+      "question": "purge in opening lets me act again in opening?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "never permits two Actions in one phase"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Purge never permits two Actions in the same phase."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-no-martyrs-harmful",
+      "category": "player-language",
+      "question": "no martyrs blocks their bad loss trigger too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "does not prevent harmful consequences"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. No Martyrs blocks beneficial loss/retreat effects controlled by the loser, not harmful consequences."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-entrench-attacking",
+      "category": "player-language",
+      "question": "commandant can entrench while attacking?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Entrench"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Entrench requires defending and is unavailable while attacking."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-mission-control-special-op",
+      "category": "player-language",
+      "question": "mission control into special op?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "cannot be a Special Operation"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Mission Control cannot start a Special Operation."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-materia-gambit-clear",
+      "category": "player-language",
+      "question": "arcane gambit hits graveyard after battle. materia prima?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "A Gambit does not trigger Materia Prima"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A Gambit entering the Graveyard from battle during the Aftermath does not by itself trigger Materia Prima."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-witch-pursuit-terms",
+      "category": "player-language",
+      "question": "pursuit starts battle. can terms still end it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Accepted Terms may still end the resulting battle sequence"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Accepted Terms can end the Pursuit-created battle during Onset."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-margin-loan-draw",
+      "category": "player-language",
+      "question": "margin loan banked means no normal draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "may not draw at the start of your turn"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. While Margin Loan remains banked, its controller may not draw at the start of the turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-g-player-war-crimes-order",
+      "category": "player-language",
+      "question": "war crimes win then order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "cannot move, capture a Territory, or use an Order"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. War Crimes prohibits using an Order as a result of that victory."
+        }
+      ]
+    }
+  ]
+}
