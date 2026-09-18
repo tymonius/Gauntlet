@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-20";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-21";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -105,6 +105,43 @@ const SHORTHAND_ACTION_AUTHORITY_IDS = [
 ];
 const REVEAL_ZONE_AUTHORITY_IDS = [
   "rulebook:revealing-cards-and-zones"
+];
+const GAMBIT_TACTIC_ROLE_AUTHORITY_IDS = [
+  "rulebook:gambit-and-tactic-effect-roles"
+];
+const NO_WINNER_AUTHORITY_IDS = [
+  "rulebook:battles-ending-without-a-winner"
+];
+const CAPITAL_LIMIT_AUTHORITY_IDS = [
+  "rulebook:capital-and-capital-ledger"
+];
+const GUARDIANS_AUTHORITY_IDS = [
+  "rulebook:spirit-walker",
+  "faction:guardians-of-the-circle",
+  "leader:guardians-of-the-circle"
+];
+const DIPLOMATIC_LATITUDE_AUTHORITY_IDS = [
+  "card:diplomats-diplomatic-latitude",
+  "rulebook:multiple-proposals"
+];
+const DETENTE_AUTHORITY_IDS = [
+  "card:diplomats-detente"
+];
+const ASSIMILATION_SIEGE_AUTHORITY_IDS = [
+  "card:neutral-assimilation",
+  "card:neutral-protracted-siege",
+  "rulebook:front-line",
+  "rulebook:normal-capture",
+  "rulebook:immediate-capture-effects"
+];
+const EXFILTRATION_LOSS_AUTHORITY_IDS = [
+  "card:intelligence-exfiltration",
+  "rulebook:battles-ending-without-a-winner"
+];
+const REARGUARD_ROUT_AUTHORITY_IDS = [
+  "card:military-rearguard",
+  "leader:rout",
+  "rulebook:complete-rules-17"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -665,6 +702,45 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
+  if (
+    canonicalIds.has("rulebook:battles-ending-without-a-winner")
+    && /\b(?:no winner|without a winner|ends? without a winner)\b/.test(current)
+    && /\b(?:clear|committed|reserve|gambit|tactic|battle cards?)\b/.test(current)
+  ) {
+    reminders.push(
+      "For a battle that ends without a winner after Onset, preserve the complete clearing rule: both committed battle cards and cards remaining in Reserve clear normally unless the ending effect gives another destination. Do not omit the Reserve cards when the player asks whether already-committed cards clear."
+    );
+  }
+
+  if (
+    /\brearguard\b/.test(current)
+    && /\brout\b/.test(current)
+    && /\b(?:uses?|used)\s+rout\b/.test(current)
+  ) {
+    reminders.push(
+      "The question states as a game-state premise that the opposing General uses Rout later that turn. Unless the player asks whether that Rout use was legal, do not re-litigate Rout's earlier win prerequisite. Resolve the stated Rout movement against Rearguard. If Rearguard prevents that movement, apply Rearguard's printed consequence that no Command is spent."
+    );
+  }
+
+  if (
+    /\bassimilation\b/.test(current)
+    && /\bprotracted siege\b/.test(current)
+    && canonicalIds.has("rulebook:front-line")
+  ) {
+    reminders.push(
+      "Resolve the interaction through the Front Line control rules, not by treating 'advance Front Line' as a non-capture movement. A Front Line is the player's contiguous controlled Territories, and adding the next opposing Territory to it is the capture/control change. If Assimilation advances the Front Line to include the Territory Protracted Siege protects, evaluate Protracted Siege's capture-prevention trigger against that capture."
+    );
+  }
+
+  const terseConfirmationQuestion = /\?\s*$/.test(String(question || ""))
+    && current.split(/\s+/).filter(Boolean).length <= 10
+    && !/^\s*(?:who|what|where|when|why|how|is|are|am|was|were|do|does|did|can|could|will|would|should|may|must|has|have|had)\b/.test(current);
+  if (terseConfirmationQuestion) {
+    reminders.push(
+      "Treat this terse player-language sentence as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. Do not begin with No and then describe the proposition as true."
+    );
+  }
+
   const namedCardSource = sourceList.find((source) => {
     if (!String(source?.canonicalId || "").startsWith("card:")) return false;
     const title = String(source?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase();
@@ -817,6 +893,8 @@ export function contextualQuery(question, history = []) {
 
 function normalizeReferentSubject(value) {
   return String(value || "")
+    .normalize("NFD")
+    .replace(/\p{M}+/gu, "")
     .toLowerCase()
     .replace(/[’']s\b/g, "")
     .replace(/^(?:card|leader|faction|rulebook):\s*/i, "")
@@ -996,6 +1074,14 @@ function isIdentityIndependentStakeLeverageQuestionR19(current, noun) {
     && /\b(?:spend|use)\b/i.test(text);
 }
 
+function isIdentityIndependentBattleRoleQuestionR21(current, noun) {
+  if (!["gambit", "tactic"].includes(noun)) return false;
+  const text = String(current || "");
+  return /\b(?:gambit|tactic|gambit\/tactic)\b/i.test(text)
+    && /\b(?:heading|role|effect|text)\b/i.test(text)
+    && /\b(?:choose|commit|committed|eligible|eligibility|use)\b/i.test(text);
+}
+
 export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
   const current = String(question || "").trim();
   const genericRuleMatch = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
@@ -1019,7 +1105,10 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
   });
   if (explicitlyNamedCards.length === 1) return null;
 
-  if (isIdentityIndependentStakeLeverageQuestionR19(current, noun)) {
+  if (
+    isIdentityIndependentStakeLeverageQuestionR19(current, noun)
+    || isIdentityIndependentBattleRoleQuestionR21(current, noun)
+  ) {
     return null;
   }
 
@@ -1237,7 +1326,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         && /\b(?:opponent(?:['’]s)? turn|their turn|defend(?:ing|ed)?)\b/.test(current)
       )
     );
-  const specialOperationTopic = /\bspecial operations?\b/;
+  const specialOperationTopic = /\bspecial\s+(?:operations?|ops?)\b/;
   const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum|capture|captured|captures|progress|denouement|fail|fails|failed)\b/.test(current);
   const recentSpecialOperationTopic = specialOperationTopic.test(recent);
   const specialOperationFollowupCue = /\b(?:they|opponent|capture|captured|captures|territor(?:y|ies)|progress|ready|readiness|denouement|what happens|now|fail|fails|failed)\b/.test(current);
@@ -1264,11 +1353,12 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     : SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS;
   const fieldcraftTopic = /\bfieldcraft\b/;
   const fieldcraftTerritoryStateCue = /\b(?:control(?:s|led|ling)?|occupation|occupier|capture(?:s|d|ing)?|defensive edge|last stand|battle bonus(?:es)?|territor(?:y|ies)[ -]?(?:limit|limits)|limits? calculated from territor(?:y|ies))\b/;
-  const fieldcraftFollowupCue = /\b(?:it|that|this|control|occupation|occupier|capture|defensive edge|last stand|bonus|limit|territory|territories)\b/.test(current);
+  const fieldcraftCostCue = /\b(?:cost|costs|spend|spends|pay|pays|intel|how much)\b/.test(current);
+  const fieldcraftFollowupCue = /\b(?:it|that|this|control|occupation|occupier|capture|defensive edge|last stand|bonus|limit|territory|territories|cost|spend|pay|intel)\b/.test(current);
   const fieldcraftFocus = (
     fieldcraftTopic.test(current)
     || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
-  ) && fieldcraftTerritoryStateCue.test(combined);
+  ) && (fieldcraftTerritoryStateCue.test(combined) || fieldcraftCostCue);
   const militaryLateTacticFocus = /\bmilitary\b/.test(current)
     && /\b(?:add|adds|added|additional)\b[\s\S]{0,40}\btactic\b/.test(current)
     && /\b(?:after|late|face[ -]?up|reveal)\b/.test(current);
@@ -1290,13 +1380,60 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\bmission\b/.test(current);
   const routFollowupBattleFocus = /\brout\b/.test(current)
     && /\b(?:battle|follow-up|followup|continuation|new|gambit|reserve|tactic|once-per-battle)\b/.test(current);
-  const shorthandActionFocus = /\+\s*\d+\s+actions?\b/.test(current);
-  const revealZoneFocus = (
+  const literalActionShorthand = /\+\s*\d+\s+actions?\b/;
+  const shorthandActionFocus = literalActionShorthand.test(current)
+    || (
+      currentWordCount <= 20
+      && literalActionShorthand.test(recent)
+      && /\b(?:action|opening|denouement|phase|wait|extra|another|current)\b/.test(current)
+    );
+  const revealZoneInCurrent = (
     /\breveal(?:s|ed|ing)?\s+(?:(?:my|your|their|the|an?|opponent(?:['’]s)?|player(?:['’]s)?|its)\s+)?(?:entire\s+)?(?:hand|reserve)\b/.test(current)
     || /\b(?:hand|reserve)\b[\s\S]{0,24}\b(?:is|was|gets?|be|being)?\s*reveal(?:ed|ing|s)?\b/.test(current)
   );
-  const topicAuthorityIds = shorthandActionFocus
-    ? SHORTHAND_ACTION_AUTHORITY_IDS
+  const revealZoneFocus = revealZoneInCurrent
+    || (
+      currentWordCount <= 20
+      && /\breveal(?:s|ed|ing)?\b[\s\S]{0,40}\b(?:hand|reserve)\b/.test(recent)
+      && /\b(?:hand|reserve|zone|face[ -]?up|still|remain|stays?)\b/.test(current)
+    );
+  const battleRoleFocus = /\b(?:gambit|tactic|gambit\/tactic)\b/.test(current)
+    && /\b(?:heading|role|effect|text)\b/.test(current)
+    && /\b(?:choose|commit|committed|eligible|eligibility|use)\b/.test(current);
+  const noWinnerClearingFocus = /\b(?:no winner|without a winner|ends? without a winner)\b/.test(current)
+    && /\b(?:clear|committed|reserve|gambit|tactic|battle cards?)\b/.test(current);
+  const capitalLimitFocus = /\bcapital\b/.test(current)
+    && /\blimit\b/.test(current);
+  const guardiansFocus = /\bguardians of the circle\b/.test(current);
+  const diplomaticLatitudeFocus = /\b(?:diplomatic\s+latitude|latitude)\b/.test(current)
+    && /\b(?:terms?|proposal|proposals|refus|refused|accepted?|effect|effects)\b/.test(current);
+  const detenteFocus = /\b(?:detente|détente)\b/.test(current);
+  const assimilationSiegeFocus = /\bassimilation\b/.test(current)
+    && /\bprotracted siege\b/.test(current);
+  const exfiltrationLossFocus = /\bexfiltration\b/.test(current)
+    && /\b(?:withdraw|los(?:e|es|t|ing)|loss|winner|trigger|effect)\b/.test(current);
+  const rearguardRoutFocus = /\brearguard\b/.test(current)
+    && /\brout\b/.test(current);
+  const topicAuthorityIds = battleRoleFocus
+    ? GAMBIT_TACTIC_ROLE_AUTHORITY_IDS
+    : noWinnerClearingFocus
+      ? NO_WINNER_AUTHORITY_IDS
+    : capitalLimitFocus
+      ? CAPITAL_LIMIT_AUTHORITY_IDS
+    : guardiansFocus
+      ? GUARDIANS_AUTHORITY_IDS
+    : diplomaticLatitudeFocus
+      ? DIPLOMATIC_LATITUDE_AUTHORITY_IDS
+    : detenteFocus
+      ? DETENTE_AUTHORITY_IDS
+    : assimilationSiegeFocus
+      ? ASSIMILATION_SIEGE_AUTHORITY_IDS
+    : exfiltrationLossFocus
+      ? EXFILTRATION_LOSS_AUTHORITY_IDS
+    : rearguardRoutFocus
+      ? REARGUARD_ROUT_AUTHORITY_IDS
+    : shorthandActionFocus
+      ? SHORTHAND_ACTION_AUTHORITY_IDS
     : revealZoneFocus
       ? REVEAL_ZONE_AUTHORITY_IDS
     : startingTerritoryFocus
