@@ -29,10 +29,13 @@
 .faction-page.left > .faction-page-watermark {
   left: -.62in;
 }
-.faction-page > .page-inner,
+.faction-page > .page-inner {
+  position: relative;
+  z-index: 1;
+}
 .faction-page > .footer-rule,
 .faction-page > .folio {
-  position: relative;
+  position: absolute;
   z-index: 1;
 }
 /*
