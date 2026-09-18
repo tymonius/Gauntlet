@@ -10,6 +10,7 @@ on:
       - "rules-assistant/v071-public-corpus.js"
       - "rules-assistant/r13-classification.js"
       - "rules-assistant/v071-gate3-c-remediation.js"
+      - "rules-assistant/v071-answer-verifier.js"
       - "rules-assistant/rules-persistence.js"
       - "rules-assistant/github-actions-qa-auth.js"
       - "rules-assistant/wrangler.toml"
