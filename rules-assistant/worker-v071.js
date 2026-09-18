@@ -14,9 +14,14 @@ import {
   isOccupationControlQuestion,
   shouldCarryImmediateHistory
 } from "./v071-gate3-c-remediation.js";
+import {
+  applyHighRiskVerification,
+  highRiskVerificationReasons,
+  verifyHighRiskDraft
+} from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-28";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-29";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -462,11 +467,20 @@ export default {
         return answerResponse(result, origin);
       }
 
+      const verificationReasons = highRiskVerificationReasons(question, retrieval);
+      const verificationPlanned = verificationReasons.length > 0;
       const modelBudget = env.OPENAI_API_KEY
         ? await reserveModelRequest(request, env)
         : { allowed: false, reason: "model_not_configured" };
+      const verifierBudget = verificationPlanned && env.OPENAI_API_KEY && modelBudget.allowed
+        ? await reserveModelRequest(request, env)
+        : { allowed: !verificationPlanned, reason: verificationPlanned ? "primary_model_unavailable" : "not_required" };
 
-      if (!env.OPENAI_API_KEY || !modelBudget.allowed) {
+      if (
+        !env.OPENAI_API_KEY
+        || !modelBudget.allowed
+        || (verificationPlanned && !verifierBudget.allowed)
+      ) {
         failureStage = "persistence";
         const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
         const result = {
@@ -489,13 +503,56 @@ export default {
           mode: "source_lookup",
           model: null,
           sources: fallback.sources,
-          diagnostics: { ...diagnostics, modelBudget }
+          diagnostics: {
+            ...diagnostics,
+            modelBudget,
+            verifierBudget,
+            verification: {
+              planned: verificationPlanned,
+              reasons: verificationReasons,
+              completed: false
+            }
+          }
         });
         return answerResponse(result, origin);
       }
 
       failureStage = "model";
-      const modelResult = await askOpenAI({ env, request, question, history, sources: retrieval });
+      let modelResult = await askOpenAI({ env, request, question, history, sources: retrieval });
+      let verification = null;
+      let verificationApplied = false;
+
+      if (verificationPlanned) {
+        failureStage = "verification";
+        verification = await verifyHighRiskDraft({
+          env,
+          request,
+          question,
+          sources: retrieval,
+          draft: modelResult,
+          reasons: verificationReasons
+        });
+        const application = applyHighRiskVerification(modelResult, verification, retrieval);
+        modelResult = application.draft;
+        verificationApplied = application.applied;
+        diagnostics.verification = {
+          planned: true,
+          reasons: verificationReasons,
+          completed: true,
+          valid: verification.valid,
+          issues: verification.issues,
+          replacementApplied: application.applied,
+          applicationReason: application.reason
+        };
+      } else {
+        diagnostics.verification = {
+          planned: false,
+          reasons: [],
+          completed: false
+        };
+      }
+
+      failureStage = "model";
       let sources = selectUsedSources(retrieval, modelResult.source_ids);
       const rulingStatus = normalizeR13RulingStatus(
         normalizeModelRulingStatus(modelResult.ruling_status, question, sources),
@@ -517,7 +574,9 @@ export default {
         confidence,
         responseType: responseTypeFor(rulingStatus),
         sources,
-        executionPath: "model"
+        executionPath: verificationPlanned
+          ? (verificationApplied ? "model-verified-repaired" : "model-verified")
+          : "model"
       };
       failureStage = "persistence";
       result.interactionId = await persistSmartInteraction(env, {
@@ -529,10 +588,14 @@ export default {
         gameVersion: RULES_VERSION,
         rulingStatus,
         confidence,
-        mode: "ai",
+        mode: verificationPlanned ? "ai_verified" : "ai",
         model: env.OPENAI_MODEL || FALLBACK_MODEL,
         sources,
-        diagnostics
+        diagnostics: {
+          ...diagnostics,
+          modelBudget,
+          verifierBudget
+        }
       });
       return answerResponse(result, origin);
     } catch (error) {
