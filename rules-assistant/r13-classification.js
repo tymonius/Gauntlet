@@ -497,6 +497,71 @@ export function shouldPromoteDirectDeedOwnershipChange(question, sources = []) {
   });
 }
 
+export function shouldPromoteR18DirectProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const abortMission = /\b(?:abort|aborts|aborted|aborting)\b/.test(current)
+    && /\bmission\b/.test(current);
+  if (
+    abortMission
+    && texts.some((text) =>
+      /aborting\s+is\s+not\s+failure/.test(text)
+      && /put\s+it\s+in\s+the\s+discard\s+pile/.test(text)
+    )
+  ) return true;
+
+  const setupEntry = /\bsetup\b/.test(current)
+    && /\b(?:token|placement|place|placed)\b/.test(current)
+    && /\b(?:enter|enters|entered|entering|trigger|triggers|triggered)\b/.test(current);
+  if (
+    setupEntry
+    && texts.some((text) =>
+      /placing\s+a\s+player\s+token\s+during\s+setup/.test(text)
+      && /does\s+not\s+count\s+as\s+entering\s+the\s+territory/.test(text)
+    )
+  ) return true;
+
+  const peaceTreatyTiming = /\b(?:six|6)\b/.test(current)
+    && /\b(?:treaty|treaties|proposal|proposals|ratified|ratification)\b/.test(current)
+    && /\b(?:win|wins|winning|victory|now|instant|immediate|turn)\b/.test(current);
+  if (
+    peaceTreatyTiming
+    && texts.some((text) =>
+      /at\s+the\s+start\s+of\s+the\s+diplomat(?:['’]s)?\s+turn/.test(text)
+      && /six[\s\S]{0,120}different\s+proposals\s+are\s+ratified/.test(text)
+    )
+  ) return true;
+
+  const routFollowup = /\brout\b/.test(current)
+    && /\b(?:battle|continuation|new|gambit|reserve|tactic|once-per-battle)\b/.test(current);
+  if (
+    routFollowup
+    && texts.some((text) =>
+      /follow-up\s+battle\s+is\s+a\s+new\s+battle/.test(text)
+      && /new\s+gambits,?\s+reserves,?\s+tactics/.test(text)
+    )
+  ) return true;
+
+  const shattering = /\b(?:shattering|first\s+battle|before\s+dice|reaches\s+dice)\b/.test(current)
+    && texts.some((text) =>
+      /rite\s+of\s+shattering/.test(text)
+      && /first\s+battle\s+that\s+reaches\s+dice\s+on\s+a\s+later\s+turn/.test(text)
+    );
+  if (shattering) return true;
+
+  const echoes = /\bechoes\b/.test(current)
+    && /\b(?:lose|loss|lost|bound|graveyard|reset)\b/.test(current)
+    && texts.some((text) =>
+      /rite\s+of\s+echoes/.test(text)
+      && /if\s+you\s+lose\s+a\s+battle\s+before\s+completion/.test(text)
+      && /reset\s+this\s+rite/.test(text)
+    );
+  if (echoes) return true;
+
+  return false;
+}
+
 export function normalizeR13RulingStatus(value, question, sources = []) {
   if (value === "out_of_scope") return value;
 
@@ -507,7 +572,13 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
     return "provisional";
   }
 
-  if (value === "provisional" && shouldPromoteDirectDeedOwnershipChange(question, sources)) {
+  if (
+    value === "provisional"
+    && (
+      shouldPromoteDirectDeedOwnershipChange(question, sources)
+      || shouldPromoteR18DirectProcedure(question, sources)
+    )
+  ) {
     return "explicit";
   }
 
@@ -529,6 +600,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteNamedDirectAuthority(question, sources)
       || shouldPromoteDirectEnumeratedProcedure(question, sources)
       || shouldPromoteDirectDeedOwnershipChange(question, sources)
+      || shouldPromoteR18DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
