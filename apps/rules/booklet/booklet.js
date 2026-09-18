@@ -180,6 +180,90 @@ function createWoodcutPage(publication, index) {
   applyPublicationIdentity(page, publication);
   const hero = ((index % 4) + 1);
   flowOf(page).outerHTML = `<img src="/images/woodcuts/hero compositions/hero ${hero}.png" alt="" /><div class="woodcut-mark">Gauntlet</div>`;
+  return page;
+}
+
+function renumberPages() {
+  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
+  pages.splice(0, pages.length, ...ordered);
+
+  pages.forEach((page, index) => {
+    const number = index + 1;
+    const side = number % 2 === 0 ? 'left' : 'right';
+    page.dataset.page = String(number);
+    page.classList.remove('left', 'right');
+    page.classList.add(side);
+
+    const folio = page.querySelector(':scope > .folio');
+    if (!folio) return;
+    const label = folio.querySelector('.folio-label')?.textContent || '';
+    const folioLabel = `<span class="folio-label">${label}</span>`;
+    const folioNumber = `<span class="folio-number">${number}</span>`;
+    folio.innerHTML = side === 'left' ? `${folioNumber}${folioLabel}` : `${folioLabel}${folioNumber}`;
+  });
+}
+
+function semanticFillerCandidates(contentPages) {
+  return contentPages
+    .map((page, index) => ({ page, index }))
+    .filter(({ page, index }) => {
+      if (index < 3) return false;
+      return Boolean(
+        page.classList.contains('part-page')
+        || page.classList.contains('faction-opener')
+        || page.classList.contains('leader-page')
+        || page.querySelector('.chapter-title-row, .page-title, .part-title, .leader-title-row')
+      );
+    });
+}
+
+function balancedFillerTargets(contentPages, count) {
+  if (count <= 0) return [];
+  const candidates = semanticFillerCandidates(contentPages);
+  const fallback = contentPages
+    .map((page, index) => ({ page, index }))
+    .filter(({ index }) => index >= 3);
+
+  const pool = candidates.length >= count ? candidates : fallback;
+  const selected = [];
+  const used = new Set();
+  for (let slot = 1; slot <= count; slot += 1) {
+    const desiredIndex = Math.round((slot * (contentPages.length - 1)) / (count + 1));
+    const choice = [...pool]
+      .filter(({ page }) => !used.has(page))
+      .sort((a, b) => Math.abs(a.index - desiredIndex) - Math.abs(b.index - desiredIndex))[0];
+    if (!choice) break;
+    used.add(choice.page);
+    selected.push(choice.page);
+  }
+  return selected;
+}
+
+function distributeFillerPages(fillerPages) {
+  if (!fillerPages.length) return;
+
+  const contentPages = pages.filter(page => !page.classList.contains('woodcut-page'));
+  if (contentPages.length < 2) return;
+
+  const targets = [contentPages[1]];
+  targets.push(...balancedFillerTargets(contentPages, fillerPages.length - 1));
+
+  fillerPages.forEach((filler, index) => {
+    const target = targets[index] || contentPages.at(-1);
+    pagesRoot.insertBefore(filler, target);
+  });
+
+  renumberPages();
+
+  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
+  if (!ordered[1]?.classList.contains('woodcut-page')) {
+    throw new Error('Booklet filler distribution must use the inside front cover first.');
+  }
+  for (let index = 1; index < ordered.length; index += 1) {
+    if (ordered[index].classList.contains('woodcut-page') && ordered[index - 1].classList.contains('woodcut-page')) {
+      throw new Error('Booklet filler pages may not appear back to back.');
+    }
+  }
 }
 
 function newContinuationPage(context) {
@@ -786,8 +870,10 @@ async function main() {
   sections.forEach(section => paginateSection(section, publication, documentId));
 
   const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;
-  for (let index = 0; index < fillerCount; index += 1) createWoodcutPage(publication, index);
+  const fillerPages = Array.from({ length: fillerCount }, (_, index) => createWoodcutPage(publication, index));
+  distributeFillerPages(fillerPages);
   createBackCover(publication);
+  renumberPages();
   fillContents();
   addFactionWatermarkPlaceholders();
   await hydrateFactionSymbols();
