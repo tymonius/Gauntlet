@@ -69,6 +69,9 @@ const RITUAL_ASCENSION_AUTHORITY_IDS = [
 const EFFECT_MOVEMENT_AUTHORITY_IDS = [
   "rulebook:movement-granted-by-effects"
 ];
+const MILITARY_COMMAND_AUTHORITY_IDS = [
+  "rulebook:command-and-orders"
+];
 const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
   "rulebook:golden-rules"
 ];
@@ -1088,6 +1091,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
   const genericRerollFocus = /\b(?:reroll|re-roll|rerolled|re-rolled|rerolling|re-rolling)\b/.test(current)
     && !/\btiebreak\b/.test(current);
+  const militaryCommandFocus = /\bcommand\b/.test(current)
+    && /\b(?:first|win|won|winning|maximum|max|2|two|withdraw|withdrawal|later|another|second)\b/.test(current);
   const specialOperationTopic = /\bspecial operations?\b/;
   const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum)\b/.test(current);
   const specialOperationFocus = specialOperationTopic.test(current) && specialOperationProcedureCue;
@@ -1114,6 +1119,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   ) && fieldcraftTerritoryStateCue.test(combined);
   const topicAuthorityIds = genericRerollFocus
     ? GENERIC_REROLL_AUTHORITY_IDS
+    : militaryCommandFocus
+      ? MILITARY_COMMAND_AUTHORITY_IDS
     : specialOperationFocus
       ? SPECIAL_OPERATION_COMPLETION_AUTHORITY_IDS
     : ritualFocus
