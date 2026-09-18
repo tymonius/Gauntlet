@@ -1092,9 +1092,17 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
       ]
     : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
   const genericRerollFocus = /\b(?:reroll|re-roll|rerolled|re-rolled|rerolling|re-rolling)\b/.test(current)
-    && !/\btiebreak\b/.test(current);
+    && !/\btiebreak\b/.test(current)
+    && !/\b(?:first player|first turn|setup)\b/.test(current)
+    && !namedCardSource;
   const militaryCommandFocus = /\bcommand\b/.test(current)
-    && /\b(?:first|win|won|winning|maximum|max|2|two|withdraw|withdrawal|later|another|second)\b/.test(current);
+    && (
+      (
+        /\b(?:already|begins?|starts?|maximum|max|at)\b[\s\S]{0,40}\b(?:2|two|maximum|max)\b/.test(current)
+        && /\b(?:first|later|another|second)\b[\s\S]{0,50}\b(?:win|won|winning|victory)\b/.test(current)
+      )
+      || /\bwithdraw(?:al|s|n|ing)?\b/.test(current)
+    );
   const specialOperationTopic = /\bspecial operations?\b/;
   const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum)\b/.test(current);
   const specialOperationFocus = specialOperationTopic.test(current) && specialOperationProcedureCue;
