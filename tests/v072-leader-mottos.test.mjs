@@ -49,7 +49,7 @@ describe('v0.7.2 faction and Leader mottos', () => {
     expect(browserLeaders).toContain("motto.querySelector('strong')?.remove()");
     expect(browserLeaders).toContain("heading.insertAdjacentElement('afterend', motto)");
     expect(browserLeaders).toContain("motto.insertAdjacentElement('afterend', hero)");
-    expect(browserCss).toMatch(/\.candidate-leader-motto \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;[\s\S]*?font-size: clamp\(2\.15rem, 4vw, 2\.85rem\);/);
+    expect(browserCss).toMatch(/\.candidate-leader-motto \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;[\s\S]*?font-size: clamp\(2\.15rem, 4vw, 2\.85rem\) !important;/);
     expect(browserCss).toContain('.candidate-leader-motto em');
     expect(browserCss).not.toContain('.candidate-leader-motto strong');
   });
