@@ -183,86 +183,77 @@ function createWoodcutPage(publication, index) {
   return page;
 }
 
-function renumberPages() {
-  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
-  pages.splice(0, pages.length, ...ordered);
-
-  pages.forEach((page, index) => {
-    const number = index + 1;
-    const side = number % 2 === 0 ? 'left' : 'right';
-    page.dataset.page = String(number);
-    page.classList.remove('left', 'right');
-    page.classList.add(side);
-
-    const folio = page.querySelector(':scope > .folio');
-    if (!folio) return;
-    const label = folio.querySelector('.folio-label')?.textContent || '';
-    const folioLabel = `<span class="folio-label">${label}</span>`;
-    const folioNumber = `<span class="folio-number">${number}</span>`;
-    folio.innerHTML = side === 'left' ? `${folioNumber}${folioLabel}` : `${folioLabel}${folioNumber}`;
-  });
+function resetPublicationPages() {
+  pagesRoot.replaceChildren();
+  pages.splice(0, pages.length);
+  anchors.clear();
 }
 
-function semanticFillerCandidates(contentPages) {
-  return contentPages
-    .map((page, index) => ({ page, index }))
-    .filter(({ page, index }) => {
-      if (index < 3) return false;
-      return Boolean(
-        page.classList.contains('part-page')
-        || page.classList.contains('faction-opener')
-        || page.classList.contains('leader-page')
-        || page.querySelector('.chapter-title-row, .page-title, .part-title, .leader-title-row')
-      );
-    });
-}
+function balancedFillerSectionIndexes(sections, count) {
+  if (count <= 0 || sections.length < 2) return [];
 
-function balancedFillerTargets(contentPages, count) {
-  if (count <= 0) return [];
-  const candidates = semanticFillerCandidates(contentPages);
-  const fallback = contentPages
-    .map((page, index) => ({ page, index }))
-    .filter(({ index }) => index >= 3);
-
-  const pool = candidates.length >= count ? candidates : fallback;
+  const eligible = sections
+    .map((_, index) => index)
+    .filter(index => index > 0);
   const selected = [];
-  const used = new Set();
-  for (let slot = 1; slot <= count; slot += 1) {
-    const desiredIndex = Math.round((slot * (contentPages.length - 1)) / (count + 1));
-    const choice = [...pool]
-      .filter(({ page }) => !used.has(page))
-      .sort((a, b) => Math.abs(a.index - desiredIndex) - Math.abs(b.index - desiredIndex))[0];
-    if (!choice) break;
-    used.add(choice.page);
-    selected.push(choice.page);
+
+  for (let slot = 1; slot <= Math.min(count, eligible.length); slot += 1) {
+    const desired = Math.round((slot * (sections.length - 1)) / (count + 1));
+    const choice = [...eligible]
+      .filter(index => !selected.includes(index))
+      .sort((a, b) => Math.abs(a - desired) - Math.abs(b - desired))[0];
+    if (choice !== undefined) selected.push(choice);
   }
-  return selected;
+
+  return selected.sort((a, b) => a - b);
 }
 
-function distributeFillerPages(fillerPages) {
-  if (!fillerPages.length) return;
+function composePublication(publication, documentId, headings, prelude, sections, fillerCount = 0) {
+  createCover(publication);
 
-  const contentPages = pages.filter(page => !page.classList.contains('woodcut-page'));
-  if (contentPages.length < 2) return;
+  // The inside front cover is the most useful padding position because it
+  // preserves the cover/contents transition and avoids a blank run at the end.
+  let fillerIndex = 0;
+  if (fillerCount > 0) createWoodcutPage(publication, fillerIndex++);
 
-  const targets = [contentPages[1]];
-  targets.push(...balancedFillerTargets(contentPages, fillerPages.length - 1));
+  createContentsPage(publication, headings);
 
-  fillerPages.forEach((filler, index) => {
-    const target = targets[index] || contentPages.at(-1);
-    pagesRoot.insertBefore(filler, target);
+  if (prelude.length) {
+    const synthetic = document.createElement('h2');
+    synthetic.id = 'introduction';
+    synthetic.textContent = 'Introduction';
+    paginateSection({ heading: synthetic, nodes: prelude }, publication, documentId);
+  }
+
+  const sectionFillers = new Set(
+    balancedFillerSectionIndexes(sections, Math.max(0, fillerCount - 1)),
+  );
+
+  sections.forEach((section, index) => {
+    if (sectionFillers.has(index)) createWoodcutPage(publication, fillerIndex++);
+    paginateSection(section, publication, documentId);
   });
 
-  renumberPages();
+  createBackCover(publication);
+}
 
+function assertFillerPlacement(fillerCount) {
   const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
-  if (!ordered[1]?.classList.contains('woodcut-page')) {
+  const fillers = ordered.filter(page => page.classList.contains('woodcut-page'));
+
+  if (fillers.length !== fillerCount) {
+    throw new Error(`Booklet expected ${fillerCount} filler pages but composed ${fillers.length}.`);
+  }
+  if (fillerCount > 0 && !ordered[1]?.classList.contains('woodcut-page')) {
     throw new Error('Booklet filler distribution must use the inside front cover first.');
   }
   for (let index = 1; index < ordered.length; index += 1) {
     if (ordered[index].classList.contains('woodcut-page') && ordered[index - 1].classList.contains('woodcut-page')) {
       throw new Error('Booklet filler pages may not appear back to back.');
     }
+  }
+  if (ordered.length % 4 !== 0) {
+    throw new Error(`Booklet composition must end on a multiple of four pages; found ${ordered.length}.`);
   }
 }
 
@@ -858,22 +849,23 @@ async function main() {
 
   await ensurePublicationFonts();
 
-  createCover(publication);
-  createContentsPage(publication, rendered.headings);
   const { prelude, sections } = splitSections(sourceRoot);
-  if (prelude.length) {
-    const synthetic = document.createElement('h2');
-    synthetic.id = 'introduction';
-    synthetic.textContent = 'Introduction';
-    paginateSection({ heading: synthetic, nodes: prelude }, publication, documentId);
-  }
-  sections.forEach(section => paginateSection(section, publication, documentId));
 
-  const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;
-  const fillerPages = Array.from({ length: fillerCount }, (_, index) => createWoodcutPage(publication, index));
-  distributeFillerPages(fillerPages);
-  createBackCover(publication);
-  renumberPages();
+  // First pass measures the actual fixed-page publication without padding.
+  // If padding is required, rebuild from the source so every content page is
+  // paginated with its final left/right parity rather than moving pages after
+  // layout and risking overflow.
+  resetPublicationPages();
+  composePublication(publication, documentId, rendered.headings, prelude, sections, 0);
+  const logicalPageCount = pages.length;
+  const fillerCount = (4 - (logicalPageCount % 4)) % 4;
+
+  if (fillerCount > 0) {
+    resetPublicationPages();
+    composePublication(publication, documentId, rendered.headings, prelude, sections, fillerCount);
+  }
+
+  assertFillerPlacement(fillerCount);
   fillContents();
   addFactionWatermarkPlaceholders();
   await hydrateFactionSymbols();
