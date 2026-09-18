@@ -7,7 +7,7 @@ import {
 } from "./v071-public-corpus.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
-import { normalizeR13RulingStatus } from "./r13-classification.js";
+import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "./r13-classification.js";
 import {
   buildGate3CAdjudicationReminder,
   hasTerseSurveillanceLanguage,
@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-26";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-27";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -704,6 +704,19 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     source?.excerpt,
     source?.body
   ].map((value) => String(value || "").toLowerCase()).join(" "));
+
+  if (shouldForceAbsentProcedureGap(question, sourceList)) {
+    reminders.push(
+      "The player is asking for an official rollback, rewind, repair, or remedy that the supplied clean authority does not define. Treat this as a genuine rules gap, not an inference from the normal procedure. Classify the ruling provisional. Give a minimal usable table ruling that preserves the current game state as much as practical, clearly distinguish it from written authority, and keep the normal provisional duration/designer-review language."
+    );
+  }
+
+  if (shouldResolveR27CombinedInteraction(question, sourceList)) {
+    reminders.push(
+      "This answer depends on combining a named card's +N Action instruction with the Rulebook definition of +N Action as current-phase shorthand. No single supplied authority states the resulting card-specific phase conclusion by itself. Classify the ruling inferred and cite both the named card and the Actions shorthand authority."
+    );
+  }
+
   const noQualifyingEventSource = sourceAuthorityText.some((text) =>
     /\b(?:not a battle fought, won, or lost|no battle is fought|no winner|without a battle result)\b/.test(text)
   );
