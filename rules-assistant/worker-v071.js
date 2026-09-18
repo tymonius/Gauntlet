@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260916-15";
+export const BEHAVIOR_REVISION = "v071-qa-20260917-16";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -55,6 +55,24 @@ const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
 ];
 const INQUISITION_CONDEMNATION_AUTHORITY_IDS = [
   "rulebook:condemnation"
+];
+const GENERIC_REROLL_AUTHORITY_IDS = [
+  "rulebook:rerolls"
+];
+const SPECIAL_OPERATION_COMPLETION_AUTHORITY_IDS = [
+  "rulebook:readiness-and-completion"
+];
+const RITUAL_ASCENSION_AUTHORITY_IDS = [
+  "rulebook:completion",
+  "rulebook:interruption"
+];
+const EFFECT_MOVEMENT_AUTHORITY_IDS = [
+  "rulebook:movement-granted-by-effects"
+];
+const MILITARY_COMMAND_AUTHORITY_IDS = [
+  // "Command and Orders" is a structural parent heading with no body of its own.
+  // The governing v0.7.1 text is the nested Complete rules document.
+  "rulebook:complete-rules-17"
 ];
 const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
   "rulebook:golden-rules"
@@ -1004,6 +1022,12 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const namedCardTitle = namedCardSource
     ? String(namedCardSource?.title || "").replace(/^Card:\s*/i, "").trim().toLowerCase()
     : "";
+  const namedCardMovementFocus = Boolean(namedCardSource)
+    && /\b(?:move|moves|movement|advance|enter|enters|entering)\b/.test(current)
+    && /\b(?:battle|onset|last stand|opponent(?:['’]s)? position)\b/.test(current);
+  const namedCardMovementAuthorityIds = namedCardMovementFocus
+    ? [namedCardSource.canonicalId, ...EFFECT_MOVEMENT_AUTHORITY_IDS]
+    : [];
   const namedCardRuleReference = namedCardTitle
     ? retrieval.find((source) => {
         if (source === namedCardSource || String(source?.canonicalId || "").startsWith("card:")) return false;
@@ -1067,6 +1091,25 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
       ]
     : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
+  const genericRerollFocus = /\b(?:reroll|re-roll|rerolled|re-rolled|rerolling|re-rolling)\b/.test(current)
+    && !/\btiebreak\b/.test(current)
+    && !/\b(?:first player|first turn|setup)\b/.test(current)
+    && !namedCardSource;
+  const militaryCommandFocus = /\bcommand\b/.test(current)
+    && (
+      (
+        /\b(?:already|begins?|starts?|maximum|max|at)\b[\s\S]{0,40}\b(?:2|two|maximum|max)\b/.test(current)
+        && /\b(?:first|later|another|second)\b[\s\S]{0,50}\b(?:win|won|winning|victory)\b/.test(current)
+      )
+      || /\bwithdraw(?:al|s|n|ing)?\b/.test(current)
+    );
+  const specialOperationTopic = /\bspecial operations?\b/;
+  const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum)\b/.test(current);
+  const specialOperationFocus = specialOperationTopic.test(current) && specialOperationProcedureCue;
+  const ritualTopic = /\britual of ascension\b/;
+  const ritualProcedureCue = /\b(?:initiate|initiated|attacker|defender|win|won|lose|lost|complete|completion|interrupt|battle)\b/.test(current);
+  const ritualFocus = ritualTopic.test(current)
+    || (currentWordCount <= 14 && ritualTopic.test(recent) && ritualProcedureCue);
   const specificRulePrecedenceFocus =
     /\b(?:conflict(?:s|ing)?|override(?:s|d|ing)?|different|which rule wins|more specific)\b/.test(current)
     && /\b(?:specific|card|rule|instruction|effect)\b/.test(combined)
@@ -1084,8 +1127,18 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     fieldcraftTopic.test(current)
     || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
   ) && fieldcraftTerritoryStateCue.test(combined);
-  const topicAuthorityIds = occupationControlFocus
-    ? OCCUPATION_CONTROL_AUTHORITY_IDS
+  const topicAuthorityIds = genericRerollFocus
+    ? GENERIC_REROLL_AUTHORITY_IDS
+    : militaryCommandFocus
+      ? MILITARY_COMMAND_AUTHORITY_IDS
+    : specialOperationFocus
+      ? SPECIAL_OPERATION_COMPLETION_AUTHORITY_IDS
+    : ritualFocus
+      ? RITUAL_ASCENSION_AUTHORITY_IDS
+    : namedCardMovementFocus
+      ? namedCardMovementAuthorityIds
+    : occupationControlFocus
+      ? OCCUPATION_CONTROL_AUTHORITY_IDS
     : deedContiguityFocus
       ? DEED_CONTIGUITY_AUTHORITY_IDS
     : fieldcraftFocus

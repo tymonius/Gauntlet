@@ -74,7 +74,7 @@ function namedAuthoritySubjects(source) {
     const normalized = normalizePhrase(value);
     if (!normalized) continue;
     subjects.add(normalized);
-    const separators = String(value || "").split(/\s+[—–]\s+|:\s+/);
+    const separators = String(value || "").split(/\s+[—–]\s+|\s+›\s+|:\s+/);
     const tail = normalizePhrase(separators.at(-1));
     if (tail) subjects.add(tail);
   }
@@ -159,6 +159,58 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
     && texts.some((text) =>
       /defensive\s+edge/.test(text)
       && /defender[\s\S]{0,80}\bwins?\s+tied\s+battle\s+totals?/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+
+  const noWinnerWinTriggerQuestion = /\b(?:no\s+winner|without\s+a\s+winner|withdraw\w*)\b/.test(current)
+    && /\b(?:win|wins|winning|victory|trigger|effect)\b/.test(current);
+  if (
+    noWinnerWinTriggerQuestion
+    && texts.some((text) =>
+      /effect\s+conditioned\s+on\s+a\s+player\s+winning\s+or\s+losing\s+does\s+not\s+apply\s+when\s+the\s+battle\s+sequence\s+ends\s+without\s+a\s+winner/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const commandAtMaximumQuestion = /\bcommand\b/.test(current)
+    && /\bfirst\b/.test(current)
+    && /\b(?:later|another|second)\b/.test(current)
+    && /\bwin\w*\b/.test(current);
+  if (
+    commandAtMaximumQuestion
+    && texts.some((text) =>
+      /winning\s+while\s+already\s+at\s+2\s+command\s+still\s+counts\s+as\s+the\s+first\s+military\s+victory\s+of\s+that\s+turn/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const withdrawalCommandQuestion = /\bcommand\b/.test(current)
+    && /\bwithdraw\w*\b/.test(current);
+  if (
+    withdrawalCommandQuestion
+    && texts.some((text) =>
+      /withdrawal\s+has\s+no\s+winner[\s\S]{0,100}generates?\s+no\s+command/.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  const acceptedTermsAftermathQuestion = /\b(?:accept(?:ed|s|ing)?|agree(?:d|s|ing)?)\b/.test(current)
+    && /\b(?:terms?|deal)\b/.test(current)
+    && /\baftermath\b/.test(current);
+  if (
+    acceptedTermsAftermathQuestion
+    && texts.some((text) =>
+      (
+        /accepted\s+terms[\s\S]{0,500}(?:no\s+aftermath|aftermath\s+does\s+not\s+occur)/.test(text)
+        || /accepted\s+terms\s+end\s+the\s+(?:battle\s+)?sequence\s+during\s+onset/.test(text)
+        || /no\s+battle\s+is\s+fought[\s\S]{0,160}no\s+aftermath/.test(text)
+      )
     )
   ) {
     return true;
@@ -284,16 +336,104 @@ export function shouldForceUndefinedTransformationGap(question, sources = []) {
   return !sourceList.some((source) => sourceDirectlyDefinesSubject(source, subject));
 }
 
+
+function questionMatchedAuthoritySources(question, sources = []) {
+  const current = ` ${normalizePhrase(question)} `;
+  const generic = new Set([
+    "battle", "complete rules", "rules", "timing", "movement", "action", "territory",
+    "gambit", "tactic", "aftermath", "opening", "denouement", "card", "effect"
+  ]);
+
+  return (Array.isArray(sources) ? sources : []).filter((source) =>
+    namedAuthoritySubjects(source).some((subject) =>
+      subject.length >= 4
+      && !generic.has(subject)
+      && current.includes(` ${subject} `)
+    )
+  );
+}
+
+export function shouldDemoteCombinedAuthorityInteraction(question, sources = []) {
+  const matched = questionMatchedAuthoritySources(question, sources);
+  if (matched.length < 2) return false;
+
+  const current = ` ${normalizePhrase(question)} `;
+  const subjects = matched
+    .map((source) => namedAuthoritySubjects(source)
+      .filter((subject) => current.includes(` ${subject} `))
+      .sort((a, b) => b.length - a.length)[0])
+    .filter(Boolean);
+
+  const uniqueSubjects = [...new Set(subjects)];
+  if (uniqueSubjects.length < 2) return false;
+
+  return !matched.some((source) => {
+    const text = sourceText(source);
+    return uniqueSubjects.every((subject) => text.includes(subject));
+  });
+}
+
+export function shouldDemoteNamedMovementInteraction(question, sources = []) {
+  if (
+    !/\b(?:battle|onset|last stand)\b/i.test(question)
+    || !/\b(?:move|moves|movement|enter|enters|entering|advance)\b/i.test(question)
+  ) {
+    return false;
+  }
+
+  const current = ` ${normalizePhrase(question)} `;
+  const sourceList = Array.isArray(sources) ? sources : [];
+  const card = sourceList.find((source) => {
+    if (!/^card:\s*/i.test(String(source?.title || ""))) return false;
+    return namedAuthoritySubjects(source).some((subject) => current.includes(` ${subject} `));
+  });
+  if (!card) return false;
+
+  const cardText = sourceText(card);
+  if (/\b(?:start|starts|initiate|initiates|initiated)\s+(?:a\s+)?battle\b/.test(cardText)) return false;
+  if (!/\b(?:move|moves|movement|advance)\b/.test(cardText)) return false;
+
+  return sourceList.some((source) => {
+    if (source === card) return false;
+    const text = sourceText(source);
+    return (
+      /effect[- ]granted\s+movement|when\s+an\s+effect\s+grants\s+movement/.test(text)
+      && /may\s+initiate\s+a\s+battle|entering\s+the\s+opponent(?:['’]s)?\s+position[\s\S]{0,100}initiates\s+a\s+battle/.test(text)
+    );
+  });
+}
+
+export function shouldForceAbsentProcedureGap(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  if (!/\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(current)) {
+    return false;
+  }
+  if (!/\b(?:rule|rules|ruleset|procedure|define|defines|formal|award|awarding|win|winner)\b/.test(current)) {
+    return false;
+  }
+
+  return !(Array.isArray(sources) ? sources : []).some((source) =>
+    /\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(sourceText(source))
+  );
+}
+
 export function normalizeR13RulingStatus(value, question, sources = []) {
   if (value === "out_of_scope") return value;
 
-  if (shouldForceUndefinedTransformationGap(question, sources)) {
+  if (
+    shouldForceUndefinedTransformationGap(question, sources)
+    || shouldForceAbsentProcedureGap(question, sources)
+  ) {
     return "provisional";
   }
 
   if (!["explicit", "inferred"].includes(value)) return value;
 
-  if (hasNamedCardBattleCollateralTimingConflict(sources)) {
+  if (
+    hasNamedCardBattleCollateralTimingConflict(sources)
+    || (value === "explicit" && shouldDemoteCombinedAuthorityInteraction(question, sources))
+    || (value === "explicit" && shouldDemoteNamedMovementInteraction(question, sources))
+  ) {
     return "inferred";
   }
 
