@@ -1,0 +1,334 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "K",
+  "behaviorRevision": "v071-qa-20260918-21",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche K benchmark authored only after r21 production deployment and current-live-publication verification succeeded; it was not used to construct r21.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r21 and was not used to construct r21.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-k-player-other-card-text-too",
+      "category": "player-language",
+      "question": "played action side. asset text fires too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Only the printed effect being used applies",
+          "Printed card effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Using the Action effect does not also apply the card's Asset effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-direct-bank-action",
+      "category": "player-language",
+      "question": "effect says bank it now. costs another action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A direct bank instruction does not require another Action unless it says so."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-late-tactic-faceup",
+      "category": "player-language",
+      "question": "+1 tactic after reveal. comes in faceup?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after Tactics are revealed, play it face up",
+          "Additional Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. An additional Tactic added after the reveal stage is played face up."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-negated-tactic-discard",
+      "category": "player-language",
+      "question": "negated tactic still hits discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Tactic still goes to its owner's Discard Pile during the Aftermath",
+          "Negation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, unless another effect gives it a different destination."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-final-capture-win-now",
+      "category": "player-language",
+      "question": "captured their last territory. win right now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately runs the Gauntlet and wins",
+          "Final-Territory Capture Victory"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. A legal capture of the opponent's final Territory wins immediately."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-capacity-stays",
+      "category": "player-language",
+      "question": "financial capacity checked yes, treasury drops later. still 2 actions?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "later Treasury or control changes do not grant or remove the permission that turn",
+          "Financial Capacity"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Once Financial Capacity is established at its check timing, later Treasury changes do not remove that turn's permission."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-income-over-cap",
+      "category": "player-language",
+      "question": "income pushes capital over limit. allowed temporarily?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Income may temporarily exceed the Capital limit",
+          "Income"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Income may temporarily exceed the Capital limit."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-mission-auto",
+      "category": "player-language",
+      "question": "mission requirement met midbattle. completes automatically?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Satisfying the requirement does not complete it automatically",
+          "Completing a Mission"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. It still requires the Denouement completion Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-special-op-reward",
+      "category": "player-language",
+      "question": "special op completion also gives normal mission reward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "not a normal Mission. It grants no Mission reward",
+          "Starting a Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Special Operations do not grant the normal Mission reward."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-transmutation-card-text",
+      "category": "player-language",
+      "question": "transmuted card's printed effect goes off too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The card is not played and none of its printed effects apply",
+          "Transmutation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A card used for Transmutation is not played and its printed effects do not apply."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-condemnation-reserve",
+      "category": "player-language",
+      "question": "condemnation sends leftover reserve to grave too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Cards remaining in the opponent's Reserve are discarded normally",
+          "Condemnation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Remaining Reserve cards are discarded normally."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-no-martyrs-retreat",
+      "category": "player-language",
+      "question": "no martyrs stops their retreat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not prevent harmful consequences, the retreat itself",
+          "No Martyrs"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. No Martyrs does not prevent the retreat itself."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-conscription-second-action",
+      "category": "player-language",
+      "question": "conscription immediate bank needs second action?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately play one card from your Hand whose Action effect banks it",
+          "Conscription"
+        ],
+        [
+          "does not spend or require another Action unless the instruction expressly says",
+          "Directly permitted card procedures"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Conscription directly permits the immediate banking play without a second Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-trade-concessions-refused",
+      "category": "player-language",
+      "question": "trade concessions refused. back to hand before gambit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Return this card to your Hand before Gambits are set",
+          "Trade Concessions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. It returns to Hand before Gambits are set."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-stand-ground-court-martial",
+      "category": "player-language",
+      "question": "stand ground can block court martial extra retreat but not normal retreat?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing card effect would move you",
+          "Stand Ground"
+        ],
+        [
+          "after their normal retreat",
+          "Retreat +1",
+          "Court Martial"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Stand Ground can ignore Court Martial's extra card-effect movement, but not the normal retreat caused by losing."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-player-fieldcraft-quicksand",
+      "category": "player-language",
+      "question": "fieldcraft can ignore quicksand movement cap?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "ignore that effect until the end of the turn",
+          "Fieldcraft"
+        ],
+        [
+          "cannot Advance or Fall Back more than one Position",
+          "Quicksand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Fieldcraft can ignore Quicksand's printed Territory movement restriction for the turn."
+        }
+      ]
+    }
+  ]
+}
