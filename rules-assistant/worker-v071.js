@@ -730,7 +730,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   }
 
   const optionalCostThenBenefitAuthority = sourceAuthorityText.some((text) =>
-    /\byou may\b[^.]{0,220}\bif you do\b/.test(text)
+    /\byou may\b[\s\S]{0,260}\bif you do\b/.test(text)
   );
   if (
     optionalCostThenBenefitAuthority
@@ -903,7 +903,7 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     && !/\b(?:who|what|where|when|why|how)\b/.test(current);
   if (declarativeConfirmationQuestion) {
     reminders.push(
-      "Treat this declarative player-language question as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. The first yes/no word must agree with the explanation; never begin with No and then restate the proposition as true, or vice versa."
+      "Treat this declarative player-language question as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. The first yes/no word must agree with the explanation. Do not begin with No and then restate the proposition as true, and do not begin with Yes and then explain that it is false."
     );
   }
 
