@@ -299,7 +299,7 @@ function buildCandidateLeaderProfile(name, src) {
   }
   if (motto) {
     motto.classList.add('candidate-leader-motto');
-    identity.append(motto);
+    motto.querySelector('strong')?.remove();
   }
   if (ability) {
     ability.classList.add('candidate-leader-ability');
@@ -308,7 +308,12 @@ function buildCandidateLeaderProfile(name, src) {
 
   const artwork = buildCandidateLeaderFigure(name, src);
   hero.append(artwork.figure, identity);
-  heading.insertAdjacentElement('afterend', hero);
+  if (motto) {
+    heading.insertAdjacentElement('afterend', motto);
+    motto.insertAdjacentElement('afterend', hero);
+  } else {
+    heading.insertAdjacentElement('afterend', hero);
+  }
   fitCandidateLeaderArtwork(artwork.figure, artwork.image, artwork.canvas);
 }
 
