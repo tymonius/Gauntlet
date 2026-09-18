@@ -38,6 +38,7 @@ Earlier application, public-route, game-data, asset, release-automation, and rul
 - [#1753](https://github.com/tymonius/Gauntlet/pull/1753) established `packages/rendering/` as the environment-neutral physical-face model authority while preserving the established browser/TTS compatibility paths and public URLs.
 - [#1757](https://github.com/tymonius/Gauntlet/pull/1757) closed the post-extraction dependency audit: the remaining canonical face pipeline is browser-specific production tooling, while authoring/review/compositor surfaces are a separate production-tooling role.
 - [#1761](https://github.com/tymonius/Gauntlet/pull/1761) decoupled repository `card-design/` placement from the deployed `/card-design/` route while preserving package-owned rendering overrides and staged Pages behavior.
+- [#1797](https://github.com/tymonius/Gauntlet/pull/1797) aligned the local card-design server with the same publication contract and corrected local artwork-authoring writes to canonical `packages/game-data/current-game.json`.
 
 ## Completed tranche — shared rendering model package
 
@@ -86,7 +87,7 @@ This tranche makes that boundary explicit without moving renderer code:
 
 This is a publication-boundary prerequisite only. Browser runtime, authoring/compositor tooling, gameplay data, and rendering behavior remain unchanged.
 
-## Current tranche — local card-design publication-boundary alignment
+## Completed tranche — local card-design publication-boundary alignment
 
 The first physical authoring/compositor extraction audit found one remaining source-placement dependency outside Pages: `scripts/card-design-server.mjs` served URL paths directly from repository paths. That meant moving a browser tool behind the stable `/card-design/` route would preserve production Pages behavior but break the local authoring server.
 
@@ -97,7 +98,22 @@ This tranche removes that second coupling before files move:
 - local artwork-authoring writes now target canonical `packages/game-data/current-game.json` rather than the retired pre-package path;
 - the existing publication-route regression test locks the local server to the shared resolver.
 
-After this lands, the verified first physical extraction remains the artwork authoring/compositor cluster: the seven `artwork-*` browser files can move together behind stable `/card-design/` file mappings without changing deployed URLs or the local authoring entrypoint.
+With both deployed and local URL resolution decoupled from source placement, the verified first physical extraction is now safe.
+
+## Current tranche — artwork authoring/compositor extraction
+
+The first classified production-tooling cluster is moving from the transitional `card-design/` source root to `tools/card-design/artwork-authoring/`.
+
+Verified scope:
+
+- seven browser files (`artwork-authoring-client.js`, `artwork-batch-publish-control.js`, `artwork-compositor-targets.js`, `artwork-compositor.css`, `artwork-compositor.js`, `artwork-crop.js`, and `artwork-publish-fetch-recovery.js`) move together;
+- their public URLs remain unchanged under `/card-design/` through explicit `materializedFiles` mappings;
+- the local card-design server resolves those mappings through the same contract, so local browser URLs also remain unchanged;
+- artwork-authoring workflow/tests follow the maintained source location;
+- the Worker/browser working-branch authority path is corrected to canonical `packages/game-data/current-game.json`, while the intentionally stable browser fetch URL remains `/game-data/current-game.json`;
+- `tools/` becomes an explicit non-transitional production-tooling root in the machine architecture contract and remains source-only for Pages.
+
+This extraction does not move the browser face-render runtime or the remaining review/inspection and family-specific presentation tooling.
 
 ## Card-design lifecycle state
 
@@ -109,7 +125,8 @@ After this lands, the verified first physical extraction remains the artwork aut
 - the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
-- authoring, review, compositor, and family-specific presentation tooling remains under `card-design/` pending a separate tools-boundary audit.
+- artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
+- review/inspection and family-specific presentation tooling remains under `card-design/` pending the next tools-boundary audit.
 
 ## Rules boundary state
 
@@ -125,14 +142,13 @@ After this lands, the verified first physical extraction remains the artwork aut
 
 ## Next top-down queue
 
-1. Finish local card-design server alignment with the publication contract so source moves preserve both staged Pages and local authoring behavior.
-2. Move the verified artwork authoring/compositor cluster out of the transitional `card-design/` source root behind stable `/card-design/` file mappings, updating its workflow/tests and establishing the maintained tooling boundary.
-3. Audit the remaining review/inspection and family-specific presentation tooling before deciding the next card-design extraction.
-4. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances; do not collapse the transition early.
-5. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
-6. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-7. Audit governance/traceability and CI paths that still encode transitional locations.
-8. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Finish and verify the artwork authoring/compositor extraction under `tools/card-design/artwork-authoring/` with stable `/card-design/` publication/local routes.
+2. Audit the remaining review/inspection and family-specific presentation tooling before deciding the next card-design extraction.
+3. Complete the `/rulebook/` release-route cutover only when release lifecycle authority advances; do not collapse the transition early.
+4. Inspect Rules Arbiter implementation/data/export placement once ongoing functional work is stable enough that cleanup will not collide with it.
+5. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+6. Audit governance/traceability and CI paths that still encode transitional locations.
+7. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 

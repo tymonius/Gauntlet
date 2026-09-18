@@ -31,7 +31,9 @@ These modules should not be moved into `packages/rendering/` merely to reduce th
 
 ## Authoring and review tooling
 
-The artwork compositor, crop/normalization helpers, catalog/review/inspection surfaces, family-specific renderer scripts/styles, and print/review pages are production tooling around the browser renderer. They may eventually move under a dedicated tooling location, but that is a separate lifecycle and public-path migration from shared model authority.
+Artwork compositor/authoring source now lives under [`tools/card-design/artwork-authoring/`](../tools/card-design/artwork-authoring/). `config/publication-boundary.json` materializes those files back onto their established `/card-design/artwork-*` URLs, so browser consumers and the public compositor do not depend on repository placement.
+
+Catalog/review/inspection surfaces, family-specific renderer scripts/styles, and print/review pages remain in `card-design/` pending their own dependency/lifecycle audit. They are production tooling around the browser renderer, not shared model authority.
 
 ## Source and lifecycle boundaries
 
