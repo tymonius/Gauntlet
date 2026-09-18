@@ -35,7 +35,8 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
       workflowRefs: [
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
-        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main"
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main",
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main"
       ],
       eventName: "workflow_dispatch",
       ref: "refs/heads/main",
