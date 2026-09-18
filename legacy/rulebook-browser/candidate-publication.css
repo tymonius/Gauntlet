@@ -361,13 +361,13 @@
 }
 
 .candidate-masthead-claim {
-  max-width: 32rem;
-  margin: 14px 0 0 !important;
+  max-width: 42rem;
+  margin: 16px 0 0 !important;
   color: var(--rulebook-ink) !important;
   font-family: var(--rulebook-flavor) !important;
-  font-size: clamp(1.3rem, 2.8vw, 1.8rem) !important;
+  font-size: clamp(2.25rem, 4.7vw, 3.2rem) !important;
   font-weight: 400;
-  line-height: 1.05 !important;
+  line-height: .94 !important;
 }
 
 .candidate-leader-profile {
@@ -377,7 +377,7 @@
 }
 
 .rulebook-content .candidate-leader-name {
-  margin: 0 0 20px !important;
+  margin: 0 0 8px !important;
   color: var(--candidate-accent, var(--rulebook-crimson)) !important;
   font-family: var(--rulebook-heritage) !important;
   font-size: clamp(2.85rem, 6vw, 4.25rem) !important;
@@ -441,27 +441,17 @@
   line-height: 1.45;
 }
 
-.candidate-leader-identity .candidate-leader-motto {
-  margin: 16px 0 0 !important;
+.candidate-leader-motto {
+  max-width: none !important;
+  margin: 0 0 24px !important;
   color: var(--rulebook-ink);
   font-family: var(--rulebook-flavor) !important;
-  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-size: clamp(2.15rem, 4vw, 2.85rem);
   font-weight: 400;
-  line-height: 1.08;
+  line-height: .96;
 }
 
-.candidate-leader-identity .candidate-leader-motto strong {
-  display: block;
-  margin-bottom: 3px;
-  font-family: var(--rulebook-ui);
-  font-size: .7rem;
-  font-style: normal;
-  font-weight: 700;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-}
-
-.candidate-leader-identity .candidate-leader-motto em {
+.candidate-leader-motto em {
   font-style: normal;
 }
 
@@ -506,6 +496,11 @@
 
   .candidate-leader-profile {
     margin-top: 50px;
+  }
+
+  .candidate-leader-motto {
+    font-size: 2rem;
+    margin-bottom: 18px !important;
   }
 
   .candidate-leader-hero {
