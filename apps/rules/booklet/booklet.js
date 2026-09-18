@@ -640,6 +640,53 @@ async function ensurePublicationFonts() {
   await document.fonts.ready;
 }
 
+const factionSymbolSvgCache = new Map();
+
+async function factionSymbolSvgMarkup(src) {
+  if (!factionSymbolSvgCache.has(src)) {
+    factionSymbolSvgCache.set(src, (async () => {
+      const response = await fetch(src, { cache: 'force-cache' });
+      if (!response.ok) throw new Error(`Unable to load faction symbol ${src}: HTTP ${response.status}`);
+      const parsed = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
+      const svg = parsed.documentElement;
+      if (!svg || svg.nodeName.toLowerCase() !== 'svg' || parsed.querySelector('parsererror')) {
+        throw new Error(`Invalid faction symbol SVG: ${src}`);
+      }
+
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      svg.querySelectorAll('path, circle, ellipse, polygon, polyline, rect, line').forEach(shape => {
+        if (shape.getAttribute('fill') !== 'none') shape.setAttribute('fill', 'currentColor');
+        if (shape.hasAttribute('stroke') && shape.getAttribute('stroke') !== 'none') {
+          shape.setAttribute('stroke', 'currentColor');
+        }
+      });
+      return svg.outerHTML;
+    })());
+  }
+  return factionSymbolSvgCache.get(src);
+}
+
+function addFactionWatermarkPlaceholders() {
+  pagesRoot.querySelectorAll('.faction-page[data-faction-symbol-src]').forEach(page => {
+    if (page.querySelector(':scope > .faction-page-watermark')) return;
+    const watermark = document.createElement('span');
+    watermark.className = 'faction-page-watermark booklet-inline-faction-symbol';
+    watermark.dataset.factionSymbolSrc = page.dataset.factionSymbolSrc;
+    watermark.setAttribute('aria-hidden', 'true');
+    page.prepend(watermark);
+  });
+}
+
+async function hydrateFactionSymbols() {
+  const targets = [...pagesRoot.querySelectorAll('[data-faction-symbol-src]')];
+  await Promise.all(targets.map(async target => {
+    target.innerHTML = await factionSymbolSvgMarkup(target.dataset.factionSymbolSrc);
+  }));
+  document.body.dataset.factionSymbolsReady = 'true';
+}
 async function waitForImages() {
   const images = [...pagesRoot.querySelectorAll('img')];
   await Promise.all(images.map(image => image.complete && image.naturalWidth > 0
@@ -708,6 +755,8 @@ async function main() {
   for (let index = 0; index < fillerCount; index += 1) createWoodcutPage(publication, index);
   createBackCover(publication);
   fillContents();
+  addFactionWatermarkPlaceholders();
+  await hydrateFactionSymbols();
   await Promise.all([waitForImages(), waitForFrames(), ensurePublicationFonts()]);
 
   document.title = `${publication.title} — Gauntlet v0.7.2`;
