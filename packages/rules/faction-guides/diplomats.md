@@ -163,6 +163,8 @@ This creates a visible race. Your opponent can see how close you are, and you st
 
 **Playstyle:** agreement, card flow, and making acceptance attractive.
 
+**Motto:** *Words first. War last.*
+
 - **Cordiality — No Action · Once per turn · After accepted Terms.** After the opponent accepts your Terms, draw one card.
 
 The Ambassador gets extra value when the opponent says yes. Cordiality works even when the tactical benefit of the Proposal itself is modest: acceptance can progress the Peace Treaty, return your stake, give the normal new-ratification reward when applicable, and draw you a card.
@@ -172,6 +174,8 @@ The Ambassador therefore likes offers the opponent might genuinely accept. You a
 ### Senator
 
 **Playstyle:** risk management, refusal pressure, and resilient high-stake Terms.
+
+**Motto:** *Procedure endures.*
 
 - **Political Capital — No Action · Once per turn · After losing following refused Terms.** When you would lose staked Influence, put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card you put there; lose the rest of the stake.
 
