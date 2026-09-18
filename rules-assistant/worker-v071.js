@@ -1292,8 +1292,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\b(?:battle|follow-up|followup|continuation|new|gambit|reserve|tactic|once-per-battle)\b/.test(current);
   const shorthandActionFocus = /\+\s*\d+\s+actions?\b/.test(current);
   const revealZoneFocus = (
-    /\breveal(?:s|ed|ing)?\b[\s\S]{0,60}\b(?:hand|reserve)\b/.test(current)
-    || /\b(?:hand|reserve)\b[\s\S]{0,60}\breveal(?:s|ed|ing)?\b/.test(current)
+    /\breveal(?:s|ed|ing)?\s+(?:(?:my|your|their|the|an?|opponent(?:['’]s)?|player(?:['’]s)?|its)\s+)?(?:entire\s+)?(?:hand|reserve)\b/.test(current)
+    || /\b(?:hand|reserve)\b[\s\S]{0,24}\b(?:is|was|gets?|be|being)?\s*reveal(?:ed|ing|s)?\b/.test(current)
   );
   const topicAuthorityIds = shorthandActionFocus
     ? SHORTHAND_ACTION_AUTHORITY_IDS
