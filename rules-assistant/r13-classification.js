@@ -668,6 +668,44 @@ export function shouldResolveR22CombinedInteraction(question, sources = []) {
   return false;
 }
 
+export function shouldResolveR23CombinedInteraction(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const contingencyPlan = /\bcontingency plan\b/.test(current)
+    && /\b(?:forced|force|asset cap|asset limit|lower|drops?|removed|trigger|discard|pitch)\b/.test(current);
+  if (
+    contingencyPlan
+    && texts.some((text) =>
+      /contingency plan/.test(text)
+      && /if this card is removed/.test(text)
+      && /\+1 card/.test(text)
+    )
+    && texts.some((text) =>
+      /asset limit/.test(text)
+      && /forced to discard/.test(text)
+      && /removed/.test(text)
+    )
+  ) return true;
+
+  const monasteryInvocation = /\bmonastery\b/.test(current)
+    && /\binvocation\b/.test(current)
+    && /\b(?:grave|graveyard|discard|move|moves|leave|leaving|out)\b/.test(current);
+  if (
+    monasteryInvocation
+    && texts.some((text) =>
+      /monastery/.test(text)
+      && /cards cannot leave either player's graveyard/.test(text)
+    )
+    && texts.some((text) =>
+      /invocation/.test(text)
+      && /move one card from your graveyard to your discard pile/.test(text)
+    )
+  ) return true;
+
+  return false;
+}
+
 export function shouldPromoteR18DirectProcedure(question, sources = []) {
   const current = String(question || "").toLowerCase();
   const texts = sourceListText(sources);
@@ -748,6 +786,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
     && (
       shouldResolveR21CombinedInteraction(question, sources)
       || shouldResolveR22CombinedInteraction(question, sources)
+      || shouldResolveR23CombinedInteraction(question, sources)
     )
   ) {
     return "inferred";
@@ -771,6 +810,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
     hasNamedCardBattleCollateralTimingConflict(sources)
     || (value === "explicit" && shouldResolveR21CombinedInteraction(question, sources))
     || (value === "explicit" && shouldResolveR22CombinedInteraction(question, sources))
+    || (value === "explicit" && shouldResolveR23CombinedInteraction(question, sources))
     || (value === "explicit" && shouldDemoteCombinedAuthorityInteraction(question, sources))
     || (value === "explicit" && shouldDemoteNamedMovementInteraction(question, sources))
   ) {

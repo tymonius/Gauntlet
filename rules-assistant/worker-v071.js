@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-22";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-23";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -159,6 +159,24 @@ const ADDITIONAL_TACTIC_AUTHORITY_IDS = [
 ];
 const NO_MARTYRS_AUTHORITY_IDS = [
   "rulebook:no-martyrs"
+];
+const COUNTERINTELLIGENCE_AUTHORITY_IDS = [
+  "rulebook:counterintelligence",
+  "card:neutral-counterintelligence"
+];
+const POISONOUS_GAS_AUTHORITY_IDS = [
+  "territory:territory-poisonous-gas"
+];
+const CONTINGENCY_REMOVAL_AUTHORITY_IDS = [
+  "card:neutral-contingency-plan",
+  "rulebook:removed-assets"
+];
+const MONASTERY_INVOCATION_AUTHORITY_IDS = [
+  "territory:territory-monastery",
+  "rulebook:invocation"
+];
+const RITE_BOUND_DESTINATION_AUTHORITY_IDS = [
+  "rulebook:bound-cards-3"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -766,6 +784,35 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   ) {
     reminders.push(
       "A condition prefix applies only to the clause that immediately follows it. Do not carry the condition across a sentence boundary or into a later independent clause unless that later clause is separately conditioned."
+    );
+  }
+
+  if (
+    canonicalIds.has("rulebook:counterintelligence")
+    && /\bcounterintel(?:ligence)?\b/.test(current)
+  ) {
+    reminders.push(
+      "Counterintelligence prevents the entire opposing revealing effect, not merely the information portion. Do not describe this as negating the revealed card unless a separate authority actually says the card is negated."
+    );
+  }
+
+  if (
+    canonicalIds.has("territory:territory-poisonous-gas")
+    && /\bpoison(?:ous)?\s+gas\b/.test(current)
+  ) {
+    reminders.push(
+      "Poisonous Gas expressly allows each player to employ Gambits or Tactics, but not both. If the player states that they set or use a Gambit, they cannot also use Tactics in that battle."
+    );
+  }
+
+  if (
+    canonicalIds.has("rulebook:bound-cards-3")
+    && /\brite\b/.test(current)
+    && /\bbound cards?\b/.test(current)
+    && /\b(?:grave|graveyard)\b/.test(current)
+  ) {
+    reminders.push(
+      "The Mystics bound-card rule directly affirms that when a Rite or Ritual binding ends without another instruction, its bound cards go to their owners' Graveyards. If the player asks whether they go to the Graveyard, answer Yes, not No."
     );
   }
 
@@ -1475,7 +1522,29 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
   const noMartyrsFocus = /\bno martyrs\b/.test(current)
     && /\b(?:retreat|loss|lose|loses|lost|trigger|benefit|prevent|stop)\b/.test(current);
-  const topicAuthorityIds = conditionPrefixFocus
+  const counterintelligenceFocus = /\bcounterintel(?:ligence)?\b/.test(current)
+    && /\b(?:reveal|revealing|cards?|hand|reserve|whole|entire|effect|block|prevent|stop)\b/.test(current);
+  const poisonousGasFocus = /\bpoison(?:ous)?\s+gas\b/.test(current)
+    && /\b(?:gambit|gambits|tactic|tactics|battle|both|either)\b/.test(current);
+  const contingencyRemovalFocus = /\bcontingency plan\b/.test(current)
+    && /\b(?:forced|force|asset cap|asset limit|lower|drops?|removed|trigger|discard|pitch)\b/.test(current);
+  const monasteryInvocationFocus = /\bmonastery\b/.test(current)
+    && /\binvocation\b/.test(current)
+    && /\b(?:grave|graveyard|discard|move|moves|leave|leaving|out)\b/.test(current);
+  const riteBoundDestinationFocus = /\brite\b/.test(current)
+    && /\bbound cards?\b/.test(current)
+    && /\b(?:grave|graveyard|destination|go|goes|binding ends?)\b/.test(current);
+  const topicAuthorityIds = counterintelligenceFocus
+    ? COUNTERINTELLIGENCE_AUTHORITY_IDS
+    : poisonousGasFocus
+      ? POISONOUS_GAS_AUTHORITY_IDS
+    : contingencyRemovalFocus
+      ? CONTINGENCY_REMOVAL_AUTHORITY_IDS
+    : monasteryInvocationFocus
+      ? MONASTERY_INVOCATION_AUTHORITY_IDS
+    : riteBoundDestinationFocus
+      ? RITE_BOUND_DESTINATION_AUTHORITY_IDS
+    : conditionPrefixFocus
     ? CONDITION_PREFIX_AUTHORITY_IDS
     : negatedTacticDestinationFocus
       ? NEGATED_BATTLE_CARD_AUTHORITY_IDS
