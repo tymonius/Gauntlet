@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "N",
+  "behaviorRevision": "v071-qa-20260918-24",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche N ambiguous-follow-up cases authored after r24 production verification; each must request clarification rather than guess among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-n-clarify-deep-cover-reassessment",
+      "question": "Does that one return my Mission to my Hand?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Deep Cover and Operational Reassessment."
+        },
+        {
+          "role": "assistant",
+          "content": "They can both change what happens to an Active Mission, but at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-clarify-pathfinders-fog",
+      "question": "Does that one make the Territory's printed text inactive?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Pathfinders and Fog of War in Hand."
+        },
+        {
+          "role": "assistant",
+          "content": "They both interact with Territories, but in different ways."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-clarify-underwriting-property-dues",
+      "question": "Does that one discard itself to give me Capital?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Underwriting and Property Dues banked."
+        },
+        {
+          "role": "assistant",
+          "content": "They have different triggers tied to Subsidize and Deeds."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-clarify-grave-ward-natures-altar",
+      "question": "Does that one move a card from Graveyard to Discard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Grave Ward banked and Nature's Altar on my Territory."
+        },
+        {
+          "role": "assistant",
+          "content": "They support Mystics through different procedures."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-clarify-confession-guilt",
+      "question": "Does that one reveal their Hand?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm deciding between Confession and Guilt by Association."
+        },
+        {
+          "role": "assistant",
+          "content": "Their Action effects target different information and zones."
+        }
+      ]
+    }
+  ]
+}
