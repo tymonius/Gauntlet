@@ -21,6 +21,7 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     expect(css).toContain('bottom: -.72in');
     expect(css).toContain('isolation: isolate');
     expect(css).not.toContain('mask-image: var(--booklet-symbol)');
+    expect(css).toMatch(/\.faction-page > \.footer-rule,[\s\S]*?\.faction-page > \.folio \{[\s\S]*?position: absolute;/);
 
     // The approved color-edition paper field is continuous across front/back.
     expect(css).toContain('.back-cover');
