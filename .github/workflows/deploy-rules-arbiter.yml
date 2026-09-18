@@ -1,0 +1,102 @@
+name: Deploy Rules Arbiter Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "rules-assistant/worker-v071.js"
+      - "rules-assistant/local-search.js"
+      - "rules-assistant/v071-public-corpus.js"
+      - "rules-assistant/r13-classification.js"
+      - "rules-assistant/v071-gate3-c-remediation.js"
+      - "rules-assistant/rules-persistence.js"
+      - "rules-assistant/github-actions-qa-auth.js"
+      - "rules-assistant/wrangler.toml"
+      - ".github/workflows/deploy-rules-arbiter.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rules-arbiter-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install --no-save wrangler@4
+
+      - name: Validate Rules Arbiter runtime
+        run: |
+          node --check rules-assistant/worker-v071.js
+          npx vitest run rules-assistant/v071-gate3-h-remediation.test.mjs
+
+      - name: Resolve expected behavior revision
+        id: revision
+        shell: bash
+        run: |
+          revision="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from "node:fs";
+          const source = readFileSync("rules-assistant/worker-v071.js", "utf8");
+          const match = source.match(/BEHAVIOR_REVISION\s*=\s*"([^"]+)"/);
+          if (!match) process.exit(1);
+          process.stdout.write(match[1]);
+          NODE
+          )"
+          test -n "$revision"
+          echo "value=$revision" >> "$GITHUB_OUTPUT"
+          echo "Deploying Rules Arbiter behavior revision $revision"
+
+      - name: Deploy Rules Arbiter
+        run: npx wrangler deploy --config rules-assistant/wrangler.toml
+
+      - name: Verify production health
+        env:
+          EXPECTED_BEHAVIOR_REVISION: ${{ steps.revision.outputs.value }}
+        run: |
+          node <<'NODE'
+          const endpoint = "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health";
+          const expected = process.env.EXPECTED_BEHAVIOR_REVISION;
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(endpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.behaviorRevision || "missing";
+              console.log(`Health check ${attempt}/20: ${actual}`);
+              if (response.ok && payload?.ok === true && actual === expected) {
+                console.log(`Verified production Rules Arbiter ${expected}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              console.log(`Health check ${attempt}/20: ${error.message}`);
+            }
+            if (attempt < 20) await new Promise((resolve) => setTimeout(resolve, 3000));
+          }
+
+          console.error(`Production did not report expected behavior revision ${expected}.`);
+          process.exit(1);
+          NODE
