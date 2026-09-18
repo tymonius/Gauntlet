@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260917-16";
+export const BEHAVIOR_REVISION = "v071-qa-20260917-17";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -967,17 +967,25 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const immediateRecentNormalized = normalizeReferentSubject(immediateRecent);
-  const recentCardFollowupCue = shouldCarryImmediateHistory(question);
-  const recentCardAuthorityIds = recentCardFollowupCue
+  const recentNamedFollowupCue = shouldCarryImmediateHistory(question);
+  const recentNamedAuthorityIds = recentNamedFollowupCue
     ? documents
-        .filter((document) => String(document?.id || "").startsWith("card:"))
+        .filter((document) => /^(?:card|leader|faction):/i.test(String(document?.id || "")))
         .filter((document) => {
           const title = normalizeReferentSubject(document?.title || document?.heading || "");
           return title.length >= 4 && immediateRecentNormalized.includes(title);
         })
         .map((document) => document.id)
-        .slice(0, 4)
+        .slice(0, 6)
     : [];
+  const explicitlyNamedCardAuthorityIds = documents
+    .filter((document) => String(document?.id || "").startsWith("card:"))
+    .filter((document) => {
+      const title = normalizeReferentSubject(document?.title || document?.heading || "");
+      return title.length >= 4 && (` ${normalizeReferentSubject(current)} `).includes(` ${title} `);
+    })
+    .map((document) => document.id)
+    .slice(0, 2);
   const deedTopic = /\bdeeds?\b/;
   const contiguityCue = /\b(?:contigu(?:ous|ity)|adjacen(?:t|cy)|front line)\b/;
   const deedContiguityFocus = (
@@ -1102,11 +1110,15 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         && /\b(?:first|later|another|second)\b[\s\S]{0,50}\b(?:win|won|winning|victory)\b/.test(current)
       )
       || /\bwithdraw(?:al|s|n|ing)?\b/.test(current)
+      || (
+        /\bfirst\b[\s\S]{0,50}\b(?:battle|fight|win|won|victory)\b/.test(current)
+        && /\b(?:opponent(?:['’]s)? turn|their turn|defend(?:ing|ed)?)\b/.test(current)
+      )
     );
   const specialOperationTopic = /\bspecial operations?\b/;
   const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum)\b/.test(current);
   const specialOperationFocus = specialOperationTopic.test(current) && specialOperationProcedureCue;
-  const ritualTopic = /\britual of ascension\b/;
+  const ritualTopic = /\britual(?: of ascension)?\b/;
   const ritualProcedureCue = /\b(?:initiate|initiated|attacker|defender|win|won|lose|lost|complete|completion|interrupt|battle)\b/.test(current);
   const ritualFocus = ritualTopic.test(current)
     || (currentWordCount <= 14 && ritualTopic.test(recent) && ritualProcedureCue);
@@ -1127,10 +1139,28 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     fieldcraftTopic.test(current)
     || (currentWordCount <= 9 && fieldcraftTopic.test(recent) && fieldcraftFollowupCue)
   ) && fieldcraftTerritoryStateCue.test(combined);
-  const topicAuthorityIds = genericRerollFocus
-    ? GENERIC_REROLL_AUTHORITY_IDS
+  const militaryLateTacticFocus = /\bmilitary\b/.test(current)
+    && /\b(?:add|adds|added|additional)\b[\s\S]{0,40}\btactic\b/.test(current)
+    && /\b(?:after|late|face[ -]?up|reveal)\b/.test(current);
+  const militaryLateTacticAuthorityIds = militaryLateTacticFocus
+    ? documents
+        .filter((document) => /\bmilitary\b[\s\S]*\badditional tactics\b/.test(
+          normalizeReferentSubject(document?.title || document?.heading || "")
+        ))
+        .map((document) => document.id)
+        .slice(0, 1)
+    : [];
+  const deedOwnershipChangeFocus = deedTopic.test(current)
+    && /\b(?:capture|captured|control|controls|controlled|transfer|transfers|ownership)\b/.test(current)
+    && /\b(?:deed|own|owner|ownership|transfer|keep|keeps|still)\b/.test(current);
+  const topicAuthorityIds = militaryLateTacticFocus
+    ? militaryLateTacticAuthorityIds
+    : genericRerollFocus
+      ? GENERIC_REROLL_AUTHORITY_IDS
     : militaryCommandFocus
       ? MILITARY_COMMAND_AUTHORITY_IDS
+    : deedOwnershipChangeFocus
+      ? ["rulebook:deeds"]
     : specialOperationFocus
       ? SPECIAL_OPERATION_COMPLETION_AUTHORITY_IDS
     : ritualFocus
@@ -1168,7 +1198,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
                 : [];
   const preferredAuthorityIds = [...new Set([
     ...topicAuthorityIds,
-    ...recentCardAuthorityIds
+    ...recentNamedAuthorityIds,
+    ...explicitlyNamedCardAuthorityIds
   ])];
   if (!preferredAuthorityIds.length) return retrieval;
 
