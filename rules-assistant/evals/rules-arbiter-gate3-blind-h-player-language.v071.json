@@ -1,0 +1,339 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "H",
+  "behaviorRevision": "v071-qa-20260917-18",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche H benchmark authored after r18 deployment and after the QA source-group contract was merged; none of these prompts was used to construct r18.",
+  "blindnessPolicy": [
+    "This tranche was authored after production health reported r18 and was not used to construct r18.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G player-language questions.",
+    "Semantic criteria are limited to the answer actually requested.",
+    "Alternative source groups may be used only when multiple passages are independently sufficient."
+  ],
+  "cases": [
+    {
+      "id": "blind-h-player-opening-four-keep-three",
+      "category": "player-language",
+      "question": "opening draw 4 keep 3?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Draw four cards, choose one card from those four"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Draw four, discard one face up, and keep the other three as the opening Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-accepted-terms-aftermath",
+      "category": "player-language",
+      "question": "accepted terms. aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accepted Terms",
+          "No battle is fought, no Gambits are set, and there is no winner, loser, or Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Accepted Terms end the sequence during Onset and there is no Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-tiebreak-advantage",
+      "category": "player-language",
+      "question": "advantage counts on tiebreak?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Do not apply advantage, disadvantage"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Ordinary advantage and disadvantage do not apply to a Tiebreak Roll."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-command-defense-opponent-turn",
+      "category": "player-language",
+      "question": "defensive win on their turn gives command?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "This trigger may occur during either player's turn"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The first Military victory each turn grants Command even on the opponent's turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-refused-withdraw-stake",
+      "category": "player-language",
+      "question": "refused then withdrew. stake back?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Withdrawal produces no winner. Return the Stake"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Withdrawal returns the Stake and the Proposal is not imposed."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-financial-capacity-threshold",
+      "category": "player-language",
+      "question": "treasury 4, control 3. two actions?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Financial Capacity"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "If that comparison is true at the after-Capture check, Financial Capacity permits one Action in Opening and one in Denouement that turn, with at least one Action spent on a Financier Faction Feature marked 1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-surveillance-stage-reset",
+      "category": "player-language",
+      "question": "used gambit surveillance. tactics still available?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "The Gambit and Tactic opportunities are independent"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Gambit and Tactic Surveillance are separate once-per-battle opportunities."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-transmutation-not-play",
+      "category": "player-language",
+      "question": "transmutation counts as playing the card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "The card is not played and none of its printed effects apply"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A card put into the Graveyard for Transmutation is not played."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-purification-reserve-draw",
+      "category": "player-language",
+      "question": "reserve draw empty = purification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "A failed Reserve draw or effect-generated draw does not trigger Purification"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Purification only checks the opponent's normal start-of-turn draw attempt."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-general-rally-defense",
+      "category": "player-language",
+      "question": "rally while defending?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rally",
+          "General"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Rally is available only when attacking in a battle the General initiated."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-commandant-repel-fresh-command",
+      "category": "player-language",
+      "question": "win defense at zero command. can repel now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Repel",
+          "Commandant"
+        ],
+        [
+          "Determine the winner, then gain normal Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The victory grants normal Command before Aftermath victory effects, so the newly gained Command can pay for Repel."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-ambassador-old-treaty-cordiality",
+      "category": "player-language",
+      "question": "old treaty accepted. cordiality draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Cordiality",
+          "Ambassador"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Cordiality triggers after accepted Terms even when the Proposal was already ratified."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-banker-credit-five",
+      "category": "player-language",
+      "question": "deed costs 5. line of credit covers 2?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Line of Credit",
+          "Banker"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Half of 5 rounded down is 2, so the collateral can contribute 2 and the remaining 3 must be paid with Capital."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-executive-front-line-blocked",
+      "category": "player-language",
+      "question": "takeover bought it, front line blocked. purchase stays?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Hostile Takeover",
+          "Executive"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. A successful Hostile Takeover purchase remains successful even if the following Front Line advance cannot occur."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-ranger-control",
+      "category": "player-language",
+      "question": "fieldcraft makes me control territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fieldcraft",
+          "Ranger"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Fieldcraft does not alter Territory control."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-spymaster-action",
+      "category": "player-language",
+      "question": "mission control spends an action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Mission Control",
+          "Spymaster"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Mission Control is a No Action Leader Ability."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-alchemist-draw-timing",
+      "category": "player-language",
+      "question": "transmute in battle. materia draw before dice?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Materia Prima",
+          "Alchemist"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A qualifying Materia Prima draw caused during battle waits until after the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-player-witch-hunter-withdrawal",
+      "category": "player-language",
+      "question": "pursuit after withdrawal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Relentless Pursuit",
+          "Witch Hunter"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Withdrawal has no loser, so Relentless Pursuit does not trigger."
+        }
+      ]
+    }
+  ]
+}
