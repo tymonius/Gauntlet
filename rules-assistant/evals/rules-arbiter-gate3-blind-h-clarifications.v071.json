@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "H",
+  "behaviorRevision": "v071-qa-20260917-18",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche H ambiguous-follow-up cases that must request clarification instead of guessing among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-h-clarify-armistice-or-tariffs",
+      "question": "Can I discard that one during Denouement?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Armistice and Tariffs banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Assets, but each has its own restriction on when it may leave play."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-clarify-line-credit-or-takeover",
+      "question": "Does that one spend an Action?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Line of Credit and Hostile Takeover."
+        },
+        {
+          "role": "assistant",
+          "content": "They are separate Financier Leader abilities with different action profiles."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-clarify-fieldcraft-or-mission-control",
+      "question": "Does that one cost Intel?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Fieldcraft and Mission Control."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are the Ranger and Spymaster Leader abilities."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-clarify-condemnation-or-blasphemy",
+      "question": "Does that one trigger when their Tactic is revealed?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Condemnation and Blasphemy."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are automatic Inquisition features, but they operate at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-h-clarify-invocation-or-transmutation",
+      "question": "Can I use that one before dice?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have both Invocation and Transmutation unlocked."
+        },
+        {
+          "role": "assistant",
+          "content": "They are separate Mystics features with different triggers and timing."
+        }
+      ]
+    }
+  ]
+}
