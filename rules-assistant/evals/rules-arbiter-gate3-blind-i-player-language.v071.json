@@ -97,8 +97,7 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "Command, maximum 2",
-          "Command cannot exceed the current maximum"
+          "Command, maximum 2"
         ]
       ],
       "semanticCriteria": [
