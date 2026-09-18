@@ -25,11 +25,11 @@ describe('v0.7.2 faction and Leader mottos', () => {
     const browserPublication = await readFile('legacy/rulebook-browser/candidate-publication.css', 'utf8');
 
     expect(bookletParity).toContain('--flavor: "p22-declaration-pro"');
-    expect(bookletParity).toMatch(/\.faction-opener \.faction-claim \{[\s\S]*?font-family: var\(--flavor\);/);
-    expect(browserPublication).toMatch(/\.candidate-masthead-claim \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;/);
+    expect(bookletParity).toMatch(/\.faction-opener \.faction-claim \{[\s\S]*?font-family: var\(--flavor\);[\s\S]*?font-size: 38pt;/);
+    expect(browserPublication).toMatch(/\.candidate-masthead-claim \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;[\s\S]*?font-size: clamp\(2\.25rem, 4\.7vw, 3\.2rem\) !important;/);
   });
 
-  it('places Leader mottos in the identity column and renders the quote in Declaration Pro', async () => {
+  it('places Leader mottos beneath the heading before the column split and renders them in enlarged Declaration Pro', async () => {
     const booklet = await readFile('apps/rules/booklet/booklet.js', 'utf8');
     const refinements = await readFile('apps/rules/booklet/publication-layout-refinements.js', 'utf8');
     const bookletCss = await readFile('apps/rules/booklet/v071-final-parity.css', 'utf8');
@@ -38,13 +38,19 @@ describe('v0.7.2 faction and Leader mottos', () => {
 
     expect(booklet).toContain("clone.classList.add('leader-motto')");
     expect(refinements).toContain("flow?.querySelector(':scope > .leader-motto')");
-    expect(refinements).toContain('identity.append(playstyle, motto, ability)');
-    expect(bookletCss).toMatch(/\.leader-page \.leader-identity-column \.leader-motto \{[\s\S]*?font-family: var\(--flavor\);/);
-    expect(bookletCss).toContain('.leader-page .leader-identity-column .leader-motto em');
+    expect(refinements).toContain('identity.append(playstyle, ability)');
+    expect(refinements).toContain("titleRow.insertAdjacentElement('afterend', motto)");
+    expect(refinements).toContain("motto.insertAdjacentElement('afterend', hero)");
+    expect(bookletCss).toMatch(/\.leader-page \.leader-motto \{[\s\S]*?font-family: var\(--flavor\);[\s\S]*?font-size: 22pt;/);
+    expect(bookletCss).toContain('.leader-page .leader-motto em');
+    expect(booklet).toContain("clone.querySelector('strong')?.remove()");
 
     expect(browserLeaders).toContain("motto.classList.add('candidate-leader-motto')");
-    expect(browserLeaders).toContain('identity.append(motto)');
-    expect(browserCss).toMatch(/\.candidate-leader-identity \.candidate-leader-motto \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;/);
-    expect(browserCss).toContain('.candidate-leader-identity .candidate-leader-motto em');
+    expect(browserLeaders).toContain("motto.querySelector('strong')?.remove()");
+    expect(browserLeaders).toContain("heading.insertAdjacentElement('afterend', motto)");
+    expect(browserLeaders).toContain("motto.insertAdjacentElement('afterend', hero)");
+    expect(browserCss).toMatch(/\.candidate-leader-motto \{[\s\S]*?font-family: var\(--rulebook-flavor\) !important;[\s\S]*?font-size: clamp\(2\.15rem, 4vw, 2\.85rem\);/);
+    expect(browserCss).toContain('.candidate-leader-motto em');
+    expect(browserCss).not.toContain('.candidate-leader-motto strong');
   });
 });
