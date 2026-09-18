@@ -10,14 +10,17 @@ describe('v0.7.2 booklet final v0.7.1 visual parity', () => {
     const adapter = await readFile('scripts/render-v072-dedicated-booklets.mjs', 'utf8');
     const playerGuide = await readFile('packages/rules/player-guide/player-guide.md', 'utf8');
 
-    // PR #1210 final v0.7.1 watermark, superseding the earlier PR #1198 pass.
-    expect(css).toContain('FINAL v0.7.1 PRODUCTION WATERMARK — PR #1210');
+    // Preserve the final v0.7.1 watermark geometry while using a print-safe
+    // inline SVG layer instead of external CSS masks.
+    expect(css).toContain('.faction-page-watermark');
     expect(css).toContain('opacity: .09');
-    expect(css).toContain('mask-size: 3.9in 3.9in');
-    expect(css).toContain('right -.62in bottom -.72in');
-    expect(css).toContain('left -.62in bottom -.72in');
+    expect(css).toContain('width: 3.9in');
+    expect(css).toContain('height: 3.9in');
+    expect(css).toContain('right: -.62in');
+    expect(css).toContain('left: -.62in');
+    expect(css).toContain('bottom: -.72in');
     expect(css).toContain('isolation: isolate');
-    expect(css).toContain('position: static');
+    expect(css).not.toContain('mask-image: var(--booklet-symbol)');
 
     // The approved color-edition paper field is continuous across front/back.
     expect(css).toContain('.back-cover');
