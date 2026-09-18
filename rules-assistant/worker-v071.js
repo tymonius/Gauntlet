@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260917-18";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-19";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -208,6 +208,10 @@ const OUTPUT_SCHEMA = {
   },
   required: ["answer", "ruling_status", "source_ids"]
 };
+
+export function normalizeOutOfScopeAnswerR19() {
+  return "That request is outside the Rules Arbiter's gameplay-rules scope.";
+}
 
 export function stripInlineSourceMarkers(value) {
   return String(value || "")
@@ -405,9 +409,11 @@ export default {
       );
       if (rulingStatus === "out_of_scope") sources = [];
       const cleanModelAnswer = stripInlineSourceMarkers(modelResult.answer);
-      const answer = rulingStatus === "provisional"
-        ? ensureProvisionalAnswer(cleanModelAnswer)
-        : cleanModelAnswer;
+      const answer = rulingStatus === "out_of_scope"
+        ? normalizeOutOfScopeAnswerR19()
+        : rulingStatus === "provisional"
+          ? ensureProvisionalAnswer(cleanModelAnswer)
+          : cleanModelAnswer;
       const confidence = deriveConfidence(rulingStatus, sources.length);
 
       const result = {
@@ -612,6 +618,16 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   if (noQualifyingEventSource && dependentTriggerSource) {
     reminders.push(
       "This question links one authority that says the encounter does not produce the required battle/win/result with another authority whose effect triggers only from that required condition. The downstream trigger conclusion is a combined-authority inference unless one clean source directly states the final consequence. Classify that derived consequence inferred and cite the authorities establishing both premises."
+    );
+  }
+
+  const statedWin = /\b(?:win|wins|won|winning|victory)\b/.test(current);
+  const withdrawalAuthorityPresent = sourceAuthorityText.some((text) =>
+    /\bwithdraw(?:al|s|n|ing)?\b/.test(text)
+  );
+  if (statedWin && withdrawalAuthorityPresent) {
+    reminders.push(
+      "The player explicitly states that the battle was won. Preserve that stated result as a premise. Do not substitute withdrawal or another no-winner branch merely because a retrieved authority mentions it. Apply only the authority branches consistent with the stated win unless the player is asking whether that win was legally possible."
     );
   }
 
@@ -937,6 +953,15 @@ function hasClearLocalSingularAntecedentR18(current, match, noun) {
   return false;
 }
 
+function isIdentityIndependentStakeLeverageQuestionR19(current, noun) {
+  if (noun !== "proposal") return false;
+  const text = String(current || "");
+  return /\bterms?\b/i.test(text)
+    && /\b(?:this|that)\s+proposal[’']s\s+stake\b/i.test(text)
+    && /\bleverage\b/i.test(text)
+    && /\b(?:spend|use)\b/i.test(text);
+}
+
 export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
   const current = String(question || "").trim();
   const genericRuleMatch = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
@@ -959,6 +984,10 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
     );
   });
   if (explicitlyNamedCards.length === 1) return null;
+
+  if (isIdentityIndependentStakeLeverageQuestionR19(current, noun)) {
+    return null;
+  }
 
   if (hasClearLocalSingularAntecedentR18(current, match, noun)) {
     return null;
@@ -1175,8 +1204,16 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
       )
     );
   const specialOperationTopic = /\bspecial operations?\b/;
-  const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum)\b/.test(current);
-  const specialOperationFocus = specialOperationTopic.test(current) && specialOperationProcedureCue;
+  const specialOperationProcedureCue = /\b(?:ready|readiness|complete|completion|cost|pay|payment|intel|value|territor(?:y|ies)|minimum|capture|captured|captures|progress|denouement|fail|fails|failed)\b/.test(current);
+  const recentSpecialOperationTopic = specialOperationTopic.test(recent);
+  const specialOperationFollowupCue = /\b(?:they|opponent|capture|captured|captures|territor(?:y|ies)|progress|ready|readiness|denouement|what happens|now|fail|fails|failed)\b/.test(current);
+  const specialOperationFocus = (
+    specialOperationTopic.test(current) && specialOperationProcedureCue
+  ) || (
+    currentWordCount <= 16
+    && recentSpecialOperationTopic
+    && specialOperationFollowupCue
+  );
   const ritualTopic = /\britual(?: of ascension)?\b/;
   const ritualProcedureCue = /\b(?:initiate|initiated|attacker|defender|win|won|lose|lost|complete|completion|interrupt|battle)\b/.test(current);
   const ritualFocus = ritualTopic.test(current)
