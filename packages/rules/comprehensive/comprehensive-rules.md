@@ -529,20 +529,20 @@ Revising a choice does not create another reveal, response, or replacement oppor
 
 Rules text may use the following compact forms when their meaning is unambiguous:
 
-- Add N cards to the player’s Reserve at the stated timing. During Reserve formation, increase the normal Reserve size by N.
-- Reduce that Reserve quantity by N; any stated or applicable minimum still applies.
-- Permit N additional Tactics under the additional-Tactic rules. Reserve is the default source unless another source is named.
-- Draw N cards from the Draw Pile into Hand unless another player or destination is identified.
-- Grant N additional Actions during the current phase. Increase the number of Actions permitted in that phase; do not reopen a phase that has ended. If another phase is named, apply the Action there instead.
-- Gain N of the named resource, including Capital, Influence, Command, or Conviction.
-- Set the named resource to N.
-- Add N to that player’s battle total.
-- Increase the distance of the identified retreat by N Positions; this modifies that retreat rather than creating a separate retreat.
-- Gain one instance of advantage.
-- Gain two instances of advantage.
-- Gain one instance of disadvantage.
-- Advance the player’s Front Line by N Territories, subject to stated conditions and the normal Front Line rules.
-- A condition prefix such as Attacker, Defender, Counterattack, Win, or Lose applies only to the clause that immediately follows it.
+- `+N Reserve` — Add N cards to the player’s Reserve at the stated timing. During Reserve formation, increase the normal Reserve size by N.
+- `−N Reserve` — Reduce that Reserve quantity by N; any stated or applicable minimum still applies.
+- `+N Tactic` — Permit N additional Tactics under the additional-Tactic rules. Reserve is the default source unless another source is named.
+- `+N Card(s)` — Draw N cards from the Draw Pile into Hand unless another player or destination is identified.
+- `+N Action` — Grant N additional Actions during the current phase. Increase the number of Actions permitted in that phase; do not reopen a phase that has ended. If another phase is named, apply the Action there instead.
+- `+N Resource` — Gain N of the named resource, including Capital, Influence, Command, or Conviction.
+- `Resource = N` — Set the named resource to N.
+- `+N Battle Total` — Add N to that player’s battle total.
+- `Retreat +N` — Increase the distance of the identified retreat by N Positions; this modifies that retreat rather than creating a separate retreat.
+- `gain advantage` — Gain one instance of advantage.
+- `gain double advantage` — Gain two instances of advantage.
+- `gain disadvantage` — Gain one instance of disadvantage.
+- `Advance Front Line N` — Advance the player’s Front Line by N Territories, subject to stated conditions and the normal Front Line rules.
+- `condition prefix` — A condition prefix such as Attacker, Defender, Counterattack, Win, or Lose applies only to the clause that immediately follows it.
 
 Reserve is the default source for a Tactic unless another source is named. Rerolls use the new result by default. Multiple Reserve-size and Tactic-count modifiers add together unless a more specific rule says otherwise.
 
