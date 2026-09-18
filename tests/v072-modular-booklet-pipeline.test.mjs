@@ -180,13 +180,13 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toMatch(/const ARCANE_CARD_ID = '[^']+';/);
     expect(client).toContain('card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}');
     expect(client).toContain('card-print-render.html?fit=production&card=${ARCANE_CARD_ID}');
-    expect(client).toContain('const fillerCount = (4 - (logicalPageCount % 4)) % 4;');
+    expect(client).toContain('for (let candidate = 0; candidate <= 3; candidate += 1)');
     expect(client).toContain('composePublication');
     expect(client).toContain('balancedFillerSectionIndexes');
     expect(client).toContain('resetPublicationPages');
     expect(client).toContain("if (fillerCount > 0 && !ordered[1]?.classList.contains('woodcut-page'))");
     expect(client).toContain('Booklet filler pages may not appear back to back.');
-    expect(client).toContain('rebuild from the source so every content page is');
+    expect(client).toContain('choose the smallest final composition that actually lands on a multiple of');
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
 
