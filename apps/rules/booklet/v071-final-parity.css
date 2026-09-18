@@ -181,26 +181,16 @@
   line-height: 1.28;
 }
 
-.leader-page .leader-identity-column .leader-motto {
-  margin: .09in 0 0;
+.leader-page .leader-motto {
+  margin: -.01in 0 .11in;
+  max-width: none;
   font-family: var(--flavor);
-  font-size: 13.5pt;
+  font-size: 22pt;
   font-weight: 400;
-  line-height: 1.05;
+  line-height: .96;
 }
 
-.leader-page .leader-identity-column .leader-motto strong {
-  display: block;
-  margin-bottom: .025in;
-  font-family: var(--ui);
-  font-size: 6.6pt;
-  font-style: normal;
-  font-weight: 700;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-}
-
-.leader-page .leader-identity-column .leader-motto em {
+.leader-page .leader-motto em {
   font-style: normal;
 }
 
