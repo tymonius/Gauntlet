@@ -148,16 +148,7 @@ describe("Gate 3 blind tranche F certification freeze", () => {
     expect(evaluator).toContain('QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2"');
   });
 
-  test("current Gate 3 workflow is pinned to F/r16 and is already OIDC-authorized", () => {
-    const workflowPath = ".github/workflows/current-rules-arbiter-gate3-blind.yml";
-    const workflow = readFileSync(new URL(`../${workflowPath}`, import.meta.url), "utf8");
-    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche F");
-    expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260917-16");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-f.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-f-player-language.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-f-clarifications.v071.json");
-    expect(workflow).toContain("run-v071-semantic-rules-qa.mjs");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-f-v0.7.1");
+  test("the mutable current Gate 3 dispatch remains OIDC-authorized after F is historical", () => {
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
     );
