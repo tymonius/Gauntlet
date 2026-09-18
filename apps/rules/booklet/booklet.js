@@ -237,6 +237,18 @@ function composePublication(publication, documentId, headings, prelude, sections
   createBackCover(publication);
 }
 
+function insertInsideBackCoverFiller(publication, index) {
+  const backCover = pagesRoot.querySelector(':scope > .back-cover');
+  if (!backCover) throw new Error('Could not locate the back cover for final filler placement.');
+
+  const filler = createWoodcutPage(publication, index);
+  pagesRoot.insertBefore(filler, backCover);
+
+  const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
+  pages.splice(0, pages.length, ...ordered);
+  return filler;
+}
+
 function assertFillerPlacement(fillerCount) {
   const ordered = [...pagesRoot.querySelectorAll(':scope > .page')];
   const fillers = ordered.filter(page => page.classList.contains('woodcut-page'));
@@ -857,18 +869,38 @@ async function main() {
   // four rather than assuming the baseline page count will remain stable.
   let fillerCount = null;
   const fillerAttempts = [];
-  for (let candidate = 0; candidate <= 7; candidate += 1) {
-    resetPublicationPages();
-    composePublication(publication, documentId, rendered.headings, prelude, sections, candidate);
-    fillerAttempts.push(`${candidate} filler(s) → ${pages.length} pages`);
-    if (pages.length % 4 === 0) {
-      fillerCount = candidate;
-      break;
+
+  // Do not add art pages to publications that already impose cleanly.
+  resetPublicationPages();
+  composePublication(publication, documentId, rendered.headings, prelude, sections, 0);
+  fillerAttempts.push(`0 filler(s) → ${pages.length} pages`);
+  if (pages.length % 4 === 0) {
+    fillerCount = 0;
+  } else {
+    // When padding is actually required, reserve the first filler for the
+    // inside front cover, spread the rest through section boundaries, and use
+    // the inside back cover as a final single-page adjustment when necessary.
+    for (let candidate = 1; candidate <= 7; candidate += 1) {
+      resetPublicationPages();
+      composePublication(publication, documentId, rendered.headings, prelude, sections, candidate);
+      fillerAttempts.push(`${candidate} distributed filler(s) → ${pages.length} pages`);
+
+      if (pages.length % 4 === 0) {
+        fillerCount = candidate;
+        break;
+      }
+
+      if ((pages.length + 1) % 4 === 0) {
+        insertInsideBackCoverFiller(publication, candidate);
+        fillerCount = candidate + 1;
+        fillerAttempts.push(`+ inside-back filler → ${pages.length} pages`);
+        break;
+      }
     }
   }
 
-  if (fillerCount === null) {
-    throw new Error(`Could not compose booklet to a multiple of four pages with at most seven distributed fillers: ${fillerAttempts.join(', ')}.`);
+  if (fillerCount === null || pages.length % 4 !== 0) {
+    throw new Error(`Could not compose booklet to a multiple of four pages with distributed fillers: ${fillerAttempts.join(', ')}.`);
   }
 
   assertFillerPlacement(fillerCount);
