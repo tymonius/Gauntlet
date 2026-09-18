@@ -721,18 +721,18 @@ export function shouldResolveR27CombinedInteraction(question, sources = []) {
   const sourceList = Array.isArray(sources) ? sources : [];
   const texts = sourceListText(sourceList);
 
-  const asksCurrentPhaseUse = /\\b(?:opening|denouement|current phase|same phase|immediately|right there|right away)\\b/.test(current)
-    && /\\bactions?\\b/.test(current);
+  const asksCurrentPhaseUse = /\b(?:opening|denouement|current phase|same phase|immediately|right there|right away)\b/.test(current)
+    && /\bactions?\b/.test(current);
   if (!asksCurrentPhaseUse) return false;
 
   const namedCardUsesActionShorthand = sourceList.some((source) => {
-    if (!/^card:\\s*/i.test(String(source?.title || ""))) return false;
+    if (!/^card:\s*/i.test(String(source?.title || ""))) return false;
     const subjects = namedAuthoritySubjects(source);
     if (!subjects.some((subject) => normalizedQuestion.includes(` ${subject} `))) return false;
-    return /\\+\\s*\\d+\\s+action\\b/.test(sourceText(source));
+    return /\+\s*\d+\s+action\b/.test(sourceText(source));
   });
   const hasActionShorthandDefinition = texts.some((text) =>
-    /\\+n action grants n additional actions during the current phase/.test(text)
+    /\+n action grants n additional actions during the current phase/.test(text)
   );
 
   return namedCardUsesActionShorthand && hasActionShorthandDefinition;
