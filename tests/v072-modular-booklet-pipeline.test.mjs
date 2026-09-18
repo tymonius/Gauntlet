@@ -180,7 +180,7 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toMatch(/const ARCANE_CARD_ID = '[^']+';/);
     expect(client).toContain('card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}');
     expect(client).toContain('card-print-render.html?fit=production&card=${ARCANE_CARD_ID}');
-    expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
+    expect(client).toContain('const fillerCount = (4 - (logicalPageCount % 4)) % 4;');
     expect(client).toContain('composePublication');
     expect(client).toContain('balancedFillerSectionIndexes');
     expect(client).toContain('resetPublicationPages');
