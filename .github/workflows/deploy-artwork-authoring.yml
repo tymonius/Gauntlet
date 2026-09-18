@@ -4,20 +4,14 @@ on:
   pull_request:
     paths:
       - "workers/artwork-authoring/**"
-      - "card-design/artwork-authoring-client.js"
-      - "card-design/artwork-batch-publish-control.js"
-      - "card-design/artwork-publish-fetch-recovery.js"
-      - "card-design/artwork-compositor-targets.js"
+      - "tools/card-design/artwork-authoring/**"
       - ".github/workflows/deploy-artwork-authoring.yml"
   push:
     branches:
       - main
     paths:
       - "workers/artwork-authoring/**"
-      - "card-design/artwork-authoring-client.js"
-      - "card-design/artwork-batch-publish-control.js"
-      - "card-design/artwork-publish-fetch-recovery.js"
-      - "card-design/artwork-compositor-targets.js"
+      - "tools/card-design/artwork-authoring/**"
       - ".github/workflows/deploy-artwork-authoring.yml"
   workflow_dispatch:
 
@@ -47,10 +41,12 @@ jobs:
           node --check workers/artwork-authoring/src/index-session.js
           node --check workers/artwork-authoring/src/index-publish-ready.js
           node --check workers/artwork-authoring/src/format.js
-          node --check card-design/artwork-authoring-client.js
-          node --check card-design/artwork-batch-publish-control.js
-          node --check card-design/artwork-publish-fetch-recovery.js
-          node --check card-design/artwork-compositor-targets.js
+          node --check tools/card-design/artwork-authoring/artwork-authoring-client.js
+          node --check tools/card-design/artwork-authoring/artwork-batch-publish-control.js
+          node --check tools/card-design/artwork-authoring/artwork-publish-fetch-recovery.js
+          node --check tools/card-design/artwork-authoring/artwork-compositor-targets.js
+          node --check tools/card-design/artwork-authoring/artwork-compositor.js
+          node --check tools/card-design/artwork-authoring/artwork-crop.js
           node --test workers/artwork-authoring/src/index.node-test.mjs
 
   deploy:

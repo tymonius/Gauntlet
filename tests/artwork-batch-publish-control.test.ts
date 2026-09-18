@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const controller = readFileSync('card-design/artwork-batch-publish-control.js', 'utf8');
-const recovery = readFileSync('card-design/artwork-publish-fetch-recovery.js', 'utf8');
-const targets = readFileSync('card-design/artwork-compositor-targets.js', 'utf8');
+const controller = readFileSync('tools/card-design/artwork-authoring/artwork-batch-publish-control.js', 'utf8');
+const recovery = readFileSync('tools/card-design/artwork-authoring/artwork-publish-fetch-recovery.js', 'utf8');
+const targets = readFileSync('tools/card-design/artwork-authoring/artwork-compositor-targets.js', 'utf8');
 
 describe('artwork batch publish controller', () => {
   it('does not rerender on every mutation inside the compositor dialog', () => {

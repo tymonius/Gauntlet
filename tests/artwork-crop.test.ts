@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { describe, expect, it } from "vitest";
 
-const cropSource = readFileSync("card-design/artwork-crop.js", "utf8");
+const cropSource = readFileSync("tools/card-design/artwork-authoring/artwork-crop.js", "utf8");
 
 type CropResult = {
   mode: string;

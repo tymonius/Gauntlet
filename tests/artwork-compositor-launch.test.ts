@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
-const source = readFileSync('card-design/artwork-compositor-targets.js', 'utf8');
+const source = readFileSync('tools/card-design/artwork-authoring/artwork-compositor-targets.js', 'utf8');
 
 describe('artwork compositor launch behavior', () => {
   it('locks the catalog viewport before the compositor dialog opens', () => {

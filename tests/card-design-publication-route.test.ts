@@ -17,6 +17,21 @@ describe('card-design publication route boundary', () => {
     });
   });
 
+  it('materializes extracted artwork authoring tools at their stable public card-design URLs', () => {
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    for (const name of [
+      'artwork-authoring-client.js',
+      'artwork-batch-publish-control.js',
+      'artwork-compositor-targets.js',
+      'artwork-compositor.css',
+      'artwork-compositor.js',
+      'artwork-crop.js',
+      'artwork-publish-fetch-recovery.js',
+    ]) {
+      expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/artwork-authoring/${name}`);
+    }
+  });
+
   it('preserves package-owned rendering modules at their stable public card-design URLs', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/card-design/face-authority.mjs')).toBe('packages/rendering/face-authority.mjs');
