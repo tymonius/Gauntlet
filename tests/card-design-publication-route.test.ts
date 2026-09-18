@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const contract = JSON.parse(readFileSync('config/publication-boundary.json', 'utf8'));
@@ -19,6 +19,8 @@ describe('card-design publication route boundary', () => {
 
   it('materializes extracted artwork authoring tools at their stable public card-design URLs', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(contract.pages.sourceOnlyRepositoryRoots).toContain('card-design');
+    expect(contract.pages.sourceOnlyRepositoryRoots).toContain('tools');
     for (const name of [
       'artwork-authoring-client.js',
       'artwork-batch-publish-control.js',
@@ -29,6 +31,8 @@ describe('card-design publication route boundary', () => {
       'artwork-publish-fetch-recovery.js',
     ]) {
       expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/artwork-authoring/${name}`);
+      expect(existsSync(`tools/card-design/artwork-authoring/${name}`)).toBe(true);
+      expect(existsSync(`card-design/${name}`)).toBe(false);
     }
   });
 

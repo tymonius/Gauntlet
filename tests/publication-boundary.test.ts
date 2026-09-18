@@ -30,7 +30,7 @@ describe('public route and Pages publication boundary', () => {
   });
 
   it('keeps repository source boundaries non-public by default', () => {
-    for (const root of ['.github', 'apps', 'docs', 'governance', 'legacy', 'media', 'packages', 'rulebook', 'scripts', 'src', 'tests', 'workers']) {
+    for (const root of ['.github', 'apps', 'card-design', 'docs', 'governance', 'legacy', 'media', 'packages', 'rulebook', 'scripts', 'src', 'tests', 'tools', 'workers']) {
       expect(contract.pages.sourceOnlyRepositoryRoots).toContain(root);
       expect(contract.pages.publishedDirectories).not.toContain(root);
     }
