@@ -41,7 +41,7 @@ function source(title, excerpt = "", canonicalId = "") {
 
 describe("Gate 3 tranche E r16 remediation", () => {
   test("bumps the production behavior revision without changing the frozen tranche E datasets", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260917-18");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-19");
   });
 
   test.each([
