@@ -70,7 +70,9 @@ const EFFECT_MOVEMENT_AUTHORITY_IDS = [
   "rulebook:movement-granted-by-effects"
 ];
 const MILITARY_COMMAND_AUTHORITY_IDS = [
-  "rulebook:command-and-orders"
+  // "Command and Orders" is a structural parent heading with no body of its own.
+  // The governing v0.7.1 text is the nested Complete rules document.
+  "rulebook:complete-rules-17"
 ];
 const SPECIFIC_RULE_PRECEDENCE_AUTHORITY_IDS = [
   "rulebook:golden-rules"
