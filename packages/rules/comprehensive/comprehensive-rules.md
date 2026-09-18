@@ -1383,8 +1383,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 
 **Deed.** See Part XII — Financier Rules. See also **Capital**, **Controlling Interest**.
 
-**Deeds.** See **Deed**.
-
 **Defensive Edge.** When the defender has Defensive Edge, the defender wins tied battle totals. The defender normally has it while controlling the contested Territory or making a Last Stand, unless an effect removes it. See also **Tiebreak Roll**.
 
 **Denouement.** See III.1 Turn sequence; III.2 Actions. See also **Action**, **Opening**.
@@ -1402,8 +1400,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 **Front Line.** The unbroken sequence of Territories a player controls from their own end. Control cannot skip an opposing Territory, although a Player Token may move beyond its Front Line. See also **Control**, **Capture**.
 
 **Gambit.** See V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings. See also **Tactic**, **Reserve**.
-
-**Gambits.** See **Gambit**.
 
 **Gauntlet.** Six Territory Cards arranged in one column.
 
@@ -1427,8 +1423,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 
 **Mission.** An Intelligence card with a printed Mission requirement. See also **Operation Progress**, **Special Operation**.
 
-**Missions.** See **Mission**.
-
 **Negation.** A negated card has no effect but remains in battle.
 
 **Occupation.** Occupation is the state in which a player's token is on an opposing Territory that player does not control. That player is the occupier. Occupation does not itself change control. See also **Control**, **Counterattack**.
@@ -1451,8 +1445,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 
 **Proposal.** See Part XI — Diplomat Rules. See also **Stake**, **Ratification**, **Terms**.
 
-**Proposals.** See **Proposal**.
-
 **Purge.** See Part XV — Inquisition Rules. See also **Conviction**.
 
 **Purification.** If the opponent draws no cards because both their Draw Pile and Discard Pile are empty, you win immediately. See also **Conviction**.
@@ -1467,23 +1459,17 @@ End their turn, then advance one Position toward their end. If this movement ini
 
 **Rite.** See Part XIV — Mystics Rules. See also **Ritual of Ascension**, **Invocation**, **Transmutation**, **Convergence**.
 
-**Rites.** See **Rite**.
-
 **Ritual.** See **Ritual of Ascension**.
 
 **Ritual of Ascension.** After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game. See also **Rite**, **Convergence**.
 
 **Special Operation.** See Part XIII — Intelligence Rules. See also **Mission**, **Operation Progress**, **Intel**.
 
-**Special Operations.** See **Special Operation**.
-
 **Stake.** See Part XI — Diplomat Rules. See also **Influence**, **Proposal**, **Terms**.
 
 **Surveillance.** See Part XIII — Intelligence Rules. See also **Intel**, **Interference**.
 
 **Tactic.** See V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings. See also **Gambit**, **Reserve**.
-
-**Tactics.** See **Tactic**.
 
 **Terms.** Terms are resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused. Accepted Terms end the battle sequence during Onset. Refused Terms apply their Refused effect and any refusal modifiers, then Onset continues unless that effect ends the sequence. See also **Proposal**, **Stake**.
 
@@ -1518,7 +1504,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 - **Counterattack:** IV.5 Counterattack
 - **Deck:** II.1 Deck construction
 - **Deed:** Part XII — Financier Rules
-- **Deeds:** See **Deed** — Part XII — Financier Rules
 - **Defensive Edge:** V.6 Defensive Edge and Tiebreak Roll
 - **Denouement:** III.1 Turn sequence; III.2 Actions
 - **Discard Pile:** VII.1 Card zones; III.3 Draw
@@ -1528,7 +1513,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 - **Financial Capacity:** Part XII — Financier Rules
 - **Front Line:** VI.1 Front Line; VI.2 Capture
 - **Gambit:** V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
-- **Gambits:** See **Gambit** — V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
 - **Gauntlet:** IV.1 Gauntlet and Position
 - **Graveyard:** VII.1 Card zones
 - **Hand:** VII.1 Card zones
@@ -1540,7 +1524,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 - **Leader Ability:** I.1 Faction Features and Leader Abilities
 - **Leverage:** Part XI — Diplomat Rules
 - **Mission:** Part XIII — Intelligence Rules
-- **Missions:** See **Mission** — Part XIII — Intelligence Rules
 - **Negation:** VIII.6 Negation
 - **Occupation:** IV.4 Occupation
 - **Occupier:** See **Occupation** — IV.4 Occupation
@@ -1552,7 +1535,6 @@ End their turn, then advance one Position toward their end. If this movement ini
 - **Peace Treaty:** Part XI — Diplomat Rules
 - **Position:** IV.1 Gauntlet and Position
 - **Proposal:** Part XI — Diplomat Rules
-- **Proposals:** See **Proposal** — Part XI — Diplomat Rules
 - **Purge:** Part XV — Inquisition Rules
 - **Purification:** Part XV — Inquisition Rules
 - **Ratification:** Part XI — Diplomat Rules
@@ -1560,15 +1542,12 @@ End their turn, then advance one Position toward their end. If this movement ini
 - **Retreat:** V.8 Retreat and withdrawal
 - **Reveal-stage Interference:** VIII.5 Reveal-stage interference
 - **Rite:** Part XIV — Mystics Rules
-- **Rites:** See **Rite** — Part XIV — Mystics Rules
 - **Ritual:** See **Ritual of Ascension** — Part XIV — Mystics Rules
 - **Ritual of Ascension:** Part XIV — Mystics Rules
 - **Special Operation:** Part XIII — Intelligence Rules
-- **Special Operations:** See **Special Operation** — Part XIII — Intelligence Rules
 - **Stake:** Part XI — Diplomat Rules
 - **Surveillance:** Part XIII — Intelligence Rules
 - **Tactic:** V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
-- **Tactics:** See **Tactic** — V.1 Normal battle sequence; V.2 Commitment sources and Reserve; VII.2 Effect headings
 - **Terms:** V.3 Onset; Part XI — Diplomat Rules
 - **Tiebreak Roll:** V.6 Defensive Edge and Tiebreak Roll
 - **Transmutation:** Part XIV — Mystics Rules
