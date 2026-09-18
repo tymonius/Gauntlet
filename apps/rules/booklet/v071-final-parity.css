@@ -181,6 +181,29 @@
   line-height: 1.28;
 }
 
+.leader-page .leader-identity-column .leader-motto {
+  margin: .09in 0 0;
+  font-family: var(--flavor);
+  font-size: 13.5pt;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.leader-page .leader-identity-column .leader-motto strong {
+  display: block;
+  margin-bottom: .025in;
+  font-family: var(--ui);
+  font-size: 6.6pt;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.leader-page .leader-identity-column .leader-motto em {
+  font-style: normal;
+}
+
 .leader-page .leader-identity-column > ul,
 .leader-page .leader-identity-column > ol {
   margin: .10in 0 0;
@@ -198,7 +221,7 @@
 
 /* Explanatory commentary is intentionally full width below the hero block.
    There is no float boundary and therefore no arbitrary column-width switch. */
-.leader-page .page-flow > p:not(.leader-playstyle) {
+.leader-page .page-flow > p:not(.leader-playstyle):not(.leader-motto) {
   margin-bottom: .065in;
   font-size: 8.8pt;
   line-height: 1.30;
