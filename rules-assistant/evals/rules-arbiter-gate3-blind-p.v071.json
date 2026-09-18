@@ -1,0 +1,927 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "P",
+  "behaviorRevision": "v071-qa-20260918-26",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche P certification benchmark authored only after r26 was merged, deployed, and current-live-publication verification succeeded. It was not used to construct r26 and stresses core timing, Leader abilities, previously untested card text, cross-authority interactions, rules gaps, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-26; it was not used to construct r26.",
+    "Do not edit or retroactively regrade tranche P after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-P case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche P, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-p-core-normal-action-limit",
+      "category": "core",
+      "question": "Without any effect granting extra Actions, how many Actions may the active player normally take in the turn, and how many may normally be taken in either Action phase?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The active player normally takes one Action total during the turn",
+          "No more than one Action may normally be taken during Opening",
+          "no more than one Action may normally be taken during Denouement",
+          "Normal Action limit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Normally one Action total for the turn, with no more than one Action in Opening and no more than one Action in Denouement."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-core-defensive-edge-tie",
+      "category": "core",
+      "question": "Battle totals are tied and the defender controls the contested Territory. No effect removes Defensive Edge. Who wins the tie?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When the defender has Defensive Edge, the defender wins tied battle totals",
+          "defender controls the contested Territory",
+          "Defensive Edge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The defender wins the tied battle totals because they have Defensive Edge."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-core-tiebreak-clean-roll",
+      "category": "core",
+      "question": "A Tiebreak Roll is required. Do the players apply their battle Advantage, Disadvantage, card modifiers, or previous battle totals to that roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals",
+          "Tiebreak Roll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Each player rolls one die without those modifiers; higher roll wins, and further ties are rerolled."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-core-manifest-territory-deed",
+      "category": "core",
+      "question": "Manifest Destiny has entered the Gauntlet as a Territory. Does it have a normal Deed and use the ordinary Deed purchase and income rules?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Territory with a normal Deed",
+          "Existing Deed purchase costs, caps, procedures, income rules",
+          "Cards that become Territories"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. It is a normal Territory with a normal Deed and the normal Deed and income rules apply."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-financiers-banker-line-credit",
+      "category": "financiers",
+      "question": "On Banker's first Deed purchase of the turn, how much of the purchase cost can Line of Credit cover with one collateral card, and what happens to that collateral?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Line of Credit",
+          "contributes up to half the purchase cost, rounded down",
+          "discard the collateral",
+          "Banker"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "One Hand or Treasury card may cover up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-financiers-executive-takeover",
+      "category": "financiers",
+      "question": "Executive won as attacker and is occupying the enemy Territory during Denouement. What may Hostile Takeover do if the Deed purchase succeeds?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Hostile Takeover",
+          "While occupying that enemy Territory, buy or buy out its Deed",
+          "If successful, advance your Front Line by one Territory",
+          "Executive"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Executive may buy or buy out that Territory's Deed, treating themself as occupier for cost; if successful, advance Front Line by one Territory if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-intelligence-mission-control",
+      "category": "intelligence",
+      "question": "Spymaster completes a normal Mission and uses Mission Control. What may be started immediately, and what two restrictions apply to it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Mission Control",
+          "Immediately start another eligible Mission from Hand",
+          "It cannot complete that turn and cannot be a Special Operation",
+          "Spymaster"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Immediately start another eligible Mission from Hand; it cannot complete that turn and cannot be a Special Operation."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-mystics-materia-prima",
+      "category": "mystics",
+      "question": "Alchemist's first qualifying Hand-to-Graveyard sacrifice happens during a battle. When is the card from Materia Prima drawn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Materia Prima",
+          "During battle, draw after the Aftermath",
+          "Alchemist"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Draw the card after the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-inquisition-final-judgment",
+      "category": "inquisition",
+      "question": "Grand Inquisitor uses Final Judgment after winning. How does it change that Purge's Conviction cost, and does it consume the normal once-per-turn Action permission to Purge?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Final Judgment",
+          "Reduce that Purge's Conviction cost by 1, to a minimum of 1",
+          "does not consume the once-per-turn permission to spend an Action on Purge",
+          "Grand Inquisitor"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reduce the Purge cost by 1 to a minimum of 1; it does not consume the normal once-per-turn permission to spend an Action on Purge."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-inquisition-relentless-pursuit",
+      "category": "inquisition",
+      "question": "Witch Hunter defeats an attacking opponent and uses Relentless Pursuit. What happens to the opponent's turn and what happens if the advance enters the opponent's Position?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Relentless Pursuit",
+          "End their turn, then advance one Position toward their end",
+          "If this movement initiates a battle, you are the attacker",
+          "Witch Hunter"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "End the opponent's turn, then advance one Position; if that movement starts a battle, Witch Hunter is the attacker."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-inquisition-purification-trigger",
+      "category": "inquisition",
+      "question": "The opponent fails to draw a card from an effect because both their Draw Pile and Discard Pile are empty. Does that failure trigger Purification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A failed Reserve draw or effect-generated draw does not trigger Purification",
+          "Purification"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Purification checks the opponent's normal start-of-turn draw attempt, not an effect-generated draw."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-mystics-arcane-trait",
+      "category": "mystics",
+      "question": "Does having the Arcane trait make a card a Mystics-allegiance card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Arcane is a trait, not faction allegiance",
+          "cards from other pools may also have the trait",
+          "Arcane trait"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Arcane is a trait, not faction allegiance."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-mystics-grave-entry-trigger",
+      "category": "mystics",
+      "question": "A card enters my Graveyard and Grave Ward immediately moves it elsewhere. Did the card still enter the Graveyard for entry triggers?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A card enters the Graveyard before an effect such as Grave Ward moves it elsewhere",
+          "An entry trigger still applies even if the card immediately leaves",
+          "Entering the Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. It enters the Graveyard first, so entry triggers still apply even if it immediately leaves."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-foothold-asset",
+      "category": "cards",
+      "question": "Foothold is banked. I win while defending against a Counterattack. What may I do with Foothold and what do I gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After you win while defending against a Counterattack, you may discard this card for +2 Cards",
+          "Foothold"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Foothold to gain 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-forced-march",
+      "category": "cards",
+      "question": "I play Forced March for its Action effect. May the additional Position of movement it grants initiate a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This additional movement cannot initiate a battle",
+          "Forced March"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Forced March's additional movement cannot initiate a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-fortifications-asset",
+      "category": "cards",
+      "question": "Fortifications is banked and I am defending. How many Tactics may I choose instead of the normal one?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When defending, you may choose up to two Tactics instead of one",
+          "Fortifications"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Up to two Tactics."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-military-give-chase-action",
+      "category": "military",
+      "question": "When may Give Chase be played for its Action effect, and where does the card go after the advance?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During Denouement, if you won a battle you initiated this turn, advance 1 Position. Then put this card in your Graveyard",
+          "Give Chase"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "During Denouement after winning a battle you initiated that turn; advance 1 Position, then put Give Chase in your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-military-hold-line-loss",
+      "category": "military",
+      "question": "Hold the Line is applying while I defend a Territory I control, but I lose. What happens after my retreat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If you lose, after you retreat, the attacker captures that Territory",
+          "Hold the Line"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After you retreat, the attacker captures that Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-illegal-occupation",
+      "category": "cards",
+      "question": "Illegal Occupation is banked while the opponent occupies a Territory I control. What happens to their Assets?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "While the opponent occupies a Territory you control, their Assets are inactive",
+          "Illegal Occupation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Their Assets are inactive while they occupy a Territory you control."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-insurrection-action",
+      "category": "cards",
+      "question": "What sequence does Insurrection's Action effect perform after I play it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. +3 Cards. +1 Action",
+          "Insurrection"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard your Hand; each player shuffles their Discard Pile into their Draw Pile; then you gain 3 Cards and +1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-intelligence-intercepted-orders",
+      "category": "intelligence",
+      "question": "Intercepted Orders is banked. When the opponent forms their Reserve, what can I do before they choose Tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When the opponent forms their Reserve, before they choose Tactics, you may discard this card to reveal that Reserve and choose 1 card they cannot choose this battle",
+          "Intercepted Orders"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Intercepted Orders to reveal their Reserve and choose one card they cannot choose in that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-military-invasion-action",
+      "category": "military",
+      "question": "I play Invasion for its Action effect. How much additional movement can it grant, and may any of that extra movement be used to Fall Back?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "advance up to two additional Positions",
+          "This additional movement may only be used to advance",
+          "Invasion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Up to two additional Positions, and that extra movement may only be used to Advance, not Fall Back."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-landslide-overlay",
+      "category": "cards",
+      "question": "A player retreats onto a Territory with a Landslide Overlay. What happens to the retreat and to Landslide afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a player retreats onto this Territory: Retreat +1, if able. Then put this card in its owner's Discard Pile",
+          "Landslide"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Increase that retreat by 1 Position if able, then put Landslide in its owner's Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-liberation-asset",
+      "category": "cards",
+      "question": "Liberation is banked and I win a Counterattack. What immediate card benefit and later Action benefit does it give?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After you win a Counterattack, +1 Card. During your Denouement that turn: +1 Action",
+          "Liberation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 1 Card, and during your Denouement that turn gain +1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-manifest-destiny-action",
+      "category": "cards",
+      "question": "I use Manifest Destiny's Action effect. What minimum sacrifice is required and where is the new blank Territory added?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put all other cards in your Hand and at least one Asset, totaling a minimum of three cards, in your Graveyard",
+          "Add this card to your end of the Gauntlet as a blank Territory you control",
+          "Manifest Destiny"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put all other Hand cards plus at least one Asset into your Graveyard, with at least three cards total, then add Manifest Destiny to your end of the Gauntlet as a blank Territory you control."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-inquisition-martyrdom",
+      "category": "inquisition",
+      "question": "I play Martyrdom as its Aftermath Reaction after losing. What happens to cards remaining in the opponent's Reserve, and what is my Conviction set to after battle cards clear?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile",
+          "After battle cards are cleared, Conviction = 4",
+          "Martyrdom"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent's remaining Reserve cards go to their Graveyard instead of Discard; after battle cards clear, set your Conviction to 4."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-financiers-monetary-crisis",
+      "category": "financiers",
+      "question": "What does Monetary Crisis do to both players' Hands when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each player discards their Hand, then draws two cards",
+          "Monetary Crisis"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Each player discards their Hand, then draws two cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-new-recruits",
+      "category": "cards",
+      "question": "What is the cost and draw result of New Recruits' Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Discard one other card from your Hand, then +2 Cards",
+          "New Recruits"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard one other card from your Hand, then draw 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-palisade-wall",
+      "category": "cards",
+      "question": "Palisade Wall is banked and I am the defender during Onset. What may I do to the opponent's Assets for that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During Onset while you are the defender, you may discard this card to make the opponent's Assets inactive during that battle",
+          "Palisade Wall"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Palisade Wall during Onset to make the opponent's Assets inactive for that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-mystics-paths-shadow",
+      "category": "mystics",
+      "question": "I play Paths of Shadow for its Action effect. Where may I move, and can that movement start a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Move to any Territory you control. This movement cannot start a battle",
+          "Paths of Shadow"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Move to any Territory you control; that movement cannot start a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-inquisition-penance-action",
+      "category": "inquisition",
+      "question": "What choice does the opponent make when I play Penance for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent chooses one: put one card from their Hand in their Graveyard; or +1 Conviction",
+          "Penance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses either to put one Hand card in their Graveyard or allow you to gain 1 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-intelligence-reconnaissance",
+      "category": "intelligence",
+      "question": "Reconnaissance is banked and I initiated the battle. During Onset, what can I learn and what choice may I make afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During Onset in a battle you initiated, you may discard this card to reveal the opponent's Hand. You may then withdraw or continue the attack",
+          "Reconnaissance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Reconnaissance to reveal the opponent's Hand, then choose to withdraw or continue the attack."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-redemption-asset",
+      "category": "cards",
+      "question": "Redemption is banked and an opposing effect puts one of my other cards in my Discard Pile. What may Redemption do after that effect applies?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard this card to return one of those cards to your Hand after the effect applies",
+          "Redemption"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Redemption after the effect applies to return one of those cards from your Discard Pile to your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-reinforcements-asset",
+      "category": "cards",
+      "question": "When may I use banked Reinforcements to gain an Action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During Opening or Denouement, discard this card: +1 Action",
+          "Reinforcements"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "During Opening or Denouement, discard Reinforcements to gain +1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-mystics-rend-veil-asset",
+      "category": "mystics",
+      "question": "Rend the Veil is banked. After Tactics are revealed, what may I do with a Tactic effect in my Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After Tactics are revealed, you may discard this card to apply the Tactic effect of one card in your Graveyard that can apply now",
+          "Rend the Veil"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Rend the Veil to apply the Tactic effect of one Graveyard card that can apply then."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-requisition-action",
+      "category": "cards",
+      "question": "What does Requisition's Action effect require and give?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Discard 1 of your Assets: +2 Cards",
+          "Requisition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard one of your Assets to gain 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-military-reserve-force-asset",
+      "category": "military",
+      "question": "Reserve Force has a Tactic bound beneath it. After Tactics are revealed, what may I do with the bound card and where does it go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After Tactics are revealed, you may discard this card and play the bound card as a Tactic. Put it in your Graveyard in the Aftermath",
+          "Reserve Force"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Reserve Force and play the bound card as a Tactic; that bound card goes to your Graveyard in the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-second-line-action",
+      "category": "cards",
+      "question": "What does Second Line do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Card, then place one card from your Hand on top of your Draw Pile",
+          "Second Line"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Draw 1 Card, then place one card from your Hand on top of your Draw Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-resistance-asset",
+      "category": "cards",
+      "question": "Resistance is banked during a Counterattack. What Reserve bonus does it provide?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Counterattack — +2 Reserve",
+          "Resistance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "+2 Reserve."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-resourcefulness",
+      "category": "cards",
+      "question": "Resourcefulness is banked. What is the once-per-turn trigger for drawing a card from its Asset effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The first time during each of your turns that you apply the Action, Gambit, or Tactic effect of a cost-1 card you played, set, or chose, +1 Card",
+          "Resourcefulness"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The first time on each of your turns that you apply the Action, Gambit, or Tactic effect of a cost-1 card you played, set, or chose, gain 1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-revolution-action",
+      "category": "cards",
+      "question": "I play Revolution for its Action effect. I discard four Hand cards and the opponent discards two. How many cards does each player draw?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each player discards their Hand, then draws cards equal to the number of cards the other player discarded",
+          "Revolution"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You draw 2 cards and the opponent draws 4 cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-card-sabotage-action",
+      "category": "cards",
+      "question": "I play Sabotage for its Action effect on a face-up opposing Asset. How long does that Asset remain face down?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Turn it face down until the start of your next turn",
+          "Sabotage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Until the start of your next turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-interaction-reinforcements-action-shorthand",
+      "category": "interaction",
+      "question": "During Denouement I discard banked Reinforcements for its +1 Action. Is that extra Action available in Denouement immediately?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "During Opening or Denouement, discard this card: +1 Action",
+          "Reinforcements"
+        ],
+        [
+          "+N Action grants N additional Actions during the current phase",
+          "Actions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Reinforcements is used during Denouement and its +1 Action shorthand grants an additional Action in the current phase, so the extra Action is available in Denouement."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-interaction-decoys-sedition",
+      "category": "interaction",
+      "question": "The opponent plays Sedition's Action effect, forcing me to discard one Asset. I have Decoys banked. May I discard Decoys to keep the Asset Sedition would force out?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent discards 1 Asset",
+          "Sedition"
+        ],
+        [
+          "If an opposing effect would Remove one or more of your other Assets, you may discard this card to keep one of them in play",
+          "Decoys"
+        ],
+        [
+          "An Asset is Removed whenever a rule or effect forces it to leave play",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Sedition's forced discard is Removal, so Decoys may be discarded to keep that other Asset in play."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-unsupported-wrong-first-turn",
+      "category": "unsupported",
+      "question": "We accidentally let the wrong player take the first turn and only noticed during that turn's Denouement. Does published v0.7.1 define an official rollback or repair procedure?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official rollback or repair procedure for this misplay; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-out-of-scope-line-credit-buff",
+      "category": "out-of-scope",
+      "question": "Should Line of Credit be buffed before the next release?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for balance/design judgment rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    },
+    {
+      "id": "blind-p-out-of-scope-war-witch-lore",
+      "category": "out-of-scope",
+      "question": "Write a backstory for the War Witch card.",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is a creative/lore request rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
