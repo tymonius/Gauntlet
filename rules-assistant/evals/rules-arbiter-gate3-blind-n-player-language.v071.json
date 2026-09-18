@@ -1,0 +1,294 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "N",
+  "behaviorRevision": "v071-qa-20260918-24",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche N benchmark authored only after r24 production deployment and current-live-publication verification succeeded; it was not used to construct r24.",
+  "blindnessPolicy": [
+    "This tranche was authored after production verification of r24 and was not used to construct r24.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-n-player-replacement-no-reopen",
+      "category": "player-language",
+      "question": "replacement gambit doesn't reopen old response window, right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Replacing a card does not reopen an earlier timing window",
+          "Replacing a Gambit or Tactic"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. Replacing the Gambit does not reopen an earlier timing window."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-gunboat-refused",
+      "category": "player-language",
+      "question": "gunboat refused = faceup extra gambit, doesn't use my gambit limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Set this card face up as an additional Gambit",
+          "does not count against your Gambit limit",
+          "Gunboat Diplomacy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-safe-conduct",
+      "category": "player-language",
+      "question": "safe conduct after refused terms turns my loss into withdrawal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "discard this card to withdraw instead",
+          "Safe Conduct"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-embargo",
+      "category": "player-language",
+      "question": "embargo knocks their asset limit down 1, floor zero?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Asset limit is reduced by 1, to a minimum of 0",
+          "Sanctions: Embargo"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-liquidation",
+      "category": "player-language",
+      "question": "liquidation treasury card -> capital equal value, then immediate deed buy?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gain Capital equal to its value, then you may immediately buy or buy out one Deed",
+          "Liquidation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-deep-cover",
+      "category": "player-language",
+      "question": "mission would fail, deep cover can grave itself and put mission back in hand instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put this card in your Graveyard to return that Mission to your Hand instead",
+          "Deep Cover"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-operational-reassessment",
+      "category": "player-language",
+      "question": "operational reassessment new mission can't complete this turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It cannot complete this turn",
+          "Operational Reassessment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-spectral-surveillance",
+      "category": "player-language",
+      "question": "spectral surveillance can go grave instead of intel and reveal all gambits OR all tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put this card in your Graveyard instead of spending Intel",
+          "reveal all opposing Gambits OR Tactics",
+          "Spectral Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-natures-altar",
+      "category": "player-language",
+      "question": "rite started through nature's altar can finish same turn if i still control it at completion?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Rite begun this way may complete this turn if you control this Territory",
+          "Nature's Altar"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, when its completion condition and timing are satisfied."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-confession-gambit",
+      "category": "player-language",
+      "question": "confession picked their gambit in hand. if they set one this turn, they have to set that card if able?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if they set a Gambit, they must set that card if able",
+          "Confession"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-retribution",
+      "category": "player-language",
+      "question": "retribution fires and they have no assets. +2 conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If they have no Assets, +2 Conviction",
+          "Retribution"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you discard Retribution after they lose a battle they initiated."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-difficult-terrain",
+      "category": "player-language",
+      "question": "enter difficult terrain = movement ends and no card action in denouement that turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "movement ends",
+          "cannot play a card for its Action effect during Denouement",
+          "Difficult Terrain"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-pathfinders-difficult",
+      "category": "player-language",
+      "question": "pathfinders shut off difficult terrain during my movement, so entering it doesn't end movement?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "printed effect is inactive during your movement this turn",
+          "Pathfinders"
+        ],
+        [
+          "When a player enters Difficult Terrain, their movement ends",
+          "Difficult Terrain"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. With Difficult Terrain's printed effect inactive during your movement, its movement-ending effect does not stop you."
+        }
+      ]
+    },
+    {
+      "id": "blind-n-player-fortified-subversion",
+      "category": "player-language",
+      "question": "attacking fortified pass, my assets are inactive. can't use banked subversion there?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "the attacker's Assets are inactive",
+          "Fortified Pass"
+        ],
+        [
+          "When an opposing Asset's effect would apply",
+          "Subversion"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. The attacking player's banked Subversion Asset effect is inactive while Fortified Pass's suppression applies."
+        }
+      ]
+    }
+  ]
+}
