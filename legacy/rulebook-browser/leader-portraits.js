@@ -284,6 +284,8 @@ function buildCandidateLeaderProfile(name, src) {
 
   const playstyle = [...profile.children]
     .find(element => element.tagName === 'P' && /^Playstyle:/i.test(element.textContent.trim()));
+  const motto = [...profile.children]
+    .find(element => element.tagName === 'P' && /^Motto:/i.test(element.textContent.trim()));
   const ability = [...profile.children]
     .find(element => /^(UL|OL)$/.test(element.tagName));
 
@@ -294,6 +296,10 @@ function buildCandidateLeaderProfile(name, src) {
   if (playstyle) {
     playstyle.classList.add('candidate-leader-playstyle');
     identity.append(playstyle);
+  }
+  if (motto) {
+    motto.classList.add('candidate-leader-motto');
+    identity.append(motto);
   }
   if (ability) {
     ability.classList.add('candidate-leader-ability');
