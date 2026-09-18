@@ -1,0 +1,938 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "Q",
+  "behaviorRevision": "v071-qa-20260918-27",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche Q certification benchmark authored only after r27 was merged, deployed, and current-live-publication verification succeeded. It was not used to construct r27 and stresses previously under-sampled card text, faction interactions, repair-gap handling, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-27; it was not used to construct r27.",
+    "Do not edit or retroactively regrade tranche Q after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-Q case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche Q, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-q-clemency-action",
+      "category": "diplomats",
+      "question": "I play Clemency for its Action effect and choose a card in the opponent's Graveyard. What choice does the opponent make, and what do I gain from each branch?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Clemency",
+          "Move it to their Discard Pile; +1 Influence",
+          "Leave it there; +1 Card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses either to move the chosen card to their Discard Pile, giving you +1 Influence, or leave it in their Graveyard, giving you +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-demilitarized-zone-reaction",
+      "category": "diplomats",
+      "question": "After my Terms are accepted and the Proposal's Accepted effect applies, what may Demilitarized Zone do immediately?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Demilitarized Zone",
+          "place this Overlay on the contested Territory",
+          "Each player there withdraws",
+          "Neither player may enter there this turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may place the Overlay on the contested Territory; each player there withdraws, and neither player may enter that Territory for the rest of the turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-demilitarized-zone-capture",
+      "category": "diplomats",
+      "question": "A Territory with Demilitarized Zone would be captured. What happens to the Overlay and the capture?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Demilitarized Zone",
+          "When this Territory would be captured, discard this Overlay instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard the Demilitarized Zone Overlay instead of capturing the Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-diplomatic-divination-hit",
+      "category": "diplomats",
+      "question": "I use Diplomatic Divination when offering Terms, name 'accept,' and the opponent accepts. What happens?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Diplomatic Divination",
+          "if you named that choice, +1 Influence and put this card in your Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 1 Influence and put Diplomatic Divination in your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-detente-once-turn",
+      "category": "diplomats",
+      "question": "Détente is banked and the opponent accepts two different Proposals this turn that were each already ratified when offered. How many times does Détente award Influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Détente",
+          "The first time each turn",
+          "already ratified when you offered it, +1 Influence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once: Détente awards +1 Influence only the first qualifying time each turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-foreclosure-action",
+      "category": "financiers",
+      "question": "During Denouement, when can Foreclosure advance my Front Line without a battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Foreclosure",
+          "next opposing Territory immediately beyond your Front Line",
+          "if its Deed is yours and it is unoccupied",
+          "Advance Front Line 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "During Denouement, if the next opposing Territory immediately beyond your Front Line is unoccupied and you own its Deed, Foreclosure advances your Front Line by 1."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-foreclosure-battle",
+      "category": "financiers",
+      "question": "I initiated and won a battle on a Territory whose Deed I owned when the battle began. If I use Foreclosure's battle effect, do I become the occupier?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Foreclosure",
+          "advance Front Line 1, if able, instead of becoming the occupier"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Foreclosure advances your Front Line by 1, if able, instead of making you the occupier."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-war-bonds-first-battle",
+      "category": "financiers",
+      "question": "War Bonds is banked. What may I do after the first battle each turn, and what resource do I gain if I do it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "War Bonds",
+          "After the first battle each turn",
+          "place one card from your Hand face up in your Treasury",
+          "If you do, +1 Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After the first battle each turn, you may place one Hand card face up in Treasury; if you do, gain 1 Capital."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-actuarial-alchemy-tiebreak",
+      "category": "financiers",
+      "question": "I lose a battle only after a Tiebreak Roll. Can Actuarial Alchemy measure the loss margin from that Tiebreak Roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Actuarial Alchemy",
+          "Battle Total or Tiebreak Roll exceeded yours"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. If you put Actuarial Alchemy in your Graveyard after the loss, it can gain Capital equal to the amount by which the opponent's Tiebreak Roll exceeded yours."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-monetary-crisis-aftermath",
+      "category": "financiers",
+      "question": "Monetary Crisis is used as a Gambit or Tactic. In the Aftermath, what happens to a player who has four cards in Hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Monetary Crisis",
+          "each player with more than one card in Hand chooses one and discards the rest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "That player chooses one card to keep and discards the other three."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-disinformation-gambit-return",
+      "category": "intelligence",
+      "question": "I set Disinformation as a Gambit and the opponent also set a Gambit. What does Disinformation give me, and where does it go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Disinformation",
+          "if the opponent also set a Gambit, gain Advantage",
+          "return this card to your Hand instead of putting it in your Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain Advantage, and in the Aftermath return Disinformation to your Hand instead of putting it in your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-disinformation-mission",
+      "category": "intelligence",
+      "question": "What must happen for Disinformation's Mission to complete?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Disinformation",
+          "Complete after you win a battle in which the opponent set a Gambit and you did not"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You must win a battle in which the opponent set a Gambit and you did not."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-treason-asset",
+      "category": "intelligence",
+      "question": "Treason is banked. After Tactics reveal, what may I do to an opposing Gambit or Tactic effect that has not yet taken effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treason",
+          "discard this card",
+          "Negate it, then apply that effect"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Treason, choose one such opposing effect, negate it, then apply that effect yourself."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-subversion-gambit",
+      "category": "intelligence",
+      "question": "I use Subversion as a Gambit or Tactic. What happens to opposing Assets during that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Subversion",
+          "Opposing Assets cannot be used during this battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Opposing Assets cannot be used during that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-encampment-action",
+      "category": "military",
+      "question": "Where may I place Encampment with its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Encampment",
+          "Place this Overlay on a Territory you occupy and control"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Place the Encampment Overlay on a Territory you both occupy and control."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-encampment-command",
+      "category": "military",
+      "question": "Encampment is on a Territory I still occupy and control at the end of my turn. What does it give me?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Encampment",
+          "At the end of this card's owner's turn",
+          "occupy and control this Territory, +1 Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 1 Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-shock-and-awe-breakthrough",
+      "category": "military",
+      "question": "I attack on an enemy-controlled Territory with Shock and Awe and win, choosing Breakthrough. What movement does that branch produce?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Shock and Awe",
+          "Breakthrough",
+          "Opponent: Retreat +1, if able; then you advance one Position"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent retreats 1 additional Position if able, then you advance 1 Position."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-shock-and-awe-consolidate",
+      "category": "military",
+      "question": "I win with Shock and Awe and choose Consolidate. What happens to Front Line and Command?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Shock and Awe",
+          "Consolidate",
+          "Advance Front Line 1, if able; Command = 2"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Advance Front Line by 1 if able, and set Command to 2."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-rearguard-card-return",
+      "category": "military",
+      "question": "Rearguard prevents an opposing card effect from entering my Position later that turn. What happens to the card used for that movement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rearguard",
+          "return any card used to its owner's Hand",
+          "That Order or card cannot be used again that turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Return that card to its owner's Hand, and it cannot be used again that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-countercharge-asset",
+      "category": "military",
+      "question": "Countercharge is banked. I win a battle I did not initiate. What may I do at the end of the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Countercharge",
+          "At the end of the Aftermath",
+          "if you won and did not initiate this battle",
+          "put this card in your Graveyard to advance one Position"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put Countercharge in your Graveyard to advance 1 Position."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-accursed-wager-action",
+      "category": "mystics",
+      "question": "I play Accursed Wager for its Action effect, then initiate a battle later that turn. What happens to the losing player's Hand after that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accursed Wager",
+          "After the next battle you initiate this turn",
+          "losing player puts one card from their Hand in their Graveyard, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The losing player puts one card from their Hand in their Graveyard, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-witchcraft-asset",
+      "category": "mystics",
+      "question": "Witchcraft is banked. After Tactics reveal, what is its once-per-turn cost and what may it repeat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Witchcraft",
+          "Once per turn, after Tactics are revealed",
+          "put 1 card from your Hand in your Graveyard",
+          "repeat one other Gambit or Tactic effect you control in this battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once per turn after Tactics reveal, put one Hand card in your Graveyard to repeat one other Gambit or Tactic effect you control in that battle that can apply then."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-heresy-cost",
+      "category": "inquisition",
+      "question": "How much Conviction does Heresy cost, and whose Graveyard supplies the copied Gambit or Tactic effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Heresy",
+          "spend 4 Conviction",
+          "one card in the opponent's Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Spend 4 Conviction, and use an applicable Gambit or Tactic effect from a card in the opponent's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-guilt-battle",
+      "category": "inquisition",
+      "question": "I use Guilt by Association in battle and later choose an opposing card the opponent controlled in that battle. What does it do to matching cards in the opponent's Discard Pile?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Guilt by Association",
+          "Put every card in the opponent's Discard Pile with that title in their Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put every card in the opponent's Discard Pile with that chosen title into their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-divine-mercy-battle",
+      "category": "inquisition",
+      "question": "What does Divine Mercy do when used as a Gambit or Tactic?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Divine Mercy",
+          "Move one card from the opponent's Graveyard to their Discard Pile. +2 Battle Total"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Move one card from the opponent's Graveyard to their Discard Pile, then gain +2 Battle Total."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-penance-battle",
+      "category": "inquisition",
+      "question": "What choice does the opponent make when Penance is used as a Gambit or Tactic?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Penance",
+          "put one card from their Hand in their Graveyard; or +1 Battle Total"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses either to put one card from Hand in their Graveyard or give you +1 Battle Total."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-tyranny-asset",
+      "category": "inquisition",
+      "question": "Tyranny is banked. How often per turn can it negate a newly revealed opposing Gambit or Tactic, and what does that cost?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Tyranny",
+          "Once per turn",
+          "spend 1 Conviction to negate one of them"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once per turn, spend 1 Conviction to negate one newly revealed opposing Gambit or Tactic before its effect applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-salvage-action",
+      "category": "cards",
+      "question": "What two card movements happen when I play Salvage for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Salvage",
+          "Return one card from your Discard Pile to your Hand, then discard one card from your Hand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Return one card from your Discard Pile to your Hand, then discard one card from your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-salvage-battle",
+      "category": "cards",
+      "question": "I win a battle after using Salvage as a Gambit or Tactic. What may I do with one card remaining in Reserve, and what must I do afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Salvage",
+          "put one card remaining in your Reserve in your Hand instead of your Discard Pile",
+          "then discard one card from your Hand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put one remaining Reserve card into your Hand instead of your Discard Pile, then discard one card from your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-scorched-earth-asset",
+      "category": "cards",
+      "question": "Scorched Earth is banked. I lose while defending a Territory I control and retreat. What may I do in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Scorched Earth",
+          "if you lost while defending a Territory you control, after you retreat",
+          "place this card on that Territory as a Ruins Overlay"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may place Scorched Earth on that Territory as a Ruins Overlay."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-sequestration-action",
+      "category": "cards",
+      "question": "I play Sequestration for its Action effect while each player controls several Assets. What does each player keep?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Sequestration",
+          "Each player keeps 1 Asset, if able, and discards the rest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Each player keeps one Asset if able and discards the rest."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-sequestration-battle",
+      "category": "cards",
+      "question": "Sequestration is used as a Gambit or Tactic. What happens to Assets during that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Sequestration",
+          "All Assets are inactive during this battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "All Assets are inactive during that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-rousing-speech-asset",
+      "category": "cards",
+      "question": "Rousing Speech is banked and the opponent banks an Asset. What optional draw/discard procedure may I use?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rousing Speech",
+          "Whenever the opponent banks an Asset, you may draw one card, then discard one card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may draw one card, then discard one card."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-rousing-speech-battle",
+      "category": "cards",
+      "question": "I use Rousing Speech as a Gambit or Tactic while the opponent has more face-up Assets than I do. What do I gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rousing Speech",
+          "If the opponent has more face-up Assets than you, gain Advantage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain Advantage."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-rallying-cry-action",
+      "category": "cards",
+      "question": "What does Rallying Cry do when played for its Action effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rallying Cry",
+          "Action",
+          "+1 Card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain 1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-rallying-cry-battle",
+      "category": "cards",
+      "question": "What does Rallying Cry do when used as a Gambit or Tactic?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rallying Cry",
+          "Gambit/Tactic",
+          "+1 Battle Total"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain +1 Battle Total."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-second-line-battle",
+      "category": "cards",
+      "question": "I use Second Line in battle. In the Aftermath, what may I do with one card remaining in Reserve?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Second Line",
+          "place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may place one remaining Reserve card on top of your Draw Pile instead of putting it in your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-stand-ground-asset",
+      "category": "cards",
+      "question": "Stand Ground is banked and an opposing card effect would move me. What may I do?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Stand Ground",
+          "discard this card to ignore that movement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Stand Ground to ignore that movement."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-strategic-withdrawal-denouement",
+      "category": "cards",
+      "question": "I play Strategic Withdrawal during Denouement after my normal Movement ended. What movement sequence does it create?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Strategic Withdrawal",
+          "begin a new Movement sequence with up to one Position of movement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It begins a new Movement sequence with up to one Position of movement."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-strategic-withdrawal-battle",
+      "category": "cards",
+      "question": "I use Strategic Withdrawal in battle and lose. After my normal retreat, what two things may I do?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Strategic Withdrawal",
+          "move one additional Position toward your own end",
+          "return one other card you controlled in this battle to your Hand"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may move one additional Position toward your own end and return one other card you controlled in the battle to your Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-redemption-negated-tactic",
+      "category": "cards",
+      "question": "An opposing effect negates one other Tactic I chose and that Tactic would enter my Discard Pile. If Redemption is my other battle card, what happens to the negated Tactic in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Redemption",
+          "If an opposing effect negates one other Tactic you chose",
+          "return it to your Hand in the Aftermath instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Return the negated Tactic to your Hand in the Aftermath instead of letting it enter your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-trade-concessions-accepted-bank",
+      "category": "diplomats",
+      "question": "Trade Concessions is accepted and the opponent chooses the option to bank a card from Hand. What happens to Trade Concessions and what additional card benefit occurs?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Trade Concessions",
+          "Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After banking one eligible Hand card, put Trade Concessions in your Discard Pile and gain 1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-diplomatic-latitude-refused",
+      "category": "diplomats",
+      "question": "I offered two Proposals through Diplomatic Latitude and the opponent refused. How many Refused effects apply, and what happens to the other Proposal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Diplomatic Latitude",
+          "Choose one Proposal before applying its Refused effect",
+          "Only it may be imposed",
+          "The other Proposal does not take effect or become ratified"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Choose one Proposal and apply only its Refused effect; only that Proposal may be imposed, and the other does not take effect or become ratified."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-plenipotentiary-refused-effect",
+      "category": "diplomats",
+      "question": "I use Plenipotentiary after an opponent refuses an unratified Proposal and successfully ratify it that way. Does the Proposal's Refused effect still apply, and do I gain Influence for that ratification?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Plenipotentiary",
+          "Gain no Influence for ratifying it this way. Its Refused effect still applies"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, the Refused effect still applies; no, you gain no Influence for ratifying it through Plenipotentiary."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-interaction-sequestration-contingency",
+      "category": "interaction",
+      "question": "Sequestration forces me to discard Contingency Plan because I can keep only one Asset. Does Contingency Plan's Removed trigger give me +1 Card?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Sequestration",
+          "Each player keeps 1 Asset, if able, and discards the rest"
+        ],
+        [
+          "Contingency Plan",
+          "If this card is Removed, +1 Card"
+        ],
+        [
+          "Removed Assets",
+          "forced to discard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Sequestration forces Contingency Plan to leave play, which counts as Removal, so its Removed trigger gives +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-unsupported-extra-hand-draw",
+      "category": "unsupported",
+      "question": "I accidentally drew one extra card into my Hand and cannot identify which card was the extra draw. Does published v0.7.1 define an official repair procedure?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official repair procedure for this accidental hidden-information error; the Arbiter should identify the gap and issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-q-out-of-scope-opening-strategy",
+      "category": "out-of-scope",
+      "question": "What is the strongest opening strategy for Banker against Spymaster?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for competitive strategy rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
