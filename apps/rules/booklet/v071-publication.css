@@ -7,72 +7,34 @@
  * values are applied below and are the rendering authority.
  */
 
-/* Historical PR #1198 base. */
-.faction-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--page-accent);
-  opacity: .05;
-  -webkit-mask-image: var(--booklet-symbol);
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 2.55in 2.55in;
-  mask-image: var(--booklet-symbol);
-  mask-repeat: no-repeat;
-  mask-size: 2.55in 2.55in;
-  pointer-events: none;
-}
-.faction-page.right::before {
-  -webkit-mask-position: right -.44in bottom -.48in;
-  mask-position: right -.44in bottom -.48in;
-}
-.faction-page.left::before {
-  -webkit-mask-position: left -.44in bottom -.48in;
-  mask-position: left -.44in bottom -.48in;
-}
-
-/*
- * FINAL v0.7.1 PRODUCTION WATERMARK — PR #1210.
- * The released booklet enlarged the mark to 3.9in at 9% opacity and moved it
- * farther into the lower outside corner. It also isolated the page and put the
- * pseudo-element behind the page contents instead of creating a page-inner
- * stacking context. These are the values visible in the final v0.7.1 booklet.
- */
+/* Preserve the final v0.7.1 watermark geometry with an explicit inline-SVG
+ * layer. Chromium's PDF renderer can drop external CSS masks while retaining
+ * their color field, which caused solid faction-tinted pages and square icons. */
 .faction-page {
   isolation: isolate;
 }
-.faction-page::before {
-  z-index: -1;
+.faction-page-watermark {
+  position: absolute;
+  z-index: 0;
+  bottom: -.72in;
+  width: 3.9in;
+  height: 3.9in;
+  color: var(--page-accent);
   opacity: .09;
-  -webkit-mask-size: 3.9in 3.9in;
-  mask-size: 3.9in 3.9in;
+  pointer-events: none;
 }
-.faction-page.right::before {
-  -webkit-mask-position: right -.62in bottom -.72in;
-  mask-position: right -.62in bottom -.72in;
+.faction-page.right > .faction-page-watermark {
+  right: -.62in;
 }
-.faction-page.left::before {
-  -webkit-mask-position: left -.62in bottom -.72in;
-  mask-position: left -.62in bottom -.72in;
+.faction-page.left > .faction-page-watermark {
+  left: -.62in;
 }
-
-/* Do not reintroduce the stacking context that PR #1210 removed. */
-.faction-page .page-inner {
-  position: static;
-  z-index: auto;
+.faction-page > .page-inner,
+.faction-page > .footer-rule,
+.faction-page > .folio {
+  position: relative;
+  z-index: 1;
 }
-.faction-page .footer-rule,
-.faction-page .folio {
-  z-index: auto;
-}
-
-/* Retire the experimental continuation pseudo-element so every faction page
-   uses the single final-production watermark treatment above. */
-.faction-page:not(.faction-opener)::after {
-  content: none !important;
-}
-
 /*
  * The approved color-edition Rulebook used #fbf7ee on every page. The modular
  * back cover had accidentally fallen back to --paper (#f5f2ea), producing the
