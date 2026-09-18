@@ -857,7 +857,7 @@ async function main() {
   // four rather than assuming the baseline page count will remain stable.
   let fillerCount = null;
   const fillerAttempts = [];
-  for (let candidate = 0; candidate <= 3; candidate += 1) {
+  for (let candidate = 0; candidate <= 7; candidate += 1) {
     resetPublicationPages();
     composePublication(publication, documentId, rendered.headings, prelude, sections, candidate);
     fillerAttempts.push(`${candidate} filler(s) → ${pages.length} pages`);
@@ -868,7 +868,7 @@ async function main() {
   }
 
   if (fillerCount === null) {
-    throw new Error(`Could not compose booklet to a multiple of four pages with at most three fillers: ${fillerAttempts.join(', ')}.`);
+    throw new Error(`Could not compose booklet to a multiple of four pages with at most seven distributed fillers: ${fillerAttempts.join(', ')}.`);
   }
 
   assertFillerPlacement(fillerCount);
