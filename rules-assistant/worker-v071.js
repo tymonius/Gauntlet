@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-21";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-22";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -142,6 +142,23 @@ const REARGUARD_ROUT_AUTHORITY_IDS = [
   "card:military-rearguard",
   "leader:rout",
   "rulebook:complete-rules-17"
+];
+const DIRECT_PERMISSION_AUTHORITY_IDS = [
+  "rulebook:directly-permitted-card-procedures"
+];
+const NEGATED_BATTLE_CARD_AUTHORITY_IDS = [
+  "rulebook:negation",
+  "rulebook:clearing-battle-cards"
+];
+const CONDITION_PREFIX_AUTHORITY_IDS = [
+  "rulebook:condition-prefixes"
+];
+const ADDITIONAL_TACTIC_AUTHORITY_IDS = [
+  "rulebook:additional-tactics",
+  "rulebook:reserve-and-tactics"
+];
+const NO_MARTYRS_AUTHORITY_IDS = [
+  "rulebook:no-martyrs"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -729,6 +746,26 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   ) {
     reminders.push(
       "Resolve the interaction through the Front Line control rules, not by treating 'advance Front Line' as a non-capture movement. A Front Line is the player's contiguous controlled Territories, and adding the next opposing Territory to it is the capture/control change. If Assimilation advances the Front Line to include the Territory Protracted Siege protects, evaluate Protracted Siege's capture-prevention trigger against that capture."
+    );
+  }
+
+  if (
+    canonicalIds.has("rulebook:directly-permitted-card-procedures")
+    && /\b(?:bank|play|place|reveal|use)\b/.test(current)
+    && /\b(?:action|another action|second action|extra action|consume|spend|cost)\b/.test(current)
+  ) {
+    reminders.push(
+      "A rule or effect that directly instructs or permits a card procedure at a stated timing resolves that procedure as part of the instruction. It does not spend or require another Action unless the instruction expressly says 'as an Action', 'take an Action', or otherwise identifies an Action. Distinguish that direct permission from the ordinary inherent Bank Action or ordinary play-for-Action procedure."
+    );
+  }
+
+  if (
+    canonicalIds.has("rulebook:condition-prefixes")
+    && /\b(?:attacker|defender|counterattack|win|lose)\b/.test(current)
+    && /\b(?:clause|prefix|advantage|battle total|apply|applies|later|next)\b/.test(current)
+  ) {
+    reminders.push(
+      "A condition prefix applies only to the clause that immediately follows it. Do not carry the condition across a sentence boundary or into a later independent clause unless that later clause is separately conditioned."
     );
   }
 
@@ -1414,7 +1451,35 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\b(?:withdraw|los(?:e|es|t|ing)|loss|winner|trigger|effect)\b/.test(current);
   const rearguardRoutFocus = /\brearguard\b/.test(current)
     && /\brout\b/.test(current);
-  const topicAuthorityIds = battleRoleFocus
+  const directPermissionFocus = (
+    /\b(?:direct(?:ly)?|immediate(?:ly)?|effect|instruction|instructs?|permits?|lets?)\b/.test(current)
+    && /\b(?:bank|play|place|reveal|use)\b/.test(current)
+    && /\b(?:action|another action|second action|extra action|consume|spend|cost)\b/.test(current)
+  ) || (
+    currentWordCount <= 14
+    && /\b(?:conscription|trade concessions)\b/.test(recent)
+    && /\b(?:action|another|second|extra|cost|consume|spend)\b/.test(current)
+  );
+  const negatedTacticDestinationFocus = /\bnegat(?:e|ed|ion)\b/.test(current)
+    && /\btactic\b/.test(current)
+    && /\b(?:discard|aftermath|destination|go|goes|still|clear)\b/.test(current);
+  const conditionPrefixFocus = /\b(?:attacker|defender|counterattack|win|lose)\b/.test(current)
+    && /\b(?:condition|prefix|clause|advantage|battle total|apply|applies|later|next)\b/.test(current);
+  const additionalTacticFocus = /\b(?:\+\s*\d+\s+tactic|additional tactic|extra tactic)\b/.test(current)
+    && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
+  const noMartyrsFocus = /\bno martyrs\b/.test(current)
+    && /\b(?:retreat|loss|lose|loses|lost|trigger|benefit|prevent|stop)\b/.test(current);
+  const topicAuthorityIds = conditionPrefixFocus
+    ? CONDITION_PREFIX_AUTHORITY_IDS
+    : negatedTacticDestinationFocus
+      ? NEGATED_BATTLE_CARD_AUTHORITY_IDS
+    : directPermissionFocus
+      ? DIRECT_PERMISSION_AUTHORITY_IDS
+    : additionalTacticFocus
+      ? ADDITIONAL_TACTIC_AUTHORITY_IDS
+    : noMartyrsFocus
+      ? NO_MARTYRS_AUTHORITY_IDS
+    : battleRoleFocus
     ? GAMBIT_TACTIC_ROLE_AUTHORITY_IDS
     : noWinnerClearingFocus
       ? NO_WINNER_AUTHORITY_IDS
