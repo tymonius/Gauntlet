@@ -671,7 +671,7 @@ async function ensureFactionSymbolDefinition(src) {
         throw new Error(`Invalid faction symbol SVG: ${src}`);
       }
 
-      const id = `booklet-faction-symbol-${factionSymbolDefinitionCache.size}`;
+      const id = `booklet-faction-symbol-${src.split('/').pop().replace(/\.svg$/i, '').replace(/[^a-z0-9_-]+/gi, '-')}`;
       const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol');
       symbol.id = id;
       symbol.setAttribute('viewBox', sourceSvg.getAttribute('viewBox') || '0 0 1000 1000');
@@ -710,9 +710,10 @@ async function hydrateFactionSymbols() {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('focusable', 'false');
-    svg.setAttribute('viewBox', '0 0 1 1');
     const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
     use.setAttribute('href', `#${symbolIds.get(target.dataset.factionSymbolSrc)}`);
+    use.setAttribute('width', '100%');
+    use.setAttribute('height', '100%');
     svg.append(use);
     target.replaceChildren(svg);
   });
