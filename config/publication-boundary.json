@@ -44,6 +44,7 @@
       "scripts",
       "src",
       "tests",
+      "tools",
       "workers"
     ]
   },
@@ -85,6 +86,13 @@
     {"source": "packages/rules/comprehensive/comprehensive-rules.md", "publicPath": "/rulebook/sources/complete-rules.md", "kind": "release-transition-source"},
     {"source": "packages/rendering/face-authority.mjs", "publicPath": "/card-design/face-authority.mjs", "kind": "shared-browser-contract"},
     {"source": "packages/rendering/production-surface.mjs", "publicPath": "/card-design/production-surface.mjs", "kind": "shared-browser-contract"},
+    {"source": "tools/card-design/artwork-authoring/artwork-authoring-client.js", "publicPath": "/card-design/artwork-authoring-client.js", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-batch-publish-control.js", "publicPath": "/card-design/artwork-batch-publish-control.js", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-compositor-targets.js", "publicPath": "/card-design/artwork-compositor-targets.js", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-compositor.css", "publicPath": "/card-design/artwork-compositor.css", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-compositor.js", "publicPath": "/card-design/artwork-compositor.js", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-crop.js", "publicPath": "/card-design/artwork-crop.js", "kind": "production-tooling"},
+    {"source": "tools/card-design/artwork-authoring/artwork-publish-fetch-recovery.js", "publicPath": "/card-design/artwork-publish-fetch-recovery.js", "kind": "production-tooling"},
     {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.html", "publicPath": "/card-design/long-card-render.html", "kind": "historical-card-review"},
     {"source": "legacy/card-design-v0.6.3/long-card-render.js", "publicPath": "/card-design/long-card-render.js", "kind": "historical-card-review"},

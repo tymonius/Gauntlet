@@ -7,7 +7,7 @@
   const PUBLIC_SAVE_PATH = '/api/art-direction';
   const PUBLISH_PATH = '/api/art-direction/publish';
   const WORKING_BRANCH = 'artwork/compositor-authoring';
-  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/game-data/current-game.json?ref=${encodeURIComponent(WORKING_BRANCH)}`;
+  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/packages/game-data/current-game.json?ref=${encodeURIComponent(WORKING_BRANCH)}`;
   const WORKING_PR_API = 'https://api.github.com/repos/tymonius/Gauntlet/pulls?state=open&head=tymonius%3Aartwork%2Fcompositor-authoring&base=main&per_page=1';
   const CANONICAL_FILE_URL = '/game-data/current-game.json';
 

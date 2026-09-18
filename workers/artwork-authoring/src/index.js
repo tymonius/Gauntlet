@@ -18,7 +18,7 @@ function config(env) {
     allowedLogin: String(env.GITHUB_ALLOWED_LOGIN || 'tymonius').toLowerCase(),
     defaultBranch: String(env.GITHUB_DEFAULT_BRANCH || 'main'),
     authorBranch: String(env.GITHUB_AUTHOR_BRANCH || 'artwork/compositor-authoring'),
-    authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json'),
+    authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'packages/game-data/current-game.json'),
     callbackUrl: String(env.OAUTH_CALLBACK_URL || ''),
   };
 }
@@ -294,7 +294,7 @@ async function ensurePullRequest(token, cfg) {
       title: 'Update canonical artwork compositions',
       head: cfg.authorBranch,
       base: cfg.defaultBranch,
-      body: 'Canonical artwork-composition updates saved from the public `/card-design/` compositor.\n\nArtwork direction is stored directly in `game-data/current-game.json.artDirection`, the complete current gameplay authority.',
+      body: 'Canonical artwork-composition updates saved from the public `/card-design/` compositor.\n\nArtwork direction is stored directly in `packages/game-data/current-game.json.artDirection`, the complete current gameplay authority.',
     }),
   });
 }
