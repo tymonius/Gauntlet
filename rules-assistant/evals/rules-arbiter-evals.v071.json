@@ -1044,6 +1044,41 @@
         "Purge"
       ],
       "expectedTopic": "Purge"
+    },
+    {
+      "id": "r29-tiebreak-polarity",
+      "category": "regression",
+      "question": "During a Tiebreak Roll, do Advantage, Disadvantage, card modifiers, or the previous battle totals apply?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Tiebreak Roll"
+      ],
+      "expectedAnswerPatterns": [
+        "No",
+        "do not apply"
+      ],
+      "forbiddenAnswerPatterns": [
+        "Yes."
+      ],
+      "origin": "gate3-blind-r-2026-09-18"
+    },
+    {
+      "id": "r29-retribution-owner",
+      "category": "regression",
+      "question": "The opponent loses a battle they initiated while Retribution is banked. What activation is required before its punishment applies?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Retribution"
+      ],
+      "expectedAnswerPatterns": [
+        "may discard"
+      ],
+      "forbiddenAnswerPatterns": [
+        "opponent gains +2 Conviction",
+        "opponent takes +2 Conviction",
+        "they take +2 Conviction"
+      ],
+      "origin": "gate3-blind-r-2026-09-18"
     }
   ],
   "smokeCaseIds": [
