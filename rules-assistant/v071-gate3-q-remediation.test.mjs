@@ -60,7 +60,7 @@ describe("Gate 3 tranche Q r28 remediation", () => {
     expect(sources.some((source) => source.canonicalId === "card:neutral-strategic-withdrawal")).toBe(true);
     const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, []);
     expect(reminder).toContain("declarative player-language question");
-    expect(reminder).toContain("never begin with No and then restate the proposition as true");
+    expect(reminder).toContain("Do not begin with No and then restate the proposition as true");
   });
 
   test("ordinary wh-questions are not misclassified as declarative confirmations", () => {
