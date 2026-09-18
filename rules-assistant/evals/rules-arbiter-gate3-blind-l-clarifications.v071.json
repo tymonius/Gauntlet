@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "L",
+  "behaviorRevision": "v071-qa-20260918-22",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche L ambiguous-follow-up cases authored after r22 production verification; each must request clarification rather than guess among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-l-clarify-contingency-decoys",
+      "question": "Does that one trigger if it gets forced out?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Contingency Plan and Decoys banked."
+        },
+        {
+          "role": "assistant",
+          "content": "They have different reactions to cards leaving play or being targeted."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-clarify-compound-capital-gains",
+      "question": "Does that one look at the top card after my normal Draw?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Compound Interest and Capital Gains banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Both affect Treasury, but at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-clarify-anathema-reembodiment",
+      "question": "Does that one stop a card from leaving the Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Anathema banked and Reembodiment banked."
+        },
+        {
+          "role": "assistant",
+          "content": "They interact with Graveyard movement in different ways."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-clarify-high-field-command",
+      "question": "Does that one raise my maximum Command?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have High Command and Field Command banked."
+        },
+        {
+          "role": "assistant",
+          "content": "They affect Command and Orders differently."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-clarify-poison-monastery",
+      "question": "Does that one shut off Arcane cards during the battle?",
+      "history": [
+        {
+          "role": "user",
+          "content": "The battle could be on Poisonous Gas or Monastery."
+        },
+        {
+          "role": "assistant",
+          "content": "Those Territories impose different battle restrictions."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,822 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "L",
+  "behaviorRevision": "v071-qa-20260918-22",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche L certification benchmark authored only after r22 was merged, deployed, and the current-live-publication verification succeeded. It was not used to construct r22 and stresses shared timing, zone/Asset semantics, direct permissions, faction procedures, card and Territory interactions, rules gaps, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-22; it was not used to construct r22.",
+    "Do not edit or retroactively regrade tranche L after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-L case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche L, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-l-core-shared-timing-alternates",
+      "category": "core",
+      "question": "The attacker and defender each control two effects that all apply at the same timing. Does one player resolve both of theirs first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the attacker applies one effect they control",
+          "the defender applies one effect they control",
+          "Shared timing"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. At shared timing the attacker applies one controlled effect, then the defender applies one, and they continue alternating until none remain."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-multiple-tactics-simultaneous-choice",
+      "category": "core",
+      "question": "An effect lets me choose two Tactics at once. Do I choose the first, reveal or resolve anything, and then choose the second?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When several Tactics are chosen as part of the same choice, choose them simultaneously",
+          "Multiple Gambits or Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Tactics chosen as part of the same choice are chosen simultaneously."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-revise-does-not-reopen",
+      "category": "core",
+      "question": "An effect lets me revise a Tactic choice after an earlier reveal or response opportunity has passed. Does revising the choice reopen that earlier opportunity?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Revising a choice does not create another reveal, response, or replacement opportunity",
+          "Revising a choice"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Revising a choice does not create a new reveal, response, or replacement opportunity unless the effect says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-interference-before-ordinary",
+      "category": "core",
+      "question": "At a reveal stage, one Tactic would negate another Tactic while a different Tactic only adds Battle Total. Which effect is resolved first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "resolve reveal-stage interference before ordinary effects",
+          "Reveal-stage interference"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The negation/reveal-stage interference resolves before the ordinary Battle Total effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-forced-asset-limit-is-removed",
+      "category": "core",
+      "question": "My Asset limit drops below the number of Assets I have banked, forcing me to discard one. Does that forced departure count as the defined Removed event?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If a player's Asset limit decreases below the number of Assets they have banked",
+          "each Asset they are forced to discard",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. An Asset forced out because the Asset limit fell counts as Removed."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-self-expiration-not-removed",
+      "category": "core",
+      "question": "An Asset leaves play because its own printed expiration condition happens normally. Does that count as Removed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "normal resolution, expiration, or self-removal condition does not count as Removal",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Normal self-expiration is not Removal unless a rule expressly says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-advantage-stacks-and-cancels",
+      "category": "core",
+      "question": "I have two separate instances of Advantage and one instance of Disadvantage before rolling battle dice. What is my net dice state?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cancel opposing instances one-for-one",
+          "double advantage plus one disadvantage leaves one net advantage",
+          "Advantage and disadvantage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "One net Advantage remains, so the player rolls two dice and uses the higher result."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-reroll-replaces-result",
+      "category": "core",
+      "question": "I reroll a die and the new result is worse. May I keep the original result instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the reroll replaces the result it rerolls",
+          "Use the new result",
+          "Rerolls"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The reroll replaces the original result; use the new result unless the rule says otherwise."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-direct-permission-action-cost",
+      "category": "core",
+      "question": "A rule directly permits me to use a Faction Feature at a stated timing but does not say '1 Action' or tell me to spend an Action. Does that permission consume my Action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "spends an Action only if it says 1 Action or expressly instructs the player to spend or take an Action",
+          "Directly permitted effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A directly permitted effect spends an Action only when it expressly says so."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-core-draw-recycles-discard",
+      "category": "core",
+      "question": "I need to draw two cards, but only one card remains in my Draw Pile and my Discard Pile has cards. Can the draw continue after the Draw Pile empties?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile",
+          "Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. When the Draw Pile cannot complete the draw, shuffle the Discard Pile into a new Draw Pile and continue."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-financiers-treasury-outside-normal-zones",
+      "category": "financiers",
+      "question": "A card is face up in my Treasury. Can I play it normally from there just because it is visible?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treasury cards are outside normal card zones",
+          "They cannot be played or affected unless a rule specifically refers to Treasury",
+          "Treasury"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Treasury cards cannot be played or affected unless a rule specifically refers to Treasury."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-financiers-multiple-purchases-recalculate",
+      "category": "financiers",
+      "question": "An effect lets me buy several Deeds. Do I calculate all of their costs from my Deed count before the first purchase?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "complete each purchase before recalculating the next cost",
+          "Buying and buying out Deeds"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Complete each purchase first, then recalculate the next Deed's cost from the updated state."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-intelligence-start-mission-not-play",
+      "category": "intelligence",
+      "question": "When I start an Active Mission from Hand, does that count as playing the card for one of its printed effects?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Starting it is not playing the card for a printed effect",
+          "Starting a Mission"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Starting a Mission is not playing that card for a printed effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-intelligence-counterintelligence-entire-effect",
+      "category": "intelligence",
+      "question": "An opposing card effect would reveal my Hand and then do something else based on that reveal. Counterintelligence applies. Does it prevent only the information reveal while the rest still resolves?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "prevents the entire opposing revealing effect, not only the information portion",
+          "Counterintelligence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Counterintelligence prevents the entire opposing revealing effect, not only the information portion."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-mystics-ended-binding-graveyard",
+      "category": "mystics",
+      "question": "A Rite binding ends and that Rite gives no other instruction for its bound cards. Where do those bound cards go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If a Rite or Ritual binding ends without another instruction, put its bound cards in their owners' Graveyards",
+          "Bound cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They go to their owners' Graveyards."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-mystics-witchcraft-repeat-layer",
+      "category": "mystics",
+      "question": "Witchcraft tells me to repeat another Gambit or Tactic effect. Can I choose another repeat effect and chain another repeated effect from it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A repeat effect cannot choose another repeat or card-adding effect unless it expressly permits one additional layer",
+          "Repeating Gambit or Tactic effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A repeat effect cannot choose another repeat or card-adding effect unless the effect expressly permits an additional layer."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-inquisition-purge-one-options",
+      "category": "inquisition",
+      "question": "I spend 1 Conviction on Purge. What are the two legal Purge options at that cost?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "top card of the opponent's Discard Pile",
+          "combined value 2 or less",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "At 1 Conviction, either put the top card of the opponent's Discard Pile in their Graveyard, or choose up to two cards there with combined value 2 or less and put them in their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-inquisition-discard-top-order",
+      "category": "inquisition",
+      "question": "No effect has changed the order of the opponent's Discard Pile. Which card is considered the top card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The top card is the most recently placed card",
+          "Discard Pile order"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The most recently placed card is on top unless a rule changes the order."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-inquisition-combined-value-cap",
+      "category": "inquisition",
+      "question": "An effect lets me choose several cards with combined value up to 5. May I choose values 3 and 3 because each card individually is at most 5?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "add their printed values",
+          "The total cannot exceed the limit",
+          "Combined card value"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Add the chosen cards' printed values; their total cannot exceed 5."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-accursed-wager-next-initiated-battle",
+      "category": "cards",
+      "question": "I play Accursed Wager for its Action, then later this turn initiate a battle. When that battle ends, who must put a card from Hand in the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the next battle you initiate this turn, the losing player puts one card from their Hand in their Graveyard",
+          "Accursed Wager"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The losing player puts one card from their Hand in their Graveyard, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-clemency-opponent-chooses",
+      "category": "cards",
+      "question": "I play Clemency and choose a card in the opponent's Graveyard. Who chooses whether that card moves to their Discard Pile or stays in the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "They choose one",
+          "Move it to their Discard Pile",
+          "Leave it there",
+          "Clemency"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent chooses between moving it to their Discard Pile or leaving it in the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-compound-interest-choice",
+      "category": "cards",
+      "question": "Compound Interest triggers after my normal Draw while Treasury contains a card. After revealing the top card of my Draw Pile, what may I do with it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Place it face up in your Treasury or put it in your Discard Pile",
+          "Compound Interest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may place the revealed card face up in Treasury or put it in your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-interaction-contingency-plan-forced-removal",
+      "category": "interaction",
+      "question": "Contingency Plan is banked. My Asset limit drops and I am forced to discard Contingency Plan to get within the limit. Do I draw from Contingency Plan's Removed trigger?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "If this card is Removed, +1 Card",
+          "Contingency Plan"
+        ],
+        [
+          "Asset limit decreases",
+          "forced to discard",
+          "Removed Assets"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The forced discard caused by the lowered Asset limit is Removal, so Contingency Plan's Removed trigger gives +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-demilitarized-zone-accepted-reaction",
+      "category": "cards",
+      "question": "After my Terms are accepted and the Proposal's Accepted effect resolves, I use Demilitarized Zone. What immediate movement happens to the players at the contested Territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each player there withdraws",
+          "Neither player may enter there this turn",
+          "Demilitarized Zone"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Each player there withdraws; neither player may enter that Territory again that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-disinformation-return-independent",
+      "category": "cards",
+      "question": "I use Disinformation as my Gambit, but the opponent did not set a Gambit so I do not gain its Advantage. In the Aftermath, does Disinformation still return to my Hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "In the Aftermath, return this card to your Hand instead of putting it in your Graveyard",
+          "Disinformation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Its Aftermath return-to-Hand instruction still applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-divestment-pre-change-deed-count",
+      "category": "cards",
+      "question": "I own four Deeds and play Divestment for its Action. How much Capital do I gain, and when is the Deed count measured?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gain Capital equal to the number of Deeds you owned before doing so",
+          "Divestment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain 4 Capital, measured from the four Deeds owned before making one of them unowned; Divestment also grants +1 Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-encampment-end-turn-command",
+      "category": "cards",
+      "question": "Encampment is on a Territory I both occupy and control at the end of my turn. What does it give me?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "At the end of this card's owner's turn, if they occupy and control this Territory, +1 Command",
+          "Encampment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It gives +1 Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-foreclosure-conditions",
+      "category": "cards",
+      "question": "During Denouement, Foreclosure is available. Which Territory may it advance my Front Line into?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the next opposing Territory immediately beyond your Front Line",
+          "if its Deed is yours and it is unoccupied",
+          "Foreclosure"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Only the next opposing Territory immediately beyond your Front Line, and only if you own its Deed and it is unoccupied."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-interaction-monastery-blocks-invocation",
+      "category": "interaction",
+      "question": "The opponent controls Monastery and is there. My Invocation would move a card from my Graveyard to my Discard Pile. Can Invocation move that card while Monastery's effect applies?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "cards cannot leave either player's Graveyard",
+          "Monastery"
+        ],
+        [
+          "move one card from your Graveyard to your Discard Pile",
+          "Invocation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Monastery prevents cards from leaving either player's Graveyard, so Invocation cannot move the card while that effect applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-poisonous-gas-role-choice",
+      "category": "territory",
+      "question": "A battle is on Poisonous Gas. I set a Gambit. May I also choose Tactics in that same battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "may employ Gambits or Tactics, but not both",
+          "Poisonous Gas"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. On Poisonous Gas a player may employ Gambits or Tactics, but not both."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-ruined-storehouse-substitution",
+      "category": "territory",
+      "question": "I control Ruined Storehouse and am there during my Draw step. What card may I draw instead of the top of my Draw Pile?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "draw the top card of their Discard Pile instead of a card from their Draw Pile",
+          "Ruined Storehouse"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once during the Draw step, you may draw the top card of your Discard Pile instead."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-training-grounds-refresh",
+      "category": "territory",
+      "question": "I control Training Grounds and defend there. Before choosing Tactics, may I replace only part of my Reserve?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "discard their Reserve and draw the same number of cards to form a new Reserve",
+          "Training Grounds"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Territory lets you discard the Reserve and draw the same number of cards to form a new Reserve."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-command-tent-phase-actions",
+      "category": "territory",
+      "question": "I start my turn on Command Tent while controlling it. What special Action permission do I get, and what restriction applies to my first Action in each phase?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "+1 Action",
+          "take Actions during both Opening and Denouement",
+          "first Action in each phase must be used to play a card for its Action effect",
+          "Command Tent"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain +1 Action and may act in both Opening and Denouement; your first Action in each phase must play a card for its Action effect."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-field-hospital-gambit-save",
+      "category": "territory",
+      "question": "I control Field Hospital where a battle just ended. One of my Gambits from that battle would normally go to my Graveyard. May Field Hospital put that card in my Discard Pile instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "may put 1 of their cards from that battle in their Discard Pile instead of their Graveyard",
+          "Field Hospital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Field Hospital may put one of the controller's battle cards in the Discard Pile instead of the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-territory-refuge-withdraw-card",
+      "category": "territory",
+      "question": "I withdraw to Refuge. What does Refuge give me after I arrive there?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After a player Falls Back or withdraws to this Territory: +1 Card",
+          "Refuge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You gain +1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-regime-change-leader-lock",
+      "category": "cards",
+      "question": "Regime Change is banked. May the opponent use their Leader abilities while it remains active?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent cannot use their Leader abilities",
+          "Regime Change"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The opponent cannot use their Leader abilities while Regime Change is active."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-high-command-maximum",
+      "category": "cards",
+      "question": "High Command is banked. What maximum Command does Military have?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Your maximum Command is 3",
+          "High Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Military's maximum Command is 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-interaction-anathema-stops-grave-move",
+      "category": "interaction",
+      "question": "An opponent's effect would move two cards from their Graveyard to another zone, and I discard Anathema. What happens to those cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "those cards remain in their Graveyard",
+          "Anathema"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Those cards remain in the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-card-malleus-heretical-duration",
+      "category": "cards",
+      "question": "Malleus Maleficarum declares a non-Arcane card heretical when it is revealed. How long does that card have the Arcane trait?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It has the Arcane trait for that play or reveal and until the end of the turn",
+          "Malleus Maleficarum"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It has the Arcane trait for that play or reveal and until the end of the turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-unsupported-off-table-die",
+      "category": "unsupported",
+      "question": "A battle die rolls off the table and lands on the floor. Does published v0.7.1 define an official rule for whether to reroll it or use the result?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official procedure for an off-table die; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-out-of-scope-opening-strategy",
+      "category": "out-of-scope",
+      "question": "What is the strongest opening strategy for Financiers in competitive play?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for strategy evaluation rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary rather than recommend a strategy."
+        }
+      ]
+    },
+    {
+      "id": "blind-l-out-of-scope-card-art",
+      "category": "out-of-scope",
+      "question": "Design new card art for Demilitarized Zone.",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is a creative/design request rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
