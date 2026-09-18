@@ -202,6 +202,8 @@ Because the victory is immediate, buying the final required Deed ends the game a
 
 **Playstyle:** collateral, planned purchases, and flexible financing.
 
+**Motto:** *Credit closes the distance.*
+
 - **Line of Credit — No Action · First Deed purchase each turn · Collateral.** On the first Deed purchase or buyout of your turn, you may use one card from Hand or Treasury as collateral. Its value can contribute toward the price, but no more than half the purchase cost, rounded down. Pay the rest with Capital, then discard the collateral.
 
 Line of Credit modifies the purchase you are already making; it is not a separate Action. It lets the Banker close a deal before enough liquid Capital has accumulated.
@@ -213,6 +215,8 @@ The Banker rewards planning. Before spending a card as collateral, ask whether i
 ### Executive
 
 **Playstyle:** offensive acquisition, occupation, and control.
+
+**Motto:** *Take the ground. Close the deal.*
 
 - **Hostile Takeover — 1 Action · Denouement · After winning as attacker.** If you won a battle as the attacker that turn and are occupying that enemy Territory, buy or buy out its Deed. Treat yourself as the occupier for the purchase cost. If the purchase succeeds, capture that Territory, if able.
 
