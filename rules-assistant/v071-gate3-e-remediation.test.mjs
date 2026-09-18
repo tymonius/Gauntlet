@@ -51,11 +51,11 @@ describe("Gate 3 tranche E r16 remediation", () => {
     ],
     [
       "Military begins the turn already at the 2 Command maximum and wins its first battle, so no Command can be added. Later that turn it spends 1 Command and wins another battle. Does the later win now generate Command?",
-      "rulebook:command-and-orders"
+      "rulebook:complete-rules-17"
     ],
     [
       "Military has not gained Command yet this turn, but a battle involving it ends by withdrawal with no winner. Does that sequence generate the normal 1 Command?",
-      "rulebook:command-and-orders"
+      "rulebook:complete-rules-17"
     ],
     [
       "they accepted my terms. do we still do aftermath stuff?",
