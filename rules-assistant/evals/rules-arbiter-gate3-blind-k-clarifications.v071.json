@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "K",
+  "behaviorRevision": "v071-qa-20260918-21",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche K ambiguous-follow-up cases authored after r21 production verification; each must request clarification rather than guessing among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-k-clarify-countercharge-court-martial",
+      "question": "Can that one move me after the retreat?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Countercharge and Court Martial."
+        },
+        {
+          "role": "assistant",
+          "content": "They both involve post-battle movement, but they apply to different players and results."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-clarify-war-bonds-compound-interest",
+      "question": "Does that one put the card in Treasury?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have War Bonds and Compound Interest banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can move cards into Treasury, but at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-clarify-trade-concessions-divination",
+      "question": "Does that one come back to my Hand if they refuse?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm holding Trade Concessions and Diplomatic Divination for Terms."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Terms cards with different results after the opponent chooses."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-clarify-reembodiment-witchcraft",
+      "question": "Can that one bring another card back from the Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Reembodiment banked and Witchcraft available."
+        },
+        {
+          "role": "assistant",
+          "content": "Both interact with Arcane cards and the Graveyard in different ways."
+        }
+      ]
+    },
+    {
+      "id": "blind-k-clarify-tyranny-anathema",
+      "question": "Does that one get discarded when I use it?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I control Tyranny and Anathema."
+        },
+        {
+          "role": "assistant",
+          "content": "They are separate Inquisition Assets with different triggers and costs."
+        }
+      ]
+    }
+  ]
+}
