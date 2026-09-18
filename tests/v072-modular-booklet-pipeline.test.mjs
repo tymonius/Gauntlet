@@ -181,6 +181,11 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('card-print-render.html?fit=production&card=${CARD_ANATOMY_CARD_ID}');
     expect(client).toContain('card-print-render.html?fit=production&card=${ARCANE_CARD_ID}');
     expect(client).toContain('const fillerCount = (4 - ((pages.length + 1) % 4)) % 4;');
+    expect(client).toContain('distributeFillerPages');
+    expect(client).toContain('balancedFillerTargets');
+    expect(client).toContain("if (!ordered[1]?.classList.contains('woodcut-page'))");
+    expect(client).toContain('Booklet filler pages may not appear back to back.');
+    expect(client).toContain('renumberPages');
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
 
