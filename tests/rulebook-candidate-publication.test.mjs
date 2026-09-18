@@ -43,6 +43,7 @@ describe('Browser Rulebook candidate publication', () => {
     expect(app).toContain("printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'");
 
     expect(workflow).toContain('Stage current modular Rulebook booklets');
+    expect(workflow).toContain('npm install --no-save --package-lock=false pdf-lib');
     expect(workflow).toContain('node scripts/render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('node scripts/validate-v072-modular-booklets.mjs');
     expect(workflow).toContain('target_root="$SITE_DIR/rulebook/booklets/v0.7.2"');
