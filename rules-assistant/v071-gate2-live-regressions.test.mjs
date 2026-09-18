@@ -10,7 +10,7 @@ const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals
 
 describe("v0.7.1 Gate 2 live replay regressions", () => {
   test("pins the refined classification boundary", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-20");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-21");
     expect(workerSource).toContain("Multiple citations alone do not make an answer inferred.");
     expect(workerSource).toContain("Procedural compilation is not inference");
     expect(workerSource).toContain("a no-contiguity ruling is inferred, not explicit");
