@@ -16,6 +16,7 @@ const corrections = JSON.parse(readFileSync(
   "utf8"
 ));
 const corrected = applyBenchmarkCorrections(benchmark, corrections);
+const runnerSource = readFileSync(new URL("./run-v071-live-rules-qa.mjs", import.meta.url), "utf8");
 const byId = new Map(corrected.cases.map((item) => [item.id, item]));
 
 test("v0.7.1 live QA corrections align the smoke classification boundary with published authority", () => {
@@ -88,4 +89,9 @@ test("r29 live regression corpus preserves the two material Gate 3 R failures", 
     expectedAnswerPatterns: ["may discard"],
     origin: "gate3-blind-r-2026-09-18"
   });
+});
+
+
+test("verified model execution paths retain live QA answer-quality checks", () => {
+  expect(runnerSource).toContain('String(payload?.executionPath || "").startsWith("model")');
 });
