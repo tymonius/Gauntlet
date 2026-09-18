@@ -72,3 +72,20 @@ test("conversation continuity checks source excerpts, not only source titles", (
   expect(terms.some((term) => text.includes(term))).toBe(true);
   expect(text).toContain("gambit");
 });
+
+
+test("r29 live regression corpus preserves the two material Gate 3 R failures", () => {
+  expect(byId.get("r29-tiebreak-polarity")).toMatchObject({
+    expectedClassification: "explicit",
+    expectedSourcePatterns: ["Tiebreak Roll"],
+    expectedAnswerPatterns: ["No", "do not apply"],
+    forbiddenAnswerPatterns: ["Yes."],
+    origin: "gate3-blind-r-2026-09-18"
+  });
+  expect(byId.get("r29-retribution-owner")).toMatchObject({
+    expectedClassification: "explicit",
+    expectedSourcePatterns: ["Retribution"],
+    expectedAnswerPatterns: ["may discard"],
+    origin: "gate3-blind-r-2026-09-18"
+  });
+});
