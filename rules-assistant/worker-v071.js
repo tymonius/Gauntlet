@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-24";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-25";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -837,6 +837,16 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
   ) {
     reminders.push(
       "When banking a new Asset at the Asset limit, discarding one controlled Asset to make room is part of the replacement procedure and is not a separate Action. Do not substitute the ordinary 'Discarding an Asset as an Action' procedure for this replacement discard."
+    );
+  }
+
+  if (
+    canonicalIds.has("card:inquisition-retribution")
+    && /\bretribution\b/.test(current)
+    && /\b(?:no assets?|\+?2 conviction|conviction|fires?|trigger)\b/.test(current)
+  ) {
+    reminders.push(
+      "Retribution is controlled by the player who owns the card. After the opponent loses a battle they initiated, that controller may discard Retribution. If they do and the opponent has no Assets, the controller gains +2 Conviction. Do not say the opponent gains Conviction merely because the immediately preceding pronoun 'they' refers to the opponent's Assets."
     );
   }
 
