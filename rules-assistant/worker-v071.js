@@ -1467,8 +1467,10 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const negatedTacticDestinationFocus = /\bnegat(?:e|ed|ion)\b/.test(current)
     && /\btactic\b/.test(current)
     && /\b(?:discard|aftermath|destination|go|goes|still|clear)\b/.test(current);
-  const conditionPrefixFocus = /\b(?:attacker|defender|counterattack|win|lose)\b/.test(current)
-    && /\b(?:condition|prefix|clause|advantage|battle total|apply|applies)\b/.test(current);
+  const conditionPrefixFocus = (
+    /\b(?:condition|prefix|clause)\b/.test(current)
+    || /\b(?:attacker|defender|counterattack|win|lose)\s*[—-]/.test(current)
+  ) && /\b(?:advantage|battle total|apply|applies|later|next|clause|condition)\b/.test(current);
   const additionalTacticFocus = /(?:\+\s*\d+\s+tactics?\b|\b(?:additional|extra)\s+tactics?\b)/.test(current)
     && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
   const noMartyrsFocus = /\bno martyrs\b/.test(current)
