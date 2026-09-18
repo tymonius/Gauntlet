@@ -232,9 +232,10 @@
       const figure = flow?.querySelector(':scope > .leader-woodcut-wrap');
       const image = figure?.querySelector('img');
       const playstyle = flow?.querySelector(':scope > .leader-playstyle');
+      const motto = flow?.querySelector(':scope > .leader-motto');
       const ability = [...(flow?.children || [])].find(node => /^(UL|OL)$/.test(node.tagName));
 
-      if (!flow || !titleRow || !figure || !image || !playstyle || !ability) {
+      if (!flow || !titleRow || !figure || !image || !playstyle || !motto || !ability) {
         fail(`Leader page ${page.dataset.page || '?'} is missing the expected hero-layout pieces.`);
         return;
       }
@@ -251,8 +252,9 @@
       figure.append(artworkCanvas);
       figure.remove();
       playstyle.remove();
+      motto.remove();
       ability.remove();
-      identity.append(playstyle, ability);
+      identity.append(playstyle, motto, ability);
       hero.append(figure, identity);
       titleRow.insertAdjacentElement('afterend', hero);
       page.classList.add('leader-layout-refined');
