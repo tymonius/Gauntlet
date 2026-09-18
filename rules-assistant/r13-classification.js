@@ -715,6 +715,29 @@ export function shouldResolveR23CombinedInteraction(question, sources = []) {
   return false;
 }
 
+export function shouldResolveR27CombinedInteraction(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const normalizedQuestion = ` ${normalizePhrase(question)} `;
+  const sourceList = Array.isArray(sources) ? sources : [];
+  const texts = sourceListText(sourceList);
+
+  const asksCurrentPhaseUse = /\\b(?:opening|denouement|current phase|same phase|immediately|right there|right away)\\b/.test(current)
+    && /\\bactions?\\b/.test(current);
+  if (!asksCurrentPhaseUse) return false;
+
+  const namedCardUsesActionShorthand = sourceList.some((source) => {
+    if (!/^card:\\s*/i.test(String(source?.title || ""))) return false;
+    const subjects = namedAuthoritySubjects(source);
+    if (!subjects.some((subject) => normalizedQuestion.includes(` ${subject} `))) return false;
+    return /\\+\\s*\\d+\\s+action\\b/.test(sourceText(source));
+  });
+  const hasActionShorthandDefinition = texts.some((text) =>
+    /\\+n action grants n additional actions during the current phase/.test(text)
+  );
+
+  return namedCardUsesActionShorthand && hasActionShorthandDefinition;
+}
+
 export function shouldPromoteR24DirectProcedure(question, sources = []) {
   const current = String(question || "").toLowerCase();
   const texts = sourceListText(sources);
@@ -873,6 +896,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       shouldResolveR21CombinedInteraction(question, sources)
       || shouldResolveR22CombinedInteraction(question, sources)
       || shouldResolveR23CombinedInteraction(question, sources)
+      || shouldResolveR27CombinedInteraction(question, sources)
     )
   ) {
     return "inferred";
@@ -893,6 +917,10 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
   }
 
   if (!["explicit", "inferred"].includes(value)) return value;
+
+  if (shouldResolveR27CombinedInteraction(question, sources)) {
+    return "inferred";
+  }
 
   if (
     hasNamedCardBattleCollateralTimingConflict(sources)
