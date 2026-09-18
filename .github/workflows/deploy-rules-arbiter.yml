@@ -52,7 +52,7 @@ jobs:
       - name: Validate Rules Arbiter runtime
         run: |
           node --check rules-assistant/worker-v071.js
-          npx vitest run rules-assistant/v071-gate3-h-remediation.test.mjs
+          npx vitest run rules-assistant/v071-gate3-h-remediation.test.mjs rules-assistant/v071-gate3-i-remediation.test.mjs
 
       - name: Resolve expected behavior revision
         id: revision
