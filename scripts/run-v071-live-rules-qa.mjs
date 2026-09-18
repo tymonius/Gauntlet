@@ -10,6 +10,7 @@ import {
   buildContinuityText,
   normalizeQaText,
   significantTopicTerms,
+  sourceRequirementGroups,
   sourceText,
   validateClassificationExpectations
 } from "./v071-live-rules-qa-support.mjs";
@@ -159,10 +160,22 @@ function inspectAnswer(item, payload) {
   }
 
   const haystacks = sources.map(sourceText);
-  for (const pattern of item.expectedSourcePatterns || []) {
-    const normalized = normalizeQaText(pattern);
-    if (!haystacks.some((text) => text.includes(normalized))) {
-      failures.push('citations: expected governing source pattern "' + pattern + '" not selected');
+  const legacyPatternCount = Array.isArray(item.expectedSourcePatterns)
+    ? item.expectedSourcePatterns.length
+    : 0;
+  const sourceGroups = sourceRequirementGroups(item);
+  for (const [index, group] of sourceGroups.entries()) {
+    const normalizedGroup = group.map(normalizeQaText).filter(Boolean);
+    if (!normalizedGroup.some((pattern) => haystacks.some((text) => text.includes(pattern)))) {
+      if (index < legacyPatternCount && group.length === 1) {
+        failures.push('citations: expected governing source pattern "' + group[0] + '" not selected');
+      } else {
+        failures.push(
+          'citations: expected one governing source from group '
+          + JSON.stringify(group)
+          + ' but none was selected'
+        );
+      }
     }
   }
 
@@ -318,6 +331,7 @@ async function postCase(item, index) {
       expectedClassification: item.expectedClassification,
       classificationBasis: item.classificationBasis || null,
       expectedSourcePatterns: item.expectedSourcePatterns || [],
+      expectedSourceGroups: item.expectedSourceGroups || [],
       expectedAnswerPatterns: item.expectedAnswerPatterns || [],
       forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
       expectedTopic: item.expectedTopic || null,
@@ -341,6 +355,7 @@ async function postCase(item, index) {
     expectedClassification: item.expectedClassification,
     classificationBasis: item.classificationBasis || null,
     expectedSourcePatterns: item.expectedSourcePatterns || [],
+    expectedSourceGroups: item.expectedSourceGroups || [],
     expectedAnswerPatterns: item.expectedAnswerPatterns || [],
     forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
     expectedTopic: item.expectedTopic || null,
