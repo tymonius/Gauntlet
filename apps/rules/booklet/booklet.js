@@ -372,24 +372,41 @@ function digitalToolsGrid(tableWrapper) {
   return grid;
 }
 
-function decorateFactionOverviewHeading(node) {
+function factionDecorationForHeading(node) {
   const label = node.textContent.trim();
   const entry = Object.entries(FACTION_DECORATION).find(([prefix]) => label.startsWith(prefix));
-  if (!entry) return node;
+  if (!entry) return null;
   const [, [accent, symbol]] = entry;
-  const clone = cloneNode(node);
-  clone.classList.add('faction-overview-heading');
-  clone.style.setProperty('--overview-accent', accent);
-
-  const symbolMark = document.createElement('span');
-  symbolMark.className = 'faction-overview-symbol';
-  symbolMark.setAttribute('aria-hidden', 'true');
-  symbolMark.style.setProperty('--overview-symbol', `url("${symbol}")`);
-  clone.prepend(symbolMark);
-
-  return clone;
+  return { accent, symbol };
 }
 
+function buildFactionOverviewCallout(nodes, startIndex) {
+  const heading = nodes[startIndex];
+  const decoration = factionDecorationForHeading(heading);
+  if (!decoration) return null;
+
+  const block = document.createElement('section');
+  block.className = 'booklet-faction-overview';
+  block.style.setProperty('--overview-accent', decoration.accent);
+
+  const title = cloneNode(heading);
+  title.classList.add('faction-overview-heading');
+
+  const symbolMark = document.createElement('span');
+  symbolMark.className = 'faction-overview-symbol booklet-inline-faction-symbol';
+  symbolMark.dataset.factionSymbolSrc = decoration.symbol;
+  symbolMark.setAttribute('aria-hidden', 'true');
+  title.prepend(symbolMark);
+  block.append(title);
+
+  let nextIndex = startIndex + 1;
+  while (nextIndex < nodes.length && nodes[nextIndex].tagName !== 'H3') {
+    block.append(cloneNode(nodes[nextIndex]));
+    nextIndex += 1;
+  }
+
+  return { block, nextIndex };
+}
 function cardAnatomyMarkers() {
   return [
     ['1', 'left m1'], ['2', 'right m2'], ['3', 'left m3'], ['4', 'right m4'],
@@ -568,10 +585,16 @@ function paginateSection(section, publication, documentId) {
       continue;
     }
 
-    let node = original;
     if (documentId === 'player-guide' && sectionLabel === '9. The Six Factions' && original.tagName === 'H3') {
-      node = decorateFactionOverviewHeading(original);
+      const factionOverview = buildFactionOverviewCallout(section.nodes, index);
+      if (factionOverview) {
+        page = appendNodeAcrossPages(factionOverview.block, page, context);
+        index = factionOverview.nextIndex;
+        continue;
+      }
     }
+
+    let node = original;
     if (sectionLabel === 'At the Table: Digital Tools' && original.classList?.contains('table-scroll')) {
       const grid = digitalToolsGrid(original);
       page.classList.add('digital-tools-page');
