@@ -39,7 +39,7 @@ function textOf(source) {
 
 describe("Gate 3 tranche K r22 remediation", () => {
   test("bumps production behavior to r22", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-22");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-23");
   });
 
   test("condition-prefix questions retrieve the direct condition-prefix rule", () => {
