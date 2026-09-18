@@ -4,12 +4,12 @@
   "cardCount": 142,
   "effectSurfaceCount": 290,
   "authorityDigest": "21f8911e5d1aa645afd7b63192f3549a240156af6c83384eb8ca1445f1dee4ca",
-  "classificationDigest": "e1a6f3fbb82d700789a8850298636ae9af1b991ca5636b83a1a78e15fdc61290",
+  "classificationDigest": "b48d8ffeda3d760c226754b39c9facc9a508fe11ecebaa397cead527556ab9a9",
   "summary": {
-    "dynamic_canonical_text_only": 157,
-    "literal_authority_locked": 64,
+    "dynamic_canonical_text_only": 158,
+    "literal_authority_locked": 65,
     "literal_without_regression": 10,
-    "unverified": 59
+    "unverified": 57
   },
-  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Reconnaissance battle tranche. The 2026-09-14 review verified that the authority digest, 142-card inventory, and 290-surface inventory remain unchanged from the Rend the Veil baseline. Reconnaissance Gambit/Tactic moves from unverified to literal-authority-locked because the engine now binds its exact frozen release text and has end-to-end regression coverage; registration independently reports 67/113 battle surfaces registered, up from 66/113, while Action registration remains 72/72. The same source/test evidence causes the separate Reconnaissance Asset surface to move from unverified to dynamic_canonical_text_only. That Asset reclassification records only dynamic canonical evidence associated with the card and is not a claim that the Asset effect is implemented or behaviorally verified. The integration suite verifies exact frozen authority binding, Gambit deferral until after Tactics, the optional decline path, resumption of later ordinary reveal effects before dice, attacker and defender withdrawal, termination of later reveal effects when withdrawal is chosen, and normal late-withdrawal battle-card cleanup. The Browser Rulebook retirement review later on 2026-09-14 removed obsolete Browser Rulebook presentation tests from the maintained regression corpus. The authority digest, card and effect inventories, and every classification status count remained unchanged; only the enumerated regression-evidence file set changed, so the classification digest was re-locked after that evidence-only review. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
+  "note": "Exhaustive v0.7.0 digital-behavior audit baseline after explicit review of the Rearguard battle-banking tranche. The authority digest, 142-card inventory, and 290-surface inventory remain unchanged. Rearguard Gambit/Tactic moves from unverified to literal-authority-locked because the engine binds its exact frozen release text and the integration suite verifies registration, loss-plus-retreat eligibility, win cleanup, and Asset-limit replacement; digital-engine registration independently reports 68/113 battle surfaces registered, up from 67/113, while Action registration remains 72/72. The same card-level source/test evidence causes Rearguard's separate Asset surface to move from unverified to dynamic_canonical_text_only. That Asset reclassification records only dynamic canonical evidence associated with the card and is not a claim that the Rearguard Asset effect is implemented or behaviorally verified. Unverified and dynamic-canonical surfaces remain audit debt, not claims of implementation correctness. Any future authority or classification-evidence drift requires explicit review before this baseline is updated."
 }
