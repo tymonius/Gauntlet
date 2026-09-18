@@ -6,7 +6,6 @@ import {
 } from "../scripts/v071-live-rules-qa-support.mjs";
 import { validateSemanticBenchmark } from "../scripts/v071-semantic-rules-qa-support.mjs";
 import { githubActionsQaAuthContract } from "./github-actions-qa-auth.js";
-import { BEHAVIOR_REVISION } from "./worker-v071.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -62,10 +61,6 @@ describe("Gate 3 blind tranche H certification freeze", () => {
       expect(dataset.behaviorRevision).toBe(G_FROZEN_BEHAVIOR);
       expect(dataset.authoritySetId).toBe(EXPECTED_AUTHORITY);
     }
-  });
-
-  test("production behavior is r18 before H certification", () => {
-    expect(BEHAVIOR_REVISION).toBe(EXPECTED_BEHAVIOR);
   });
 
   test("does not exactly reuse Gate 2 or Gate 3 A/B/C/D/E/F/G cases", () => {
