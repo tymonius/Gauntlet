@@ -380,7 +380,13 @@ function decorateFactionOverviewHeading(node) {
   const clone = cloneNode(node);
   clone.classList.add('faction-overview-heading');
   clone.style.setProperty('--overview-accent', accent);
-  clone.style.setProperty('--overview-symbol', `url("${symbol}")`);
+
+  const symbolMark = document.createElement('span');
+  symbolMark.className = 'faction-overview-symbol';
+  symbolMark.setAttribute('aria-hidden', 'true');
+  symbolMark.style.setProperty('--overview-symbol', `url("${symbol}")`);
+  clone.prepend(symbolMark);
+
   return clone;
 }
 
