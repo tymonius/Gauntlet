@@ -39,7 +39,7 @@ function textOf(source) {
 
 describe("Gate 3 tranche L r23 remediation", () => {
   test("bumps production behavior to r23", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-25");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-26");
   });
 
   test("counterintel shorthand retrieves Counterintelligence direct authority", () => {
