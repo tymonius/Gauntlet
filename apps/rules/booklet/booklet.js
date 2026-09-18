@@ -104,7 +104,7 @@ function createPage({ className = '', runningLeft = '', runningRight = '', label
 
 function applyPublicationIdentity(page, publication) {
   page.style.setProperty('--page-accent', publication.accent);
-  if (publication.symbol) page.style.setProperty('--booklet-symbol', `url("${publication.symbol}")`);
+  if (publication.symbol) page.dataset.factionSymbolSrc = publication.symbol;
 }
 
 function flowOf(page) { return page.querySelector('.page-flow'); }
@@ -131,7 +131,7 @@ function createCover(publication) {
         <p class="cover-subtitle">Modular Rules Publication</p>
         <p class="cover-version">Version 0.7.2 · 2026</p>
       </div>
-      ${publication.symbol ? `<span class="cover-faction-symbol" style="--booklet-symbol:url(&quot;${publication.symbol}&quot;)" aria-hidden="true"></span>` : ''}
+      ${publication.symbol ? `<span class="cover-faction-symbol booklet-inline-faction-symbol" data-faction-symbol-src="${publication.symbol}" aria-hidden="true"></span>` : ''}
     </div>
     <div class="cover-art"><img src="/images/woodcuts/hero compositions/hero ${publication.hero}.png" alt="" /></div>
     <div class="cover-bottom"><span>Tactical card-and-territory game</span><span>gauntlet.run</span></div>`;
@@ -193,7 +193,7 @@ function newContinuationPage(context) {
     label: context.label,
   });
   page.style.setProperty('--page-accent', context.accent);
-  if (context.symbol) page.style.setProperty('--booklet-symbol', `url("${context.symbol}")`);
+  if (context.symbol) page.dataset.factionSymbolSrc = context.symbol;
   flowOf(page).innerHTML = `<div class="continuation-label">${context.runningRight} · continued</div>`;
   return page;
 }
