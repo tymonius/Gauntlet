@@ -1,0 +1,909 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "R",
+  "behaviorRevision": "v071-qa-20260918-28",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche R certification benchmark authored only after r28 was merged, deployed, and current-live-publication verification succeeded. It specifically retests replacement semantics, ruling-first polarity, and optional activation-cost preservation with fresh authorities while preserving broad core-rules, Leader, interaction, rules-gap, and scope coverage.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-28; it was not used to construct r28.",
+    "Do not edit or retroactively regrade tranche R after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-R case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche R, certify the changed behavior only if the precommitted closeout criterion requires another fresh blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-r-opening-selection",
+      "category": "core-rules",
+      "question": "During setup, how many cards do I draw for opening selection, how many must I discard, and is that discard face up?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "draw 4",
+          "discard 1",
+          "face up"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Draw 4 cards, discard 1 face up, and keep 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-territory-arrangement-timing",
+      "category": "core-rules",
+      "question": "Do players arrange their Territories before or after opening selection and the first-player roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After opening selection and before the first-player roll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Arrange Territories after opening selection and before the first-player roll."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-setup-placement-entering",
+      "category": "core-rules",
+      "question": "Does placing my Player Token on my starting Territory during setup count as movement or entering that Territory?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Setup placement is not movement and does not count as entering"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Setup placement is not movement, does not count as entering, and does not trigger enter effects."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-movement-initiates-battle",
+      "category": "core-rules",
+      "question": "What happens to the current movement sequence when I enter the opponent's Position?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Entering the opponent's Position initiates a battle and ends that movement sequence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Entering the opponent's Position initiates a battle and ends that movement sequence."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-onset-withdrawal",
+      "category": "core-rules",
+      "question": "A player withdraws during Onset before Gambits are set. Is that a battle fought, and does an Aftermath occur?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Withdrawal during Onset ends the battle sequence without a winner or battle result",
+          "No Gambits are set and no Aftermath occurs"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. It is not a battle fought, no Gambits are set, and no Aftermath occurs."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-late-withdrawal",
+      "category": "core-rules",
+      "question": "A battle has already proceeded past Onset to Gambits, then a later effect causes withdrawal. What cleanup still happens?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Complete the remaining non-result Aftermath steps and clear committed battle cards normally; there is no battle winner or result."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-defensive-edge-tie",
+      "category": "core-rules",
+      "question": "If battle totals tie and the defender has Defensive Edge, who wins?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the defender wins tied battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The defender wins the tied battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-tiebreak-roll-clean",
+      "category": "core-rules",
+      "question": "During a Tiebreak Roll, do Advantage, Disadvantage, card modifiers, or the previous battle totals apply?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Do not apply advantage, disadvantage, card effects, numerical modifiers, or previous battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Each player rolls one die without those modifiers or prior totals; higher roll wins, and further ties are rerolled."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-capture-limit",
+      "category": "core-rules",
+      "question": "Under normal Capture, can my Front Line advance more than one Territory in a single turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Normal Capture advances the Front Line by at most one Territory per turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Normal Capture advances the Front Line by at most one Territory per turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-last-stand-separate-sequence",
+      "category": "core-rules",
+      "question": "I am on the opponent's final Territory after forcing them beyond their end. Can the same movement sequence continue directly into Last Stand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "using a separate legal movement sequence",
+          "separate_movement_sequence_required"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Initiating Last Stand requires a separate legal movement sequence from the opponent's final Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-terms-offer-priority",
+      "category": "diplomats",
+      "question": "During Onset, who gets the first chance to offer Terms, and when may the defender offer instead?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The attacker has the first opportunity to offer Terms",
+          "If the attacker passes, the defender may offer"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The attacker has the first opportunity; the defender may offer only if the attacker passes."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-accepted-terms-end-battle",
+      "category": "diplomats",
+      "question": "What does accepted Terms do to the battle sequence during Onset?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accepted Terms end the battle sequence during Onset"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Accepted Terms end the battle sequence during Onset."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-general-rout",
+      "category": "military",
+      "question": "After the General wins as attacker and spends 2 Command on Rout at the end of the Aftermath, can that advance start another battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Rout",
+          "Advance one Position. This movement may initiate a battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Rout advances one Position, and that movement may initiate a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-commandant-repel",
+      "category": "military",
+      "question": "The Commandant wins as defender and uses Repel. When does the extra retreat happen?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Repel",
+          "After the opponent's normal retreat, they retreat one additional Position, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After the opponent's normal retreat, they retreat one additional Position if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-ambassador-cordiality",
+      "category": "diplomats",
+      "question": "What does the Ambassador's Cordiality do after the opponent accepts the Ambassador's Terms?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Cordiality",
+          "After the opponent accepts your Terms, draw one card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once per turn after the opponent accepts your Terms, draw one card."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-senator-political-capital",
+      "category": "diplomats",
+      "question": "The Senator loses after refused Terms and would lose 3 staked Influence. How can Political Capital reduce that loss?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Political Capital",
+          "put up to that many cards from Hand in your Graveyard",
+          "Recover 1 staked Influence per card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put up to 3 cards from Hand into your Graveyard, recovering 1 staked Influence per card; lose any unrecovered remainder."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-banker-line-of-credit",
+      "category": "financiers",
+      "question": "On the Banker's first Deed purchase of the turn, how much of the purchase cost can one collateral card cover?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Line of Credit",
+          "up to half the purchase cost, rounded down",
+          "discard the collateral"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "One Hand or Treasury card may cover up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-executive-hostile-takeover",
+      "category": "financiers",
+      "question": "The Executive successfully uses Hostile Takeover on an enemy Territory after winning there as attacker. What Front Line effect follows?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Hostile Takeover",
+          "If successful, advance your Front Line by one Territory, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Advance your Front Line by one Territory, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-ranger-fieldcraft",
+      "category": "intelligence",
+      "question": "What can the Ranger's Fieldcraft ignore, and for how long?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fieldcraft",
+          "printed Territory effect",
+          "ignore that effect until the end of the turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Once per turn, for 1 Intel, Fieldcraft can ignore a printed Territory effect that would affect the Ranger, their movement, or a battle involving them until the end of the turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-spymaster-mission-control",
+      "category": "intelligence",
+      "question": "After the Spymaster completes a normal Mission and uses Mission Control, what restriction applies to the new Mission?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Mission Control",
+          "Immediately start another eligible Mission from Hand",
+          "It cannot complete that turn and cannot be a Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Start another eligible Mission from Hand immediately; it cannot complete that turn and cannot be a Special Operation."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-spirit-walker-guardians",
+      "category": "mystics",
+      "question": "The Spirit Walker would lose a battle that would interrupt a Rite after completing two Rites. What Arcane card value is needed for Guardians of the Circle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Guardians of the Circle",
+          "value is at least 1 plus your completed Rites"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "An Arcane card of value at least 3 is required; putting it from Hand into the Graveyard prevents that interruption."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-grand-inquisitor-final-judgment",
+      "category": "inquisition",
+      "question": "After the Grand Inquisitor wins a battle, what does Final Judgment do to the next immediate Purge?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Final Judgment",
+          "immediately Purge",
+          "Reduce that Purge's Conviction cost by 1, to a minimum of 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After battle cards are cleared, immediately Purge and reduce that Purge's Conviction cost by 1, to a minimum of 1."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-assimilation-replacement",
+      "category": "cards",
+      "question": "I win as attacker on a Territory the opponent controls and use Assimilation's battle effect. Do I occupy the Territory after advancing Front Line?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Assimilation",
+          "advance Front Line 1, if able, instead of occupying it"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Advance Front Line by 1 if able instead of occupying the Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-battlefield-promotion-replacement",
+      "category": "cards",
+      "question": "I win with Battlefield Promotion as a Gambit or Tactic. What happens to one other Tactic I chose in that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Battlefield Promotion",
+          "return one other Tactic you chose to your Hand instead of putting it in your Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Return one other Tactic you chose to your Hand instead of putting it in your Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-capital-gains-replacement",
+      "category": "financiers",
+      "question": "I win with Capital Gains as a Gambit or Tactic. Where may one other Gambit, Tactic, or Reserve card go in the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Capital Gains",
+          "Place it face up in your Treasury instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may place one other Gambit, Tactic, or Reserve card face up in your Treasury instead of its normal destination."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-deep-cover-replacement",
+      "category": "intelligence",
+      "question": "My Active Mission would fail while Deep Cover is banked. What may I do?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Deep Cover",
+          "put this card in your Graveyard to return that Mission to your Hand instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put Deep Cover in your Graveyard to return the Active Mission to your Hand instead of letting it fail."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-war-crimes-replacement",
+      "category": "military",
+      "question": "After I win and activate banked War Crimes, where do the opponent's Tactics from that battle go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "War Crimes",
+          "put all opposing Tactics from this battle in their owner's Graveyard instead of their Discard Pile"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "They go to their owner's Graveyard instead of the Discard Pile."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-fealty-instead",
+      "category": "cards",
+      "question": "I use Fealty as a Gambit or Tactic while I have no Disadvantage. What does it give me?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fealty",
+          "If you have no Disadvantage, +1 Battle Total instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain +1 Battle Total instead."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-field-command-asset-cost",
+      "category": "military",
+      "question": "Field Command is banked. After I use a 1-Command Order, what must I do to get the free use of my Leader's other 1-Command Order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Field Command",
+          "you may discard this card",
+          "other 1-Command Order",
+          "without spending Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may discard Field Command; then use your Leader's other 1-Command Order at its next legal timing that turn without spending Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-spectral-surveillance-cost",
+      "category": "intelligence",
+      "question": "When Spectral Surveillance replaces the Intel cost of Surveillance, what happens to Spectral Surveillance and what may be revealed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Spectral Surveillance",
+          "put this card in your Graveyard instead of spending Intel",
+          "reveal all opposing Gambits OR Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put Spectral Surveillance in your Graveyard instead of spending Intel; if you do, reveal all opposing Gambits or all opposing Tactics chosen for that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-retribution-cost",
+      "category": "inquisition",
+      "question": "The opponent loses a battle they initiated while Retribution is banked. What activation is required before its punishment applies?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Retribution",
+          "you may discard this card. If you do"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You must choose to discard Retribution. If you do, the opponent chooses an Asset to put in their Graveyard or gives you +2 Conviction; if they have no Assets, you gain +2 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-anathema-cost",
+      "category": "inquisition",
+      "question": "An opponent's effect would move cards from their Graveyard to another zone while Anathema is banked. What must I do to keep those cards in the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Anathema",
+          "you may discard this card. If you do, those cards remain in their Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard Anathema; if you do, those cards remain in the opponent's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-war-witch-cost",
+      "category": "military",
+      "question": "When choosing Tactics, what does banked War Witch require before it grants +1 Tactic from the Graveyard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "War Witch",
+          "put this card in your Graveyard. If you do, +1 Tactic from your Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put War Witch in your Graveyard; if you do, gain +1 Tactic from your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-court-martial-cost",
+      "category": "cards",
+      "question": "The opponent lost and completed their normal retreat. How does banked Court Martial produce Retreat +1?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Court Martial",
+          "you may discard this card: Retreat +1, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After their normal retreat, you may discard Court Martial to make them retreat one additional Position if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-foothold-cost",
+      "category": "cards",
+      "question": "I win while defending against a Counterattack with Foothold banked. How do I get its +2 Cards benefit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Foothold",
+          "you may discard this card for +2 Cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After that win, you may discard Foothold to gain 2 Cards."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-scouting-report-replacement",
+      "category": "cards",
+      "question": "I use Scouting Report as a battle card and replace it with a Reserve card. In what state is the replacement card, and where does Scouting Report go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Scouting Report",
+          "eligible card from your Reserve, face up",
+          "put this card in your Graveyard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The eligible Reserve replacement enters face up, and Scouting Report goes to your Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-conscription-immediate-bank",
+      "category": "cards",
+      "question": "After Conscription's Action gives me +1 Card, what kind of Hand card may I immediately play?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Conscription",
+          "immediately play one card from your Hand whose Action effect banks it"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may immediately play one Hand card whose Action effect banks it."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-divestment-battle",
+      "category": "financiers",
+      "question": "Before dice, how does Divestment's battle effect calculate the Capital gained when I make one of my Deeds unowned?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Divestment",
+          "gain Capital equal to the number of Deeds you owned before doing so"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Gain Capital equal to the number of Deeds you owned before making that Deed unowned; then you may immediately Subsidize."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-extraordinary-rendition-priority",
+      "category": "intelligence",
+      "question": "Extraordinary Rendition is banked and an effect makes me discard one or more Assets. Which Asset must be discarded first if able?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Extraordinary Rendition",
+          "discard this card before any others, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard Extraordinary Rendition before any of your other Assets, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-sleeper-network-removed",
+      "category": "intelligence",
+      "question": "Sleeper Network is Removed while it has bound cards. What happens to those bound cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Sleeper Network",
+          "If this card is Removed, reveal its bound cards; immediately play 1 for its Action effect and discard the rest"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Reveal the bound cards, immediately play one for its Action effect, and discard the rest."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-spies-revise",
+      "category": "intelligence",
+      "question": "I use Spies as a Gambit or Tactic. After it reveals opposing face-down Tactics, what choices do I have for my own Tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Spies",
+          "You may then revise your own Tactics or withdraw"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may revise your own Tactics or withdraw."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-circle-of-bones-reroll",
+      "category": "mystics",
+      "question": "During a battle on Circle of Bones, what is the cost of its once-per-battle reroll and whose die may be rerolled?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Circle of Bones",
+          "put one card from your Hand in your Graveyard to make either player reroll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put one Hand card in your Graveyard; then either player's die may be rerolled."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-dark-omens-battle",
+      "category": "mystics",
+      "question": "Dark Omens gives me +1 Card in battle. What optional step converts that draw into Advantage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Dark Omens",
+          "+1 Card. You may put it in your Graveyard to gain Advantage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put the card you just drew into your Graveyard to gain Advantage."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-fates-toll-reroll",
+      "category": "mystics",
+      "question": "After I roll, what does Fate's Toll require to reroll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fate's Toll",
+          "put one other card from your Hand in your Graveyard to reroll"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You may put one other card from your Hand in your Graveyard to reroll."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-field-command-general-combo",
+      "category": "interaction",
+      "question": "I am the General and used Rally, one of my 1-Command Orders, during a battle. If Field Command's battle effect now applies, which General Order is the 'other 1-Command Order'?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "Field Command",
+          "other 1-Command Order"
+        ],
+        [
+          "General",
+          "Rally",
+          "Onward",
+          "1 Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Onward is the General's other 1-Command Order, so Field Command can allow Onward at its next legal timing that turn without spending Command."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-unsupported-early-tactic-reveal",
+      "category": "unsupported",
+      "question": "I accidentally revealed one of my own Tactics early, before its normal reveal, and both players saw it. Does published v0.7.1 define an official rollback or repair procedure for that mistake?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official rollback or repair procedure for this accidental early reveal; the Arbiter should identify the gap and give a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-r-out-of-scope-best-leader",
+      "category": "out-of-scope",
+      "question": "Which Gauntlet Leader is the easiest one for a new player to win with?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for strategic or comparative advice rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}
