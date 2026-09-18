@@ -45,6 +45,6 @@ describe("v0.7.1 Asset replacement review", () => {
   });
 
   test("the behavior revision records the retrieval change", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-21");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-22");
   });
 });

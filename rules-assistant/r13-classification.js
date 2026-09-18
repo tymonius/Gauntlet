@@ -583,6 +583,91 @@ export function shouldResolveR21CombinedInteraction(question, sources = []) {
   return false;
 }
 
+export function shouldPromoteR22DirectProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const conditionPrefix = /\b(?:attacker|defender|counterattack|win|lose)\b/.test(current)
+    && /\b(?:condition|prefix|clause|advantage|battle total|apply|applies|later|next)\b/.test(current);
+  if (
+    conditionPrefix
+    && texts.some((text) =>
+      /condition prefix applies only to the clause that immediately follows it/.test(text)
+    )
+  ) return true;
+
+  const additionalTactic = /(?:\+\s*\d+\s+tactics?\b|\b(?:additional|extra)\s+tactics?\b)/.test(current)
+    && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
+  if (
+    additionalTactic
+    && texts.some((text) =>
+      /after tactics are revealed, play it face up/.test(text)
+    )
+  ) return true;
+
+  const noMartyrs = /\bno martyrs\b/.test(current)
+    && /\b(?:retreat|loss|lose|loses|lost|trigger|benefit|prevent|stop)\b/.test(current);
+  if (
+    noMartyrs
+    && texts.some((text) =>
+      /no martyrs/.test(text)
+      && /does not prevent harmful consequences, the retreat itself/.test(text)
+    )
+  ) return true;
+
+  return false;
+}
+
+export function shouldResolveR22CombinedInteraction(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+  const hasDirectPermission = texts.some((text) =>
+    /directly instructs or permits/.test(text)
+    && /does not spend or require another action/.test(text)
+  );
+
+  const conscription = texts.some((text) =>
+    /conscription/.test(text)
+    && /immediately play one card from your hand whose action effect banks it/.test(text)
+  );
+  if (
+    conscription
+    && hasDirectPermission
+    && /\b(?:bank|play|card|action|another|second|extra|consume|spend|cost)\b/.test(current)
+  ) return true;
+
+  const tradeConcessions = texts.some((text) =>
+    /trade concessions/.test(text)
+    && /bank one eligible card from hand/.test(text)
+  );
+  if (
+    tradeConcessions
+    && hasDirectPermission
+    && /\b(?:bank|action|consume|spend|cost|accepted|accepts)\b/.test(current)
+  ) return true;
+
+  const standGround = texts.some((text) =>
+    /stand ground/.test(text)
+    && /opposing card effect would move you/.test(text)
+  );
+  const courtMartial = texts.some((text) =>
+    /court martial/.test(text)
+    && /after their normal retreat/.test(text)
+    && /retreat \+1/.test(text)
+  );
+  const retreatRule = texts.some((text) =>
+    /a player retreats because they lost a battle/.test(text)
+  );
+  if (
+    standGround
+    && courtMartial
+    && retreatRule
+    && /\b(?:retreat|movement|move|original|normal|still|happened)\b/.test(current)
+  ) return true;
+
+  return false;
+}
+
 export function shouldPromoteR18DirectProcedure(question, sources = []) {
   const current = String(question || "").toLowerCase();
   const texts = sourceListText(sources);
@@ -660,7 +745,10 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
 
   if (
     value === "provisional"
-    && shouldResolveR21CombinedInteraction(question, sources)
+    && (
+      shouldResolveR21CombinedInteraction(question, sources)
+      || shouldResolveR22CombinedInteraction(question, sources)
+    )
   ) {
     return "inferred";
   }
@@ -671,6 +759,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       shouldPromoteDirectDeedOwnershipChange(question, sources)
       || shouldPromoteR18DirectProcedure(question, sources)
       || shouldPromoteR21DirectProcedure(question, sources)
+      || shouldPromoteR22DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
@@ -681,6 +770,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
   if (
     hasNamedCardBattleCollateralTimingConflict(sources)
     || (value === "explicit" && shouldResolveR21CombinedInteraction(question, sources))
+    || (value === "explicit" && shouldResolveR22CombinedInteraction(question, sources))
     || (value === "explicit" && shouldDemoteCombinedAuthorityInteraction(question, sources))
     || (value === "explicit" && shouldDemoteNamedMovementInteraction(question, sources))
   ) {
@@ -697,6 +787,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteDirectDeedOwnershipChange(question, sources)
       || shouldPromoteR18DirectProcedure(question, sources)
       || shouldPromoteR21DirectProcedure(question, sources)
+      || shouldPromoteR22DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
