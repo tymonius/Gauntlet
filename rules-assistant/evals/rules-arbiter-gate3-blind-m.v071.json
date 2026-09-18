@@ -1,0 +1,871 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "M",
+  "behaviorRevision": "v071-qa-20260918-23",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh Gate 3 tranche M certification benchmark authored only after r23 was merged, deployed, and current-live-publication verification succeeded. It was not used to construct r23 and stresses unused shared procedures, faction rules, card text, Territory text, rules gaps, and scope restraint.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260918-23; it was not used to construct r23.",
+    "Do not edit or retroactively regrade tranche M after its first paid live run; preserve that run as immutable blind evidence.",
+    "Any failed tranche-M case may become regression coverage only after diagnosis and may not be reused as evidence of a later blind pass.",
+    "If candidate behavior changes after tranche M, certify the changed behavior with a newly authored blind tranche.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-m-core-choice-no-valid-option",
+      "category": "core",
+      "question": "An effect requires me to choose one of several options, but none of those options is currently legal. Do I invent a substitute choice or stop the whole effect?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If no valid option is available, that choice is ignored",
+          "Choosing among options"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Do not invent a substitute. The unavailable choice is ignored."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-core-inherent-bank-unprinted",
+      "category": "core",
+      "question": "A card has an Asset effect but no printed Bank line. Can I still bank it from Hand as an Action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A card with an Asset effect has this inherent banking Action",
+          "Bank: As an Action",
+          "Inherent Bank Action"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Every card with an Asset effect has the inherent Bank Action even if it is not printed on the card."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-core-inherent-bank-counts-action-effect",
+      "category": "core",
+      "question": "A rule cares whether a card has an Action effect that banks it. Does the inherent Bank Action of an Asset count for that rule?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the inherent Bank Action counts as an Action effect that banks that card",
+          "Inherent Bank Action"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The inherent Bank Action counts as an Action effect that banks the card."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-core-asset-replacement-no-extra-action",
+      "category": "core",
+      "question": "I am already at my Asset limit and bank a new Asset by discarding one I control to make room. Is that replacement discard a separate Action?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This replacement is not a separate Action",
+          "Replacing an Asset"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Replacing the old Asset to make room is not a separate Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-core-asset-replacement-blocked-leave",
+      "category": "core",
+      "question": "An effect says one of my banked Assets cannot leave play. Can I discard that Asset as the one I replace when banking a new Asset at my limit?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "An effect that prevents an Asset from leaving play also prevents replacing it this way",
+          "Replacing an Asset"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. An Asset that cannot leave play cannot be used as the replacement discard."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-core-additional-action-phase-split",
+      "category": "core",
+      "question": "I have two Actions available this turn from a generic 'one additional Action' effect, with no special same-phase permission. May I take both in Opening?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "does not change the normal limit of one Action in each phase",
+          "must take one during Opening and one during Denouement",
+          "Additional Actions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Without express same-phase permission, the two Actions must be split between Opening and Denouement."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-sanction-default-expiration",
+      "category": "diplomats",
+      "question": "A Sanction was put into play because an opponent refused my Terms. Later that opponent accepts my Terms, and the Sanction has no contrary text. What happens to the Sanction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile",
+          "Sanctions"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put the Sanction in its owner's Discard Pile after that opponent accepts the owner's Terms."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-military-onward-timing",
+      "category": "military",
+      "question": "Can General use Onward after a battle finishes to move one more Position?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Onward cannot be used after a battle",
+          "General"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Onward cannot be used after a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-military-repel-extra-retreat",
+      "category": "military",
+      "question": "Commandant wins while defending and uses Repel. Does the extra retreat happen instead of the opponent's normal retreat or after it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent's normal retreat, they retreat one additional Position",
+          "Repel",
+          "Commandant"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "After it. Repel adds one additional retreat after the opponent's normal retreat, if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-cordiality",
+      "category": "diplomats",
+      "question": "Ambassador's Terms are accepted. What does Cordiality give, and how often can it happen each turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Cordiality",
+          "Once per turn",
+          "After accepted Terms",
+          "draw one card",
+          "Ambassador"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Cordiality draws one card after accepted Terms and is usable once per turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-political-capital-partial",
+      "category": "diplomats",
+      "question": "Senator would lose 3 staked Influence after losing following refused Terms, but has only 2 cards in Hand. If Political Capital is used, how much Influence can be recovered?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "put up to that many cards from Hand in your Graveyard",
+          "Recover 1 staked Influence per card; lose the rest",
+          "Political Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "At most 2 staked Influence can be recovered by putting both Hand cards in the Graveyard; the remaining 1 is lost."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-mirror-one-offer",
+      "category": "diplomats",
+      "question": "The attacking Diplomat passes on offering Terms, so the defending Diplomat offers a Proposal and it is refused. Can the attacker now offer Terms in that same battle sequence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once either player offers Terms, the other cannot offer Terms in that battle sequence, even if the Proposal is refused",
+          "Diplomat mirrors"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Once either player offers Terms, the other cannot offer in that battle sequence even after refusal."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-open-channels-accepted",
+      "category": "diplomats",
+      "question": "Open Channels is accepted. What happens to the players' Hands and positions, and what does the accepting player gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Both players reveal their Hands, then both withdraw. Accepting player: +1 Card",
+          "Open Channels"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Both players reveal their Hands, then both withdraw, and the accepting player gains 1 Card."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-prisoner-exchange-accepted",
+      "category": "diplomats",
+      "question": "Prisoner Exchange is accepted. Are the Graveyard moves mandatory, and what happens afterward?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each player may move 1 card from their Graveyard to their Discard Pile. Then both withdraw",
+          "Prisoner Exchange"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The Graveyard moves are optional for each player; after those choices, both players withdraw."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-diplomats-recognition-refused-influence",
+      "category": "diplomats",
+      "question": "Diplomatic Recognition is refused and the Diplomat later wins. Do they gain Influence for imposing that Proposal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "No Influence for imposing this Proposal",
+          "Diplomatic Recognition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The refused branch expressly gives no Influence for imposing Diplomatic Recognition."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-financiers-collateral-not-zone",
+      "category": "financiers",
+      "question": "Is collateral a separate game zone that a card enters when pledged?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Collateral is not a separate zone",
+          "Collateral"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Collateral is not a separate zone."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-financiers-collateral-not-capital",
+      "category": "financiers",
+      "question": "I pledge a value-4 card as collateral toward a purchase. Does that card become 4 Capital while pledged?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Collateral contributes payment value but does not become Capital unless stated",
+          "Collateral"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Collateral contributes payment value but does not become Capital unless an effect expressly says so."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-financiers-tariffs-cannot-replace-same-turn",
+      "category": "financiers",
+      "question": "I bank Tariffs this turn, then later reach my Asset limit and want to discard Tariffs to make room for another Asset. Is that allowed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During the turn Tariffs is banked, you cannot voluntarily cause it to leave play, including replacing it to make room for another Asset",
+          "Tariffs and Asset replacement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. During the turn Tariffs is banked, it cannot voluntarily leave play, including through Asset replacement."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-financiers-margin-loan-removed-default",
+      "category": "financiers",
+      "question": "A banked Margin Loan is Removed before it is repaid. What happens?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If this card is Removed, Default",
+          "Margin Loan"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It Defaults."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-progress-one-per-mission",
+      "category": "intelligence",
+      "question": "I complete a normal Mission with card value 5. How much Operation Progress does that completion add?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each completed normal Mission adds 1, regardless of card value",
+          "Operation Progress"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It adds exactly 1 Operation Progress, regardless of the Mission's card value."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-gambit-surveillance-cost",
+      "category": "intelligence",
+      "question": "How much Intel does Gambit Surveillance cost, and how often may I use that Gambit Surveillance opportunity in one battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Once per battle",
+          "spend 1 Intel to reveal it",
+          "Gambit Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It costs 1 Intel and the Gambit Surveillance opportunity is once per battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-tactic-surveillance-multiple-cost",
+      "category": "intelligence",
+      "question": "The opponent chose three face-down Tactics. If I use Tactic Surveillance to reveal all three, how much Intel do I spend?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "spend 1 Intel for each opposing Tactic you reveal",
+          "Tactic Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "3 Intel."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-prevented-interference-cost-stays",
+      "category": "intelligence",
+      "question": "An effect prevents my Surveillance or Interference after I commit to using it. Do I get the Intel back and keep the once-per-battle opportunity?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the Intel remains spent and the relevant once-per-battle opportunity is still used",
+          "Interference after Surveillance"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Intel remains spent and the relevant once-per-battle opportunity is still used."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-direct-interference-opportunity",
+      "category": "intelligence",
+      "question": "I use Direct Interference on an opposing card that was set face up. Does that consume Surveillance, and which opportunity does it consume?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This does not use Surveillance but does use the relevant stage's Interference opportunity",
+          "Direct Interference"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It does not use Surveillance, but it does use the relevant stage's Interference opportunity."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-intelligence-watchtower-faceup",
+      "category": "intelligence",
+      "question": "At Watchtower, the attacker sets their Gambit face up. Can Counterintelligence prevent that reveal?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Because the attacker's Gambit was never face down, Counterintelligence does not prevent the reveal",
+          "Watchtower"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Counterintelligence does not prevent that Watchtower reveal because the Gambit was never face down."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-one-active-rite",
+      "category": "mystics",
+      "question": "I already have one begun but incomplete Rite. May I begin a second Rite during Denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You may have only one begun but incomplete Rite",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Only one begun but incomplete Rite may exist at a time."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-rite-no-same-turn-completion",
+      "category": "mystics",
+      "question": "I begin a Rite during Denouement and immediately satisfy its completion condition that same turn. Can it complete now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Rite cannot complete during the turn it begins",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A Rite cannot complete during the turn it begins."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-progression-unlocks",
+      "category": "mystics",
+      "question": "What do completing my first, second, and third selected Rites unlock in order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "first selected Rite to unlock Invocation",
+          "second selected Rite to unlock Transmutation",
+          "third selected Rite to unlock Convergence",
+          "Progression"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "First unlocks Invocation; second unlocks Transmutation; third unlocks Convergence and permission to begin the Ritual of Ascension."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-ritual-begin-three-zones",
+      "category": "mystics",
+      "question": "When beginning the Ritual of Ascension, which three cards must be bound and from which zones?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "one Arcane card from your Hand",
+          "one Arcane card from your Discard Pile",
+          "one Arcane card from your Graveyard",
+          "Beginning the Ritual"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Bind one Arcane card from Hand, one from the Discard Pile, and one from the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-convergence-three-bound",
+      "category": "mystics",
+      "question": "All three Ritual cards are still bound and I initiate a battle while the Ritual is underway. How much does Convergence add to my battle total?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "add +1 to your battle total for each card bound to the Ritual",
+          "With all three cards bound, Convergence normally gives +3",
+          "Convergence"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "+3 Battle Total."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-mystics-ritual-withdrawal-neutral",
+      "category": "mystics",
+      "question": "I withdraw from a battle while the Ritual of Ascension is underway. Does that withdrawal complete or interrupt the Ritual?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Withdrawal neither completes nor interrupts the Ritual because it has no winner or loser",
+          "Interruption"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Neither. Withdrawal neither completes nor interrupts the Ritual."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-inquisition-conviction-multiple-cards-one-gain",
+      "category": "inquisition",
+      "question": "Three opposing cards enter the Graveyard during the Aftermath of the same battle involving me, and this is my first qualifying event this turn. How much normal Conviction do I gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Several qualifying cards from the same battle still produce only 1 normal gain",
+          "Conviction"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "1 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-inquisition-blasphemy-copy-no-trigger",
+      "category": "inquisition",
+      "question": "An opponent copies the effect of an Arcane card without playing or revealing that Arcane card. Does Blasphemy gain Conviction from the copy alone?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Merely copying an Arcane card's effect does not count as playing or revealing that card and does not trigger Blasphemy",
+          "Blasphemy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Copying the effect alone does not trigger Blasphemy."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-inquisition-purge-two-asset",
+      "category": "inquisition",
+      "question": "I spend 2 Conviction on Purge. What may I do to an opposing Asset?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "2 | Choose one opposing Asset and put it in its owner's Graveyard",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Choose one opposing Asset and put it in its owner's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-inquisition-purge-once-turn",
+      "category": "inquisition",
+      "question": "I already spent an Action on Purge this turn. May I spend another Action on Purge in the other Action phase?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "You may spend an Action on Purge no more than once per turn",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. You may spend an Action on Purge no more than once per turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-inquisition-heresy-one-extra-layer",
+      "category": "inquisition",
+      "question": "Heresy copies an effect that itself repeats another effect. Can that repeated effect create yet another copied-effect layer?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "retains permission for one additional copied-effect layer",
+          "That additional effect cannot create another layer",
+          "Heresy and copied effects"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Heresy permits one additional copied-effect layer, and that additional effect cannot create another layer."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-card-advance-guard-battle-no-gambit",
+      "category": "cards",
+      "question": "I use Advance Guard's Action for extra Movement, and that extra movement initiates a battle. May I set a Gambit in that battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If that additional movement initiates a battle, you cannot set a Gambit in that battle",
+          "Advance Guard"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A battle initiated by Advance Guard's additional movement forbids you from setting a Gambit in that battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-card-capital-gains-loss",
+      "category": "cards",
+      "question": "Capital Gains is bound to a Treasury card for its Action effect, but I lose a battle before my next turn's income. What happens to the two cards?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Before then, if you lose a battle, discard both",
+          "Capital Gains"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard both Capital Gains and the bound Treasury card."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-card-extraordinary-rendition-bound-lock",
+      "category": "cards",
+      "question": "A card is bound beneath Extraordinary Rendition. Can another effect move or otherwise affect that bound card while Extraordinary Rendition remains banked?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The bound card cannot be played, moved, or affected except by this card",
+          "Extraordinary Rendition"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The bound card cannot be played, moved, or affected except by Extraordinary Rendition."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-card-neutral-observers-order",
+      "category": "cards",
+      "question": "After Terms are refused I discard Neutral Observers. Who sets a Gambit first, and is the opponent's Gambit face up or face down?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass",
+          "Neutral Observers"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent acts first and sets their Gambit face up or passes; then you set a Gambit face down or pass."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-territory-toll-bridge-voluntary-advance",
+      "category": "territory",
+      "question": "I am on Toll Bridge and want to voluntarily Advance. What extra cost does the Territory require?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "must discard 1 card from Hand to voluntarily Advance from this Territory",
+          "Toll Bridge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard 1 card from Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-territory-smugglers-run-loss-control",
+      "category": "territory",
+      "question": "I stashed a card beneath Smuggler's Run, then I lose control of that Territory before returning the card to Hand. What happens to the stashed card?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If they lose control, it is discarded",
+          "Smuggler's Run"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The stashed card is discarded."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-unsupported-cocked-die",
+      "category": "unsupported",
+      "question": "A die lands cocked against a component but remains on the table. Does published v0.7.1 define whether that roll must be rerolled?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Published v0.7.1 does not define an official cocked-die procedure; the Arbiter should identify the gap and may issue a clearly provisional table ruling."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-out-of-scope-tournament-ban",
+      "category": "out-of-scope",
+      "question": "Which faction should tournament organizers ban because it is too strong?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for balance/tournament-policy judgment rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-out-of-scope-lore",
+      "category": "out-of-scope",
+      "question": "What historical event inspired the Monastery Territory?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This asks for lore/design background rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "M",
+  "behaviorRevision": "v071-qa-20260918-23",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche M ambiguous-follow-up cases authored after r23 production verification; each must request clarification rather than guess among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-m-clarify-good-faith-gunboat",
+      "question": "Does that one come back to my Hand on refusal?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Good Faith and Gunboat Diplomacy when I offer Terms."
+        },
+        {
+          "role": "assistant",
+          "content": "They modify the offer in different ways and have different Accepted and Refused outcomes."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-clarify-deep-cover-subversion",
+      "question": "Does that one go to the Graveyard when I use it?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Deep Cover and Subversion banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Each can react to a different kind of opposing effect or failure."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-clarify-margin-capital-gains",
+      "question": "Does that one bind a Treasury card?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Margin Loan and Capital Gains."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can involve Treasury cards, but their procedures differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-clarify-onward-rout",
+      "question": "Can that one start another battle?",
+      "history": [
+        {
+          "role": "user",
+          "content": "General has Onward and Rout available."
+        },
+        {
+          "role": "assistant",
+          "content": "They grant movement at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-m-clarify-toll-kings-road",
+      "question": "Does that one make me discard to move?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm on the edge between Toll Bridge and King's Road."
+        },
+        {
+          "role": "assistant",
+          "content": "Those Territories affect movement differently."
+        }
+      ]
+    }
+  ]
+}
