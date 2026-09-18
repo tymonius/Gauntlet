@@ -30,8 +30,10 @@ if (manifest.releaseVersion !== V072_BOOKLET_RELEASE_VERSION) {
 }
 if (manifest.status !== 'candidate-review-artifact') throw new Error(`Unexpected modular booklet manifest status: ${manifest.status}.`);
 if (manifest.authority?.sha256 !== hashFile(AUTHORITY_PATH)) throw new Error('Modular booklet authority hash is stale.');
-if (!/hero-woodcut pages placed preferentially at semantic section boundaries/i.test(manifest.renderContract?.pagePadding || '')) {
-  throw new Error('Modular booklet manifest does not declare semantic hero-woodcut padding.');
+if (!/inside front cover/i.test(manifest.renderContract?.pagePadding || '')
+  || !/semantic section boundaries/i.test(manifest.renderContract?.pagePadding || '')
+  || !/never adjacent/i.test(manifest.renderContract?.pagePadding || '')) {
+  throw new Error('Modular booklet manifest does not declare strategic non-adjacent hero-woodcut padding.');
 }
 
 const heroById = new Map(V072_BOOKLET_HERO_WOODCUTS.map(hero => [hero.id, hero]));
