@@ -160,6 +160,10 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('createPage');
     expect(client).toContain('newContinuationPage');
     expect(client).toContain('buildCardAnatomyBlock');
+    expect(client).toContain("symbolMark.className = 'faction-overview-symbol'");
+    expect(client).toContain("clone.prepend(symbolMark)");
+    expect(css).toContain('.faction-overview-symbol');
+    expect(css).not.toContain('.faction-overview-heading::before');
     expect(client).toContain('paginateLeaderSection');
     expect(client).toContain('appendHeadingAndFollower');
     expect(client).toContain('waitForFrames');
