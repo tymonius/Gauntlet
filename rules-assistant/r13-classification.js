@@ -477,6 +477,15 @@ export function shouldForceAbsentProcedureGap(question, sources = []) {
     );
   }
 
+  const accidentalProcedureRepair = /\b(?:accidentally|accidental|mistake|misplay|wrong player|illegal action|illegal move)\b/.test(current)
+    && /\b(?:rollback|roll back|rewind|repair|remedy|procedure|official)\b/.test(current);
+  if (accidentalProcedureRepair) {
+    return !sourceList.some((source) => {
+      const text = sourceText(source);
+      return /\b(?:rollback|roll back|rewind|rewinding|repair procedure|repair the game state|misplay remedy|illegal action remedy)\b/.test(text);
+    });
+  }
+
   if (!/\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(current)) {
     return false;
   }
