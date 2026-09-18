@@ -976,16 +976,16 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const currentWordCount = current.split(/\s+/).filter(Boolean).length;
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const immediateRecentNormalized = normalizeReferentSubject(immediateRecent);
-  const recentNamedFollowupCue = shouldCarryImmediateHistory(question);
-  const recentNamedAuthorityIds = recentNamedFollowupCue
+  const recentCardFollowupCue = shouldCarryImmediateHistory(question);
+  const recentCardAuthorityIds = recentCardFollowupCue
     ? documents
-        .filter((document) => /^(?:card|leader|faction):/i.test(String(document?.id || "")))
+        .filter((document) => String(document?.id || "").startsWith("card:"))
         .filter((document) => {
           const title = normalizeReferentSubject(document?.title || document?.heading || "");
           return title.length >= 4 && immediateRecentNormalized.includes(title);
         })
         .map((document) => document.id)
-        .slice(0, 6)
+        .slice(0, 4)
     : [];
   const explicitlyNamedCardAuthorityIds = documents
     .filter((document) => String(document?.id || "").startsWith("card:"))
@@ -1127,6 +1127,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
         .slice(0, 1)
     : [];
   const militaryCommandFocus = /\bcommand\b/.test(current)
+    && !/\brepel\b/.test(current)
     && (
       (
         /\b(?:already|begins?|starts?|maximum|max|at)\b[\s\S]{0,40}\b(?:2|two|maximum|max)\b/.test(current)
@@ -1223,7 +1224,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
                 : [];
   const preferredAuthorityIds = [...new Set([
     ...topicAuthorityIds,
-    ...recentNamedAuthorityIds,
+    ...recentCardAuthorityIds,
     ...explicitlyNamedCardAuthorityIds
   ])];
   if (!preferredAuthorityIds.length) return retrieval;
