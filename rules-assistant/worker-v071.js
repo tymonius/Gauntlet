@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-27";
+export const BEHAVIOR_REVISION = "v071-qa-20260918-28";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -717,6 +717,30 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
+  const replacementInsteadAuthority = sourceAuthorityText.some((text) =>
+    /\bwhen\b[^.]{0,180}\bwould\b[^.]{0,180}\binstead\b/.test(text)
+  );
+  if (
+    replacementInsteadAuthority
+    && /\b(?:would|capture|captured|instead|what happens?|happen)\b/.test(current)
+  ) {
+    reminders.push(
+      "A direct instruction of the form 'when X would happen, do Y instead' makes Y replace X. Do not also apply X unless a separate supplied authority expressly says that the replaced event still occurs. State the replacement result first and do not invert the meaning of 'instead'."
+    );
+  }
+
+  const optionalCostThenBenefitAuthority = sourceAuthorityText.some((text) =>
+    /\byou may\b[^.]{0,220}\bif you do\b/.test(text)
+  );
+  if (
+    optionalCostThenBenefitAuthority
+    && /\b(?:can|may|does|do|gain|gains|measure|measures|how much|what happens?)\b/.test(current)
+  ) {
+    reminders.push(
+      "When a direct effect is written as an optional activation or cost followed by 'If you do' and a benefit, preserve that activation condition when stating the benefit. Do not make the benefit sound automatic or omit the required card movement, discard, spend, or other stated cost that unlocks it."
+    );
+  }
+
   const noQualifyingEventSource = sourceAuthorityText.some((text) =>
     /\b(?:not a battle fought, won, or lost|no battle is fought|no winner|without a battle result)\b/.test(text)
   );
@@ -873,12 +897,13 @@ export function buildQuestionSpecificAdjudicationReminder(question, sources = []
     );
   }
 
-  const terseConfirmationQuestion = /\?\s*$/.test(String(question || ""))
-    && current.split(/\s+/).filter(Boolean).length <= 10
-    && !/^\s*(?:who|what|where|when|why|how|is|are|am|was|were|do|does|did|can|could|will|would|should|may|must|has|have|had)\b/.test(current);
-  if (terseConfirmationQuestion) {
+  const declarativeConfirmationQuestion = /\?\s*$/.test(String(question || ""))
+    && current.split(/\s+/).filter(Boolean).length <= 20
+    && !/^\s*(?:who|what|where|when|why|how|is|are|am|was|were|do|does|did|can|could|will|would|should|may|must|has|have|had)\b/.test(current)
+    && !/\b(?:who|what|where|when|why|how)\b/.test(current);
+  if (declarativeConfirmationQuestion) {
     reminders.push(
-      "Treat this terse player-language sentence as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. Do not begin with No and then describe the proposition as true."
+      "Treat this declarative player-language question as a yes/no confirmation of the proposition it states. If the governing text affirms that proposition, begin with Yes; if it contradicts it, begin with No. The first yes/no word must agree with the explanation; never begin with No and then restate the proposition as true, or vice versa."
     );
   }
 
