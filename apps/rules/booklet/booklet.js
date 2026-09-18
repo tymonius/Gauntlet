@@ -640,35 +640,54 @@ async function ensurePublicationFonts() {
   await document.fonts.ready;
 }
 
-const factionSymbolSvgCache = new Map();
+const factionSymbolDefinitionCache = new Map();
 
-async function factionSymbolSvgMarkup(src) {
-  if (!factionSymbolSvgCache.has(src)) {
-    factionSymbolSvgCache.set(src, (async () => {
+function symbolDefinitionsRoot() {
+  let root = document.querySelector('svg[data-booklet-symbol-definitions]');
+  if (root) return root;
+
+  root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  root.dataset.bookletSymbolDefinitions = 'true';
+  root.setAttribute('aria-hidden', 'true');
+  root.setAttribute('width', '0');
+  root.setAttribute('height', '0');
+  root.style.position = 'absolute';
+  root.style.width = '0';
+  root.style.height = '0';
+  root.style.overflow = 'hidden';
+  root.append(document.createElementNS('http://www.w3.org/2000/svg', 'defs'));
+  document.body.prepend(root);
+  return root;
+}
+
+async function ensureFactionSymbolDefinition(src) {
+  if (!factionSymbolDefinitionCache.has(src)) {
+    factionSymbolDefinitionCache.set(src, (async () => {
       const response = await fetch(src, { cache: 'force-cache' });
       if (!response.ok) throw new Error(`Unable to load faction symbol ${src}: HTTP ${response.status}`);
       const parsed = new DOMParser().parseFromString(await response.text(), 'image/svg+xml');
-      const svg = parsed.documentElement;
-      if (!svg || svg.nodeName.toLowerCase() !== 'svg' || parsed.querySelector('parsererror')) {
+      const sourceSvg = parsed.documentElement;
+      if (!sourceSvg || sourceSvg.nodeName.toLowerCase() !== 'svg' || parsed.querySelector('parsererror')) {
         throw new Error(`Invalid faction symbol SVG: ${src}`);
       }
 
-      svg.removeAttribute('width');
-      svg.removeAttribute('height');
-      svg.setAttribute('aria-hidden', 'true');
-      svg.setAttribute('focusable', 'false');
-      svg.querySelectorAll('path, circle, ellipse, polygon, polyline, rect, line').forEach(shape => {
+      const id = `booklet-faction-symbol-${factionSymbolDefinitionCache.size}`;
+      const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol');
+      symbol.id = id;
+      symbol.setAttribute('viewBox', sourceSvg.getAttribute('viewBox') || '0 0 1000 1000');
+      [...sourceSvg.childNodes].forEach(node => symbol.append(node.cloneNode(true)));
+      symbol.querySelectorAll('path, circle, ellipse, polygon, polyline, rect, line').forEach(shape => {
         if (shape.getAttribute('fill') !== 'none') shape.setAttribute('fill', 'currentColor');
         if (shape.hasAttribute('stroke') && shape.getAttribute('stroke') !== 'none') {
           shape.setAttribute('stroke', 'currentColor');
         }
       });
-      return svg.outerHTML;
+      symbolDefinitionsRoot().querySelector('defs').append(symbol);
+      return id;
     })());
   }
-  return factionSymbolSvgCache.get(src);
+  return factionSymbolDefinitionCache.get(src);
 }
-
 function addFactionWatermarkPlaceholders() {
   pagesRoot.querySelectorAll('.faction-page[data-faction-symbol-src]').forEach(page => {
     if (page.querySelector(':scope > .faction-page-watermark')) return;
@@ -682,9 +701,21 @@ function addFactionWatermarkPlaceholders() {
 
 async function hydrateFactionSymbols() {
   const targets = [...pagesRoot.querySelectorAll('[data-faction-symbol-src]')];
-  await Promise.all(targets.map(async target => {
-    target.innerHTML = await factionSymbolSvgMarkup(target.dataset.factionSymbolSrc);
+  const symbolIds = new Map();
+  await Promise.all([...new Set(targets.map(target => target.dataset.factionSymbolSrc))].map(async src => {
+    symbolIds.set(src, await ensureFactionSymbolDefinition(src));
   }));
+
+  targets.forEach(target => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    svg.setAttribute('viewBox', '0 0 1 1');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', `#${symbolIds.get(target.dataset.factionSymbolSrc)}`);
+    svg.append(use);
+    target.replaceChildren(svg);
+  });
   document.body.dataset.factionSymbolsReady = 'true';
 }
 async function waitForImages() {
