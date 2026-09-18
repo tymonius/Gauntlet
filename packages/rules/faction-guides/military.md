@@ -100,6 +100,8 @@ Neither Leader changes what victory means. They change how you create and exploi
 
 **Playstyle:** movement, attacking, and sustained forward pressure.
 
+**Motto:** *Forward. Again.*
+
 The General's Orders reward you for choosing the moment to attack and for keeping momentum after a win.
 
 - **Onward — 1 Command · No Action · During Movement.** During your Movement, move one additional Position. This may start a battle.
@@ -115,6 +117,8 @@ The General's Orders reward you for choosing the moment to attack and for keepin
 ### Commandant
 
 **Playstyle:** defense, holding occupied ground, and battlefield control.
+
+**Motto:** *We hold. They break.*
 
 The Commandant's Orders reward you for absorbing an attack, winning on defense, and holding enemy ground long enough to turn position into control.
 

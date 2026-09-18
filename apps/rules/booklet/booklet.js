@@ -535,6 +535,10 @@ function paginateLeaderSection(section, publication) {
     for (const node of [...prefixNodes, ...group.nodes]) {
       const clone = cloneNode(node);
       if (clone.tagName === 'P' && /^Playstyle:/i.test(normalizedText(clone))) clone.classList.add('leader-playstyle');
+      if (clone.tagName === 'P' && /^Motto:/i.test(normalizedText(clone))) {
+        clone.classList.add('leader-motto');
+        clone.querySelector('strong')?.remove();
+      }
       current = appendNodeAcrossPages(clone, current, context);
     }
   });

@@ -271,6 +271,8 @@ Reaching the Operation Progress threshold does not itself win or complete anythi
 
 **Playstyle:** territory effects, reconnaissance, and field operations.
 
+**Motto:** *Know the land before the battle begins.*
+
 - **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect.** When a printed Territory effect would affect you, your movement, or the current battle, ignore that printed Territory effect until the end of the turn.
 
 Fieldcraft lets the Ranger keep a plan moving when a Territory's printed rule would interfere with it. It does not erase the Territory itself or change who controls it.
@@ -280,6 +282,8 @@ The Ranger is a good first choice when you want Intelligence's Mission and infor
 ### Spymaster
 
 **Playstyle:** Mission tempo and operational coordination.
+
+**Motto:** *Information never rests. Momentum is the weapon.*
 
 - **Mission Control — No Action · Once per turn · After completing a normal Mission.** Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation.
 

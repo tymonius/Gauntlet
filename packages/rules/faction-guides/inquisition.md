@@ -160,6 +160,8 @@ Purification is not checked continuously. Emptying both piles during your turn d
 
 **Playstyle:** judgment, Purge, and permanent removal.
 
+**Motto:** *We judge. We purge.*
+
 - **Final Judgment — No Action · Once per turn · After winning a battle.** After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by **1**, to a minimum of 1.
 
 The normal Conviction gain caused by that battle's Aftermath can occur before Final Judgment, so newly gained Conviction may help pay for the discounted Purge.
@@ -173,6 +175,8 @@ The Grand Inquisitor is the most direct first Leader: win battles, collect Convi
 ### Witch Hunter
 
 **Playstyle:** defense, retaliation, and pursuit.
+
+**Motto:** *You ran. I followed.*
 
 - **Relentless Pursuit — 2 Conviction · No Action · Once per turn · After defeating an attacking opponent.** End their turn, then Advance one Position toward their end. If that movement initiates a battle, you are the attacker.
 

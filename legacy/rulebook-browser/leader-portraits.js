@@ -284,6 +284,8 @@ function buildCandidateLeaderProfile(name, src) {
 
   const playstyle = [...profile.children]
     .find(element => element.tagName === 'P' && /^Playstyle:/i.test(element.textContent.trim()));
+  const motto = [...profile.children]
+    .find(element => element.tagName === 'P' && /^Motto:/i.test(element.textContent.trim()));
   const ability = [...profile.children]
     .find(element => /^(UL|OL)$/.test(element.tagName));
 
@@ -295,6 +297,10 @@ function buildCandidateLeaderProfile(name, src) {
     playstyle.classList.add('candidate-leader-playstyle');
     identity.append(playstyle);
   }
+  if (motto) {
+    motto.classList.add('candidate-leader-motto');
+    motto.querySelector('strong')?.remove();
+  }
   if (ability) {
     ability.classList.add('candidate-leader-ability');
     identity.append(ability);
@@ -302,7 +308,12 @@ function buildCandidateLeaderProfile(name, src) {
 
   const artwork = buildCandidateLeaderFigure(name, src);
   hero.append(artwork.figure, identity);
-  heading.insertAdjacentElement('afterend', hero);
+  if (motto) {
+    heading.insertAdjacentElement('afterend', motto);
+    motto.insertAdjacentElement('afterend', hero);
+  } else {
+    heading.insertAdjacentElement('afterend', hero);
+  }
   fitCandidateLeaderArtwork(artwork.figure, artwork.image, artwork.canvas);
 }
 

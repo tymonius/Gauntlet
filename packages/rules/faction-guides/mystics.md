@@ -217,6 +217,8 @@ A **Withdrawal** neither completes nor interrupts the Ritual because there is no
 
 **Playstyle:** sacrifice sequencing and card conversion.
 
+**Motto:** *Nothing is fixed. Everything can be transformed.*
+
 - **Materia Prima — No Action · Once per turn · First qualifying sacrifice from Hand.** Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath.
 
 Materia Prima makes deliberate sacrifice less costly. For example, beginning Rite of Blood by putting a card from Hand in your Graveyard can trigger the draw, as can using Transmutation later in the game.
@@ -228,6 +230,8 @@ The Alchemist rewards careful sequencing: once Materia Prima has triggered for t
 ### Spirit Walker
 
 **Playstyle:** Rite endurance and protective sacrifice.
+
+**Motto:** *The spirits remember what the living abandon.*
 
 - **Guardians of the Circle — No Action · Once per turn · Battle loss would interrupt a Rite or Ritual.** Put one Arcane card from Hand in your Graveyard whose value is at least **1 + your completed Rites**. If you do, prevent that interruption.
 

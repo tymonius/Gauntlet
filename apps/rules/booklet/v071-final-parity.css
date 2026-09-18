@@ -181,6 +181,19 @@
   line-height: 1.28;
 }
 
+.leader-page .leader-motto {
+  margin: -.01in 0 .11in;
+  max-width: none;
+  font-family: var(--flavor);
+  font-size: 22pt;
+  font-weight: 400;
+  line-height: .96;
+}
+
+.leader-page .leader-motto em {
+  font-style: normal;
+}
+
 .leader-page .leader-identity-column > ul,
 .leader-page .leader-identity-column > ol {
   margin: .10in 0 0;
@@ -198,7 +211,7 @@
 
 /* Explanatory commentary is intentionally full width below the hero block.
    There is no float boundary and therefore no arbitrary column-width switch. */
-.leader-page .page-flow > p:not(.leader-playstyle) {
+.leader-page .page-flow > p:not(.leader-playstyle):not(.leader-motto) {
   margin-bottom: .065in;
   font-size: 8.8pt;
   line-height: 1.30;
