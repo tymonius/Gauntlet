@@ -40,7 +40,7 @@ function sourceText(source) {
 
 describe("Gate 3 tranche J r21 remediation", () => {
   test("bumps production behavior to r21", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-23");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260918-24");
   });
 
   test("generic Gambit-role questions do not trigger referent clarification", () => {

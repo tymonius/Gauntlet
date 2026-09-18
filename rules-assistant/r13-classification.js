@@ -706,6 +706,65 @@ export function shouldResolveR23CombinedInteraction(question, sources = []) {
   return false;
 }
 
+export function shouldPromoteR24DirectProcedure(question, sources = []) {
+  const current = String(question || "").toLowerCase();
+  const texts = sourceListText(sources);
+
+  const assetReplacement = /\basset\b/.test(current)
+    && /\b(?:cap|limit)\b/.test(current)
+    && /\b(?:bank|banking|banked)\b/.test(current)
+    && /\b(?:ditch|discard|replace|replacing|replacement|room|new)\b/.test(current);
+  if (
+    assetReplacement
+    && texts.some((text) =>
+      /replacing an asset/.test(text)
+      && /this replacement is not a separate action/.test(text)
+    )
+  ) return true;
+
+  const ritualWithdrawal = /\britual\b/.test(current)
+    && /\bwithdraw(?:al|s|n|ing)?\b/.test(current);
+  if (
+    ritualWithdrawal
+    && texts.some((text) =>
+      /withdrawal neither completes nor interrupts the ritual/.test(text)
+    )
+  ) return true;
+
+  const diplomatMirror = /\bdiplomat\b/.test(current)
+    && /\bterms?\b/.test(current)
+    && /\b(?:attacker|defender)\b/.test(current)
+    && /\b(?:offer|offers|offered|offering|pass|passes|passed)\b/.test(current);
+  if (
+    diplomatMirror
+    && texts.some((text) =>
+      /once either player offers terms, the other cannot offer terms in that battle sequence/.test(text)
+    )
+  ) return true;
+
+  const diplomaticRecognition = /\bdiplomatic recognition\b/.test(current)
+    && /\b(?:influence|refus(?:e|ed|al)|impos(?:e|ed|ing)|win|wins|won)\b/.test(current);
+  if (
+    diplomaticRecognition
+    && texts.some((text) =>
+      /diplomatic recognition/.test(text)
+      && /no influence for imposing this proposal/.test(text)
+    )
+  ) return true;
+
+  const smugglersRun = /\bsmuggler[’']?s run\b/.test(current)
+    && /\b(?:stash|stashed|control|lose|loses|lost|discard|card)\b/.test(current);
+  if (
+    smugglersRun
+    && texts.some((text) =>
+      /smuggler[’']?s run/.test(text)
+      && /if they lose control, it is discarded/.test(text)
+    )
+  ) return true;
+
+  return false;
+}
+
 export function shouldPromoteR18DirectProcedure(question, sources = []) {
   const current = String(question || "").toLowerCase();
   const texts = sourceListText(sources);
@@ -799,6 +858,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteR18DirectProcedure(question, sources)
       || shouldPromoteR21DirectProcedure(question, sources)
       || shouldPromoteR22DirectProcedure(question, sources)
+      || shouldPromoteR24DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
@@ -828,6 +888,7 @@ export function normalizeR13RulingStatus(value, question, sources = []) {
       || shouldPromoteR18DirectProcedure(question, sources)
       || shouldPromoteR21DirectProcedure(question, sources)
       || shouldPromoteR22DirectProcedure(question, sources)
+      || shouldPromoteR24DirectProcedure(question, sources)
     )
   ) {
     return "explicit";
