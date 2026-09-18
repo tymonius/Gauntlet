@@ -1456,6 +1456,10 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\b(?:bank|play|place|reveal|use)\b/.test(current)
     && /\b(?:action|another action|second action|extra action|consume|spend|cost)\b/.test(current)
   ) || (
+    /\b(?:conscription|trade concessions)\b/.test(current)
+    && /\b(?:bank|play)\b/.test(current)
+    && /\b(?:action|another|second|extra|cost|consume|spend)\b/.test(current)
+  ) || (
     currentWordCount <= 14
     && /\b(?:conscription|trade concessions)\b/.test(recent)
     && /\b(?:action|another|second|extra|cost|consume|spend)\b/.test(current)
@@ -1464,8 +1468,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\btactic\b/.test(current)
     && /\b(?:discard|aftermath|destination|go|goes|still|clear)\b/.test(current);
   const conditionPrefixFocus = /\b(?:attacker|defender|counterattack|win|lose)\b/.test(current)
-    && /\b(?:condition|prefix|clause|advantage|battle total|apply|applies|later|next)\b/.test(current);
-  const additionalTacticFocus = /\b(?:\+\s*\d+\s+tactic|additional tactic|extra tactic)\b/.test(current)
+    && /\b(?:condition|prefix|clause|advantage|battle total|apply|applies)\b/.test(current);
+  const additionalTacticFocus = /(?:\+\s*\d+\s+tactics?\b|\b(?:additional|extra)\s+tactics?\b)/.test(current)
     && /\b(?:after|reveal|revealed|face ?up|faceup|late)\b/.test(current);
   const noMartyrsFocus = /\bno martyrs\b/.test(current)
     && /\b(?:retreat|loss|lose|loses|lost|trigger|benefit|prevent|stop)\b/.test(current);
