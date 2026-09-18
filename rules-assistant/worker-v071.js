@@ -16,7 +16,7 @@ import {
 } from "./v071-gate3-c-remediation.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260917-17";
+export const BEHAVIOR_REVISION = "v071-qa-20260917-18";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -90,6 +90,15 @@ const OCCUPATION_CONTROL_AUTHORITY_IDS = [
   "rulebook:occupation",
   "rulebook:front-line",
   "rulebook:normal-capture"
+];
+const STARTING_TERRITORY_AUTHORITY_IDS = [
+  "rulebook:starting-territory"
+];
+const MISSION_ABORT_AUTHORITY_IDS = [
+  "rulebook:aborting-and-failing"
+];
+const FOLLOWUP_BATTLE_AUTHORITY_IDS = [
+  "rulebook:initiating-battles"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -906,6 +915,28 @@ function localCompatibleReferentCountR15(current, match, noun, retrieval = []) {
   return count;
 }
 
+function hasClearLocalSingularAntecedentR18(current, match, noun) {
+  if (!match || !noun || noun === "one") return false;
+  const prefix = String(current || "").slice(0, Math.max(0, Number(match.index || 0)));
+  const patterns = noun === "card"
+    ? ["card"]
+    : [noun];
+  for (const pattern of patterns) {
+    const re = new RegExp("\\b" + pattern + "\\b", "gi");
+    const occurrences = [...prefix.matchAll(re)];
+    if (!occurrences.length) continue;
+    const last = occurrences.at(-1);
+    const start = Math.max(0, Number(last.index || 0) - 60);
+    const phrase = prefix.slice(start, Number(last.index || 0) + String(last[0] || "").length);
+    const objectPhrase = new RegExp(
+      "\\b(?:one|another|a|an|the)\\s+(?:[a-z0-9'’-]+\\s+){0,4}" + pattern + "$",
+      "i"
+    );
+    if (objectPhrase.test(phrase.trim())) return true;
+  }
+  return false;
+}
+
 export function buildAmbiguousReferentClarification(question, history = [], retrieval = []) {
   const current = String(question || "").trim();
   const genericRuleMatch = current.match(/\b(?:this|that)\s+(ability|effect|feature)\b/i);
@@ -929,12 +960,16 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
   });
   if (explicitlyNamedCards.length === 1) return null;
 
+  if (hasClearLocalSingularAntecedentR18(current, match, noun)) {
+    return null;
+  }
+
   if (localCompatibleReferentCountR15(current, match, noun, retrieval) === 1) {
     return null;
   }
 
   const namedAuthoritySubjects = currentNamedAuthoritySubjects(current, retrieval);
-  if (namedAuthoritySubjects.length === 1) return null;
+  if (!genericOneMatch && namedAuthoritySubjects.length === 1) return null;
 
   const recentText = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
   const familyCue = noun === "effect"
@@ -1075,7 +1110,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const shockAndAweAuthorityIds = shockAndAweFocus && /\bwar crimes\b/.test(combined)
     ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
     : SHOCK_AND_AWE_AUTHORITY_IDS;
-  const peaceTreatyTopic = /\b(?:peace treaty|treaty articles?|ratif(?:y|ies|ied|ying|ication|ications))\b/;
+  const peaceTreatyTopic = /\b(?:peace treaty|treaty articles?|treat(?:y|ies)|ratif(?:y|ies|ied|ying|ication|ications))\b/;
   const peaceTreatyTimingCue = /\b(?:win|wins|winning|victory|now|immediately|start|next turn|capture|draw|sixth|6th|six|6|again)\b/.test(current);
   const proposalVictoryCue = /\bproposals?\b/.test(current) && peaceTreatyTimingCue;
   const recentPeaceTreatyTopic = peaceTreatyTopic.test(recent) || /\bproposals?\b/.test(recent);
@@ -1177,7 +1212,20 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const deedOwnershipChangeFocus = deedTopic.test(current)
     && /\b(?:capture|captured|control|controls|controlled|transfer|transfers|ownership)\b/.test(current)
     && /\b(?:deed|own|owner|ownership|transfer|keep|keeps|still)\b/.test(current);
-  const topicAuthorityIds = militaryLateTacticFocus
+  const startingTerritoryFocus = /\bsetup\b/.test(current)
+    && /\b(?:token|placement|place|placed)\b/.test(current)
+    && /\b(?:enter|enters|entered|entering|trigger|triggers|triggered)\b/.test(current);
+  const missionAbortFocus = /\b(?:abort|aborts|aborted|aborting)\b/.test(current)
+    && /\bmission\b/.test(current);
+  const routFollowupBattleFocus = /\brout\b/.test(current)
+    && /\b(?:battle|follow-up|followup|continuation|new|gambit|reserve|tactic|once-per-battle)\b/.test(current);
+  const topicAuthorityIds = startingTerritoryFocus
+    ? STARTING_TERRITORY_AUTHORITY_IDS
+    : missionAbortFocus
+      ? MISSION_ABORT_AUTHORITY_IDS
+    : routFollowupBattleFocus
+      ? FOLLOWUP_BATTLE_AUTHORITY_IDS
+    : militaryLateTacticFocus
     ? militaryLateTacticAuthorityIds
     : rallyFollowupFocus
       ? rallyAuthorityIds
