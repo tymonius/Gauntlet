@@ -1,0 +1,359 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "J",
+  "behaviorRevision": "v071-qa-20260918-20",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche J benchmark authored after r20 deployment and not used to construct r20.",
+  "blindnessPolicy": [
+    "This tranche was authored after production health verified r20 and was not used to construct r20.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I player-language questions.",
+    "Semantic criteria are limited to the answer actually requested."
+  ],
+  "cases": [
+    {
+      "id": "blind-j-player-opening-discard-zone",
+      "category": "player-language",
+      "question": "opening discard is already in discard before turn 1?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "forms the player's Discard Pile before the first turn begins",
+          "Opening selection and Territory arrangement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The mandatory opening discard is already the Discard Pile before turn one begins."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-no-valid-choice",
+      "category": "player-language",
+      "question": "none of the listed choices legal. skip it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If no valid option is available, that choice is ignored",
+          "Choosing among options"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. If no listed choice is valid, that choice is ignored."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-bound-over-limit",
+      "category": "player-language",
+      "question": "bound max dropped. excess cards discard?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "discard excess bound cards until the limit is satisfied",
+          "Bound cards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Immediately choose and discard excess bound cards until within the new maximum."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-both-withdraw-order",
+      "category": "player-language",
+      "question": "both withdraw. attacker moves first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if both players withdraw, move the attacker first, then the defender",
+          "Withdrawal"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Resolve the attacker's withdrawal first, then the defender's."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-high-command-three",
+      "category": "player-language",
+      "question": "high command banked. can command hit 3?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Your maximum Command is 3",
+          "High Command"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. High Command raises the Military Command maximum to 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-latitude-both-refused-effects",
+      "category": "player-language",
+      "question": "latitude got refused. both refused effects?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Choose one Proposal before applying its Refused effect",
+          "Diplomatic Latitude"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Choose one offered Proposal; only that Proposal's Refused effect applies."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-detente-old-proposal",
+      "category": "player-language",
+      "question": "detente banked, old proposal accepted. +1 influence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "already ratified when you offered it, +1 Influence",
+          "Détente"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if this is the first such acceptance that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-treasury-no-capital",
+      "category": "player-language",
+      "question": "treasury value 4 means +4 income?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Treasury cards do not generate Capital by themselves",
+          "Treasury"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Treasury value raises the Capital limit but does not itself generate Capital."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-interference-prevented-cost",
+      "category": "player-language",
+      "question": "interference got prevented. intel refunded?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Intel remains spent",
+          "Interference"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Intel remains spent when Interference is prevented."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-special-op-min-one",
+      "category": "player-language",
+      "question": "special op math says 0 intel. still pay 1?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Minimum payment is 1 Intel",
+          "Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Special Operation completion has a minimum payment of 1 Intel."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-rite-any-order",
+      "category": "player-language",
+      "question": "have three rites. must do them in order?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "there is no required order",
+          "Beginning a Rite"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Any selected incomplete Rite may be begun when legal."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-ritual-three-zones",
+      "category": "player-language",
+      "question": "ritual cards all from hand okay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard",
+          "Ritual of Ascension"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The three Ritual cards must come one each from Hand, Discard Pile, and Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-blasphemy-vs-normal-conviction",
+      "category": "player-language",
+      "question": "blasphemy gain uses up normal conviction gain?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "outside the normal once-per-turn Conviction gain",
+          "Blasphemy"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Blasphemy is separate from the normal once-per-turn Conviction gain."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-purge-three",
+      "category": "player-language",
+      "question": "3 conviction purge hits their hand?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "opponent chooses one card from their Hand and puts it in their Graveyard",
+          "Purge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The 3-Conviction Purge makes the opponent choose one Hand card to put in their Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-banker-treasury-collateral",
+      "category": "player-language",
+      "question": "line of credit collateral from treasury okay?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Hand or Treasury as collateral",
+          "Line of Credit"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Banker may use a card from Hand or Treasury as collateral."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-spymaster-immediate",
+      "category": "player-language",
+      "question": "mission control starts next mission immediately?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "immediately start another eligible Mission from Hand",
+          "Mission Control"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Mission Control immediately starts another eligible Mission from Hand."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-final-judgment-floor",
+      "category": "player-language",
+      "question": "1-cost purge with final judgment becomes free?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "minimum of 1",
+          "Final Judgment"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Final Judgment's reduced Purge cost cannot go below 1."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-player-tariffs-no-replace",
+      "category": "player-language",
+      "question": "banked tariffs this turn. replace it for another asset?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cannot voluntarily cause it to leave play during the turn it is banked",
+          "Tariffs"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Tariffs cannot voluntarily leave play during the turn it was banked."
+        }
+      ]
+    }
+  ]
+}
