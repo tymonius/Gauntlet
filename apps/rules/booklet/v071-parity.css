@@ -567,9 +567,9 @@ h1, h2, h3, h4 {
 }
 .faction-opener .faction-claim {
   margin: 0 0 12px;
-  font-family: var(--title);
+  font-family: var(--flavor);
   font-size: 25pt;
-  font-weight: 500;
+  font-weight: 400;
   line-height: .98;
   letter-spacing: 0;
 }
