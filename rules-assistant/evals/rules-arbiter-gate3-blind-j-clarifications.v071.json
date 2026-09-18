@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "J",
+  "behaviorRevision": "v071-qa-20260918-20",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh Gate 3 tranche J ambiguous-follow-up cases that must request clarification rather than guessing among multiple plausible recent referents.",
+  "cases": [
+    {
+      "id": "blind-j-clarify-forced-march-advance-guard",
+      "question": "Can that one start a battle?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Forced March and Advance Guard."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can alter movement, but their extra movement has different restrictions."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-clarify-detente-good-faith",
+      "question": "Does that one get discarded if they accept?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Détente and Good Faith available."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Diplomat cards that care about accepted Terms."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-clarify-deep-cover-regime-change",
+      "question": "Does that one stay banked?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My Intelligence Assets are Deep Cover and Regime Change."
+        },
+        {
+          "role": "assistant",
+          "content": "They have different triggers and persistence."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-clarify-reembodiment-grave-ward",
+      "question": "Can that one move the card out of my Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I have Reembodiment and Grave Ward banked."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can interact with cards entering or sitting in the Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-j-clarify-anathema-retribution",
+      "question": "Does that one trigger after they lose?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm holding Anathema and Retribution."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Inquisition cards with different triggers."
+        }
+      ]
+    }
+  ]
+}
