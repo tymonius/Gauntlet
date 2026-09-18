@@ -125,8 +125,8 @@ export function shouldPromoteDirectEnumeratedProcedure(question, sources = []) {
   }
 
   const refusedNoWinnerQuestion = /\brefus\w*\b/.test(current)
-    && /\b(?:withdraw\w*|no\s+winner)\b/.test(current)
-    && /\b(?:stake|proposal|deal)\b/.test(current);
+    && /\b(?:withdraw\w*|no\s+winner|without\s+a\s+winner|ends?\s+without\s+a\s+winner)\b/.test(current)
+    && /\b(?:stake|proposal|deal|ratif\w*)\b/.test(current);
   if (
     refusedNoWinnerQuestion
     && texts.some((text) =>
