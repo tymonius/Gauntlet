@@ -1,0 +1,304 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "F",
+  "behaviorRevision": "v071-qa-20260917-16",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language Gate 3 tranche F benchmark authored after r16 deployment and not used to construct r16.",
+  "blindnessPolicy": [
+    "This tranche was authored after r16 was merged and deployed and was not used to construct r16.",
+    "Do not edit or retroactively regrade this tranche after its first paid live run.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E player-language questions."
+  ],
+  "cases": [
+    {
+      "id": "blind-f-player-opening-discard-order",
+      "category": "player-language",
+      "question": "opening discard before first player roll right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Complete rules"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The mandatory opening discard and Territory arrangement occur before the first-player roll."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-asset-trigger-after-action",
+      "category": "player-language",
+      "question": "used my action already. banked asset trigger still works?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Discarding an Asset as an Action"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A normal banked Asset trigger does not spend an Action unless its text or another rule says it does."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-tiebreak-reroll-no-bonuses",
+      "category": "player-language",
+      "question": "tiebreak tied again. bonuses on the reroll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Tiebreak Roll"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Further Tiebreak Roll rerolls still exclude battle bonuses, modifiers, advantage/disadvantage, card effects, and prior totals."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-command-on-their-turn",
+      "category": "player-language",
+      "question": "won my first military fight on their turn. command?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Command and Orders"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Military gains 1 Command from its first battle victory each turn even when that win happens on the opponent's turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-refused-then-withdraw-stake",
+      "category": "player-language",
+      "question": "they refused terms then we withdrew. stake comes back?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Refused Terms"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A no-winner withdrawal after refused Terms returns the Stake and does not impose or ratify the Proposal."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-ratified-proposal-again",
+      "category": "player-language",
+      "question": "already ratified proposal. can i offer it again?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Treaty Articles and Peace Treaty"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "An already-ratified Proposal may be offered again for its tactical effects, but it cannot be ratified again or give the normal new-ratification reward."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-capacity-later-drop",
+      "category": "player-language",
+      "question": "qualified for financial capacity then treasury dropped. still have it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Financial Capacity"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Financial Capacity eligibility is fixed at its after-Capture check; later Treasury changes do not remove it for that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-deed-control-transfer",
+      "category": "player-language",
+      "question": "i captured the territory. do i get its deed too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Deeds"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Territory control does not transfer Deed ownership."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-mission-auto-complete",
+      "category": "player-language",
+      "question": "mission condition hit. does it auto finish?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Completing a Mission"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Satisfying the Mission requirement does not complete it automatically; completion requires the later Denouement Action."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-direct-interference-faceup",
+      "category": "player-language",
+      "question": "their tactic is face up. interference without surveillance?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Direct Interference"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "A face-up opposing choice can be directly Interfered with for 2 Intel at the proper response timing without using Surveillance."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-blood-transmutation",
+      "category": "player-language",
+      "question": "rite of blood plus transmutation still counts?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Rite of Blood"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Using Transmutation does not by itself prevent Rite of Blood from completing if the battle is otherwise eligible."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-ritual-withdrawal",
+      "category": "player-language",
+      "question": "ritual battle ended by withdrawal. interrupted?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Interruption"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Withdrawal neither completes nor interrupts the Ritual because there is no winner or loser."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-conviction-multiple-cards",
+      "category": "player-language",
+      "question": "three enemy cards hit graveyard same aftermath. three conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Conviction"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Multiple qualifying cards in the same battle Aftermath produce only 1 normal Conviction gain."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-condemnation-reserve",
+      "category": "player-language",
+      "question": "reserve cards get condemned too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Condemnation"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Condemnation redirects opposing Tactics, not cards left in Reserve; Reserve cards are discarded normally."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-rally-defending",
+      "category": "player-language",
+      "question": "rally while defending?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Rally"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Rally is only legal while attacking in a battle the General initiated."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-fieldcraft-edge",
+      "category": "player-language",
+      "question": "fieldcraft turns off defensive edge too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Fieldcraft"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Fieldcraft does not alter Defensive Edge."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-final-judgment-zero",
+      "category": "player-language",
+      "question": "final judgment purge can cost zero?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Final Judgment"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Final Judgment reduces the Purge cost to a minimum of 1, never 0."
+        }
+      ]
+    },
+    {
+      "id": "blind-f-player-pursuit-attacker",
+      "category": "player-language",
+      "question": "witch hunter attacked and won. pursuit fires?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Relentless Pursuit"
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Relentless Pursuit requires defeating an attacking opponent, so it does not fire when Witch Hunter was the attacker."
+        }
+      ]
+    }
+  ]
+}
