@@ -529,7 +529,7 @@ export function shouldPromoteR18DirectProcedure(question, sources = []) {
     peaceTreatyTiming
     && texts.some((text) =>
       /at\s+the\s+start\s+of\s+the\s+diplomat(?:['’]s)?\s+turn/.test(text)
-      && /six\s+different\s+proposals\s+are\s+ratified/.test(text)
+      && /six[\s\S]{0,120}different\s+proposals\s+are\s+ratified/.test(text)
     )
   ) return true;
 
