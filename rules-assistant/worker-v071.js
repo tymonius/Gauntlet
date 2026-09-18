@@ -920,6 +920,15 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
     ? "card"
     : String(match[1] || "ability").toLowerCase();
 
+  const normalizedCurrent = " " + normalizeReferentSubject(current) + " ";
+  const explicitlyNamedCards = retrieval.filter((source) => {
+    if (!String(source?.canonicalId || "").startsWith("card:")) return false;
+    return referentSourceAliasesR15(source).some((alias) =>
+      normalizedCurrent.includes(" " + alias + " ")
+    );
+  });
+  if (explicitlyNamedCards.length === 1) return null;
+
   if (localCompatibleReferentCountR15(current, match, noun, retrieval) === 1) {
     return null;
   }
@@ -1103,6 +1112,20 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && !/\btiebreak\b/.test(current)
     && !/\b(?:first player|first turn|setup)\b/.test(current)
     && !namedCardSource;
+  const rallyFollowupFocus = /\brally\b/.test(current)
+    || (
+      currentWordCount <= 20
+      && /\brally\b/.test(recent)
+      && /\b(?:attack|attacker|attacking|defend|defender|defending|before dice|battle|initiated)\b/.test(current)
+    );
+  const rallyAuthorityIds = rallyFollowupFocus
+    ? documents
+        .filter((document) => /\bmilitary\b[\s\S]*\bgeneral\b[\s\S]*\borders\b/.test(
+          normalizeReferentSubject(document?.title || document?.heading || "")
+        ) && /\brally\b/.test(normalizeReferentSubject(document?.body || "")))
+        .map((document) => document.id)
+        .slice(0, 1)
+    : [];
   const militaryCommandFocus = /\bcommand\b/.test(current)
     && (
       (
@@ -1121,7 +1144,7 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const ritualTopic = /\britual(?: of ascension)?\b/;
   const ritualProcedureCue = /\b(?:initiate|initiated|attacker|defender|win|won|lose|lost|complete|completion|interrupt|battle)\b/.test(current);
   const ritualFocus = ritualTopic.test(current)
-    || (currentWordCount <= 14 && ritualTopic.test(recent) && ritualProcedureCue);
+    || (currentWordCount <= 20 && ritualTopic.test(recent) && ritualProcedureCue);
   const specificRulePrecedenceFocus =
     /\b(?:conflict(?:s|ing)?|override(?:s|d|ing)?|different|which rule wins|more specific)\b/.test(current)
     && /\b(?:specific|card|rule|instruction|effect)\b/.test(combined)
@@ -1155,6 +1178,8 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
     && /\b(?:deed|own|owner|ownership|transfer|keep|keeps|still)\b/.test(current);
   const topicAuthorityIds = militaryLateTacticFocus
     ? militaryLateTacticAuthorityIds
+    : rallyFollowupFocus
+      ? rallyAuthorityIds
     : genericRerollFocus
       ? GENERIC_REROLL_AUTHORITY_IDS
     : militaryCommandFocus
