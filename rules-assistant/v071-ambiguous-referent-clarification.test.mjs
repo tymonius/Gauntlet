@@ -111,6 +111,20 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
     )).toBeNull();
   });
 
+  test("self-contained staked-Influence Leverage questions do not require Proposal identity", () => {
+    expect(buildAmbiguousReferentClarification(
+      "After my Terms are refused, can I spend the Influence I staked on that Proposal as Leverage before dice?",
+      [],
+      [{ canonicalId: "rulebook:leverage", title: "Leverage" }]
+    )).toBeNull();
+
+    expect(buildAmbiguousReferentClarification(
+      "Can I use Influence staked on that Proposal for Leverage?",
+      [],
+      [{ canonicalId: "rulebook:leverage", title: "Leverage" }]
+    )).toBeNull();
+  });
+
   test("self-contained questions are not diverted into clarification", () => {
     expect(buildAmbiguousReferentClarification(
       "Can I use Transmutation before dice are rolled?",
@@ -122,6 +136,6 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
   test("clarification is a first-class current answer mode while remaining legacy compatible", () => {
     expect(normalizeCurrentAnswerMode("clarification")).toBe("clarification");
     expect(toLegacyAnswerMode("clarification")).toBe("ai");
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-30");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
   });
 });
