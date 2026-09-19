@@ -72,7 +72,7 @@
     {
       "id": "blind-t-player-mission-control-special",
       "category": "player-language",
-      "question": "mission control can start a special op?",
+      "question": "mission control starts another mission. that next one can't be a special op, right?",
       "expectedClassification": "explicit",
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
@@ -83,7 +83,7 @@
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "No."
+          "statement": "Correct. The Mission started by Mission Control cannot be a Special Operation."
         }
       ]
     },
