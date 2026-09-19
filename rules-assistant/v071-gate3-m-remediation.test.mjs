@@ -40,7 +40,7 @@ function textOf(source) {
 
 describe("Gate 3 tranche M r24 remediation", () => {
   test("bumps production behavior to r24", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-30");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
   });
 
   test("Diplomat mirror question prioritizes the one-offer rule", () => {

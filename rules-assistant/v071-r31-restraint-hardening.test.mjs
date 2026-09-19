@@ -4,6 +4,7 @@ import { buildRulesCorpus, retrieveRules } from "./local-search.js";
 import {
   augmentRetrievalForContext,
   BEHAVIOR_REVISION,
+  buildAmbiguousReferentClarification,
   buildQuestionSpecificAdjudicationReminder,
   contextualQuery
 } from "./worker-v071.js";
@@ -30,33 +31,24 @@ function augmented(question, history = []) {
   return augmentRetrievalForContext(corpus, question, history, retrieval);
 }
 
-function textOf(source) {
-  return [source?.title, source?.heading, source?.body, source?.excerpt]
-    .map((value) => String(value || ""))
-    .join("\n");
-}
-
-describe("Gate 3 tranche O r26 remediation", () => {
-  test("bumps production behavior to r26", () => {
+describe("r31 restraint hardening from final blind tranche S", () => {
+  test("bumps production behavior to r31", () => {
     expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
   });
 
-  test("Counterworks terse Overlay questions preserve the discard activation condition", () => {
-    const question = "counterworks stops an opposing overlay and discards the overlay card?";
+  test("universal staked-Influence Leverage rule is not diverted by 'that Proposal'", () => {
+    const question = "After my Terms are refused, can I spend the Influence I staked on that Proposal as Leverage before dice?";
     const sources = augmented(question);
-    expect(sources.some((source) =>
-      source.canonicalId === "card:neutral-counterworks"
-      && /you may discard this card to prevent that Overlay/i.test(textOf(source))
-    )).toBe(true);
-    const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, []);
-    expect(reminder).toContain("requires discarding Counterworks");
-    expect(reminder).toContain("Do not describe the prevention as automatic or passive");
+    expect(sources.some((source) => /leverage/i.test(String(source.title || "")) || /staked influence cannot be spent as leverage/i.test(String(source.excerpt || source.body || "")))).toBe(true);
+    expect(buildAmbiguousReferentClarification(question, [], sources)).toBeNull();
   });
 
-  test("Counterworks into Bombardment keeps the same activation condition", () => {
-    const question = "counterworks into their bombardment overlay: bombardment gets discarded?";
+  test("unsupported official cocked-die procedure gets a rules-gap reminder", () => {
+    const question = "A die lands cocked against a card during a battle roll. Does published v0.7.1 define an official cocked-die reroll procedure?";
     const sources = augmented(question);
     const reminder = buildQuestionSpecificAdjudicationReminder(question, sources, []);
-    expect(reminder).toContain("the player may discard Counterworks to prevent the Overlay");
+    expect(reminder).toContain("genuine rules gap");
+    expect(reminder).toContain("Classify the ruling provisional");
+    expect(reminder).toContain("minimal usable table ruling");
   });
 });

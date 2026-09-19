@@ -486,6 +486,28 @@ export function shouldForceAbsentProcedureGap(question, sources = []) {
     });
   }
 
+  const officialProcedureMatch = current.match(
+    /\b(?:define|defines|provide|provides|specify|specifies|have|has)\b[\s\S]{0,80}?\b(?:an?\s+)?(?:official\s+|formal\s+)?([a-z0-9'’ -]{2,70}?)\s+(?:procedure|rule|remedy)\b/
+  );
+  const asksPublishedProcedureCoverage = Boolean(officialProcedureMatch)
+    && /\b(?:published|rulebook|rules?|ruleset|v0\.7\.1)\b/.test(current);
+  if (asksPublishedProcedureCoverage) {
+    const subjectTokens = tokens(officialProcedureMatch[1]).filter((token) =>
+      token.length >= 3
+      && !new Set([
+        "official", "formal", "published", "rulebook", "rule", "rules", "ruleset",
+        "procedure", "remedy", "game", "gauntlet", "define", "provide", "specify"
+      ]).has(token)
+    );
+    if (subjectTokens.length) {
+      const directlyDefined = sourceList.some((source) => {
+        const text = sourceText(source);
+        return subjectTokens.every((token) => new RegExp(`\\b${token}\\b`, "i").test(text));
+      });
+      if (!directlyDefined) return true;
+    }
+  }
+
   if (!/\b(?:concede|concedes|conceded|concession|surrender|surrenders|surrendered|forfeit|forfeits|forfeited)\b/.test(current)) {
     return false;
   }

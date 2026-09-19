@@ -32,7 +32,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche Q r28 remediation", () => {
   test("bumps production behavior to r28", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-30");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
   });
 
   test("replacement language with 'instead' is treated as replacement, not addition", () => {

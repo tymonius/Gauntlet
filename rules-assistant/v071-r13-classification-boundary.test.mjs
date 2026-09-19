@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   hasNamedCardBattleCollateralTimingConflict,
   normalizeR13RulingStatus,
+  shouldForceAbsentProcedureGap,
   shouldForceUndefinedTransformationGap,
   shouldPromoteDirectPhaseLegality,
   shouldPromoteExpandedDirectOverview,
@@ -132,6 +133,30 @@ describe("v0.7.1 r13 classification boundary", () => {
     expect(shouldForceUndefinedTransformationGap(question, sources)).toBe(true);
     expect(normalizeR13RulingStatus("explicit", question, sources)).toBe("provisional");
     expect(normalizeR13RulingStatus("inferred", question, sources)).toBe("provisional");
+  });
+
+  test("forces an unsupported official procedure question provisional when the retrieved rule does not define the distinguishing condition", () => {
+    const sources = [
+      source(
+        "11. Detailed Card and Timing Rules › Rerolls",
+        "When a rule or effect causes a die to be rerolled, the reroll replaces the result it rerolls."
+      )
+    ];
+    const question = "A die lands cocked against a card during a battle roll. Does published v0.7.1 define an official cocked-die reroll procedure?";
+    expect(shouldForceAbsentProcedureGap(question, sources)).toBe(true);
+    expect(normalizeR13RulingStatus("explicit", question, sources)).toBe("provisional");
+  });
+
+  test("does not manufacture a procedure gap when the requested official procedure is directly defined", () => {
+    const sources = [
+      source(
+        "7. Battles › Tiebreak Roll",
+        "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or previous battle totals."
+      )
+    ];
+    const question = "Does the published rulebook define an official Tiebreak Roll procedure?";
+    expect(shouldForceAbsentProcedureGap(question, sources)).toBe(false);
+    expect(normalizeR13RulingStatus("explicit", question, sources)).toBe("explicit");
   });
 
   test("does not force provisional when the transformed state is directly defined", () => {
