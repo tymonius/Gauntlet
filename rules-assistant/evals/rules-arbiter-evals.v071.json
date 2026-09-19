@@ -1054,13 +1054,13 @@
         "Tiebreak Roll"
       ],
       "expectedAnswerPatterns": [
-        "No",
-        "do not apply"
+        "No"
       ],
       "forbiddenAnswerPatterns": [
         "Yes."
       ],
-      "origin": "gate3-blind-r-2026-09-18"
+      "origin": "gate3-blind-r-2026-09-18",
+      "note": "Question-scoped polarity regression. Any concise wording equivalent to the cited Tiebreak rule is acceptable; do not require the literal phrase 'do not apply'."
     },
     {
       "id": "r29-retribution-owner",

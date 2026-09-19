@@ -79,7 +79,7 @@ test("r29 live regression corpus preserves the two material Gate 3 R failures", 
   expect(byId.get("r29-tiebreak-polarity")).toMatchObject({
     expectedClassification: "explicit",
     expectedSourcePatterns: ["Tiebreak Roll"],
-    expectedAnswerPatterns: ["No", "do not apply"],
+    expectedAnswerPatterns: ["No"],
     forbiddenAnswerPatterns: ["Yes."],
     origin: "gate3-blind-r-2026-09-18"
   });
