@@ -1,0 +1,200 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "S",
+  "behaviorRevision": "v071-qa-20260919-30",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language companion to final Gate 3 tranche S.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260919-30 and after the Rules Arbiter historical regression gate passed on main; it was not used to construct r30.",
+    "Do not edit or retroactively regrade tranche S after its first paid live run; preserve that run as immutable final blind evidence.",
+    "Any failed tranche-S case may become regression coverage only after diagnosis; the first S run remains the certification evidence.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R questions.",
+    "Question-scoped semantic criteria require only what the question asks; do not require unasked costs, frequencies, consequences, or context.",
+    "Citation/classification mismatches must be distinguished from semantically wrong rulings during closeout.",
+    "expectedSourceGroups are OR-lists within a governing requirement; separate groups remain independently required."
+  ],
+  "cases": [
+    {
+      "id": "blind-s-player-action-total",
+      "category": "player-language",
+      "question": "used my action in opening. normal rules let me act again in denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "no more than one Action total during the turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-gambit-graveyard",
+      "category": "player-language",
+      "question": "normal gambit goes graveyard after the fight, right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Gambits go to their owners' Graveyards"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-both-withdraw",
+      "category": "player-language",
+      "question": "both withdraw; attacker moves first?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "if both players withdraw, move the attacker first"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-deep-control",
+      "category": "player-language",
+      "question": "i'm deep on their territory. being there alone means i control it?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Deep Occupation does not itself change control"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-stake-leverage",
+      "category": "player-language",
+      "question": "can i spend my staked influence on leverage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-collateral-capital",
+      "category": "player-language",
+      "question": "line of credit collateral turns into capital i keep?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Collateral contributes payment value but does not become Capital"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-surveillance-both",
+      "category": "player-language",
+      "question": "watched their gambit already. can i still surveil tactics?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "The Gambit and Tactic opportunities are independent"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-rite-same-turn",
+      "category": "player-language",
+      "question": "started the rite this turn and met it. completes now?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "A Rite cannot complete during the turn it begins"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-conviction-three",
+      "category": "player-language",
+      "question": "three enemy cards hit graveyard in that first aftermath. +3 conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "one or more opposing cards enter the Graveyard during the Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The normal trigger gives 1 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-player-pursuit-attacker",
+      "category": "player-language",
+      "question": "pursuit moves me into them. i'm attacker in the new battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If this movement initiates a battle, you are the attacker"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    }
+  ]
+}
