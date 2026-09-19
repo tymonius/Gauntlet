@@ -96,7 +96,7 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "A Counterattack is a battle initiated by the controller of a Territory against an opponent who is the occupier of that Territory"
+          "battle initiated by the controller of a Territory against an opponent who is the occupier of that Territory"
         ]
       ],
       "semanticCriteria": [
