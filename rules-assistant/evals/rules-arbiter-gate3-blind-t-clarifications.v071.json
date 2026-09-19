@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "T",
+  "behaviorRevision": "v071-qa-20260919-31",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh ambiguity probes for bounded post-r31 confirmation. Each contains multiple plausible recent referents and should request clarification rather than guess.",
+  "cases": [
+    {
+      "id": "blind-t-clarify-rally-entrench",
+      "question": "Can that one still be used now?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Rally and Entrench before dice."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are 1-Command Orders, but they apply to different battle roles."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-clarify-deed-collateral",
+      "question": "Does that one go to the Discard Pile afterward?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at a Deed purchase and the card used as Line of Credit collateral."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are different objects in the purchase procedure."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-clarify-invocation-transmutation",
+      "question": "Does that one move a card out of my Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Invocation and Transmutation are both unlocked for me."
+        },
+        {
+          "role": "assistant",
+          "content": "They use cards and zones differently."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-clarify-fortify-takeover",
+      "question": "Does that one advance Front Line automatically if it works?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Fortify with Hostile Takeover."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can affect your Front Line after an attacking or occupying success, but their requirements differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-clarify-surveillance-counterintel",
+      "question": "Does that one spend Intel?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Surveillance and Counterintelligence."
+        },
+        {
+          "role": "assistant",
+          "content": "One is an Intelligence procedure and the other prevents revealing effects."
+        }
+      ]
+    }
+  ]
+}
