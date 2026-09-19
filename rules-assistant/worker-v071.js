@@ -21,7 +21,7 @@ import {
 } from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260919-30";
+export const BEHAVIOR_REVISION = "v071-qa-20260919-31";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -1297,8 +1297,12 @@ function hasClearLocalSingularAntecedentR18(current, match, noun) {
 function isIdentityIndependentStakeLeverageQuestionR19(current, noun) {
   if (noun !== "proposal") return false;
   const text = String(current || "");
-  return /\bterms?\b/i.test(text)
-    && /\b(?:this|that)\s+proposal[’']s\s+stake\b/i.test(text)
+  const namesProposal = /\bproposal\b/i.test(text);
+  const namesStakedInfluence = (
+    /\bstak(?:e|ed|ing)\b/i.test(text) && /\binfluence\b/i.test(text)
+  ) || /\b(?:this|that|the)\s+proposal[’']s\s+stake\b/i.test(text);
+  return namesProposal
+    && namesStakedInfluence
     && /\bleverage\b/i.test(text)
     && /\b(?:spend|use)\b/i.test(text);
 }
