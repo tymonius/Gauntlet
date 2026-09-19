@@ -136,13 +136,14 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `packages/` | Canonical source container for maintained shared packages and authorities; currently contains `packages/game-data/` and `packages/rules/` |
+| `packages/` | Canonical source container for maintained shared packages and authorities; currently contains `packages/game-data/`, `packages/rules/`, and `packages/rendering/` |
 
 ### Production tooling
 
 | Path | Role |
 |---|---|
-| `card-design/` | Card/component rendering and authoring; transitional toward shared rendering plus production-tool boundaries |
+| `card-design/` | Browser rendering, review, and component-presentation tooling; transitional as classified tooling moves behind stable `/card-design/` URLs |
+| `tools/` | Canonical maintained production-tooling container; first established boundary is `tools/card-design/artwork-authoring/` |
 | `tts/` | TTS generation, packaging, renderer support, QA, and versioned release evidence |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
