@@ -1,0 +1,163 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "T",
+  "behaviorRevision": "v071-qa-20260919-31",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language companion to bounded post-r31 Gate 3 tranche T.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260919-31; it was not used to construct r31.",
+    "Do not edit or retroactively regrade tranche T after its first paid live run; preserve that run as immutable confirmation evidence.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "Citation/classification mismatches must be distinguished from semantically wrong rulings during closeout.",
+    "This is the bounded post-r31 confirmation tranche required by #1630, not the start of another open-ended tranche loop."
+  ],
+  "cases": [
+    {
+      "id": "blind-t-player-leverage-deictic",
+      "category": "player-language",
+      "question": "influence is staked on that proposal. can i use it for leverage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-replacement-window",
+      "category": "player-language",
+      "question": "i replaced the gambit. that doesn't reopen the old response window, right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Replacing a card does not reopen an earlier timing window"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. The earlier window stays closed."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-deed-capture",
+      "category": "player-language",
+      "question": "i captured their territory. their deed doesn't just become mine?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "changing Territory control does not transfer its Deed"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. The Deed does not automatically transfer."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-mission-control-special",
+      "category": "player-language",
+      "question": "mission control starts another mission. that next one can't be a special op, right?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "cannot be a Special Operation"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Correct. The Mission started by Mission Control cannot be a Special Operation."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-fieldcraft-edge",
+      "category": "player-language",
+      "question": "fieldcraft can turn off defensive edge?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-final-judgment-zero",
+      "category": "player-language",
+      "question": "final judgment can make a purge free?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "minimum of 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-purge-same-phase",
+      "category": "player-language",
+      "question": "purged in opening. can i use the extra action in opening too?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Purge never permits two Actions in one phase"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-t-player-tiebreak-basic",
+      "category": "player-language",
+      "question": "tiebreak roll is one die each?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Each player rolls one die"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    }
+  ]
+}
