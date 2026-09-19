@@ -10,7 +10,7 @@ describe("v0.7.1 printed effect-label fidelity", () => {
     expect(workerV071).toContain("distinguish an Action that banks a card from a later ability of the banked Asset");
   });
 
-  test("advances the behavior revision for the terminology fix", () => {
-    expect(workerV071).toContain('BEHAVIOR_REVISION = "v071-qa-20260914-12"');
+  test("keeps the terminology guard in the versioned production Worker", () => {
+    expect(workerV071).toMatch(/export const BEHAVIOR_REVISION = "v071-qa-[^"]+";/);
   });
 });

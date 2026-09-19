@@ -1,0 +1,36 @@
+name: Rules Arbiter historical regression
+
+on:
+  pull_request:
+    paths:
+      - 'rules-assistant/**'
+      - 'scripts/v071-*.mjs'
+      - '.github/workflows/rules-arbiter-historical-regression.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'rules-assistant/**'
+      - 'scripts/v071-*.mjs'
+      - '.github/workflows/rules-arbiter-historical-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Rules Arbiter historical suite
+        run: npm run test:rules-assistant
