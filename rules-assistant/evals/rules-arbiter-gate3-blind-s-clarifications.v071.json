@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "S",
+  "behaviorRevision": "v071-qa-20260919-30",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Final fresh Gate 3 ambiguous-follow-up probes authored after r30 historical regressions passed; each presents multiple plausible recent referents and must request clarification rather than guess.",
+  "cases": [
+    {
+      "id": "blind-s-clarify-onward-takeover",
+      "question": "Does that one cost an Action?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing the General's Onward with the Executive's Hostile Takeover."
+        },
+        {
+          "role": "assistant",
+          "content": "They occur at different timings and use different kinds of costs."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-clarify-gambit-tactic-destination",
+      "question": "Does that one go to the Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at my Gambit and my Tactic from this battle."
+        },
+        {
+          "role": "assistant",
+          "content": "They normally have different destinations when battle cards are cleared."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-clarify-leverage-line-credit",
+      "question": "Can that one use the staked resource?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Diplomat Leverage with the Banker's Line of Credit."
+        },
+        {
+          "role": "assistant",
+          "content": "Both help pay for something, but they use different resources and restrictions."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-clarify-pursuit-repel",
+      "question": "Does that one end the opponent's turn first?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Relentless Pursuit and Repel after a defensive win."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can move a player after the battle, but their procedures are different."
+        }
+      ]
+    },
+    {
+      "id": "blind-s-clarify-surveillance-interference",
+      "question": "Does that one use my Surveillance opportunity?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing normal Surveillance with Direct Interference against a face-up choice."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Intelligence responses at a battle-choice stage, but they consume different opportunities."
+        }
+      ]
+    }
+  ]
+}
