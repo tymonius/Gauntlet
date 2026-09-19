@@ -33,7 +33,7 @@ describe("v0.7.1 high-risk answer verification", () => {
     const sources = [
       source(
         "card:inquisition-retribution",
-        "After the opponent loses a battle they initiated, you may discard this card. If you do, the opponent chooses one Asset to put in their Graveyard or gives you +2 Conviction. If they have no Assets, gain +2 Conviction."
+        "After the opponent loses a battle they initiated, you may discard this card. If you do, they choose one: put one of their Assets in their Graveyard; or +2 Conviction. If they have no Assets, +2 Conviction."
       )
     ];
 
@@ -84,7 +84,7 @@ describe("v0.7.1 high-risk answer verification", () => {
     const sources = [
       source(
         "card:inquisition-retribution",
-        "The opponent chooses one Asset to put in their Graveyard or gives you +2 Conviction. If they have no Assets, gain +2 Conviction."
+        "After the opponent loses a battle they initiated, you may discard this card. If you do, they choose one: put one of their Assets in their Graveyard; or +2 Conviction. If they have no Assets, +2 Conviction."
       )
     ];
     const draft = {
@@ -100,9 +100,43 @@ describe("v0.7.1 high-risk answer verification", () => {
       source_ids: ["card:inquisition-retribution"]
     };
 
-    const result = applyHighRiskVerification(draft, verification, sources);
+    const result = applyHighRiskVerification(
+      draft,
+      verification,
+      sources,
+      "Who gets the +2 Conviction from Retribution if the opponent has no Assets?"
+    );
     expect(result.applied).toBe(true);
     expect(result.draft.answer).toContain("you gain +2 Conviction");
+  });
+
+  test("overrides a verifier-approved Retribution activation answer when the deterministic source invariant is violated", () => {
+    const question = "The opponent loses a battle they initiated while Retribution is banked. What activation is required before its punishment applies?";
+    const sources = [
+      source(
+        "card:inquisition-retribution",
+        "After the opponent loses a battle they initiated, you may discard this card. If you do, they choose one: put one of their Assets in their Graveyard; or +2 Conviction. If they have no Assets, +2 Conviction."
+      )
+    ];
+    const draft = {
+      answer: "You must choose to discard Retribution. If you do, the opponent chooses to lose an Asset or take +2 Conviction.",
+      ruling_status: "explicit",
+      source_ids: ["card:inquisition-retribution"]
+    };
+    const verification = {
+      valid: true,
+      issues: [],
+      replacement_answer: "",
+      replacement_status: "none",
+      source_ids: []
+    };
+
+    const result = applyHighRiskVerification(draft, verification, sources, question);
+    expect(result.applied).toBe(true);
+    expect(result.reason).toBe("deterministic-retribution-activation");
+    expect(result.draft.answer).toContain("You may discard Retribution");
+    expect(result.draft.answer).toContain("optional, not required");
+    expect(result.draft.answer).not.toMatch(/opponent.*\+2 Conviction/i);
   });
 
   test("rejects a repair that cites authority outside the supplied retrieval set", () => {

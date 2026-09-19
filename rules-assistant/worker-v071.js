@@ -21,7 +21,7 @@ import {
 } from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260918-29";
+export const BEHAVIOR_REVISION = "v071-qa-20260919-30";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -532,7 +532,7 @@ export default {
           draft: modelResult,
           reasons: verificationReasons
         });
-        const application = applyHighRiskVerification(modelResult, verification, retrieval);
+        const application = applyHighRiskVerification(modelResult, verification, retrieval, question);
         modelResult = application.draft;
         verificationApplied = application.applied;
         diagnostics.verification = {

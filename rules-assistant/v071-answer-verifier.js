@@ -78,6 +78,56 @@ export function shouldVerifyHighRiskAnswer(question, sources = []) {
   return highRiskVerificationReasons(question, sources).length > 0;
 }
 
+
+function sourceId(source, index) {
+  return source?.id || `S${index + 1}`;
+}
+
+function retributionSource(sources = []) {
+  return sources.find((source) => String(source?.canonicalId || "") === "card:inquisition-retribution") || null;
+}
+
+function retributionActivationQuestion(question) {
+  const current = String(question || "").toLowerCase();
+  return /\bactivation\b/.test(current)
+    || /\bwhat\b[^?]{0,80}\brequired\b/.test(current)
+    || /\bbefore\b[^?]{0,80}\b(?:punishment|effect)\b[^?]{0,40}\bappl(?:y|ies)\b/.test(current);
+}
+
+function unsafeRetributionAnswer(answer) {
+  const current = String(answer || "");
+  return /\b(?:must|have to|required to)\b[^.]{0,90}\bdiscard\b/i.test(current)
+    || /\b(?:opponent|they)\b[^.]{0,70}\b(?:gain|gains|take|takes|receive|receives)\b[^.]{0,30}\+?2\s+Conviction\b/i.test(current);
+}
+
+export function applyDeterministicHighRiskInvariants(draft, question, sources = []) {
+  const source = retributionSource(sources);
+  if (!source) return { draft, applied: false, reason: "no-deterministic-invariant" };
+
+  const activationQuestion = retributionActivationQuestion(question);
+  if (!activationQuestion && !unsafeRetributionAnswer(draft?.answer)) {
+    return { draft, applied: false, reason: "deterministic-invariant-satisfied" };
+  }
+
+  const index = sources.indexOf(source);
+  const id = sourceId(source, index);
+  const answer = activationQuestion
+    ? "You may discard Retribution after the opponent loses a battle they initiated. If you do, its punishment applies. The discard is optional, not required."
+    : "Retribution is optional: after the opponent loses a battle they initiated, you may discard Retribution. If you do, the opponent chooses one: put one of their Assets in their Graveyard, or you gain +2 Conviction. If they have no Assets, you gain +2 Conviction.";
+
+  return {
+    draft: {
+      answer,
+      ruling_status: "explicit",
+      source_ids: [id]
+    },
+    applied: true,
+    reason: activationQuestion
+      ? "deterministic-retribution-activation"
+      : "deterministic-retribution-attribution"
+  };
+}
+
 function formatSources(sources = []) {
   return sources.map((source, index) => [
     `[${source.id || `S${index + 1}`}] ${source.title || source.heading || "Canonical source"}`,
@@ -176,37 +226,48 @@ Do not manufacture a failure from an unasked detail. Return only the required JS
   return JSON.parse(outputText);
 }
 
-export function applyHighRiskVerification(draft, verification, sources = []) {
-  if (!verification || verification.valid !== false) {
-    return { draft, applied: false, reason: "valid-or-not-run" };
+export function applyHighRiskVerification(draft, verification, sources = [], question = "") {
+  let candidate = draft;
+  let applied = false;
+  let reason = "valid-or-not-run";
+
+  if (verification?.valid === false) {
+    if (
+      verification.replacement_status === "none"
+      || !String(verification.replacement_answer || "").trim()
+    ) {
+      reason = "missing-replacement";
+    } else {
+      const validIds = new Set(sources.map((source, index) => sourceId(source, index)));
+      const sourceIds = Array.isArray(verification.source_ids)
+        ? verification.source_ids.filter((id) => validIds.has(id))
+        : [];
+
+      if (
+        ["explicit", "inferred"].includes(verification.replacement_status)
+        && sourceIds.length === 0
+      ) {
+        reason = "unsupported-replacement";
+      } else {
+        candidate = {
+          answer: String(verification.replacement_answer).trim(),
+          ruling_status: verification.replacement_status,
+          source_ids: sourceIds
+        };
+        applied = true;
+        reason = "replacement-applied";
+      }
+    }
   }
 
-  if (
-    verification.replacement_status === "none"
-    || !String(verification.replacement_answer || "").trim()
-  ) {
-    return { draft, applied: false, reason: "missing-replacement" };
+  const invariant = applyDeterministicHighRiskInvariants(candidate, question, sources);
+  if (invariant.applied) {
+    return {
+      draft: invariant.draft,
+      applied: true,
+      reason: invariant.reason
+    };
   }
 
-  const validIds = new Set(sources.map((source, index) => source.id || `S${index + 1}`));
-  const sourceIds = Array.isArray(verification.source_ids)
-    ? verification.source_ids.filter((id) => validIds.has(id))
-    : [];
-
-  if (
-    ["explicit", "inferred"].includes(verification.replacement_status)
-    && sourceIds.length === 0
-  ) {
-    return { draft, applied: false, reason: "unsupported-replacement" };
-  }
-
-  return {
-    draft: {
-      answer: String(verification.replacement_answer).trim(),
-      ruling_status: verification.replacement_status,
-      source_ids: sourceIds
-    },
-    applied: true,
-    reason: "replacement-applied"
-  };
+  return { draft: candidate, applied, reason };
 }
