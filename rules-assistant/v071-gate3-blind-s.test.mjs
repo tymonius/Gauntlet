@@ -135,4 +135,5 @@ describe("Gate 3 final blind tranche S certification freeze", () => {
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
     );
-  });});
+  });
+});
