@@ -151,7 +151,7 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six different Proposals are ratified"
+          "after the Capture step and before the Draw step"
         ]
       ],
       "semanticCriteria": [
