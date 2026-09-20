@@ -111,6 +111,27 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
     )).toBeNull();
   });
 
+
+  test("generic that-one follow-up clarifies an explicit two-item comparison even when retrieval contains only one item", () => {
+    const history = [
+      { role: "user", content: "I'm comparing Surveillance and Counterintelligence." },
+      { role: "assistant", content: "One is an Intelligence procedure and the other prevents revealing effects." }
+    ];
+    const retrieval = [
+      { canonicalId: "card:neutral-counterintelligence", title: "Card: Counterintelligence" },
+      { canonicalId: "faction:intel", title: "Faction: Intel" }
+    ];
+    const result = buildAmbiguousReferentClarification(
+      "Does that one spend Intel?",
+      history,
+      retrieval
+    );
+    expect(result?.rulingStatus).toBe("unresolved");
+    expect(result?.responseType).toBe("clarification");
+    expect(result?.executionPath).toBe("deterministic-clarification");
+    expect(result?.answer).toContain("Which one do you mean?");
+  });
+
   test("self-contained staked-Influence Leverage questions do not require Proposal identity", () => {
     expect(buildAmbiguousReferentClarification(
       "After my Terms are refused, can I spend the Influence I staked on that Proposal as Leverage before dice?",
@@ -136,6 +157,6 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
   test("clarification is a first-class current answer mode while remaining legacy compatible", () => {
     expect(normalizeCurrentAnswerMode("clarification")).toBe("clarification");
     expect(toLegacyAnswerMode("clarification")).toBe("ai");
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
   });
 });
