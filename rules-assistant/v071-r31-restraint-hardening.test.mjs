@@ -33,7 +33,7 @@ function augmented(question, history = []) {
 
 describe("r31 restraint hardening from final blind tranche S", () => {
   test("bumps production behavior to r31", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
   });
 
   test("universal staked-Influence Leverage rule is not diverted by 'that Proposal'", () => {

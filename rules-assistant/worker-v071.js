@@ -21,7 +21,7 @@ import {
 } from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260919-31";
+export const BEHAVIOR_REVISION = "v071-qa-20260920-32";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -1272,6 +1272,22 @@ function localCompatibleReferentCountR15(current, match, noun, retrieval = []) {
   return count;
 }
 
+function hasRecentExplicitComparisonR32(history = []) {
+  const recentUser = [...history]
+    .reverse()
+    .find((item) => item?.role !== "assistant" && String(item?.content || "").trim());
+  const text = String(recentUser?.content || "").trim();
+  if (!text) return false;
+
+  if (
+    /\b(?:compar(?:e|ing)|looking at|choosing between|deciding between)\b[\s\S]{1,180}\b(?:and|with|versus|vs\.?)\b[\s\S]{1,180}/i.test(text)
+  ) {
+    return true;
+  }
+
+  return /\b[A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*){0,3}\s+and\s+[A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*){0,3}\b[\s\S]{0,80}\bboth\b/.test(text);
+}
+
 function hasClearLocalSingularAntecedentR18(current, match, noun) {
   if (!match || !noun || noun === "one") return false;
   const prefix = String(current || "").slice(0, Math.max(0, Number(match.index || 0)));
@@ -1349,12 +1365,19 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
     return null;
   }
 
-  if (localCompatibleReferentCountR15(current, match, noun, retrieval) === 1) {
+  const recentExplicitComparison = Boolean(
+    genericOneMatch && hasRecentExplicitComparisonR32(history)
+  );
+
+  if (
+    !recentExplicitComparison
+    && localCompatibleReferentCountR15(current, match, noun, retrieval) === 1
+  ) {
     return null;
   }
 
   const namedAuthoritySubjects = currentNamedAuthoritySubjects(current, retrieval);
-  if (!genericOneMatch && namedAuthoritySubjects.length === 1) return null;
+  if (!recentExplicitComparison && !genericOneMatch && namedAuthoritySubjects.length === 1) return null;
 
   const recentText = history.slice(-2).map((item) => String(item?.content || "")).join(" ");
   const familyCue = noun === "effect"
@@ -1370,7 +1393,7 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
       : familyCue.test(recentText)
         ? recentSpecificSubjects(history, retrieval)
         : [];
-  if (subjects.length === 1) return null;
+  if (!recentExplicitComparison && subjects.length === 1) return null;
 
   const answer = noun === "card"
     ? "Which card do you mean? Give me its name or exact text, plus the current phase or step, whose turn it is, and any relevant game state that is not already clear from the conversation."

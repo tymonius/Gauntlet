@@ -32,7 +32,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche I r20 remediation", () => {
   test("bumps production behavior to r20", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260919-31");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
   });
 
   test("literal +N Action shorthand prioritizes the card-shorthand Actions authority", () => {
