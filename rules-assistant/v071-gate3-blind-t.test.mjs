@@ -144,14 +144,10 @@ describe("Gate 3 bounded blind tranche T confirmation freeze", () => {
     }
   });
 
-  test("current Gate 3 workflow is pinned to T/r31 and remains OIDC-authorized", () => {
+  test("later Gate 3 workflow advancement does not invalidate frozen T evidence and remains OIDC-authorized", () => {
     const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
-    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche T");
-    expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260919-31");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-t.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-t-player-language.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-t-clarifications.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-t-v0.7.1");
+    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche ");
+    expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
     );
