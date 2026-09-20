@@ -22,6 +22,7 @@ const requestTimeoutMs = Math.max(5000, Number(process.env.GAUNTLET_RULES_QA_TIM
 const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 4, 8));
 const retryableStatuses = new Set([429, 502, 503, 504]);
 const useGitHubActionsOidc = process.env.GAUNTLET_RULES_QA_USE_GITHUB_OIDC === "true";
+const semanticOnlyGate = process.env.GAUNTLET_RULES_QA_SEMANTIC_ONLY === "true";
 const qaOidcAudience = "gauntlet-rules-assistant-live-qa";
 let cachedQaOidcToken = null;
 let cachedQaOidcExpiresAt = 0;
@@ -178,10 +179,14 @@ if (benchmark.gradingMode !== SEMANTIC_GRADING_MODE) {
     const result = report.results[index];
     const item = casesById.get(result.id);
     const semantic = await evaluateCase(item, result, index);
-    const failures = [...(result.failures || []), ...semantic.failures];
+    const collectionFailures = [...(result.failures || [])];
+    const semanticOnlyFailures = [...semantic.failures];
+    const failures = [...collectionFailures, ...semanticOnlyFailures];
     const graded = {
       ...result,
       semanticEvaluation: semantic.evaluation,
+      collectionFailures,
+      semanticFailures: semanticOnlyFailures,
       failures
     };
     gradedResults.push(graded);
@@ -190,6 +195,7 @@ if (benchmark.gradingMode !== SEMANTIC_GRADING_MODE) {
   }
 
   const failed = gradedResults.filter((result) => result.failures.length);
+  const semanticFailed = gradedResults.filter((result) => (result.semanticFailures || []).length);
   const preSemanticSummary = report.summary || null;
   const semanticSummary = summarizeSemanticResults(gradedResults);
   const gradedReport = {
@@ -206,6 +212,7 @@ if (benchmark.gradingMode !== SEMANTIC_GRADING_MODE) {
       failed: failed.length,
       passRate: gradedResults.length ? (gradedResults.length - failed.length) / gradedResults.length : 0,
       benchmarkStatus: failed.length ? "failed" : "passed",
+      semanticBenchmarkStatus: semanticFailed.length ? "failed" : "passed",
       semantic: semanticSummary
     },
     results: gradedResults
@@ -216,5 +223,5 @@ if (benchmark.gradingMode !== SEMANTIC_GRADING_MODE) {
   console.log(`Semantic live QA: ${gradedReport.summary.passed}/${gradedReport.summary.total} passed.`);
   console.log(`Semantic verdicts: ${semanticSummary.pass} pass, ${semanticSummary.fail} fail, ${semanticSummary.review} review.`);
   console.log(`Report: ${outputPath}`);
-  if (failed.length) process.exitCode = 1;
+  if (semanticOnlyGate ? semanticFailed.length : failed.length) process.exitCode = 1;
 }
