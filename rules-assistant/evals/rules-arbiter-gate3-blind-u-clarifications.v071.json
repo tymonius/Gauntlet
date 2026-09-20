@@ -22,7 +22,7 @@
     },
     {
       "id": "blind-u-clarify-invocation-transmutation",
-      "question": "Does that one move a card out of my Graveyard?",
+      "question": "Is that the one that pulls a card out of my Graveyard?",
       "history": [
         {
           "role": "user",
