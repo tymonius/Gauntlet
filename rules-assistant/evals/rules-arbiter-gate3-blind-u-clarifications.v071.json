@@ -50,7 +50,7 @@
     },
     {
       "id": "blind-u-clarify-fieldcraft-mission-control",
-      "question": "Does that one spend Intel?",
+      "question": "Is that the one that actually spends Intel?",
       "history": [
         {
           "role": "user",
