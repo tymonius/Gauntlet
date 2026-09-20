@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "U",
+  "behaviorRevision": "v071-qa-20260920-32",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh post-r32 ambiguity probes. Each immediate user history explicitly contrasts two named game subjects; the generic follow-up remains ambiguous even if retrieval surfaces only one subject.",
+  "cases": [
+    {
+      "id": "blind-u-clarify-onward-rout",
+      "question": "Does that one happen during Movement?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Onward with Rout."
+        },
+        {
+          "role": "assistant",
+          "content": "Both can move the General, but they occur at different timings."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-clarify-invocation-transmutation",
+      "question": "Does that one move a card out of my Graveyard?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Invocation and Transmutation are both available to me."
+        },
+        {
+          "role": "assistant",
+          "content": "They use cards and zones differently."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-clarify-cordiality-political-capital",
+      "question": "Does that one trigger after accepted Terms?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Cordiality and Political Capital."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Leader abilities with different triggers."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-clarify-fieldcraft-mission-control",
+      "question": "Does that one spend Intel?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Fieldcraft and Mission Control."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Intelligence Leader abilities, but their costs and triggers differ."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-clarify-judgment-pursuit",
+      "question": "Does that one cost 2 Conviction?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Final Judgment with Relentless Pursuit."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are Inquisition Leader abilities, but they pay and trigger differently."
+        }
+      ]
+    }
+  ]
+}
