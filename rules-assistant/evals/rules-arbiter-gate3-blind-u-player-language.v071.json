@@ -1,0 +1,127 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-blind.v2",
+  "rulesVersion": "v0.7.1",
+  "tranche": "U",
+  "behaviorRevision": "v071-qa-20260920-32",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "gradingMode": "semantic-v1",
+  "purpose": "Fresh terse player-language companion to bounded post-r32 tranche U.",
+  "blindnessPolicy": [
+    "This tranche was authored only after production deployment and current-live-publication verification succeeded for v071-qa-20260920-32; it was not used to construct r32.",
+    "Do not edit or retroactively regrade tranche U after its first paid live run; preserve that run as immutable confirmation evidence.",
+    "Do not exactly reuse prior Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S/T questions.",
+    "Question-scoped semantic criteria require only what the question asks.",
+    "Citation/classification mismatches are diagnostics and must remain separate from semantic wrong rulings.",
+    "This is the bounded post-r32 confirmation required by #1630, not the start of another open-ended tranche loop."
+  ],
+  "cases": [
+    {
+      "id": "blind-u-player-stake",
+      "category": "player-language",
+      "question": "that influence is staked. can it pay for leverage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-negated-gambit",
+      "category": "player-language",
+      "question": "negated gambit still goes graveyard after?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Gambit still goes to its owner's Graveyard during the Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-fieldcraft-capture",
+      "category": "player-language",
+      "question": "fieldcraft can change capture?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Fieldcraft does not alter Territory control, Occupation, Capture"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-mission-delay",
+      "category": "player-language",
+      "question": "mission control starts it now; can it finish this turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It cannot complete that turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-final-judgment-floor",
+      "category": "player-language",
+      "question": "final judgment can drop purge below 1 conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "minimum of 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-defensive-edge",
+      "category": "player-language",
+      "question": "tie while defender has defensive edge. tiebreak roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "defender wins tied battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    }
+  ]
+}

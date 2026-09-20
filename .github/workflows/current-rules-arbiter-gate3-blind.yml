@@ -1,4 +1,4 @@
-name: Rules Arbiter Gate 3 blind tranche T
+name: Rules Arbiter Gate 3 blind tranche U
 
 on:
   workflow_dispatch:
@@ -22,15 +22,15 @@ permissions:
   id-token: write
 
 jobs:
-  blind-ta:
+  blind-ua:
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
-      GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260919-31
+      GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260920-32
       GATE3_EXPECTED_AUTHORITY_SET: 5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339
-      GATE3_STANDARD_REPORT: artifacts/rules-qa/v071-gate3-blind-t.json
-      GATE3_PLAYER_LANGUAGE_REPORT: artifacts/rules-qa/v071-gate3-blind-t-player-language.json
-      GATE3_CLARIFICATION_REPORT: artifacts/rules-qa/v071-gate3-blind-t-clarifications.json
+      GATE3_STANDARD_REPORT: artifacts/rules-qa/v071-gate3-blind-u.json
+      GATE3_PLAYER_LANGUAGE_REPORT: artifacts/rules-qa/v071-gate3-blind-u-player-language.json
+      GATE3_CLARIFICATION_REPORT: artifacts/rules-qa/v071-gate3-blind-u-clarifications.json
 
     steps:
       - name: Require paid-API confirmation
@@ -155,12 +155,12 @@ jobs:
         if: inputs.scope == 'full'
         run: |
           set -euo pipefail
-          cp rules-assistant/evals/rules-arbiter-gate3-blind-t.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
+          cp rules-assistant/evals/rules-arbiter-gate3-blind-u.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
           cat > rules-assistant/evals/rules-arbiter-evals.v071-corrections.json <<'JSON'
           {
             "schema": "gauntlet.rules-arbiter-evals.v071-corrections.v1",
             "rulesVersion": "v0.7.1",
-            "purpose": "Empty corrections for immutable Gate 3 blind tranche T.",
+            "purpose": "Empty corrections for immutable Gate 3 blind tranche U.",
             "cases": []
           }
           JSON
@@ -185,18 +185,19 @@ jobs:
         id: standard_grade
         continue-on-error: true
         env:
-          GAUNTLET_RULES_QA_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-t.v071.json
+          GAUNTLET_RULES_QA_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-u.v071.json
           GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_STANDARD_REPORT }}
           GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+          GAUNTLET_RULES_QA_SEMANTIC_ONLY: 'true'
         run: node scripts/run-v071-semantic-rules-qa.mjs
 
       - name: Prepare player-language blind cases
         if: inputs.scope == 'full'
         run: |
           set -euo pipefail
-          cp rules-assistant/evals/rules-arbiter-gate3-blind-t-player-language.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
+          cp rules-assistant/evals/rules-arbiter-gate3-blind-u-player-language.v071.json rules-assistant/evals/rules-arbiter-evals.v071.json
 
       - name: Run Gate 3 blind player-language cases
         if: inputs.scope == 'full'
@@ -218,11 +219,12 @@ jobs:
         id: player_language_grade
         continue-on-error: true
         env:
-          GAUNTLET_RULES_QA_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-t-player-language.v071.json
+          GAUNTLET_RULES_QA_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-u-player-language.v071.json
           GAUNTLET_RULES_QA_OUTPUT: ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
           GAUNTLET_RULES_QA_USE_GITHUB_OIDC: 'true'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
+          GAUNTLET_RULES_QA_SEMANTIC_ONLY: 'true'
         run: node scripts/run-v071-semantic-rules-qa.mjs
 
       - name: Run Gate 3 blind clarification cases
@@ -230,7 +232,7 @@ jobs:
         continue-on-error: true
         env:
           GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
-          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-t-clarifications.v071.json
+          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-u-clarifications.v071.json
           GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.GATE3_CLARIFICATION_REPORT }}
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'
@@ -241,10 +243,10 @@ jobs:
         if: always()
         run: |
           mkdir -p artifacts/rules-qa
-          cat > artifacts/rules-qa/v071-gate3-blind-t-metadata.json <<JSON
+          cat > artifacts/rules-qa/v071-gate3-blind-u-metadata.json <<JSON
           {
             "schema": "gauntlet.rules-arbiter-gate3-run-metadata.v2",
-            "tranche": "T",
+            "tranche": "U",
             "rulesVersion": "v0.7.1",
             "behaviorRevision": "$GATE3_EXPECTED_BEHAVIOR_REVISION",
             "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
@@ -262,12 +264,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rules-arbiter-gate3-blind-t-v0.7.1
+          name: rules-arbiter-gate3-blind-u-v0.7.1
           path: |
             ${{ env.GATE3_STANDARD_REPORT }}
             ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
             ${{ env.GATE3_CLARIFICATION_REPORT }}
-            artifacts/rules-qa/v071-gate3-blind-t-metadata.json
+            artifacts/rules-qa/v071-gate3-blind-u-metadata.json
           if-no-files-found: error
           retention-days: 30
 
