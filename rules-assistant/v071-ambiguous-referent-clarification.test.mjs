@@ -132,6 +132,41 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
     expect(result?.answer).toContain("Which one do you mean?");
   });
 
+  test("generic that-the-one follow-up clarifies a named two-feature comparison", () => {
+    const history = [
+      { role: "user", content: "Invocation and Transmutation are both available to me." },
+      { role: "assistant", content: "They use cards and zones differently." }
+    ];
+    const result = buildAmbiguousReferentClarification(
+      "Is that the one that pulls a card out of my Graveyard?",
+      history,
+      [{ canonicalId: "rulebook:mystics-faction-features", title: "Mystics Faction Features" }]
+    );
+    expect(result?.rulingStatus).toBe("unresolved");
+    expect(result?.responseType).toBe("clarification");
+    expect(result?.executionPath).toBe("deterministic-clarification");
+    expect(result?.answer).toContain("Which one do you mean?");
+  });
+
+  test("generic that-the-one follow-up clarifies a named two-ability comparison", () => {
+    const history = [
+      { role: "user", content: "I'm looking at Fieldcraft and Mission Control." },
+      { role: "assistant", content: "Both are Intelligence Leader abilities, but their costs and triggers differ." }
+    ];
+    const result = buildAmbiguousReferentClarification(
+      "Is that the one that actually spends Intel?",
+      history,
+      [
+        { canonicalId: "leader:ranger-fieldcraft", title: "Leader: Fieldcraft" },
+        { canonicalId: "leader:spymaster-mission-control", title: "Leader: Mission Control" }
+      ]
+    );
+    expect(result?.rulingStatus).toBe("unresolved");
+    expect(result?.responseType).toBe("clarification");
+    expect(result?.executionPath).toBe("deterministic-clarification");
+    expect(result?.answer).toContain("Which one do you mean?");
+  });
+
   test("self-contained staked-Influence Leverage questions do not require Proposal identity", () => {
     expect(buildAmbiguousReferentClarification(
       "After my Terms are refused, can I spend the Influence I staked on that Proposal as Leverage before dice?",
@@ -157,6 +192,6 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
   test("clarification is a first-class current answer mode while remaining legacy compatible", () => {
     expect(normalizeCurrentAnswerMode("clarification")).toBe("clarification");
     expect(toLegacyAnswerMode("clarification")).toBe("ai");
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
   });
 });
