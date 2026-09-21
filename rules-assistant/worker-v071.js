@@ -21,7 +21,7 @@ import {
 } from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260920-32";
+export const BEHAVIOR_REVISION = "v071-qa-20260921-33";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -1337,7 +1337,7 @@ export function buildAmbiguousReferentClarification(question, history = [], retr
   const genericCardMatch = current.match(/\b(?:this|that)\s+card(?:[’']s)?\b/i);
   const describedCardMatch = current.match(/\b(?:the|this|that|a)\s+(?:stored|saved|held|set[ -]?aside)\s+card\b/i);
   const typedObjectMatch = current.match(/\b(?:this|that)\s+(rite|asset|proposal|order|mission|deed|gambit|tactic|overlay|territory|leader|faction)\b/i);
-  const genericOneMatch = current.match(/\b(?:this|that)\s+(one)\b/i);
+  const genericOneMatch = current.match(/\b(?:this|that)\s+(?:the\s+)?(one)\b/i);
   const match = genericRuleMatch || genericCardMatch || describedCardMatch || typedObjectMatch || genericOneMatch;
   if (!match) return null;
 
