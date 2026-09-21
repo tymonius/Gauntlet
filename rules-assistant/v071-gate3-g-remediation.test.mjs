@@ -36,7 +36,7 @@ function augmented(question, history = []) {
 
 describe("Gate 3 tranche G r18 remediation", () => {
   test("bumps production behavior to r18", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
   });
 
   test("resolves a locally introduced banked Asset instead of asking which Asset", () => {
