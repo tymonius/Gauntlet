@@ -38,7 +38,7 @@ function textOf(source) {
 
 describe("Gate 3 tranche O r26 remediation", () => {
   test("bumps production behavior to r26", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
   });
 
   test("Counterworks terse Overlay questions preserve the discard activation condition", () => {
