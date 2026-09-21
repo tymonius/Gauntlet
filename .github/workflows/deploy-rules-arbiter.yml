@@ -5,7 +5,11 @@ on:
     branches:
       - main
     paths:
+      - "rules-assistant/admin-refinement-worker.js"
+      - "rules-assistant/worker-entry.js"
       - "rules-assistant/worker-v071.js"
+      - "rules-assistant/worker-v072-candidate.js"
+      - "rules-assistant/v072-candidate-corpus.js"
       - "rules-assistant/local-search.js"
       - "rules-assistant/v071-public-corpus.js"
       - "rules-assistant/r13-classification.js"
@@ -52,8 +56,16 @@ jobs:
 
       - name: Validate Rules Arbiter runtime
         run: |
+          node --check rules-assistant/admin-refinement-worker.js
+          node --check rules-assistant/worker-entry.js
           node --check rules-assistant/worker-v071.js
-          npx vitest run rules-assistant/v071-gate3-h-remediation.test.mjs rules-assistant/v071-gate3-i-remediation.test.mjs
+          node --check rules-assistant/worker-v072-candidate.js
+          npx vitest run \
+            rules-assistant/v071-gate3-h-remediation.test.mjs \
+            rules-assistant/v071-gate3-i-remediation.test.mjs \
+            rules-assistant/v072-candidate-corpus.test.mjs \
+            rules-assistant/v072-r33-worker-port.test.mjs \
+            rules-assistant/worker-entry-v072-candidate.test.mjs
 
       - name: Resolve expected behavior revision
         id: revision
@@ -70,6 +82,22 @@ jobs:
           test -n "$revision"
           echo "value=$revision" >> "$GITHUB_OUTPUT"
           echo "Deploying Rules Arbiter behavior revision $revision"
+
+      - name: Resolve expected candidate behavior revision
+        id: candidate_revision
+        shell: bash
+        run: |
+          revision="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from "node:fs";
+          const source = readFileSync("rules-assistant/worker-v072-candidate.js", "utf8");
+          const match = source.match(/BEHAVIOR_REVISION\s*=\s*"([^"]+)"/);
+          if (!match) process.exit(1);
+          process.stdout.write(match[1]);
+          NODE
+          )"
+          test -n "$revision"
+          echo "value=$revision" >> "$GITHUB_OUTPUT"
+          echo "Staging v0.7.2 candidate Rules Arbiter behavior revision $revision"
 
       - name: Deploy Rules Arbiter
         run: npx wrangler deploy --config rules-assistant/wrangler.toml
@@ -99,5 +127,63 @@ jobs:
           }
 
           console.error(`Production did not report expected behavior revision ${expected}.`);
+          process.exit(1);
+          NODE
+
+      - name: Verify v0.7.2 candidate health and corpus
+        env:
+          EXPECTED_CANDIDATE_BEHAVIOR_REVISION: ${{ steps.candidate_revision.outputs.value }}
+        run: |
+          node <<'NODE'
+          const healthEndpoint = "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072-candidate/health";
+          const corpusEndpoint = "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072-candidate/corpus-health";
+          const expected = process.env.EXPECTED_CANDIDATE_BEHAVIOR_REVISION;
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(healthEndpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              console.log(`Candidate health ${attempt}/20: ${payload?.behaviorRevision || "missing"}`);
+              if (
+                response.ok
+                && payload?.ok === true
+                && payload?.version === "v0.7.2-candidate"
+                && payload?.published === false
+                && payload?.currentPublicRelease === "v0.7.1"
+                && payload?.behaviorRevision === expected
+              ) break;
+              if (attempt === 20) throw new Error("candidate health did not converge");
+            } catch (error) {
+              if (attempt === 20) {
+                console.error(`Candidate health verification failed: ${error.message}`);
+                process.exit(1);
+              }
+            }
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+          }
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(corpusEndpoint, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              console.log(`Candidate corpus ${attempt}/20: ${payload?.authoritySetId || "missing"}`);
+              if (
+                response.ok
+                && payload?.ok === true
+                && payload?.version === "v0.7.2-candidate"
+                && payload?.currentPublicRelease === "v0.7.1"
+                && payload?.behaviorRevision === expected
+                && /^[a-f0-9]{64}$/.test(String(payload?.authoritySetId || ""))
+              ) {
+                console.log(`Verified staged v0.7.2 candidate Rules Arbiter ${expected}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              if (attempt === 20) console.error(`Candidate corpus verification failed: ${error.message}`);
+            }
+            if (attempt < 20) await new Promise((resolve) => setTimeout(resolve, 3000));
+          }
+
+          console.error("Production candidate route did not report a valid v0.7.2 candidate corpus.");
           process.exit(1);
           NODE
