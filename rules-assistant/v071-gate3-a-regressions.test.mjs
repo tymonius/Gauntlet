@@ -44,7 +44,7 @@ function sourceText(source) {
 
 describe("v0.7.1 Gate 3 blind A promoted regressions", () => {
   test("pins r10 behavior", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260920-32");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
   });
 
   test("ordinary player language for battle-card quantity retrieves the direct one-Gambit/one-Tactic rule", () => {
