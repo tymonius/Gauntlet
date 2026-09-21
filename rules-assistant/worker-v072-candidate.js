@@ -351,7 +351,7 @@ export default {
           service: "gauntlet-rules-assistant",
           version: RULES_VERSION,
           behaviorRevision: BEHAVIOR_REVISION,
-          error: "The published Rules Arbiter corpus could not be refreshed."
+          error: "The v0.7.2 candidate Rules Arbiter corpus could not be refreshed."
         }, 502, origin);
       }
     }
@@ -366,7 +366,7 @@ export default {
         version: RULES_VERSION,
         versionLabel: V072_CANDIDATE_VERSION_LABEL,
         reconstruction: false,
-        published: true,
+        published: false,
         currentPublicRelease: "v0.7.1",
         behaviorRevision: BEHAVIOR_REVISION,
         deterministicRuleAnswers: false,
@@ -2046,7 +2046,7 @@ function answerResponse(result, origin) {
     version: RULES_VERSION,
     versionLabel: V072_CANDIDATE_VERSION_LABEL,
     reconstruction: false,
-    published: true,
+    published: false,
     currentPublicRelease: "v0.7.1",
     behaviorRevision: BEHAVIOR_REVISION
   }, 200, origin);
