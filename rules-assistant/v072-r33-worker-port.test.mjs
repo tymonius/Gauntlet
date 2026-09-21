@@ -47,7 +47,9 @@ function portR33Worker(source) {
     .replaceAll('"/v071/health"', '"/v072-candidate/health"')
     .replaceAll('"/api/v071/health"', '"/api/v072-candidate/health"')
     .replaceAll('"/v071/rules"', '"/v072-candidate/rules"')
-    .replaceAll('"/api/v071/rules"', '"/api/v072-candidate/rules"');
+    .replaceAll('"/api/v071/rules"', '"/api/v072-candidate/rules"')
+    .replaceAll('error: "The published Rules Arbiter corpus could not be refreshed."', 'error: "The v0.7.2 candidate Rules Arbiter corpus could not be refreshed."')
+    .replaceAll("published: true", "published: false");
 }
 
 describe("v0.7.2 candidate r33 Worker port", () => {
@@ -68,6 +70,8 @@ describe("v0.7.2 candidate r33 Worker port", () => {
     expect(candidate).toContain('"/api/v072-candidate/health"');
     expect(candidate).toContain('"/api/v072-candidate/corpus-health"');
     expect(candidate).toContain("v0.7.2 candidate current-game and reviewed Complete Rules passages");
+    expect(candidate.match(/published: false/g)?.length).toBe(2);
+    expect(candidate).not.toContain("published: true");
     expect(candidate).not.toContain('from "./v071-public-corpus.js";');
   });
 });
