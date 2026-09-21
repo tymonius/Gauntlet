@@ -17,8 +17,14 @@ import {
 
 const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
   || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
-const benchmarkPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071.json");
-const benchmarkCorrectionsPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071-corrections.json");
+const benchmarkPath = resolve(
+  process.env.GAUNTLET_RULES_QA_BENCHMARK
+  || "rules-assistant/evals/rules-arbiter-evals.v071.json"
+);
+const benchmarkCorrectionsPath = resolve(
+  process.env.GAUNTLET_RULES_QA_CORRECTIONS
+  || "rules-assistant/evals/rules-arbiter-evals.v071-corrections.json"
+);
 const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
 const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 1, 8));
@@ -221,7 +227,7 @@ async function requestAttempt(body) {
     const headers = {
       "Content-Type": "application/json",
       "Origin": "https://gauntlet.run",
-      "User-Agent": "Gauntlet-v0.7.1-live-QA"
+      "User-Agent": `Gauntlet-${benchmark.rulesVersion}-live-QA`
     };
     const qaOidcToken = await getGitHubActionsQaOidcToken();
     if (qaOidcToken) headers["X-Gauntlet-QA-OIDC"] = qaOidcToken;
