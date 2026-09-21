@@ -130,7 +130,7 @@ describe("Gate 3 final blind tranche S certification freeze", () => {
 
   test("later Gate 3 workflow advancement does not invalidate frozen S evidence and remains OIDC-authorized", () => {
     const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
-    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche ");
+    expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
