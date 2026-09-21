@@ -1,0 +1,148 @@
+name: v0.7.2 candidate Rules Arbiter regression replay
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/qa-triggers/v072-candidate-regression-20260921.txt"
+  workflow_dispatch:
+    inputs:
+      confirm_paid_api:
+        description: I understand this workflow makes paid OpenAI API calls
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  candidate-regression-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      EXPECTED_RULES_VERSION: v0.7.2-candidate
+      EXPECTED_BEHAVIOR_REVISION: v072-qa-20260921-01
+      EXPECTED_AUTHORITY_SET: faacd55458ec1595f480798449033a2c8705e018d828ae8034c5fe2b2a6f35b0
+      RULES_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072-candidate/rules
+      HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072-candidate/health
+      CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072-candidate/corpus-health
+      BENCHMARK: rules-assistant/evals/rules-arbiter-v072-candidate-regression-replay.json
+      CORRECTIONS: rules-assistant/evals/rules-arbiter-v072-candidate-regression-replay-corrections.json
+      CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-v072-candidate-clarification-replay.json
+      REPORT: artifacts/rules-qa/v072-candidate-regression-replay.json
+      CLARIFICATION_REPORT: artifacts/rules-qa/v072-candidate-regression-replay-clarifications.json
+
+    steps:
+      - name: Require paid-API confirmation for manual runs
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Paid API confirmation was not provided."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify pinned live candidate before paid calls
+        run: |
+          node <<'NODE'
+          const expectedVersion = process.env.EXPECTED_RULES_VERSION;
+          const expectedRevision = process.env.EXPECTED_BEHAVIOR_REVISION;
+          const expectedAuthority = process.env.EXPECTED_AUTHORITY_SET;
+
+          const healthResponse = await fetch(process.env.HEALTH_ENDPOINT, { cache: "no-store" });
+          const health = healthResponse.ok ? await healthResponse.json() : null;
+          if (
+            !healthResponse.ok
+            || health?.ok !== true
+            || health?.version !== expectedVersion
+            || health?.behaviorRevision !== expectedRevision
+            || health?.published !== false
+            || health?.currentPublicRelease !== "v0.7.1"
+          ) {
+            console.error("Live v0.7.2 candidate health does not match the frozen replay target. No paid QA calls were made.");
+            console.error(JSON.stringify(health));
+            process.exit(1);
+          }
+
+          const corpusResponse = await fetch(process.env.CORPUS_HEALTH_ENDPOINT, { cache: "no-store" });
+          const corpus = corpusResponse.ok ? await corpusResponse.json() : null;
+          if (
+            !corpusResponse.ok
+            || corpus?.ok !== true
+            || corpus?.version !== expectedVersion
+            || corpus?.behaviorRevision !== expectedRevision
+            || corpus?.authoritySetId !== expectedAuthority
+          ) {
+            console.error("Live v0.7.2 candidate corpus does not match the frozen replay target. No paid QA calls were made.");
+            console.error(JSON.stringify(corpus));
+            process.exit(1);
+          }
+
+          console.log(`Pinned candidate verified: ${expectedVersion} / ${expectedRevision} / ${expectedAuthority}`);
+          NODE
+
+      - name: Collect candidate regression answers
+        id: collect
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ env.RULES_ENDPOINT }}
+          GAUNTLET_RULES_QA_BENCHMARK: ${{ env.BENCHMARK }}
+          GAUNTLET_RULES_QA_CORRECTIONS: ${{ env.CORRECTIONS }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_LIMIT: "0"
+          GAUNTLET_RULES_QA_CONCURRENCY: "1"
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: "750"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-live-rules-qa.mjs
+
+      - name: Grade candidate regression semantics
+        id: semantic
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_BENCHMARK: ${{ env.BENCHMARK }}
+          GAUNTLET_RULES_QA_SEMANTIC_INPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_SEMANTIC_OUTPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_SEMANTIC_ONLY: "true"
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-semantic-rules-qa.mjs
+
+      - name: Replay ambiguity confirmations
+        id: clarification
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ env.RULES_ENDPOINT }}
+          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: ${{ env.CLARIFICATION_BENCHMARK }}
+          GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.CLARIFICATION_REPORT }}
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-gate3-clarification-qa.mjs
+
+      - name: Upload candidate regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v072-candidate-rules-arbiter-regression-replay
+          path: |
+            ${{ env.REPORT }}
+            ${{ env.CLARIFICATION_REPORT }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce candidate regression replay
+        if: steps.semantic.outcome != 'success' || steps.clarification.outcome != 'success'
+        run: exit 1

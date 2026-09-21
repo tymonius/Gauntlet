@@ -20,7 +20,8 @@ let cachedQaOidcToken = null;
 let cachedQaOidcExpiresAt = 0;
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
-if (benchmark.rulesVersion !== "v0.7.1") throw new Error("Gate 3 clarification benchmark must target v0.7.1.");
+if (!String(benchmark.rulesVersion || "").trim()) throw new Error("Gate 3 clarification benchmark is missing rulesVersion.");
+if (!String(benchmark.behaviorRevision || "").trim()) throw new Error("Gate 3 clarification benchmark is missing behaviorRevision.");
 if (!Array.isArray(benchmark.cases) || benchmark.cases.length < 1) throw new Error("Gate 3 clarification benchmark has no cases.");
 
 function jwtExpiryMs(token) {
@@ -62,7 +63,7 @@ async function requestAttempt(body) {
     const headers = {
       "Content-Type": "application/json",
       "Origin": "https://gauntlet.run",
-      "User-Agent": "Gauntlet-v0.7.1-Gate3-blind-clarification-QA"
+      "User-Agent": `Gauntlet-${benchmark.rulesVersion}-clarification-QA`
     };
     const qaOidcToken = await getGitHubActionsQaOidcToken();
     if (qaOidcToken) headers["X-Gauntlet-QA-OIDC"] = qaOidcToken;
