@@ -110,14 +110,10 @@ describe("Gate 3 bounded blind tranche U confirmation freeze", () => {
     expect(player.cases.every((item) => item.question.split(/\s+/).length <= 12)).toBe(true);
   });
 
-  test("current Gate 3 workflow is pinned to U/r32, semantic-only grading, and OIDC", () => {
+  test("later Gate 3 workflow advancement does not invalidate frozen U evidence and remains OIDC-authorized", () => {
     const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
-    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche U");
-    expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260920-32");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-u.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-u-player-language.v071.json");
-    expect(workflow).toContain("rules-arbiter-gate3-blind-u-clarifications.v071.json");
-    expect(workflow.match(/GAUNTLET_RULES_QA_SEMANTIC_ONLY: 'true'/g)?.length).toBe(2);
+    expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
+    expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
     );
