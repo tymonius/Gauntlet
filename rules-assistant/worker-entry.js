@@ -2,6 +2,7 @@ import v061Worker from "./worker-v061.js";
 import v063Worker from "./worker-v063.js";
 import v070Worker from "./worker-v070.js";
 import worker from "./worker-v071.js";
+import v072CandidateWorker from "./worker-v072-candidate.js";
 import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
 import smartWorker from "./smart-worker.js";
@@ -190,6 +191,23 @@ export default {
       url.pathname === "/api/v070/health" || url.pathname === "/v070/health"
     ) {
       return v070Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
+    }
+
+    if (
+      request.method === "GET" &&
+      [
+        "/v072-candidate/corpus-health",
+        "/api/v072-candidate/corpus-health"
+      ].includes(url.pathname)
+    ) {
+      return v072CandidateWorker.fetch(request, env, context);
+    }
+
+    if (
+      url.pathname === "/api/v072-candidate/rules" || url.pathname === "/v072-candidate/rules" ||
+      url.pathname === "/api/v072-candidate/health" || url.pathname === "/v072-candidate/health"
+    ) {
+      return v072CandidateWorker.fetch(request, env, context);
     }
 
     if (
