@@ -1,3 +1,4 @@
+// Exact-port guard: candidate adjudication behavior must remain mechanically derived from r33.
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
