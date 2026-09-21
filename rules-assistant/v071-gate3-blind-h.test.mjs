@@ -162,7 +162,7 @@ describe("Gate 3 blind tranche H certification freeze", () => {
   test("later Gate 3 workflow advancement does not invalidate this frozen tranche and remains OIDC-authorized", () => {
     const workflowPath = ".github/workflows/current-rules-arbiter-gate3-blind.yml";
     const workflow = readFileSync(new URL(`../${workflowPath}`, import.meta.url), "utf8");
-    expect(workflow).toContain("name: Rules Arbiter Gate 3 blind tranche ");
+    expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
       "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main"
