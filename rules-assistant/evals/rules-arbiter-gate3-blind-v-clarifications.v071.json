@@ -1,0 +1,80 @@
+{
+  "schema": "gauntlet.rules-arbiter-gate3-clarifications.v1",
+  "rulesVersion": "v0.7.1",
+  "tranche": "V",
+  "behaviorRevision": "v071-qa-20260921-33",
+  "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+  "purpose": "Fresh clarification-only confirmation authored after r33 was merged, deployed, and current-live-publication verified. It targets the natural 'this/that the one' grammar that tranche U exposed without reopening broad rules certification.",
+  "cases": [
+    {
+      "id": "blind-v-clarify-safe-conduct-strategic-withdrawal",
+      "question": "Is that the one I discard after my Terms are refused?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm choosing between Safe Conduct and Strategic Withdrawal."
+        },
+        {
+          "role": "assistant",
+          "content": "They can both change how a battle sequence ends, but under different conditions."
+        }
+      ]
+    },
+    {
+      "id": "blind-v-clarify-counterworks-counterintelligence",
+      "question": "Is this the one that stops the entire effect?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Counterworks and Counterintelligence are both relevant to this play."
+        },
+        {
+          "role": "assistant",
+          "content": "They respond to different kinds of opposing effects."
+        }
+      ]
+    },
+    {
+      "id": "blind-v-clarify-reinforcements-retribution",
+      "question": "Is that the one that gives extra Actions?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm deciding between Reinforcements and Retribution."
+        },
+        {
+          "role": "assistant",
+          "content": "Their timing, cost, and payoff are different."
+        }
+      ]
+    },
+    {
+      "id": "blind-v-clarify-hostile-takeover-line-of-credit",
+      "question": "Is this the one that uses collateral?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm looking at Hostile Takeover and Line of Credit."
+        },
+        {
+          "role": "assistant",
+          "content": "Both interact with Deeds, but they do different things."
+        }
+      ]
+    },
+    {
+      "id": "blind-v-clarify-materia-guardians",
+      "question": "Is that the one that draws after the Aftermath?",
+      "history": [
+        {
+          "role": "user",
+          "content": "I'm comparing Materia Prima with Guardians of the Circle."
+        },
+        {
+          "role": "assistant",
+          "content": "They are different Leader abilities with different costs and timings."
+        }
+      ]
+    }
+  ]
+}
