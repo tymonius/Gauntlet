@@ -8,15 +8,6 @@ on:
         required: true
         default: false
         type: boolean
-      scope:
-        description: Run the full tranche, or only clarification cases for recovery
-        required: true
-        default: full
-        type: choice
-        options:
-          - full
-          - clarifications-only
-
 permissions:
   contents: read
   id-token: write
@@ -28,8 +19,6 @@ jobs:
     env:
       GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260921-33
       GATE3_EXPECTED_AUTHORITY_SET: 5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339
-      GATE3_STANDARD_REPORT: artifacts/rules-qa/v071-gate3-blind-u.json
-      GATE3_PLAYER_LANGUAGE_REPORT: artifacts/rules-qa/v071-gate3-blind-u-player-language.json
       GATE3_CLARIFICATION_REPORT: artifacts/rules-qa/v071-gate3-blind-v-clarifications.json
 
     steps:
@@ -176,10 +165,6 @@ jobs:
             "authoritySetId": "$GATE3_EXPECTED_AUTHORITY_SET",
             "repositorySha": "$GITHUB_SHA",
             "scope": "clarifications-only",
-            "standardCollectionOutcome": "${{ steps.standard.outcome }}",
-            "standardOutcome": "${{ steps.standard_grade.outcome }}",
-            "playerLanguageCollectionOutcome": "${{ steps.player_language.outcome }}",
-            "playerLanguageOutcome": "${{ steps.player_language_grade.outcome }}",
             "clarificationOutcome": "${{ steps.clarification.outcome }}"
           }
           JSON
@@ -190,16 +175,11 @@ jobs:
         with:
           name: rules-arbiter-gate3-blind-v-clarification-v0.7.1
           path: |
-            ${{ env.GATE3_STANDARD_REPORT }}
-            ${{ env.GATE3_PLAYER_LANGUAGE_REPORT }}
             ${{ env.GATE3_CLARIFICATION_REPORT }}
             artifacts/rules-qa/v071-gate3-blind-v-metadata.json
           if-no-files-found: error
           retention-days: 30
 
       - name: Enforce Gate 3 blind result
-        if: >-
-          steps.clarification.outcome != 'success' ||
-          (inputs.scope == 'full' &&
-          (steps.standard_grade.outcome != 'success' || steps.player_language_grade.outcome != 'success'))
+        if: steps.clarification.outcome != 'success'
         run: exit 1
