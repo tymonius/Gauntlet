@@ -100,7 +100,47 @@ function unsafeRetributionAnswer(answer) {
     || /\b(?:opponent|they)\b[^.]{0,70}\b(?:gain|gains|take|takes|receive|receives)\b[^.]{0,30}\+?2\s+Conviction\b/i.test(current);
 }
 
+function defensiveEdgeTiebreakSource(sources = []) {
+  return sources.find((source) => {
+    const authority = [
+      source?.title,
+      source?.heading,
+      source?.excerpt,
+      source?.body,
+      source?.text
+    ].map((value) => String(value || "").toLowerCase()).join(" ");
+    return authority.includes("defensive edge")
+      && authority.includes("defender wins tied battle totals");
+  }) || null;
+}
+
+function defensiveEdgeTiebreakQuestion(question) {
+  const current = String(question || "").trim().toLowerCase();
+  if (!/\bdefensive edge\b/.test(current) || !/\btiebreak\s+roll\b/.test(current)) return false;
+  return /\?\s*$/.test(current)
+    && (
+      /\btiebreak\s+roll\s*\?\s*$/.test(current)
+      || /\b(?:need|needs|needed|make|makes|made|require|required|happen|happens)\b[^?]{0,80}\btiebreak\s+roll\b/.test(current)
+      || /\btiebreak\s+roll\b[^?]{0,80}\b(?:need|needs|needed|required|happen|happens)\b/.test(current)
+    );
+}
+
 export function applyDeterministicHighRiskInvariants(draft, question, sources = []) {
+  const defensiveEdgeSource = defensiveEdgeTiebreakSource(sources);
+  if (defensiveEdgeSource && defensiveEdgeTiebreakQuestion(question)) {
+    const index = sources.indexOf(defensiveEdgeSource);
+    const id = sourceId(defensiveEdgeSource, index);
+    return {
+      draft: {
+        answer: "No. When the defender has Defensive Edge, tied battle totals are resolved in the defender's favor, so no Tiebreak Roll is made.",
+        ruling_status: "explicit",
+        source_ids: [id]
+      },
+      applied: true,
+      reason: "deterministic-defensive-edge-tiebreak"
+    };
+  }
+
   const source = retributionSource(sources);
   if (!source) return { draft, applied: false, reason: "no-deterministic-invariant" };
 
