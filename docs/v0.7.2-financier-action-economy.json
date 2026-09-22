@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "targetVersion": "v0.7.2",
+  "status": "approved-design",
+  "changeType": "faction-action-economy-and-deed-scaling",
+  "gameplayBehaviorChanged": true,
+  "summary": "Financiers move economic setup into Opening, evaluate Financial Capacity at the end of Opening, allow Hostile Takeover to satisfy Financial Capacity, steepen Deed base costs, and add a cumulative same-turn acquisition surcharge.",
+  "actionEconomy": {
+    "treasury": {
+      "actionCost": 1,
+      "timing": "Opening or Denouement",
+      "note": "Treasury may establish Financial Capacity during Opening."
+    },
+    "playTheMarket": {
+      "actionCost": 1,
+      "timing": "Opening",
+      "cost": "Discard one card from Hand.",
+      "note": "Market Capital is generated before Movement so it can fund Subsidize or later-turn purchases."
+    },
+    "deeds": {
+      "actionCost": 1,
+      "timing": "Denouement"
+    },
+    "hostileTakeover": {
+      "actionCost": 1,
+      "timing": "Denouement after winning as attacker while occupying that enemy Territory",
+      "financialCapacityQualifying": true
+    },
+    "financialCapacity": {
+      "timing": "End of Opening",
+      "qualification": "Treasury value exceeds the number of Territories you control.",
+      "rule": "If qualified, you may take one Action during Denouement even if you already took an Action during Opening. You still cannot take more than one Action in either phase. At least one Action that turn must be Treasury, Deeds, Play the Market, or Hostile Takeover.",
+      "qualifyingSharedFeatures": [
+        "Treasury",
+        "Deeds",
+        "Play the Market"
+      ],
+      "qualifyingLeaderAbilities": [
+        "Hostile Takeover"
+      ],
+      "determineOnce": true
+    }
+  },
+  "deedPricing": {
+    "baseCurve": [
+      1,
+      2,
+      4,
+      6,
+      8,
+      10
+    ],
+    "baseFormula": "min(10, max(1, 2 × Deeds you own))",
+    "positionModifiers": {
+      "control": -1,
+      "occupy": 0,
+      "neither": 1
+    },
+    "buyoutPremium": "If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0.",
+    "sameTurnAcquisitionSurcharge": {
+      "rule": "+1 Capital for each Deed you have already successfully purchased or bought out this turn.",
+      "sequence": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "appliesTo": "Every successful Deed purchase or buyout regardless of source, including Deeds, Hostile Takeover, Corner the Market, Liquidation, Leveraged Buyout, or another effect.",
+      "resets": "At the start of each turn."
+    },
+    "minimumCost": 1,
+    "calculationOrder": [
+      "base",
+      "position modifier",
+      "buyout premium",
+      "same-turn acquisition surcharge",
+      "minimum 1"
+    ],
+    "sequentialRecalculation": true
+  },
+  "integrationRequirements": {
+    "currentAuthority": [
+      "Register this document in current-development provenance.",
+      "Update Financier Treasury, Play the Market, Financial Capacity, Deed pricing, and Hostile Takeover qualification in current-game authority.",
+      "Preserve Hostile Takeover as a Leader Ability rather than reclassifying it as a shared Faction Feature."
+    ],
+    "rulebook": [
+      "Update both current technical rules surfaces and Financier teaching copy.",
+      "Teach Financial Capacity as an end-of-Opening check.",
+      "Show the 1/2/4/6/8/10 Deed base curve and the cumulative same-turn acquisition surcharge."
+    ],
+    "digitalEngine": [
+      "Permit Treasury in Opening or Denouement and Play the Market only in Opening.",
+      "Evaluate Financial Capacity when Opening ends.",
+      "Treat Hostile Takeover as a Financial Capacity qualifying Action.",
+      "Implement the new Deed base formula and count prior successful Deed acquisitions during the current turn for surcharge purposes."
+    ],
+    "referenceSurfaces": [
+      "Update compact Financier reference copy and any generated current rules surfaces.",
+      "Do not modify frozen v0.7.1 release artifacts."
+    ],
+    "tests": [
+      "Cover Treasury creating Financial Capacity during Opening.",
+      "Cover Play the Market legality in Opening and illegality in Denouement.",
+      "Cover Hostile Takeover satisfying Financial Capacity.",
+      "Cover the 1/2/4/6/8/10 base curve and +0/+1/+2/... same-turn surcharge."
+    ],
+    "releaseBoundary": "These are v0.7.2 gameplay changes. Published v0.7.1 artifacts remain immutable."
+  }
+}
