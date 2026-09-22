@@ -2,10 +2,10 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-const authority = JSON.parse(read('game-data/current-game.json'));
-const runtime = read('game-data/current-game.mjs');
-const sharedValidation = read('game-data/current-game-validation.mjs');
-const rulesetRuntime = read('game-data/ruleset.mjs');
+const authority = JSON.parse(read('packages/game-data/current-game.json'));
+const runtime = read('packages/game-data/current-game.mjs');
+const sharedValidation = read('packages/game-data/current-game-validation.mjs');
+const rulesetRuntime = read('packages/game-data/ruleset.mjs');
 const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
