@@ -320,6 +320,25 @@ jobs:
 
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
+          echo
+          echo "=== Pages size audit: top-level paths ==="
+          du -sb "$SITE_DIR"/* 2>/dev/null | sort -nr | head -40 | awk '{ printf "%12d  %s\n", $1, $2 }'
+          echo
+          echo "=== Pages size audit: largest staged files ==="
+          find "$SITE_DIR" -type f -printf '%s\t%p\n' | sort -nr | head -60 | awk -F '\t' '{ printf "%12d  %s\n", $1, $2 }'
+          echo
+          echo "=== Pages size audit: selected publication/runtime trees ==="
+          for audit_path in \
+            "$SITE_DIR/images" \
+            "$SITE_DIR/rulebook" \
+            "$SITE_DIR/tts" \
+            "$SITE_DIR/media" \
+            "$SITE_DIR/card-design" \
+            "$SITE_DIR/game-data"; do
+            if [ -e "$audit_path" ]; then
+              du -sb "$audit_path"
+            fi
+          done
           # Keep a bounded guard below the 1 GB Pages target while allowing the approved
           # production artwork and compressed current Rulebook booklets to ship.
           test "$bytes" -lt 999000000
