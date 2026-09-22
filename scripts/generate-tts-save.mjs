@@ -328,7 +328,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
 
   const targetStatus = String(releaseAssets?.targetStatus || 'current-release').trim();
-  if (!['current-release', 'active-development'].includes(targetStatus)) {
+  if (!['current-release', 'release-candidate', 'active-development'].includes(targetStatus)) {
     throw new Error('Unsupported staged TTS target status ' + (targetStatus || 'missing') + '.');
   }
   const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE]);
@@ -347,7 +347,11 @@ function buildTtsSave(starterManifest, releaseAssets) {
     'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
     'White sits at the south end; Green sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
     'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
-    rulebook ? 'The shared Rulebook PDF is included from the materialized release package.' : 'This active-development QA save omits the publication-only Rulebook PDF; use the maintained current Rulebook while testing.',
+    rulebook
+      ? 'The shared Rulebook PDF is included from the materialized release package.'
+      : targetStatus === 'release-candidate'
+        ? 'This release-candidate QA save omits the publication-only Rulebook PDF until stable release materialization; use the maintained v0.7.2 Browser Rulebook while testing.'
+        : 'This active-development QA save omits the publication-only Rulebook PDF; use the maintained current Rulebook while testing.',
   ].join('\n\n');
 
   return {
