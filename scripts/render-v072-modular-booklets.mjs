@@ -28,11 +28,11 @@ const LETTER_LANDSCAPE = Object.freeze({ width: 792, height: 612 });
 const BUILD_EPOCH = new Date('2000-01-01T00:00:00.000Z');
 const REQUIRED_PUBLIC_DIRECTORIES = Object.freeze([
   'assets',
-  'card-design',
   'images',
   'rules-assistant',
 ]);
 const REQUIRED_MATERIALIZED_ROUTES = new Set([
+  '/card-design/',
   '/game-data/',
   '/rulebook/',
 ]);
