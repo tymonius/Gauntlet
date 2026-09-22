@@ -55,6 +55,8 @@ describe('Browser Rulebook publication assets', () => {
     expect(script).toContain('decoratePlayerGuideFactions()');
     expect(script).toContain('decorateCompleteRulesFactions()');
     expect(script).toContain('decorateFactionGuide(documentId)');
+    expect(script).toContain('updateHeroArt(mode, documentId)');
+    expect(script).toContain("faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART");
 
     for (const releasedPortrait of [
       '../images/woodcuts/general.png',
