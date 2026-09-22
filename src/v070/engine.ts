@@ -484,7 +484,9 @@ export interface V070FinancierState {
   financialCapacityTurn: number | null;
   financialCapacityUsedTurn: number | null;
   financierFeatureActionSpentTurn: number | null;
+  financialCapacityQualifyingActionTurn: number | null;
   deedPurchaseTurn: number | null;
+  deedPurchasesThisTurn: number;
   hostileTakeoverTurn: number | null;
   hostileTakeoverTerritoryInstanceId: string | null;
 }
@@ -783,7 +785,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             financialCapacityTurn: null,
             financialCapacityUsedTurn: null,
             financierFeatureActionSpentTurn: null,
+            financialCapacityQualifyingActionTurn: null,
             deedPurchaseTurn: null,
+            deedPurchasesThisTurn: 0,
             hostileTakeoverTurn: null,
             hostileTakeoverTerritoryInstanceId: null,
           }
