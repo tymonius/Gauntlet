@@ -23,6 +23,7 @@ describe("v0.7.2 candidate polarity probe contract", () => {
   test("repeats the exact terse question five times and requires ruling-first No", () => {
     expect(workflow).toContain('const question = "tie while defender has defensive edge. tiebreak roll?";');
     expect(workflow).toContain("index < 5");
+    expect(workflow).toContain("(async () => {");
     expect(workflow).toContain('firstPolarity !== "no"');
   });
 
