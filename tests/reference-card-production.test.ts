@@ -71,7 +71,7 @@ describe('production faction reference cards', () => {
     expect(missionCopy).toContain('| Missions | 1 Action · Denouement |');
     expect(missionCopy).toContain('### Start a Mission');
     expect(missionCopy).toContain('Increase **Operation Progress by 1**');
-    expect(missionCopy).toContain('**Territories currently in the Gauntlet − card value**');
+    expect(missionCopy).toContain('**Intel cost = Territories currently in the Gauntlet − card value, minimum 1**');
 
     const operationsCopy = readFileSync(operations.source, 'utf8');
     expect(operations.referenceFaces.reverse.title).toBe('Mirrors & Replacements');
