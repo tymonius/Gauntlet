@@ -28,7 +28,8 @@
       "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json",
       "v072InquisitionPurificationTuning": "/docs/v0.7.2-inquisition-purification-tuning.json",
       "v072FinancierEconomy": "/docs/v0.7.2-financier-action-economy.json",
-      "v072NewRecruitsLiquidity": "/docs/v0.7.2-new-recruits-liquidity.json"
+      "v072NewRecruitsLiquidity": "/docs/v0.7.2-new-recruits-liquidity.json",
+      "v072StarterDeckCompetitiveReaudit": "/docs/v0.7.2-starter-deck-competitive-reaudit.md"
     }
   },
   "visualPolicy": {
@@ -6619,7 +6620,19 @@
         ],
         "cards": [
           {
+            "name": "Contingency Plan",
+            "quantity": 2
+          },
+          {
             "name": "Countercharge",
+            "quantity": 1
+          },
+          {
+            "name": "Counterintelligence",
+            "quantity": 1
+          },
+          {
+            "name": "Court Martial",
             "quantity": 1
           },
           {
@@ -6627,39 +6640,15 @@
             "quantity": 1
           },
           {
-            "name": "Field Command",
-            "quantity": 1
-          },
-          {
-            "name": "Hold the Line",
-            "quantity": 1
-          },
-          {
-            "name": "Rearguard",
-            "quantity": 2
-          },
-          {
-            "name": "Reserve Force",
-            "quantity": 1
-          },
-          {
-            "name": "Unbroken Ranks",
-            "quantity": 2
-          },
-          {
-            "name": "Counterintelligence",
-            "quantity": 1
-          },
-          {
-            "name": "Contingency Plan",
-            "quantity": 2
-          },
-          {
             "name": "Entrenchment",
             "quantity": 2
           },
           {
             "name": "Fealty",
+            "quantity": 1
+          },
+          {
+            "name": "Field Command",
             "quantity": 1
           },
           {
@@ -6671,7 +6660,7 @@
             "quantity": 1
           },
           {
-            "name": "Court Martial",
+            "name": "Hold the Line",
             "quantity": 1
           },
           {
@@ -6695,6 +6684,14 @@
             "quantity": 2
           },
           {
+            "name": "Rearguard",
+            "quantity": 2
+          },
+          {
+            "name": "Reserve Force",
+            "quantity": 1
+          },
+          {
             "name": "Resistance",
             "quantity": 1
           },
@@ -6708,6 +6705,10 @@
           },
           {
             "name": "Supplies",
+            "quantity": 2
+          },
+          {
+            "name": "Unbroken Ranks",
             "quantity": 2
           }
         ],
@@ -6747,15 +6748,15 @@
             "quantity": 1
           },
           {
-            "name": "Diplomatic Latitude",
-            "quantity": 1
-          },
-          {
             "name": "Détente",
             "quantity": 1
           },
           {
             "name": "Diplomatic Divination",
+            "quantity": 1
+          },
+          {
+            "name": "Diplomatic Latitude",
             "quantity": 1
           },
           {
@@ -6855,11 +6856,11 @@
             "quantity": 1
           },
           {
-            "name": "Diplomatic Latitude",
+            "name": "Détente",
             "quantity": 1
           },
           {
-            "name": "Détente",
+            "name": "Diplomatic Latitude",
             "quantity": 1
           },
           {
@@ -6951,6 +6952,10 @@
             "quantity": 1
           },
           {
+            "name": "Conscription",
+            "quantity": 1
+          },
+          {
             "name": "Corner the Market",
             "quantity": 1
           },
@@ -6976,7 +6981,7 @@
           },
           {
             "name": "Margin Loan",
-            "quantity": 2
+            "quantity": 1
           },
           {
             "name": "New Recruits",
@@ -7040,15 +7045,11 @@
         "cards": [
           {
             "name": "Advance Guard",
-            "quantity": 1
-          },
-          {
-            "name": "Capital Gains",
             "quantity": 2
           },
           {
-            "name": "Compound Interest",
-            "quantity": 1
+            "name": "Capital Gains",
+            "quantity": 3
           },
           {
             "name": "Corner the Market",
@@ -7088,7 +7089,7 @@
           },
           {
             "name": "Rallying Cry",
-            "quantity": 3
+            "quantity": 2
           },
           {
             "name": "Reinforcements",
@@ -7532,8 +7533,8 @@
         "strategy": "Win battles, turn those wins into discounted Final Judgment Purges, and accelerate opposing-card depletion toward Purification.",
         "signatureCards": [
           "Attrition",
+          "Act of Faith",
           "Hellfire",
-          "Heresy",
           "Martyrdom"
         ],
         "territories": [
@@ -7545,6 +7546,10 @@
           {
             "name": "Accusation",
             "quantity": 3
+          },
+          {
+            "name": "Act of Faith",
+            "quantity": 1
           },
           {
             "name": "Anathema",
@@ -7560,7 +7565,7 @@
           },
           {
             "name": "Counterintelligence",
-            "quantity": 2
+            "quantity": 1
           },
           {
             "name": "Divine Mercy",
@@ -7579,16 +7584,16 @@
             "quantity": 1
           },
           {
-            "name": "Heresy",
-            "quantity": 1
-          },
-          {
             "name": "Martyrdom",
             "quantity": 1
           },
           {
             "name": "New Recruits",
             "quantity": 3
+          },
+          {
+            "name": "Penance",
+            "quantity": 2
           },
           {
             "name": "Rallying Cry",
@@ -7604,7 +7609,7 @@
           },
           {
             "name": "Supplies",
-            "quantity": 3
+            "quantity": 2
           },
           {
             "name": "Tyranny",
@@ -7671,15 +7676,15 @@
             "quantity": 1
           },
           {
+            "name": "Malleus Maleficarum",
+            "quantity": 1
+          },
+          {
             "name": "Martyrdom",
             "quantity": 1
           },
           {
             "name": "New Recruits",
-            "quantity": 1
-          },
-          {
-            "name": "Malleus Maleficarum",
             "quantity": 1
           },
           {
