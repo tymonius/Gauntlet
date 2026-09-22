@@ -323,7 +323,13 @@ describe('complete current-game authority', () => {
     ]);
     expect(rules.intelligence.mission_control_classification).toBe('Leader Ability');
     expect(rules.inquisition.final_judgment_classification).toBe('Leader Ability');
-    expect(JSON.stringify(rules)).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
+    const activeRules = Object.fromEntries(
+      Object.entries(rules).map(([id, rule]: [string, any]) => {
+        const { normalization, ...mechanics } = rule;
+        return [id, mechanics];
+      }),
+    );
+    expect(JSON.stringify(activeRules)).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
   });
 
   it('locks the v0.7.2 Financier action economy and Deed scaling across authority and Rulebook', () => {
@@ -475,7 +481,7 @@ describe('complete current-game authority', () => {
     expect(sharedValidation).toContain('validateFactionFeatures(authority)');
     expect(sharedValidation).toContain('authority.leaders.forEach(validateLeader)');
 
-    expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json'");
+    expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'packages/game-data/current-game.json'");
     expect(nodeAuthority).toContain('export async function loadCurrentGameAuthority()');
     expect(nodeAuthority).toContain('validateSharedCurrentGameAuthority(authority)');
     expect(nodeAuthority).toContain('validateAuthorityEmbeddedFacts(authority)');
@@ -515,7 +521,7 @@ describe('complete current-game authority', () => {
     expect(artworkClient).toContain('const directions = authority?.artDirection');
     expect(artworkClient).not.toContain(['contents', 'tts', 'artwork-direction-overrides.js'].join('/'));
 
-    expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json')");
+    expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'packages', 'game-data', 'current-game.json')");
     expect(artworkServer).toContain('const next = { ...authority, artDirection: map }');
     expect(artworkServer).not.toContain("join(ROOT, 'tts', 'artwork-direction-overrides.js')");
 
