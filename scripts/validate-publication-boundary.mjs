@@ -122,7 +122,7 @@ if (siteRoot) {
 
   const allowedDirectories = new Set(contract.pages.publishedDirectories);
   const materializedTopLevelDirectories = new Set();
-  for (const mapping of contract.materializedRoutes) {
+  for (const mapping of [...contract.materializedRoutes, ...(contract.materializedFiles || [])]) {
     const topLevel = mapping.publicPath.replace(/^\/+|\/+$/g, '').split('/', 1)[0];
     if (topLevel) materializedTopLevelDirectories.add(topLevel);
     allowedDirectories.add(topLevel);

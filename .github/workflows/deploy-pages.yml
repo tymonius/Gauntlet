@@ -15,6 +15,7 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/rules-arbiter/**'
+      - 'images/woodcuts/factions/**'
       - 'images/sketches/*.png'
       - 'apps/card-reference/**'
       - 'apps/deckbuilder/**'
@@ -77,16 +78,12 @@ jobs:
           node scripts/stage-pages-publication.mjs "$site"
 
           # Keep large authoring/source subsets out of the deployed artifact while retaining
-          # the production asset namespaces that current public pages consume. Faction-cover
-          # source PNGs remain in Git for future publication work but are not yet public inputs.
+          # the production asset namespaces that current public pages consume.
           rm -rf \
             "$site/images/3d" \
             "$site/images/sketches" \
             "$site/images/tools" \
             "$site/images/artwork/reference" \
-            "$site/images/woodcuts/factions" \
-            "$site/releases/v0.6.2-withdrawn" \
-            "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
 
           # Keep source/alternate Chief Justice artwork in Git without publishing redundant
@@ -109,17 +106,6 @@ jobs:
           mkdir -p "$site/images/sketches"
           find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
           node scripts/materialize-public-route-compatibility.mjs "$site"
-
-          # Editable release-source documents are retained in Git but are not public-site assets.
-          find "$site/releases" -type f -name '*.docx' -delete
-
-          # Older releases preserve multiple equivalent Rulebook export variants for
-          # archival/legal provenance. Keep the canonical booklet on Pages, but omit
-          # redundant large exports that are not referenced by any live public page.
-          rm -f \
-            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
-            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf" \
-            "$site/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf"
 
           test -s "$site/game-data/current-game.json"
           test -s "$site/CNAME"
@@ -320,6 +306,34 @@ jobs:
 
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
+          echo
+          echo "=== Pages size audit: top-level paths ==="
+          du -sb "$SITE_DIR"/* 2>/dev/null | sort -nr | sed -n '1,40p' | awk '{ printf "%12d  %s\n", $1, $2 }'
+          echo
+          echo "=== Pages size audit: largest staged files ==="
+          find "$SITE_DIR" -type f -printf '%s\t%p\n' | sort -nr | sed -n '1,60p' | awk -F '\t' '{ printf "%12d  %s\n", $1, $2 }'
+          echo
+          echo "=== Pages size audit: image namespaces ==="
+          du -sb "$SITE_DIR/images"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: artwork namespaces ==="
+          du -sb "$SITE_DIR/images/artwork"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: card-art faction namespaces ==="
+          du -sb "$SITE_DIR/images/artwork/cards"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: selected publication/runtime trees ==="
+          for audit_path in \
+            "$SITE_DIR/images" \
+            "$SITE_DIR/rulebook" \
+            "$SITE_DIR/tts" \
+            "$SITE_DIR/media" \
+            "$SITE_DIR/card-design" \
+            "$SITE_DIR/game-data"; do
+            if [ -e "$audit_path" ]; then
+              du -sb "$audit_path"
+            fi
+          done
           # Keep a bounded guard below the 1 GB Pages target while allowing the approved
           # production artwork and compressed current Rulebook booklets to ship.
           test "$bytes" -lt 999000000
@@ -330,6 +344,10 @@ jobs:
             "chief-justice-rules-arbiter-popup.webp" \
             "chief-justice-rules-arbiter.webp"; do
             test -s "$SITE_DIR/images/rules-arbiter/$image"
+          done
+
+          for faction in military diplomats financiers intelligence mystics inquisition; do
+            test -s "$SITE_DIR/images/woodcuts/factions/$faction.png"
           done
           for image in \
             "hero sketch.png" \
