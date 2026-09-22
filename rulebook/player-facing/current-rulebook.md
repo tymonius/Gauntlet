@@ -2214,7 +2214,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge. If o
 > **Conviction:** Maximum 4<!-- RULE-FACT:inquisition.conviction.maximum:number -->. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath, gain 1<!-- RULE-FACT:inquisition.conviction.gain:number --> Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered.
 
 - This may occur during either player's turn.
-- Exactly one qualifying opposing card produces 1 normal Conviction; two or more produce 2 total, regardless of how many additional cards entered the Graveyard.
+- Exactly one qualifying opposing card produces 1 normal Conviction; two or more produce 2<!-- RULE-FACT:inquisition.conviction.two_or_more_gain:number --> total, regardless of how many additional cards entered the Graveyard.
 - Winning is not required.
 - Conviction above 4 is lost.
 
@@ -2236,7 +2236,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge:
 
 | Cost | Purge |
 |---:|---|
-| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; or choose up to two cards there with combined value 3 or less and put them in their Graveyard. |
+| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; or choose up to two cards there with combined value 3<!-- RULE-FACT:inquisition.purge.one_conviction_combined_value_max:number --> or less and put them in their Graveyard. |
 | 2 | Choose one opposing Asset and put it in its owner's Graveyard. |
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
