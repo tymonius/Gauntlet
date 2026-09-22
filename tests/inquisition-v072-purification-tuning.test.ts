@@ -39,6 +39,10 @@ describe('v0.7.2 Inquisition Purification tuning', () => {
       },
     });
     expect(rules.conviction.text).toContain('gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered');
+    expect(rules.purge).toMatchObject({
+      one_conviction_combined_card_count_max: 2,
+      one_conviction_combined_value_max: 3,
+    });
     expect(rules.purge.options['1']).toContain('combined value 3 or less');
 
     for (const leader of authority.gameplay.factions
