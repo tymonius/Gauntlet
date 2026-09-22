@@ -250,7 +250,9 @@ if (
   throw new Error("Public v0.7.2 starter Deck data is incomplete or not bound to the frozen authority.");
 }
 for (const deck of starters.decks) {
-  const count = Object.values(deck.cards || {}).reduce((sum, qty) => sum + Number(qty || 0), 0);
+  const count = Array.isArray(deck.cards)
+    ? deck.cards.reduce((sum, entry) => sum + Number(entry?.quantity || 0), 0)
+    : 0;
   if (count !== 30) throw new Error(`Starter ${deck.id || deck.name} does not contain 30 cards.`);
 }
 
