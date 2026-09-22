@@ -41,6 +41,14 @@ jobs:
       CLARIFICATION_REPORT: artifacts/rules-qa/v072-final-regression-replay-clarifications.json
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Require explicit paid-API approval
         shell: bash
         env:
@@ -53,31 +61,21 @@ jobs:
               exit 1
             fi
           else
-            node <<'NODE'
-            const { readFileSync } = require("node:fs");
-            const approval = JSON.parse(readFileSync(".github/qa-approvals/v072-final-20260922.json", "utf8"));
-            const expectedAuthority = "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84";
-            if (
-              approval?.approved !== true
-              || approval?.scope !== "final-v0.7.2-rules-arbiter-blind-live-qa"
-              || approval?.authoritySetId !== expectedAuthority
-              || approval?.behaviorRevision !== "v072-qa-20260922-02"
-              || approval?.oneShot !== true
-            ) {
-              console.error("The one-shot paid-QA approval marker is missing or does not match the frozen target.");
-              process.exit(1);
-            }
-            console.log("Validated one-shot user approval marker for final v0.7.2 Rules Arbiter QA.");
-            NODE
+            node -e '
+              const approval = require("./.github/qa-approvals/v072-final-20260922.json");
+              const expectedAuthority = "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84";
+              const valid = approval?.approved === true
+                && approval?.scope === "final-v0.7.2-rules-arbiter-blind-live-qa"
+                && approval?.authoritySetId === expectedAuthority
+                && approval?.behaviorRevision === "v072-qa-20260922-02"
+                && approval?.oneShot === true;
+              if (!valid) {
+                console.error("The one-shot paid-QA approval marker is missing or does not match the frozen target.");
+                process.exit(1);
+              }
+              console.log("Validated one-shot user approval marker for final v0.7.2 Rules Arbiter QA.");
+            '
           fi
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - name: Wait for matching Rules Arbiter deployment
         if: github.event_name == 'push'
