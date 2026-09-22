@@ -8,7 +8,7 @@ const QA_WORKFLOW_EVENT_NAMES = Object.freeze({
   "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
   "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
   "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
-  "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": Object.freeze(["workflow_dispatch", "push"])
+  "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": Object.freeze(["workflow_dispatch"])
 });
 const QA_WORKFLOW_REFS = Object.freeze(Object.keys(QA_WORKFLOW_EVENT_NAMES));
 const QA_EVENT_NAME = "workflow_dispatch";
