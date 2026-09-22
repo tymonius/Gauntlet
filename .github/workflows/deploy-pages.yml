@@ -77,12 +77,14 @@ jobs:
           node scripts/stage-pages-publication.mjs "$site"
 
           # Keep large authoring/source subsets out of the deployed artifact while retaining
-          # the production asset namespaces that current public pages consume.
+          # the production asset namespaces that current public pages consume. Faction-cover
+          # source PNGs remain in Git for future publication work but are not yet public inputs.
           rm -rf \
             "$site/images/3d" \
             "$site/images/sketches" \
             "$site/images/tools" \
             "$site/images/artwork/reference" \
+            "$site/images/woodcuts/factions" \
             "$site/releases/v0.6.2-withdrawn" \
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
