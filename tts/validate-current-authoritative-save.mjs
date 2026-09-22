@@ -110,8 +110,8 @@ function validateEnvironment(save) {
 function validateSharedRulebook(save, release) {
   const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
   const targetStatus = String(release?.targetStatus || '').trim();
-  if (targetStatus === 'active-development' && rulebooks.length === 0) return;
-  if (targetStatus !== 'active-development' && targetStatus !== 'current-release') {
+  if (['active-development', 'release-candidate'].includes(targetStatus) && rulebooks.length === 0) return;
+  if (!['active-development', 'release-candidate', 'current-release'].includes(targetStatus)) {
     throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + ' while validating shared Rulebook.');
   }
   if (rulebooks.length !== 1) {
