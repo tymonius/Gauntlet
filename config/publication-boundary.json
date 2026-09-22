@@ -9,7 +9,8 @@
       "rules-arbiter",
       "rules-assistant",
       "tts",
-      "v0.7.1"
+      "v0.7.1",
+      "v0.7.2"
     ],
     "rootFiles": {
       "required": [
@@ -338,29 +339,104 @@
       "kind": "current-release-runtime"
     },
     {
-      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
-      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
-      "kind": "staged-release-runtime"
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide.md",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide.md",
+      "kind": "current-release-runtime"
     },
     {
       "source": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
       "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
-      "kind": "staged-release-runtime"
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "kind": "current-release-runtime"
     },
     {
       "source": "releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
       "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
-      "kind": "staged-release-runtime"
+      "kind": "current-release-runtime"
     },
     {
       "source": "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
       "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
-      "kind": "staged-release-runtime"
+      "kind": "current-release-runtime"
     },
     {
       "source": "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
       "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
-      "kind": "staged-release-runtime"
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
+      "kind": "current-release-runtime"
     }
   ],
   "managedRoutes": [
