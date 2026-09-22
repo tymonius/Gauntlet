@@ -1241,7 +1241,7 @@ Conviction begins at **0**, cannot fall below **0**, and cannot exceed **4**.
 
 **Timing:** First qualifying Aftermath each turn.
 
-The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.
+The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered, up to the maximum of 4.
 
 This normal Aftermath gain occurs at most once per turn, may trigger on either player's turn, and does not require the Inquisition to win the battle.
 
@@ -1263,7 +1263,7 @@ The top of a Discard Pile is its most recently placed card. When a Purge lets yo
 
 Purge options:
 
-- **1 Conviction:** Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.
+- **1 Conviction:** Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 3 or less and put them in their Graveyard.
 - **2 Conviction:** Choose one opposing Asset and put it in its owner’s Graveyard.
 - **3 Conviction:** The opponent chooses one card from their Hand and puts it in their Graveyard.
 - **4 Conviction:** Reveal the opponent’s Hand; choose one card and put it in their Graveyard.
