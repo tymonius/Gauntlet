@@ -1644,11 +1644,11 @@
           },
           {
             "label": "Gambit/Tactic",
-            "text": "Move one card from the opponent's Graveyard to their Discard Pile. +2 Battle Total."
+            "text": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. +2 Battle Total."
           }
         ],
         "action": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. Then +2 Conviction.",
-        "gambit_tactic": "Move one card from the opponent's Graveyard to their Discard Pile. +2 Battle Total."
+        "gambit_tactic": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. +2 Battle Total."
       },
       {
         "id": "military-encampment",
