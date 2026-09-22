@@ -9,32 +9,32 @@ const PUBLICATIONS = Object.freeze({
     coverFlavor: 'Learn the field before you command it',
   }),
   military: Object.freeze({
-    title: 'Military Guide', name: 'Military', claim: 'Command the advance.', accent: '#8f1f25', symbol: '/images/faction-symbols/military.svg', hero: 2,
+    title: 'Military Guide', name: 'Military', claim: 'Command the advance.', accent: '#8f1f25', symbol: '/images/faction-symbols/military.svg', coverArt: '/images/woodcuts/factions/military.png', hero: 2,
     description: 'The operating guide for Command, Orders, Military Leaders, and the Military path through the Gauntlet.',
     leaders: [['General', '/images/woodcuts/general.png'], ['Commandant', '/images/woodcuts/commandant.png']],
   }),
   diplomats: Object.freeze({
-    title: 'Diplomats Guide', name: 'Diplomats', claim: 'Make the enemy agree.', accent: '#244b8f', symbol: '/images/faction-symbols/diplomats.svg', hero: 3,
+    title: 'Diplomats Guide', name: 'Diplomats', claim: 'Make the enemy agree.', accent: '#244b8f', symbol: '/images/faction-symbols/diplomats.svg', coverArt: '/images/woodcuts/factions/diplomats.png', hero: 3,
     description: 'The operating guide for Influence, Proposals, Diplomat Leaders, and the diplomatic path through the Gauntlet.',
     leaders: [['Ambassador', '/images/woodcuts/ambassador.png'], ['Senator', '/images/woodcuts/senator.png']],
   }),
   financiers: Object.freeze({
-    title: 'Financiers Guide', name: 'Financiers', claim: 'Own what others contest.', accent: '#276744', symbol: '/images/faction-symbols/financiers.svg', hero: 4,
+    title: 'Financiers Guide', name: 'Financiers', claim: 'Own what others contest.', accent: '#276744', symbol: '/images/faction-symbols/financiers.svg', coverArt: '/images/woodcuts/factions/financiers.png', hero: 4,
     description: 'The operating guide for Capital, Deeds, Financier Leaders, and economic control of the Gauntlet.',
     leaders: [['Banker', '/images/woodcuts/banker.png'], ['Executive', '/images/woodcuts/executive.png']],
   }),
   intelligence: Object.freeze({
-    title: 'Intelligence Guide', name: 'Intelligence', claim: 'Know before they act.', accent: '#34373b', symbol: '/images/faction-symbols/intelligence.svg', hero: 1,
+    title: 'Intelligence Guide', name: 'Intelligence', claim: 'Know before they act.', accent: '#34373b', symbol: '/images/faction-symbols/intelligence.svg', coverArt: '/images/woodcuts/factions/intelligence.png', hero: 1,
     description: 'The operating guide for Intel, Operations, Intelligence Leaders, and covert progress through the Gauntlet.',
     leaders: [['Ranger', '/images/woodcuts/ranger.png'], ['Spymaster', '/images/woodcuts/spymaster.png']],
   }),
   mystics: Object.freeze({
-    title: 'Mystics Guide', name: 'Mystics', claim: 'Transform the hidden world.', accent: '#603d78', symbol: '/images/faction-symbols/mystics.svg', hero: 2,
+    title: 'Mystics Guide', name: 'Mystics', claim: 'Transform the hidden world.', accent: '#603d78', symbol: '/images/faction-symbols/mystics.svg', coverArt: '/images/woodcuts/factions/mystics.png', hero: 2,
     description: 'The operating guide for Rites, Rituals, Mystic Leaders, and Arcane play in the Gauntlet.',
     leaders: [['Alchemist', '/images/woodcuts/alchemist.png'], ['Spirit Walker', '/images/woodcuts/spirit-walker.png']],
   }),
   inquisition: Object.freeze({
-    title: 'Inquisition Guide', name: 'Inquisition', claim: 'Condemn what cannot endure.', accent: '#9a6e21', symbol: '/images/faction-symbols/inquisition.svg', hero: 3,
+    title: 'Inquisition Guide', name: 'Inquisition', claim: 'Condemn what cannot endure.', accent: '#9a6e21', symbol: '/images/faction-symbols/inquisition.svg', coverArt: '/images/woodcuts/factions/inquisition.png', hero: 3,
     description: 'The operating guide for Conviction, Purges, Inquisition Leaders, and doctrinal control of the Gauntlet.',
     leaders: [['Grand Inquisitor', '/images/woodcuts/grand-inquisitor.png'], ['Witch Hunter', '/images/woodcuts/witch-hunter.png']],
   }),
@@ -133,7 +133,7 @@ function createCover(publication) {
       </div>
       ${publication.symbol ? `<span class="cover-faction-symbol booklet-inline-faction-symbol" data-faction-symbol-src="${publication.symbol}" aria-hidden="true"></span>` : ''}
     </div>
-    <div class="cover-art"><img src="/images/woodcuts/hero compositions/hero ${publication.hero}.png" alt="" /></div>
+    <div class="cover-art"><img src="${publication.coverArt || `/images/woodcuts/hero compositions/hero ${publication.hero}.png`}" alt="${publication.name ? `${publication.name} faction Leaders woodcut` : ''}" /></div>
     <div class="cover-bottom"><span>Tactical card-and-territory game</span><span>gauntlet.run</span></div>`;
 }
 

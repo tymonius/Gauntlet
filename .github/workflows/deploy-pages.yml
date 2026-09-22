@@ -321,8 +321,8 @@ jobs:
           bytes="$(du -sb "$SITE_DIR" | cut -f1)"
           echo "Staged Pages site size: $bytes bytes"
           # Keep a bounded guard below the 1 GB Pages target while allowing the approved
-          # production Chief Justice assets and compressed current Rulebook booklets to ship.
-          test "$bytes" -lt 990000000
+          # production artwork and compressed current Rulebook booklets to ship.
+          test "$bytes" -lt 999000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           for image in \

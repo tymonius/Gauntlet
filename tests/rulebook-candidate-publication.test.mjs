@@ -82,6 +82,18 @@ describe('Browser Rulebook candidate publication', () => {
     expect(css).toContain('font-family: var(--rulebook-body);');
   });
 
+  it('features the paired faction woodcuts at the top of candidate faction guides', async () => {
+    const script = await read('legacy/rulebook-browser/candidate-publication.js');
+    const css = await read('legacy/rulebook-browser/candidate-publication.css');
+
+    expect(script).toContain("import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs'");
+    expect(script).toContain('featureFactionGuideWoodcut(masthead, faction)');
+    expect(script).toContain("figure.className = 'candidate-faction-guide-woodcut'");
+    expect(script).toContain('image.src = faction.guideWoodcut');
+    expect(css).toContain('.candidate-faction-guide .candidate-faction-guide-woodcut');
+    expect(css).toContain('.rulebook-content .candidate-faction-guide-woodcut img');
+  });
+
   it('keeps browser-only consent and skip controls out of print output', async () => {
     const css = await read('legacy/rulebook-browser/candidate-publication.css');
     expect(css).toMatch(/@media print[\s\S]*\.analytics-consent,[\s\S]*\.skip-link[\s\S]*display: none !important;/);

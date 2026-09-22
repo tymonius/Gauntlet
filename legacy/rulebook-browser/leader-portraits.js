@@ -4,8 +4,13 @@ import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
 const content = document.querySelector('[data-rulebook-content]');
 
 const heroArt = document.querySelector('.hero-art img');
-if (heroArt) {
-  heroArt.src = '../images/woodcuts/hero compositions/hero 1.png';
+const DEFAULT_HERO_ART = '../images/woodcuts/hero compositions/hero 1.png';
+
+function updateHeroArt(mode, documentId) {
+  if (!heroArt) return;
+  const faction = mode === 'candidate' ? RULES_PUBLICATION_ASSETS.factions[documentId] : null;
+  heroArt.src = faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART;
+  heroArt.alt = faction ? `${faction.name} faction Leaders woodcut` : '';
 }
 
 // Keep the frozen released-v0.7.1 presentation exactly on its established
@@ -342,6 +347,7 @@ function clearInjectedPublicationAssets() {
 function decorateForRender({ mode = 'released', document: documentId = 'released-rulebook' } = {}) {
   if (!content) return;
   clearInjectedPublicationAssets();
+  updateHeroArt(mode, documentId);
 
   if (mode !== 'candidate') {
     injectReleasedLeaderPortraits();

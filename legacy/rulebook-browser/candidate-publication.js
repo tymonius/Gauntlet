@@ -1,12 +1,14 @@
+import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
+
 const content = document.querySelector('[data-rulebook-content]');
 
 const FACTIONS = Object.freeze({
-  military: Object.freeze({ name: 'Military', claim: 'Command the advance.', color: '#8f1f25', symbol: 'url("/images/faction-symbols/military.svg")' }),
-  diplomats: Object.freeze({ name: 'Diplomats', claim: 'Make the enemy agree.', color: '#244b8f', symbol: 'url("/images/faction-symbols/diplomats.svg")' }),
-  financiers: Object.freeze({ name: 'Financiers', claim: 'Own what others contest.', color: '#276744', symbol: 'url("/images/faction-symbols/financiers.svg")' }),
-  intelligence: Object.freeze({ name: 'Intelligence', claim: 'Know before they act.', color: '#34373b', symbol: 'url("/images/faction-symbols/intelligence.svg")' }),
-  mystics: Object.freeze({ name: 'Mystics', claim: 'Transform the hidden world.', color: '#603d78', symbol: 'url("/images/faction-symbols/mystics.svg")' }),
-  inquisition: Object.freeze({ name: 'Inquisition', claim: 'Condemn what cannot endure.', color: '#9a6e21', symbol: 'url("/images/faction-symbols/inquisition.svg")' }),
+  military: Object.freeze({ name: 'Military', claim: 'Command the advance.', color: '#8f1f25', symbol: 'url("/images/faction-symbols/military.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.military.guideWoodcut.publicUrl }),
+  diplomats: Object.freeze({ name: 'Diplomats', claim: 'Make the enemy agree.', color: '#244b8f', symbol: 'url("/images/faction-symbols/diplomats.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.diplomats.guideWoodcut.publicUrl }),
+  financiers: Object.freeze({ name: 'Financiers', claim: 'Own what others contest.', color: '#276744', symbol: 'url("/images/faction-symbols/financiers.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.financiers.guideWoodcut.publicUrl }),
+  intelligence: Object.freeze({ name: 'Intelligence', claim: 'Know before they act.', color: '#34373b', symbol: 'url("/images/faction-symbols/intelligence.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.intelligence.guideWoodcut.publicUrl }),
+  mystics: Object.freeze({ name: 'Mystics', claim: 'Transform the hidden world.', color: '#603d78', symbol: 'url("/images/faction-symbols/mystics.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.mystics.guideWoodcut.publicUrl }),
+  inquisition: Object.freeze({ name: 'Inquisition', claim: 'Condemn what cannot endure.', color: '#9a6e21', symbol: 'url("/images/faction-symbols/inquisition.svg")', guideWoodcut: RULES_PUBLICATION_ASSETS.factions.inquisition.guideWoodcut.publicUrl }),
 });
 
 const COMPLETE_RULES_FACTION_TITLES = Object.freeze({
@@ -212,11 +214,21 @@ function decorateCompleteRulesParts() {
   });
 }
 
-function featureFactionGuideLeaders(masthead) {
-  const gallery = content.querySelector('.candidate-leader-portrait-gallery');
-  if (!gallery || !masthead) return;
-  gallery.classList.add('candidate-featured-leaders');
-  masthead.insertAdjacentElement('afterend', gallery);
+function featureFactionGuideWoodcut(masthead, faction) {
+  if (!masthead || !faction?.guideWoodcut || content.querySelector('.candidate-faction-guide-woodcut')) return;
+
+  const figure = document.createElement('figure');
+  figure.className = 'candidate-faction-guide-woodcut';
+  figure.setAttribute('aria-label', `${faction.name} faction Leaders`);
+
+  const image = document.createElement('img');
+  image.src = faction.guideWoodcut;
+  image.alt = `${faction.name} faction Leaders woodcut`;
+  image.loading = 'eager';
+  image.decoding = 'async';
+
+  figure.append(image);
+  masthead.insertAdjacentElement('afterend', figure);
 }
 
 function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode, document: documentId = document.body.dataset.candidateDocument } = {}) {
@@ -248,7 +260,7 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   } else {
     decorateNumberedSections(normalizedDocument);
     if (normalizedDocument === 'player-guide') wrapPlayerGuideFactionOverviews();
-    if (faction) featureFactionGuideLeaders(masthead);
+    if (faction) featureFactionGuideWoodcut(masthead, faction);
   }
 }
 
