@@ -36,4 +36,33 @@ describe('current card authority contract', () => {
     proposal.renderSource = { ...(proposal.renderSource || {}), componentId: 'missing-proposal' };
     expect(() => validateCurrentGameContract(broken)).toThrow(/does not resolve to current Proposal authority/);
   });
+  it('locks the v0.7.2 New Recruits liquidity rebalance and legal starter values', () => {
+    const card = authority.gameplay.cards.find((candidate: any) => candidate.id === 'neutral-new-recruits');
+    expect(card).toBeDefined();
+    expect(card.cost).toBe(2);
+    expect(card.action).toBe('Discard one other card from your Hand if able, then +3 Cards.');
+    expect(card.effects.find((effect: any) => effect.label === 'Action')?.text)
+      .toBe('Discard one other card from your Hand if able, then +3 Cards.');
+    expect(authority.provenance.currentDevelopmentInputs.v072NewRecruitsLiquidity)
+      .toBe('/docs/v0.7.2-new-recruits-liquidity.json');
+    expect(authority.gameplay.card_pool_summary.Neutral.total_value).toBe(126);
+    expect(authority.gameplay.card_pool_summary.Neutral.cost_curve).toMatchObject({
+      '1': 10,
+      '2': 21,
+    });
+
+    const byName = new Map(authority.gameplay.cards.map((candidate: any) => [candidate.name, candidate]));
+    for (const deck of authority.starterDecks.decks) {
+      const count = deck.cards.reduce((total: number, entry: any) => total + entry.quantity, 0);
+      const value = deck.cards.reduce(
+        (total: number, entry: any) => total + entry.quantity * Number(byName.get(entry.name)?.cost || 0),
+        0,
+      );
+      expect(count).toBe(30);
+      expect(value).toBe(60);
+      expect(deck.cardCount).toBe(30);
+      expect(deck.deckbuildingValue).toBe(60);
+    }
+  });
+
 });
