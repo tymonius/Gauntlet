@@ -39,6 +39,11 @@ describe('public route and Pages publication boundary', () => {
 
   it('keeps historical release binaries out of Pages while publishing current faction woodcuts', () => {
     expect(contract.pages.publishedDirectories).not.toContain('releases');
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf');
+    expect(contract.materializedFiles.some((entry: any) => /^\/releases\/(?!v0\.7\.1\/)/.test(entry.publicPath))).toBe(false);
     expect(pagesWorkflow).toContain("'images/woodcuts/factions/**'");
     expect(pagesWorkflow).not.toContain('"$site/images/woodcuts/factions"');
     expect(pagesWorkflow).toContain('test -s "$SITE_DIR/images/woodcuts/factions/$faction.png"');
