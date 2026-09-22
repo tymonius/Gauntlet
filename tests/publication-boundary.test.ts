@@ -115,6 +115,7 @@ describe('public route and Pages publication boundary', () => {
     expect(pagesStager).toContain('loadPublicationBoundary');
     expect(pagesStager).toContain('materializePublicRoutes');
     expect(pagesValidator).toContain('materializedTopLevelDirectories');
+    expect(pagesValidator).toContain('...(contract.materializedFiles || [])');
     expect(publicationWorkflow).toContain('/config/publication-boundary.json');
     expect(publicationWorkflow).toContain('/rulebook/player-facing/current-rulebook.md');
     expect(publicationWorkflow).toContain('/legacy/rulebook-browser/');
