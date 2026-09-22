@@ -68,16 +68,37 @@ const financiers = factionRules.financiers;
 invariant(financiers.capital?.starting === 2 && financiers.capital?.minimum === 0, 'Financier Capital start/minimum drifted.');
 invariant(financiers.capital?.may_exceed_limit_temporarily === true, 'Financier temporary excess-Capital rule is missing.');
 invariant(financiers.capital?.limit_recalculates_immediately === true, 'Financier Capital Limit must track board/Treasury changes immediately.');
-invariant(financiers.treasury?.action_cost === 1 && financiers.treasury?.timing === 'Denouement', 'Treasury Action profile drifted.');
+invariant(financiers.treasury?.action_cost === 1 && financiers.treasury?.timing === 'Opening or Denouement', 'Treasury Action profile drifted.');
 invariant(financiers.income?.text === 'Gain 1 Capital for each Deed you own.', 'Financier Income rule drifted.');
 invariant(financiers.financial_capacity_rules?.determine_once === true, 'Financial Capacity must be determined once at its timing.');
+invariant(financiers.financial_capacity_rules?.timing === 'End of Opening.', 'Financial Capacity timing drifted.');
+invariant(JSON.stringify(financiers.financial_capacity_rules?.qualifying_features) === JSON.stringify([
+  'Treasury',
+  'Deeds',
+  'Play the Market',
+  'Hostile Takeover',
+]), 'Financial Capacity qualifying Actions drifted.');
 invariant(financiers.deeds?.ownership_independent_of_control === true && financiers.deeds?.ownership_independent_of_occupation === true, 'Deed ownership independence drifted.');
 invariant(financiers.deeds?.cost?.minimum === 1 && financiers.deeds?.cost?.sequential_recalculation === true, 'Deed cost floor/recalculation rule drifted.');
+invariant(financiers.deeds?.cost?.base === 'min(10, max(1, 2 × Deeds you own))', 'Deed base-cost curve drifted.');
+invariant(String(financiers.deeds?.cost?.same_turn_surcharge || '').includes('+1 Capital for each Deed'), 'Same-turn Deed acquisition surcharge drifted.');
+invariant(JSON.stringify(financiers.deeds?.cost?.calculation_order) === JSON.stringify([
+  'base',
+  'position modifier',
+  'buyout premium',
+  'same-turn acquisition surcharge',
+  'minimum 1',
+]), 'Deed cost calculation order drifted.');
 invariant(financiers.deeds?.cost?.position_modifiers?.control === -1 && financiers.deeds?.cost?.position_modifiers?.occupy === 0 && financiers.deeds?.cost?.position_modifiers?.neither === 1, 'Deed position modifiers drifted.');
+invariant(financiers.play_the_market?.action_cost === 1 && financiers.play_the_market?.timing === 'Opening', 'Play the Market Action profile drifted.');
 invariant(financiers.play_the_market?.roll?.['1'] && financiers.play_the_market?.roll?.['2-3'] && financiers.play_the_market?.roll?.['4-5'] && financiers.play_the_market?.roll?.['6'], 'Play the Market result table is incomplete.');
 invariant(financiers.subsidize?.costs?.['1'] === 1 && financiers.subsidize?.costs?.['2'] === 3 && financiers.subsidize?.costs?.['3'] === 6 && financiers.subsidize?.costs?.['4'] === 10, 'Subsidize triangular cost table drifted.');
 invariant(financiers.controlling_interest?.immediate === true, 'Controlling Interest must remain immediate.');
 for (const name of ['Treasury', 'Deeds', 'Play the Market', 'Subsidize', 'Financial Capacity', 'Income']) feature('financiers', name);
+const executive = authority.leaders?.find(leader => leader.faction === 'financiers' && leader.id === 'executive');
+const hostileTakeover = executive?.sections?.find(section => section.name === 'Hostile Takeover');
+invariant(hostileTakeover?.classification === 'Leader Ability', 'Hostile Takeover must remain an Executive Leader Ability.');
+invariant(hostileTakeover?.financialCapacityQualifying === true, 'Hostile Takeover must qualify for Financial Capacity.');
 
 // Intelligence
 const intelligence = factionRules.intelligence;
