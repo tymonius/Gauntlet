@@ -345,6 +345,10 @@ jobs:
       - name: Validate current TTS sources
         run: npm run tts:check
 
+      - name: Render v0.7.2 modular rules PDFs for TTS
+        if: steps.scope.outputs.stage_assets == 'true'
+        run: node scripts/render-v072-dedicated-booklets.mjs
+
       - name: Generate playable card sheets and production backs
         if: steps.scope.outputs.render_cards == 'true'
         run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
@@ -368,10 +372,6 @@ jobs:
       - name: Generate finalized Proposal, Ledger, and Deed components
         if: steps.scope.outputs.render_finalized == 'true'
         run: npm run tts:finalized-supplementals
-
-      - name: Render v0.7.2 modular rules PDFs for TTS
-        if: steps.scope.outputs.stage_assets == 'true'
-        run: node scripts/render-v072-dedicated-booklets.mjs
 
       - name: Stage hosted TTS release assets
         if: steps.scope.outputs.stage_assets == 'true'
