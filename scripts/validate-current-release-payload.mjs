@@ -115,10 +115,65 @@ for (const [key, binding] of bindings) {
   }
 }
 
-for (const requiredBinding of ['rulebook', 'canonical_data', 'approved_starters']) {
-  assert(manifest.binding_sources?.[requiredBinding], `Current release manifest is missing required binding source: ${requiredBinding}`);
+const modularDocuments = manifest.modular_rules?.documents;
+if (Array.isArray(modularDocuments) && modularDocuments.length > 0) {
+  assert.equal(
+    manifest.modular_rules?.default_document,
+    'player-guide',
+    'Modular current release must identify the Player Guide as its default rules document.',
+  );
+  const requiredIds = [
+    'player-guide',
+    'military',
+    'diplomats',
+    'financiers',
+    'intelligence',
+    'mystics',
+    'inquisition',
+    'complete-rules',
+  ];
+  const documentById = new Map(modularDocuments.map((document) => [document?.id, document]));
+  assert.equal(documentById.size, requiredIds.length, 'Modular current release must contain exactly eight uniquely identified rules documents.');
+
+  for (const id of requiredIds) {
+    const document = documentById.get(id);
+    assert(document, `Modular current release is missing rules document: ${id}`);
+    assert(document.source?.path, `Modular rules document ${id} has no source path.`);
+    assert(document.booklet?.path, `Modular rules document ${id} has no booklet path.`);
+
+    const sourceNormalized = String(document.source.path).replace(/\\/g, '/').replace(/^\/+/, '');
+    const sourceRelative = sourceNormalized.startsWith(packagePrefix)
+      ? sourceNormalized.slice(packagePrefix.length)
+      : sourceNormalized;
+    const sourcePayload = payloadByPath.get(sourceRelative);
+    assert(sourcePayload, `Modular rules source is not present in payload_files: ${id} -> ${sourceRelative}`);
+    if (document.source.sha256) {
+      assert.equal(sourcePayload.actualSha256, document.source.sha256, `Modular rules source hash drifted: ${id}`);
+    }
+    if (Number.isInteger(document.source.bytes)) {
+      assert.equal(sourcePayload.bytes.length, document.source.bytes, `Modular rules source byte count drifted: ${id}`);
+    }
+
+    const bookletPayload = payloadByPath.get(document.booklet.path);
+    assert(bookletPayload, `Modular rules booklet is not present in payload_files: ${id} -> ${document.booklet.path}`);
+    assert(pdfKeys.has(`${id}-booklet`), `Modular current release is missing PDF output ${id}-booklet.`);
+    if (document.booklet.sha256) {
+      assert.equal(bookletPayload.actualSha256, document.booklet.sha256, `Modular rules booklet hash drifted: ${id}`);
+    }
+  }
+
+  for (const requiredBinding of ['complete_rules', 'canonical_data', 'approved_starters', 'source_provenance']) {
+    assert(
+      manifest.binding_sources?.[requiredBinding],
+      `Modular current release manifest is missing required binding source: ${requiredBinding}`,
+    );
+  }
+} else {
+  for (const requiredBinding of ['rulebook', 'canonical_data', 'approved_starters']) {
+    assert(manifest.binding_sources?.[requiredBinding], `Current release manifest is missing required binding source: ${requiredBinding}`);
+  }
+  assert(pdfKeys.has('rulebook-booklet'), 'Current release manifest is missing the canonical Rulebook booklet PDF output.');
 }
-assert(pdfKeys.has('rulebook-booklet'), 'Current release manifest is missing the canonical Rulebook booklet PDF output.');
 
 if (mismatches.length) {
   console.error(`Current release payload manifest has ${mismatches.length} mismatch(es):`);
