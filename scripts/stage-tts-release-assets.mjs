@@ -109,7 +109,7 @@ async function stageReleaseAssets() {
   }
 
   const targetStatus = String(release.targetStatus || '').trim();
-  if (!['current-release', 'active-development'].includes(targetStatus)) {
+  if (!['current-release', 'release-candidate', 'active-development'].includes(targetStatus)) {
     throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + '.');
   }
   const includeRulebook = targetStatus === 'current-release';
@@ -117,7 +117,7 @@ async function stageReleaseAssets() {
     const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
     await generateTtsRulebookReader();
   } else {
-    console.log('TTS active-development staging for ' + release.version + ': publication Rulebook PDF is intentionally omitted until release materialization.');
+    console.log(`TTS ${targetStatus} staging for ${release.version}: publication Rulebook PDF is intentionally omitted until stable release materialization.`);
   }
 
   const prefix = assetPrefix(release.version);
