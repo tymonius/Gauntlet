@@ -115,6 +115,12 @@ export function deriveRuleFacts(authority) {
       /\bgain\s+(\d+)\s+Conviction\b/i,
       'Inquisition Conviction gain',
     ),
+    'inquisition.conviction.two_or_more_gain': Number(
+      authority?.gameplay?.faction_rules?.inquisition?.conviction?.gain_by_opposing_card_count?.two_or_more,
+    ),
+    'inquisition.purge.one_conviction_combined_value_max': Number(
+      authority?.gameplay?.faction_rules?.inquisition?.purge?.one_conviction_combined_value_max,
+    ),
   };
 
   const rites = authority?.mystics?.rites;
