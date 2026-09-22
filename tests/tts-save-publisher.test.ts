@@ -33,7 +33,7 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("objectBase('CardCustom'");
     expect(publisher).toContain("const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:'");
     expect(publisher).toContain("const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:'");
-    expect(publisher).toContain('const containedObjects = [leader, deck, territoryStack, playerToken, battleDie]');
+    expect(publisher).toContain('const containedObjects = [leader, ...(factionGuide ? [factionGuide] : []), deck, territoryStack, playerToken, battleDie]');
     expect(publisher).toContain('starter.territories.length !== 3');
     expect(publisher).toContain('ContainedObjects: territories');
     expect(publisher).toContain('starters.map(starter => buildStarterKit');
@@ -66,7 +66,7 @@ describe('TTS save publisher', () => {
     }
   });
 
-  it('includes the shared reader-order Rulebook when staged and keeps it mandatory for published releases', () => {
+  it('keeps legacy Rulebook support while packaging v0.7.2 modular rules in reader order', () => {
     const releaseAssets = {
       bySourceFile: {
         'rulebook-reader.pdf': 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_TTS_Rulebook.pdf?v=123456789abc',
@@ -85,12 +85,23 @@ describe('TTS save publisher', () => {
         PDFPageOffset: 0,
       },
     });
-    expect(publisher).toContain("const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf'");
-    expect(publisher).toContain("const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE])");
-    expect(publisher).toContain("if (targetStatus === 'current-release' && !hasRulebook)");
-    expect(publisher).toContain('ObjectStates: [...(rulebook ? [rulebook] : []), ...starterKits]');
-    expect(validator).toContain("isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')");
-    expect(validator).toContain("approved physical-table scale of 2.55×");
+
+    expect(publisher).toContain("playerGuide: 'rules/player-guide.pdf'");
+    expect(publisher).toContain("completeRules: 'rules/complete-rules.pdf'");
+    for (const faction of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
+      expect(publisher).toContain(`${faction}: 'rules/${faction}.pdf'`);
+    }
+    expect(publisher).toContain("const SHARED_PLAYER_GUIDE_NOTE = 'gauntlet:shared-player-guide'");
+    expect(publisher).toContain("const SHARED_COMPLETE_RULES_NOTE = 'gauntlet:shared-complete-rules'");
+    expect(publisher).toContain("const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:'");
+    expect(publisher).toContain('makeSharedModularRules');
+    expect(publisher).toContain('makeFactionGuide');
+    expect(publisher).toContain("The Player\\'s Guide and Complete Rules are on the table");
+    expect(publisher).toContain('ObjectStates: [...sharedRules, ...starterKits]');
+    expect(validator).toContain("SHARED_PLAYER_GUIDE_NOTE");
+    expect(validator).toContain("SHARED_COMPLETE_RULES_NOTE");
+    expect(validator).toContain("Faction Guide PDF");
+    expect(validator).toContain("Leader → Faction Guide → trackers");
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {

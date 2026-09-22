@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 3,
+  "gameVersion": "v0.7.2-candidate",
+  "status": "in-progress",
+  "checks": {
+    "tableSetup": {
+      "hostedSaveLoad": false,
+      "playerPerspectivesAndHandZones": false,
+      "gauntletSnapsAndTerritoryOrientation": false,
+      "playerTokensAndBattleDice": false,
+      "rulebookSetup": false,
+      "playAreasRemainDistinct": false
+    },
+    "factionComponents": {
+      "militaryCommandTracker": false,
+      "diplomatInfluenceTracker": false,
+      "diplomatProposalsAndTreaties": false,
+      "financierCapitalLimitTracker": false,
+      "financierCapitalLedger": false,
+      "financierDeeds": false,
+      "intelligenceNestedOperationStack": false,
+      "mysticsRitesAndCompletedFaces": false,
+      "inquisitionConvictionDoctrineAndPurge": false
+    },
+    "handlingValidation": {
+      "coreHandlingExercised": false,
+      "focusedFactionDrillsComplete": false,
+      "frictionResolved": false
+    }
+  },
+  "approvedForWorkshop": false,
+  "notes": [
+    "2026-09-22: Opened the v0.7.2-candidate TTS QA record after the repository owner froze v0.7.2 gameplay/rules content for release.",
+    "2026-09-22: Every manual QA check intentionally begins incomplete and Workshop approval is false. The public Workshop item remains on v0.7.1 until stable v0.7.2 publication and hands-on TTS QA are complete.",
+    "2026-09-22: Focused v0.7.2 QA must exercise the regenerated Territory/starter packages plus Intelligence recurring Intel and Operational Capacity references, Financier action-economy/Deed changes, Inquisition Conviction/Purge tuning, and New Recruits hand replenishment.",
+    "2026-09-22: PR-preview assets are candidate evidence only. Production Workshop publication requires the stable v0.7.2 release asset set and a separate passed stable QA record.",
+    "2026-09-22: Modular-rules QA must verify the Player's Guide and Complete Rules open correctly on the table, every starter Bag contains the correct faction guide, and all eight Custom PDF objects use sequential reader-order pages rather than saddle-stitch print imposition."
+  ]
+}

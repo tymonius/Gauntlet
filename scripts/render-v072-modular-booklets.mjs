@@ -12,6 +12,7 @@ import {
   V072_BOOKLET_RELEASE_VERSION,
   V072_MODULAR_BOOKLETS,
   v072BookletImposition,
+  v072BookletReaderFilename,
 } from '../packages/rules/publication/v072-modular-booklets.mjs';
 import {
   loadPublicationBoundary,
@@ -534,17 +535,19 @@ fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
 const publicRoot = materializeCandidateSite();
 const server = await startStaticServer(publicRoot);
 const browser = await chromium.launch({ headless: true });
-const temporaryReaders = fs.mkdtempSync(path.join(os.tmpdir(), 'gauntlet-v072-readers-'));
 
 try {
   const outputs = [];
   for (const publication of V072_MODULAR_BOOKLETS) {
-    const readerPath = path.join(temporaryReaders, `${publication.id}.pdf`);
+    const readerFile = v072BookletReaderFilename(publication);
+    const readerPath = path.join(OUTPUT_ROOT, readerFile);
     const bookletPath = path.join(OUTPUT_ROOT, publication.filename);
     const readerPagination = await renderReaderPdf(browser, publication, server.baseUrl, readerPath);
     const pagination = await imposeBooklet(readerPath, bookletPath, publication, readerPagination);
     const bytes = fs.statSync(bookletPath).size;
+    const readerBytes = fs.statSync(readerPath).size;
     if (bytes < 10000) throw new Error(`${publication.title} booklet is unexpectedly small: ${bytes} bytes.`);
+    if (readerBytes < 10000) throw new Error(`${publication.title} reader PDF is unexpectedly small: ${readerBytes} bytes.`);
     outputs.push({
       id: publication.id,
       title: publication.title,
@@ -552,10 +555,13 @@ try {
       file: publication.filename,
       sha256: hashFile(bookletPath),
       bytes,
+      readerFile,
+      readerSha256: hashFile(readerPath),
+      readerBytes,
       ...pagination,
     });
     console.log(
-      `Rendered ${publication.title}: ${relative(bookletPath)} (${pagination.logicalPages} logical pages + ${pagination.interstitials.length} woodcut interstitials, ${pagination.physicalSheets} sheets).`,
+      `Rendered ${publication.title}: ${relative(bookletPath)} + reader-order ${relative(readerPath)} (${pagination.logicalPages} logical pages + ${pagination.interstitials.length} woodcut interstitials, ${pagination.physicalSheets} sheets).`,
     );
   }
 
@@ -583,5 +589,4 @@ try {
   await browser.close();
   await server.close();
   fs.rmSync(publicRoot, { recursive: true, force: true });
-  fs.rmSync(temporaryReaders, { recursive: true, force: true });
 }

@@ -14,6 +14,9 @@ const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
+const SHARED_PLAYER_GUIDE_NOTE = 'gauntlet:shared-player-guide';
+const SHARED_COMPLETE_RULES_NOTE = 'gauntlet:shared-complete-rules';
+const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
@@ -108,12 +111,41 @@ function validateEnvironment(save) {
 }
 
 function validateSharedRulebook(save, release) {
-  const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
   const targetStatus = String(release?.targetStatus || '').trim();
-  if (targetStatus === 'active-development' && rulebooks.length === 0) return;
-  if (targetStatus !== 'active-development' && targetStatus !== 'current-release') {
-    throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + ' while validating shared Rulebook.');
+  if (!['active-development', 'release-candidate', 'current-release'].includes(targetStatus)) {
+    throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + ' while validating shared rules.');
   }
+
+  const isV072 = String(release?.displayVersion || release?.version || '').startsWith('v0.7.2');
+  if (isV072) {
+    const playerGuides = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_PLAYER_GUIDE_NOTE);
+    const completeRules = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_COMPLETE_RULES_NOTE);
+    if (playerGuides.length !== 1 || completeRules.length !== 1) {
+      throw new Error(`v0.7.2 TTS must place exactly one Player's Guide and one Complete Rules PDF on the table; found ${playerGuides.length} and ${completeRules.length}.`);
+    }
+    for (const [label, object, z, suffix] of [
+      ["Player's Guide", playerGuides[0], -4.2, '_TTS_Rules_player-guide.pdf'],
+      ['Complete Rules', completeRules[0], 4.2, '_TTS_Rules_complete-rules.pdf'],
+    ]) {
+      if (object.Name !== 'Custom_PDF' || !object.CustomPDF) throw new Error(`${label} must be a TTS Custom_PDF object.`);
+      if (!close(object.Transform?.posX, 11.4) || !close(object.Transform?.posZ, z) || !close(object.Transform?.rotY, 90)) {
+        throw new Error(`${label} is not parked in the approved east-side shared-rules position.`);
+      }
+      if (!close(object.Transform?.scaleX, 2.2) || !close(object.Transform?.scaleY, 1) || !close(object.Transform?.scaleZ, 2.2)) {
+        throw new Error(`${label} must use the approved shared-rules table scale of 2.2×.`);
+      }
+      if (!isContentVersionedReleaseAsset(String(object.CustomPDF.PDFUrl || ''), suffix)) {
+        throw new Error(`${label} must load its content-versioned reader-order v0.7.2 PDF.`);
+      }
+      if (Number(object.CustomPDF.PDFPage) !== 0 || Number(object.CustomPDF.PDFPageOffset) !== 0) {
+        throw new Error(`${label} must open at the beginning of the PDF.`);
+      }
+    }
+    return;
+  }
+
+  const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
+  if (['active-development', 'release-candidate'].includes(targetStatus) && rulebooks.length === 0) return;
   if (rulebooks.length !== 1) {
     const expectation = targetStatus === 'current-release' ? 'exactly one' : 'zero or one';
     throw new Error('Expected ' + expectation + ' shared Rulebook Custom PDF for ' + targetStatus + '; found ' + rulebooks.length + '.');
@@ -300,7 +332,7 @@ function validateHandsAndSeats(save) {
   }
 }
 
-function validateBagsAndUtilities(save, manifest) {
+function validateBagsAndUtilities(save, manifest, release) {
   const bags = (save.ObjectStates || []).filter(object => (
     object?.Name === 'Bag'
     && String(object?.GMNotes || '').startsWith(STARTER_KIT_NOTE_PREFIX)
@@ -331,6 +363,15 @@ function validateBagsAndUtilities(save, manifest) {
       throw new Error(`${bag.Nickname} token/die colors do not match the bag faction color.`);
     }
 
+    const faction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
+    const factionGuides = objects.filter(object => object?.Name === 'Custom_PDF' && object?.GMNotes === `${FACTION_GUIDE_NOTE_PREFIX}${faction}`);
+    if (String(release?.displayVersion || release?.version || '').startsWith('v0.7.2')) {
+      if (factionGuides.length !== 1) throw new Error(`${bag.Nickname} must contain exactly one reader-order ${faction} Faction Guide PDF.`);
+      if (!isContentVersionedReleaseAsset(String(factionGuides[0].CustomPDF?.PDFUrl || ''), `_TTS_Rules_${faction}.pdf`)) {
+        throw new Error(`${bag.Nickname} Faction Guide must use the content-versioned reader-order ${faction} PDF.`);
+      }
+    }
+
     const leader = objects.filter(object => object?.Name === 'CardCustom' && /Leader$/u.test(String(object.Description || '')));
     const playableDeck = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
     const territoryStacks = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
@@ -352,27 +393,26 @@ function validateBagsAndUtilities(save, manifest) {
     const rank = object => {
       if (object === leader[0]) return 0;
       const notes = String(object?.GMNotes || '');
+      if (notes.startsWith(FACTION_GUIDE_NOTE_PREFIX)) return 1;
       if (notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
         const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
         const record = supplementalById.get(id);
-        if (record?.component?.representation === 'sliding-tracker') return 1;
-        if (record?.component?.family === 'reference-card') return 2;
-        return 3;
+        if (record?.component?.representation === 'sliding-tracker') return 2;
+        if (record?.component?.family === 'reference-card') return 3;
+        return 4;
       }
-      if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) return 3;
-      if (notes.startsWith(STARTER_DECK_NOTE_PREFIX)) return 4;
-      if (notes.startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX)) return 5;
-      if (object?.Name === 'PlayerPawn' || object?.Name === 'Die_6') return 6;
+      if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) return 4;
+      if (notes.startsWith(STARTER_DECK_NOTE_PREFIX)) return 5;
+      if (notes.startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX)) return 6;
+      if (object?.Name === 'PlayerPawn' || object?.Name === 'Die_6') return 7;
       return 99;
     };
     const ranks = objects.map(rank);
     const extractionRanks = [...ranks].reverse();
     if (extractionRanks[0] !== 0 || extractionRanks.some(value => value === 99)
       || extractionRanks.some((value, index) => index > 0 && value < extractionRanks[index - 1])) {
-      throw new Error(`${bag.Nickname} native TTS extraction order must be Leader → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
+      throw new Error(`${bag.Nickname} native TTS extraction order must be Leader → Faction Guide → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
     }
-
-    const faction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
     if (!Object.hasOwn(FACTION_ROW_Z, faction)) throw new Error(`${bag.Nickname} has unknown faction utility marker ${faction}.`);
     if (!byFaction.has(faction)) byFaction.set(faction, []);
     byFaction.get(faction).push(bag);
@@ -663,7 +703,7 @@ async function main() {
   validateSharedRulebook(save, release);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
-  const bags = validateBagsAndUtilities(save, manifest);
+  const bags = validateBagsAndUtilities(save, manifest, release);
   validateDeckImportTemplates(save);
   validateFamilyStacks(bags);
   validateCapitalLedgers(save);

@@ -7,6 +7,7 @@ import {
   V072_BOOKLET_RELEASE_VERSION,
   V072_MODULAR_BOOKLETS,
   v072BookletImposition,
+  v072BookletReaderFilename,
 } from '../packages/rules/publication/v072-modular-booklets.mjs';
 
 const expected = [
@@ -27,6 +28,16 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(V072_BOOKLET_MANIFEST).toBe('Gauntlet_v0.7.2_Modular_Rules_Manifest.json');
     expect(V072_MODULAR_BOOKLETS.map(({ id, filename }) => [id, filename])).toEqual(expected);
     expect(new Set(V072_MODULAR_BOOKLETS.map(publication => publication.source)).size).toBe(8);
+    expect(V072_MODULAR_BOOKLETS.map(v072BookletReaderFilename)).toEqual([
+      'Gauntlet_v0.7.2_Player_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Military_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Diplomats_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Financiers_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Intelligence_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Mystics_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Inquisition_Guide_Reader.pdf',
+      'Gauntlet_v0.7.2_Complete_Rules_Reader.pdf',
+    ]);
   });
 
   it('uses the approved hero woodcut compositions for semantic padding pages', () => {
@@ -206,6 +217,10 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(renderer).toContain("width: '5.5in'");
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
+    expect(renderer).toContain('v072BookletReaderFilename');
+    expect(renderer).toContain('readerSha256');
+    expect(validator).toContain('HALF_LETTER_PORTRAIT');
+    expect(validator).toContain('readerSha256');
     expect(validator).toContain("await import('pdf-lib')");
     expect(validator).toContain('paddedPages % 4');
     expect(workflow).toContain('Render all eight modular booklets');

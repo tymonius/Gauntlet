@@ -15,9 +15,24 @@ const FACTION_COLORS = Object.freeze({
 const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
 const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
 const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf';
+const MODULAR_RULES_SOURCES = Object.freeze({
+  playerGuide: 'rules/player-guide.pdf',
+  completeRules: 'rules/complete-rules.pdf',
+});
+const FACTION_GUIDE_SOURCES = Object.freeze({
+  military: 'rules/military.pdf',
+  diplomats: 'rules/diplomats.pdf',
+  financiers: 'rules/financiers.pdf',
+  intelligence: 'rules/intelligence.pdf',
+  mystics: 'rules/mystics.pdf',
+  inquisition: 'rules/inquisition.pdf',
+});
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
+const SHARED_PLAYER_GUIDE_NOTE = 'gauntlet:shared-player-guide';
+const SHARED_COMPLETE_RULES_NOTE = 'gauntlet:shared-complete-rules';
+const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:';
 
 
 function jsonText(value) {
@@ -71,16 +86,16 @@ function requireHostedUrl(releaseAssets, sourceFile) {
   return url;
 }
 
-function makeSharedRulebook(version, releaseAssets, guid) {
-  const rulebook = {
+function makeRulesPdf({ nickname, description, sourceFile, objectTransform, gmNotes, releaseAssets, guid }) {
+  return {
     ...objectBase(
       'Custom_PDF',
-      `Gauntlet ${version} Rulebook`,
-      'Shared table Rulebook · current stable rules',
-      transform(11.4, 1.2, 0, 90, 2.55, 1, 2.55),
+      nickname,
+      description,
+      objectTransform,
       guid,
     ),
-    GMNotes: SHARED_RULEBOOK_NOTE,
+    GMNotes: gmNotes,
     Grid: false,
     Snap: false,
     Sticky: false,
@@ -88,13 +103,62 @@ function makeSharedRulebook(version, releaseAssets, guid) {
     MeasureMovement: false,
     DragSelectable: true,
     CustomPDF: {
-      PDFUrl: requireHostedUrl(releaseAssets, RULEBOOK_READER_SOURCE),
+      PDFUrl: requireHostedUrl(releaseAssets, sourceFile),
       PDFPassword: '',
       PDFPage: 0,
       PDFPageOffset: 0,
     },
   };
-  return rulebook;
+}
+
+function makeSharedRulebook(version, releaseAssets, guid) {
+  return makeRulesPdf({
+    nickname: `Gauntlet ${version} Rulebook`,
+    description: 'Shared table Rulebook · current stable rules',
+    sourceFile: RULEBOOK_READER_SOURCE,
+    objectTransform: transform(11.4, 1.2, 0, 90, 2.55, 1, 2.55),
+    gmNotes: SHARED_RULEBOOK_NOTE,
+    releaseAssets,
+    guid,
+  });
+}
+
+function makeSharedModularRules(version, releaseAssets, guid) {
+  return [
+    makeRulesPdf({
+      nickname: `Gauntlet ${version} Player's Guide`,
+      description: 'Shared table Player\'s Guide · reader-order PDF',
+      sourceFile: MODULAR_RULES_SOURCES.playerGuide,
+      objectTransform: transform(11.4, 1.2, -4.2, 90, 2.2, 1, 2.2),
+      gmNotes: SHARED_PLAYER_GUIDE_NOTE,
+      releaseAssets,
+      guid: guid(),
+    }),
+    makeRulesPdf({
+      nickname: `Gauntlet ${version} Complete Rules`,
+      description: 'Shared table Complete Rules · reader-order PDF',
+      sourceFile: MODULAR_RULES_SOURCES.completeRules,
+      objectTransform: transform(11.4, 1.2, 4.2, 90, 2.2, 1, 2.2),
+      gmNotes: SHARED_COMPLETE_RULES_NOTE,
+      releaseAssets,
+      guid: guid(),
+    }),
+  ];
+}
+
+function makeFactionGuide(starter, releaseAssets, guid) {
+  const sourceFile = FACTION_GUIDE_SOURCES[starter.factionId];
+  if (!sourceFile) throw new Error(`No faction-guide PDF source is defined for ${starter.factionId || "missing faction"}.`);
+  const factionLabel = starter.leader.factionLabel || starter.factionId;
+  return makeRulesPdf({
+    nickname: `${factionLabel} Guide`,
+    description: `${factionLabel} faction guide · reader-order PDF`,
+    sourceFile,
+    objectTransform: transform(0, 1, 0, 180, 1, 1, 1),
+    gmNotes: `${FACTION_GUIDE_NOTE_PREFIX}${starter.factionId}`,
+    releaseAssets,
+    guid,
+  });
 }
 
 function makeCustomDeckState(faceUrl, backUrl, numWidth, numHeight) {
@@ -291,6 +355,10 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   const battleDie = makeDie(`${factionLabel} Battle Die`, tint, guid());
   battleDie.Description = `${factionLabel} faction-colored battle die`;
   battleDie.GMNotes = `gauntlet:starter-utility:battle-die:${starter.factionId}`;
+  const factionGuideSource = FACTION_GUIDE_SOURCES[starter.factionId];
+  const factionGuide = factionGuideSource && releaseAssets?.bySourceFile?.[factionGuideSource]
+    ? makeFactionGuide(starter, releaseAssets, guid())
+    : null;
 
   const orderById = new Map(starter.territories.map(territory => [territory.id, territory.name]));
   const territoryOrder = (starter.recommendedTerritoryOrder || []).map(id => orderById.get(id) || id).join(' → ');
@@ -298,13 +366,13 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, one three-card selected-Territory stack, faction-colored Player Token, and faction-colored Battle Die.`,
+    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, one three-card selected-Territory stack, faction-colored Player Token, faction-colored Battle Die${factionGuide ? ", and reader-order Faction Guide" : ""}.`,
   ].filter(Boolean).join('\n\n');
 
   // Base package order is already setup-oriented. Supplemental assembly inserts
   // trackers/reference material ahead of the playable Deck while retaining this
   // Leader-first / Deck-before-Territories backbone.
-  const containedObjects = [leader, deck, territoryStack, playerToken, battleDie];
+  const containedObjects = [leader, ...(factionGuide ? [factionGuide] : []), deck, territoryStack, playerToken, battleDie];
   for (const object of containedObjects) {
     if (object?.Transform) object.Transform.rotY = 180;
   }
@@ -328,16 +396,22 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
 
   const targetStatus = String(releaseAssets?.targetStatus || 'current-release').trim();
-  if (!['current-release', 'active-development'].includes(targetStatus)) {
+  if (!['current-release', 'release-candidate', 'active-development'].includes(targetStatus)) {
     throw new Error('Unsupported staged TTS target status ' + (targetStatus || 'missing') + '.');
   }
   const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE]);
-  if (targetStatus === 'current-release' && !hasRulebook) {
-    throw new Error('Published/current TTS save requires a staged Rulebook reader PDF.');
+  const hasModularRules = Object.values(MODULAR_RULES_SOURCES)
+    .every(sourceFile => Boolean(releaseAssets?.bySourceFile?.[sourceFile]));
+  if (targetStatus === 'current-release' && !hasRulebook && !hasModularRules) {
+    throw new Error('Published/current TTS save requires staged shared rules PDFs.');
   }
 
   const guid = makeGuidFactory();
-  const rulebook = hasRulebook ? makeSharedRulebook(version, releaseAssets, guid()) : null;
+  const sharedRules = hasModularRules
+    ? makeSharedModularRules(version, releaseAssets, guid)
+    : hasRulebook
+      ? [makeSharedRulebook(version, releaseAssets, guid())]
+      : [];
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
   const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z) }));
@@ -347,7 +421,11 @@ function buildTtsSave(starterManifest, releaseAssets) {
     'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
     'White sits at the south end; Green sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
     'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
-    rulebook ? 'The shared Rulebook PDF is included from the materialized release package.' : 'This active-development QA save omits the publication-only Rulebook PDF; use the maintained current Rulebook while testing.',
+    hasModularRules
+      ? 'The Player\'s Guide and Complete Rules are on the table, and each starter bag includes its reader-order Faction Guide.'
+      : hasRulebook
+        ? 'The shared legacy Rulebook PDF is included from the materialized release package.'
+        : 'This QA save has no staged rules PDF; use the maintained current Rulebook while testing.',
   ].join('\n\n');
 
   return {
@@ -398,7 +476,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
       TurnColor: 'White',
     },
     SnapPoints: snapPoints,
-    ObjectStates: [...(rulebook ? [rulebook] : []), ...starterKits],
+    ObjectStates: [...sharedRules, ...starterKits],
   };
 }
 

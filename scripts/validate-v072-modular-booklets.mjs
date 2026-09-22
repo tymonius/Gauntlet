@@ -7,6 +7,7 @@ import {
   V072_BOOKLET_OUTPUT_ROOT,
   V072_BOOKLET_RELEASE_VERSION,
   V072_MODULAR_BOOKLETS,
+  v072BookletReaderFilename,
 } from '../packages/rules/publication/v072-modular-booklets.mjs';
 
 const ROOT = process.cwd();
@@ -14,6 +15,7 @@ const OUTPUT_ROOT = path.resolve(ROOT, process.env.GAUNTLET_V072_BOOKLET_OUTPUT 
 const MANIFEST_PATH = path.join(OUTPUT_ROOT, V072_BOOKLET_MANIFEST);
 const AUTHORITY_PATH = path.join(ROOT, 'packages', 'game-data', 'current-game.json');
 const LETTER_LANDSCAPE = Object.freeze({ width: 792, height: 612 });
+const HALF_LETTER_PORTRAIT = Object.freeze({ width: 396, height: 612 });
 const tolerance = 0.75;
 
 const hashBytes = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -66,6 +68,15 @@ for (const publication of V072_MODULAR_BOOKLETS) {
   if (hashBytes(bytes) !== output.sha256) throw new Error(`${publication.id} SHA-256 does not match the manifest.`);
   if (bytes.length < 10000) throw new Error(`${publication.id} booklet is unexpectedly small: ${bytes.length} bytes.`);
 
+  const expectedReaderFile = v072BookletReaderFilename(publication);
+  if (output.readerFile !== expectedReaderFile) throw new Error(`${publication.id} reader filename drifted: ${output.readerFile}.`);
+  const readerPath = path.join(OUTPUT_ROOT, expectedReaderFile);
+  if (!fs.existsSync(readerPath)) throw new Error(`Missing ${publication.id} reader-order PDF: ${readerPath}`);
+  const readerBytes = fs.readFileSync(readerPath);
+  if (readerBytes.length !== output.readerBytes) throw new Error(`${publication.id} reader byte count does not match the manifest.`);
+  if (hashBytes(readerBytes) !== output.readerSha256) throw new Error(`${publication.id} reader SHA-256 does not match the manifest.`);
+  if (readerBytes.length < 10000) throw new Error(`${publication.id} reader PDF is unexpectedly small: ${readerBytes.length} bytes.`);
+
   if (!Number.isInteger(output.logicalPages) || output.logicalPages < 1) throw new Error(`${publication.id} has invalid logical page count.`);
   if (!Number.isInteger(output.paddedPages) || output.paddedPages < output.logicalPages || output.paddedPages % 4 !== 0) {
     throw new Error(`${publication.id} has invalid padded page count ${output.paddedPages}.`);
@@ -88,6 +99,17 @@ for (const publication of V072_MODULAR_BOOKLETS) {
 
   if (output.bookletSides !== output.paddedPages / 2) throw new Error(`${publication.id} booklet side count is inconsistent with imposition.`);
   if (output.physicalSheets !== output.paddedPages / 4) throw new Error(`${publication.id} physical sheet count is inconsistent with imposition.`);
+
+  const readerPdf = await PDFDocument.load(readerBytes);
+  if (readerPdf.getPageCount() !== output.paddedPages) {
+    throw new Error(`${publication.id} reader PDF contains ${readerPdf.getPageCount()} pages; manifest says ${output.paddedPages}.`);
+  }
+  for (const [index, page] of readerPdf.getPages().entries()) {
+    const { width, height } = page.getSize();
+    if (!closeEnough(width, HALF_LETTER_PORTRAIT.width) || !closeEnough(height, HALF_LETTER_PORTRAIT.height)) {
+      throw new Error(`${publication.id} reader page ${index + 1} is ${width}x${height}pt; expected Half Letter portrait.`);
+    }
+  }
 
   const pdf = await PDFDocument.load(bytes);
   if (pdf.getPageCount() !== output.bookletSides) {

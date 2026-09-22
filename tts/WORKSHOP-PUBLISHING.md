@@ -1,6 +1,6 @@
-# Gauntlet v0.7.1 — Tabletop Simulator Workshop publication
+# Gauntlet — Tabletop Simulator Workshop publication
 
-This file records the current v0.7.1 Tabletop Simulator Workshop item, its completed publication gate, and the retained v0.7.0 history.
+This file records the permanent Gauntlet Tabletop Simulator Workshop item, the current live v0.7.1 publication, v0.7.2 candidate preparation, and retained release history.
 
 ## Workshop item
 
@@ -12,6 +12,27 @@ This file records the current v0.7.1 Tabletop Simulator Workshop item, its compl
 - **v0.7.1 update live:** 2026-08-31
 
 The existing Workshop item was updated in place from v0.7.0 to v0.7.1. No replacement listing was created; the permanent Workshop ID remains unchanged.
+
+## v0.7.2 candidate preparation
+
+v0.7.2 gameplay/rules content was frozen for release on 2026-09-22. The TTS refresh is prepared as a **candidate first**; it does not replace the live v0.7.1 Workshop item merely because automated generation succeeds.
+
+The v0.7.2 candidate build regenerates the data-driven TTS surfaces from the frozen current authority, including:
+
+- the v0.7.2 Territory and recommended starter-package rebalance;
+- the updated New Recruits face and all twelve resulting starter Deck substitutions;
+- current Financier references for the action-economy and Deed-pricing changes;
+- current Intelligence references for recurring Intel and Operational Capacity;
+- current Inquisition references for Conviction/Purge tuning;
+- all six faction guides as sequential Half Letter reader-order PDFs packaged inside each matching starter Bag;
+- the Player's Guide and Complete Rules as shared reader-order Custom PDF objects on the table; and
+- every other card/Leader/reference text change already present in the frozen v0.7.2 authority.
+
+The TTS package must never use the Letter-landscape saddle-stitch `*_Booklet.pdf` outputs for these documents. Those remain physical-print impositions; TTS stages the corresponding sequential `*_Reader.pdf` files generated from the same approved modular publication composition.
+
+Candidate hands-on QA is tracked at `tts/release-qa/v0.7.2-candidate.json`. All 18 checks begin false and `approvedForWorkshop` is false.
+
+The live Workshop item must remain v0.7.1 until the final v0.7.2 release/tag and stable hosted TTS assets exist, a stable v0.7.2 save has passed the required in-game QA, and Workshop promotion is explicitly approved. PR-preview releases and candidate save files are test artifacts, not publication authority.
 
 ## v0.7.1 Workshop package
 
