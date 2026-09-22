@@ -50,8 +50,12 @@ describe("v0.7.2 candidate live regression replay freeze", () => {
     expect(workflow).toContain("steps.semantic.outcome != 'success' || steps.clarification.outcome != 'success'");
   });
 
-  test("automatic paid replay is one-shot and tied to its explicit authorization marker", () => {
-    expect(workflow).toContain('.github/qa-triggers/v072-candidate-regression-20260921.txt');
-    expect(workflow).not.toContain("pull_request:");
+  test("paid replay is manual-only and requires explicit confirmation", () => {
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("I explicitly approve this paid OpenAI API run");
+    expect(workflow).toContain("Require explicit paid-API confirmation");
+    expect(workflow).toContain('inputs.confirm_paid_api');
+    expect(workflow).not.toContain("push:");
+    expect(workflow).not.toContain(".github/qa-triggers/");
   });
 });

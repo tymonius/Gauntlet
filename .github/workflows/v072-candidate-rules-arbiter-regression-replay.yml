@@ -1,16 +1,18 @@
 name: v0.7.2 candidate Rules Arbiter regression replay
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/qa-triggers/v072-candidate-regression-20260921.txt"
-      - ".github/qa-triggers/v072-candidate-polarity-probe-20260922.txt"
   workflow_dispatch:
     inputs:
+      qa_mode:
+        description: Paid QA mode to run
+        required: true
+        default: regression
+        type: choice
+        options:
+          - regression
+          - polarity-probe
       confirm_paid_api:
-        description: I understand this workflow makes paid OpenAI API calls
+        description: I explicitly approve this paid OpenAI API run
         required: true
         default: false
         type: boolean
@@ -25,28 +27,10 @@ jobs:
     outputs:
       mode: ${{ steps.mode.outputs.value }}
     steps:
-      - name: Checkout trigger commit
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
       - name: Classify requested QA mode
         id: mode
         shell: bash
-        run: |
-          set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "value=regression" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          changed="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")"
-          printf '%s\n' "$changed"
-          if printf '%s\n' "$changed" | grep -Fxq ".github/qa-triggers/v072-candidate-polarity-probe-20260922.txt"; then
-            echo "value=polarity-probe" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=regression" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "value=${{ inputs.qa_mode }}" >> "$GITHUB_OUTPUT"
 
   candidate-regression-replay:
     needs: classify-run
@@ -67,11 +51,10 @@ jobs:
       CLARIFICATION_REPORT: artifacts/rules-qa/v072-candidate-regression-replay-clarifications.json
 
     steps:
-      - name: Require paid-API confirmation for manual runs
-        if: github.event_name == 'workflow_dispatch'
+      - name: Require explicit paid-API confirmation
         run: |
           if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
-            echo "Paid API confirmation was not provided."
+            echo "Explicit paid API approval was not provided."
             exit 1
           fi
 
@@ -192,6 +175,13 @@ jobs:
       PROBE_REPORT: artifacts/rules-qa/v072-candidate-defensive-edge-polarity-probe.json
 
     steps:
+      - name: Require explicit paid-API confirmation
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Explicit paid API approval was not provided."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 

@@ -30,11 +30,23 @@ describe('public route and Pages publication boundary', () => {
   });
 
   it('keeps repository source boundaries non-public by default', () => {
-    for (const root of ['.github', 'apps', 'docs', 'governance', 'legacy', 'media', 'packages', 'rulebook', 'scripts', 'src', 'tests', 'workers']) {
+    for (const root of ['.github', 'apps', 'docs', 'governance', 'legacy', 'media', 'packages', 'releases', 'rulebook', 'scripts', 'src', 'tests', 'workers']) {
       expect(contract.pages.sourceOnlyRepositoryRoots).toContain(root);
       expect(contract.pages.publishedDirectories).not.toContain(root);
     }
     expect(contract.pages.publishedDirectories).toContain('config');
+  });
+
+  it('keeps historical release binaries out of Pages while publishing current faction woodcuts', () => {
+    expect(contract.pages.publishedDirectories).not.toContain('releases');
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf');
+    expect(contract.materializedFiles.some((entry: any) => /^\/releases\/(?!v0\.7\.1\/)/.test(entry.publicPath))).toBe(false);
+    expect(pagesWorkflow).toContain("'images/woodcuts/factions/**'");
+    expect(pagesWorkflow).not.toContain('"$site/images/woodcuts/factions"');
+    expect(pagesWorkflow).toContain('test -s "$SITE_DIR/images/woodcuts/factions/$faction.png"');
   });
 
   it('archives the v0.6.3 long-card review source without changing its public URLs', () => {
@@ -103,6 +115,7 @@ describe('public route and Pages publication boundary', () => {
     expect(pagesStager).toContain('loadPublicationBoundary');
     expect(pagesStager).toContain('materializePublicRoutes');
     expect(pagesValidator).toContain('materializedTopLevelDirectories');
+    expect(pagesValidator).toContain('...(contract.materializedFiles || [])');
     expect(publicationWorkflow).toContain('/config/publication-boundary.json');
     expect(publicationWorkflow).toContain('/rulebook/player-facing/current-rulebook.md');
     expect(publicationWorkflow).toContain('/legacy/rulebook-browser/');
