@@ -58,7 +58,7 @@ describe('Faction Feature Rulebook terminology', () => {
     const financiers = factionFeatureSection('financiers');
     expect(financiers).toContain('**Deeds — 1 Action · Denouement · Current Deed cost.**');
     expect(financiers).toContain('**Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total.');
-    expect(financiers).toContain('**Financial Capacity — No Action · After Capture.**');
+    expect(financiers).toContain('**Financial Capacity — No Action · End of Opening.**');
     expect(financiers).toContain('**Income — Automatic · After Capture.**');
     expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability.');
     expect(financiers).toContain('**Line of Credit** is the Banker\'s Leader Ability.');
