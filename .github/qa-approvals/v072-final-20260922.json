@@ -1,0 +1,14 @@
+{
+  "schema": "gauntlet.rules-arbiter-paid-qa-approval.v1",
+  "approved": true,
+  "approvedAt": "2026-09-22",
+  "approvedBy": "Tymon",
+  "scope": "final-v0.7.2-rules-arbiter-blind-live-qa",
+  "rulesVersion": "v0.7.2",
+  "behaviorRevision": "v072-qa-20260922-02",
+  "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
+  "oneShot": true,
+  "note": "Explicit user approval was given in chat immediately before the final QA attempt.",
+  "retryAttempt": 2,
+  "retryReason": "Previous launch failed before checkout/paid calls because of approval-gate shell syntax; this retry uses the same explicit user approval and frozen QA target."
+}

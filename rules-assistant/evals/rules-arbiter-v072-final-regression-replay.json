@@ -1,0 +1,613 @@
+{
+  "schema": "gauntlet.rules-arbiter-v072-final-regression-replay.v1",
+  "rulesVersion": "v0.7.2",
+  "behaviorRevision": "v072-qa-20260922-02",
+  "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
+  "gradingMode": "semantic-v1",
+  "purpose": "Replay the final v0.7.1 confirmation canaries plus material historical failures against the frozen v0.7.2 release authority. Semantic verdicts gate release certification; citation and classification mismatches are diagnostics only.",
+  "provenance": {
+    "finalConfirmation": [
+      "Gate 3 tranche U standard semantic cases",
+      "Gate 3 tranche U terse player-language cases"
+    ],
+    "historicalFailures": [
+      "Tiebreak polarity",
+      "Retribution activation ownership",
+      "Demilitarized Zone replacement semantics",
+      "Strategic Withdrawal ruling-first polarity",
+      "Actuarial Alchemy optional activation/tiebreak margin"
+    ]
+  },
+  "cases": [
+    {
+      "id": "blind-u-denouement-after-hold",
+      "category": "core-rules",
+      "question": "I skipped my Action in Opening and chose Hold during Movement, with no effect changing my Action allowance. May I still use my normal Action in Denouement?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Denouement is the Action phase after Movement and any battle caused by it"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. An unused normal Action may be taken in Denouement if the chosen Action is legal there."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-negated-gambit-destination",
+      "category": "interaction",
+      "question": "A Gambit was negated, but nothing changed its destination. Where does it go during the Aftermath?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Gambit still goes to its owner's Graveyard during the Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "It still goes to its owner's Graveyard."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-withdrawal-no-result-triggers",
+      "category": "core-rules",
+      "question": "A battle sequence ends by withdrawal instead of a win. Do effects that require a player to have won or lost that battle trigger?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "There is no winner or loser. Victory, loss, and retreat triggers do not occur"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Withdrawal produces no winner or loser, so win- and loss-dependent triggers do not occur."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-defensive-edge-tie",
+      "category": "core-rules",
+      "question": "The battle totals are tied and the defender currently has Defensive Edge. Is a Tiebreak Roll needed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "the defender wins tied battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Defensive Edge resolves the tie in the defender's favor."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-leverage-stake-universal",
+      "category": "diplomats",
+      "question": "Terms were refused and I have Influence tied up as the Proposal's stake. May any of that staked Influence pay for Leverage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Staked Influence cannot be spent as Leverage."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-line-credit-collateral-destination",
+      "category": "financiers",
+      "question": "After the Banker's Line of Credit successfully helps pay for a Deed, where does the collateral card go?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Line of Credit collateral goes to the Discard Pile after purchase"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The collateral goes to the Discard Pile after the purchase."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-counterintel-whole-reveal-effect",
+      "category": "intelligence",
+      "question": "Counterintelligence applies to an opposing effect that would reveal my Reserve and then continue resolving. Does it stop only the reveal portion?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Opposing effects cannot reveal your Hand, Reserve, or face-down Gambits or Tactics"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. When Counterintelligence is functioning as an Asset against an effect that would reveal your Reserve, it prevents that reveal but does not prevent the rest of the opposing effect from resolving."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-transmutation-payment",
+      "category": "mystics",
+      "question": "What card movement is required to use Transmutation before dice, and what does that card contribute?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Put one card from Hand in your Graveyard and add its value to your battle total"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Put one card from Hand into your Graveyard; its value is added to your battle total."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-conviction-batch",
+      "category": "inquisition",
+      "question": "On the first qualifying Aftermath this turn, two opposing cards enter the Graveyard at once. Does the Inquisition's normal Conviction trigger give 2?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. On the first qualifying Aftermath that turn, two or more opposing cards entering the Graveyard gives 2 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-general-rout-sequence",
+      "category": "leaders",
+      "question": "The General wins as attacker and uses Rout at the end of the Aftermath. If that advance reaches the opponent, can it begin another battle?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "This movement may initiate a battle"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Rout's advance may initiate a new battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-commandant-repel-order",
+      "category": "leaders",
+      "question": "After the Commandant wins as defender and uses Repel, when does the extra retreat happen relative to the opponent's normal retreat?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent's normal retreat, they retreat one additional Position, if able"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The opponent makes the normal retreat first, then retreats one additional Position if able."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-ambassador-cordiality-trigger",
+      "category": "leaders",
+      "question": "The Ambassador's opponent refuses Terms. Does that refusal trigger Cordiality?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent accepts your Terms, draw one card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Cordiality triggers after accepted Terms, not refused Terms."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-senator-recovery-per-card",
+      "category": "leaders",
+      "question": "The Senator would lose 3 staked Influence and uses Political Capital with two cards from Hand. How much staked Influence is recovered?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Recover 1 staked Influence per card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Recover 2 staked Influence."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-executive-occupation-check",
+      "category": "leaders",
+      "question": "The Executive won as attacker but left that enemy Territory before Denouement. Can Hostile Takeover still be used on its Deed?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "While occupying that enemy Territory, buy or buy out its Deed"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Hostile Takeover requires the Executive to still be occupying that enemy Territory."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-ranger-capture-boundary",
+      "category": "leaders",
+      "question": "Can Fieldcraft change whether I control, occupy, or capture a Territory?",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourceGroups": [
+        [
+          "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
+        ],
+        [
+          "Occupation does not itself change control"
+        ],
+        [
+          "During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Fieldcraft does not directly rewrite Territory control, Occupation, or Capture rules. It can nevertheless indirectly change the resulting game state when ignoring a printed Territory effect changes movement or a battle."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-spymaster-delay",
+      "category": "leaders",
+      "question": "Mission Control starts another normal Mission immediately. Can that newly started Mission complete during the same turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It cannot complete that turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The Mission started by Mission Control cannot complete that turn."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-alchemist-battle-draw",
+      "category": "leaders",
+      "question": "Materia Prima triggers from a qualifying sacrifice during battle. When is the Alchemist's card draw made?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "During battle, draw after the Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Draw after the Aftermath."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-spirit-walker-threshold",
+      "category": "leaders",
+      "question": "The Spirit Walker has completed two Rites. What minimum printed value must the Arcane card sacrificed to Guardians of the Circle have?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "value is at least 1 plus your completed Rites"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "At least 3."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-final-judgment-floor",
+      "category": "leaders",
+      "question": "Can Final Judgment's Conviction-cost reduction ever reduce that immediate Purge below 1 Conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Reduce that Purge's Conviction cost by 1, to a minimum of 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. The reduced Purge cost has a minimum of 1 Conviction."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-pursuit-terms-stop",
+      "category": "leaders",
+      "question": "Relentless Pursuit begins another battle. During that new battle's Onset, the opponent accepts applicable Terms. Does the sequence stop before Gambits?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Accepted Terms may still end the resulting battle sequence during Onset before Gambits are set"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Accepted Terms can end that new battle sequence during Onset before Gambits."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-unsupported-accidental-shuffle",
+      "category": "unsupported",
+      "question": "I accidentally shuffled my Graveyard during play. Does the v0.7.2 candidate define an official repair procedure for restoring its prior order?",
+      "expectedClassification": "provisional",
+      "classificationBasis": "rules-gap",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "The v0.7.2 candidate rules do not define an official repair procedure for reconstructing the prior Graveyard order; identify the rules gap and do not invent a written procedure."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-out-of-scope-deck-pick",
+      "category": "out-of-scope",
+      "question": "Which Leader should I build around if I want the strongest tournament deck?",
+      "expectedClassification": "out_of_scope",
+      "classificationBasis": "out-of-scope",
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "This is comparative strategy/deckbuilding advice rather than a gameplay-rules ruling, so the Rules Arbiter should give a concise scope boundary."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-stake",
+      "category": "player-language",
+      "question": "that influence is staked. can it pay for leverage?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Staked Influence cannot be spent as Leverage"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-negated-gambit",
+      "category": "player-language",
+      "question": "negated gambit still goes graveyard after?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "a negated Gambit still goes to its owner's Graveyard during the Aftermath"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-fieldcraft-capture",
+      "category": "player-language",
+      "question": "fieldcraft can change capture?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. Fieldcraft does not alter the Capture rule itself."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-mission-delay",
+      "category": "player-language",
+      "question": "mission control starts it now; can it finish this turn?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "It cannot complete that turn"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-final-judgment-floor",
+      "category": "player-language",
+      "question": "final judgment can drop purge below 1 conviction?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "minimum of 1"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "blind-u-player-defensive-edge",
+      "category": "player-language",
+      "question": "tie while defender has defensive edge. tiebreak roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "defender wins tied battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No."
+        }
+      ]
+    },
+    {
+      "id": "v072-regression-tiebreak-polarity",
+      "category": "historical-regression",
+      "question": "During a Tiebreak Roll, do Advantage, Disadvantage, card modifiers, or the previous battle totals apply?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "Do not apply advantage, disadvantage, card effects, numerical modifiers, or previous battle totals"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "No. A Tiebreak Roll ignores advantage, disadvantage, card effects, numerical modifiers, and previous battle totals."
+        }
+      ]
+    },
+    {
+      "id": "v072-regression-retribution-activation",
+      "category": "historical-regression",
+      "question": "The opponent loses a battle they initiated while Retribution is banked. What activation is required before its punishment applies?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "After the opponent loses a battle they initiated, you may discard this card"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "You must choose to discard Retribution; only if you do does the opponent choose the Asset-to-Graveyard or +2 Conviction consequence."
+        }
+      ]
+    },
+    {
+      "id": "v072-regression-demilitarized-zone-replacement",
+      "category": "historical-regression",
+      "question": "A Territory with Demilitarized Zone would be captured. What happens to the Overlay and the capture?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "When this Territory would be captured, discard this Overlay instead"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Discard Demilitarized Zone instead of capturing the Territory; the capture does not also occur."
+        }
+      ]
+    },
+    {
+      "id": "v072-regression-strategic-withdrawal-polarity",
+      "category": "historical-regression",
+      "question": "Strategic Withdrawal in Denouement after Movement ended starts a new 1-position Movement sequence?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "If you play this during Denouement after your normal Movement has ended, begin a new Movement sequence with up to one Position of movement"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes. Played in Denouement after normal Movement has ended, Strategic Withdrawal begins a new Movement sequence with up to one Position of movement."
+        }
+      ]
+    },
+    {
+      "id": "v072-regression-actuarial-alchemy-tiebreak",
+      "category": "historical-regression",
+      "question": "I lose a battle only after a Tiebreak Roll. Can Actuarial Alchemy measure the loss margin from that Tiebreak Roll?",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourceGroups": [
+        [
+          "gain Capital equal to the amount by which your opponent's Battle Total or Tiebreak Roll exceeded yours"
+        ]
+      ],
+      "semanticCriteria": [
+        {
+          "id": "ruling",
+          "statement": "Yes, if you choose to put Actuarial Alchemy in your Graveyard after losing; when the loss is determined by the Tiebreak Roll, its margin may be measured from that Tiebreak Roll."
+        }
+      ]
+    }
+  ]
+}

@@ -42,6 +42,9 @@ const PUBLICATIONS = Object.freeze({
     title: 'Complete Rules',
     description: 'The complete technical rules reference for exact procedures, timing, interactions, definitions, and edge cases.',
     accent: '#8f1f25',
+    coverArt: '/images/woodcuts/hero compositions/full.png',
+    coverArtAlt: 'All twelve faction Leaders woodcut',
+    coverClass: 'complete-rules-cover',
     hero: 4,
     coverFlavor: 'Exact language for difficult interactions',
   }),
@@ -118,7 +121,7 @@ function hasBodyContent(page) {
 }
 
 function createCover(publication) {
-  const page = createPage({ className: `cover front-cover${publication.name ? ' faction-cover' : ''}`, furniture: false });
+  const page = createPage({ className: `cover front-cover${publication.name ? ' faction-cover' : ''}${publication.coverClass ? ` ${publication.coverClass}` : ''}`, furniture: false });
   applyPublicationIdentity(page, publication);
   const flow = flowOf(page);
   flow.outerHTML = `
@@ -133,7 +136,7 @@ function createCover(publication) {
       </div>
       ${publication.symbol ? `<span class="cover-faction-symbol booklet-inline-faction-symbol" data-faction-symbol-src="${publication.symbol}" aria-hidden="true"></span>` : ''}
     </div>
-    <div class="cover-art"><img src="${publication.coverArt || `/images/woodcuts/hero compositions/hero ${publication.hero}.png`}" alt="${publication.name ? `${publication.name} faction Leaders woodcut` : ''}" /></div>
+    <div class="cover-art"><img src="${publication.coverArt || `/images/woodcuts/hero compositions/hero ${publication.hero}.png`}" alt="${publication.coverArtAlt || (publication.name ? `${publication.name} faction Leaders woodcut` : '')}" /></div>
     <div class="cover-bottom"><span>Tactical card-and-territory game</span><span>gauntlet.run</span></div>`;
 }
 
