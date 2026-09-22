@@ -295,6 +295,18 @@ h1, h2, h3, h4 {
   -webkit-mask-image: none;
   mask-image: none;
 }
+
+.cover.complete-rules-cover .cover-art {
+  padding: 6px 4px 0;
+}
+
+.cover.complete-rules-cover .cover-art img {
+  object-position: center bottom;
+  filter: grayscale(1) contrast(1.22) brightness(1.08);
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
 .cover-bottom {
   display: flex;
   justify-content: space-between;

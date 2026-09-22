@@ -40,6 +40,9 @@ describe('Browser Rulebook publication assets', () => {
 
   it('reuses existing production card-anatomy and hero assets', async () => {
     await access(RULES_PUBLICATION_ASSETS.hero.sourcePath);
+    expect(RULES_PUBLICATION_ASSETS.completeRulesWoodcut.sourcePath).toBe('images/woodcuts/hero compositions/full.png');
+    expect(RULES_PUBLICATION_ASSETS.completeRulesWoodcut.publicUrl).toBe('/images/woodcuts/hero compositions/full.png');
+    await access(RULES_PUBLICATION_ASSETS.completeRulesWoodcut.sourcePath);
     await access(RULES_PUBLICATION_ASSETS.cardAnatomy.browserModule);
 
     const anatomy = await readFile(RULES_PUBLICATION_ASSETS.cardAnatomy.browserModule, 'utf8');
@@ -56,6 +59,8 @@ describe('Browser Rulebook publication assets', () => {
     expect(script).toContain('decorateCompleteRulesFactions()');
     expect(script).toContain('decorateFactionGuide(documentId)');
     expect(script).toContain('updateHeroArt(mode, documentId)');
+    expect(script).toContain("documentId === 'complete-rules'");
+    expect(script).toContain('RULES_PUBLICATION_ASSETS.completeRulesWoodcut.publicUrl');
     expect(script).toContain("faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART");
 
     for (const releasedPortrait of [

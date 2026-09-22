@@ -3,6 +3,10 @@ export const RULES_PUBLICATION_ASSETS = Object.freeze({
     sourcePath: 'images/woodcuts/hero compositions/hero 1.png',
     publicUrl: '/images/woodcuts/hero compositions/hero 1.png',
   }),
+  completeRulesWoodcut: Object.freeze({
+    sourcePath: 'images/woodcuts/hero compositions/full.png',
+    publicUrl: '/images/woodcuts/hero compositions/full.png',
+  }),
   cardAnatomy: Object.freeze({
     browserModule: 'legacy/rulebook-browser/card-anatomy.js',
     playableCardId: 'military-unbroken-ranks',

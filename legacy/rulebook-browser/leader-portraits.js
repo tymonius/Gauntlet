@@ -8,6 +8,13 @@ const DEFAULT_HERO_ART = '../images/woodcuts/hero compositions/hero 1.png';
 
 function updateHeroArt(mode, documentId) {
   if (!heroArt) return;
+
+  if (mode === 'candidate' && documentId === 'complete-rules') {
+    heroArt.src = RULES_PUBLICATION_ASSETS.completeRulesWoodcut.publicUrl;
+    heroArt.alt = 'All twelve faction Leaders woodcut';
+    return;
+  }
+
   const faction = mode === 'candidate' ? RULES_PUBLICATION_ASSETS.factions[documentId] : null;
   heroArt.src = faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART;
   heroArt.alt = faction ? `${faction.name} faction Leaders woodcut` : '';
