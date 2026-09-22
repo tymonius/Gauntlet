@@ -298,46 +298,67 @@ jobs:
             }
 
             const token = await oidcToken();
+            const retryableStatuses = new Set([429, 502, 503, 504]);
             const results = [];
             for (let index = 0; index < 5; index += 1) {
-              const response = await fetch(endpoint, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Origin": "https://gauntlet.run",
-                  "User-Agent": "Gauntlet-v0.7.2-candidate-polarity-probe",
-                  "X-Gauntlet-QA-OIDC": token
-                },
-                body: JSON.stringify({
-                  question,
-                  history: [],
-                  sessionId: `v072_polarity_probe_${index + 1}_${Date.now().toString(36)}`,
-                  rulesVersion: expectedVersion
-                })
-              });
-              const body = await response.text();
+              let response = null;
+              let body = "";
               let payload = null;
-              try { payload = JSON.parse(body); } catch {}
+              let transportAttempts = 0;
+
+              for (transportAttempts = 1; transportAttempts <= 4; transportAttempts += 1) {
+                response = await fetch(endpoint, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Origin": "https://gauntlet.run",
+                    "User-Agent": "Gauntlet-v0.7.2-candidate-polarity-probe",
+                    "X-Gauntlet-QA-OIDC": token
+                  },
+                  body: JSON.stringify({
+                    question,
+                    history: [],
+                    sessionId: `v072_polarity_probe_${index + 1}_${Date.now().toString(36)}`,
+                    rulesVersion: expectedVersion
+                  })
+                });
+                body = await response.text();
+                try { payload = JSON.parse(body); } catch { payload = null; }
+
+                if (!retryableStatuses.has(response.status) || transportAttempts === 4) break;
+                const delayMs = 3000 * transportAttempts;
+                console.log(`RETRY ${index + 1}/5 after HTTP ${response.status} (${delayMs} ms): ${String(payload?.error || body).slice(0, 220)}`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+              }
+
               const answer = String(payload?.answer || "").trim();
               const firstPolarity = answer.match(/\b(yes|no)\b/i)?.[1]?.toLowerCase() || null;
               const failures = [];
-              if (response.status !== 200) failures.push(`http: ${response.status}`);
+              if (response?.status !== 200) failures.push(`http: ${response?.status ?? "none"}`);
               if (!payload) failures.push("response: not JSON");
               if (payload?.version !== expectedVersion) failures.push(`version: ${payload?.version || "missing"}`);
               if (payload?.behaviorRevision !== expectedRevision) failures.push(`behavior: ${payload?.behaviorRevision || "missing"}`);
-              if (firstPolarity !== "no") failures.push(`polarity: first Yes/No word was ${firstPolarity || "missing"}`);
+              if (response?.status === 200 && firstPolarity !== "no") {
+                failures.push(`polarity: first Yes/No word was ${firstPolarity || "missing"}`);
+              }
               results.push({
                 attempt: index + 1,
-                httpStatus: response.status,
+                transportAttempts,
+                httpStatus: response?.status || null,
+                error: payload?.error || null,
+                errorCode: payload?.errorCode || null,
+                upstreamStatus: payload?.upstreamStatus || null,
+                upstreamCategory: payload?.upstreamCategory || null,
+                rawResponse: payload ? null : String(body || "").slice(0, 1200),
                 answer,
                 firstPolarity,
                 rulingStatus: payload?.rulingStatus || null,
                 executionPath: payload?.executionPath || null,
                 failures
               });
-              console.log(`${failures.length ? "FAIL" : "PASS"} ${index + 1}/5: ${answer}`);
+              console.log(`${failures.length ? "FAIL" : "PASS"} ${index + 1}/5 after ${transportAttempts} transport attempt(s): ${answer || payload?.error || String(body || "").slice(0, 220)}`);
               for (const failure of failures) console.log(`  - ${failure}`);
-              if (index < 4) await new Promise(resolve => setTimeout(resolve, 1000));
+              if (index < 4) await new Promise(resolve => setTimeout(resolve, 3000));
             }
 
             const failed = results.filter(item => item.failures.length);
