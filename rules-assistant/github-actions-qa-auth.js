@@ -3,12 +3,14 @@ const GITHUB_ACTIONS_OIDC_JWKS = "https://token.actions.githubusercontent.com/.w
 const QA_OIDC_AUDIENCE = "gauntlet-rules-assistant-live-qa";
 const QA_REPOSITORY = "tymonius/Gauntlet";
 const QA_REPOSITORY_ID = "375950579";
-const QA_WORKFLOW_REFS = Object.freeze([
-  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
-  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
-  "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main",
-  "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main"
-]);
+const QA_WORKFLOW_EVENT_NAMES = Object.freeze({
+  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
+  "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
+  "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
+  "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main": Object.freeze(["workflow_dispatch"]),
+  "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": Object.freeze(["workflow_dispatch", "push"])
+});
+const QA_WORKFLOW_REFS = Object.freeze(Object.keys(QA_WORKFLOW_EVENT_NAMES));
 const QA_EVENT_NAME = "workflow_dispatch";
 const QA_REF = "refs/heads/main";
 const QA_RUNNER_ENVIRONMENT = "github-hosted";
@@ -40,8 +42,8 @@ export function claimsAreAuthorized(claims, nowSeconds) {
   if (!audienceMatches(claims?.aud)) return false;
   if (claims?.repository !== QA_REPOSITORY) return false;
   if (String(claims?.repository_id || "") !== QA_REPOSITORY_ID) return false;
-  if (!QA_WORKFLOW_REFS.includes(claims?.workflow_ref)) return false;
-  if (claims?.event_name !== QA_EVENT_NAME) return false;
+  const allowedEvents = QA_WORKFLOW_EVENT_NAMES[claims?.workflow_ref];
+  if (!allowedEvents || !allowedEvents.includes(claims?.event_name)) return false;
   if (claims?.ref !== QA_REF) return false;
   if (claims?.runner_environment !== QA_RUNNER_ENVIRONMENT) return false;
 
@@ -141,6 +143,7 @@ export const githubActionsQaAuthContract = Object.freeze({
   repositoryId: QA_REPOSITORY_ID,
   workflowRef: QA_WORKFLOW_REFS[0],
   workflowRefs: QA_WORKFLOW_REFS,
+  workflowEventNames: QA_WORKFLOW_EVENT_NAMES,
   eventName: QA_EVENT_NAME,
   ref: QA_REF,
   runnerEnvironment: QA_RUNNER_ENVIRONMENT,
