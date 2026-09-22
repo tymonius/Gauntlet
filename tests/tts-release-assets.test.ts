@@ -35,10 +35,15 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).not.toContain("join(outputRoot, 'territories')");
   });
 
-  it('supports development, release-candidate, and stable TTS staging without treating a candidate as published', () => {
+  it('supports development, release-candidate, and stable TTS staging with reader-order v0.7.2 modular rules', () => {
     expect(stager).toContain("['current-release', 'release-candidate', 'active-development']");
-    expect(stager).toContain("const includeRulebook = targetStatus === 'current-release'");
-    expect(stager).toContain('publication Rulebook PDF is intentionally omitted until stable release materialization');
+    expect(stager).toContain('const useV072ModularRules');
+    expect(stager).toContain('prepareV072RulesReaders');
+    expect(stager).toContain('v072BookletReaderFilename');
+    expect(stager).toContain("'shared-rules-reader'");
+    expect(stager).toContain("'faction-guide-reader'");
+    expect(stager).toContain("pageOrder: 'reading'");
+    expect(stager).toContain("const includeLegacyRulebook = targetStatus === 'current-release' && !useV072ModularRules");
   });
 
   it('gives every staged file a deterministic current-release download URL and digest', () => {
@@ -79,6 +84,7 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).toContain('_Territory_Manifest.json');
     expect(stager).toContain('_Leader_Manifest.json');
     expect(stager).toContain('_Starter_Deck_Manifest.json');
+    expect(stager).toContain('_Rules_');
     expect(stager).toContain('_Release_Assets.json');
   });
 
@@ -88,6 +94,8 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(packageJson.scripts['tts:release:stage']).toContain('node scripts/stage-tts-release-assets.mjs');
     expect(workflow).toContain('publish_release_assets:');
     expect(workflow).toContain("if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'");
+    expect(workflow).toContain('name: Render v0.7.2 modular rules PDFs for TTS');
+    expect(workflow).toContain('run: node scripts/render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('name: Stage hosted TTS release assets');
     expect(workflow).toContain('run: npm run tts:release:stage');
     expect(workflow).toContain("gh release view \"$tag\" --repo \"$repo\"");
