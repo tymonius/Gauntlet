@@ -37,14 +37,16 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
         "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main",
         "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main",
-        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main"
+        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main",
+        "tymonius/Gauntlet/.github/workflows/v072-final-rules-arbiter-qa.yml@refs/heads/main"
       ],
       workflowEventNames: {
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main": ["workflow_dispatch"],
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main": ["workflow_dispatch"],
         "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main": ["workflow_dispatch"],
         "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main": ["workflow_dispatch"],
-        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": ["workflow_dispatch"]
+        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": ["workflow_dispatch"],
+        "tymonius/Gauntlet/.github/workflows/v072-final-rules-arbiter-qa.yml@refs/heads/main": ["workflow_dispatch", "push"]
       },
       eventName: "workflow_dispatch",
       ref: "refs/heads/main",
@@ -60,9 +62,11 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
     }
   });
 
-  test("rejects push-triggered QA for every paid workflow", () => {
+  test("allows push only for the one-shot final v0.7.2 QA workflow", () => {
+    const finalWorkflow = githubActionsQaAuthContract.workflowRefs.find((value) => value.includes("v072-final-rules-arbiter-qa.yml"));
+    expect(finalWorkflow).toBeTruthy();
     for (const workflow_ref of githubActionsQaAuthContract.workflowRefs) {
-      expect(claimsAreAuthorized(validClaims({ workflow_ref, event_name: "push" }), now)).toBe(false);
+      expect(claimsAreAuthorized(validClaims({ workflow_ref, event_name: "push" }), now)).toBe(workflow_ref === finalWorkflow);
     }
   });
 

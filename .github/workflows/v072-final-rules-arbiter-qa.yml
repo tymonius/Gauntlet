@@ -1,0 +1,231 @@
+name: v0.7.2 final Rules Arbiter QA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/qa-approvals/v072-final-20260922.json
+  workflow_dispatch:
+    inputs:
+      confirm_paid_api:
+        description: I explicitly approve this paid OpenAI API run
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+
+concurrency:
+  group: v072-final-rules-arbiter-qa
+  cancel-in-progress: false
+
+jobs:
+  final-blind-live-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      EXPECTED_RULES_VERSION: v0.7.2
+      EXPECTED_BEHAVIOR_REVISION: v072-qa-20260922-02
+      EXPECTED_AUTHORITY_SET: ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84
+      RULES_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/rules
+      HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/health
+      CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/corpus-health
+      BENCHMARK: rules-assistant/evals/rules-arbiter-v072-final-regression-replay.json
+      CORRECTIONS: rules-assistant/evals/rules-arbiter-v072-final-regression-replay-corrections.json
+      CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-v072-final-clarification-replay.json
+      REPORT: artifacts/rules-qa/v072-final-regression-replay.json
+      CLARIFICATION_REPORT: artifacts/rules-qa/v072-final-regression-replay-clarifications.json
+
+    steps:
+      - name: Require explicit paid-API approval
+        shell: bash
+        env:
+          DISPATCH_APPROVAL: ${{ inputs.confirm_paid_api }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "$DISPATCH_APPROVAL" != "true" ]; then
+              echo "Explicit paid API approval was not provided."
+              exit 1
+            fi
+          else
+            node <<'NODE'
+            const { readFileSync } = require("node:fs");
+            const approval = JSON.parse(readFileSync(".github/qa-approvals/v072-final-20260922.json", "utf8"));
+            const expectedAuthority = "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84";
+            if (
+              approval?.approved !== true
+              || approval?.scope !== "final-v0.7.2-rules-arbiter-blind-live-qa"
+              || approval?.authoritySetId !== expectedAuthority
+              || approval?.behaviorRevision !== "v072-qa-20260922-02"
+              || approval?.oneShot !== true
+            ) {
+              console.error("The one-shot paid-QA approval marker is missing or does not match the frozen target.");
+              process.exit(1);
+            }
+            console.log("Validated one-shot user approval marker for final v0.7.2 Rules Arbiter QA.");
+            NODE
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Wait for matching Rules Arbiter deployment
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node <<'NODE'
+          const sha = process.env.GITHUB_SHA;
+          const repo = process.env.GITHUB_REPOSITORY;
+          const token = process.env.GH_TOKEN;
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+          const headers = {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28"
+          };
+
+          for (let attempt = 1; attempt <= 80; attempt += 1) {
+            const url = `https://api.github.com/repos/${repo}/actions/workflows/deploy-rules-arbiter.yml/runs?head_sha=${sha}&event=push&per_page=10`;
+            const response = await fetch(url, { headers, cache: "no-store" });
+            if (!response.ok) {
+              console.error(`Deployment lookup failed with HTTP ${response.status}.`);
+              process.exit(1);
+            }
+            const payload = await response.json();
+            const run = payload.workflow_runs?.[0];
+            console.log(`Deployment check ${attempt}/80: ${run ? `${run.status}/${run.conclusion || "pending"}` : "not-yet-created"}`);
+            if (run?.status === "completed") {
+              if (run.conclusion === "success") process.exit(0);
+              console.error(`Matching Rules Arbiter deployment concluded ${run.conclusion || "unknown"}; no paid QA calls were made.`);
+              process.exit(1);
+            }
+            if (attempt < 80) await sleep(5000);
+          }
+          console.error("Matching Rules Arbiter deployment did not complete in time; no paid QA calls were made.");
+          process.exit(1);
+          NODE
+
+      - name: Verify frozen v0.7.2 target before paid calls
+        run: |
+          node <<'NODE'
+          const expectedVersion = process.env.EXPECTED_RULES_VERSION;
+          const expectedRevision = process.env.EXPECTED_BEHAVIOR_REVISION;
+          const expectedAuthority = process.env.EXPECTED_AUTHORITY_SET;
+
+          const healthResponse = await fetch(process.env.HEALTH_ENDPOINT, { cache: "no-store" });
+          const health = healthResponse.ok ? await healthResponse.json() : null;
+          if (
+            !healthResponse.ok
+            || health?.ok !== true
+            || health?.version !== expectedVersion
+            || health?.behaviorRevision !== expectedRevision
+            || health?.published !== false
+            || health?.currentPublicRelease !== "v0.7.1"
+          ) {
+            console.error("Frozen v0.7.2 health does not match the approved QA target. No paid QA calls were made.");
+            console.error(JSON.stringify(health));
+            process.exit(1);
+          }
+
+          const corpusResponse = await fetch(process.env.CORPUS_HEALTH_ENDPOINT, { cache: "no-store" });
+          const corpus = corpusResponse.ok ? await corpusResponse.json() : null;
+          if (
+            !corpusResponse.ok
+            || corpus?.ok !== true
+            || corpus?.version !== expectedVersion
+            || corpus?.currentPublicRelease !== "v0.7.1"
+            || corpus?.behaviorRevision !== expectedRevision
+            || corpus?.authoritySetId !== expectedAuthority
+          ) {
+            console.error("Frozen v0.7.2 corpus does not match the approved QA target. No paid QA calls were made.");
+            console.error(JSON.stringify(corpus));
+            process.exit(1);
+          }
+
+          console.log(`Pinned final target verified: ${expectedVersion} / ${expectedRevision} / ${expectedAuthority}`);
+          NODE
+
+      - name: Collect final blind live answers
+        id: collect
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ env.RULES_ENDPOINT }}
+          GAUNTLET_RULES_QA_BENCHMARK: ${{ env.BENCHMARK }}
+          GAUNTLET_RULES_QA_CORRECTIONS: ${{ env.CORRECTIONS }}
+          GAUNTLET_RULES_QA_OUTPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_LIMIT: "0"
+          GAUNTLET_RULES_QA_CONCURRENCY: "1"
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: "750"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-live-rules-qa.mjs
+
+      - name: Grade final regression semantics
+        id: semantic
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_BENCHMARK: ${{ env.BENCHMARK }}
+          GAUNTLET_RULES_QA_SEMANTIC_INPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_SEMANTIC_OUTPUT: ${{ env.REPORT }}
+          GAUNTLET_RULES_QA_SEMANTIC_ONLY: "true"
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-semantic-rules-qa.mjs
+
+      - name: Replay final ambiguity confirmations
+        id: clarification
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_ENDPOINT: ${{ env.RULES_ENDPOINT }}
+          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: ${{ env.CLARIFICATION_BENCHMARK }}
+          GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.CLARIFICATION_REPORT }}
+          GAUNTLET_RULES_QA_TIMEOUT_MS: "45000"
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: "4"
+          GAUNTLET_RULES_QA_USE_GITHUB_OIDC: "true"
+        run: node scripts/run-v071-gate3-clarification-qa.mjs
+
+      - name: Write final QA metadata
+        if: always()
+        run: |
+          mkdir -p artifacts/rules-qa
+          cat > artifacts/rules-qa/v072-final-qa-metadata.json <<JSON
+          {
+            "schema": "gauntlet.rules-arbiter-v072-final-qa-metadata.v1",
+            "rulesVersion": "$EXPECTED_RULES_VERSION",
+            "behaviorRevision": "$EXPECTED_BEHAVIOR_REVISION",
+            "authoritySetId": "$EXPECTED_AUTHORITY_SET",
+            "repositorySha": "$GITHUB_SHA",
+            "collectOutcome": "${{ steps.collect.outcome }}",
+            "semanticOutcome": "${{ steps.semantic.outcome }}",
+            "clarificationOutcome": "${{ steps.clarification.outcome }}"
+          }
+          JSON
+
+      - name: Upload final QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v072-final-rules-arbiter-qa
+          path: |
+            ${{ env.REPORT }}
+            ${{ env.CLARIFICATION_REPORT }}
+            artifacts/rules-qa/v072-final-qa-metadata.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce final QA
+        if: steps.collect.outcome != 'success' || steps.semantic.outcome != 'success' || steps.clarification.outcome != 'success'
+        run: exit 1

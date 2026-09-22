@@ -1,0 +1,8 @@
+{
+  "schema": "gauntlet.rules-arbiter-v072-final-regression-replay-corrections.v1",
+  "rulesVersion": "v0.7.2",
+  "purpose": "No post-freeze corrections. Present only to satisfy the reusable live-QA runner correction contract.",
+  "cases": [],
+  "behaviorRevision": "v072-qa-20260922-02",
+  "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84"
+}
