@@ -1,10 +1,10 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
 import {
-  V072_CANDIDATE_RULES_VERSION,
-  V072_CANDIDATE_VERSION_LABEL,
-  defaultV072CandidateSourceUrls,
-  loadV072CandidateRulesCorpus
-} from "./v072-candidate-corpus.js";
+  V072_RULES_VERSION,
+  V072_VERSION_LABEL,
+  defaultV072SourceUrls,
+  loadV072RulesCorpus
+} from "./v072-release-corpus.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "./r13-classification.js";
@@ -20,7 +20,7 @@ import {
   verifyHighRiskDraft
 } from "./v071-answer-verifier.js";
 
-export const RULES_VERSION = V072_CANDIDATE_RULES_VERSION;
+export const RULES_VERSION = V072_RULES_VERSION;
 export const BEHAVIOR_REVISION = "v072-qa-20260922-02";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -236,9 +236,9 @@ VOICE — CHIEF JUSTICE
 - A good answer should feel as though an intelligent eighteenth-century magistrate has been sitting at the table, has followed the discussion, and has now settled the matter clearly enough that play can continue.
 `;
 
-const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the canonical v0.7.2 candidate playtest edition.
+const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the staged canonical v0.7.2 release edition.
 
-Use only the supplied v0.7.2 candidate current-game and reviewed Complete Rules passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, historical Gauntlet releases, superseded candidate text, or unstated design facts.
+Use only the supplied frozen v0.7.2 release canonical data and reviewed Complete Rules passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, historical Gauntlet releases, superseded candidate text, or unstated design facts.
 
 Every gameplay-rules question must receive one of four classifications:
 - explicit: the supplied clean authority directly states the answer, including every permission, prohibition, timing, zone, or numerical effect asserted;
@@ -332,7 +332,7 @@ export default {
 
     if (
       request.method === "GET" &&
-      ["/corpus-health", "/api/corpus-health", "/v072-candidate/corpus-health", "/api/v072-candidate/corpus-health"].includes(url.pathname)
+      ["/corpus-health", "/api/corpus-health", "/v072/corpus-health", "/api/v072/corpus-health"].includes(url.pathname)
     ) {
       try {
         const corpus = await getCorpus(env, { force: true });
@@ -345,26 +345,26 @@ export default {
           authoritySetId: corpus.authoritySetId || ""
         }, 200, origin);
       } catch (error) {
-        console.error("v0.7.2 candidate Rules Arbiter corpus health failure", error);
+        console.error("v0.7.2 Rules Arbiter corpus health failure", error);
         return json({
           ok: false,
           service: "gauntlet-rules-assistant",
           version: RULES_VERSION,
           behaviorRevision: BEHAVIOR_REVISION,
-          error: "The v0.7.2 candidate Rules Arbiter corpus could not be refreshed."
+          error: "The staged v0.7.2 Rules Arbiter corpus could not be refreshed."
         }, 502, origin);
       }
     }
 
     if (
       request.method === "GET" &&
-      ["/", "/health", "/api/health", "/v072-candidate/health", "/api/v072-candidate/health"].includes(url.pathname)
+      ["/", "/health", "/api/health", "/v072/health", "/api/v072/health"].includes(url.pathname)
     ) {
       return json({
         ok: true,
         service: "gauntlet-rules-assistant",
         version: RULES_VERSION,
-        versionLabel: V072_CANDIDATE_VERSION_LABEL,
+        versionLabel: V072_VERSION_LABEL,
         reconstruction: false,
         published: false,
         currentPublicRelease: "v0.7.1",
@@ -382,7 +382,7 @@ export default {
 
     if (
       request.method !== "POST" ||
-      !["/rules", "/api/rules", "/v072-candidate/rules", "/api/v072-candidate/rules"].includes(url.pathname)
+      !["/rules", "/api/rules", "/v072/rules", "/api/v072/rules"].includes(url.pathname)
     ) {
       return json({ error: "Not found." }, 404, origin);
     }
@@ -404,7 +404,7 @@ export default {
     const requestedVersion = String(payload?.rulesVersion || "").trim();
     if (requestedVersion !== RULES_VERSION) {
       return json({
-        error: `This Rules Arbiter answers ${V072_CANDIDATE_VERSION_LABEL} questions only.`
+        error: `This Rules Arbiter answers ${V072_VERSION_LABEL} questions only.`
       }, 409, origin);
     }
 
@@ -622,8 +622,8 @@ async function getCorpus(env, { force = false } = {}) {
     corpusLoadedAt = 0;
   }
   if (!corpusPromise) {
-    const urls = defaultV072CandidateSourceUrls(env.SITE_ORIGIN || "https://gauntlet.run");
-    corpusPromise = loadV072CandidateRulesCorpus({
+    const urls = defaultV072SourceUrls(env.SITE_ORIGIN || "https://gauntlet.run");
+    corpusPromise = loadV072RulesCorpus({
       ...urls,
       fetchImpl: fetch
     }).then((corpus) => {
@@ -1056,7 +1056,7 @@ async function askOpenAI({ env, request, question, history, sources }) {
         verbosity: "low",
         format: {
           type: "json_schema",
-          name: "gauntlet_v072_candidate_rules_answer",
+          name: "gauntlet_v072_rules_answer",
           strict: true,
           schema: OUTPUT_SCHEMA
         }
@@ -2044,7 +2044,7 @@ function answerResponse(result, origin) {
     executionPath: result.executionPath || "canonical",
     interactionId: result.interactionId || null,
     version: RULES_VERSION,
-    versionLabel: V072_CANDIDATE_VERSION_LABEL,
+    versionLabel: V072_VERSION_LABEL,
     reconstruction: false,
     published: false,
     currentPublicRelease: "v0.7.1",
@@ -2097,7 +2097,7 @@ function json(body, status = 200, origin = null) {
 }
 
 async function makeSafetyIdentifier(request, env) {
-  const salt = env.SAFETY_ID_SALT || "gauntlet-v072-candidate-rules-arbiter";
+  const salt = env.SAFETY_ID_SALT || "gauntlet-v072-rules-arbiter";
   const address = request.headers.get("CF-Connecting-IP") || "anonymous";
   const input = new TextEncoder().encode(`${salt}:${address}`);
   const digest = await crypto.subtle.digest("SHA-256", input);

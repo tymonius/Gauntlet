@@ -192,6 +192,6 @@ describe("v0.7.1 ambiguous follow-up clarification", () => {
   test("clarification is a first-class current answer mode while remaining legacy compatible", () => {
     expect(normalizeCurrentAnswerMode("clarification")).toBe("clarification");
     expect(toLegacyAnswerMode("clarification")).toBe("ai");
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260922-34");
   });
 });

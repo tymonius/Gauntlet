@@ -41,6 +41,8 @@ describe('public route and Pages publication boundary', () => {
     expect(contract.pages.publishedDirectories).not.toContain('releases');
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json');
+    expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json');
     expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md');
     expect(files.get('/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf')).toBe('releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf');
     expect(contract.materializedFiles.some((entry: any) => /^\/releases\/(?!v0\.7\.1\/)/.test(entry.publicPath))).toBe(false);
