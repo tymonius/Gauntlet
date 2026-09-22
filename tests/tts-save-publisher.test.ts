@@ -87,7 +87,11 @@ describe('TTS save publisher', () => {
     });
     expect(publisher).toContain("const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf'");
     expect(publisher).toContain("const hasRulebook = Boolean(releaseAssets?.bySourceFile?.[RULEBOOK_READER_SOURCE])");
+    expect(publisher).toContain("['current-release', 'release-candidate', 'active-development']");
     expect(publisher).toContain("if (targetStatus === 'current-release' && !hasRulebook)");
+    expect(publisher).toContain("targetStatus === 'release-candidate'");
+    expect(publisher).toContain('release-candidate QA save omits the publication-only Rulebook PDF until stable release materialization');
+    expect(validator).toContain("['active-development', 'release-candidate'].includes(targetStatus)");
     expect(publisher).toContain('ObjectStates: [...(rulebook ? [rulebook] : []), ...starterKits]');
     expect(validator).toContain("isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')");
     expect(validator).toContain("approved physical-table scale of 2.55×");
