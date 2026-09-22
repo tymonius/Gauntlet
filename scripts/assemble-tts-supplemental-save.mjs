@@ -11,6 +11,7 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
+const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
@@ -577,24 +578,25 @@ function reorderStarterBagContents(bag, starter, applicable) {
     if (object === leader) return [0, 0];
 
     const notes = String(object?.GMNotes || '');
+    if (notes.startsWith(FACTION_GUIDE_NOTE_PREFIX)) return [1, 0];
     if (notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
       const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
       const record = componentOrder.get(id);
-      if (!record) return [3, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
-      if (record.component.representation === 'sliding-tracker') return [1, record.index];
-      if (record.component.family === 'reference-card') return [2, record.index];
-      return [3, record.index];
+      if (!record) return [4, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
+      if (record.component.representation === 'sliding-tracker') return [2, record.index];
+      if (record.component.family === 'reference-card') return [3, record.index];
+      return [4, record.index];
     }
 
     if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) {
-      return [3, supplementalStackOrder(notes.slice(SUPPLEMENTAL_STACK_NOTE_PREFIX.length), applicable)];
+      return [4, supplementalStackOrder(notes.slice(SUPPLEMENTAL_STACK_NOTE_PREFIX.length), applicable)];
     }
-    if (notes === `${STARTER_DECK_NOTE_PREFIX}${starter.id}`) return [4, 0];
-    if (notes === `${STARTER_TERRITORY_STACK_NOTE_PREFIX}${starter.id}`) return [5, 0];
+    if (notes === `${STARTER_DECK_NOTE_PREFIX}${starter.id}`) return [5, 0];
+    if (notes === `${STARTER_TERRITORY_STACK_NOTE_PREFIX}${starter.id}`) return [6, 0];
 
     // Player token and Battle Die (and any future non-card utilities) follow the
     // requested card/setup sequence instead of interrupting it.
-    return [6, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
+    return [7, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
   };
 
   // TTS Bags extract from the END of ContainedObjects. Therefore the serialized
