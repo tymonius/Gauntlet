@@ -3,3 +3,4 @@ Question: tie while defender has defensive edge. tiebreak roll?
 Expected first Yes/No word: No
 The workflow must compute and verify the current candidate authority from repository bytes before making paid calls.
 Retry 2: harness runtime fixed before any paid probe calls were made in retry 1.
+Retry 3: add retry/backoff and upstream transport diagnostics after five HTTP 502 responses.
