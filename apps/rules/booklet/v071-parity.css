@@ -283,6 +283,18 @@ h1, h2, h3, h4 {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
 }
+
+.cover.faction-cover .cover-art {
+  padding: 8px 6px 0;
+}
+
+.cover.faction-cover .cover-art img {
+  object-position: center bottom;
+  filter: grayscale(1) contrast(1.22) brightness(1.08);
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
 .cover-bottom {
   display: flex;
   justify-content: space-between;
