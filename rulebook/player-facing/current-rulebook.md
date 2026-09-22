@@ -1542,8 +1542,8 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
-| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Feature marked 1 Action. |
-| Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
+| Financial Capacity | At the end of Opening, if Treasury value exceeds Territories controlled, you may still take one Action in Denouement after taking an Opening Action; at least one Action that turn must be Treasury, Deeds, Play the Market, or Hostile Takeover. |
+| Faction Features | Treasury — 1 Action · Opening or Denouement; Buy / Buy Out Deed — 1 Action · Denouement; Play the Market — 1 Action · Opening; Subsidize — No Action · Before dice; Financial Capacity — No Action · End of Opening; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 15<!-- RULE-FACT:cards.financiers.count:number --> Financier card titles. |
@@ -1551,14 +1551,14 @@ Deed ownership is independent of token position and Territory control. Own the D
 
 ## Faction Features
 
-- **Treasury — 1 Action · Denouement.** Place one card from Hand face up in Treasury. Its value increases your Capital limit.<!-- RULE-FACT:faction-features.financiers.treasury -->
+- **Treasury — 1 Action · Opening or Denouement.** Place one card from Hand face up in Treasury. Its value increases your Capital limit.<!-- RULE-FACT:faction-features.financiers.treasury -->
 - **Deeds — 1 Action · Denouement · Current Deed cost.** Buy an unowned Deed or buy out an opposing Financier's Deed by paying its full current cost.<!-- RULE-FACT:faction-features.financiers.deeds -->
-- **Play the Market — 1 Action · Denouement · Discard 1 card from Hand.** Roll one die and gain Capital according to the result.<!-- RULE-FACT:faction-features.financiers.play-the-market -->
+- **Play the Market — 1 Action · Opening · Discard 1 card from Hand.** Roll one die and gain Capital according to the result.<!-- RULE-FACT:faction-features.financiers.play-the-market -->
 - **Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total. +1 / +2 / +3 / +4 costs 1 / 3 / 6 / 10 Capital; the progression continues without a fixed maximum.<!-- RULE-FACT:faction-features.financiers.subsidize -->
-- **Financial Capacity — No Action · After Capture.** If your Treasury value is greater than the number of Territories you control, you may take one Action in Opening and one Action in Denouement that turn. At least one must be a Financier Faction Feature marked 1 Action.<!-- RULE-FACT:faction-features.financiers.financial-capacity -->
+- **Financial Capacity — No Action · End of Opening.** If your Treasury value is greater than the number of Territories you control, you may take one Action in Denouement even if you already took one in Opening. At least one Action that turn must be Treasury, Deeds, Play the Market, or Hostile Takeover.<!-- RULE-FACT:faction-features.financiers.financial-capacity -->
 - **Income — Automatic · After Capture.** Gain 1 Capital for each Deed you own.<!-- RULE-FACT:faction-features.financiers.income -->
 
-**Hostile Takeover** is the Executive's Leader Ability. **Line of Credit** is the Banker's Leader Ability. Neither is a shared Faction Feature.
+**Hostile Takeover** is the Executive's Leader Ability and explicitly qualifies for Financial Capacity. **Line of Credit** is the Banker's Leader Ability. Neither is a shared Faction Feature.
 
 ## Components and setup
 
@@ -1578,9 +1578,7 @@ Begin with 2 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Feature marked 1 Action.
-
-During an Denouement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
+Treasury and Play the Market can be used during Opening. At the end of Opening, compare Treasury value with Territories controlled. If Treasury value is greater, Financial Capacity can preserve a Denouement Action even if you already used one during Opening.
 
 ### Complete rules
 
@@ -1594,15 +1592,17 @@ Capital may exceed the limit temporarily. At the end of every turn, including an
 
 #### Financial Capacity
 
-After completing the Capture step and applying all effects that occur after it, but before Draw, compare the total card value in your Treasury with the number of Territories you control.
+At the **end of Opening**, compare the total card value in your Treasury with the number of Territories you control.
 
-If Treasury value is greater, you may take one Action during both Opening and Denouement that turn, provided at least one of those Actions is a Financier Faction Feature marked 1 Action. A Financier Faction Feature marked 1 Action is normally legal only during Denouement.
+If Treasury value is greater, you may take one Action during Denouement even if you already took an Action during Opening. At least one Action that turn must be **Treasury, Buy / Buy Out Deed, Play the Market, or Hostile Takeover**.
 
-Financial Capacity does not permit two Actions in one phase. Determine eligibility once at this timing; later Treasury or control changes do not grant or remove the permission that turn.
+Financial Capacity does not permit two Actions in one phase. Determine eligibility once at the end of Opening. A Treasury card placed during Opening can establish Financial Capacity for that same turn; later Treasury or control changes do not grant or remove the permission that turn.
+
+Hostile Takeover remains an Executive Leader Ability, not a shared Faction Feature, but it explicitly qualifies for this requirement.
 
 #### Treasury
 
-During Denouement, take an Action to place one card from your Hand face up in your Treasury.
+During **Opening or Denouement**, take an Action to place one card from your Hand face up in your Treasury.
 
 - Treasury cards are outside normal card zones.
 - They cannot be played or affected unless a rule specifically refers to Treasury.
@@ -1627,9 +1627,22 @@ During Denouement, take an Action to buy or buy out one Deed by paying its full 
 
 When an effect permits several purchases, complete each purchase before recalculating the next cost.
 
-> **Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium**
+> **Deed cost = max(1, base cost + position modifier + buyout premium + same-turn acquisition surcharge)**
 
-Minimum cost is 1 Capital.
+The normal base-cost curve for your first through sixth Deeds is:
+
+| Deed being acquired | Base cost |
+|---:|---:|
+| 1st | 1 |
+| 2nd | 2 |
+| 3rd | 4 |
+| 4th | 6 |
+| 5th | 8 |
+| 6th | 10 |
+
+Equivalently:
+
+> **Base cost = min(10, max(1, 2 × Deeds you own))**
 
 | Territory state from buyer's perspective | Modifier |
 |---|---:|
@@ -1643,6 +1656,14 @@ For a Deed owned by an opposing Financier:
 
 > **Buyout premium = min(Deeds the opposing owner owns, 6)**
 
+After your first successful Deed purchase or buyout in a turn, each additional purchase has a cumulative surcharge:
+
+> **Same-turn acquisition surcharge = +1 Capital for each Deed you have already purchased or bought out this turn**
+
+So the first purchase has +0, the second +1, the third +2, and so on. Count every successful Deed purchase or buyout regardless of source, including Deeds, Hostile Takeover, Corner the Market, Liquidation, Leveraged Buyout, or another effect.
+
+Apply base cost, position modifier, buyout premium, and same-turn acquisition surcharge, then apply the minimum final cost of 1 Capital. Recalculate after every successful purchase or buyout.
+
 #### Income
 
 After the Capture step at the start of your turn, gain 1 Capital for each Deed you own. Income may temporarily exceed the Capital limit.
@@ -1655,7 +1676,7 @@ A Territory added to the Gauntlet has a normal Deed and expands the required por
 
 #### Play the Market
 
-During Denouement, take an Action, discard one card from Hand, and roll one die:
+During **Opening**, take an Action, discard one card from Hand, and roll one die:
 
 | Roll | Result |
 |---:|---|
@@ -1663,6 +1684,8 @@ During Denouement, take an Action, discard one card from Hand, and roll one die:
 | 2–3 | Gain 1 Capital. |
 | 4–5 | Gain Capital equal to the card's value. |
 | 6 | Gain Capital equal to twice the card's value. |
+
+Capital gained through Play the Market remains available for the rest of that turn, including Subsidize during Movement battles and Deed purchases during Denouement.
 
 #### Subsidize
 
@@ -1693,6 +1716,8 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 > **Hostile Takeover — 1<!-- RULE-FACT:financiers.executive.hostile_takeover.action_cost:number --> Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.
 
+Hostile Takeover qualifies as the required Financier economic Action for Financial Capacity.
+
 ## Financier-specific rules
 
 ### Collateral
@@ -1713,7 +1738,7 @@ A Territory added to the Gauntlet:
 - counts toward Capital and Asset limits when controlled;
 - generates income when its Deed is owned;
 - expands Controlling Interest; and
-- uses the normal capped cost formulas.
+- uses the normal Deed pricing and same-turn acquisition surcharge.
 
 ### Self-tracking cards
 
