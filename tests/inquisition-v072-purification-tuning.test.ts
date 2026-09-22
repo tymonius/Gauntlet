@@ -66,10 +66,14 @@ describe('v0.7.2 Inquisition Purification tuning', () => {
     for (const surface of [factionGuide, completeRules, currentRulebook, doctrineReference]) {
       expect(surface).toContain('2 Conviction');
     }
-    for (const surface of [factionGuide, completeRules, currentRulebook, purgeReference]) {
+    for (const surface of [factionGuide, completeRules, purgeReference]) {
       expect(surface).toContain('combined value 3 or less');
       expect(surface).not.toContain('combined value 2 or less');
     }
+    expect(currentRulebook).toContain(
+      'combined value 3<!-- RULE-FACT:inquisition.purge.one_conviction_combined_value_max:number --> or less',
+    );
+    expect(currentRulebook).not.toContain('combined value 2 or less');
 
     expect(factionGuide).toContain('two or more give **2 Conviction total**');
     expect(doctrineReference).toContain('two or more give **2 Conviction total**');
