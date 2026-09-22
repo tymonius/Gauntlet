@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "release_version": "v0.7.2",
+  "name": "The Chief Justice",
+  "status": "candidate",
+  "authority_set_id": "a644061be1f605d0c83ff8b1cde7e0d5b6323ef01fa804dd720bdbae205b1b6b",
+  "frozen_on": "2026-09-22",
+  "staged_package_path": "releases/v0.7.2/",
+  "source_provenance": {
+    "source_version": "v0.7.2",
+    "base_version": "v0.7.1",
+    "current_game_authority": "packages/game-data/current-game.json",
+    "freeze_record": "config/v072-release-freeze.json"
+  },
+  "binding_sources": {
+    "complete_rules": {
+      "path": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
+      "sha256": "8b5381362fa9fe43d8c6e6f8a38d8db71727e713818732cdf42a1031f7dda352"
+    },
+    "canonical_data": {
+      "path": "releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
+      "sha256": "03947f64611a1aa70c21fd5322ef5b4c75f9b7c5571bbb24b143f7636bdbfb74"
+    },
+    "approved_starters": {
+      "path": "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
+      "sha256": "a6ae60566e3718bb64e076f11167070ef453d93a483d60bc245feca987d39111"
+    },
+    "source_provenance": {
+      "path": "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
+      "sha256": "cfb1fab61a4470475e1f678a082cc3f21e79f3cd6573d3e6243bf8104491f63e"
+    }
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "json_exports": 3,
+    "rules_documents": 1
+  },
+  "public_defaults": {
+    "website": "v0.7.1",
+    "browser_tools": "v0.7.1",
+    "rules_arbiter": "v0.7.1",
+    "digital_rules": "v0.7.1",
+    "rulebook": "v0.7.1"
+  },
+  "staged_routes": {
+    "rules_arbiter": "/api/v072/rules",
+    "health": "/api/v072/health",
+    "corpus_health": "/api/v072/corpus-health"
+  },
+  "json_exports": [
+    "Gauntlet_v0.7.2_Canonical_Data.json",
+    "Gauntlet_v0.7.2_Starter_Decks.json",
+    "Gauntlet_v0.7.2_Source_Provenance.json"
+  ]
+}
