@@ -104,9 +104,11 @@ import {
   buyV070DeedWithLineOfCredit,
   clampAllV070CapitalToLimits,
   consumeV070FinancialCapacityAction,
+  evaluateV070FinancialCapacityAtEndOfOpening,
   gainV070Capital,
   isV070FinancierPlayer,
   makeV070DeedUnowned,
+  markV070FinancialCapacityQualifyingAction,
   markV070FinancierFeatureActionSpent,
   placeV070CardInTreasury,
   removeV070CardFromTreasury,
@@ -116,6 +118,7 @@ import {
   v070DeedsOwned,
   v070ExecutiveHostileTakeoverTerritory,
   v070FinancialCapacityAvailable,
+  v070FinancialCapacityQualifyingActionThisTurn,
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
 import {
@@ -2251,9 +2254,13 @@ function spendTurnAction(
   playerId: PlayerId,
   financierFeatureName?: string,
   cardAction = false,
+  financialCapacityQualifyingActionName?: string,
 ): void {
   const turnState = requireTurnState(state);
   const financierFeature = Boolean(financierFeatureName);
+  const financialCapacityQualifier = Boolean(
+    financierFeatureName || financialCapacityQualifyingActionName,
+  );
 
   if (turnState.commandTentCardActionFirst
     && (turnState.phase === 'opening'
@@ -2273,6 +2280,12 @@ function spendTurnAction(
         playerId,
         financierFeatureName!,
       );
+    } else if (financialCapacityQualifyingActionName) {
+      markV070FinancialCapacityQualifyingAction(
+        state,
+        playerId,
+        financialCapacityQualifyingActionName,
+      );
     }
     return;
   } catch (error) {
@@ -2285,10 +2298,10 @@ function spendTurnAction(
       throw new V070GameActionError(message);
     }
 
-    if (!financierFeature
-      && !v070FinancierFeatureActionSpentThisTurn(state, playerId)) {
+    if (!financialCapacityQualifier
+      && !v070FinancialCapacityQualifyingActionThisTurn(state, playerId)) {
       throw new V070GameActionError(
-        'Financial Capacity’s additional Action requires at least one Action this turn to be spent on a Financier Faction Feature.',
+        'Financial Capacity’s additional Action requires Treasury, Deeds, Play the Market, or Hostile Takeover to be used this turn.',
       );
     }
 
@@ -2311,6 +2324,12 @@ function spendTurnAction(
         state,
         playerId,
         financierFeatureName!,
+      );
+    } else if (financialCapacityQualifyingActionName) {
+      markV070FinancialCapacityQualifyingAction(
+        state,
+        playerId,
+        financialCapacityQualifyingActionName,
       );
     }
   }
@@ -2465,6 +2484,35 @@ function intelligenceCompleteMission(
   }
 }
 
+function requireFinancierActionPhase(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const phase = requireTurnState(state).phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      'Treasury is legal only during Opening or Denouement.',
+    );
+  }
+  if (!isV070FinancierPlayer(state, playerId)) {
+    throw new V070GameActionError(
+      `${playerId} is not using the Financiers faction.`,
+    );
+  }
+}
+
+function requireFinancierOpening(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requirePhase(state, 'opening');
+  if (!isV070FinancierPlayer(state, playerId)) {
+    throw new V070GameActionError(
+      `${playerId} is not using the Financiers faction.`,
+    );
+  }
+}
+
 function requireFinancierDenouement(
   state: V070GameState,
   playerId: PlayerId,
@@ -2482,7 +2530,7 @@ function financierPlaceTreasury(
   playerId: PlayerId,
   cardInstanceId: string,
 ): void {
-  requireFinancierDenouement(state, playerId);
+  requireFinancierActionPhase(state, playerId);
   if (!state.players[playerId].zones.hand.includes(cardInstanceId)) {
     throw new V070GameActionError(
       'Treasury requires one card from your Hand.',
@@ -2586,7 +2634,13 @@ function financierHostileTakeover(
     );
   }
 
-  spendTurnAction(state, playerId);
+  spendTurnAction(
+    state,
+    playerId,
+    undefined,
+    false,
+    'Hostile Takeover',
+  );
   buyV070Deed(
     state,
     playerId,
@@ -2624,7 +2678,7 @@ function financierPlayMarket(
   cardInstanceId: string,
   roll: number,
 ): void {
-  requireFinancierDenouement(state, playerId);
+  requireFinancierOpening(state, playerId);
   if (!Number.isInteger(roll) || roll < 1 || roll > 6) {
     throw new V070GameActionError(
       'Play the Market requires an unmodified d6 result.',
@@ -9806,6 +9860,9 @@ function drawIntoHand(
 
 function passOpening(state: V070GameState, playerId: PlayerId): void {
   requirePhase(state, 'opening');
+  if (isV070FinancierPlayer(state, playerId)) {
+    evaluateV070FinancialCapacityAtEndOfOpening(state, playerId);
+  }
   const current = requireTurnState(state);
   const turnState = advanceV070TurnPhase(current);
   state.turnState = beginNormalV070Movement(

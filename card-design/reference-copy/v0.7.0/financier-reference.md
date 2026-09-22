@@ -1,6 +1,6 @@
-# Gauntlet v0.7.0 — Financier Reference Copy
+# Gauntlet v0.7.2 Candidate — Financier Reference Copy
 
-> **Player-aid copy, not faction-rule authority.** This file is deliberately authored for compact table lookup. It is audited against the complete v0.7.0 authorities and does not define mechanics independently.
+> **Player-aid copy, not faction-rule authority.** This file is deliberately authored for compact table lookup. It is audited against the complete current gameplay authority and does not define mechanics independently.
 >
 > Audit authority: `game-data/current-game.json`.
 >
@@ -18,16 +18,16 @@ Capital may exceed the limit temporarily. At the end of every turn, reduce Capit
 
 | Feature | Use |
 |---|---|
-| Treasury | 1 Action · Denouement |
+| Treasury | 1 Action · Opening or Denouement |
 | Deeds | 1 Action · Denouement · Current Deed cost |
-| Play the Market | 1 Action · Denouement · Discard 1 card |
+| Play the Market | 1 Action · Opening · Discard 1 card |
 | Subsidize | No Action · Before dice · Capital cost |
-| Financial Capacity | No Action · After Capture |
+| Financial Capacity | No Action · End of Opening |
 | Income | Automatic · After Capture |
 
 ### Treasury
 
-During Denouement, spend **1 Action** to place a card from your Hand face up in your Treasury. Its value increases your Capital limit.
+During **Opening or Denouement**, spend **1 Action** to place a card from your Hand face up in your Treasury. Its value increases your Capital limit.
 
 ### Income
 
@@ -35,9 +35,9 @@ After Capture at the start of your turn, gain **1 Capital per Deed** you own.
 
 ### Financial Capacity
 
-After Capture, if your Treasury value is greater than the number of Territories you control, you may take one Action in **Opening** and one Action in **Denouement** that turn.
+At the **end of Opening**, if your Treasury value is greater than the number of Territories you control, you may still take **1 Action in Denouement** after taking an Opening Action.
 
-At least one Action must be spent on a **Faction Feature marked 1 Action**.
+At least one Action that turn must be **Treasury, Deeds, Play the Market, or Hostile Takeover**.
 
 ## Reverse — Deeds & Spending
 
@@ -45,7 +45,7 @@ At least one Action must be spent on a **Faction Feature marked 1 Action**.
 
 During Denouement, spend **1 Action** and pay the Deed's full cost.
 
-**Base cost:** min(Deeds you own + 1, 6)
+**Base costs:** 1 / 2 / 4 / 6 / 8 / 10 for your 1st–6th Deeds.
 
 | Position | Modifier |
 |---|---:|
@@ -58,13 +58,15 @@ During Denouement, spend **1 Action** and pay the Deed's full cost.
 | Unowned | 0 |
 | Opposing Financier | + min(their Deeds, 6) |
 
-Minimum cost: **1 Capital**.
+**Same-turn surcharge:** +1 Capital for each Deed you already purchased or bought out this turn.
+
+Minimum final cost: **1 Capital**.
 
 If making several purchases, recalculate after each purchase.
 
 ### Play the Market
 
-During Denouement, spend **1 Action**, discard **1 card from Hand**, and roll:
+During **Opening**, spend **1 Action**, discard **1 card from Hand**, and roll:
 
 | Roll | Result |
 |---:|---|
@@ -88,4 +90,3 @@ Before dice are rolled, spend Capital to increase your battle total.
 ### Controlling Interest
 
 If you own the Deeds to **every Territory currently in the Gauntlet**, you win immediately.
-

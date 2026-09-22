@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
-const currentGame = JSON.parse(read('game-data/current-game.json'));
+const currentGame = JSON.parse(read('packages/game-data/current-game.json'));
 
 describe('Faction Feature Rulebook terminology', () => {
   const chapterHeadings: Record<string, string> = {
@@ -58,9 +58,9 @@ describe('Faction Feature Rulebook terminology', () => {
     const financiers = factionFeatureSection('financiers');
     expect(financiers).toContain('**Deeds — 1 Action · Denouement · Current Deed cost.**');
     expect(financiers).toContain('**Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total.');
-    expect(financiers).toContain('**Financial Capacity — No Action · After Capture.**');
+    expect(financiers).toContain('**Financial Capacity — No Action · End of Opening.**');
     expect(financiers).toContain('**Income — Automatic · After Capture.**');
-    expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability.');
+    expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability and explicitly qualifies for Financial Capacity.');
     expect(financiers).toContain('**Line of Credit** is the Banker\'s Leader Ability.');
 
     const intelligence = factionFeatureSection('intelligence');
@@ -113,6 +113,7 @@ describe('Faction Feature Rulebook terminology', () => {
       'Special Operations',
       'Surveillance',
       'Interference',
+      'Operational Capacity',
     ]);
     expect(currentGame.factionFeatures.inquisition).toContainEqual({
       name: 'Purge',

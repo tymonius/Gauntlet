@@ -1059,7 +1059,7 @@
             "faction.mystics.definition",
             "faction.inquisition.definition"
           ],
-          "reviewFingerprint": "663eadd23c6aa82b827a145c7678f9ffe6f209ca235460c8dba5d57a146c00e5"
+          "reviewFingerprint": "a8588661c335b2bf57e676e4d950391d336652c8da9ed0199c3de56c6ef572a8"
         },
         {
           "id": "deckbuilding",
@@ -1340,7 +1340,7 @@
             "faction.financiers.definition",
             "faction.financiers.features"
           ],
-          "reviewFingerprint": "60e98f4d573ad8f624dadc7f7d8ddd0ff2a914adeae97603ac329458e07604ac"
+          "reviewFingerprint": "bbc51d586e22e196a5cdf2434839f03f2d692a0f602aa6fae2096f721930a7c6"
         },
         {
           "id": "intelligence",
@@ -1456,7 +1456,7 @@
             "faction.diplomats.proposals",
             "faction.mystics.rites"
           ],
-          "reviewFingerprint": "986fd2514ea9b0d272bb290b7c94d73f63decbadd0bd7b1288c2ce4dc03b2a91"
+          "reviewFingerprint": "d8ac42456143bac1144a7abb6db0ce468137955f4758a324ea2632a01c2a8c8c"
         }
       ],
       "termRegistry": [
@@ -2793,7 +2793,7 @@
             "faction.financiers.features",
             "core.battlefield.victory"
           ],
-          "reviewFingerprint": "b3689d99f47bf5b75afb97865739debf3ca3947c853024c3ebcc065beda2fe2f"
+          "reviewFingerprint": "1e83b08a6965fe39130f8d87b7e089ddde469bea39388dc328bbc891d41f09c7"
         },
         {
           "id": "changes",
@@ -2803,7 +2803,7 @@
             "core.turn.actions",
             "core.turn.cleanup"
           ],
-          "reviewFingerprint": "60cc3c3d0b223dae8517e883348b16245ede3d32b1d75ae78c1d02d26d442e8a"
+          "reviewFingerprint": "cbe840ac0be06e25351004700c6cfb341223781dafc40d4126d92c9b77d17ad7"
         },
         {
           "id": "components",
@@ -2813,7 +2813,7 @@
             "faction.financiers.features",
             "core.components"
           ],
-          "reviewFingerprint": "7f03eb0ceabc4536bf212b6badfa9b5560d49c90e626c31ccf4b86a22f2ed5ad"
+          "reviewFingerprint": "dbc81cc1111df63b028b9758bd97f6938ee5c49403cfd051819b191f1c5546d9"
         },
         {
           "id": "resource",
@@ -2824,7 +2824,7 @@
             "core.turn.cleanup",
             "core.battlefield.capture"
           ],
-          "reviewFingerprint": "65f114568823ea994ca6ccd7d3190d5c099df5f45b8a8488d31978c087efc35b"
+          "reviewFingerprint": "5ebbb01c175ef9bc3857ab986e4e652b07f4cc12c29b40c8ef3eab98152f6026"
         },
         {
           "id": "features",
@@ -2838,7 +2838,7 @@
             "core.battlefield.front-line",
             "core.battle.battle-total"
           ],
-          "reviewFingerprint": "e06893e8cf6736ad1457ae67fa7480c8d1ad1406abffb09603d64d39e80b6a1c"
+          "reviewFingerprint": "58fdb560b1412f53c58c8ed40a03e7d9a6fcc67c6889dbd36bd7e79c53ac7b28"
         },
         {
           "id": "victory",
@@ -2848,7 +2848,7 @@
             "core.battlefield.victory",
             "core.battlefield.last-stand"
           ],
-          "reviewFingerprint": "1debe0306a4aca29e5a49ea69a98ba5eecbe55adfdd707ef3bed96d770903798"
+          "reviewFingerprint": "bcd7d853fc9bc0c93181a32764856f548cdea399ac77b0f082046f3ef195e6d6"
         },
         {
           "id": "leaders",
@@ -2859,7 +2859,7 @@
             "core.battlefield.capture",
             "core.battlefield.front-line"
           ],
-          "reviewFingerprint": "573ea6c1fde53e32d8a8259f46ff54e6aa25250904d519997010da153c08b6ae"
+          "reviewFingerprint": "ef4484c0aa6f90e1172b818d52d83c67891280f6b2acfe2bbc7ed49e77026f62"
         },
         {
           "id": "together",
@@ -2870,7 +2870,7 @@
             "core.battlefield.occupation",
             "core.turn.actions"
           ],
-          "reviewFingerprint": "71e6cab6bdefdd1fb9b8feac66da5c810330cb6321b05970f6f09a17dbf84cd8"
+          "reviewFingerprint": "064cd2bbfbc1ff59897486a18ed1712be8f24df87704a3a598a560999bc4d8db"
         },
         {
           "id": "first-game",
@@ -2881,7 +2881,7 @@
             "core.turn.cleanup",
             "core.battlefield.occupation"
           ],
-          "reviewFingerprint": "060c59b730f3fa832cb71c0dbb7f4a08295e027e3a85d1263c1bb81312464bf4"
+          "reviewFingerprint": "b0e307fcdbd758561f0f38aced5aa388da5d1f95e86296ed85267b3934115915"
         },
         {
           "id": "reference",

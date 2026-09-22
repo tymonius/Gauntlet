@@ -2,10 +2,10 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-const authority = JSON.parse(read('game-data/current-game.json'));
-const runtime = read('game-data/current-game.mjs');
-const sharedValidation = read('game-data/current-game-validation.mjs');
-const rulesetRuntime = read('game-data/ruleset.mjs');
+const authority = JSON.parse(read('packages/game-data/current-game.json'));
+const runtime = read('packages/game-data/current-game.mjs');
+const sharedValidation = read('packages/game-data/current-game-validation.mjs');
+const rulesetRuntime = read('packages/game-data/ruleset.mjs');
 const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
@@ -44,6 +44,8 @@ describe('complete current-game authority', () => {
     expect(authority.status).toBe('active-development');
     expect(authority.provenance.currentDevelopmentInputs.v072TimingAndCaptureCleanup)
       .toBe('/docs/v0.7.2-timing-and-capture-cleanup.json');
+    expect(authority.provenance.currentDevelopmentInputs.v072FinancierEconomy)
+      .toBe('/docs/v0.7.2-financier-action-economy.json');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');
     expect(authority.runtimePolicy).toContain('historical source and change documents are provenance only');
 
@@ -291,8 +293,27 @@ describe('complete current-game authority', () => {
     expect(rules.diplomats.peace_treaty_threshold).toBe(6);
     expect(rulebook).toContain('Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals');
     expect(rulebook).toContain('if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified');
-    expect(rules.financiers.faction_feature_action_phase).toBe('Denouement');
-    expect(rules.financiers.financial_capacity).toContain('Faction Feature marked 1 Action');
+    expect(rules.financiers.faction_feature_action_phase)
+      .toContain('Treasury — Opening or Denouement');
+    expect(rules.financiers.treasury.timing).toBe('Opening or Denouement');
+    expect(rules.financiers.play_the_market.timing).toBe('Opening');
+    expect(rules.financiers.financial_capacity_rules).toMatchObject({
+      timing: 'End of Opening.',
+      qualifying_features: [
+        'Treasury',
+        'Deeds',
+        'Play the Market',
+        'Hostile Takeover',
+      ],
+    });
+    expect(rules.financiers.deeds.cost).toMatchObject({
+      base: 'min(10, max(1, 2 × Deeds you own))',
+      same_turn_surcharge:
+        '+1 Capital for each Deed you have already successfully purchased or bought out this turn.',
+      minimum: 1,
+    });
+    expect(rules.financiers.deeds.cost.formula)
+      .toContain('Deeds already purchased or bought out this turn');
     expect(rules.intelligence.faction_features_1_action).toEqual([
       'Start Mission',
       'Complete Mission',
@@ -302,7 +323,55 @@ describe('complete current-game authority', () => {
     ]);
     expect(rules.intelligence.mission_control_classification).toBe('Leader Ability');
     expect(rules.inquisition.final_judgment_classification).toBe('Leader Ability');
-    expect(JSON.stringify(rules)).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
+    const activeRules = Object.fromEntries(
+      Object.entries(rules).map(([id, rule]: [string, any]) => {
+        const { normalization, ...mechanics } = rule;
+        return [id, mechanics];
+      }),
+    );
+    expect(JSON.stringify(activeRules)).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
+  });
+
+  it('locks the v0.7.2 Financier action economy and Deed scaling across authority and Rulebook', () => {
+    const rules = authority.gameplay.faction_rules.financiers;
+    const features = new Map(
+      authority.factionFeatures.financiers.map((feature: any) => [feature.name, feature]),
+    );
+    const executive = authority.leaders.find((leader: any) =>
+      leader.faction === 'financiers' && leader.id === 'executive'
+    );
+    const hostileTakeover = executive.sections.find((section: any) =>
+      section.name === 'Hostile Takeover'
+    );
+
+    expect(features.get('Treasury')).toMatchObject({
+      profile: '1 Action',
+      timing: 'Opening or Denouement',
+    });
+    expect(features.get('Play the Market')).toMatchObject({
+      profile: '1 Action',
+      timing: 'Opening',
+    });
+    expect(features.get('Deeds')).toMatchObject({
+      profile: '1 Action',
+      timing: 'Denouement',
+    });
+    expect(features.get('Financial Capacity')).toMatchObject({
+      profile: 'No Action',
+      timing: 'End of Opening',
+    });
+    expect(hostileTakeover?.financialCapacityQualifying).toBe(true);
+    expect(rules.deeds.cost.calculation_order).toEqual([
+      'base',
+      'position modifier',
+      'buyout premium',
+      'same-turn acquisition surcharge',
+      'minimum 1',
+    ]);
+
+    expect(rulebook).toContain('Base cost = min(10, max(1, 2 × Deeds you own))');
+    expect(rulebook).toContain('Same-turn acquisition surcharge = +1 Capital for each Deed you have already purchased or bought out this turn');
+    expect(rulebook).toContain('Hostile Takeover remains an Executive Leader Ability, not a shared Faction Feature');
   });
 
   it('keeps Faction Feature taxonomy and structured Leader mechanics authoritative', () => {
@@ -412,7 +481,7 @@ describe('complete current-game authority', () => {
     expect(sharedValidation).toContain('validateFactionFeatures(authority)');
     expect(sharedValidation).toContain('authority.leaders.forEach(validateLeader)');
 
-    expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json'");
+    expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'packages/game-data/current-game.json'");
     expect(nodeAuthority).toContain('export async function loadCurrentGameAuthority()');
     expect(nodeAuthority).toContain('validateSharedCurrentGameAuthority(authority)');
     expect(nodeAuthority).toContain('validateAuthorityEmbeddedFacts(authority)');
@@ -452,13 +521,13 @@ describe('complete current-game authority', () => {
     expect(artworkClient).toContain('const directions = authority?.artDirection');
     expect(artworkClient).not.toContain(['contents', 'tts', 'artwork-direction-overrides.js'].join('/'));
 
-    expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json')");
+    expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'packages', 'game-data', 'current-game.json')");
     expect(artworkServer).toContain('const next = { ...authority, artDirection: map }');
     expect(artworkServer).not.toContain("join(ROOT, 'tts', 'artwork-direction-overrides.js')");
 
     expect(artworkCompositor).toContain('game-data/current-game.json · artDirection');
     expect(artworkCompositor).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
-    expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
+    expect(livePublicationWorkflow).toContain("'packages/game-data/current-game.json'");
     expect(livePublicationWorkflow).not.toContain("['tts', 'artwork-direction-overrides.js'].join('/')");
   });
 

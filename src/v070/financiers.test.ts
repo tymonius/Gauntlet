@@ -116,7 +116,7 @@ function injectTreasuryCard(
   return instanceId;
 }
 
-describe('v0.7.0 Financier economy core', () => {
+describe('v0.7.2 Financier economy core', () => {
   test('Financiers begin with 2 Capital, an empty Treasury, and one unowned Deed per Territory', () => {
     const state = setupForFinancierB();
 
@@ -126,7 +126,9 @@ describe('v0.7.0 Financier economy core', () => {
       financialCapacityTurn: null,
       financialCapacityUsedTurn: null,
       financierFeatureActionSpentTurn: null,
+      financialCapacityQualifyingActionTurn: null,
       deedPurchaseTurn: null,
+      deedPurchasesThisTurn: 0,
       hostileTakeoverTurn: null,
       hostileTakeoverTerritoryInstanceId: null,
     });
@@ -149,7 +151,6 @@ describe('v0.7.0 Financier economy core', () => {
     );
     const limitBefore = v070CapitalLimit(state, 'B');
 
-    state = toDenouement(state);
     state = reduceV070TurnAction(state, {
       type: 'financier_place_treasury',
       playerId: 'B',
@@ -162,6 +163,7 @@ describe('v0.7.0 Financier economy core', () => {
     expect(state.players.B.zones.graveyard).not.toContain(card);
     expect(v070TreasuryValue(state, 'B')).toBe(5);
     expect(v070CapitalLimit(state, 'B')).toBe(limitBefore + 5);
+    expect(state.turnState?.phase).toBe('opening');
 
     const opponentView = viewV070GameForPlayer(state, 'A');
     expect(opponentView.players.B.financiers?.treasury).toContainEqual({
@@ -170,7 +172,7 @@ describe('v0.7.0 Financier economy core', () => {
     });
   });
 
-  test('Buy / Buy Out Deed uses the released capped cost formula and spends Capital', () => {
+  test('Buy / Buy Out Deed uses the v0.7.2 scaled cost formula and spends Capital', () => {
     let state = openingForFinancierB();
     state = toDenouement(state);
 
@@ -214,48 +216,36 @@ describe('v0.7.0 Financier economy core', () => {
     )).toBe(true);
   });
 
-  test('Financial Capacity supplies a cross-phase second Action only when a Financier Feature satisfies its condition', () => {
-    let state = setupForFinancierB();
-    injectTreasuryCard(
-      state,
-      'neutral-manifest-destiny',
-      'capacity',
-    );
-
-    state = reduceV070TurnAction(state, {
-      type: 'resolve_capture',
-      playerId: 'B',
-    });
-    expect(state.players.B.financiers?.financialCapacityTurn)
-      .toBe(state.turnNumber);
-
-    state = reduceV070TurnAction(state, {
-      type: 'draw_turn_card',
-      playerId: 'B',
-    });
-    const firstAction = injectHandCard(
-      state,
-      'neutral-rallying-cry',
-      'first-action',
-    );
+  test('an Opening Treasury deposit can establish Financial Capacity for a Denouement Action', () => {
+    let state = openingForFinancierB();
     const treasuryCard = injectHandCard(
       state,
-      'neutral-fealty',
+      'neutral-manifest-destiny',
       'capacity-feature',
     );
+    const secondAction = injectHandCard(
+      state,
+      'neutral-rallying-cry',
+      'capacity-second-action',
+    );
 
-    state = reduceV070TurnAction(state, {
-      type: 'play_action_card',
-      playerId: 'B',
-      cardInstanceId: firstAction,
-    });
-    expect(state.turnState?.actionsAvailable).toBe(0);
+    expect(state.players.B.financiers?.financialCapacityTurn).toBeNull();
 
-    state = toDenouement(state);
     state = reduceV070TurnAction(state, {
       type: 'financier_place_treasury',
       playerId: 'B',
       cardInstanceId: treasuryCard,
+    });
+    expect(state.players.B.financiers?.financialCapacityTurn).toBeNull();
+
+    state = toDenouement(state);
+    expect(state.players.B.financiers?.financialCapacityTurn)
+      .toBe(state.turnNumber);
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: secondAction,
     });
 
     expect(state.turnState?.actionsTaken).toEqual({
@@ -264,7 +254,7 @@ describe('v0.7.0 Financier economy core', () => {
     });
     expect(state.players.B.financiers?.financialCapacityUsedTurn)
       .toBe(state.turnNumber);
-    expect(state.players.B.financiers?.financierFeatureActionSpentTurn)
+    expect(state.players.B.financiers?.financialCapacityQualifyingActionTurn)
       .toBe(state.turnNumber);
   });
 
@@ -305,20 +295,19 @@ describe('v0.7.0 Financier economy core', () => {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: second,
-    })).toThrow(/Financial Capacity.*Financier Faction Feature/);
+    })).toThrow(/Financial Capacity.*Treasury.*Hostile Takeover/);
 
     expect(state.players.B.zones.hand).toContain(second);
     expect(state.players.B.financiers?.financialCapacityUsedTurn).toBeNull();
   });
 
-  test('Play the Market keeps excess Capital until Cleanup, then the public Capital limit is enforced', () => {
+  test('Play the Market in Opening keeps excess Capital until Cleanup, then the public Capital limit is enforced', () => {
     let state = openingForFinancierB();
     const wager = injectHandCard(
       state,
       'neutral-manifest-destiny',
       'market',
     );
-    state = toDenouement(state);
 
     state = reduceV070TurnAction(state, {
       type: 'financier_play_market',
@@ -330,6 +319,7 @@ describe('v0.7.0 Financier economy core', () => {
     expect(v070CapitalLimit(state, 'B')).toBe(3);
     expect(state.players.B.zones.discardPile).toContain(wager);
 
+    state = toDenouement(state);
     state = reduceV070TurnAction(state, {
       type: 'pass_denouement',
       playerId: 'B',
@@ -344,14 +334,13 @@ describe('v0.7.0 Financier economy core', () => {
     expect(state.players.B.financiers?.capital).toBe(3);
   });
 
-  test('a Play the Market roll of 1 moves the discarded card to Graveyard and gains no Capital', () => {
+  test('a Play the Market roll of 1 in Opening moves the discarded card to Graveyard and gains no Capital', () => {
     let state = openingForFinancierB();
     const wager = injectHandCard(
       state,
       'neutral-manifest-destiny',
       'market-loss',
     );
-    state = toDenouement(state);
 
     state = reduceV070TurnAction(state, {
       type: 'financier_play_market',
@@ -363,6 +352,37 @@ describe('v0.7.0 Financier economy core', () => {
     expect(state.players.B.financiers?.capital).toBe(2);
     expect(state.players.B.zones.discardPile).not.toContain(wager);
     expect(state.players.B.zones.graveyard).toContain(wager);
+  });
+
+  test('Deed base costs scale 1/2/4/6/8/10 and same-turn purchases add +0/+1/+2 surcharges', () => {
+    const state = setupForFinancierB();
+    state.players.B.financiers!.capital = 100;
+    const controlled = state.board.filter(item => item.controller === 'B');
+
+    expect(v070DeedCost(state, 'B', controlled[0].territoryInstanceId)).toBe(1);
+    buyV070Deed(state, 'B', controlled[0].territoryInstanceId, 'curve test');
+
+    expect(v070DeedCost(state, 'B', controlled[1].territoryInstanceId)).toBe(2);
+    buyV070Deed(state, 'B', controlled[1].territoryInstanceId, 'curve test');
+
+    expect(v070DeedCost(state, 'B', controlled[2].territoryInstanceId)).toBe(5);
+  });
+
+  test('Play the Market is not legal during Denouement', () => {
+    let state = openingForFinancierB();
+    const wager = injectHandCard(
+      state,
+      'neutral-manifest-destiny',
+      'market-denouement',
+    );
+    state = toDenouement(state);
+
+    expect(() => reduceV070TurnAction(state, {
+      type: 'financier_play_market',
+      playerId: 'B',
+      cardInstanceId: wager,
+      roll: 4,
+    })).toThrow(/opening/i);
   });
 
   test('owning every current Deed immediately wins through Controlling Interest', () => {

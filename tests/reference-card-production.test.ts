@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
@@ -59,7 +59,10 @@ describe('production faction reference cards', () => {
     expect(diplomatCopy).toContain('if **6 different Proposals** are ratified, you win.');
 
     const financierCopy = readFileSync(financier.source, 'utf8');
-    expect(financierCopy).toContain('**Base cost:** min(Deeds you own + 1, 6)');
+    expect(financierCopy).toContain('**Base costs:** 1 / 2 / 4 / 6 / 8 / 10');
+    expect(financierCopy).toContain('**Same-turn surcharge:** +1 Capital for each Deed you already purchased or bought out this turn.');
+    expect(financierCopy).toContain('| Treasury | 1 Action · Opening or Denouement |');
+    expect(financierCopy).toContain('| Play the Market | 1 Action · Opening · Discard 1 card |');
     expect(financierCopy).toContain('### Play the Market');
     expect(financierCopy).toContain('### Subsidize');
 
@@ -67,8 +70,8 @@ describe('production faction reference cards', () => {
     expect(mission.referenceFaces.reverse.title).toBe('Special Operations');
     expect(missionCopy).toContain('| Missions | 1 Action · Denouement |');
     expect(missionCopy).toContain('### Start a Mission');
-    expect(missionCopy).toContain('Increment **Operation Progress by 1**.');
-    expect(missionCopy).toContain('**Territories currently in the Gauntlet − card value**');
+    expect(missionCopy).toContain('Increase **Operation Progress by 1**');
+    expect(missionCopy).toContain('**Intel cost = Territories currently in the Gauntlet − card value, minimum 1**');
 
     const operationsCopy = readFileSync(operations.source, 'utf8');
     expect(operations.referenceFaces.reverse.title).toBe('Mirrors & Replacements');
