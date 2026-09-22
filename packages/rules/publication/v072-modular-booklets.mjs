@@ -81,6 +81,18 @@ export function v072BookletOutputPath(publication) {
   return `${V072_BOOKLET_OUTPUT_ROOT}/${publication.filename}`;
 }
 
+export function v072BookletReaderFilename(publication) {
+  const filename = String(publication?.filename || '');
+  if (!filename.endsWith('_Booklet.pdf')) {
+    throw new Error(`Cannot derive reader-order PDF filename from ${filename || "missing filename"}.`);
+  }
+  return filename.replace(/_Booklet\.pdf$/u, '_Reader.pdf');
+}
+
+export function v072BookletReaderOutputPath(publication) {
+  return `${V072_BOOKLET_OUTPUT_ROOT}/${v072BookletReaderFilename(publication)}`;
+}
+
 export function v072BookletManifestPath() {
   return `${V072_BOOKLET_OUTPUT_ROOT}/${V072_BOOKLET_MANIFEST}`;
 }
