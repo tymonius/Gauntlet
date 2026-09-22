@@ -18,7 +18,7 @@ describe('homepage Chief Justice rules support block', () => {
   it('uses the full Chief Justice artwork on the right side of the block', () => {
     const section = homepage.match(/<section id="rules-assistant"[\s\S]*?<\/section>/)?.[0] || '';
 
-    expect(section).toContain('/images/rules-arbiter/chief-justice-rules-arbiter.webp');
+    expect(section).toContain('/images/rules-arbiter/chief-justice-homepage.webp');
     expect(section).not.toContain('chief-justice-rules-arbiter-popup.webp');
     expect(section.indexOf('class="assistant-copy"')).toBeLessThan(section.indexOf('class="assistant-portrait"'));
     expect(styles).toMatch(/\.assistant-section\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+minmax\(300px,\s*400px\);/);
