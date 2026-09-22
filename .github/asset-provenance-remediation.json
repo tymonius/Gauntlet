@@ -669,41 +669,6 @@
           "path": "card-design/deed-ornamental-divider.svg"
         }
       ]
-    },
-    {
-      "id": "tmp-faction-guide-woodcuts-1843",
-      "description": "Temporary evidence batch used to materialize hashes for the six new faction-guide woodcuts in PR #1843.",
-      "defaults": {
-        "origin": "generated",
-        "creator": "OpenAI/ChatGPT image generation under Tymon Scott's direction",
-        "source": "Direct project-owner attestation on 2026-09-22: the six faction-guide leader-pair woodcuts were generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
-        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
-      },
-      "evidence_basis": {
-        "user_attestation": "Gauntlet project conversation, 2026-09-22, covering the six faction-guide leader-pair woodcuts.",
-        "identity_commit": "d0a45aef08b31c9165b46b8dab87aacc11ba5f74",
-        "rights_reference": "https://openai.com/policies/terms-of-use/"
-      },
-      "assets": [
-        {
-          "path": "images/woodcuts/factions/diplomats.png"
-        },
-        {
-          "path": "images/woodcuts/factions/financiers.png"
-        },
-        {
-          "path": "images/woodcuts/factions/inquisition.png"
-        },
-        {
-          "path": "images/woodcuts/factions/intelligence.png"
-        },
-        {
-          "path": "images/woodcuts/factions/military.png"
-        },
-        {
-          "path": "images/woodcuts/factions/mystics.png"
-        }
-      ]
     }
   ]
 }
