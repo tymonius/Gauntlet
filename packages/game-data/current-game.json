@@ -4761,7 +4761,9 @@
           "discard_pile_top": "The top of the Discard Pile is its most recently placed card.",
           "combined_value_choice_preserves_remaining_order": true,
           "two_phase_permission": "If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.",
-          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself."
+          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself.",
+          "one_conviction_combined_card_count_max": 2,
+          "one_conviction_combined_value_max": 3
         },
         "purification": {
           "timing": "After the opponent’s normal start-of-turn draw attempt.",
