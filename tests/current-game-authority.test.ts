@@ -527,7 +527,7 @@ describe('complete current-game authority', () => {
 
     expect(artworkCompositor).toContain('game-data/current-game.json · artDirection');
     expect(artworkCompositor).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
-    expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
+    expect(livePublicationWorkflow).toContain("'packages/game-data/current-game.json'");
     expect(livePublicationWorkflow).not.toContain("['tts', 'artwork-direction-overrides.js'].join('/')");
   });
 
