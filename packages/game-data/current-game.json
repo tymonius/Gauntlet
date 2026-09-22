@@ -25,7 +25,8 @@
       "v072BattleCommitmentOrderRestoration": "/docs/v0.7.2-battle-commitment-order-restoration.json",
       "v072SharedBaselineRestoration": "/docs/v0.7.2-shared-baseline-restoration.json",
       "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json",
-      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json"
+      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json",
+      "v072NewRecruitsLiquidity": "/docs/v0.7.2-new-recruits-liquidity.json"
     }
   },
   "visualPolicy": {
@@ -700,13 +701,13 @@
       },
       "Neutral": {
         "count": 52,
-        "total_value": 125,
+        "total_value": 126,
         "unique": [
           "Manifest Destiny"
         ],
         "cost_curve": {
-          "1": 11,
-          "2": 20,
+          "1": 10,
+          "2": 21,
           "3": 11,
           "4": 9,
           "5": 1
@@ -2476,7 +2477,7 @@
         "id": "neutral-new-recruits",
         "name": "New Recruits",
         "allegiance": "Neutral",
-        "cost": 1,
+        "cost": 2,
         "trait": null,
         "card_form": null,
         "unique": false,
@@ -2484,14 +2485,14 @@
         "effects": [
           {
             "label": "Action",
-            "text": "Discard one other card from your Hand, then +2 Cards."
+            "text": "Discard one other card from your Hand if able, then +3 Cards."
           },
           {
             "label": "Gambit/Tactic",
             "text": "+1 Battle Total."
           }
         ],
-        "action": "Discard one other card from your Hand, then +2 Cards.",
+        "action": "Discard one other card from your Hand if able, then +3 Cards.",
         "gambit_tactic": "+1 Battle Total."
       },
       {
@@ -6532,7 +6533,7 @@
           },
           {
             "name": "Pathfinders",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Rallying Cry",
@@ -6541,10 +6542,6 @@
           {
             "name": "Reinforcements",
             "quantity": 2
-          },
-          {
-            "name": "Reserve Force",
-            "quantity": 1
           },
           {
             "name": "Resourcefulness",
@@ -6600,7 +6597,7 @@
           },
           {
             "name": "Encampment",
-            "quantity": 2
+            "quantity": 1
           },
           {
             "name": "Field Command",
@@ -6628,7 +6625,7 @@
           },
           {
             "name": "Contingency Plan",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Entrenchment",
@@ -6715,12 +6712,8 @@
             "quantity": 3
           },
           {
-            "name": "Contraband",
-            "quantity": 1
-          },
-          {
             "name": "Counterintelligence",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Demilitarized Zone",
@@ -6847,12 +6840,8 @@
             "quantity": 1
           },
           {
-            "name": "Gunboat Diplomacy",
-            "quantity": 1
-          },
-          {
             "name": "Neutral Observers",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "New Recruits",
@@ -6935,10 +6924,6 @@
             "quantity": 1
           },
           {
-            "name": "Conscription",
-            "quantity": 1
-          },
-          {
             "name": "Corner the Market",
             "quantity": 1
           },
@@ -6976,11 +6961,11 @@
           },
           {
             "name": "Rallying Cry",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Second Line",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Speculation",
@@ -6989,10 +6974,6 @@
           {
             "name": "Supplies",
             "quantity": 3
-          },
-          {
-            "name": "Tactical Planning",
-            "quantity": 1
           },
           {
             "name": "Tariffs",
@@ -7032,7 +7013,7 @@
         "cards": [
           {
             "name": "Advance Guard",
-            "quantity": 2
+            "quantity": 1
           },
           {
             "name": "Capital Gains",
@@ -7080,19 +7061,15 @@
           },
           {
             "name": "Rallying Cry",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Reinforcements",
             "quantity": 1
           },
           {
-            "name": "Sabotage",
-            "quantity": 1
-          },
-          {
             "name": "Second Line",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Speculation",
@@ -7139,10 +7116,6 @@
             "quantity": 1
           },
           {
-            "name": "Contraband",
-            "quantity": 1
-          },
-          {
             "name": "Counterintelligence",
             "quantity": 1
           },
@@ -7180,7 +7153,7 @@
           },
           {
             "name": "Pathfinders",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Reconnaissance",
@@ -7252,7 +7225,7 @@
           },
           {
             "name": "Exfiltration",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Extraordinary Rendition",
@@ -7267,19 +7240,11 @@
             "quantity": 3
           },
           {
-            "name": "Operational Reassessment",
-            "quantity": 1
-          },
-          {
             "name": "Rallying Cry",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Reconnaissance",
-            "quantity": 1
-          },
-          {
-            "name": "Reinforcements",
             "quantity": 1
           },
           {
@@ -7399,12 +7364,8 @@
             "quantity": 1
           },
           {
-            "name": "Spirit Hollow",
-            "quantity": 1
-          },
-          {
             "name": "Supplies",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Threefold Vision",
@@ -7461,10 +7422,6 @@
             "quantity": 3
           },
           {
-            "name": "Entrenchment",
-            "quantity": 1
-          },
-          {
             "name": "Fate's Toll",
             "quantity": 2
           },
@@ -7502,7 +7459,7 @@
           },
           {
             "name": "Scouting Report",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Second Line",
@@ -7563,10 +7520,6 @@
             "quantity": 3
           },
           {
-            "name": "Act of Faith",
-            "quantity": 1
-          },
-          {
             "name": "Anathema",
             "quantity": 1
           },
@@ -7580,7 +7533,7 @@
           },
           {
             "name": "Counterintelligence",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Divine Mercy",
@@ -7611,10 +7564,6 @@
             "quantity": 3
           },
           {
-            "name": "Penance",
-            "quantity": 1
-          },
-          {
             "name": "Rallying Cry",
             "quantity": 3
           },
@@ -7628,7 +7577,7 @@
           },
           {
             "name": "Supplies",
-            "quantity": 2
+            "quantity": 3
           },
           {
             "name": "Tyranny",
@@ -7668,7 +7617,7 @@
           },
           {
             "name": "Contingency Plan",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Counterintelligence",
@@ -7681,10 +7630,6 @@
           {
             "name": "Divine Mercy",
             "quantity": 2
-          },
-          {
-            "name": "Entrenchment",
-            "quantity": 1
           },
           {
             "name": "Fealty",
