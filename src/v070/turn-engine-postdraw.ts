@@ -20,7 +20,7 @@ import {
 import {
   consumeV070FinancialCapacityAction,
   v070FinancialCapacityAvailable,
-  v070FinancierFeatureActionSpentThisTurn,
+  v070FinancialCapacityQualifyingActionThisTurn,
 } from './financiers';
 import {
   canOpenV070CompoundInterestAfterNormalDraw,
@@ -424,9 +424,9 @@ function spendInterruptedV070AssetAction(
       || !v070FinancialCapacityAvailable(state, playerId)) {
       throw new V070GameActionError(message);
     }
-    if (!v070FinancierFeatureActionSpentThisTurn(state, playerId)) {
+    if (!v070FinancialCapacityQualifyingActionThisTurn(state, playerId)) {
       throw new V070GameActionError(
-        'Financial Capacity’s additional Action requires at least one Action this turn to be spent on a Financier Faction Feature.',
+        'Financial Capacity’s additional Action requires Treasury, Deeds, Play the Market, or Hostile Takeover to be used this turn.',
       );
     }
 
