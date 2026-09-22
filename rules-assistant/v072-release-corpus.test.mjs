@@ -43,7 +43,7 @@ describe("frozen v0.7.2 release corpus", () => {
     expect(freeze.releaseVersion).toBe("v0.7.2");
     expect(freeze.status).toBe("frozen-release-candidate");
     expect(freeze.authoritySetId).toBe("ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84");
-    expect(freeze.sources.currentGame.gitBlob).toBe("163582f53725e377ad31336433457bb77cc8a43f");
+    expect(freeze.sources.currentGame.gitBlob).toBe("d584f7b019a6bad03eeef9fd282bc569b9ead740");
     expect(freeze.sources.completeRules.gitBlob).toBe("c5915af9aa9668ebaf20755a3755f5d12474c7a0");
   });
 
