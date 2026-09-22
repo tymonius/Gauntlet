@@ -22,7 +22,7 @@ export function defaultV072SourceUrls(origin = "https://gauntlet.run") {
     manifestUrl: `${base}/${V072_MANIFEST_SOURCE_PATH}`,
     provenanceUrl: `${base}/${V072_PROVENANCE_SOURCE_PATH}`,
     startersUrl: `${base}/${V072_STARTERS_SOURCE_PATH}`,
-    rulebookBrowserUrl: `${base}/rulebook/?rules=candidate&doc=complete-rules`,
+    rulebookBrowserUrl: `${base}/rulebook/?doc=complete-rules`,
   };
 }
 
@@ -94,10 +94,10 @@ export function validateV072ReleaseData({ canonicalData, manifest, provenance, c
   }
   if (
     manifest?.release_version !== V072_RULES_VERSION
-    || manifest?.status !== "candidate"
+    || !["candidate", "current"].includes(manifest?.status)
     || !manifest?.authority_set_id
   ) {
-    throw new Error("Staged v0.7.2 manifest is incomplete.");
+    throw new Error("v0.7.2 manifest is incomplete.");
   }
   if (
     provenance?.release_version !== V072_RULES_VERSION
@@ -199,7 +199,7 @@ export async function loadV072RulesCorpus(options = {}) {
     published: manifest.status === "current",
     candidate: manifest.status === "candidate",
     reconstruction: false,
-    currentPublicRelease: manifest.public_defaults?.rules_arbiter || "v0.7.1",
+    currentPublicRelease: manifest.public_defaults?.rules_arbiter || V072_RULES_VERSION,
     sourceVersion: V072_SOURCE_VERSION,
     authoritySetId: manifest.authority_set_id,
     manifest,
