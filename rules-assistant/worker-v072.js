@@ -340,7 +340,7 @@ export default {
           ok: true,
           service: "gauntlet-rules-assistant",
           version: RULES_VERSION,
-          currentPublicRelease: "v0.7.1",
+          currentPublicRelease: "v0.7.2",
           behaviorRevision: BEHAVIOR_REVISION,
           authoritySetId: corpus.authoritySetId || ""
         }, 200, origin);
@@ -366,8 +366,8 @@ export default {
         version: RULES_VERSION,
         versionLabel: V072_VERSION_LABEL,
         reconstruction: false,
-        published: false,
-        currentPublicRelease: "v0.7.1",
+        published: true,
+        currentPublicRelease: "v0.7.2",
         behaviorRevision: BEHAVIOR_REVISION,
         deterministicRuleAnswers: false,
         interactionLogging: Boolean(env.DB),
@@ -2046,8 +2046,8 @@ function answerResponse(result, origin) {
     version: RULES_VERSION,
     versionLabel: V072_VERSION_LABEL,
     reconstruction: false,
-    published: false,
-    currentPublicRelease: "v0.7.1",
+    published: true,
+    currentPublicRelease: "v0.7.2",
     behaviorRevision: BEHAVIOR_REVISION
   }, 200, origin);
 }
