@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
-  <link rel="stylesheet" href="styles.css?v=20260802-1" />
+  <link rel="stylesheet" href="styles.css?v=20260922-1" />
   <link rel="stylesheet" href="live-state.css?v=20260802-1" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
@@ -126,73 +126,15 @@
         </div>
       </section>
 
-      <section id="sharePanel" class="tracked-panel share-panel">
-        <div>
-          <p class="eyebrow">Invite the other player</p>
-          <h2>Both players use this game.</h2>
-          <p>Have the opponent scan the QR code or send the public link. Do not share a URL containing a review key.</p>
-          <div class="button-row">
-            <button id="copyJoinLink" type="button" class="button primary">Copy join link</button>
-            <button id="shareJoinLink" type="button" class="button secondary">Share</button>
-          </div>
-          <p id="shareStatus" class="form-status" aria-live="polite"></p>
-        </div>
-        <div id="qrCode" class="qr-code" aria-label="Tracked game QR code"><span>Preparing QR code…</span></div>
-      </section>
-
-      <section class="players-section" aria-labelledby="players-title">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Game seats</p><h2 id="players-title">The matchup.</h2></div>
-          <p>Each player joins from their own device. The saved faction and Leader from the Start page are suggested automatically.</p>
-        </div>
-        <div id="playerCards" class="player-cards"></div>
-      </section>
-
-      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transportTitle">
-        <div>
-          <p id="transportEyebrow" class="eyebrow">Play method</p>
-          <h2 id="transportTitle">Preparing the play handoff…</h2>
-          <p id="transportCopy"></p>
-          <p id="transportMatchup" class="transport-matchup"></p>
-        </div>
-        <div>
-          <div class="transport-actions">
-            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
-            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
-          </div>
-          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
-        </div>
-      </section>
-
-      <section id="joinPanel" class="tracked-panel form-panel" hidden>
-        <p class="eyebrow">Join this game</p>
-        <h2>Confirm your side.</h2>
-        <form id="joinForm">
-          <label>Your name<input id="joinName" type="text" maxlength="80" autocomplete="name" required /></label>
-          <div class="two-field-grid">
-            <label>Faction<select id="joinFaction" required></select></label>
-            <label>Leader<select id="joinLeader" required disabled></select></label>
-          </div>
-          <label>What made this faction or Leader appeal to you?
-            <textarea id="joinSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing."></textarea>
-          </label>
-          <button class="button primary" type="submit">Join game</button>
-          <p id="joinStatus" class="form-status" aria-live="polite"></p>
-        </form>
-      </section>
-
-      <section id="joinedPanel" class="tracked-panel joined-panel" hidden>
-        <div><p class="eyebrow">Your seat</p><h2 id="joinedHeading">You are connected.</h2><p id="joinedCopy"></p></div>
-        <button id="openArbiter" type="button" class="button primary">Ask the Rules Arbiter</button>
-      </section>
-
       <section id="playPanel" class="tracked-panel play-panel" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">Creator controls</p><h2>Record the shared milestones.</h2></div></div>
-        <p>The Rules Arbiter links questions automatically. Only the game creator records the start, factual notes, and shared result.</p>
-        <div class="button-row">
-          <button id="recordStart" type="button" class="button primary">Game started</button>
-          <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
-          <button id="showStoppedResult" type="button" class="button secondary">Game stopped</button>
+        <div class="lifecycle-controls-shell">
+          <div class="panel-heading"><div><p class="eyebrow">Creator controls</p><h2>What happens next?</h2></div></div>
+          <p class="lifecycle-controls-copy">Record the game start once setup is complete. When play ends, record the result here before the questionnaires.</p>
+          <div class="button-row lifecycle-actions">
+            <button id="recordStart" type="button" class="button primary">Start game</button>
+            <button id="showCompletedResult" type="button" class="button primary">Complete game</button>
+            <button id="showStoppedResult" type="button" class="button secondary">Stopped early</button>
+          </div>
         </div>
         <section class="companion-panel" aria-labelledby="companion-title">
           <div class="companion-heading">
@@ -257,6 +199,68 @@
         </details>
         <p id="eventStatus" class="form-status" aria-live="polite"></p>
       </section>
+
+      <section id="sharePanel" class="tracked-panel share-panel">
+        <div>
+          <p class="eyebrow">Invite the other player</p>
+          <h2>Both players use this game.</h2>
+          <p>Have the opponent scan the QR code or send the public link. Do not share a URL containing a review key.</p>
+          <div class="button-row">
+            <button id="copyJoinLink" type="button" class="button primary">Copy join link</button>
+            <button id="shareJoinLink" type="button" class="button secondary">Share</button>
+          </div>
+          <p id="shareStatus" class="form-status" aria-live="polite"></p>
+        </div>
+        <div id="qrCode" class="qr-code" aria-label="Tracked game QR code"><span>Preparing QR code…</span></div>
+      </section>
+
+      <section class="players-section" aria-labelledby="players-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Game seats</p><h2 id="players-title">The matchup.</h2></div>
+          <p>Each player joins from their own device. The saved faction and Leader from the Start page are suggested automatically.</p>
+        </div>
+        <div id="playerCards" class="player-cards"></div>
+      </section>
+
+      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transportTitle">
+        <div>
+          <p id="transportEyebrow" class="eyebrow">Play method</p>
+          <h2 id="transportTitle">Preparing the play handoff…</h2>
+          <p id="transportCopy"></p>
+          <p id="transportMatchup" class="transport-matchup"></p>
+        </div>
+        <div>
+          <div class="transport-actions">
+            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
+            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+          </div>
+          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
+        </div>
+      </section>
+
+      <section id="joinPanel" class="tracked-panel form-panel" hidden>
+        <p class="eyebrow">Join this game</p>
+        <h2>Confirm your side.</h2>
+        <form id="joinForm">
+          <label>Your name<input id="joinName" type="text" maxlength="80" autocomplete="name" required /></label>
+          <div class="two-field-grid">
+            <label>Faction<select id="joinFaction" required></select></label>
+            <label>Leader<select id="joinLeader" required disabled></select></label>
+          </div>
+          <label>What made this faction or Leader appeal to you?
+            <textarea id="joinSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing."></textarea>
+          </label>
+          <button class="button primary" type="submit">Join game</button>
+          <p id="joinStatus" class="form-status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="joinedPanel" class="tracked-panel joined-panel" hidden>
+        <div><p class="eyebrow">Your seat</p><h2 id="joinedHeading">You are connected.</h2><p id="joinedCopy"></p></div>
+        <button id="openArbiter" type="button" class="button primary">Ask the Rules Arbiter</button>
+      </section>
+
+
 
       <section id="resultSection" class="feedback-section" hidden aria-labelledby="result-title">
         <div class="section-heading split-heading">
