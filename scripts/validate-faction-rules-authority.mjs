@@ -122,7 +122,7 @@ for (const name of ['Rites', 'Invocation', 'Transmutation', 'Convergence', 'Ritu
 // Inquisition
 const inquisition = factionRules.inquisition;
 invariant(inquisition.conviction?.starting === 0 && inquisition.conviction?.minimum === 0 && inquisition.conviction?.maximum === 4, 'Conviction bounds drifted.');
-invariant(inquisition.conviction?.once_per_turn === true && inquisition.conviction?.per_qualifying_aftermath_gain === 1 && inquisition.conviction?.two_or_more_cards_gain === 2, 'Normal Conviction gain scaling drifted.');
+invariant(inquisition.conviction?.once_per_turn === true && inquisition.conviction?.gain_by_opposing_card_count?.exactly_one === 1 && inquisition.conviction?.gain_by_opposing_card_count?.two_or_more === 2, 'Normal Conviction gain scaling drifted.');
 invariant(inquisition.condemnation?.remaining_reserve_unchanged === true, 'Condemnation must not change unused Reserve cleanup.');
 invariant(inquisition.blasphemy?.separate_from_normal_conviction_gain === true, 'Blasphemy independence from normal Conviction gain is missing.');
 invariant(Object.keys(inquisition.purge?.options || {}).sort().join(',') === '1,2,3,4', 'Purge option table is incomplete.');
