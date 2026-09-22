@@ -58,13 +58,13 @@ Conviction is the resource you spend on Purge and, as the Witch Hunter, on Relen
 
 ### Normal Conviction gain
 
-**Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction**, up to the maximum of 4.
+**Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction** if exactly one opposing card entered, or **2 Conviction** if two or more entered, up to the maximum of 4.
 
 Important details:
 
 - this can happen during **either player's turn**;
 - you do not need to win the battle;
-- several opposing cards entering the Graveyard in the same Aftermath still give only **1 Conviction total** from this normal gain; and
+- exactly one opposing card entering the Graveyard in that Aftermath gives **1 Conviction**; two or more give **2 Conviction total**, no matter how many additional cards entered; and
 - once the normal gain has happened during that turn, another qualifying battle that same turn does not give another normal Conviction.
 
 Opposing Gambits already go to the Graveyard under the shared battle rules. Condemnation makes opposing Tactics go there too, so an opponent who commits battle cards against you is often feeding the Conviction engine.
@@ -97,14 +97,14 @@ Because opposing Gambits already go to the Graveyard, Condemnation can make both
 
 | Conviction | Purge effect |
 |---:|---|
-| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; **or** choose up to two cards there with combined value 2 or less and put them in their Graveyard. |
+| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; **or** choose up to two cards there with combined value 3 or less and put them in their Graveyard. |
 | 2 | Choose one opposing Asset and put it in its owner's Graveyard. |
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand; choose one card and put it in their Graveyard. |
 
 A Purge is a **Faction Feature**, not a card play.
 
-For the 1-Conviction Purge, the top of the Discard Pile is its most recently placed card. If you choose cards by combined value instead, add their printed values; their total must be 2 or less. Choosing cards from the Discard Pile does not reorder the cards that remain.
+For the 1-Conviction Purge, the top of the Discard Pile is its most recently placed card. If you choose cards by combined value instead, add their printed values; their total must be 3 or less. Choosing cards from the Discard Pile does not reorder the cards that remain.
 
 ### Purge and your two Action phases
 
@@ -201,14 +201,14 @@ Suppose you are the **Grand Inquisitor** and have **1 Conviction** when the oppo
 
 The opponent sets a Gambit and chooses an **Arcane Tactic**. When that Arcane Tactic is revealed, **Blasphemy** gives you 1 Conviction. Move the tracker from 1 to **2**.
 
-You win the battle. During the Aftermath, the opponent's Gambit goes to their Graveyard normally. **Condemnation** sends their Tactic to the Graveyard instead of the Discard Pile. This is the first qualifying Aftermath of the turn, so the normal Conviction feature gives you **1 Conviction total** for those opposing cards—not one for each card. Move the tracker from 2 to **3**.
+You win the battle. During the Aftermath, the opponent's Gambit goes to their Graveyard normally. **Condemnation** sends their Tactic to the Graveyard instead of the Discard Pile. This is the first qualifying Aftermath of the turn, and two opposing cards entered the Graveyard, so the normal Conviction feature gives you **2 Conviction total**. Move the tracker from 2 to the maximum of **4**.
 
-After the battle cards are cleared, **Final Judgment** can immediately Purge. You choose the normal 4-Conviction Purge that reveals the opponent's Hand and lets you put one chosen card there in the Graveyard. Final Judgment reduces that cost from 4 to **3 Conviction**, so you spend all 3 and move the tracker to **0**.
+After the battle cards are cleared, **Final Judgment** can immediately Purge. You choose the normal 4-Conviction Purge that reveals the opponent's Hand and lets you put one chosen card there in the Graveyard. Final Judgment reduces that cost from 4 to **3 Conviction**, so you spend 3 and move the tracker from 4 to **1**.
 
 That one battle therefore did three different things:
 
 - Blasphemy rewarded the opposing Arcane reveal;
-- the Aftermath produced the normal once-per-turn Conviction gain; and
+- the Aftermath produced the normal once-per-turn **2 Conviction** gain for two opposing cards entering the Graveyard; and
 - Final Judgment converted the victory and newly available Conviction into immediate removal from Hand.
 
 Because Final Judgment's Purge was directly permitted rather than taken as an Action, it did not spend an Action or activate Purge's two-phase Action permission.
@@ -218,7 +218,7 @@ Because Final Judgment's Purge was directly permitted rather than taken as an Ac
 
 For your first Inquisition game, keep five ideas in mind:
 
-1. **Conviction normally comes from the first qualifying Aftermath each turn, not from each card.** Several opposing cards entering the Graveyard together still give only 1 normal Conviction.
+1. **Conviction normally comes from the first qualifying Aftermath each turn, not from each card.** Exactly one opposing card entering the Graveyard gives 1 normal Conviction; two or more give 2 total.
 2. **Condemnation changes Tactic cleanup.** Opposing Tactics go to the Graveyard during the Aftermath; remaining Reserve cards still discard normally.
 3. **Blasphemy is a separate Conviction source.** Opposing Arcane Actions and revealed Arcane Gambits or Tactics can gain Conviction outside the normal Aftermath limit.
 4. **An Action Purge can give you two Actions that turn, but only across the two different Action phases.** Never take two Actions in one phase because of Purge.
@@ -232,7 +232,7 @@ Choose the **Witch Hunter** if you want to hold Conviction as a threat and turn 
 
 ### Common mistakes
 
-Do not gain one normal Conviction for every opposing card that enters the Graveyard in an Aftermath. The normal feature gives only **1 total**, and only the first qualifying Aftermath each turn.
+Do not gain one normal Conviction for every opposing card that enters the Graveyard in an Aftermath. The first qualifying Aftermath each turn gives **1** for exactly one opposing card or **2 total** for two or more.
 
 Do not send the opponent's unused Reserve cards to the Graveyard because of Condemnation. Condemnation changes opposing **Tactics**, not the rest of Reserve.
 
