@@ -21,10 +21,10 @@
 
 Begin at **0**. Maximum **4**.
 
-The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction**.
+The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain **1 Conviction** if exactly one opposing card entered, or **2 Conviction** if two or more entered.
 
 - This may occur during either player's turn.
-- Several qualifying cards from the same battle give **1 Conviction total**.
+- Exactly one qualifying opposing card gives **1 Conviction**; two or more give **2 Conviction total**.
 
 ### Condemnation
 

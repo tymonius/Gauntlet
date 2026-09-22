@@ -205,9 +205,24 @@ jobs:
           release_dir="$RUNNER_TEMP/gauntlet-tts-release"
           rm -rf "$release_dir"
           mkdir -p "$release_dir"
-          gh release download "$TTS_RELEASE_TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --dir "$release_dir"
+
+          for attempt in 1 2 3; do
+            if gh release download "$TTS_RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --dir "$release_dir"; then
+              break
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "Failed to download approved TTS release assets after $attempt attempts."
+              exit 1
+            fi
+
+            echo "GitHub release-asset download failed on attempt $attempt; retrying..."
+            rm -rf "$release_dir"
+            mkdir -p "$release_dir"
+            sleep $((attempt * 5))
+          done
 
           test -s "$release_dir/$TTS_PREVIEW_SAVE"
           count="$(find "$release_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
