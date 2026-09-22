@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
