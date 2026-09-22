@@ -87,25 +87,22 @@ Income can temporarily take you above your Capital Limit. You do not reduce exce
 
 ### Financial Capacity
 
-After Capture and before Draw, compare the total card value in your Treasury with the number of Territories you control.
+At the **end of Opening**, compare the total card value in your Treasury with the number of Territories you control.
 
-If **Treasury value is greater than Territories controlled**, Financial Capacity applies for that turn. You may take:
+If **Treasury value is greater than Territories controlled**, Financial Capacity applies for that turn. You may take one Action during **Denouement** even if you already took an Action during **Opening**.
 
-- one Action during **Opening**; and
-- one Action during **Denouement**.
+You still cannot take two Actions in the same phase. At least one Action that turn must be **Treasury, buying or buying out a Deed, Play the Market, or Hostile Takeover**. Hostile Takeover remains an Executive Leader Ability rather than a shared Faction Feature, but it explicitly qualifies for Financial Capacity.
 
-You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a **Financier Faction Feature marked 1 Action**: Treasury, buying or buying out a Deed, or Play the Market. **Hostile Takeover is an Executive Leader Ability, not a shared Faction Feature, so using it does not by itself satisfy this requirement.**
+Determine Financial Capacity once at the end of Opening. A Treasury deposit made during Opening can therefore establish Financial Capacity for that same turn. Changes after Opening do not grant or remove the permission for that turn.
 
-Determine Financial Capacity once at this timing. If your Treasury value or Territory control changes later in the turn, that does not grant or remove the permission for that turn.
-
-Financial Capacity rewards an economy whose Treasury has grown larger than its territorial base. It does not give you two unrestricted Actions at any time you choose; it specifically opens one Action window in each Action phase and requires at least one Financier Faction Feature.
+Financial Capacity rewards an economy whose Treasury has grown larger than its territorial base. It opens a second cross-phase Action window; it does not permit two Actions in one phase.
 
 <!-- RULES-SECTION:features -->
 ## 4. Treasury, Deeds, and Financier Features
 
 ### Treasury
 
-**Treasury — 1 Action · Denouement.** Place one card from your Hand face up in your Treasury.
+**Treasury — 1 Action · Opening or Denouement.** Place one card from your Hand face up in your Treasury.
 
 The card's value is added to your Capital Limit for as long as it remains there. Treasury cards do not generate Capital by themselves and are not Assets. They remain visible and cannot normally be played or affected unless a rule specifically refers to the Treasury.
 
@@ -121,14 +118,17 @@ Deed ownership is independent of **control**, **occupation**, and Player Token p
 
 To price a Deed in ordinary language:
 
-1. Start with **one more than the number of Deeds you already own**. Once that starting number reaches 6, it stays at 6.
+1. Find the **base cost** from how many Deeds you already own: **1, 2, 4, 6, 8, 10** for your first through sixth Deed. Equivalently, the base is 1 when you own none; otherwise it is twice the number you own, capped at 10.
 2. Adjust for your relationship to the Territory: **subtract 1** if you control it, **add nothing** if you occupy it, or **add 1** if you neither control nor occupy it.
 3. **Only when the Deed is owned by another Financier**, add the buyout premium: the number of Deeds that opposing Financier owns, capped at 6.
-4. The final price can never be lower than **1 Capital**.
+4. Add the **same-turn acquisition surcharge**: **+1 Capital for each Deed you have already successfully purchased or bought out this turn**.
+5. The final price can never be lower than **1 Capital**.
 
 The compact formula is:
 
-> **Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium**
+> **Deed cost = max(1, base cost + position modifier + buyout premium + Deeds already purchased this turn)**
+
+where **base cost = min(10, max(1, 2 × Deeds you own))**.
 
 | Your relationship to that Territory | Modifier |
 |---|---:|
@@ -142,13 +142,13 @@ In a **Financier mirror**, if the opposing Financier owns the Deed, add a buyout
 
 > **Buyout premium = min(Deeds the opposing Financier owns, 6)**
 
-If an effect lets you make several purchases, finish each purchase before calculating the next one. Your Deed count may have changed, so the next price may be different.
+If an effect lets you make several purchases, finish each purchase before calculating the next one. Your Deed count may have changed, and every prior successful purchase or buyout that turn adds another +1 Capital to the next purchase. This surcharge applies regardless of the purchase source, including Deeds, Hostile Takeover, Corner the Market, Liquidation, Leveraged Buyout, or another effect.
 
 > **Remember:** A Deed is ownership, not Territory control. It gives you income and counts toward Controlling Interest, but it does not move your Front Line by itself.
 
 ### Play the Market
 
-**Play the Market — 1 Action · Denouement.** Discard one card from your Hand, roll one die, and resolve the result:
+**Play the Market — 1 Action · Opening.** Discard one card from your Hand, roll one die, and resolve the result:
 
 | Roll | Result |
 |---:|---|
@@ -157,7 +157,7 @@ If an effect lets you make several purchases, finish each purchase before calcul
 | 4–5 | Gain Capital equal to the card's value. |
 | 6 | Gain Capital equal to twice the card's value. |
 
-Play the Market converts a card into uncertain liquidity. It can fund a purchase you otherwise could not afford, but the die determines how much value you actually get.
+Play the Market converts a card into uncertain liquidity before Movement. Its Capital can fund Subsidize during a battle or a Deed purchase later that turn, but the die determines how much value you actually get.
 
 ### Subsidize
 
@@ -218,7 +218,7 @@ The Banker rewards planning. Before spending a card as collateral, ask whether i
 
 **Motto:** *Take the ground. Close the deal.*
 
-- **Hostile Takeover — 1 Action · Denouement · After winning as attacker.** If you won a battle as the attacker that turn and are occupying that enemy Territory, buy or buy out its Deed. Treat yourself as the occupier for the purchase cost. If the purchase succeeds, capture that Territory, if able.
+- **Hostile Takeover — 1 Action · Denouement · After winning as attacker.** If you won a battle as the attacker that turn and are occupying that enemy Territory, buy or buy out its Deed. Treat yourself as the occupier for the purchase cost. If the purchase succeeds, capture that Territory, if able. Hostile Takeover qualifies as the required Financier economic Action for Financial Capacity.
 
 Hostile Takeover links the two maps together. An attack can create occupation, occupation avoids the +1 remote-purchase modifier, and a successful purchase can then convert that battlefield position into normal Territory control when the capture is legal.
 
@@ -235,11 +235,11 @@ At the start of your turn, after Capture, your two Deeds generate **2 Capital**,
 
 Your Treasury value is 4 and you control 2 Territories. Because 4 is greater than 2, **Financial Capacity** applies this turn. You may take one Action during Opening and one during Denouement, provided at least one is spent on a Financier Faction Feature marked 1 Action.
 
-Assume you use your Opening Action normally, then reach Denouement while occupying an enemy Territory whose Deed is unowned. You use your Denouement Action to buy that Deed.
+Assume you use your Opening Action normally. At the end of Opening, your Treasury value is still 4 and you still control 2 Territories, so Financial Capacity applies. You then reach Denouement while occupying an enemy Territory whose Deed is unowned and use your Denouement Action to buy that Deed.
 
-You already own 2 Deeds, so start with **3 Capital** for the base price. You occupy the Territory, so there is no position adjustment. The Deed is unowned, so there is no buyout premium. The final cost is therefore **3 Capital**.
+You already own 2 Deeds, so the base price is **4 Capital**. You occupy the Territory, so there is no position adjustment. The Deed is unowned, so there is no buyout premium, and this is your first Deed purchase this turn, so there is no same-turn surcharge. The final cost is therefore **4 Capital**.
 
-Spend 3 Capital, moving the Ledger from 5 to **2**, and place a Deed Card beside that Territory on your side. You now own 3 Deeds. Your Capital Limit remains 6 because buying a Deed does not itself change Territory control or Treasury value.
+Spend 4 Capital, moving the Ledger from 5 to **1**, and place a Deed Card beside that Territory on your side. You now own 3 Deeds. Your Capital Limit remains 6 because buying a Deed does not itself change Territory control or Treasury value.
 
 That purchase improves future income and moves you closer to Controlling Interest, while the Treasury you built earlier created the Action structure and capacity that made the turn possible.
 
@@ -251,7 +251,7 @@ For your first Financier game, keep four ideas in mind:
 1. **Track Capital and Capital Limit separately.** The Ledger shows what you can spend now. The Capital Limit Tracker shows what you can keep at the end of the turn.
 2. **Treasury is capacity, not income.** A Treasury card raises your Capital Limit and can help activate Financial Capacity, but it does not generate Capital by itself.
 3. **Deeds are not Territory control.** Owning a Deed produces income and counts toward Controlling Interest even if the opponent controls the Territory. Controlling a Territory makes its Deed cheaper to buy but does not make you its owner automatically.
-4. **Plan your Denouement before spending your Action.** Treasury, Deed purchases, and Play the Market all compete for the same normal Denouement Action. Financial Capacity can give you more room, but only when your Treasury is large enough and you satisfy its Faction Feature requirement.
+4. **Plan the whole turn before spending your Opening Action.** Play the Market is Opening-only, Treasury may be used in Opening or Denouement, and Deed purchases occur in Denouement. Financial Capacity can connect those phases when your Treasury is large enough.
 
 ### Choosing your first Leader
 
