@@ -77,6 +77,8 @@ describe('v0.7.2 Inquisition Purification tuning', () => {
 
     expect(factionGuide).toContain('two or more give **2 Conviction total**');
     expect(doctrineReference).toContain('two or more give **2 Conviction total**');
-    expect(currentRulebook).toContain('two or more produce 2 total');
+    expect(currentRulebook).toContain(
+      'two or more produce 2<!-- RULE-FACT:inquisition.conviction.two_or_more_gain:number --> total',
+    );
   });
 });
