@@ -115,13 +115,19 @@ export function deriveRuleFacts(authority) {
       /\bgain\s+(\d+)\s+Conviction\b/i,
       'Inquisition Conviction gain',
     ),
-    'inquisition.conviction.two_or_more_gain': Number(
-      authority?.gameplay?.faction_rules?.inquisition?.conviction?.gain_by_opposing_card_count?.two_or_more,
-    ),
-    'inquisition.purge.one_conviction_combined_value_max': Number(
-      authority?.gameplay?.faction_rules?.inquisition?.purge?.one_conviction_combined_value_max,
-    ),
   };
+
+  const inquisitionTwoOrMoreGain =
+    authority?.gameplay?.faction_rules?.inquisition?.conviction?.gain_by_opposing_card_count?.two_or_more;
+  if (Number.isInteger(inquisitionTwoOrMoreGain) && inquisitionTwoOrMoreGain >= 0) {
+    facts['inquisition.conviction.two_or_more_gain'] = inquisitionTwoOrMoreGain;
+  }
+
+  const oneConvictionPurgeValueMax =
+    authority?.gameplay?.faction_rules?.inquisition?.purge?.one_conviction_combined_value_max;
+  if (Number.isInteger(oneConvictionPurgeValueMax) && oneConvictionPurgeValueMax >= 0) {
+    facts['inquisition.purge.one_conviction_combined_value_max'] = oneConvictionPurgeValueMax;
+  }
 
   const rites = authority?.mystics?.rites;
   if (Array.isArray(rites)) facts['mystics.rites.count'] = rites.length;
