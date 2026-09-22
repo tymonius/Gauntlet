@@ -23,8 +23,12 @@ The v0.7.2 candidate build regenerates the data-driven TTS surfaces from the fro
 - the updated New Recruits face and all twelve resulting starter Deck substitutions;
 - current Financier references for the action-economy and Deed-pricing changes;
 - current Intelligence references for recurring Intel and Operational Capacity;
-- current Inquisition references for Conviction/Purge tuning; and
+- current Inquisition references for Conviction/Purge tuning;
+- all six faction guides as sequential Half Letter reader-order PDFs packaged inside each matching starter Bag;
+- the Player's Guide and Complete Rules as shared reader-order Custom PDF objects on the table; and
 - every other card/Leader/reference text change already present in the frozen v0.7.2 authority.
+
+The TTS package must never use the Letter-landscape saddle-stitch `*_Booklet.pdf` outputs for these documents. Those remain physical-print impositions; TTS stages the corresponding sequential `*_Reader.pdf` files generated from the same approved modular publication composition.
 
 Candidate hands-on QA is tracked at `tts/release-qa/v0.7.2-candidate.json`. All 18 checks begin false and `approvedForWorkshop` is false.
 
