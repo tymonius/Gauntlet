@@ -230,12 +230,14 @@ export default {
 
     if (
       request.method === "GET" &&
-      [
-        "/corpus-health",
-        "/api/corpus-health",
-        "/v071/corpus-health",
-        "/api/v071/corpus-health"
-      ].includes(url.pathname)
+      ["/corpus-health", "/api/corpus-health"].includes(url.pathname)
+    ) {
+      return v072Worker.fetch(request, env, context);
+    }
+
+    if (
+      request.method === "GET" &&
+      ["/v071/corpus-health", "/api/v071/corpus-health"].includes(url.pathname)
     ) {
       return worker.fetch(request, env, context);
     }
@@ -248,15 +250,16 @@ export default {
     }
 
     // The unversioned public Rules Arbiter follows the current canonical release.
-    if (url.pathname === "/api/health" || url.pathname === "/health") return worker.fetch(request, env, context);
+    if (url.pathname === "/api/health" || url.pathname === "/health") return v072Worker.fetch(request, env, context);
 
-    // Preserve historical clients while the unversioned route advances to v0.7.1.
+    // Preserve historical clients while the unversioned route follows v0.7.2.
     if (url.pathname === "/api/rules" || url.pathname === "/rules") {
       const requestedVersion = await requestedRulesVersion(request);
       if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, withoutPaidModel(env), context);
       if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, withoutPaidModel(env), context);
       if (requestedVersion === "v0.7.0") return v070Worker.fetch(request, withoutPaidModel(env), context);
-      return worker.fetch(request, env, context);
+      if (requestedVersion === "v0.7.1") return worker.fetch(request, env, context);
+      return v072Worker.fetch(request, env, context);
     }
 
     // Withdrawn v0.6.2 remains explicitly addressable as historical evidence, never as the default.
