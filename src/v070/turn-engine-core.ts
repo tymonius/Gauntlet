@@ -1525,16 +1525,7 @@ function marginLoanCollateralValue(
     state,
     hostInstanceId,
   );
-  const cardId = state.cardInstances[collateralInstanceId]?.cardId;
-  const card = cardId
-    ? v070CanonicalContent.cardsById.get(cardId)
-    : undefined;
-  if (!card) {
-    throw new V070GameActionError(
-      'Margin Loan collateral must be a known canonical card.',
-    );
-  }
-  return card.cost;
+  return v070CardValue(state, collateralInstanceId);
 }
 
 function openMarginLoanAfterIncomeChoice(
@@ -2573,7 +2564,7 @@ function financierBuyDeed(
     if (!card) {
       throw new V070GameActionError('Line of Credit requires a known collateral card.');
     }
-    const collateralContribution = Math.min(card.cost, Math.floor(cost / 2));
+    const collateralContribution = Math.min(v070CardValue(state, collateralInstanceId), Math.floor(cost / 2));
     const capitalRequired = Math.max(0, cost - collateralContribution);
     if (capital < capitalRequired) {
       throw new V070GameActionError(
@@ -2700,6 +2691,7 @@ function financierPlayMarket(
     );
   }
 
+  const cardValue = v070CardValue(state, cardInstanceId);
   spendTurnAction(state, playerId, 'Play the Market');
 
   player.zones.hand.splice(handIndex, 1);
@@ -2711,7 +2703,7 @@ function financierPlayMarket(
     payload: {
       cardInstanceId,
       cardId,
-      value: card.cost,
+      value: cardValue,
       roll,
     },
   });
@@ -2734,8 +2726,8 @@ function financierPlayMarket(
   const gain = roll <= 3
     ? 1
     : roll <= 5
-      ? card.cost
-      : card.cost * 2;
+      ? cardValue
+      : cardValue * 2;
   gainV070Capital(
     state,
     playerId,
@@ -2973,12 +2965,6 @@ function playActionCard(
     && player.zones.hand.length < 2) {
     throw new V070GameActionError(
       "Fate's Toll requires one other card in your Hand.",
-    );
-  }
-  if (card.id === 'neutral-new-recruits'
-    && player.zones.hand.length < 2) {
-    throw new V070GameActionError(
-      'New Recruits requires one other card in your Hand.',
     );
   }
   if (card.id === 'neutral-requisition'
@@ -3835,13 +3821,18 @@ function continuePendingActionCard(state: V070GameState): void {
       );
       return;
     case 'neutral-new-recruits':
+      if (state.players[pending.playerId].zones.hand.length === 0) {
+        drawIntoHand(state, pending.playerId, 3, 'New Recruits');
+        finishPendingActionCard(state);
+        return;
+      }
       if (!openHandDestinationChoice(
         state,
         pending.playerId,
         pending.instanceId,
         'New Recruits',
         'discard',
-        2,
+        3,
       )) {
         finishPendingActionCard(state);
       }
@@ -5654,6 +5645,7 @@ function v070CardValue(
   instanceId: string,
 ): number {
   const cardId = state.cardInstances[instanceId]?.cardId;
+  if (cardId === 'neutral-new-recruits') return 2;
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
   if (!card || typeof card.cost !== 'number') {
     throw new V070GameActionError(
@@ -6574,7 +6566,7 @@ function chooseMarginLoanCollateralTarget(
   gainV070Capital(
     state,
     playerId,
-    card.cost + 2,
+    v070CardValue(state, targetInstanceId) + 2,
     'Margin Loan',
   );
   grantAdditionalAction(state, playerId, 'Margin Loan');
@@ -7410,7 +7402,7 @@ function chooseTreasuryCardTarget(
   gainV070Capital(
     state,
     playerId,
-    card.cost,
+    v070CardValue(state, targetInstanceId),
     'Liquidation',
   );
 
