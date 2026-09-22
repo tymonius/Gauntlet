@@ -35,6 +35,12 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).not.toContain("join(outputRoot, 'territories')");
   });
 
+  it('supports development, release-candidate, and stable TTS staging without treating a candidate as published', () => {
+    expect(stager).toContain("['current-release', 'release-candidate', 'active-development']");
+    expect(stager).toContain("const includeRulebook = targetStatus === 'current-release'");
+    expect(stager).toContain('publication Rulebook PDF is intentionally omitted until stable release materialization');
+  });
+
   it('gives every staged file a deterministic current-release download URL and digest', () => {
     expect(stager).toContain('https://github.com/${repository}/releases/download/${tag}/');
     expect(stager).toContain("createHash('sha256')");
