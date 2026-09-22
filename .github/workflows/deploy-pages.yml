@@ -9,6 +9,7 @@ on:
       - 'media/**'
       - 'packages/game-data/**'
       - 'packages/rules/**'
+      - 'releases/v0.7.2/**'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/publication-boundary.json'
