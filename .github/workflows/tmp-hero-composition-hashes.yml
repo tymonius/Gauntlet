@@ -1,0 +1,17 @@
+name: Temporary hero composition hashes
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  hashes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print hero composition SHA-256
+        run: |
+          sha256sum "images/woodcuts/hero compositions/full-faction-pairs.png"
+          sha256sum "images/woodcuts/hero compositions/full.png"
