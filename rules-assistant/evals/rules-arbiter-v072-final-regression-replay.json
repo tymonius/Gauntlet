@@ -445,8 +445,8 @@
       "id": "blind-u-player-fieldcraft-capture",
       "category": "player-language",
       "question": "fieldcraft can change capture?",
-      "expectedClassification": "inferred",
-      "classificationBasis": "combined-authority",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
           "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
@@ -455,7 +455,7 @@
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "Fieldcraft does not directly rewrite Territory control, Occupation, or Capture rules. It can nevertheless indirectly change the resulting game state when ignoring a printed Territory effect changes movement or a battle."
+          "statement": "No. Fieldcraft does not alter the Capture rule itself."
         }
       ]
     },
