@@ -21,6 +21,8 @@ on:
       - 'scripts/render-v072-dedicated-booklets.mjs'
       - 'scripts/render-v072-modular-booklets.mjs'
       - 'scripts/validate-v072-modular-booklets.mjs'
+      - 'scripts/promote-v072-modular-release-package.mjs'
+      - 'scripts/validate-v072-release-package.mjs'
       - 'tests/v072-modular-booklet-pipeline.test.mjs'
 
 permissions:
