@@ -1770,7 +1770,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Tracked values | Intel and Operation Progress; both begin at 0. |
 | Mission reward | 1 Operation Progress and Intel equal to the Mission card's value. |
 | Battle tools | Surveillance and Interference. |
-| Faction Features | Missions and Special Operations — 1 Action · Denouement; Operational Capacity — Automatic; Surveillance and Interference — No Action at their stated battle timings. |<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
+| Faction Features | Missions and Special Operations — 1 Action · Denouement; Operational Capacity — Automatic · Denouement after using your normal Action during Opening; Surveillance and Interference — No Action at their stated battle timings. |<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
 | Leaders | Ranger and Spymaster. |
 | Faction pool | 15<!-- RULE-FACT:cards.intelligence.count:number --> Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
@@ -1779,7 +1779,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 
 - **Missions — 1 Action · Denouement · Abort cost: Intel equal to Mission value.** Spend an Action to start an eligible Mission, complete a satisfied Active Mission, or abort the Active Mission. Starting places the card face down; completing grants 1 Operation Progress and Intel equal to its value; aborting sends it to the Discard Pile after paying its Intel cost.<!-- RULE-FACT:faction-features.intelligence.missions -->
 - **Special Operations — 1 Action · Denouement · Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel.** When ready, spend an Action to start a Special Operation. On a later Denouement, if its requirement is satisfied and readiness remains valid, spend an Action, reveal it, pay the completion cost, and win immediately.<!-- RULE-FACT:faction-features.intelligence.special-operations -->
-- **Operational Capacity — Automatic.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
+- **Operational Capacity — Automatic · Denouement after using your normal Action during Opening.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to Start or Complete a Mission or Special Operation. You still cannot take more than one Action in either phase. Abort Mission does not qualify.<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
 - **Surveillance — No Action · After opposing Gambit or Tactic choice · 1 Intel per revealed card · Once per battle at each stage.** After the opponent sets a face-down Gambit, spend 1 Intel to reveal it. After the opponent chooses face-down Tactics, spend 1 Intel per Tactic you reveal. The Gambit and Tactic opportunities are separate.<!-- RULE-FACT:faction-features.intelligence.surveillance -->
 - **Interference — No Action · Immediately after reveal or face-up opposing choice · 2 Intel per removed card.** Immediately after revealing an opposing card through Surveillance, pay 2 additional Intel per card to return a Gambit to Hand or a Tactic to Reserve; its owner may replace it from the same source. If an opposing effect sets or chooses a card face up, you may use Interference directly at that response timing for 2 Intel.<!-- RULE-FACT:faction-features.intelligence.interference -->
 
@@ -1818,7 +1818,7 @@ Operation Progress begins at 0 and is not normally spent. Each completed normal 
 
 #### Operational Capacity
 
-**Operational Capacity — Automatic.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to **Start or Complete a Mission or Special Operation**. You still cannot take more than one Action in either phase. **Abort Mission does not qualify.**<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
+**Operational Capacity — Automatic · Denouement after using your normal Action during Opening.** If you used your normal Action during Opening, you may still spend 1 Action during Denouement to **Start or Complete a Mission or Special Operation**. You still cannot take more than one Action in either phase. **Abort Mission does not qualify.**<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
 
 Starting and completing Missions and Special Operations remain 1 Action Faction Features. Operational Capacity changes how that qualifying Denouement Action fits into the turn; it does not make those procedures No Action and cannot be converted into another ordinary Denouement Action.<!-- RULE-FACT:faction-features.intelligence.operational-capacity -->
 
