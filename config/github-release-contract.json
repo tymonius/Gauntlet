@@ -6,19 +6,26 @@
     "release_tags_are_immutable": true
   },
   "current_release": {
-    "tag": "v0.7.1",
-    "title": "Gauntlet v0.7.1 — Mystics Rites & Deck Import",
+    "tag": "v0.7.2",
+    "title": "Gauntlet v0.7.2 — The Chief Justice",
     "status": "current",
     "prerelease": true,
     "target_strategy": "verified_main_push",
-    "notes_file": "docs/releases/github/v0.7.1.md",
-    "live_verification_script": "scripts/verify-v071-live-publication.mjs",
+    "notes_file": "docs/releases/github/v0.7.2.md",
+    "live_verification_script": "scripts/verify-v072-live-publication.mjs",
     "assets": [
-      "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
-      "releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
-      "releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json",
-      "releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
-      "releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json"
+      "releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
+      "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json"
     ]
   },
   "historical_releases": [
@@ -66,6 +73,14 @@
       "status": "historical",
       "prerelease": true,
       "target": "71020fbb478007538773fc766820197fe8fe1592",
+      "publish_if_missing": false
+    },
+    {
+      "tag": "v0.7.1",
+      "title": "Gauntlet v0.7.1 — Mystics Rites & Deck Import",
+      "status": "historical",
+      "prerelease": true,
+      "target": "d7bc7fd130750a934ea7a4af9000aa4b8788bcc1",
       "publish_if_missing": false
     }
   ]
