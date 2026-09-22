@@ -60,7 +60,7 @@ describe('Faction Feature Rulebook terminology', () => {
     expect(financiers).toContain('**Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total.');
     expect(financiers).toContain('**Financial Capacity — No Action · End of Opening.**');
     expect(financiers).toContain('**Income — Automatic · After Capture.**');
-    expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability.');
+    expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability and explicitly qualifies for Financial Capacity.');
     expect(financiers).toContain('**Line of Credit** is the Banker\'s Leader Ability.');
 
     const intelligence = factionFeatureSection('intelligence');
