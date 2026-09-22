@@ -87,6 +87,32 @@ describe("frozen v0.7.2 release corpus", () => {
     )).toBe(true);
   });
 
+  test("registers v0.7.2 as staged candidate without public cutover", () => {
+    const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));
+    expect(lifecycle.current_release).toBe("v0.7.1");
+    expect(lifecycle.releases["v0.7.1"].status).toBe("current");
+    expect(lifecycle.releases["v0.7.2"].status).toBe("candidate");
+    expect(lifecycle.releases["v0.7.2"].public_cutover).toBe(false);
+    expect(lifecycle.releases["v0.7.2"].frozen_authority_set_id)
+      .toBe("a644061be1f605d0c83ff8b1cde7e0d5b6323ef01fa804dd720bdbae205b1b6b");
+  });
+
+  test("publishes only the staged v0.7.2 runtime authority files, not the releases tree", () => {
+    const boundary = JSON.parse(readFileSync(new URL("../config/publication-boundary.json", import.meta.url), "utf8"));
+    expect(boundary.pages.sourceOnlyRepositoryRoots).toContain("releases");
+    const staged = boundary.materializedFiles
+      .filter(item => item.kind === "staged-release-runtime")
+      .map(item => item.publicPath)
+      .sort();
+    expect(staged).toEqual([
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
+    ]);
+  });
+
   test("fails closed if a staged binding is tampered", async () => {
     const urls = defaultV072SourceUrls();
     const bodies = new Map([
