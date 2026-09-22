@@ -240,8 +240,12 @@ for (const [surface, version] of Object.entries(manifest.public_defaults ?? {}))
   assert.equal(version, currentVersion, `Public default ${surface} points to ${version} instead of ${currentVersion}.`);
 }
 
-const bookletEntry = manifest.pdf_outputs?.find((item) => item.key === 'rulebook-booklet');
-assert(bookletEntry, 'Current release manifest is missing the printable Rulebook booklet.');
+const modularDocuments = manifest.modular_rules?.documents;
+const primaryBookletKey = Array.isArray(modularDocuments) && modularDocuments.length > 0
+  ? `${manifest.modular_rules?.default_document || 'player-guide'}-booklet`
+  : 'rulebook-booklet';
+const bookletEntry = manifest.pdf_outputs?.find((item) => item.key === primaryBookletKey);
+assert(bookletEntry, `Current release manifest is missing the primary printable rules booklet (${primaryBookletKey}).`);
 const bookletPath = `${normalizedReleaseRoot}${bookletEntry.path}`;
 const bookletBytes = await getBytes(bookletPath);
 assert.equal(bookletBytes.length, bookletEntry.bytes, 'Published booklet byte count does not match the manifest.');
