@@ -261,7 +261,7 @@ export function v070DeedCost(
   buyer: PlayerId,
   territoryInstanceId: string,
 ): number {
-  requireFinancierState(state, buyer);
+  const financier = requireFinancierState(state, buyer);
   const deed = requireDeed(state, territoryInstanceId);
   if (deed.owner === buyer) {
     throw new V070GameActionError('You already own that Deed.');
@@ -281,7 +281,10 @@ export function v070DeedCost(
     );
   }
 
-  const base = Math.min(v070DeedsOwned(state, buyer) + 1, 6);
+  const base = Math.min(
+    10,
+    Math.max(1, v070DeedsOwned(state, buyer) * 2),
+  );
   const positionModifier = territory.controller === buyer
     ? -1
     : territory.occupant === buyer
@@ -290,8 +293,18 @@ export function v070DeedCost(
   const buyoutPremium = deed.owner
     ? Math.min(v070DeedsOwned(state, deed.owner), 6)
     : 0;
+  const sameTurnAcquisitionSurcharge =
+    financier.deedPurchaseTurn === state.turnNumber
+      ? financier.deedPurchasesThisTurn
+      : 0;
 
-  return Math.max(1, base + positionModifier + buyoutPremium);
+  return Math.max(
+    1,
+    base
+      + positionModifier
+      + buyoutPremium
+      + sameTurnAcquisitionSurcharge,
+  );
 }
 
 export function buyV070Deed(
@@ -315,7 +328,7 @@ export function buyV070Deed(
   const cost = v070DeedCost(state, buyer, territoryInstanceId);
   spendV070Capital(state, buyer, cost, reason);
   deed.owner = buyer;
-  requireFinancierState(state, buyer).deedPurchaseTurn = state.turnNumber;
+  recordV070DeedPurchase(state, buyer);
 
   appendV070Event(state, {
     type: 'deed_acquired',
@@ -378,7 +391,7 @@ export function buyV070DeedWithCollateral(
   const capitalPaid = Math.max(0, cost - collateralApplied);
   spendV070Capital(state, buyer, capitalPaid, reason);
   deed.owner = buyer;
-  requireFinancierState(state, buyer).deedPurchaseTurn = state.turnNumber;
+  recordV070DeedPurchase(state, buyer);
 
   appendV070Event(state, {
     type: 'deed_acquired',
@@ -413,6 +426,19 @@ export function buyV070DeedWithCollateral(
   };
 }
 
+
+function recordV070DeedPurchase(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const financier = requireFinancierState(state, playerId);
+  if (financier.deedPurchaseTurn === state.turnNumber) {
+    financier.deedPurchasesThisTurn += 1;
+    return;
+  }
+  financier.deedPurchaseTurn = state.turnNumber;
+  financier.deedPurchasesThisTurn = 1;
+}
 
 export function v070BankerLineOfCreditAvailable(
   state: V070GameState,
@@ -596,29 +622,40 @@ export function applyV070FinancierAfterCapture(
 
   resolveV070CapitalGainsAfterIncome(state, playerId);
 
+  financier.financialCapacityTurn = null;
+  financier.financialCapacityUsedTurn = null;
+  financier.financierFeatureActionSpentTurn = null;
+  financier.financialCapacityQualifyingActionTurn = null;
+}
+
+export function evaluateV070FinancialCapacityAtEndOfOpening(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const financier = requireFinancierState(state, playerId);
   const treasuryValue = v070TreasuryValue(state, playerId);
   const controlledTerritories = state.board.filter(
     territory => territory.controller === playerId,
   ).length;
-  if (treasuryValue > controlledTerritories) {
-    financier.financialCapacityTurn = state.turnNumber;
-    financier.financialCapacityUsedTurn = null;
-    financier.financierFeatureActionSpentTurn = null;
-    appendV070Event(state, {
-      type: 'financial_capacity_available',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        turnNumber: state.turnNumber,
-        treasuryValue,
-        controlledTerritories,
-      },
-    });
-  } else {
-    financier.financialCapacityTurn = null;
-    financier.financialCapacityUsedTurn = null;
-    financier.financierFeatureActionSpentTurn = null;
-  }
+
+  financier.financialCapacityTurn = null;
+  financier.financialCapacityUsedTurn = null;
+
+  if (treasuryValue <= controlledTerritories) return false;
+
+  financier.financialCapacityTurn = state.turnNumber;
+  appendV070Event(state, {
+    type: 'financial_capacity_available',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      treasuryValue,
+      controlledTerritories,
+      timing: 'end_of_opening',
+    },
+  });
+  return true;
 }
 
 function capitalGainsBindings(
@@ -781,6 +818,7 @@ export function markV070FinancierFeatureActionSpent(
 ): void {
   const financier = requireFinancierState(state, playerId);
   financier.financierFeatureActionSpentTurn = state.turnNumber;
+  financier.financialCapacityQualifyingActionTurn = state.turnNumber;
   appendV070Event(state, {
     type: 'financier_feature_action_spent',
     actor: playerId,
@@ -798,6 +836,32 @@ export function v070FinancierFeatureActionSpentThisTurn(
 ): boolean {
   return state.players[playerId]?.financiers
     ?.financierFeatureActionSpentTurn === state.turnNumber;
+}
+
+export function markV070FinancialCapacityQualifyingAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  actionName: string,
+): void {
+  const financier = requireFinancierState(state, playerId);
+  financier.financialCapacityQualifyingActionTurn = state.turnNumber;
+  appendV070Event(state, {
+    type: 'financial_capacity_qualifying_action',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      actionName,
+    },
+  });
+}
+
+export function v070FinancialCapacityQualifyingActionThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  return state.players[playerId]?.financiers
+    ?.financialCapacityQualifyingActionTurn === state.turnNumber;
 }
 
 export function checkV070ControllingInterest(
