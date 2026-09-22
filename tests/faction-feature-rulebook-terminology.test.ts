@@ -113,6 +113,7 @@ describe('Faction Feature Rulebook terminology', () => {
       'Special Operations',
       'Surveillance',
       'Interference',
+      'Operational Capacity',
     ]);
     expect(currentGame.factionFeatures.inquisition).toContainEqual({
       name: 'Purge',
