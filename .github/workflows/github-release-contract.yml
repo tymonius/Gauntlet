@@ -36,6 +36,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check live-publication verifier syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for verifier in scripts/verify-v*-live-publication.mjs; do
+            node --check "$verifier"
+          done
+
       - name: Validate lifecycle and release metadata
         run: node scripts/validate-github-release-contract.mjs
 
