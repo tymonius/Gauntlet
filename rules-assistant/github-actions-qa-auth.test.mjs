@@ -36,8 +36,16 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main",
         "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
         "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main",
-        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main"
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main",
+        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main"
       ],
+      workflowEventNames: {
+        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-live-qa.yml@refs/heads/main": ["workflow_dispatch"],
+        "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main": ["workflow_dispatch"],
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-d.yml@refs/heads/main": ["workflow_dispatch"],
+        "tymonius/Gauntlet/.github/workflows/rules-arbiter-gate3-blind-e.yml@refs/heads/main": ["workflow_dispatch"],
+        "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main": ["workflow_dispatch", "push"]
+      },
       eventName: "workflow_dispatch",
       ref: "refs/heads/main",
       runnerEnvironment: "github-hosted",
@@ -46,10 +54,20 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
     expect(claimsAreAuthorized(validClaims(), now)).toBe(true);
   });
 
-  test("authorizes the dedicated Gate 3 blind workflows on main", () => {
-    for (const workflow_ref of githubActionsQaAuthContract.workflowRefs.slice(1)) {
+  test("authorizes the dedicated manual QA workflows on main", () => {
+    for (const workflow_ref of githubActionsQaAuthContract.workflowRefs.slice(1, 4)) {
       expect(claimsAreAuthorized(validClaims({ workflow_ref }), now)).toBe(true);
     }
+  });
+
+  test("authorizes only the candidate replay workflow for push-triggered QA", () => {
+    const workflow_ref = "tymonius/Gauntlet/.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml@refs/heads/main";
+    expect(claimsAreAuthorized(validClaims({ workflow_ref, event_name: "push" }), now)).toBe(true);
+    expect(claimsAreAuthorized(validClaims({ event_name: "push" }), now)).toBe(false);
+    expect(claimsAreAuthorized(validClaims({
+      workflow_ref: "tymonius/Gauntlet/.github/workflows/current-rules-arbiter-gate3-blind.yml@refs/heads/main",
+      event_name: "push"
+    }), now)).toBe(false);
   });
 
   test.each([
@@ -57,7 +75,7 @@ describe("GitHub Actions live-QA OIDC authorization", () => {
     ["wrong repository", { repository: "tymonius/Other" }],
     ["wrong repository id", { repository_id: "1" }],
     ["wrong workflow", { workflow_ref: "tymonius/Gauntlet/.github/workflows/other.yml@refs/heads/main" }],
-    ["wrong event", { event_name: "push" }],
+    ["wrong event", { event_name: "pull_request" }],
     ["wrong ref", { ref: "refs/heads/feature" }],
     ["self-hosted runner", { runner_environment: "self-hosted" }],
     ["expired token", { exp: now }],
