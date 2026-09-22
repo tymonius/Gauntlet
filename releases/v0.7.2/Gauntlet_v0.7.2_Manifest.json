@@ -37,7 +37,8 @@
     "leaders": 12,
     "starter_decks": 12,
     "json_exports": 3,
-    "rules_documents": 1
+    "rules_documents": 8,
+    "print_pdfs": 8
   },
   "public_defaults": {
     "website": "v0.7.1",
@@ -55,5 +56,293 @@
     "Gauntlet_v0.7.2_Canonical_Data.json",
     "Gauntlet_v0.7.2_Starter_Decks.json",
     "Gauntlet_v0.7.2_Source_Provenance.json"
+  ],
+  "modular_rules": {
+    "default_document": "player-guide",
+    "documents": [
+      {
+        "id": "player-guide",
+        "title": "Player's Guide",
+        "maintained_source": "packages/rules/player-guide/player-guide.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md",
+          "sha256": "9e9229e7056240edf7afce8bc6599ce05fa28060e8146c3b2657dbfd0aca02d7",
+          "bytes": 28526
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+          "pages": 12,
+          "sha256": "aa4d8a7bbca314ca7d6cb42a220bf93d5cf919ea0ff27047e766ce40298ab8ea",
+          "bytes": 7925360
+        }
+      },
+      {
+        "id": "military",
+        "title": "Military Guide",
+        "maintained_source": "packages/rules/faction-guides/military.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide.md",
+          "sha256": "94a9539686e0b95350e5e8826c9f62e684360a3cedfa0f68ac87a9724bcb27dc",
+          "bytes": 10577
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+          "pages": 8,
+          "sha256": "e1802b440fcefb7343fd8a1a8727e70911f07cc9f765d91201303330ddc588bf",
+          "bytes": 4935466
+        }
+      },
+      {
+        "id": "diplomats",
+        "title": "Diplomats Guide",
+        "maintained_source": "packages/rules/faction-guides/diplomats.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide.md",
+          "sha256": "fe2d4571568416c14db38801cb8a141a349474b318941146cfafef857e80231d",
+          "bytes": 14582
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+          "pages": 8,
+          "sha256": "8a0427708d043e2c7442201b41ab07172c8d75a8b2a50d30ea0e09393aae1bc8",
+          "bytes": 7348070
+        }
+      },
+      {
+        "id": "financiers",
+        "title": "Financiers Guide",
+        "maintained_source": "packages/rules/faction-guides/financiers.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide.md",
+          "sha256": "f859044ea5a304fcfdb1de04337a4f91d049d5c652d9d143727593f9fd06cc04",
+          "bytes": 18681
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+          "pages": 10,
+          "sha256": "3ddb0bfbbd03abf688196034f555faa8e0c3944a9d45ded89aea2032018409f7",
+          "bytes": 10411064
+        }
+      },
+      {
+        "id": "intelligence",
+        "title": "Intelligence Guide",
+        "maintained_source": "packages/rules/faction-guides/intelligence.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide.md",
+          "sha256": "d4a2c9505028910577949a16349f73fa862b7b1056af17f914776ec0523c6cf7",
+          "bytes": 21524
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+          "pages": 10,
+          "sha256": "760992c9dc30ab12f3ff2385abd1fe57b1660b13025f0cbb498052a82c6d11d5",
+          "bytes": 8465119
+        }
+      },
+      {
+        "id": "mystics",
+        "title": "Mystics Guide",
+        "maintained_source": "packages/rules/faction-guides/mystics.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide.md",
+          "sha256": "961063ee011c95c4aa79df9f3db4e41d7a1ca641481d62c1e44ad06768b9b3b6",
+          "bytes": 17312
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+          "pages": 8,
+          "sha256": "5c42d18eea324f01e58f6b22a340bb73537cccb02907f06ad1d1925265ad64be",
+          "bytes": 6127198
+        }
+      },
+      {
+        "id": "inquisition",
+        "title": "Inquisition Guide",
+        "maintained_source": "packages/rules/faction-guides/inquisition.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide.md",
+          "sha256": "e7fc35eebb7841934098addcc1c5210c4d5033fc147a1a9be38f02a39d6b3283",
+          "bytes": 15967
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+          "pages": 10,
+          "sha256": "9088dea0b2369301b8d96b72120fce16a5e7621f82fd5708d5d344e3332e5621",
+          "bytes": 11204807
+        }
+      },
+      {
+        "id": "complete-rules",
+        "title": "Complete Rules",
+        "maintained_source": "packages/rules/comprehensive/comprehensive-rules.md",
+        "source": {
+          "path": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
+          "sha256": "8b5381362fa9fe43d8c6e6f8a38d8db71727e713818732cdf42a1031f7dda352",
+          "bytes": 80920
+        },
+        "booklet": {
+          "path": "Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+          "pages": 26,
+          "sha256": "8892633f10389a7fcb44eff5f3b35f39c914fe47b36b96cb0da5c903c3bcafda",
+          "bytes": 4345278
+        }
+      }
+    ]
+  },
+  "pdf_outputs": [
+    {
+      "key": "player-guide-booklet",
+      "path": "Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "pages": 12,
+      "sha256": "aa4d8a7bbca314ca7d6cb42a220bf93d5cf919ea0ff27047e766ce40298ab8ea",
+      "bytes": 7925360
+    },
+    {
+      "key": "military-booklet",
+      "path": "Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "pages": 8,
+      "sha256": "e1802b440fcefb7343fd8a1a8727e70911f07cc9f765d91201303330ddc588bf",
+      "bytes": 4935466
+    },
+    {
+      "key": "diplomats-booklet",
+      "path": "Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "pages": 8,
+      "sha256": "8a0427708d043e2c7442201b41ab07172c8d75a8b2a50d30ea0e09393aae1bc8",
+      "bytes": 7348070
+    },
+    {
+      "key": "financiers-booklet",
+      "path": "Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "pages": 10,
+      "sha256": "3ddb0bfbbd03abf688196034f555faa8e0c3944a9d45ded89aea2032018409f7",
+      "bytes": 10411064
+    },
+    {
+      "key": "intelligence-booklet",
+      "path": "Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "pages": 10,
+      "sha256": "760992c9dc30ab12f3ff2385abd1fe57b1660b13025f0cbb498052a82c6d11d5",
+      "bytes": 8465119
+    },
+    {
+      "key": "mystics-booklet",
+      "path": "Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "pages": 8,
+      "sha256": "5c42d18eea324f01e58f6b22a340bb73537cccb02907f06ad1d1925265ad64be",
+      "bytes": 6127198
+    },
+    {
+      "key": "inquisition-booklet",
+      "path": "Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "pages": 10,
+      "sha256": "9088dea0b2369301b8d96b72120fce16a5e7621f82fd5708d5d344e3332e5621",
+      "bytes": 11204807
+    },
+    {
+      "key": "complete-rules-booklet",
+      "path": "Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "pages": 26,
+      "sha256": "8892633f10389a7fcb44eff5f3b35f39c914fe47b36b96cb0da5c903c3bcafda",
+      "bytes": 4345278
+    }
+  ],
+  "payload_files": [
+    {
+      "path": "Gauntlet_v0.7.2_Player_Guide.md",
+      "sha256": "9e9229e7056240edf7afce8bc6599ce05fa28060e8146c3b2657dbfd0aca02d7",
+      "bytes": 28526
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Military_Guide.md",
+      "sha256": "94a9539686e0b95350e5e8826c9f62e684360a3cedfa0f68ac87a9724bcb27dc",
+      "bytes": 10577
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Diplomats_Guide.md",
+      "sha256": "fe2d4571568416c14db38801cb8a141a349474b318941146cfafef857e80231d",
+      "bytes": 14582
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Financiers_Guide.md",
+      "sha256": "f859044ea5a304fcfdb1de04337a4f91d049d5c652d9d143727593f9fd06cc04",
+      "bytes": 18681
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Intelligence_Guide.md",
+      "sha256": "d4a2c9505028910577949a16349f73fa862b7b1056af17f914776ec0523c6cf7",
+      "bytes": 21524
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Mystics_Guide.md",
+      "sha256": "961063ee011c95c4aa79df9f3db4e41d7a1ca641481d62c1e44ad06768b9b3b6",
+      "bytes": 17312
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Inquisition_Guide.md",
+      "sha256": "e7fc35eebb7841934098addcc1c5210c4d5033fc147a1a9be38f02a39d6b3283",
+      "bytes": 15967
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Complete_Rules.md",
+      "sha256": "8b5381362fa9fe43d8c6e6f8a38d8db71727e713818732cdf42a1031f7dda352",
+      "bytes": 80920
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "sha256": "aa4d8a7bbca314ca7d6cb42a220bf93d5cf919ea0ff27047e766ce40298ab8ea",
+      "bytes": 7925360
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "sha256": "e1802b440fcefb7343fd8a1a8727e70911f07cc9f765d91201303330ddc588bf",
+      "bytes": 4935466
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "sha256": "8a0427708d043e2c7442201b41ab07172c8d75a8b2a50d30ea0e09393aae1bc8",
+      "bytes": 7348070
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "sha256": "3ddb0bfbbd03abf688196034f555faa8e0c3944a9d45ded89aea2032018409f7",
+      "bytes": 10411064
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "sha256": "760992c9dc30ab12f3ff2385abd1fe57b1660b13025f0cbb498052a82c6d11d5",
+      "bytes": 8465119
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "sha256": "5c42d18eea324f01e58f6b22a340bb73537cccb02907f06ad1d1925265ad64be",
+      "bytes": 6127198
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "sha256": "9088dea0b2369301b8d96b72120fce16a5e7621f82fd5708d5d344e3332e5621",
+      "bytes": 11204807
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "sha256": "8892633f10389a7fcb44eff5f3b35f39c914fe47b36b96cb0da5c903c3bcafda",
+      "bytes": 4345278
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Canonical_Data.json",
+      "sha256": "04c61a2a03e272f5eb8a12d431c060de75cdabb95656e76989cf581c50072503",
+      "bytes": 312401
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Starter_Decks.json",
+      "sha256": "d8a66ce166556178da46a390d3692d5766a691c8a2aec1d916a115e8aa9614c1",
+      "bytes": 30513
+    },
+    {
+      "path": "Gauntlet_v0.7.2_Source_Provenance.json",
+      "sha256": "82dcdb773644356e3d2480df048cd79f1fa09da5bde8ad8cfec493298f25f6f7",
+      "bytes": 2666
+    }
   ]
 }
