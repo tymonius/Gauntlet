@@ -3466,6 +3466,22 @@
       "sha256": "5e041e840dfeffdf3c33ee5971a3fab4a76befde7fef512f602e2cac8bc1f255"
     },
     {
+      "path": "images/woodcuts/hero compositions/full-faction-pairs.png",
+      "origin": "generated",
+      "creator": "Tymon Scott / Gauntlet project via image-generation workflow",
+      "source": "Project-owner supplied image-generation output composed from the canonical Gauntlet faction-leader woodcut references and uploaded in PR #1861 on 2026-09-22.",
+      "rights": "Project use authorized by Tymon Scott. The composition uses Gauntlet project-owned or project-authorized reference artwork. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "69f0acc5c7dfd8ef015c416560494f87b04d3b27d59e2e9c649ba8956130a97a"
+    },
+    {
+      "path": "images/woodcuts/hero compositions/full.png",
+      "origin": "generated",
+      "creator": "Tymon Scott / Gauntlet project via image-generation workflow",
+      "source": "Project-owner supplied image-generation output composed from the canonical Gauntlet faction-leader woodcut references and uploaded in PR #1861 on 2026-09-22.",
+      "rights": "Project use authorized by Tymon Scott. The composition uses Gauntlet project-owned or project-authorized reference artwork. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "4d7cc0518fe991ceb14e4bfee644b4c37cc057174ccbbd26543532ec2030631c"
+    },
+    {
       "path": "images/woodcuts/hero compositions/hero 1.png",
       "origin": "generated",
       "creator": "OpenAI/ChatGPT image generation under Tymon Scott's direction",
