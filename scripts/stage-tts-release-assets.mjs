@@ -3,6 +3,11 @@ import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises
 import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
+import {
+  V072_BOOKLET_OUTPUT_ROOT,
+  V072_MODULAR_BOOKLETS,
+  v072BookletReaderFilename,
+} from '../packages/rules/publication/v072-modular-booklets.mjs';
 
 const DEFAULT_REPOSITORY = 'tymonius/Gauntlet';
 const STAGING_ROOT = join(ROOT, 'tts', 'generated', 'release-assets');
@@ -69,6 +74,25 @@ function addAsset(records, seenNames, sourceFile, releaseAsset, kind, metadata =
   records.push({ sourceFile, releaseAsset, kind, ...metadata });
 }
 
+async function prepareV072RulesReaders(release) {
+  const rulesRoot = join(release.outputRoot, 'rules');
+  await mkdir(rulesRoot, { recursive: true });
+  const prepared = [];
+  for (const publication of V072_MODULAR_BOOKLETS) {
+    const readerFile = v072BookletReaderFilename(publication);
+    const sourcePath = join(ROOT, V072_BOOKLET_OUTPUT_ROOT, readerFile);
+    await ensureFile(sourcePath);
+    const sourceFile = `rules/${publication.id}.pdf`;
+    await copyFile(sourcePath, join(release.outputRoot, sourceFile));
+    prepared.push({
+      publication,
+      sourceFile,
+      readerFile,
+    });
+  }
+  return prepared;
+}
+
 async function stageReleaseAssets() {
   const release = await resolveCurrentTtsRelease();
   const outputRoot = release.outputRoot;
@@ -112,12 +136,15 @@ async function stageReleaseAssets() {
   if (!['current-release', 'release-candidate', 'active-development'].includes(targetStatus)) {
     throw new Error('Unsupported TTS target status ' + (targetStatus || 'missing') + '.');
   }
-  const includeRulebook = targetStatus === 'current-release';
-  if (includeRulebook) {
+  const useV072ModularRules = String(release.displayVersion || release.version).startsWith('v0.7.2');
+  let modularRules = [];
+  const includeLegacyRulebook = targetStatus === 'current-release' && !useV072ModularRules;
+  if (useV072ModularRules) {
+    modularRules = await prepareV072RulesReaders(release);
+    console.log(`Prepared ${modularRules.length} reader-order v0.7.2 modular rules PDFs for TTS.`);
+  } else if (includeLegacyRulebook) {
     const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
     await generateTtsRulebookReader();
-  } else {
-    console.log(`TTS ${targetStatus} staging for ${release.version}: publication Rulebook PDF is intentionally omitted until stable release materialization.`);
   }
 
   const prefix = assetPrefix(release.version);
@@ -134,7 +161,26 @@ async function stageReleaseAssets() {
     );
   }
 
-  if (includeRulebook) {
+  if (useV072ModularRules) {
+    for (const { publication, sourceFile, readerFile } of modularRules) {
+      addAsset(
+        records,
+        seenNames,
+        sourceFile,
+        `${prefix}_Rules_${safeSegment(publication.id)}.pdf`,
+        publication.id === 'player-guide' || publication.id === 'complete-rules'
+          ? 'shared-rules-reader'
+          : 'faction-guide-reader',
+        {
+          publicationId: publication.id,
+          publicationTitle: publication.title,
+          sourcePublicationFile: readerFile,
+          pageFormat: 'half-letter',
+          pageOrder: 'reading',
+        },
+      );
+    }
+  } else if (includeLegacyRulebook) {
     addAsset(
       records,
       seenNames,
