@@ -7,10 +7,12 @@ const workflow = readFileSync(
 );
 
 describe("v0.7.2 candidate polarity probe contract", () => {
-  test("uses the already-authorized candidate workflow and a dedicated trigger marker", () => {
-    expect(workflow).toContain(".github/qa-triggers/v072-candidate-polarity-probe-20260922.txt");
+  test("requires an explicitly selected manual polarity-probe mode", () => {
+    expect(workflow).toContain("type: choice");
+    expect(workflow).toContain("- polarity-probe");
     expect(workflow).toContain("candidate-polarity-probe:");
     expect(workflow).toContain("needs.classify-run.outputs.mode == 'polarity-probe'");
+    expect(workflow).not.toContain("push:");
   });
 
   test("derives authority identity from current repository bytes before paid calls", () => {
@@ -27,6 +29,13 @@ describe("v0.7.2 candidate polarity probe contract", () => {
     expect(workflow).toContain("transportAttempts <= 4");
     expect(workflow).toContain("(async () => {");
     expect(workflow).toContain('firstPolarity !== "no"');
+  });
+
+  test("requires explicit paid confirmation before the polarity probe can run", () => {
+    const job = workflow.slice(workflow.indexOf("  candidate-polarity-probe:"));
+    expect(job).toContain("Require explicit paid-API confirmation");
+    expect(job).toContain('inputs.confirm_paid_api');
+    expect(job).toContain('!= "true"');
   });
 
   test("keeps the original full regression job separate from the probe", () => {

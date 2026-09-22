@@ -1,4 +1,0 @@
-Authorized one-shot paid replay of the live v0.7.2 candidate Rules Arbiter regression set.
-Requested by the repository owner on 2026-09-21.
-Expected behavior: v072-qa-20260921-01
-Expected authority set: faacd55458ec1595f480798449033a2c8705e018d828ae8034c5fe2b2a6f35b0
