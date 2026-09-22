@@ -1059,7 +1059,7 @@
             "faction.mystics.definition",
             "faction.inquisition.definition"
           ],
-          "reviewFingerprint": "152087a80e3242b9d32d6eb19e6e1a588ead16ab1b28a856dfd75807289cca9c"
+          "reviewFingerprint": "a8588661c335b2bf57e676e4d950391d336652c8da9ed0199c3de56c6ef572a8"
         },
         {
           "id": "deckbuilding",
@@ -1381,7 +1381,7 @@
             "faction.inquisition.definition",
             "faction.inquisition.features"
           ],
-          "reviewFingerprint": "1220e2cd6da51eec732b220eeab2b42a1b4f91a3bb7609859f50a1dc255e6c0b"
+          "reviewFingerprint": "99d11824aeaf3467027a2e9a44af277865c5283d880c27ee8913c697c3c293c9"
         },
         {
           "id": "definitions-index",
@@ -1456,7 +1456,7 @@
             "faction.diplomats.proposals",
             "faction.mystics.rites"
           ],
-          "reviewFingerprint": "d82eaca7146d80e2524fd16410a9ccaa5951acb79c967c30c00326e170d121ec"
+          "reviewFingerprint": "d8ac42456143bac1144a7abb6db0ce468137955f4758a324ea2632a01c2a8c8c"
         }
       ],
       "termRegistry": [
@@ -3146,7 +3146,7 @@
             "core.battlefield.victory",
             "core.card-zones"
           ],
-          "reviewFingerprint": "4b568403dc5fab9e90eaf1cab3cd90060bdbfcd0329a22f15a0237960126daae"
+          "reviewFingerprint": "ccf0b30c88feda7a80afcd385985a0a2fb2a712ab9919682ea275f96d9992a41"
         },
         {
           "id": "changes",
@@ -3158,7 +3158,7 @@
             "core.battle.aftermath",
             "core.card-zones"
           ],
-          "reviewFingerprint": "4bf724264f6917607ffa0d8e6be843c9403944bcf2fa0ca21637afa585766a85"
+          "reviewFingerprint": "6bed2f95fa1fe267a91d3c7c364f872ace763250d17b093aa1219da32cc07255"
         },
         {
           "id": "components",
@@ -3168,7 +3168,7 @@
             "faction.inquisition.features",
             "core.components"
           ],
-          "reviewFingerprint": "357ec924bda72debd994cf91b4d5ca0eaa99992a4e165e7bf2d752d532bea5d9"
+          "reviewFingerprint": "84db1ea8f25181d816a16be5bd24ebea5fd3f791f669c07b3844b7f2db12f4ea"
         },
         {
           "id": "resource",
@@ -3179,7 +3179,7 @@
             "core.card-zones",
             "core.cards.reveal"
           ],
-          "reviewFingerprint": "ecf4ad6095fa89f03697f98aa1cede9fa02f84c424e420eafeb7f0df8480b091"
+          "reviewFingerprint": "c3c4206eb8a5f2ac620208224992fbb0b3350bf02c03d52706dc5a5ebdcb4dc1"
         },
         {
           "id": "features",
@@ -3192,7 +3192,7 @@
             "core.turn.draw",
             "core.cards.assets"
           ],
-          "reviewFingerprint": "ea6892d1eab3de59b21bdb19560dcb9b272b7212e41760b1d1d69d1635cdad5c"
+          "reviewFingerprint": "434478ae15a5bc406a16d5fcb512356bebb24dd9fbb161f132a132e7a98bcdaa"
         },
         {
           "id": "victory",
@@ -3204,7 +3204,7 @@
             "core.turn.draw",
             "core.card-zones"
           ],
-          "reviewFingerprint": "35a328f192f316a4ba304d455f40651db1ec28897af6d075874c27673b6551a8"
+          "reviewFingerprint": "e2b5e67ff5d8631776afbe8ebeabf34cc59a132cf3d5e6d892f623fc75e496a9"
         },
         {
           "id": "leaders",
@@ -3219,7 +3219,7 @@
             "core.battle.onset",
             "core.battle.withdrawal-procedure"
           ],
-          "reviewFingerprint": "52eed23eb1dd562bed60d5f473346654e5aa0c4210056e7b7f5ee81cbf459f3a"
+          "reviewFingerprint": "f17ae4f8d032e73d0dc040a5f2f3423d09910480b0e998bece24914ad63d6633"
         },
         {
           "id": "together",
@@ -3230,7 +3230,7 @@
             "core.cards.reveal",
             "core.card-zones"
           ],
-          "reviewFingerprint": "ecf4ad6095fa89f03697f98aa1cede9fa02f84c424e420eafeb7f0df8480b091"
+          "reviewFingerprint": "c3c4206eb8a5f2ac620208224992fbb0b3350bf02c03d52706dc5a5ebdcb4dc1"
         },
         {
           "id": "first-game",
@@ -3242,7 +3242,7 @@
             "core.turn.draw",
             "core.card-zones"
           ],
-          "reviewFingerprint": "4bf724264f6917607ffa0d8e6be843c9403944bcf2fa0ca21637afa585766a85"
+          "reviewFingerprint": "6bed2f95fa1fe267a91d3c7c364f872ace763250d17b093aa1219da32cc07255"
         },
         {
           "id": "reference",

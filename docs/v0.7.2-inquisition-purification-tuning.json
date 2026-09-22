@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "v0.7.2",
+  "status": "approved-design",
+  "changeType": "inquisition-purification-tuning",
+  "gameplayBehaviorChanged": true,
+  "summary": "Increase the Inquisition's ordinary Conviction generation from a heavily contested Aftermath and improve the efficiency of the 1-Conviction Discard-Pile Purge so Purification becomes a more credible alternate victory path.",
+  "conviction": {
+    "trigger": "The first qualifying Aftermath each turn in which one or more opposing cards enter the Graveyard.",
+    "oneOpposingCard": 1,
+    "twoOrMoreOpposingCards": 2,
+    "maximum": 4,
+    "oncePerTurnUnchanged": true,
+    "mayTriggerOnEitherPlayersTurn": true,
+    "winRequired": false,
+    "blasphemyUnchanged": true,
+    "note": "The increased gain is capped at 2 for the qualifying Aftermath. It is not 1 Conviction per card, so mass-Graveyard effects do not independently fill the tracker beyond this +2 normal gain."
+  },
+  "purge": {
+    "oneConvictionMode": {
+      "topCardOptionUnchanged": true,
+      "combinedCardCountMaximum": 2,
+      "previousCombinedValueMaximum": 2,
+      "newCombinedValueMaximum": 3
+    },
+    "otherPurgeCostsUnchanged": true,
+    "actionTimingUnchanged": true,
+    "actionLimitUnchanged": true,
+    "directPurgeRulesUnchanged": true
+  },
+  "unchanged": [
+    "Conviction begins at 0 and has a maximum of 4.",
+    "Condemnation continues to send opposing Tactics to the Graveyard during Aftermath.",
+    "Blasphemy remains a separate +1 Conviction source for qualifying opposing Arcane plays and reveals.",
+    "Purification still requires the opponent's normal start-of-turn draw to fail because both Draw Pile and Discard Pile are empty.",
+    "Grand Inquisitor Final Judgment and Witch Hunter Relentless Pursuit are otherwise unchanged."
+  ],
+  "evaluationGoal": "Test whether Purification becomes a meaningful late-game threat before ordinary battlefield victory is effectively decided, without making Inquisition combat power or resource generation excessive.",
+  "integrationRequirements": {
+    "currentAuthority": [
+      "Register this document in current-development provenance.",
+      "Update normal Conviction gain text and structured values.",
+      "Update the 1-Conviction Purge combined-value ceiling from 2 to 3."
+    ],
+    "rulesSurfaces": [
+      "Update the maintained Inquisition faction guide.",
+      "Update the Complete Rules Inquisition chapter.",
+      "Update the current Rulebook Inquisition chapter.",
+      "Update the Inquisition Doctrine and Purge reference copy."
+    ],
+    "validation": [
+      "Assert one-card normal Aftermath gain remains 1.",
+      "Assert two-or-more-card normal Aftermath gain is 2.",
+      "Assert the 1-Conviction combined-value Purge ceiling is 3.",
+      "Preserve v0.7.0 published release and digital-engine behavior unchanged."
+    ],
+    "releaseBoundary": "This is a v0.7.2 candidate gameplay change. Published v0.7.0 and v0.7.1 artifacts remain immutable."
+  }
+}

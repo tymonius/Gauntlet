@@ -26,6 +26,7 @@
       "v072SharedBaselineRestoration": "/docs/v0.7.2-shared-baseline-restoration.json",
       "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json",
       "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json",
+      "v072InquisitionPurificationTuning": "/docs/v0.7.2-inquisition-purification-tuning.json",
       "v072FinancierEconomy": "/docs/v0.7.2-financier-action-economy.json"
     }
   },
@@ -634,7 +635,7 @@
                 "classification": "Resource",
                 "name": "Conviction",
                 "descriptor": "Begin at 0 · Maximum 4",
-                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
+                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered."
               }
             ]
           },
@@ -662,7 +663,7 @@
                 "classification": "Resource",
                 "name": "Conviction",
                 "descriptor": "Begin at 0 · Maximum 4",
-                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
+                "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered."
               }
             ]
           }
@@ -4742,11 +4743,16 @@
           "minimum": 0,
           "maximum": 4,
           "timing": "First qualifying Aftermath each turn.",
-          "text": "The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction, up to the maximum of 4.",
+          "text": "The first time each turn one or more opposing cards enter the Graveyard during an Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered, up to the maximum of 4.",
           "per_qualifying_aftermath_gain": 1,
           "once_per_turn": true,
           "may_trigger_on_either_players_turn": true,
-          "does_not_require_win": true
+          "does_not_require_win": true,
+          "gain_by_opposing_card_count": {
+            "exactly_one": 1,
+            "two_or_more": 2
+          },
+          "per_qualifying_aftermath_gain_scope": "One-card baseline retained for compatibility; current scaled gain is authoritative in gain_by_opposing_card_count."
         },
         "condemnation": {
           "timing": "During the Aftermath.",
@@ -4766,7 +4772,7 @@
           ],
           "action_purge_limit": "Once per turn",
           "options": {
-            "1": "Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard.",
+            "1": "Choose one: put the top card of the opponent’s Discard Pile in their Graveyard; or choose up to two cards there with combined value 3 or less and put them in their Graveyard.",
             "2": "Choose one opposing Asset and put it in its owner’s Graveyard.",
             "3": "The opponent chooses one card from their Hand and puts it in their Graveyard.",
             "4": "Reveal the opponent’s Hand; choose one card and put it in their Graveyard."
@@ -4774,7 +4780,9 @@
           "discard_pile_top": "The top of the Discard Pile is its most recently placed card.",
           "combined_value_choice_preserves_remaining_order": true,
           "two_phase_permission": "If one Action that turn is Purge, you may also take one Action in the other Action phase that turn. You still cannot take two Actions in the same phase.",
-          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself."
+          "directly_permitted_purge": "A Purge directly permitted by a rule or Leader Ability does not spend an Action, does not use the once-per-turn permission to spend an Action on Purge, and does not activate the two-phase Action permission by itself.",
+          "one_conviction_combined_card_count_max": 2,
+          "one_conviction_combined_value_max": 3
         },
         "purification": {
           "timing": "After the opponent’s normal start-of-turn draw attempt.",
@@ -8282,7 +8290,7 @@
           "classification": "Resource",
           "name": "Conviction",
           "descriptor": "Begin at 0 · Maximum 4",
-          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered."
         }
       ]
     },
@@ -8310,7 +8318,7 @@
           "classification": "Resource",
           "name": "Conviction",
           "descriptor": "Begin at 0 · Maximum 4",
-          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction."
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath, gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered."
         }
       ]
     }

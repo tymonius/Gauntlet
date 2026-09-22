@@ -20,7 +20,7 @@ During Opening or Denouement, spend **1 Action** and the listed Conviction.
 
 | Cost | Effect |
 |---:|---|
-| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard. |
+| 1 | Choose one: put the top card of the opponent's Discard Pile in their Graveyard; or choose up to two cards there with combined value 3 or less and put them in their Graveyard. |
 | 2 | Put one opposing Asset in its owner's Graveyard. |
 | 3 | The opponent chooses one card from Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
