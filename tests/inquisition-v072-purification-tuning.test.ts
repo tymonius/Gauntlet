@@ -33,8 +33,10 @@ describe('v0.7.2 Inquisition Purification tuning', () => {
       starting: 0,
       maximum: 4,
       once_per_turn: true,
-      per_qualifying_aftermath_gain: 1,
-      two_or_more_cards_gain: 2,
+      gain_by_opposing_card_count: {
+        exactly_one: 1,
+        two_or_more: 2,
+      },
     });
     expect(rules.conviction.text).toContain('gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered');
     expect(rules.purge.options['1']).toContain('combined value 3 or less');
