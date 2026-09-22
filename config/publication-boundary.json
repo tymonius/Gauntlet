@@ -6,14 +6,17 @@
       "assets",
       "config",
       "images",
-      "releases",
       "rules-arbiter",
       "rules-assistant",
       "tts",
       "v0.7.1"
     ],
     "rootFiles": {
-      "required": ["404.html", "CNAME", "index.html"],
+      "required": [
+        "404.html",
+        "CNAME",
+        "index.html"
+      ],
       "allowedExtensions": [
         ".css",
         ".js",
@@ -27,7 +30,9 @@
         ".xml",
         ".txt"
       ],
-      "generated": [".nojekyll"]
+      "generated": [
+        ".nojekyll"
+      ]
     },
     "sourceOnlyRepositoryRoots": [
       ".github",
@@ -38,6 +43,7 @@
       "legacy",
       "media",
       "packages",
+      "releases",
       "rulebook",
       "rulebook-design",
       "rulebook-production",
@@ -48,54 +54,264 @@
     ]
   },
   "materializedRoutes": [
-    {"source": "apps/about", "publicPath": "/about/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/accessibility", "publicPath": "/accessibility/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/card-reference", "publicPath": "/card-reference/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/changelog", "publicPath": "/changelog/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/contact", "publicPath": "/contact/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/deckbuilder", "publicPath": "/deckbuilder/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/faq", "publicPath": "/faq/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/factions", "publicPath": "/factions/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/press", "publicPath": "/press/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/privacy", "publicPath": "/privacy/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "legacy/rulebook-browser", "publicPath": "/rulebook/", "kind": "release-transition-app", "manageIndexRoutes": true},
-    {"source": "apps/rules", "publicPath": "/rules/", "kind": "compatibility-route", "manageIndexRoutes": true, "excludeSourceSubpaths": ["booklet"]},
-    {"source": "apps/start", "publicPath": "/start/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "apps/playtest", "publicPath": "/playtest/", "kind": "current-app", "manageIndexRoutes": true},
-    {"source": "card-design", "publicPath": "/card-design/", "kind": "production-tooling", "manageIndexRoutes": false},
-    {"source": "packages/game-data", "publicPath": "/game-data/", "kind": "shared-browser-contract", "manageIndexRoutes": false},
-    {"source": "legacy/card-design-v0.6.3/reference-copy", "publicPath": "/card-design/reference-copy/v0.6.3/", "kind": "historical-card-review", "manageIndexRoutes": false},
-    {"source": "legacy/public-versions/v0.6.2", "publicPath": "/v0.6.2/", "kind": "historical-version", "manageIndexRoutes": false},
-    {"source": "legacy/public-versions/v0.6.3", "publicPath": "/v0.6.3/", "kind": "historical-version", "manageIndexRoutes": false},
-    {"source": "legacy/public-versions/v0.7.0", "publicPath": "/v0.7.0/", "kind": "historical-version", "manageIndexRoutes": false},
-    {"source": "legacy/public-compatibility/deckbuilder-v0.5", "publicPath": "/deckbuilder-v0.5/", "kind": "retired-compatibility", "manageIndexRoutes": false},
-    {"source": "legacy/public-compatibility/deckbuilder-v0.6", "publicPath": "/deckbuilder-v0.6/", "kind": "retired-compatibility", "manageIndexRoutes": false},
-    {"source": "legacy/public-compatibility/faction-sheets", "publicPath": "/faction-sheets/", "kind": "retired-compatibility", "manageIndexRoutes": false}
+    {
+      "source": "apps/about",
+      "publicPath": "/about/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/accessibility",
+      "publicPath": "/accessibility/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/card-reference",
+      "publicPath": "/card-reference/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/changelog",
+      "publicPath": "/changelog/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/contact",
+      "publicPath": "/contact/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/deckbuilder",
+      "publicPath": "/deckbuilder/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/faq",
+      "publicPath": "/faq/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/factions",
+      "publicPath": "/factions/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/press",
+      "publicPath": "/press/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/privacy",
+      "publicPath": "/privacy/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "legacy/rulebook-browser",
+      "publicPath": "/rulebook/",
+      "kind": "release-transition-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/rules",
+      "publicPath": "/rules/",
+      "kind": "compatibility-route",
+      "manageIndexRoutes": true,
+      "excludeSourceSubpaths": [
+        "booklet"
+      ]
+    },
+    {
+      "source": "apps/start",
+      "publicPath": "/start/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/playtest",
+      "publicPath": "/playtest/",
+      "kind": "current-app",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "card-design",
+      "publicPath": "/card-design/",
+      "kind": "production-tooling",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "packages/game-data",
+      "publicPath": "/game-data/",
+      "kind": "shared-browser-contract",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/card-design-v0.6.3/reference-copy",
+      "publicPath": "/card-design/reference-copy/v0.6.3/",
+      "kind": "historical-card-review",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-versions/v0.6.2",
+      "publicPath": "/v0.6.2/",
+      "kind": "historical-version",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-versions/v0.6.3",
+      "publicPath": "/v0.6.3/",
+      "kind": "historical-version",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-versions/v0.7.0",
+      "publicPath": "/v0.7.0/",
+      "kind": "historical-version",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-compatibility/deckbuilder-v0.5",
+      "publicPath": "/deckbuilder-v0.5/",
+      "kind": "retired-compatibility",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-compatibility/deckbuilder-v0.6",
+      "publicPath": "/deckbuilder-v0.6/",
+      "kind": "retired-compatibility",
+      "manageIndexRoutes": false
+    },
+    {
+      "source": "legacy/public-compatibility/faction-sheets",
+      "publicPath": "/faction-sheets/",
+      "kind": "retired-compatibility",
+      "manageIndexRoutes": false
+    }
   ],
   "materializedFiles": [
-    {"source": "rulebook/player-facing/current-rulebook.md", "publicPath": "/rulebook/player-facing/current-rulebook.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/player-guide/player-guide.md", "publicPath": "/rulebook/player-guide/player-guide.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/player-guide/player-guide.md", "publicPath": "/rulebook/sources/player-guide.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/military.md", "publicPath": "/rulebook/sources/factions/military.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/diplomats.md", "publicPath": "/rulebook/sources/factions/diplomats.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/financiers.md", "publicPath": "/rulebook/sources/factions/financiers.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/intelligence.md", "publicPath": "/rulebook/sources/factions/intelligence.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/mystics.md", "publicPath": "/rulebook/sources/factions/mystics.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/faction-guides/inquisition.md", "publicPath": "/rulebook/sources/factions/inquisition.md", "kind": "release-transition-source"},
-    {"source": "packages/rules/comprehensive/comprehensive-rules.md", "publicPath": "/rulebook/sources/complete-rules.md", "kind": "release-transition-source"},
-    {"source": "packages/rendering/face-authority.mjs", "publicPath": "/card-design/face-authority.mjs", "kind": "shared-browser-contract"},
-    {"source": "packages/rendering/production-surface.mjs", "publicPath": "/card-design/production-surface.mjs", "kind": "shared-browser-contract"},
-    {"source": "images/sketches/hero-sketches/hero sketch.png", "publicPath": "/images/sketches/hero sketch.png", "kind": "retired-compatibility"},
-    {"source": "legacy/card-design-v0.6.3/long-card-render.html", "publicPath": "/card-design/long-card-render.html", "kind": "historical-card-review"},
-    {"source": "legacy/card-design-v0.6.3/long-card-render.js", "publicPath": "/card-design/long-card-render.js", "kind": "historical-card-review"},
-    {"source": "legacy/card-design-v0.6.3/generated/long-card-review-catalog.js", "publicPath": "/card-design/generated/v0.6.3/long-card-review-catalog.js", "kind": "historical-card-review"},
-    {"source": "legacy/card-design-studies/deed-ornament-study.html", "publicPath": "/card-design/deed-ornament-study.html", "kind": "historical-design-study"},
-    {"source": "legacy/card-design-studies/deed-rule-font-study.html", "publicPath": "/card-design/deed-rule-font-study.html", "kind": "historical-design-study"},
-    {"source": "legacy/card-design-studies/military-symbols.html", "publicPath": "/card-design/military-symbols.html", "kind": "historical-design-study"},
-    {"source": "legacy/card-design-studies/capital-ledger-review.md", "publicPath": "/card-design/capital-ledger-review.md", "kind": "historical-design-study"},
-    {"source": "legacy/card-design-studies/tracker-card-design-notes.md", "publicPath": "/card-design/tracker-card-design-notes.md", "kind": "historical-design-study"},
-    {"source": "docs/card-design/PARCHMENT_BACKGROUND_MAPPING.md", "publicPath": "/card-design/PARCHMENT_BACKGROUND_MAPPING.md", "kind": "maintained-design-documentation"},
-    {"source": "docs/card-design/faction-feature-taxonomy.md", "publicPath": "/card-design/faction-feature-taxonomy.md", "kind": "maintained-design-documentation"}
+    {
+      "source": "rulebook/player-facing/current-rulebook.md",
+      "publicPath": "/rulebook/player-facing/current-rulebook.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/player-guide/player-guide.md",
+      "publicPath": "/rulebook/player-guide/player-guide.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/player-guide/player-guide.md",
+      "publicPath": "/rulebook/sources/player-guide.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/military.md",
+      "publicPath": "/rulebook/sources/factions/military.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/diplomats.md",
+      "publicPath": "/rulebook/sources/factions/diplomats.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/financiers.md",
+      "publicPath": "/rulebook/sources/factions/financiers.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/intelligence.md",
+      "publicPath": "/rulebook/sources/factions/intelligence.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/mystics.md",
+      "publicPath": "/rulebook/sources/factions/mystics.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/faction-guides/inquisition.md",
+      "publicPath": "/rulebook/sources/factions/inquisition.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rules/comprehensive/comprehensive-rules.md",
+      "publicPath": "/rulebook/sources/complete-rules.md",
+      "kind": "release-transition-source"
+    },
+    {
+      "source": "packages/rendering/face-authority.mjs",
+      "publicPath": "/card-design/face-authority.mjs",
+      "kind": "shared-browser-contract"
+    },
+    {
+      "source": "packages/rendering/production-surface.mjs",
+      "publicPath": "/card-design/production-surface.mjs",
+      "kind": "shared-browser-contract"
+    },
+    {
+      "source": "images/sketches/hero-sketches/hero sketch.png",
+      "publicPath": "/images/sketches/hero sketch.png",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/card-design-v0.6.3/long-card-render.html",
+      "publicPath": "/card-design/long-card-render.html",
+      "kind": "historical-card-review"
+    },
+    {
+      "source": "legacy/card-design-v0.6.3/long-card-render.js",
+      "publicPath": "/card-design/long-card-render.js",
+      "kind": "historical-card-review"
+    },
+    {
+      "source": "legacy/card-design-v0.6.3/generated/long-card-review-catalog.js",
+      "publicPath": "/card-design/generated/v0.6.3/long-card-review-catalog.js",
+      "kind": "historical-card-review"
+    },
+    {
+      "source": "legacy/card-design-studies/deed-ornament-study.html",
+      "publicPath": "/card-design/deed-ornament-study.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/deed-rule-font-study.html",
+      "publicPath": "/card-design/deed-rule-font-study.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/military-symbols.html",
+      "publicPath": "/card-design/military-symbols.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/capital-ledger-review.md",
+      "publicPath": "/card-design/capital-ledger-review.md",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/tracker-card-design-notes.md",
+      "publicPath": "/card-design/tracker-card-design-notes.md",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "docs/card-design/PARCHMENT_BACKGROUND_MAPPING.md",
+      "publicPath": "/card-design/PARCHMENT_BACKGROUND_MAPPING.md",
+      "kind": "maintained-design-documentation"
+    },
+    {
+      "source": "docs/card-design/faction-feature-taxonomy.md",
+      "publicPath": "/card-design/faction-feature-taxonomy.md",
+      "kind": "maintained-design-documentation"
+    }
   ],
   "managedRoutes": [
     "/about/",
@@ -143,9 +359,25 @@
     "/playtest/tracked/"
   ],
   "versionedRoutes": [
-    {"version": "v0.6.2", "publicPath": "/v0.6.2/", "source": "legacy/public-versions/v0.6.2"},
-    {"version": "v0.6.3", "publicPath": "/v0.6.3/", "source": "legacy/public-versions/v0.6.3"},
-    {"version": "v0.7.0", "publicPath": "/v0.7.0/", "source": "legacy/public-versions/v0.7.0"},
-    {"version": "v0.7.1", "publicPath": "/v0.7.1/", "source": "v0.7.1"}
+    {
+      "version": "v0.6.2",
+      "publicPath": "/v0.6.2/",
+      "source": "legacy/public-versions/v0.6.2"
+    },
+    {
+      "version": "v0.6.3",
+      "publicPath": "/v0.6.3/",
+      "source": "legacy/public-versions/v0.6.3"
+    },
+    {
+      "version": "v0.7.0",
+      "publicPath": "/v0.7.0/",
+      "source": "legacy/public-versions/v0.7.0"
+    },
+    {
+      "version": "v0.7.1",
+      "publicPath": "/v0.7.1/",
+      "source": "v0.7.1"
+    }
   ]
 }
