@@ -188,9 +188,12 @@
     fillPlayerOptions();
 
     const joinedPlayer = currentPlayer();
+    const creator = Boolean(state.hostKey);
     const open = session.status === "open";
     const full = session.playerCount === 2;
     const ownResponse = Boolean(joinedPlayer?.responseSubmitted);
+    document.body.dataset.trackedRole = creator ? "creator" : joinedPlayer ? "participant" : "visitor";
+    document.body.dataset.trackedLifecycle = session.lifecycleState || "joining";
 
     el.sharePanel.hidden = !open || full;
     if (!el.sharePanel.hidden) await renderQrCode();
@@ -202,8 +205,8 @@
       el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}.${riteCopy ? ` Selected Rites: ${riteCopy}.` : ""} Rules Arbiter questions from this device will be attributed to you.`;
     }
 
-    el.playPanel.hidden = !open || !joinedPlayer || !full;
-    el.resultSection.hidden = !open || !joinedPlayer || !full || session.resultSubmitted;
+    el.playPanel.hidden = !creator || !open || !joinedPlayer || !full;
+    el.resultSection.hidden = !creator || !open || !joinedPlayer || !full || session.resultSubmitted;
     el.responseSection.hidden = !open || !joinedPlayer || !session.resultSubmitted || ownResponse;
     if (el.legacySelectionReasonField && joinedPlayer) {
       const legacyMissingReason = !joinedPlayer.selectionReasonCaptured;
