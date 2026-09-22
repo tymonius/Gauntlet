@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "v0.7.2",
+  "status": "approved-design",
+  "changeType": "neutral-card-liquidity-rebalance",
+  "gameplayBehaviorChanged": true,
+  "card": {
+    "id": "neutral-new-recruits",
+    "name": "New Recruits",
+    "cost": 2,
+    "action": "Discard one other card from your Hand if able, then +3 Cards.",
+    "battleTextChanged": false
+  },
+  "designIntent": [
+    "Make New Recruits a genuine hand-replenishment option rather than pure filtering.",
+    "Allow the Action to recover from a one-card Hand instead of being unusable there.",
+    "Preserve a discard requirement whenever another Hand card is available.",
+    "Use the higher card value to price the stronger Neutral effect and preserve a meaningful play-versus-value decision for Financiers."
+  ],
+  "starterDeckImpact": {
+    "reason": "All twelve recommended starter Decks contained New Recruits and were exactly 60 Deckbuilding Value before the cost increase.",
+    "policy": "Keep every starter at 30 cards and 60 Deckbuilding Value with minimal one-for-one substitutions; do not change the global 60-value construction limit.",
+    "adjustments": {
+      "general": ["-1 Reserve Force", "+1 Pathfinders"],
+      "commandant": ["-1 Encampment", "+1 Contingency Plan"],
+      "ambassador": ["-1 Contraband", "+1 Counterintelligence"],
+      "senator": ["-1 Gunboat Diplomacy", "+1 Neutral Observers"],
+      "banker": ["-1 Conscription", "+1 Rallying Cry", "-1 Tactical Planning", "+1 Second Line"],
+      "executive": ["-1 Advance Guard", "+1 Second Line", "-1 Sabotage", "+1 Rallying Cry"],
+      "ranger": ["-1 Contraband", "+1 Pathfinders"],
+      "spymaster": ["-1 Operational Reassessment", "+1 Exfiltration", "-1 Reinforcements", "+1 Rallying Cry"],
+      "alchemist": ["-1 Spirit Hollow", "+1 Supplies"],
+      "spirit-walker": ["-1 Entrenchment", "+1 Scouting Report"],
+      "grand-inquisitor": ["-1 Act of Faith", "+1 Counterintelligence", "-1 Penance", "+1 Supplies"],
+      "witch-hunter": ["-1 Entrenchment", "+1 Contingency Plan"]
+    }
+  },
+  "integrationRequirements": {
+    "authority": [
+      "Update New Recruits cost and Action text in current-game authority.",
+      "Update Neutral card-pool summary metadata.",
+      "Register this design record in current-development provenance."
+    ],
+    "digitalEngine": [
+      "Permit New Recruits to be played with no other Hand card.",
+      "If another Hand card exists when the effect resolves, require one such card to be discarded before drawing.",
+      "If no other Hand card exists when the effect resolves, skip the discard and draw three cards.",
+      "Draw three rather than two in all successful resolutions."
+    ],
+    "starters": [
+      "Keep all twelve recommended starter Decks at exactly 30 cards and 60 Deckbuilding Value.",
+      "Do not alter the global 60-value construction limit."
+    ],
+    "releaseBoundary": "This is a v0.7.2 gameplay change. Published v0.7.1 artifacts remain immutable."
+  }
+}
