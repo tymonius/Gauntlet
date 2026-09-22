@@ -102,6 +102,14 @@ jobs:
             config/release-lifecycle.json
             config/github-release-contract.json
             config/tts-component-contract.json
+            config/publication-boundary.json
+            apps/rules/booklet
+            apps/rules/markdown.js
+            assets
+            legacy/rulebook-browser
+            packages/rules
+            rulebook
+            rules-assistant
             scripts/current-game-authority.mjs
             rulebook/player-facing/rule-facts.js
             scripts/generate-tts-card-assets.mjs
@@ -114,6 +122,9 @@ jobs:
             scripts/stage-tts-release-assets.mjs
             scripts/generate-tts-rulebook-reader.mjs
             scripts/tts-rulebook-imposition.mjs
+            scripts/publication-boundary.mjs
+            scripts/render-v072-dedicated-booklets.mjs
+            scripts/render-v072-modular-booklets.mjs
             scripts/generate-tts-save.mjs
             scripts/assemble-tts-supplemental-save.mjs
             scripts/tts-deck-importer.mjs
@@ -130,6 +141,7 @@ jobs:
             images/Gauntlet.svg
             images/Gauntlet-G.svg
             images/faction-symbols
+            images/woodcuts
             images/artwork/manifest.json
             images/artwork/cards
             images/artwork/territories
@@ -356,6 +368,10 @@ jobs:
       - name: Generate finalized Proposal, Ledger, and Deed components
         if: steps.scope.outputs.render_finalized == 'true'
         run: npm run tts:finalized-supplementals
+
+      - name: Render v0.7.2 modular rules PDFs for TTS
+        if: steps.scope.outputs.stage_assets == 'true'
+        run: node scripts/render-v072-dedicated-booklets.mjs
 
       - name: Stage hosted TTS release assets
         if: steps.scope.outputs.stage_assets == 'true'
