@@ -82,6 +82,13 @@ describe('Browser Rulebook candidate publication', () => {
     expect(css).toContain('font-family: var(--rulebook-body);');
   });
 
+  it('shows complete header woodcuts without framing lines', async () => {
+    const css = await read('legacy/rulebook-browser/leader-portraits.css');
+
+    expect(css).toMatch(/\.hero-art\s*\{[\s\S]*overflow: visible;[\s\S]*border-top: 0;[\s\S]*border-bottom: 0;/);
+    expect(css).toMatch(/\.hero-art img\s*\{[\s\S]*width: 100%;[\s\S]*max-width: 100%;[\s\S]*height: auto;[\s\S]*object-fit: contain;/);
+  });
+
   it('features the paired faction woodcuts at the top of candidate faction guides', async () => {
     const script = await read('legacy/rulebook-browser/candidate-publication.js');
     const css = await read('legacy/rulebook-browser/candidate-publication.css');
