@@ -10,6 +10,13 @@ on:
       - "rules-assistant/worker-v071.js"
       - "rules-assistant/worker-v072-candidate.js"
       - "rules-assistant/v072-candidate-corpus.js"
+      - "rules-assistant/worker-v072.js"
+      - "rules-assistant/v072-release-corpus.js"
+      - "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md"
+      - "releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json"
+      - "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json"
+      - "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json"
+      - "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json"
       - "rules-assistant/local-search.js"
       - "rules-assistant/v071-public-corpus.js"
       - "rules-assistant/r13-classification.js"
@@ -60,12 +67,16 @@ jobs:
           node --check rules-assistant/worker-entry.js
           node --check rules-assistant/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js
+          node --check rules-assistant/worker-v072.js
           npx vitest run \
             rules-assistant/v071-gate3-h-remediation.test.mjs \
             rules-assistant/v071-gate3-i-remediation.test.mjs \
             rules-assistant/v072-candidate-corpus.test.mjs \
             rules-assistant/v072-r33-worker-port.test.mjs \
-            rules-assistant/worker-entry-v072-candidate.test.mjs
+            rules-assistant/worker-entry-v072-candidate.test.mjs \
+            rules-assistant/v072-release-corpus.test.mjs \
+            rules-assistant/v072-final-worker-port.test.mjs \
+            rules-assistant/worker-entry-v072-final.test.mjs
 
       - name: Resolve expected behavior revision
         id: revision
@@ -98,6 +109,22 @@ jobs:
           test -n "$revision"
           echo "value=$revision" >> "$GITHUB_OUTPUT"
           echo "Staging v0.7.2 candidate Rules Arbiter behavior revision $revision"
+
+      - name: Resolve expected final v0.7.2 behavior revision
+        id: v072_revision
+        shell: bash
+        run: |
+          revision="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from "node:fs";
+          const source = readFileSync("rules-assistant/worker-v072.js", "utf8");
+          const match = source.match(/BEHAVIOR_REVISION\s*=\s*"([^"]+)"/);
+          if (!match) process.exit(1);
+          process.stdout.write(match[1]);
+          NODE
+          )"
+          test -n "$revision"
+          echo "value=$revision" >> "$GITHUB_OUTPUT"
+          echo "Staging frozen v0.7.2 Rules Arbiter behavior revision $revision"
 
       - name: Deploy Rules Arbiter
         run: npx wrangler deploy --config rules-assistant/wrangler.toml
@@ -187,3 +214,52 @@ jobs:
           console.error("Production candidate route did not report a valid v0.7.2 candidate corpus.");
           process.exit(1);
           NODE
+
+      - name: Verify frozen v0.7.2 health and corpus
+        env:
+          EXPECTED_V072_BEHAVIOR_REVISION: ${{ steps.v072_revision.outputs.value }}
+          EXPECTED_V072_AUTHORITY_SET: a644061be1f605d0c83ff8b1cde7e0d5b6323ef01fa804dd720bdbae205b1b6b
+        run: |
+          node <<'NODE'
+          const healthEndpoint = "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/health";
+          const corpusEndpoint = "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/corpus-health";
+          const expectedRevision = process.env.EXPECTED_V072_BEHAVIOR_REVISION;
+          const expectedAuthority = process.env.EXPECTED_V072_AUTHORITY_SET;
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+          for (let attempt = 1; attempt <= 60; attempt += 1) {
+            try {
+              const healthResponse = await fetch(healthEndpoint, { cache: "no-store" });
+              const health = healthResponse.ok ? await healthResponse.json() : null;
+              const corpusResponse = await fetch(corpusEndpoint, { cache: "no-store" });
+              const corpus = corpusResponse.ok ? await corpusResponse.json() : null;
+              console.log(
+                `Final v0.7.2 check ${attempt}/60: health=${health?.behaviorRevision || "missing"} corpus=${corpus?.authoritySetId || "missing"}`
+              );
+              if (
+                healthResponse.ok
+                && health?.ok === true
+                && health?.version === "v0.7.2"
+                && health?.published === false
+                && health?.currentPublicRelease === "v0.7.1"
+                && health?.behaviorRevision === expectedRevision
+                && corpusResponse.ok
+                && corpus?.ok === true
+                && corpus?.version === "v0.7.2"
+                && corpus?.currentPublicRelease === "v0.7.1"
+                && corpus?.behaviorRevision === expectedRevision
+                && corpus?.authoritySetId === expectedAuthority
+              ) {
+                console.log(`Verified frozen v0.7.2 Rules Arbiter ${expectedRevision} / ${expectedAuthority}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              console.log(`Final v0.7.2 check ${attempt}/60: ${error.message}`);
+            }
+            if (attempt < 60) await sleep(5000);
+          }
+
+          console.error("Frozen v0.7.2 Rules Arbiter did not converge to the staged release corpus.");
+          process.exit(1);
+          NODE
+
