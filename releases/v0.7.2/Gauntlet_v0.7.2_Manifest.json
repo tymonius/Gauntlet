@@ -2,10 +2,9 @@
   "schema_version": 1,
   "release_version": "v0.7.2",
   "name": "The Chief Justice",
-  "status": "candidate",
+  "status": "current",
   "authority_set_id": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
   "frozen_on": "2026-09-22",
-  "staged_package_path": "releases/v0.7.2/",
   "source_provenance": {
     "source_version": "v0.7.2",
     "base_version": "v0.7.1",
@@ -41,11 +40,11 @@
     "print_pdfs": 8
   },
   "public_defaults": {
-    "website": "v0.7.1",
-    "browser_tools": "v0.7.1",
-    "rules_arbiter": "v0.7.1",
-    "digital_rules": "v0.7.1",
-    "rulebook": "v0.7.1"
+    "website": "v0.7.2",
+    "browser_tools": "v0.7.2",
+    "rules_arbiter": "v0.7.2",
+    "digital_rules": "v0.7.2",
+    "rulebook": "v0.7.2"
   },
   "staged_routes": {
     "rules_arbiter": "/api/v072/rules",
@@ -344,5 +343,15 @@
       "sha256": "82dcdb773644356e3d2480df048cd79f1fa09da5bde8ad8cfec493298f25f6f7",
       "bytes": 2666
     }
-  ]
+  ],
+  "publication_date": "2026-09-22",
+  "current_package_path": "releases/v0.7.2/",
+  "public_routes": {
+    "start": "/start/",
+    "rulebook": "/rulebook/",
+    "card_reference": "/card-reference/",
+    "factions": "/factions/",
+    "deckbuilder": "/deckbuilder/",
+    "rules_arbiter": "/rules-arbiter/"
+  }
 }
