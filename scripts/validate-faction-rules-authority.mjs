@@ -126,7 +126,7 @@ invariant(inquisition.conviction?.once_per_turn === true && inquisition.convicti
 invariant(inquisition.condemnation?.remaining_reserve_unchanged === true, 'Condemnation must not change unused Reserve cleanup.');
 invariant(inquisition.blasphemy?.separate_from_normal_conviction_gain === true, 'Blasphemy independence from normal Conviction gain is missing.');
 invariant(Object.keys(inquisition.purge?.options || {}).sort().join(',') === '1,2,3,4', 'Purge option table is incomplete.');
-invariant(inquisition.purge?.combined_value_choice_preserves_remaining_order === true && String(inquisition.purge?.options?.['1'] || '').includes('combined value 3 or less'), '1-Conviction Purge combined-value rule drifted.');
+invariant(inquisition.purge?.combined_value_choice_preserves_remaining_order === true && inquisition.purge?.one_conviction_combined_card_count_max === 2 && inquisition.purge?.one_conviction_combined_value_max === 3 && String(inquisition.purge?.options?.['1'] || '').includes('combined value 3 or less'), '1-Conviction Purge combined-value rule drifted.');
 invariant(inquisition.purge?.action_purge_limit === 'Once per turn', 'Action Purge limit drifted.');
 invariant(inquisition.purge?.directly_permitted_purge, 'Directly permitted Purge semantics are missing.');
 invariant(inquisition.purification?.other_failed_draws_do_not_trigger === true, 'Purification must remain limited to the normal start-of-turn Draw.');
