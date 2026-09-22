@@ -9,7 +9,7 @@ import {
 const expectedFactionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
 
 describe('Browser Rulebook publication assets', () => {
-  it('binds faction symbols and approved Leader woodcuts to current authority', async () => {
+  it('binds faction symbols, paired guide woodcuts, and approved Leader woodcuts to current authority', async () => {
     const authority = await loadCurrentGameAuthority();
     expect([...RULES_PUBLICATION_FACTION_IDS].sort()).toEqual([...expectedFactionIds].sort());
 
@@ -25,6 +25,10 @@ describe('Browser Rulebook publication assets', () => {
       expect(publicationLeaders).toEqual(authorityLeaders);
 
       await access(asset.symbol.sourcePath);
+      expect(asset.guideWoodcut.sourcePath).toBe(`images/woodcuts/factions/${factionId}.png`);
+      expect(asset.guideWoodcut.publicUrl).toBe(`/images/woodcuts/factions/${factionId}.png`);
+      await access(asset.guideWoodcut.sourcePath);
+
       for (const leader of asset.leaders) {
         expect(leader.sourcePath.startsWith('images/woodcuts/')).toBe(true);
         expect(leader.publicUrl.startsWith('/images/woodcuts/')).toBe(true);
