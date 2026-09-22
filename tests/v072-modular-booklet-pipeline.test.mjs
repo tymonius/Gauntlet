@@ -161,8 +161,11 @@ describe('v0.7.2 modular booklet pipeline', () => {
     for (const id of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
       expect(client).toContain(`coverArt: '/images/woodcuts/factions/${id}.png'`);
     }
+    expect(client).toContain("coverArt: '/images/woodcuts/hero compositions/full.png'");
+    expect(client).toContain("coverClass: 'complete-rules-cover'");
     expect(client).toContain('publication.coverArt ||');
     expect(parityCss).toContain('.cover.faction-cover .cover-art img');
+    expect(parityCss).toContain('.cover.complete-rules-cover .cover-art img');
     expect(parityCss).toContain('-webkit-mask-image: none');
     expect(parityCss).toContain('mask-image: none');
     expect(client).toContain('newContinuationPage');
