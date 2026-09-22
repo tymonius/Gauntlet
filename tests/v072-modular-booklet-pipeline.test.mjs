@@ -158,6 +158,13 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(parityCss).toContain('transform: none');
 
     expect(client).toContain('createPage');
+    for (const id of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
+      expect(client).toContain(`coverArt: '/images/woodcuts/factions/${id}.png'`);
+    }
+    expect(client).toContain('publication.coverArt ||');
+    expect(parityCss).toContain('.cover.faction-cover .cover-art img');
+    expect(parityCss).toContain('-webkit-mask-image: none');
+    expect(parityCss).toContain('mask-image: none');
     expect(client).toContain('newContinuationPage');
     expect(client).toContain('buildCardAnatomyBlock');
     expect(client).toContain("symbolMark.className = 'faction-overview-symbol booklet-inline-faction-symbol'");
@@ -191,6 +198,8 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain("document.body.dataset.bookletReady = 'true'");
     expect(client).toContain("document.body.dataset.rulesetMode = 'candidate'");
 
+    expect(renderer).toContain(".candidate-faction-guide-woodcut img");
+    expect(adapter).toContain('browserFactionWoodcutWait');
     expect(renderer).toContain("width: '5.5in'");
     expect(renderer).toContain("height: '8.5in'");
     expect(renderer).toContain('LETTER_LANDSCAPE');
