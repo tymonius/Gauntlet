@@ -1,0 +1,55 @@
+{
+  "schema_version": 3,
+  "release_version": "v0.7.2",
+  "source_version": "v0.7.2",
+  "status": "release-candidate",
+  "authority_set_id": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
+  "freeze_record": "config/v072-release-freeze.json",
+  "frozen_sources": {
+    "currentGame": {
+      "path": "packages/game-data/current-game.json",
+      "gitBlob": "d584f7b019a6bad03eeef9fd282bc569b9ead740"
+    },
+    "completeRules": {
+      "path": "packages/rules/comprehensive/comprehensive-rules.md",
+      "gitBlob": "c5915af9aa9668ebaf20755a3755f5d12474c7a0"
+    }
+  },
+  "current_game_authority": "packages/game-data/current-game.json",
+  "complete_rules_authority": "packages/rules/comprehensive/comprehensive-rules.md",
+  "historical_derivation": {
+    "historicalBaseVersion": "v0.6.3",
+    "transitionalSourceVersion": "v0.6.4-candidate",
+    "note": "The historical and approved-design inputs below document how the current authority was derived. They are provenance only, not runtime inputs, override layers, or current authorities.",
+    "historicalInputs": {
+      "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+      "cardChanges": "/docs/v0.6.4-card-additions.json",
+      "territories": "/docs/v0.6.4-territories.json",
+      "proposals": "/docs/v0.6.4-diplomat-proposals.json",
+      "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
+      "rules": "/docs/v0.6.4-rules.json",
+      "componentContract": "/config/tts-component-contract.json",
+      "starterDecks": "/deckbuilder/starter-decks.json"
+    },
+    "currentDevelopmentInputs": {
+      "mysticsRites": "/docs/v0.7.1-mystics-rites.json",
+      "v072TimingAndCaptureCleanup": "/docs/v0.7.2-timing-and-capture-cleanup.json",
+      "v072BattleCommitmentOrderRestoration": "/docs/v0.7.2-battle-commitment-order-restoration.json",
+      "v072SharedBaselineRestoration": "/docs/v0.7.2-shared-baseline-restoration.json",
+      "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json",
+      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json",
+      "v072InquisitionPurificationTuning": "/docs/v0.7.2-inquisition-purification-tuning.json",
+      "v072FinancierEconomy": "/docs/v0.7.2-financier-action-economy.json",
+      "v072NewRecruitsLiquidity": "/docs/v0.7.2-new-recruits-liquidity.json",
+      "v072StarterDeckCompetitiveReaudit": "/docs/v0.7.2-starter-deck-competitive-reaudit.md"
+    }
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "proposals": 9,
+    "starter_decks": 12
+  }
+}

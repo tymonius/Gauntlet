@@ -336,6 +336,31 @@
       "source": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
       "publicPath": "/releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
       "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
+      "kind": "staged-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
+      "kind": "staged-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
+      "kind": "staged-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
+      "kind": "staged-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
+      "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
+      "kind": "staged-release-runtime"
     }
   ],
   "managedRoutes": [

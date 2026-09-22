@@ -70,6 +70,10 @@ for (const release of historical) {
 
 for (const [version, state] of Object.entries(lifecycle.releases || {})) {
   if (version === current.tag) continue;
+  if (state.status === 'candidate') {
+    requireCondition(state.public_cutover === false, `${version} candidate lifecycle entry must keep public_cutover=false.`);
+    continue;
+  }
   const record = historical.find((release) => release.tag === version);
   requireCondition(record, `${version} is in release-lifecycle.json but absent from the GitHub release contract.`);
   requireCondition(record.status === state.status, `${version} lifecycle status is not represented accurately in the GitHub release contract.`);
