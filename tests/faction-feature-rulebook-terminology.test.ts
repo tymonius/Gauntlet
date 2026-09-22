@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
-const currentGame = JSON.parse(read('game-data/current-game.json'));
+const currentGame = JSON.parse(read('packages/game-data/current-game.json'));
 
 describe('Faction Feature Rulebook terminology', () => {
   const chapterHeadings: Record<string, string> = {
