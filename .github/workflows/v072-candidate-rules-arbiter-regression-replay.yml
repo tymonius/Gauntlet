@@ -277,86 +277,91 @@ jobs:
           const { mkdirSync, writeFileSync } = require("node:fs");
           const { dirname } = require("node:path");
 
-          const question = "tie while defender has defensive edge. tiebreak roll?";
-          const endpoint = process.env.RULES_ENDPOINT;
-          const expectedVersion = process.env.EXPECTED_RULES_VERSION;
-          const expectedRevision = process.env.EXPECTED_BEHAVIOR_REVISION;
-          const audience = "gauntlet-rules-assistant-live-qa";
+          (async () => {
+            const question = "tie while defender has defensive edge. tiebreak roll?";
+            const endpoint = process.env.RULES_ENDPOINT;
+            const expectedVersion = process.env.EXPECTED_RULES_VERSION;
+            const expectedRevision = process.env.EXPECTED_BEHAVIOR_REVISION;
+            const audience = "gauntlet-rules-assistant-live-qa";
 
-          async function oidcToken() {
-            const url = new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
-            url.searchParams.set("audience", audience);
-            const response = await fetch(url, {
-              headers: { Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` },
-              cache: "no-store"
-            });
-            if (!response.ok) throw new Error(`OIDC token request failed with HTTP ${response.status}`);
-            const payload = await response.json();
-            if (!payload?.value) throw new Error("OIDC token response had no value");
-            return payload.value;
-          }
+            async function oidcToken() {
+              const url = new URL(process.env.ACTIONS_ID_TOKEN_REQUEST_URL);
+              url.searchParams.set("audience", audience);
+              const response = await fetch(url, {
+                headers: { Authorization: `Bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` },
+                cache: "no-store"
+              });
+              if (!response.ok) throw new Error(`OIDC token request failed with HTTP ${response.status}`);
+              const payload = await response.json();
+              if (!payload?.value) throw new Error("OIDC token response had no value");
+              return payload.value;
+            }
 
-          const token = await oidcToken();
-          const results = [];
-          for (let index = 0; index < 5; index += 1) {
-            const response = await fetch(endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Origin": "https://gauntlet.run",
-                "User-Agent": "Gauntlet-v0.7.2-candidate-polarity-probe",
-                "X-Gauntlet-QA-OIDC": token
+            const token = await oidcToken();
+            const results = [];
+            for (let index = 0; index < 5; index += 1) {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Origin": "https://gauntlet.run",
+                  "User-Agent": "Gauntlet-v0.7.2-candidate-polarity-probe",
+                  "X-Gauntlet-QA-OIDC": token
+                },
+                body: JSON.stringify({
+                  question,
+                  history: [],
+                  sessionId: `v072_polarity_probe_${index + 1}_${Date.now().toString(36)}`,
+                  rulesVersion: expectedVersion
+                })
+              });
+              const body = await response.text();
+              let payload = null;
+              try { payload = JSON.parse(body); } catch {}
+              const answer = String(payload?.answer || "").trim();
+              const firstPolarity = answer.match(/\b(yes|no)\b/i)?.[1]?.toLowerCase() || null;
+              const failures = [];
+              if (response.status !== 200) failures.push(`http: ${response.status}`);
+              if (!payload) failures.push("response: not JSON");
+              if (payload?.version !== expectedVersion) failures.push(`version: ${payload?.version || "missing"}`);
+              if (payload?.behaviorRevision !== expectedRevision) failures.push(`behavior: ${payload?.behaviorRevision || "missing"}`);
+              if (firstPolarity !== "no") failures.push(`polarity: first Yes/No word was ${firstPolarity || "missing"}`);
+              results.push({
+                attempt: index + 1,
+                httpStatus: response.status,
+                answer,
+                firstPolarity,
+                rulingStatus: payload?.rulingStatus || null,
+                executionPath: payload?.executionPath || null,
+                failures
+              });
+              console.log(`${failures.length ? "FAIL" : "PASS"} ${index + 1}/5: ${answer}`);
+              for (const failure of failures) console.log(`  - ${failure}`);
+              if (index < 4) await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
+            const failed = results.filter(item => item.failures.length);
+            const report = {
+              schema: "gauntlet.rules-arbiter-v072-candidate-polarity-probe.v1",
+              rulesVersion: expectedVersion,
+              behaviorRevision: expectedRevision,
+              authoritySetId: process.env.EXPECTED_AUTHORITY_SET,
+              question,
+              completedAt: new Date().toISOString(),
+              summary: {
+                total: results.length,
+                passed: results.length - failed.length,
+                failed: failed.length
               },
-              body: JSON.stringify({
-                question,
-                history: [],
-                sessionId: `v072_polarity_probe_${index + 1}_${Date.now().toString(36)}`,
-                rulesVersion: expectedVersion
-              })
-            });
-            const body = await response.text();
-            let payload = null;
-            try { payload = JSON.parse(body); } catch {}
-            const answer = String(payload?.answer || "").trim();
-            const firstPolarity = answer.match(/\b(yes|no)\b/i)?.[1]?.toLowerCase() || null;
-            const failures = [];
-            if (response.status !== 200) failures.push(`http: ${response.status}`);
-            if (!payload) failures.push("response: not JSON");
-            if (payload?.version !== expectedVersion) failures.push(`version: ${payload?.version || "missing"}`);
-            if (payload?.behaviorRevision !== expectedRevision) failures.push(`behavior: ${payload?.behaviorRevision || "missing"}`);
-            if (firstPolarity !== "no") failures.push(`polarity: first Yes/No word was ${firstPolarity || "missing"}`);
-            results.push({
-              attempt: index + 1,
-              httpStatus: response.status,
-              answer,
-              firstPolarity,
-              rulingStatus: payload?.rulingStatus || null,
-              executionPath: payload?.executionPath || null,
-              failures
-            });
-            console.log(`${failures.length ? "FAIL" : "PASS"} ${index + 1}/5: ${answer}`);
-            for (const failure of failures) console.log(`  - ${failure}`);
-            if (index < 4) await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-
-          const failed = results.filter(item => item.failures.length);
-          const report = {
-            schema: "gauntlet.rules-arbiter-v072-candidate-polarity-probe.v1",
-            rulesVersion: expectedVersion,
-            behaviorRevision: expectedRevision,
-            authoritySetId: process.env.EXPECTED_AUTHORITY_SET,
-            question,
-            completedAt: new Date().toISOString(),
-            summary: {
-              total: results.length,
-              passed: results.length - failed.length,
-              failed: failed.length
-            },
-            results
-          };
-          mkdirSync(dirname(process.env.PROBE_REPORT), { recursive: true });
-          writeFileSync(process.env.PROBE_REPORT, JSON.stringify(report, null, 2) + "\n");
-          if (failed.length) process.exitCode = 1;
+              results
+            };
+            mkdirSync(dirname(process.env.PROBE_REPORT), { recursive: true });
+            writeFileSync(process.env.PROBE_REPORT, JSON.stringify(report, null, 2) + "\n");
+            if (failed.length) process.exitCode = 1;
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
 
       - name: Upload polarity probe
