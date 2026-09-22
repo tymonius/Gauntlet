@@ -1977,7 +1977,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 ## Faction Features
 
 - **Rites — 1 Action · Denouement · Printed Begin cost.** Choose one incomplete selected Rite you may legally begin, reveal it, and follow its Begin instruction. Rite completion and interruption then follow that Rite's printed conditions automatically.<!-- RULE-FACT:faction-features.mystics.rites -->
-- **Invocation — No Action · After applying an Arcane card effect · Once per turn.** After applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:faction-features.mystics.invocation -->
+- **Invocation — No Action · After applying an Arcane card effect · Once per turn.** After applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:faction-features.mystics.invocation -->
 - **Transmutation — No Action · Before dice · Put 1 card from Hand in Graveyard · Once per turn.** Put one card from Hand in your Graveyard and add its value to your battle total.<!-- RULE-FACT:faction-features.mystics.transmutation -->
 - **Ritual of Ascension — 1 Action · Denouement after 3 Rites · Bind 3 Arcane cards.** After completing all three selected Rites, bind one Arcane card from Hand, one from the Discard Pile, and one from the Graveyard to begin the Ritual.<!-- RULE-FACT:faction-features.mystics.ritual-of-ascension -->
 - **Convergence — Automatic · During a Ritual battle you initiated.** Add +1 to your battle total for each card bound to the Ritual.<!-- RULE-FACT:faction-features.mystics.convergence -->
