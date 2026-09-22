@@ -2921,12 +2921,6 @@ function playActionCard(
       "Fate's Toll requires one other card in your Hand.",
     );
   }
-  if (card.id === 'neutral-new-recruits'
-    && player.zones.hand.length < 2) {
-    throw new V070GameActionError(
-      'New Recruits requires one other card in your Hand.',
-    );
-  }
   if (card.id === 'neutral-requisition'
     && voluntarilyDiscardableV070AssetInstanceIds(state, playerId).length === 0) {
     throw new V070GameActionError(
@@ -3781,13 +3775,18 @@ function continuePendingActionCard(state: V070GameState): void {
       );
       return;
     case 'neutral-new-recruits':
+      if (state.players[pending.playerId].zones.hand.length === 0) {
+        drawIntoHand(state, pending.playerId, 3, 'New Recruits');
+        finishPendingActionCard(state);
+        return;
+      }
       if (!openHandDestinationChoice(
         state,
         pending.playerId,
         pending.instanceId,
         'New Recruits',
         'discard',
-        2,
+        3,
       )) {
         finishPendingActionCard(state);
       }
