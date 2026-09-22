@@ -25,7 +25,8 @@
       "v072BattleCommitmentOrderRestoration": "/docs/v0.7.2-battle-commitment-order-restoration.json",
       "v072SharedBaselineRestoration": "/docs/v0.7.2-shared-baseline-restoration.json",
       "v072RunTheGauntletVictoryClarification": "/docs/v0.7.2-run-the-gauntlet-victory-clarification.json",
-      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json"
+      "v072IntelligenceEconomy": "/docs/v0.7.2-intelligence-intel-generation.json",
+      "v072FinancierEconomy": "/docs/v0.7.2-financier-action-economy.json"
     }
   },
   "visualPolicy": {
@@ -448,7 +449,8 @@
                 "classification": "Leader Ability",
                 "name": "Hostile Takeover",
                 "descriptor": "1 Action · Denouement · After winning as attacker",
-                "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able."
+                "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.",
+                "financialCapacityQualifying": true
               },
               {
                 "classification": "Resource",
@@ -4468,8 +4470,8 @@
       },
       "financiers": {
         "starting_capital": 2,
-        "financial_capacity": "After Capture and before Draw, if Treasury value exceeds Territories controlled, the Financier may take one Action during both Opening and Denouement that turn, provided at least one Action is spent on a Financier Faction Feature marked 1 Action.",
-        "faction_feature_action_phase": "Denouement",
+        "financial_capacity": "At the end of Opening, if Treasury value exceeds Territories controlled, the Financier may take one Action during Denouement even if they already took an Action during Opening, provided at least one Action that turn is Treasury, Deeds, Play the Market, or Hostile Takeover.",
+        "faction_feature_action_phase": "Feature-specific: Treasury — Opening or Denouement; Deeds — Denouement; Play the Market — Opening.",
         "normalization": {
           "mechanics_changed": false,
           "normalization_issue": 1681,
@@ -4485,7 +4487,7 @@
         },
         "treasury": {
           "action_cost": 1,
-          "timing": "Denouement",
+          "timing": "Opening or Denouement",
           "text": "Place one card from your Hand face up in your Treasury.",
           "public": true,
           "is_asset": false,
@@ -4497,14 +4499,23 @@
           "text": "Gain 1 Capital for each Deed you own."
         },
         "financial_capacity_rules": {
-          "timing": "After Capture and before Draw.",
+          "timing": "End of Opening.",
           "qualification": "Treasury value is greater than the number of Territories you control.",
           "determine_once": true,
-          "text": "If qualified, you may take one Action during Opening and one Action during Denouement that turn. You still cannot take two Actions in the same phase. At least one of those Actions must be spent on a Financier Faction Feature marked 1 Action. A Leader Ability does not by itself satisfy that requirement.",
+          "text": "At the end of Opening, if qualified, you may take one Action during Denouement even if you already took an Action during Opening. You still cannot take more than one Action in either phase. At least one Action that turn must be Treasury, Deeds, Play the Market, or Hostile Takeover.",
           "qualifying_features": [
             "Treasury",
             "Deeds",
+            "Play the Market",
+            "Hostile Takeover"
+          ],
+          "qualifying_shared_features": [
+            "Treasury",
+            "Deeds",
             "Play the Market"
+          ],
+          "qualifying_leader_abilities": [
+            "Hostile Takeover"
           ]
         },
         "deeds": {
@@ -4514,7 +4525,7 @@
           "ownership_independent_of_occupation": true,
           "text": "Pay the Deed’s full current cost, then take its Deed Card from the shared supply or from an opposing Financier.",
           "cost": {
-            "base": "min(Deeds you own + 1, 6)",
+            "base": "min(10, max(1, 2 × Deeds you own))",
             "position_modifiers": {
               "control": -1,
               "occupy": 0,
@@ -4523,12 +4534,20 @@
             "buyout_premium": "If the Deed is owned by an opposing Financier, add min(Deeds that opposing Financier owns, 6). Otherwise add 0.",
             "minimum": 1,
             "sequential_recalculation": true,
-            "formula": "max(1, min(Deeds you own + 1, 6) + position modifier + buyout premium)"
+            "formula": "max(1, min(10, max(1, 2 × Deeds you own)) + position modifier + buyout premium + Deeds already purchased or bought out this turn)",
+            "same_turn_surcharge": "+1 Capital for each Deed you have already successfully purchased or bought out this turn.",
+            "calculation_order": [
+              "base",
+              "position modifier",
+              "buyout premium",
+              "same-turn acquisition surcharge",
+              "minimum 1"
+            ]
           }
         },
         "play_the_market": {
           "action_cost": 1,
-          "timing": "Denouement",
+          "timing": "Opening",
           "cost": "Discard one card from your Hand.",
           "roll": {
             "1": "Put the discarded card in your Graveyard; gain 0 Capital.",
@@ -7790,7 +7809,7 @@
       {
         "name": "Treasury",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Opening or Denouement"
       },
       {
         "name": "Deeds",
@@ -7801,7 +7820,7 @@
       {
         "name": "Play the Market",
         "profile": "1 Action",
-        "timing": "Denouement",
+        "timing": "Opening",
         "cost": "Discard 1 card from Hand"
       },
       {
@@ -7813,7 +7832,7 @@
       {
         "name": "Financial Capacity",
         "profile": "No Action",
-        "timing": "After Capture"
+        "timing": "End of Opening"
       },
       {
         "name": "Income",
@@ -8110,7 +8129,8 @@
           "classification": "Leader Ability",
           "name": "Hostile Takeover",
           "descriptor": "1 Action · Denouement · After winning as attacker",
-          "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able."
+          "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, capture that Territory, if able.",
+          "financialCapacityQualifying": true
         },
         {
           "classification": "Resource",
