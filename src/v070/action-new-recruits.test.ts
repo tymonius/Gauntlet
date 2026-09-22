@@ -83,23 +83,30 @@ function injectOpposingCensure(state: V070GameState): string {
 }
 
 describe('v0.7.0 New Recruits Action', () => {
-  test('requires one other card in Hand before the Action is spent', () => {
-    const state = openingForB();
+  test('with no other Hand card, skips the discard and draws three', () => {
+    let state = openingForB();
     state.players.B.zones.drawPile.push(...state.players.B.zones.hand.splice(0));
     const source = injectHandCard(state, 'B', 'neutral-new-recruits', 'source');
 
-    expect(() => reduceV070TurnAction(state, {
+    state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/requires one other card in your Hand/);
+    });
 
-    expect(state.players.B.zones.hand).toEqual([source]);
-    expect(state.turnState?.actionsAvailable).toBe(1);
+    expect(state.players.B.zones.hand).toHaveLength(3);
+    expect(state.players.B.zones.discardPile).toContain(source);
+    expect(state.turnState?.actionsAvailable).toBe(0);
+    expect(state.pendingActionEffectChoice).toBeNull();
     expect(state.pendingActionCard).toBeNull();
+    expect(state.events.some(event =>
+      event.type === 'cards_drawn'
+      && (event.payload as { purpose?: string; count?: number })?.purpose === 'New Recruits'
+      && (event.payload as { count?: number })?.count === 3
+    )).toBe(true);
   });
 
-  test('discards one chosen other Hand card, then draws two', () => {
+  test('discards one chosen other Hand card when able, then draws three', () => {
     let state = openingForB();
     const source = injectHandCard(state, 'B', 'neutral-new-recruits', 'source');
     const target = state.players.B.zones.hand.find(id => id !== source)!;
@@ -115,7 +122,7 @@ describe('v0.7.0 New Recruits Action', () => {
       kind: 'hand_destination_target',
       purpose: 'New Recruits',
       destination: 'discard',
-      drawAfter: 2,
+      drawAfter: 3,
     }));
     expect(state.players.B.zones.hand).not.toContain(source);
 
@@ -127,11 +134,11 @@ describe('v0.7.0 New Recruits Action', () => {
 
     expect(state.players.B.zones.discardPile).toContain(target);
     expect(state.players.B.zones.discardPile).toContain(source);
-    expect(state.players.B.zones.hand.length).toBe(handBefore);
+    expect(state.players.B.zones.hand.length).toBe(handBefore + 1);
     expect(state.events.some(event =>
       event.type === 'cards_drawn'
       && (event.payload as { purpose?: string; count?: number })?.purpose === 'New Recruits'
-      && (event.payload as { count?: number })?.count === 2
+      && (event.payload as { count?: number })?.count === 3
     )).toBe(true);
     expect(state.pendingActionCard).toBeNull();
   });
@@ -158,7 +165,7 @@ describe('v0.7.0 New Recruits Action', () => {
     }));
   });
 
-  test('if Censure removes the last other Hand card, New Recruits does not grant the later draw', () => {
+  test('if Censure removes the last other Hand card, New Recruits skips the discard and still draws three', () => {
     let state = openingForB();
     state.players.B.zones.drawPile.push(...state.players.B.zones.hand.splice(0));
     const source = injectHandCard(state, 'B', 'neutral-new-recruits', 'source');
@@ -180,19 +187,19 @@ describe('v0.7.0 New Recruits Action', () => {
       discardInstanceId: payment,
     });
 
-    expect(state.players.B.zones.hand).toHaveLength(0);
+    expect(state.players.B.zones.hand).toHaveLength(3);
     expect(state.players.B.zones.discardPile).toContain(payment);
     expect(state.players.B.zones.discardPile).toContain(source);
     expect(state.pendingActionEffectChoice).toBeNull();
     expect(state.pendingActionCard).toBeNull();
     expect(state.events.some(event =>
       event.type === 'cards_drawn'
-      && (event.payload as { purpose?: string })?.purpose === 'New Recruits'
-    )).toBe(false);
+      && (event.payload as { purpose?: string; count?: number })?.purpose === 'New Recruits'
+      && (event.payload as { count?: number })?.count === 3
+    )).toBe(true);
     expect(state.events.some(event =>
       event.type === 'action_effect_incomplete'
-      && (event.payload as { purpose?: string; reason?: string })?.purpose === 'New Recruits'
-      && (event.payload as { reason?: string })?.reason === 'required_hand_target_unavailable'
-    )).toBe(true);
+      && (event.payload as { purpose?: string })?.purpose === 'New Recruits'
+    )).toBe(false);
   });
 });

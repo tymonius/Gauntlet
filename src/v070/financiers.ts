@@ -865,6 +865,7 @@ function cardValue(
   instanceId: string,
 ): number {
   const cardId = state.cardInstances[instanceId]?.cardId;
+  if (cardId === 'neutral-new-recruits') return 2;
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
   if (!card) {
     throw new V070GameActionError(
