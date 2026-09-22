@@ -280,6 +280,12 @@
       "expectedSourceGroups": [
         [
           "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
+        ],
+        [
+          "Occupation does not itself change control"
+        ],
+        [
+          "During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line"
         ]
       ],
       "semanticCriteria": [
