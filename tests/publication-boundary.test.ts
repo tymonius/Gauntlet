@@ -30,11 +30,18 @@ describe('public route and Pages publication boundary', () => {
   });
 
   it('keeps repository source boundaries non-public by default', () => {
-    for (const root of ['.github', 'apps', 'docs', 'governance', 'legacy', 'media', 'packages', 'rulebook', 'scripts', 'src', 'tests', 'workers']) {
+    for (const root of ['.github', 'apps', 'docs', 'governance', 'legacy', 'media', 'packages', 'releases', 'rulebook', 'scripts', 'src', 'tests', 'workers']) {
       expect(contract.pages.sourceOnlyRepositoryRoots).toContain(root);
       expect(contract.pages.publishedDirectories).not.toContain(root);
     }
     expect(contract.pages.publishedDirectories).toContain('config');
+  });
+
+  it('keeps historical release binaries out of Pages while publishing current faction woodcuts', () => {
+    expect(contract.pages.publishedDirectories).not.toContain('releases');
+    expect(pagesWorkflow).toContain("'images/woodcuts/factions/**'");
+    expect(pagesWorkflow).not.toContain('"$site/images/woodcuts/factions"');
+    expect(pagesWorkflow).toContain('test -s "$SITE_DIR/images/woodcuts/factions/$faction.png"');
   });
 
   it('archives the v0.6.3 long-card review source without changing its public URLs', () => {
