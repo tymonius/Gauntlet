@@ -1,5 +1,5 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
-import { defaultV071SourceUrls, loadV071RulesCorpus } from "./v071-public-corpus.js";
+import { defaultV072SourceUrls, loadV072RulesCorpus } from "./v072-release-corpus.js";
 import { presentRulesAnswer } from "./answer-presentation.js";
 
 const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
@@ -7,7 +7,7 @@ const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
   assistantName: "Chief Justice",
-  version: "v0.7.1",
+  version: "v0.7.2",
   maxQuestionLength: 600,
   localResultLimit: 5,
   ...window.GAUNTLET_RULES_ASSISTANT_CONFIG
@@ -24,8 +24,8 @@ let corpusPromise;
 
 function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultV071SourceUrls(window.location.origin);
-    corpusPromise = loadV071RulesCorpus({ ...urls }).catch((error) => {
+    const urls = defaultV072SourceUrls(window.location.origin);
+    corpusPromise = loadV072RulesCorpus({ ...urls }).catch((error) => {
       corpusPromise = null;
       throw error;
     });
