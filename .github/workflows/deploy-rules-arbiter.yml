@@ -26,6 +26,7 @@ on:
       - "rules-assistant/github-actions-qa-auth.js"
       - "rules-assistant/wrangler.toml"
       - ".github/workflows/deploy-rules-arbiter.yml"
+      - ".github/workflows/v072-final-rules-arbiter-qa.yml"
   workflow_dispatch:
 
 permissions:
