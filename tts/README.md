@@ -65,7 +65,9 @@ npm run tts:save:promote
 
 The frozen v0.7.2 gameplay candidate is now the current-development TTS source. Pull-request TTS builds therefore regenerate playable-card sheets, Territory sheets, Leader faces, starter packages, supplemental/reference components, and the Review Scaffold from `packages/game-data/current-game.json` at `v0.7.2-candidate`.
 
-The candidate inherits the ordinary data-driven TTS pipeline rather than maintaining a separate v0.7.2 card list. In particular, the generated package picks up the final v0.7.2 Territory/starter rebalance, New Recruits update, Financier reference changes, Intelligence reference changes, and Inquisition reference changes directly from current authority.
+The candidate inherits the ordinary data-driven TTS pipeline rather than maintaining a separate v0.7.2 card list. In particular, the generated package picks up the final v0.7.2 Territory/starter rebalance, revised starter Decks, New Recruits update, Financier reference changes, Intelligence reference changes, and Inquisition reference changes directly from current authority.
+
+The v0.7.2 TTS package also consumes the modular publication pipeline. It renders all eight current rules publications in both print-imposed and sequential reader forms, then stages only the reader-order Half Letter PDFs for TTS. The Player's Guide and Complete Rules are placed on the shared table; each starter Bag contains the reader-order guide for its faction. The Letter-landscape saddle-stitch impositions remain print artifacts and are never used as TTS Custom PDF sources.
 
 The permanent Steam Workshop item remains **v0.7.1** until v0.7.2 has a stable release/tag, stable hosted TTS assets, a passed stable hands-on QA record, and explicit Workshop approval. Candidate PR previews are QA artifacts only.
 
@@ -230,10 +232,11 @@ The current package assembles the authoritative supplemental quantities across t
 - Deed snap columns at **x = ±3.95**, close to the Territory column;
 - one battle d6 per player;
 - one Player Token per player;
-- for stable/current-release packages, one shared in-table **Custom PDF Rulebook** using a reader-order half-letter PDF derived from the materialized release rules and published as a content-versioned TTS network asset; and
-- one selectable starter Bag for every current starter.
+- for v0.7.2 packages, shared **Player's Guide** and **Complete Rules** Custom PDF objects using sequential Half Letter reader PDFs published as content-versioned TTS network assets;
+- one selectable starter Bag for every current starter, with the matching reader-order **Faction Guide** inside each Bag; and
+- for legacy v0.7.1 publication maintenance only, the historical single shared reader-order Rulebook object.
 
-Stable/current-release saves park the shared rules PDF in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. Its tabletop object uses the approved 2.55× scale so it reads as a physical half-letter rules document rather than another card-sized component. Candidate/active-development PR previews intentionally omit that publication-only PDF until stable release materialization; hands-on candidate QA uses the maintained v0.7.2 Browser Rulebook alongside the generated save. This prevents a v0.7.2 candidate from silently embedding the obsolete frozen v0.7.1 monolithic Rulebook.
+The v0.7.2 Player's Guide and Complete Rules sit in the neutral east-side shared-rules space, opposite the west-side Battle Zone. Each faction guide is packaged with both starters for that faction and is ordered immediately after the Leader in native Bag extraction order. All eight TTS PDFs come from the same modular rules composition used for physical publication, but TTS receives the sequential `*_Reader.pdf` outputs rather than the Letter-landscape duplex-imposed `*_Booklet.pdf` files.
 
 The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-current-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
@@ -263,7 +266,7 @@ It records all 18 required table/setup, faction-component, and focused handling 
 
 `scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_<version>_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages the required network assets under the v0.7.1 target, including the custom campaign-table image and command-tent panorama. Stable v0.7.1 assets are hosted from the v0.7.1 GitHub Release with content-versioned URLs for cache safety.
+The current candidate package stages the custom campaign-table image, command-tent panorama, generated cards/components, current starter packages, and all eight v0.7.2 reader-order rules PDFs. PR previews rewrite those staged assets to an immutable PR-specific prerelease; stable v0.7.1 remains the live Workshop publication until v0.7.2 completes its release and hands-on QA gates.
 
 Publication remains explicit. Because those deterministic filenames are intentionally replaced in place, every generated TTS object URL carries a `?v=<sha256-prefix>` content revision. When a rendered sheet changes without changing its release filename, Tabletop Simulator therefore requests a new URL instead of silently reusing its local cache of the older image.
 
