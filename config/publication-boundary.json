@@ -313,6 +313,16 @@
       "kind": "maintained-design-documentation"
     },
     {
+      "source": "releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
+      "publicPath": "/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
+      "kind": "current-release-runtime"
+    },
+    {
+      "source": "releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
+      "publicPath": "/releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
+      "kind": "current-release-runtime"
+    },
+    {
       "source": "releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json",
       "publicPath": "/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json",
       "kind": "current-release-runtime"
