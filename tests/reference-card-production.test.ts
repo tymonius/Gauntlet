@@ -59,7 +59,10 @@ describe('production faction reference cards', () => {
     expect(diplomatCopy).toContain('if **6 different Proposals** are ratified, you win.');
 
     const financierCopy = readFileSync(financier.source, 'utf8');
-    expect(financierCopy).toContain('**Base cost:** min(Deeds you own + 1, 6)');
+    expect(financierCopy).toContain('**Base costs:** 1 / 2 / 4 / 6 / 8 / 10');
+    expect(financierCopy).toContain('**Same-turn surcharge:** +1 Capital for each Deed you already purchased or bought out this turn.');
+    expect(financierCopy).toContain('| Treasury | 1 Action · Opening or Denouement |');
+    expect(financierCopy).toContain('| Play the Market | 1 Action · Opening · Discard 1 card |');
     expect(financierCopy).toContain('### Play the Market');
     expect(financierCopy).toContain('### Subsidize');
 
