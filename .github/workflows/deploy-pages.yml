@@ -322,10 +322,23 @@ jobs:
           echo "Staged Pages site size: $bytes bytes"
           echo
           echo "=== Pages size audit: top-level paths ==="
-          du -sb "$SITE_DIR"/* 2>/dev/null | sort -nr | head -40 | awk '{ printf "%12d  %s\n", $1, $2 }'
+          du -sb "$SITE_DIR"/* 2>/dev/null | sort -nr | sed -n '1,40p' | awk '{ printf "%12d  %s\n", $1, $2 }'
           echo
           echo "=== Pages size audit: largest staged files ==="
-          find "$SITE_DIR" -type f -printf '%s\t%p\n' | sort -nr | head -60 | awk -F '\t' '{ printf "%12d  %s\n", $1, $2 }'
+          find "$SITE_DIR" -type f -printf '%s\t%p\n' | sort -nr | sed -n '1,60p' | awk -F '\t' '{ printf "%12d  %s\n", $1, $2 }'
+          echo
+          echo "=== Pages size audit: image namespaces ==="
+          du -sb "$SITE_DIR/images"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: artwork namespaces ==="
+          du -sb "$SITE_DIR/images/artwork"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: card-art faction namespaces ==="
+          du -sb "$SITE_DIR/images/artwork/cards"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+          echo
+          echo "=== Pages size audit: release namespaces ==="
+          du -sb "$SITE_DIR/releases"/* 2>/dev/null | sort -nr | sed -n '1,40p'
+
           echo
           echo "=== Pages size audit: selected publication/runtime trees ==="
           for audit_path in \
