@@ -39,7 +39,7 @@ function textOf(source) {
 
 describe("Gate 3 tranche N r25 remediation", () => {
   test("bumps production behavior to r25", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260922-34");
   });
 
   test("Safe Conduct is direct explicit authority despite downstream withdrawal consequences", () => {

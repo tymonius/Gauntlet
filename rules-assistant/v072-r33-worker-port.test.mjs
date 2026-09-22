@@ -23,7 +23,7 @@ function portR33Worker(source) {
 } from "./v072-candidate-corpus.js";`
     ],
     ["export const RULES_VERSION = V071_RULES_VERSION;", "export const RULES_VERSION = V072_CANDIDATE_RULES_VERSION;"],
-    ['export const BEHAVIOR_REVISION = "v071-qa-20260921-33";', 'export const BEHAVIOR_REVISION = "v072-qa-20260921-01";'],
+    ['export const BEHAVIOR_REVISION = "v071-qa-20260922-34";', 'export const BEHAVIOR_REVISION = "v072-qa-20260922-02";'],
     ["// The governing v0.7.1 text is the nested Complete rules document.", "// The governing v0.7.2 candidate text is the reviewed Complete Rules document."],
     ["const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the current canonical v0.7.1 playtest edition.", "const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the canonical v0.7.2 candidate playtest edition."],
     ["Use only the supplied published v0.7.1 release passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, later development material, withdrawn Gauntlet releases, historical candidate text, or unstated design facts.", "Use only the supplied v0.7.2 candidate current-game and reviewed Complete Rules passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, historical Gauntlet releases, superseded candidate text, or unstated design facts."],
@@ -52,7 +52,7 @@ function portR33Worker(source) {
     .replaceAll("published: true", "published: false");
 }
 
-describe("v0.7.2 candidate r33 Worker port", () => {
+describe("v0.7.2 candidate r34 Worker port", () => {
   test("is an exact mechanical port of the proven v0.7.1 r33 Worker", () => {
     expect(candidate).toBe(portR33Worker(v071));
   });
@@ -64,7 +64,7 @@ describe("v0.7.2 candidate r33 Worker port", () => {
   });
 
   test("binds only version identity, corpus, candidate routes, prompt scope, telemetry name, and safety salt", () => {
-    expect(candidate).toContain('export const BEHAVIOR_REVISION = "v072-qa-20260921-01";');
+    expect(candidate).toContain('export const BEHAVIOR_REVISION = "v072-qa-20260922-02";');
     expect(candidate).toContain('from "./v072-candidate-corpus.js";');
     expect(candidate).toContain('"/api/v072-candidate/rules"');
     expect(candidate).toContain('"/api/v072-candidate/health"');

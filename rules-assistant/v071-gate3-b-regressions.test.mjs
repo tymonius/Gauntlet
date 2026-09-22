@@ -14,7 +14,7 @@ function source(canonicalId, title, excerpt = "") {
 
 describe("v0.7.1 Gate 3 blind B promoted regressions", () => {
   test("pins r11 behavior", () => {
-    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260921-33");
+    expect(BEHAVIOR_REVISION).toBe("v071-qa-20260922-34");
   });
 
   test("duplicate sources for one named ability suppress generic-card clarification", () => {

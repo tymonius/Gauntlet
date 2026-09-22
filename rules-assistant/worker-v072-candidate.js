@@ -21,7 +21,7 @@ import {
 } from "./v071-answer-verifier.js";
 
 export const RULES_VERSION = V072_CANDIDATE_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v072-qa-20260921-01";
+export const BEHAVIOR_REVISION = "v072-qa-20260922-02";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [

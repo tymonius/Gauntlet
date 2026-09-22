@@ -139,6 +139,61 @@ describe("v0.7.1 high-risk answer verification", () => {
     expect(result.draft.answer).not.toMatch(/opponent.*\+2 Conviction/i);
   });
 
+  test("applies a deterministic Defensive Edge polarity repair even when the verifier approves the contradiction", () => {
+    const question = "tie while defender has defensive edge. tiebreak roll?";
+    const sources = [
+      source(
+        "rulebook:defensive-edge-and-tiebreak-roll",
+        "When the defender has Defensive Edge, the defender wins tied battle totals. If a tied battle total is not resolved by Defensive Edge or another applicable rule, make a Tiebreak Roll."
+      )
+    ];
+    const draft = {
+      answer: "Yes. The defender wins the tied battle total with Defensive Edge, so no Tiebreak Roll is made.",
+      ruling_status: "explicit",
+      source_ids: ["rulebook:defensive-edge-and-tiebreak-roll"]
+    };
+    const verification = {
+      valid: true,
+      issues: [],
+      replacement_answer: "",
+      replacement_status: "none",
+      source_ids: []
+    };
+
+    const result = applyHighRiskVerification(draft, verification, sources, question);
+    expect(result.applied).toBe(true);
+    expect(result.reason).toBe("deterministic-defensive-edge-tiebreak");
+    expect(result.draft.answer).toMatch(/^No\./);
+    expect(result.draft.answer).toContain("no Tiebreak Roll is made");
+    expect(result.draft.source_ids).toEqual(["rulebook:defensive-edge-and-tiebreak-roll"]);
+  });
+
+  test("does not force the Defensive Edge invariant for an explanatory interaction question", () => {
+    const question = "How does Defensive Edge interact with the Tiebreak Roll rule?";
+    const sources = [
+      source(
+        "rulebook:defensive-edge-and-tiebreak-roll",
+        "When the defender has Defensive Edge, the defender wins tied battle totals. If a tied battle total is not resolved by Defensive Edge or another applicable rule, make a Tiebreak Roll."
+      )
+    ];
+    const draft = {
+      answer: "Defensive Edge resolves a tied total for the defender; Tiebreak Roll applies only when no rule resolves the tie.",
+      ruling_status: "explicit",
+      source_ids: ["rulebook:defensive-edge-and-tiebreak-roll"]
+    };
+    const verification = {
+      valid: true,
+      issues: [],
+      replacement_answer: "",
+      replacement_status: "none",
+      source_ids: []
+    };
+
+    const result = applyHighRiskVerification(draft, verification, sources, question);
+    expect(result.applied).toBe(false);
+    expect(result.draft).toBe(draft);
+  });
+
   test("rejects a repair that cites authority outside the supplied retrieval set", () => {
     const sources = [source("rulebook:tiebreak-roll", "Do not apply modifiers.")];
     const draft = {
