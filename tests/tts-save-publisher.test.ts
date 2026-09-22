@@ -96,7 +96,7 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:'");
     expect(publisher).toContain('makeSharedModularRules');
     expect(publisher).toContain('makeFactionGuide');
-    expect(publisher).toContain('The Player\'s Guide and Complete Rules are on the table');
+    expect(publisher).toContain("The Player\\'s Guide and Complete Rules are on the table");
     expect(publisher).toContain('ObjectStates: [...sharedRules, ...starterKits]');
     expect(validator).toContain("SHARED_PLAYER_GUIDE_NOTE");
     expect(validator).toContain("SHARED_COMPLETE_RULES_NOTE");
