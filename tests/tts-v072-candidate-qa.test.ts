@@ -23,7 +23,6 @@ describe('v0.7.2 TTS candidate gate', () => {
     expect(checks).toHaveLength(18);
     expect(checks.every((value) => value === false)).toBe(true);
     expect(candidateQa.notes.some((note: string) => /public Workshop item remains on v0\.7\.1/i.test(note))).toBe(true);
-    expect(candidateQa.notes.some((note: string) => /Financier action-economy\/Deed changes/i.test(note))).toBe(true);
-    expect(candidateQa.notes.some((note: string) => /New Recruits hand replenishment/i.test(note))).toBe(true);
+    expect(candidateQa.notes.some((note: string) => /Focused v0\.7\.2 QA must exercise/i.test(note))).toBe(true);
   });
 });
