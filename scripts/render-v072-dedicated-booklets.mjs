@@ -25,7 +25,7 @@ function prepareDedicatedRuntime() {
   const original = fs.readFileSync(BASE_RENDERER, 'utf8');
   const browserUrl = '/rulebook/?rules=candidate&doc=';
   const printUrl = '/rulebook/booklet/?doc=';
-  const browserLeaderWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });\n  }\n\n`;
+  const browserFactionWoodcutWait = `  if (!['player-guide', 'complete-rules'].includes(publication.id)) {\n    await page.waitForSelector('.candidate-faction-guide-woodcut img', { state: 'visible', timeout: 60000 });\n  }\n\n`;
   const browserReadyPredicate = `      && document.querySelector('.rulebook-content.candidate-publication'),`;
   const printReadyPredicate = `      && (\n        document.body.dataset.bookletReady === 'error'\n        || document.body.dataset.bookletMarkersReady === 'error'\n        || (\n          document.body.dataset.bookletReady === 'true'\n          && document.body.dataset.bookletMarkersReady === 'true'\n          && document.querySelector('.rulebook-content.candidate-publication')\n        )\n      ),`;
   const defaultMargins = `    margin: {\n      top: '0.45in',\n      bottom: '0.52in',\n      left: '0.42in',\n      right: '0.42in',\n    },`;
@@ -34,8 +34,8 @@ function prepareDedicatedRuntime() {
   if (!original.includes(browserUrl)) {
     throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook candidate URL; review the dedicated print adapter.');
   }
-  if (!original.includes(browserLeaderWait)) {
-    throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook leader-gallery wait; review the dedicated print adapter.');
+  if (!original.includes(browserFactionWoodcutWait)) {
+    throw new Error('Base modular renderer no longer exposes the expected Browser Rulebook faction-woodcut wait; review the dedicated print adapter.');
   }
   if (!original.includes(browserReadyPredicate)) {
     throw new Error('Base modular renderer no longer exposes the expected publication-ready predicate; review the dedicated print adapter.');
@@ -45,7 +45,7 @@ function prepareDedicatedRuntime() {
   }
 
   let runtime = original.replace(browserUrl, printUrl);
-  runtime = runtime.replace(browserLeaderWait, '');
+  runtime = runtime.replace(browserFactionWoodcutWait, '');
   runtime = runtime.replace(browserReadyPredicate, printReadyPredicate);
   runtime = runtime.replace('displayHeaderFooter: true,', 'displayHeaderFooter: false,');
   runtime = runtime.replace('preferCSSPageSize: false,', 'preferCSSPageSize: true,');
