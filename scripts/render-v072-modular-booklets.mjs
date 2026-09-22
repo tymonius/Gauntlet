@@ -195,7 +195,7 @@ async function waitForPublication(page, publication, baseUrl) {
   );
 
   if (!['player-guide', 'complete-rules'].includes(publication.id)) {
-    await page.waitForSelector('.candidate-featured-leaders img.leader-portrait', { state: 'visible', timeout: 60000 });
+    await page.waitForSelector('.candidate-faction-guide-woodcut img', { state: 'visible', timeout: 60000 });
   }
 
   await page.evaluate(async () => {
