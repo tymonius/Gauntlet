@@ -4,7 +4,7 @@
   "behaviorRevision": "v072-qa-20260922-02",
   "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
   "gradingMode": "semantic-v1",
-  "purpose": "Replay the final v0.7.1 confirmation canaries plus the material historical failures that drove late Chief Justice remediations against the live frozen v0.7.2 release authority. Semantic verdicts gate; citation/classification mismatches remain diagnostics.",
+  "purpose": "Replay the final v0.7.1 confirmation canaries plus material historical failures against the frozen v0.7.2 release authority. Semantic verdicts gate release certification; citation and classification mismatches are diagnostics only.",
   "provenance": {
     "finalConfirmation": [
       "Gate 3 tranche U standard semantic cases",
@@ -135,13 +135,13 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "It prevents the entire opposing revealing effect, not only the information portion"
+          "Opposing effects cannot reveal your Hand, Reserve, or face-down Gambits or Tactics"
         ]
       ],
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "No. Counterintelligence prevents the entire opposing revealing effect."
+          "statement": "Yes. When Counterintelligence is functioning as an Asset against an effect that would reveal your Reserve, it prevents that reveal but does not prevent the rest of the opposing effect from resolving."
         }
       ]
     },
@@ -171,13 +171,13 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction"
+          "gain 1 Conviction if exactly one opposing card entered, or 2 Conviction if two or more entered"
         ]
       ],
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "No. The normal trigger gives 1 Conviction for that qualifying Aftermath."
+          "statement": "Yes. On the first qualifying Aftermath that turn, two or more opposing cards entering the Graveyard gives 2 Conviction."
         }
       ]
     },
@@ -275,17 +275,17 @@
       "id": "blind-u-ranger-capture-boundary",
       "category": "leaders",
       "question": "Can Fieldcraft change whether I control, occupy, or capture a Territory?",
-      "expectedClassification": "explicit",
-      "classificationBasis": "direct-authority",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
       "expectedSourceGroups": [
         [
-          "Fieldcraft does not alter Territory control, Occupation, Capture"
+          "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
         ]
       ],
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "No. Fieldcraft does not alter Territory control, Occupation, or Capture."
+          "statement": "Fieldcraft does not directly rewrite Territory control, Occupation, or Capture rules. It can nevertheless indirectly change the resulting game state when ignoring a printed Territory effect changes movement or a battle."
         }
       ]
     },
@@ -449,13 +449,13 @@
       "classificationBasis": "direct-authority",
       "expectedSourceGroups": [
         [
-          "Fieldcraft does not alter Territory control, Occupation, Capture"
+          "When a printed Territory effect would affect you, your movement, or the battle, ignore that effect until the end of the turn"
         ]
       ],
       "semanticCriteria": [
         {
           "id": "ruling",
-          "statement": "No."
+          "statement": "No. Fieldcraft does not alter the Capture rule itself."
         }
       ]
     },

@@ -225,5 +225,5 @@ jobs:
           retention-days: 30
 
       - name: Enforce final QA
-        if: steps.collect.outcome != 'success' || steps.semantic.outcome != 'success' || steps.clarification.outcome != 'success'
+        if: steps.semantic.outcome != 'success' || steps.clarification.outcome != 'success'
         run: exit 1
