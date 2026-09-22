@@ -105,3 +105,95 @@
   .companion-heading { align-items:stretch; flex-direction:column; }
   .companion-grid { grid-template-columns:1fr; }
 }
+
+
+/* Keep the current lifecycle action prominent, especially on phones. */
+.lifecycle-controls-shell {
+  border-bottom: 1px solid var(--tracked-line);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.lifecycle-controls-copy {
+  margin: .35rem 0 .9rem;
+}
+.lifecycle-actions {
+  align-items: stretch;
+}
+body[data-tracked-lifecycle="ready"] #showCompletedResult,
+body[data-tracked-lifecycle="ready"] #showStoppedResult {
+  display: none !important;
+}
+body[data-tracked-lifecycle="playing"] #recordStart {
+  display: none !important;
+}
+body[data-tracked-lifecycle="ready"] #playPanel > .companion-panel,
+body[data-tracked-lifecycle="ready"] #playPanel > .diagnostic-panel,
+body[data-tracked-lifecycle="ready"] #playPanel > .note-details,
+body[data-tracked-lifecycle="ready"] #playPanel > #eventStatus,
+body[data-tracked-lifecycle="feedback"] #playPanel,
+body[data-tracked-lifecycle="submitted"] #playPanel {
+  display: none !important;
+}
+body[data-tracked-lifecycle="ready"] #playPanel {
+  display: block !important;
+}
+
+@media (max-width: 650px) {
+  body[data-tracked-role] .tracked-hero {
+    display: none;
+  }
+  body[data-tracked-role] .tracked-summary {
+    margin-top: .75rem;
+  }
+  body[data-tracked-role] .players-section,
+  body[data-tracked-role] .feedback-section,
+  body[data-tracked-role] .review-section {
+    padding: 1.75rem 0;
+  }
+  #playPanel {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .lifecycle-controls-shell {
+    position: sticky;
+    top: .5rem;
+    z-index: 40;
+    margin: 0 0 1rem;
+    padding: 1rem;
+    border: 1px solid var(--tracked-line);
+    background: rgba(255, 253, 248, .97);
+    box-shadow: 0 10px 30px rgba(55, 38, 18, .16);
+    backdrop-filter: blur(8px);
+  }
+  .lifecycle-controls-shell .panel-heading {
+    margin-bottom: .35rem;
+  }
+  .lifecycle-controls-shell h2 {
+    margin: 0;
+    font-size: 1.45rem;
+  }
+  .lifecycle-controls-copy {
+    margin: .35rem 0 .75rem;
+    font-size: .92rem;
+    line-height: 1.4;
+  }
+  .lifecycle-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+  }
+  .lifecycle-actions .button {
+    width: 100%;
+    min-height: 3rem;
+    justify-content: center;
+  }
+  body[data-tracked-lifecycle="ready"] .lifecycle-actions {
+    grid-template-columns: 1fr;
+  }
+  .joined-panel,
+  .transport-panel {
+    margin: .75rem 0;
+  }
+}
