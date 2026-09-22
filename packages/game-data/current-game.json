@@ -4729,8 +4729,6 @@
           "once_per_turn": true,
           "may_trigger_on_either_players_turn": true,
           "does_not_require_win": true,
-          "two_or_more_cards_gain": 2,
-          "gain_scaling": "Exactly 1 opposing card entering the Graveyard in the qualifying Aftermath gives 1 Conviction; 2 or more gives 2 Conviction.",
           "gain_by_opposing_card_count": {
             "exactly_one": 1,
             "two_or_more": 2
