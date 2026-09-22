@@ -121,6 +121,92 @@ function validateFactionFeatures(authority) {
   }
 }
 
+function validateFinancierV072Economy(authority) {
+  const provenance = authority.provenance?.currentDevelopmentInputs?.v072FinancierEconomy;
+  if (provenance !== '/docs/v0.7.2-financier-action-economy.json') {
+    throw new Error('Current-game authority is missing v0.7.2 Financier economy provenance.');
+  }
+
+  const rules = requireCurrentObject(
+    authority.gameplay?.faction_rules?.financiers,
+    'Financier faction rules',
+  );
+  const treasury = requireCurrentObject(rules.treasury, 'Financier Treasury rules');
+  const market = requireCurrentObject(rules.play_the_market, 'Play the Market rules');
+  const capacity = requireCurrentObject(
+    rules.financial_capacity_rules,
+    'Financial Capacity rules',
+  );
+  const deedCost = requireCurrentObject(rules.deeds?.cost, 'Financier Deed cost rules');
+
+  if (treasury.timing !== 'Opening or Denouement') {
+    throw new Error('Treasury must be legal during Opening or Denouement in v0.7.2.');
+  }
+  if (market.timing !== 'Opening') {
+    throw new Error('Play the Market must be Opening-only in v0.7.2.');
+  }
+  if (capacity.timing !== 'End of Opening.') {
+    throw new Error('Financial Capacity must be determined at the end of Opening in v0.7.2.');
+  }
+
+  const qualifiers = requireCurrentArray(
+    capacity.qualifying_features,
+    'Financial Capacity qualifying actions',
+  );
+  const expectedQualifiers = [
+    'Treasury',
+    'Deeds',
+    'Play the Market',
+    'Hostile Takeover',
+  ];
+  if (JSON.stringify(qualifiers) !== JSON.stringify(expectedQualifiers)) {
+    throw new Error('Financial Capacity qualifying actions are incomplete or out of order.');
+  }
+
+  if (deedCost.base !== 'min(10, max(1, 2 × Deeds you own))') {
+    throw new Error('Financier Deed base scaling is not the approved v0.7.2 curve.');
+  }
+  requireCurrentText(deedCost.same_turn_surcharge, 'same-turn Deed acquisition surcharge');
+  const calculationOrder = requireCurrentArray(
+    deedCost.calculation_order,
+    'Deed cost calculation order',
+  );
+  const expectedOrder = [
+    'base',
+    'position modifier',
+    'buyout premium',
+    'same-turn acquisition surcharge',
+    'minimum 1',
+  ];
+  if (JSON.stringify(calculationOrder) !== JSON.stringify(expectedOrder)) {
+    throw new Error('Financier Deed cost calculation order is incomplete or out of order.');
+  }
+
+  const features = requireCurrentArray(
+    authority.factionFeatures?.financiers,
+    'Financier Faction Features',
+  );
+  const byName = new Map(features.map(feature => [feature.name, feature]));
+  if (byName.get('Treasury')?.timing !== 'Opening or Denouement'
+    || byName.get('Play the Market')?.timing !== 'Opening'
+    || byName.get('Deeds')?.timing !== 'Denouement'
+    || byName.get('Financial Capacity')?.timing !== 'End of Opening') {
+    throw new Error('Structured Financier Faction Feature timing disagrees with v0.7.2 authority.');
+  }
+
+  const executive = requireCurrentArray(authority.leaders, 'Leaders')
+    .find(leader => leader.faction === 'financiers' && leader.id === 'executive');
+  const hostileTakeover = executive?.sections?.find(
+    section => section.name === 'Hostile Takeover',
+  );
+  if (hostileTakeover?.classification !== 'Leader Ability'
+    || hostileTakeover.financialCapacityQualifying !== true) {
+    throw new Error(
+      'Hostile Takeover must remain a Leader Ability and explicitly qualify for Financial Capacity.',
+    );
+  }
+}
+
 function validateTrackerPresentation(authority) {
   const components = [
     ...requireCurrentArray(authority.componentContract?.components, 'component contract components'),
@@ -334,6 +420,7 @@ export function validateCurrentGameAuthority(authority) {
   requireCurrentArray(authority.leaders, 'Leaders');
   validateMysticsStarterRites(authority);
   validateFactionFeatures(authority);
+  validateFinancierV072Economy(authority);
   validateTrackerPresentation(authority);
   validateBattleCommitmentOrder(authority);
   validateSharedGameplayBaseline(authority);
