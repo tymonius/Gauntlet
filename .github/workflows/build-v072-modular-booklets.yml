@@ -2,6 +2,12 @@ name: Build v0.7.2 modular rules booklets
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Commit the generated v0.7.2 modular release package to the selected feature branch.
+        required: true
+        type: boolean
+        default: false
   pull_request:
     paths:
       - '.github/workflows/build-v072-modular-booklets.yml'
@@ -15,13 +21,27 @@ on:
       - 'scripts/render-v072-dedicated-booklets.mjs'
       - 'scripts/render-v072-modular-booklets.mjs'
       - 'scripts/validate-v072-modular-booklets.mjs'
+      - 'scripts/promote-v072-modular-release-package.mjs'
+      - 'scripts/validate-v072-release-package.mjs'
       - 'tests/v072-modular-booklet-pipeline.test.mjs'
+
+permissions:
+  contents: write
 
 jobs:
   build-booklets:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: Require a feature branch for publication
+        if: inputs.publish
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "::error::Publish the generated v0.7.2 package from a feature branch so it passes through review and protected-main checks."
+            exit 1
+          fi
+
       - name: Check out publication sources
         uses: actions/checkout@v4
 
@@ -47,6 +67,8 @@ jobs:
           node --check scripts/render-v072-dedicated-booklets.mjs
           node --check scripts/render-v072-modular-booklets.mjs
           node --check scripts/validate-v072-modular-booklets.mjs
+          node --check scripts/promote-v072-modular-release-package.mjs
+          node --check scripts/validate-v072-release-package.mjs
           node --check apps/rules/booklet/booklet.js
 
       - name: Render all eight modular booklets
@@ -54,6 +76,12 @@ jobs:
 
       - name: Validate booklet contract and imposition
         run: node scripts/validate-v072-modular-booklets.mjs
+
+      - name: Promote modular rules into staged v0.7.2 release package
+        run: node scripts/promote-v072-modular-release-package.mjs
+
+      - name: Validate staged v0.7.2 release package
+        run: node scripts/validate-v072-release-package.mjs
 
       - name: Render PDF review previews
         shell: bash
@@ -89,3 +117,29 @@ jobs:
           name: gauntlet-v0.7.2-modular-rules-booklets
           path: artifacts/rules-booklets/v0.7.2/
           if-no-files-found: error
+
+      - name: Commit staged v0.7.2 modular release package
+        if: inputs.publish
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/commit-generated-files.mjs "Publish v0.7.2 modular rules package" -- \
+            releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md \
+            releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf \
+            releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json
