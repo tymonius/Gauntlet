@@ -473,10 +473,13 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'
     needs: render
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
@@ -489,13 +492,7 @@ jobs:
           set -euo pipefail
           manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
           test -n "$manifest"
-          tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
-          repo="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.repository)" "$manifest")"
-          test "$repo" = "$GITHUB_REPOSITORY"
-          gh release view "$tag" --repo "$repo" >/dev/null
-          mapfile -t assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
-          test "${#assets[@]}" -gt 1
-          gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}"
+          node scripts/upload-tts-release-assets.mjs "$manifest"
 
       - name: Upload QA-approved v0.7.2 TTS mod save
         env:
@@ -515,7 +512,7 @@ jobs:
             throw new Error('Workshop save was not promoted to the approved stable identity.');
           }
           NODE
-          gh release upload "$tag" --repo "$GITHUB_REPOSITORY" --clobber "$mod_save"
+          node scripts/upload-tts-release-assets.mjs "$manifest" --mod-save "$mod_save"
 
       - name: Verify published TTS asset URLs
         shell: bash
