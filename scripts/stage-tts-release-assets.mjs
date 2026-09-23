@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
+import { resolveCurrentTtsRelease, resolvePublishedTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import {
   V072_BOOKLET_OUTPUT_ROOT,
   V072_MODULAR_BOOKLETS,
@@ -41,6 +41,56 @@ function safeSegment(value) {
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
+}
+
+async function resolvePublishedAssetTarget(release) {
+  const target = await readJson(join(ROOT, 'config', 'tts-release-target.json'));
+  const published = await resolvePublishedTtsRelease();
+  const releaseTag = String(target.releaseTag || '').trim();
+
+  if (!releaseTag || releaseTag !== published.version || target.sourceVersion !== published.version) {
+    throw new Error('TTS asset publication target must match the current frozen GitHub release.');
+  }
+  if (target.status !== 'release-candidate' && target.status !== 'current-release') {
+    throw new Error('TTS asset publication requires an explicitly approved release target status.');
+  }
+  if (target.currentGameAuthority !== release.currentGameSource) {
+    throw new Error('TTS asset publication target does not match the active game authority path.');
+  }
+  if (!published.starterDecksSource) {
+    throw new Error('The current GitHub release has no frozen starter-deck asset.');
+  }
+
+  const [current, frozen, frozenStarters] = await Promise.all([
+    readJson(join(ROOT, release.currentGameSource)),
+    readJson(join(ROOT, published.canonicalDataSource)),
+    readJson(join(ROOT, published.starterDecksSource)),
+  ]);
+  if (current.version !== release.version
+    || frozen.release_version !== releaseTag
+    || frozenStarters.release_version !== releaseTag) {
+    throw new Error('TTS asset publication source/release version mismatch.');
+  }
+
+  const frozenSections = [
+    ['gameplay', 'gameplay'],
+    ['proposals', 'proposals'],
+    ['componentContract', 'component_contract'],
+    ['factionFeatureTaxonomy', 'faction_feature_taxonomy'],
+    ['factionFeatures', 'faction_features'],
+    ['leaders', 'leaders'],
+    ['mystics', 'mystics'],
+  ];
+  for (const [currentKey, frozenKey] of frozenSections) {
+    if (JSON.stringify(current[currentKey]) !== JSON.stringify(frozen[frozenKey])) {
+      throw new Error(`TTS asset publication blocked: current-game ${currentKey} differs from frozen ${releaseTag} authority.`);
+    }
+  }
+  if (JSON.stringify(current.starterDecks?.decks) !== JSON.stringify(frozenStarters.decks)) {
+    throw new Error(`TTS asset publication blocked: starter Decks differ from frozen ${releaseTag} authority.`);
+  }
+
+  return Object.freeze({ releaseTag, prefix: assetPrefix(releaseTag) });
 }
 
 async function sha256(path) {
@@ -95,6 +145,7 @@ async function prepareV072RulesReaders(release) {
 
 async function stageReleaseAssets() {
   const release = await resolveCurrentTtsRelease();
+  const publicationTarget = await resolvePublishedAssetTarget(release);
   const outputRoot = release.outputRoot;
   const repository = String(process.env.TTS_RELEASE_REPOSITORY || process.env.GITHUB_REPOSITORY || DEFAULT_REPOSITORY).trim();
   if (!/^[^/\s]+\/[^/\s]+$/.test(repository)) {
@@ -147,7 +198,7 @@ async function stageReleaseAssets() {
     await generateTtsRulebookReader();
   }
 
-  const prefix = assetPrefix(release.version);
+  const prefix = publicationTarget.prefix;
   const records = [];
   const seenNames = new Set();
 
@@ -317,7 +368,7 @@ async function stageReleaseAssets() {
       bytes: info.size,
       sha256: digest,
       url: contentVersionedUrl(
-        releaseUrl(repository, release.version, record.releaseAsset),
+        releaseUrl(repository, publicationTarget.releaseTag, record.releaseAsset),
         digest,
       ),
     });
@@ -329,8 +380,8 @@ async function stageReleaseAssets() {
     gameVersion: release.version,
     targetStatus,
     repository,
-    releaseTag: release.version,
-    releasePage: `https://github.com/${repository}/releases/tag/${release.version}`,
+    releaseTag: publicationTarget.releaseTag,
+    releasePage: `https://github.com/${repository}/releases/tag/${publicationTarget.releaseTag}`,
     sourceOutput: relative(ROOT, outputRoot).replaceAll('\\', '/'),
     publication: {
       host: 'github-release-assets',
@@ -356,7 +407,7 @@ async function stageReleaseAssets() {
 
 async function main() {
   const { release, releaseManifest, releaseManifestName } = await stageReleaseAssets();
-  console.log(`Staged ${releaseManifest.assetCount} TTS network assets for ${release.version} in ${relative(ROOT, STAGING_ROOT)}.`);
+  console.log(`Staged ${releaseManifest.assetCount} TTS network assets from ${release.version} for GitHub release ${releaseManifest.releaseTag} in ${relative(ROOT, STAGING_ROOT)}.`);
   console.log(`Hosted URL manifest: ${releaseManifestName}`);
 }
 
@@ -367,4 +418,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { STAGING_ROOT, contentVersionedUrl, stageReleaseAssets };
+export { STAGING_ROOT, contentVersionedUrl, resolvePublishedAssetTarget, stageReleaseAssets };
