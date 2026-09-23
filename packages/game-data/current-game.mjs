@@ -1,5 +1,4 @@
 import { resolveArtDirection } from './art-direction.mjs';
-import { publicDisplayVersion } from './public-display-version.mjs';
 import { requireCurrentArray, validateCurrentGameAuthority } from './current-game-validation.mjs';
 
 export const CURRENT_GAME_AUTHORITY_URL = '/game-data/current-game.json';
@@ -53,7 +52,7 @@ async function resolveCurrentGame() {
     authorityUrl: CURRENT_GAME_AUTHORITY_URL,
     visualAuthorityUrl: CURRENT_GAME_AUTHORITY_URL,
     version: authority.version,
-    displayVersion: publicDisplayVersion(authority),
+    displayVersion: authority.displayVersion,
     status: authority.status,
     runtimePolicy: authority.runtimePolicy,
     provenance: Object.freeze(clone(authority.provenance)),

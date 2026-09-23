@@ -1,5 +1,4 @@
 import { validateCurrentGameAuthority } from '../current-game-authority.mjs';
-import { publicDisplayVersion } from '../../packages/game-data/public-display-version.mjs';
 import { FACE_TEMPLATES, listFaces } from '../../packages/rendering/face-authority.mjs';
 import { FACE_TEMPLATE_CONTRACTS, resolveAllFaceSpecs } from '../../card-design/face-spec.mjs';
 import { FACE_TEMPLATE_RENDERERS } from '../../card-design/face-template-registry.mjs';
@@ -48,7 +47,7 @@ export function runtimeGameFromAuthority(authority) {
     authorityUrl: '/game-data/current-game.json',
     visualAuthorityUrl: '/game-data/current-game.json',
     version: authority.version,
-    displayVersion: publicDisplayVersion(authority),
+    displayVersion: authority.displayVersion,
     visualPolicy: authority.visualPolicy || {},
     artDirection: authority.artDirection || {},
     cards: authority.gameplay?.cards || [],
@@ -202,7 +201,7 @@ export function validateFaceCatalogContract(authority) {
     invariant(spec.provenance.gameplay === '/game-data/current-game.json', `FaceSpec ${face.id} has non-current gameplay provenance.`);
     invariant(spec.provenance.visual === '/game-data/current-game.json', `FaceSpec ${face.id} has non-current visual provenance.`);
     invariant(spec.provenance.version === authority.version, `FaceSpec ${face.id} has stale game version provenance.`);
-    invariant(spec.provenance.displayVersion === publicDisplayVersion(authority), `FaceSpec ${face.id} has stale display-version provenance.`);
+    invariant(spec.provenance.displayVersion === authority.displayVersion, `FaceSpec ${face.id} has stale display-version provenance.`);
     invariant(Array.isArray(spec.dependencies.styles) && spec.dependencies.styles.length > 0, `FaceSpec ${face.id} has no style dependency contract.`);
     invariant(spec.dependencies.styles.every(style => String(style).startsWith('/')), `FaceSpec ${face.id} contains a non-rooted style dependency.`);
     invariant(spec.readiness.productionReady === true, `FaceSpec ${face.id} is not production-ready: ${spec.readiness.issues.join(', ') || 'unknown issue'}.`);

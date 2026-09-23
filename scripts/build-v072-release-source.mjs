@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const RELEASE_VERSION = "v0.7.2";
+// Preserve the original freeze-time source separately from the promoted live
+// current-game authority so this builder stays byte-reproducible after cutover.
 const CURRENT_GAME = "packages/game-data/current-game.json";
+const FROZEN_GAME = "artifacts/release-freezes/v0.7.2/current-game.json";
 const COMPLETE_RULES = "packages/rules/comprehensive/comprehensive-rules.md";
 const FREEZE = "config/v072-release-freeze.json";
 const RELEASE_DIR = join(ROOT, "releases", RELEASE_VERSION);
@@ -25,7 +28,7 @@ const write = async (relative, value) => {
 };
 
 const [gameBytes, rulesBytes, freezeBytes, existingManifestBytes] = await Promise.all([
-  read(CURRENT_GAME),
+  read(FROZEN_GAME),
   read(COMPLETE_RULES),
   read(FREEZE),
   read("releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json").catch(() => null),

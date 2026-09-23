@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { listFaces } from '../../card-design/face-authority.mjs';
 import { resolveAllFaceSpecs } from '../../card-design/face-spec.mjs';
-import { publicDisplayVersion } from '../../packages/game-data/public-display-version.mjs';
 import {
   expectedFaceIds,
   runtimeGameFromAuthority,
@@ -40,7 +39,7 @@ describe('canonical physical-face contract', () => {
         gameplay: '/game-data/current-game.json',
         visual: '/game-data/current-game.json',
         version: authority.version,
-        displayVersion: publicDisplayVersion(authority),
+        displayVersion: authority.displayVersion,
       });
     }
   });
