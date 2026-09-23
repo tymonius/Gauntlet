@@ -1,21 +1,21 @@
 # Gauntlet — Tabletop Simulator Workshop publication
 
-This file records the permanent Gauntlet Tabletop Simulator Workshop item, the current live v0.7.1 publication, v0.7.2 candidate preparation, and retained release history.
+This file records the permanent Gauntlet Tabletop Simulator Workshop item, the repository owner's reported v0.7.2 publication, the completed release gates, and retained v0.7.1/v0.7.0 history. An independently downloaded subscriber-copy smoke test remains outstanding.
 
 ## Workshop item
 
 - **Steam Workshop ID:** `3790840635`
 - **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 - **Current visibility:** public
-- **Current version:** v0.7.1
-- **Current title:** **Gauntlet — v0.7.1**
-- **v0.7.1 update live:** 2026-08-31
+- **Current version (owner-confirmed):** v0.7.2
+- **v0.7.2 Workshop update (owner-confirmed):** 2026-09-23
+- **Post-update listing title:** not independently verified
 
-The existing Workshop item was updated in place from v0.7.0 to v0.7.1. No replacement listing was created; the permanent Workshop ID remains unchanged.
+The repository owner reports updating the existing Workshop item in place using the approved v0.7.2 mod JSON. The permanent Workshop ID remains `3790840635`; no new Workshop listing was requested. Independent retrieval of the Steam listing and a fresh subscriber-copy smoke test have not yet been completed.
 
-## v0.7.2 candidate preparation
+## v0.7.2 prepublication provenance
 
-v0.7.2 gameplay/rules content was frozen for release on 2026-09-22. The TTS refresh is prepared as a **candidate first**; it does not replace the live v0.7.1 Workshop item merely because automated generation succeeds.
+v0.7.2 gameplay/rules content was frozen for release on 2026-09-22. The TTS refresh was prepared as a candidate first; automated candidate generation alone did not authorize replacement of the v0.7.1 Workshop item.
 
 The v0.7.2 candidate build regenerates the data-driven TTS surfaces from the frozen current authority, including:
 
@@ -32,11 +32,19 @@ The TTS package must never use the Letter-landscape saddle-stitch `*_Booklet.pdf
 
 Candidate hands-on QA is tracked at `tts/release-qa/v0.7.2-candidate.json`. All 18 checks begin false and `approvedForWorkshop` is false.
 
-The live Workshop item must remain v0.7.1 until the final v0.7.2 release/tag and stable hosted TTS assets exist, a stable v0.7.2 save has passed the required in-game QA, and Workshop promotion is explicitly approved. PR-preview releases and candidate save files are test artifacts, not publication authority.
+The v0.7.2 public release/tag, stable hosted TTS assets, stable save machine readiness, the owner's completed 18-check manual QA, and explicit Workshop approval were all recorded before the owner-reported Workshop update. PR-preview releases and candidate save files remain test artifacts, not publication authority.
 
-## v0.7.1 Workshop package
+## v0.7.2 publication and post-publication verification
 
-The live v0.7.1 mod preserves the established two-player table and manual-rules play model while adding the focused v0.7.1 release changes:
+On 2026-09-23, the owner confirmed that all 18 stable v0.7.2 TTS manual QA checks passed and explicitly approved Workshop publication. The stable QA authority is `tts/release-qa/v0.7.2.json` (`status: passed`, `approvedForWorkshop: true`); the candidate QA record remains historical and does not authorize publication.
+
+GitHub Actions run `35855419415` (Generate TTS card assets #2981) completed successfully from `main`. Its guarded publication step passed strict readiness, promoted the save to `Gauntlet_v0.7.2_TTS_Mod.json`, uploaded it to the existing v0.7.2 GitHub release, verified the hosted asset digests, and checked all 95 hosted TTS object URLs. The approved mod save is attached at `https://github.com/tymonius/Gauntlet/releases/download/v0.7.2/Gauntlet_v0.7.2_TTS_Mod.json`.
+
+After that run, the owner reported uploading the final v0.7.2 JSON to the existing Steam Workshop item `3790840635`. This is an owner report, **not** an independent Steam-listing verification. The post-upload listing title and a clean subscriber-copy load remain to be checked separately; do not mark the subscriber smoke test passed until it is actually performed.
+
+## v0.7.1 historical Workshop package
+
+The previous v0.7.1 mod preserved the established two-player table and manual-rules play model while adding the focused v0.7.1 release changes:
 
 - the six-Rite Mystics package;
 - the current Mystics Rite / Completed-face presentation;
@@ -47,7 +55,7 @@ The live v0.7.1 mod preserves the established two-player table and manual-rules 
 
 Rules remain player-operated. TTS reproduces the physical game surface and component handling rather than automating battle resolution or faction rules.
 
-## Publication gate — completed
+## v0.7.1 publication gate — completed
 
 The stable v0.7.1 Workshop update was authorized only after the versioned release gate was complete:
 
@@ -60,9 +68,9 @@ The stable v0.7.1 Workshop update was authorized only after the versioned releas
 
 The earlier `tts/release-qa/v0.7.1-candidate.json` record remains preserved as pre-release evidence and is not the publication authority.
 
-## Post-publication status
+## v0.7.1 post-publication history
 
-The public Workshop item is now live as **v0.7.1** at the permanent URL above.
+The public Workshop item previously carried **v0.7.1** at the permanent URL above.
 
 ### 2026-09-01 official table-layout maintenance
 
@@ -83,7 +91,7 @@ The accepted maintenance layout:
 
 The final accepted Review Scaffold passed machine readiness with no blockers and was promoted to final mod identity as **Gauntlet v0.7.1**. This is a post-release maintenance revision of v0.7.1, not a new rules release.
 
-Synchronizing the permanent Steam Workshop item to this maintenance save remains a publication action outside the GitHub source repository; until that upload is performed, subscribed Workshop copies may still contain the prior v0.7.1 table geometry.
+The historical repository record did not independently confirm whether this v0.7.1 maintenance save was synchronized to Steam before the subsequent v0.7.2 update.
 
 Any additional subscribed-copy smoke testing, hosted-asset verification, or publication-specific defects discovered after the live update are post-release maintenance evidence. They do not reopen the completed v0.7.1 promotion gate unless they reveal a concrete release defect.
 

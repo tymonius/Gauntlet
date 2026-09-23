@@ -37,6 +37,7 @@
     "2026-09-23: Workshop promotion remains blocked until machine readiness passes, all 18 hands-on checks are true, and approvedForWorkshop is explicitly set true.",
     "2026-09-23: The repository owner explicitly confirmed completion of the full v0.7.2 hands-on TTS QA and approved Workshop publication. All 18 checks are recorded as passed on the owner's attestation, not as tests run by CI.",
     "2026-09-23: The owner confirmed that the corrected PR #1876 QA save's six Faction Guides match the 2.2× tabletop Player's Guide and Complete Rules. PR #1876 merged this adjustment and its authoritative TTS save-validation test passed.",
-    "2026-09-23: Final stable v0.7.2 package generation, hosted asset upload, machine-readiness validation, and save promotion remain distinct automated publication steps; approval does not assert that the Steam Workshop item has already been updated."
+    "2026-09-23: Final stable v0.7.2 package generation, hosted asset upload, machine-readiness validation, and save promotion remain distinct automated publication steps; approval does not assert that the Steam Workshop item has already been updated.",
+    "2026-09-23: After successful stable GitHub TTS publish run 35855419415, the owner reported updating existing Steam Workshop item 3790840635 with the approved v0.7.2 mod save. Independent Steam listing verification and a fresh subscribed-copy smoke test remain pending; neither is asserted as complete."
   ]
 }

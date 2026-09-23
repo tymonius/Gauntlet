@@ -69,11 +69,11 @@ The candidate inherits the ordinary data-driven TTS pipeline rather than maintai
 
 The v0.7.2 TTS package also consumes the modular publication pipeline. It renders all eight current rules publications in both print-imposed and sequential reader forms, then stages only the reader-order Half Letter PDFs for TTS. The Player's Guide and Complete Rules are placed on the shared table; each starter Bag contains the reader-order guide for its faction. The Letter-landscape saddle-stitch impositions remain print artifacts and are never used as TTS Custom PDF sources.
 
-The permanent Steam Workshop item remains **v0.7.1** until v0.7.2 has a stable release/tag, stable hosted TTS assets, a passed stable hands-on QA record, and explicit Workshop approval. Candidate PR previews are QA artifacts only.
+The repository owner reports updating the permanent Steam Workshop item to **v0.7.2** after the stable release/tag, hosted TTS assets, passed manual QA, explicit approval, and successful final mod-save publication. The Steam listing and a clean subscribed-copy load have not been independently verified. Candidate PR previews remain QA artifacts only.
 
-Candidate manual QA is tracked in `tts/release-qa/v0.7.2-candidate.json`. Every check begins incomplete and `approvedForWorkshop` remains false.
+Historical candidate QA is tracked in `tts/release-qa/v0.7.2-candidate.json`; the stable v0.7.2 approval authority is `tts/release-qa/v0.7.2.json`, with all 18 manual checks passed and `approvedForWorkshop` true on the owner's attestation.
 
-## Published v0.7.1 package
+## Historical published v0.7.1 package
 
 The published v0.7.1 package is generated from the stable v0.7.1 release authority and contains:
 
@@ -142,7 +142,7 @@ There is no separate Territory-specific back asset.
 
 Leader export does not maintain a second copy of Leader rules or layout. The current-game authority supplies the roster and `/card-design/` supplies the production face, portrait, faction treatment, rules, and geometry.
 
-For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer. Current candidate renders are therefore stamped `v0.7.2-candidate`; the published v0.7.1 package remains frozen. Source provenance remains separately recorded in `leader-manifest.json`.
+For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer. The frozen source retains its `v0.7.2-candidate` identity, while publication-verified stable v0.7.2 TTS faces are stamped `v0.7.2`; the historical v0.7.1 package remains frozen. Source provenance remains separately recorded in `leader-manifest.json`.
 
 Leader Cards use faction-color component backs and deterministic one-card CustomDeck IDs.
 
@@ -165,7 +165,7 @@ It does not hard-code starter, card, Leader, or Territory counts; those are deri
 
 `scripts/generate-tts-supplemental-assets.mjs` renders components already marked production-ready in the physical component contract. `scripts/generate-tts-finalized-supplementals.mjs` is the explicit production bridge for final Proposal/Treaty, Capital Ledger, and Deed definitions whose raw contract status remains export-pending for provenance.
 
-The current stable v0.7.1 supplemental manifest contains the complete production-ready faction component set, including the six Mystics Rite cards and Ritual of Ascension.
+The historical stable v0.7.1 supplemental manifest contains the complete production-ready faction component set, including the six Mystics Rite cards and Ritual of Ascension.
 
 Supported representations include:
 
@@ -246,27 +246,19 @@ Behavioral tests construct the returned save JSON and verify the core table stru
 
 `npm run tts:release:status` writes `tts-release-readiness.json` without failing solely because a known release blocker remains. `npm run tts:release:strict` converts those blockers into a final closeout failure.
 
-The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. The current stable v0.7.1 package is the authority used by the live v0.7.1 Workshop build.
+The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. The stable v0.7.2 package is generated from the frozen current-game authority with the aligned v0.7.2 publication target; the v0.7.1 package remains historical.
 
-The generator still emits a Review Scaffold by default. Stable v0.7.1 has a completed manual-QA record with explicit Workshop approval; the completed v0.7.0 approval remains preserved as historical evidence.
+The generator still emits a Review Scaffold by default; final Workshop identity requires strict machine readiness and the stable approval gate. Stable v0.7.2 has the owner's completed 18-check manual QA and explicit Workshop approval; v0.7.1 and v0.7.0 approvals remain historical evidence.
 
 ## Manual QA and final promotion
 
-The current candidate QA record is:
-
-- `tts/release-qa/v0.7.2-candidate.json`
-
-It is intentionally in progress and cannot authorize Workshop publication. The latest stable publication QA record is:
-
-- `tts/release-qa/v0.7.1.json`
-
-It records all 18 required table/setup, faction-component, and focused handling checks as passed and sets `approvedForWorkshop` to true. The earlier `tts/release-qa/v0.7.1-candidate.json` record remains preserved as pre-release evidence, and the passed v0.7.0 record remains preserved at `tts/release-qa/v0.7.0.json` as historical evidence for the previous Workshop release.
+The historical candidate QA record is `tts/release-qa/v0.7.2-candidate.json`; it cannot authorize Workshop publication. The latest stable publication QA record is `tts/release-qa/v0.7.2.json`. It records all 18 table/setup, faction-component, and focused handling checks as passed on the owner's confirmation and sets `approvedForWorkshop` to true. The earlier v0.7.1 and v0.7.0 approvals remain historical evidence. The owner reported uploading the approved v0.7.2 save to Steam; independent listing verification and a subscribed-copy smoke test remain outstanding.
 
 ## GitHub Release asset hosting
 
 `scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_<version>_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current candidate package stages the custom campaign-table image, command-tent panorama, generated cards/components, current starter packages, and all eight v0.7.2 reader-order rules PDFs. PR previews rewrite those staged assets to an immutable PR-specific prerelease; stable v0.7.1 remains the live Workshop publication until v0.7.2 completes its release and hands-on QA gates.
+The stable v0.7.2 package stages the custom campaign-table image, command-tent panorama, generated cards/components, current starter packages, and all eight reader-order rules PDFs. PR previews rewrite staged assets to immutable PR-specific prereleases. The final v0.7.2 GitHub package and approved mod save were published and verified in run `35855419415`.
 
 Publication remains explicit. Because those deterministic filenames are intentionally replaced in place, every generated TTS object URL carries a `?v=<sha256-prefix>` content revision. When a rendered sheet changes without changing its release filename, Tabletop Simulator therefore requests a new URL instead of silently reusing its local cache of the older image.
 
@@ -280,7 +272,7 @@ Workshop copy, setup notes, publication-gate history, listing images, and post-p
 
 - `tts/WORKSHOP-PUBLISHING.md`
 
-The v0.7.1 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635. The existing Workshop item was updated in place; its permanent id is unchanged. The stable v0.7.1 QA gate is complete and explicitly Workshop-approved.
+The owner reports publishing v0.7.2 to the existing Workshop item at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635; its permanent ID is unchanged. The v0.7.2 stable QA gate is complete and explicitly Workshop-approved. Independent Steam listing verification and a fresh subscribed-copy smoke test are still pending.
 
 ## Generated output
 
