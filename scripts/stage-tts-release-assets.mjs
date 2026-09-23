@@ -66,7 +66,9 @@ async function resolvePublishedAssetTarget(release) {
     readJson(join(ROOT, published.canonicalDataSource)),
     readJson(join(ROOT, published.starterDecksSource)),
   ]);
-  if (current.version !== release.version
+  if (release.version !== releaseTag
+    || release.sourceVersion !== releaseTag
+    || current.version !== release.authorityVersion
     || frozen.release_version !== releaseTag
     || frozenStarters.release_version !== releaseTag) {
     throw new Error('TTS asset publication source/release version mismatch.');

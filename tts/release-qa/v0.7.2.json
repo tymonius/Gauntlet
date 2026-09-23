@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 3,
+  "gameVersion": "v0.7.2",
+  "status": "passed",
+  "checks": {
+    "tableSetup": {
+      "hostedSaveLoad": true,
+      "playerPerspectivesAndHandZones": true,
+      "gauntletSnapsAndTerritoryOrientation": true,
+      "playerTokensAndBattleDice": true,
+      "rulebookSetup": true,
+      "playAreasRemainDistinct": true
+    },
+    "factionComponents": {
+      "militaryCommandTracker": true,
+      "diplomatInfluenceTracker": true,
+      "diplomatProposalsAndTreaties": true,
+      "financierCapitalLimitTracker": true,
+      "financierCapitalLedger": true,
+      "financierDeeds": true,
+      "intelligenceNestedOperationStack": true,
+      "mysticsRitesAndCompletedFaces": true,
+      "inquisitionConvictionDoctrineAndPurge": true
+    },
+    "handlingValidation": {
+      "coreHandlingExercised": true,
+      "focusedFactionDrillsComplete": true,
+      "frictionResolved": true
+    }
+  },
+  "approvedForWorkshop": true,
+  "notes": [
+    "2026-09-23: Opened the stable v0.7.2 TTS QA record after the web/rules release cutover. All manual checks intentionally begin incomplete.",
+    "2026-09-23: The stable TTS package continues to consume packages/game-data/current-game.json as gameplay authority while config/tts-release-target.json supplies the v0.7.2 publication identity.",
+    "2026-09-23: Stable QA must verify the Player's Guide and Complete Rules on the shared table, the correct Faction Guide inside every starter Bag, and reader-order pages for all eight Custom PDF objects.",
+    "2026-09-23: Stable QA must exercise the revised starter packages plus Intelligence recurring Intel and Operational Capacity references, Financier action-economy/Deed changes, Inquisition Conviction/Purge tuning, and New Recruits hand replenishment.",
+    "2026-09-23: Workshop promotion remains blocked until machine readiness passes, all 18 hands-on checks are true, and approvedForWorkshop is explicitly set true.",
+    "2026-09-23: The repository owner explicitly confirmed completion of the full v0.7.2 hands-on TTS QA and approved Workshop publication. All 18 checks are recorded as passed on the owner's attestation, not as tests run by CI.",
+    "2026-09-23: The owner confirmed that the corrected PR #1876 QA save's six Faction Guides match the 2.2× tabletop Player's Guide and Complete Rules. PR #1876 merged this adjustment and its authoritative TTS save-validation test passed.",
+    "2026-09-23: Final stable v0.7.2 package generation, hosted asset upload, machine-readiness validation, and save promotion remain distinct automated publication steps; approval does not assert that the Steam Workshop item has already been updated."
+  ]
+}

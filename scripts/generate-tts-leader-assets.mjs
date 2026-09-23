@@ -12,6 +12,10 @@ import {
   resolveFactionBackFile,
 } from './tts-component-contract.mjs';
 import {
+  stampTtsFacePublicationVersion,
+  validateTtsFacePublicationSource,
+} from './tts-face-publication.mjs';
+import {
   surfaceCssPixels,
   surfaceDeviceScale,
   surfaceRasterPixels,
@@ -171,6 +175,7 @@ async function captureLeader(page, leader, outputPath) {
 }
 
 async function renderLeaderAssets(release, leaders, componentContract) {
+  await validateTtsFacePublicationSource(release);
   let chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -229,6 +234,9 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         fontsValidated = true;
       }
 
+      await stampTtsFacePublicationVersion(
+        page, release, leaderSelector(), '.card-footer span:last-child', 'leaderCopyVersion',
+      );
       await validateLeader(page, leader, displayVersion);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;

@@ -26,6 +26,9 @@ describe('TTS Leader assets', () => {
     expect(exporter).not.toContain("url.searchParams.set('version'");
     expect(exporter).toContain("return '#renderTarget > .leader-card'");
     expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
+    expect(exporter).toContain('await validateTtsFacePublicationSource(release)');
+    expect(exporter).toContain('await stampTtsFacePublicationVersion(');
+    expect(exporter).toContain("'leaderCopyVersion'");
     expect(exporter).toContain('fitWarning');
     expect(exporter).not.toContain('GauntletArtworkCrop.apply');
     expect(exporter).not.toContain('GAUNTLET_ART_DIRECTION');

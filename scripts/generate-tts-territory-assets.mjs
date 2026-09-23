@@ -14,6 +14,10 @@ import {
 } from './tts-component-contract.mjs';
 import { LANDSCAPE_TTS_CELL_ROTATION_DEGREES } from './tts-supplemental-geometry.mjs';
 import {
+  stampTtsFacePublicationVersion,
+  validateTtsFacePublicationSource,
+} from './tts-face-publication.mjs';
+import {
   surfaceCssPixels,
   surfaceDeviceScale,
   surfaceRasterPixels,
@@ -156,6 +160,7 @@ async function renderTerritories(catalog, componentContract) {
   }
 
   const release = await resolveCurrentTtsRelease();
+  await validateTtsFacePublicationSource(release);
   const outputRoot = release.outputRoot;
   const fallbackBackFile = resolveStandardBackFile(componentContract, 'intelligence');
   await access(join(outputRoot, fallbackBackFile)).catch((error) => {
@@ -201,6 +206,9 @@ async function renderTerritories(catalog, componentContract) {
       }
 
       await validateRenderedTerritory(page, territory);
+      await stampTtsFacePublicationVersion(
+        page, release, '.territory-card', '.territory-footer span:last-child',
+      );
       await page.locator('.territory-card').screenshot({
         path: join(outputRoot, 'territories', `${territory.id}.png`),
         omitBackground: true,

@@ -12,6 +12,7 @@ on:
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/tts-component-contract.json'
+      - 'config/tts-release-target.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
@@ -316,6 +317,12 @@ jobs:
       - name: Report TTS release readiness
         run: npm run tts:release:status
 
+      - name: Promote owner-approved stable TTS save for Workshop
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'
+        run: |
+          npm run tts:release:strict
+          npm run tts:save:promote
+
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
@@ -489,6 +496,27 @@ jobs:
           mapfile -t assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
           test "${#assets[@]}" -gt 1
           gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}"
+
+      - name: Upload QA-approved v0.7.2 TTS mod save
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
+          test -n "$manifest"
+          tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
+          mod_save="$(find tts-output -type f -name "Gauntlet_${tag}_TTS_Mod.json" -print -quit)"
+          test -n "$mod_save"
+          MOD_SAVE="$mod_save" TAG="$tag" node <<'NODE'
+          const fs = require('fs');
+          const save = JSON.parse(fs.readFileSync(process.env.MOD_SAVE, 'utf8'));
+          if (save.SaveName !== `Gauntlet ${process.env.TAG}` || /review scaffold/i.test(save.Note || '')) {
+            throw new Error('Workshop save was not promoted to the approved stable identity.');
+          }
+          NODE
+          gh release upload "$tag" --repo "$GITHUB_REPOSITORY" --clobber "$mod_save"
+
       - name: Verify published TTS asset URLs
         shell: bash
         run: |
@@ -517,3 +545,15 @@ jobs:
             process.exitCode = 1;
           });
           NODE
+
+      - name: Verify approved Workshop save is attached to the stable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
+          test -n "$manifest"
+          tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
+          name="Gauntlet_${tag}_TTS_Mod.json"
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | grep -Fx "$name"

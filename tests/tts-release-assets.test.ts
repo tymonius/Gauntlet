@@ -77,9 +77,12 @@ describe('TTS GitHub Release asset hosting', () => {
     const release = await resolveCurrentTtsRelease();
     const target = await resolvePublishedAssetTarget(release);
 
-    expect(release.version).toBe('v0.7.2-candidate');
+    expect(release.version).toBe('v0.7.2');
+    expect(release.authorityVersion).toBe('v0.7.2-candidate');
+    expect(release.publicationTargetActive).toBe(true);
     expect(target.releaseTag).toBe('v0.7.2');
     expect(target.prefix).toBe('Gauntlet_v0.7.2_TTS');
+    expect(stager).toContain('current.version !== release.authorityVersion');
     expect(stager).toContain('current-game ${currentKey} differs from frozen');
     expect(stager).toContain('starter Decks differ from frozen');
     expect(stager).toContain('releaseUrl(repository, publicationTarget.releaseTag, record.releaseAsset)');
