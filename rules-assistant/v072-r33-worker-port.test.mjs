@@ -49,7 +49,8 @@ function portR33Worker(source) {
     .replaceAll('"/v071/rules"', '"/v072-candidate/rules"')
     .replaceAll('"/api/v071/rules"', '"/api/v072-candidate/rules"')
     .replaceAll('error: "The published Rules Arbiter corpus could not be refreshed."', 'error: "The v0.7.2 candidate Rules Arbiter corpus could not be refreshed."')
-    .replaceAll("published: true", "published: false");
+    .replaceAll("published: true", "published: false")
+    .replaceAll('currentPublicRelease: "v0.7.1"', 'currentPublicRelease: "v0.7.2"');
 }
 
 describe("v0.7.2 candidate r34 Worker port", () => {
