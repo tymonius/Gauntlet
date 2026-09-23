@@ -1,5 +1,4 @@
 import { loadRenderGame } from './render-context.mjs';
-import { stampCanonicalFaceFooter } from './face-footer-version.mjs';
 import { resolveFaceSpec } from './face-spec.mjs';
 import { rendererForTemplate } from './face-template-registry.mjs';
 import { fitReferenceCard } from './reference-card.js';
@@ -290,9 +289,6 @@ async function main() {
     throw new Error(`Template ${spec.template} returned no physical face element for ${spec.id}.`);
   }
 
-  // A frozen release may retain a candidate source identifier after cutover.
-  // Correct only the physical footer; keep gameplay provenance unchanged.
-  stampCanonicalFaceFooter(result.element, spec.provenance);
   result.element.style.width = `${spec.surface.widthIn}in`;
   result.element.style.height = `${spec.surface.heightIn}in`;
   target.replaceChildren(result.element);
