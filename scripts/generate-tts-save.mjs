@@ -385,10 +385,12 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   };
 }
 
-function buildTtsSave(starterManifest, releaseAssets) {
+function buildTtsSave(starterManifest, releaseAssets, expectedReleaseTag = String(starterManifest?.gameVersion || '').trim()) {
   const version = String(starterManifest?.gameVersion || '').trim();
   if (!version) throw new Error('Starter manifest does not declare gameVersion.');
-  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
+  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== expectedReleaseTag) {
+    throw new Error(`Hosted TTS release assets do not match starter manifest ${version} on release tag ${expectedReleaseTag}.`);
+  }
   const starters = starterManifest.decks || [];
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
@@ -508,7 +510,7 @@ async function main() {
     throw error;
   }));
   const releaseAssets = await readReleaseAssetManifest(release.version, release.publishedVersion);
-  const save = buildTtsSave(starterManifest, releaseAssets);
+  const save = buildTtsSave(starterManifest, releaseAssets, release.publishedVersion);
   const versionedName = `Gauntlet_${release.version}_TTS_Review_Scaffold.json`;
   const versionedPath = join(release.outputRoot, versionedName);
   const aliasPath = join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json');
