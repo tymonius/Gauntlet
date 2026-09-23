@@ -42,7 +42,8 @@ function portCandidateToFinal(source) {
     .replaceAll('"/v072-candidate/health"', '"/v072/health"')
     .replaceAll('"/api/v072-candidate/health"', '"/api/v072/health"')
     .replaceAll('"/v072-candidate/rules"', '"/v072/rules"')
-    .replaceAll('"/api/v072-candidate/rules"', '"/api/v072/rules"');
+    .replaceAll('"/api/v072-candidate/rules"', '"/api/v072/rules"')
+    .replaceAll("published: false", "published: true");
 }
 
 describe("final v0.7.2 Rules Arbiter Worker staging", () => {
@@ -59,9 +60,10 @@ describe("final v0.7.2 Rules Arbiter Worker staging", () => {
     expect(staged).toContain("applyHighRiskVerification");
   });
 
-  test("does not claim public cutover before final certification", () => {
-    expect(staged.match(/published: false/g)?.length).toBe(2);
-    expect(staged).toContain('currentPublicRelease: "v0.7.1"');
+  test("identifies the frozen final Worker as the published v0.7.2 Rules Arbiter", () => {
+    expect(staged.match(/published: true/g)?.length).toBe(2);
+    expect(staged).not.toContain("published: false");
+    expect(staged).toContain('currentPublicRelease: "v0.7.2"');
     expect(staged).not.toContain('"/api/v072-candidate/rules"');
   });
 });
