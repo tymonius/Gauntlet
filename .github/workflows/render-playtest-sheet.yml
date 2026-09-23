@@ -81,6 +81,7 @@ jobs:
         env:
           PLAYTEST_SHEET_PDF: ${{ steps.release.outputs.pdf }}
           PLAYTEST_SHEET_PREVIEW: ${{ steps.release.outputs.preview }}
+          PLAYTEST_RULES_VERSION: ${{ steps.release.outputs.version }}
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -93,7 +94,10 @@ jobs:
             if (message.type() === 'error') errors.push(message.text());
           });
 
-          await page.goto('http://127.0.0.1:8000/playtest/sheet/?serial=G071-PREVIEW', { waitUntil: 'networkidle' });
+          const serialToken = String(process.env.PLAYTEST_RULES_VERSION || '')
+            .replace(/^v/, '')
+            .replace(/\./g, '');
+          await page.goto(`http://127.0.0.1:8000/playtest/sheet/?serial=G${serialToken}-PREVIEW`, { waitUntil: 'networkidle' });
           await page.screenshot({
             path: process.env.PLAYTEST_SHEET_PREVIEW,
             fullPage: true
@@ -162,6 +166,8 @@ jobs:
 
       - name: Commit generated PDF on main
         if: github.event_name == 'push' && github.ref_name == 'main'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           node scripts/commit-generated-files.mjs \
             "Render current ${{ steps.release.outputs.version }} printable playtest sheet PDF" \
