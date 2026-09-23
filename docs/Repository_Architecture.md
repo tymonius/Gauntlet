@@ -130,7 +130,7 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `rulebook/` | Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. Browser Rulebook application source lives under `apps/rulebook/`; durable active rules source/support lives under `packages/rules/`. No maintained current rules helper should live in this root after the rule-facts move; it remains transitional until historical support/assets and the legacy Rulebook route lifecycle are resolved. |
+| `rulebook/` | Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. The current `/rulebook/` route is the modular v0.7.2 publication; maintained rules source/support lives under `packages/rules/`. This root remains transitional historical support rather than current rules authority. |
 
 ### Shared packages
 
@@ -153,7 +153,7 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance |
+| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`, but current rules content is supplied by the frozen v0.7.2 release package. |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
 | `v0.7.1/` | Historical v0.7.1 versioned public entrypoint retained for release compatibility |
