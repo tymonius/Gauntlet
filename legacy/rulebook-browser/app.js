@@ -550,17 +550,18 @@ function publishedDocument(manifest, documentId = activeCandidateDocument) {
 
 async function loadVerifiedReleasedSource(documentId = activeCandidateDocument) {
   const normalized = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
-  if (!publishedSourcePromises.has(normalized)) {
-    const promise = (async () => {
-      const manifest = await loadReleaseManifest();
-      const { document, booklet } = publishedDocument(manifest, normalized);
-      publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, document.source.path));
-      pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
-      if (activeMode === RELEASED_MODE && activeCandidateDocument === normalized) {
-        updateBookletLinks(RELEASED_MODE, normalized);
-      }
+  const manifest = await loadReleaseManifest();
+  const { document, booklet } = publishedDocument(manifest, normalized);
+  publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, document.source.path));
+  pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
+  if (activeMode === RELEASED_MODE && activeCandidateDocument === normalized) {
+    updateBookletLinks(RELEASED_MODE, normalized);
+  }
 
-      const response = await fetch(publishedSourceUrl, { cache: 'no-store' });
+  if (!publishedSourcePromises.has(normalized)) {
+    const sourceUrl = publishedSourceUrl;
+    const promise = (async () => {
+      const response = await fetch(sourceUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`${normalized} source returned ${response.status}`);
       const bytes = await response.arrayBuffer();
       const actualHash = await sha256(bytes);
