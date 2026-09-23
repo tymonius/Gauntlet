@@ -83,12 +83,12 @@ async function startServer(root) {
   };
 }
 
-async function waitForCandidate(page, document) {
+async function waitForPublication(page, document) {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
 
   await page.waitForFunction(
-    id => document.body.dataset.rulesetMode === 'candidate'
+    id => document.body.dataset.rulesetMode === 'released'
       && document.body.dataset.candidateDocument === id
       && document.querySelector('.rulebook-content.candidate-publication'),
     document.id,
@@ -152,7 +152,7 @@ async function waitForCandidate(page, document) {
   }
 
   const expectedBooklet = BOOKLET_FILENAMES.get(document.id);
-  const expectedBookletPath = `/rulebook/booklets/v0.7.2/${expectedBooklet}`;
+  const expectedBookletPath = `/releases/v0.7.2/${expectedBooklet}`;
   if (!expectedBooklet || diagnostics.bookletPaths.length !== 2
     || diagnostics.bookletPaths.some(bookletPath => bookletPath !== expectedBookletPath)) {
     throw new Error(
@@ -183,11 +183,11 @@ try {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
       try {
         await page.goto(
-          `${server.baseUrl}/rulebook/?rules=candidate&doc=${encodeURIComponent(document.id)}`,
+          `${server.baseUrl}/rulebook/?doc=${encodeURIComponent(document.id)}`,
           { waitUntil: 'domcontentloaded', timeout: 60000 },
         );
         await page.addStyleTag({ content: '.analytics-consent { display:none !important; }' });
-        const diagnostics = await waitForCandidate(page, document);
+        const diagnostics = await waitForPublication(page, document);
         await page.screenshot({
           path: path.join(directory, `${document.id}-viewport.png`),
           fullPage: false,
