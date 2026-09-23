@@ -118,7 +118,7 @@
     {
       "source": "legacy/rulebook-browser",
       "publicPath": "/rulebook/",
-      "kind": "release-transition-app",
+      "kind": "current-rules-publication",
       "manageIndexRoutes": true
     },
     {
@@ -201,52 +201,52 @@
     {
       "source": "rulebook/player-facing/current-rulebook.md",
       "publicPath": "/rulebook/player-facing/current-rulebook.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/player-guide/player-guide.md",
       "publicPath": "/rulebook/player-guide/player-guide.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/player-guide/player-guide.md",
       "publicPath": "/rulebook/sources/player-guide.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/military.md",
       "publicPath": "/rulebook/sources/factions/military.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/diplomats.md",
       "publicPath": "/rulebook/sources/factions/diplomats.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/financiers.md",
       "publicPath": "/rulebook/sources/factions/financiers.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/intelligence.md",
       "publicPath": "/rulebook/sources/factions/intelligence.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/mystics.md",
       "publicPath": "/rulebook/sources/factions/mystics.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/faction-guides/inquisition.md",
       "publicPath": "/rulebook/sources/factions/inquisition.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rules/comprehensive/comprehensive-rules.md",
       "publicPath": "/rulebook/sources/complete-rules.md",
-      "kind": "release-transition-source"
+      "kind": "rules-publication-source"
     },
     {
       "source": "packages/rendering/face-authority.mjs",
@@ -504,6 +504,11 @@
       "version": "v0.7.1",
       "publicPath": "/v0.7.1/",
       "source": "v0.7.1"
+    },
+    {
+      "version": "v0.7.2",
+      "publicPath": "/v0.7.2/",
+      "source": "v0.7.2"
     }
   ]
 }
