@@ -79,22 +79,91 @@
     <article class="changelog-entry" id="v0-7-2">
       <p class="changelog-meta">Current release · September 23, 2026</p>
       <h2>v0.7.2 — The Chief Justice</h2>
-      <p class="changelog-summary">v0.7.2 rebuilds rules access around the Chief Justice and a modular rules library, while publishing the final Intelligence, Financier, Inquisition, Territory, New Recruits, and starter-package revisions from the frozen v0.7.2 authority.</p>
+      <p class="changelog-summary">v0.7.2 introduces the Chief Justice and a modular rules library, makes starting a first game easier, updates Intelligence, Financier, and Inquisition economies, rebalances three Territories and all twelve starter Decks, and brings the matching Tabletop Simulator update to the existing Workshop item.</p>
       <div class="release-actions">
         <a class="button primary" href="/v0.7.2/">Open v0.7.2 release</a>
         <a class="button secondary" href="/rulebook/">Read current rules</a>
       </div>
+
       <h3>At a glance</h3>
       <ol>
-        <li><strong>The Rules Arbiter is now the Chief Justice</strong>, certified against the frozen v0.7.2 corpus with 33/33 semantic verdicts and 5/5 clarification cases.</li>
-        <li><strong>The rules library is modular</strong>: Player's Guide, six Faction Guides, and Complete Rules, each with a printable booklet.</li>
-        <li><strong>Intelligence gains recurring Intel and Operational Capacity</strong>, strengthening its Mission economy and turn structure.</li>
-        <li><strong>Financiers receive revised action economy and Deed scaling</strong>, including Financial Capacity and the final multiple-Deed purchase rules.</li>
-        <li><strong>Inquisition Conviction and Purge pressure are strengthened</strong> in the frozen release authority.</li>
-        <li><strong>New Recruits is now value 2</strong> with “Discard one other card from your Hand if able, then +3 Cards,” and all twelve starter Decks remain 30 cards / 60 value.</li>
-        <li><strong>Supply Depot, Smuggler's Run, and Quicksand are rebalanced</strong>, and ten of twelve recommended starter Territory packages change.</li>
-        <li><strong>Tabletop Simulator remains on its separate publication gate.</strong> The v0.7.2 web/rules release does not by itself advance the Steam Workshop item.</li>
+        <li><strong>The Rules Arbiter is now the Chief Justice.</strong> Final v0.7.2 QA passed 33/33 semantic verdicts and 5/5 clarification cases against the frozen release corpus.</li>
+        <li><strong>Starting a first game is simpler.</strong> Start Playing teaches the shared game first, supplies a recommended starter, and introduces only the selected faction's additional rules.</li>
+        <li><strong>The rules are modular.</strong> The Player's Guide, six Faction Guides, and Complete Rules each have a browser view and printable booklet.</li>
+        <li><strong>Intelligence gains recurring Intel and Operational Capacity.</strong> Financiers gain revised Action timing, Financial Capacity, and Deed costs; Inquisition gains stronger Conviction and low-cost Purge options.</li>
+        <li><strong>New Recruits is now value 2</strong> and provides up to three drawn cards after its conditional discard.</li>
+        <li><strong>Quicksand, Supply Depot, and Smuggler's Run are rebalanced.</strong> Ten of twelve recommended starter Territory packages change, and all twelve starter card lists are revised.</li>
+        <li><strong>Tabletop Simulator has been updated to v0.7.2.</strong> The same Workshop item now carries the revised starters and all eight rules documents, with a successful fresh subscribed-copy load confirmed by the owner.</li>
       </ol>
+
+      <h3>Learning, rules, and the Chief Justice</h3>
+      <p>The revised <a href="/start/">Start Playing</a> flow follows the shared loop of move, fight, push back, hold ground, capture, and win. It teaches setup, turns, movement, battle, and taking ground before introducing the chosen faction and Leader. Custom Deck construction and the technical rules are no longer prerequisites for a first game.</p>
+      <p>The <a href="/rulebook/">Browser Rulebook</a> now hosts the Player's Guide, all six Faction Guides, and Complete Rules. Each has a matching half-letter printable booklet. The Player's Guide also includes at-the-table links and QR codes to digital tools.</p>
+      <p>The <a href="/rules-arbiter/">Chief Justice</a> is the player-facing identity of the Rules Arbiter. The v0.7.2 overhaul improves source selection, multi-question continuity, named-card interactions, clarification when necessary, and concise rulings grounded in the published rules.</p>
+
+      <h3>Faction balance changes</h3>
+      <ul>
+        <li><strong>Intelligence:</strong> At the start of each turn, gain Intel equal to Operation Progress. Operational Capacity allows a qualifying Mission or Special Operation Action in Denouement after using the normal Action in Opening; the one-Action-per-phase limit still applies, and Abort Mission does not qualify.</li>
+        <li><strong>Financiers:</strong> Treasury may be used in Opening or Denouement; Play the Market is Opening-only; Deeds remains Denouement-only. At the end of Opening, Financial Capacity can authorize one Denouement Action after an Opening Action when Treasury value exceeds controlled Territories, provided the turn includes Treasury, Deeds, Play the Market, or Executive Hostile Takeover. Deed base costs now progress through 1 / 2 / 4 / 6 / 8 / 10 Capital, with the existing position and buyout modifiers plus an additional +1 Capital for each earlier Deed acquisition that turn.</li>
+        <li><strong>Inquisition:</strong> The first qualifying Aftermath each turn grants 1 Conviction if exactly one opposing card enters the Graveyard, or 2 if at least two do. For 1 Conviction, Purge may move up to two opposing Discard-Pile cards with combined value 3 or less to the Graveyard, rather than 2 or less. The top-card alternative and other Purge tiers remain available.</li>
+      </ul>
+
+      <h3>Territories and recommended starters</h3>
+      <ul>
+        <li><strong>Quicksand:</strong> entering it now ends the current movement sequence; its start-Movement restriction and Retreat exception remain.</li>
+        <li><strong>Supply Depot:</strong> its controller may draw 1, then discard 1 when starting their turn there, replacing unconditional +1 Card.</li>
+        <li><strong>Smuggler's Run:</strong> stashing is once per turn; after stashing while there, its controller may use the stash while still controlling the Territory, even after moving away.</li>
+      </ul>
+      <p>Ten of twelve recommended starter Territory trios change. Commandant and Banker retain their previous trios. All twelve starter card lists are also adjusted for the new New Recruits value and the final faction balance changes; every starter remains <strong>30 cards / 60 Deckbuilding Value</strong>.</p>
+      <details>
+        <summary>All twelve recommended starter Territory packages</summary>
+        <ul>
+            <li><strong>General — Forward Doctrine:</strong> Smuggler's Run / King's Road / Arena: No Quarter</li>
+            <li><strong>Commandant — Holdfast:</strong> Garrison / Training Grounds / High Ground</li>
+            <li><strong>Ambassador — Open Channels:</strong> Refuge / Supply Depot / Command Tent</li>
+            <li><strong>Senator — Procedure Endures:</strong> Refuge / Garrison / Fortified Pass</li>
+            <li><strong>Banker — Sound Investment:</strong> Supply Depot / Ruined Storehouse / Arena: Spoils of War</li>
+            <li><strong>Executive — Hostile Expansion:</strong> Smuggler's Run / King's Road / Arena: No Quarter</li>
+            <li><strong>Ranger — Field Operations:</strong> Quicksand / Difficult Terrain / Poisonous Gas</li>
+            <li><strong>Spymaster — Mission Network:</strong> Refuge / Ruined Storehouse / Field Hospital</li>
+            <li><strong>Alchemist — First Principles:</strong> Poisonous Gas / Old Battlefield / Ruined Storehouse</li>
+            <li><strong>Spirit Walker — Unbroken Circle:</strong> Garrison / Training Grounds / High Ground</li>
+            <li><strong>Grand Inquisitor — Final Judgment:</strong> Poisonous Gas / Toll Bridge / Arena: Grand Melee</li>
+            <li><strong>Witch Hunter — Relentless Pursuit:</strong> Garrison / Training Grounds / High Ground</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Starter card-list changes from v0.7.1</summary>
+        <ul>
+            <li><strong>General:</strong> Pathfinders ×1 → ×2; Reserve Force ×1 → ×0</li>
+            <li><strong>Commandant:</strong> Contingency Plan ×1 → ×2; Encampment ×2 → ×1</li>
+            <li><strong>Ambassador:</strong> Contraband ×1 → ×0; Counterintelligence ×1 → ×2</li>
+            <li><strong>Senator:</strong> Gunboat Diplomacy ×1 → ×0; Neutral Observers ×2 → ×3</li>
+            <li><strong>Banker:</strong> Margin Loan ×2 → ×1; Rallying Cry ×2 → ×3; Second Line ×2 → ×3; Tactical Planning ×1 → ×0</li>
+            <li><strong>Executive:</strong> Capital Gains ×2 → ×3; Compound Interest ×1 → ×0; Sabotage ×1 → ×0; Second Line ×1 → ×2</li>
+            <li><strong>Ranger:</strong> Contraband ×1 → ×0; Pathfinders ×2 → ×3</li>
+            <li><strong>Spymaster:</strong> Exfiltration ×2 → ×3; Operational Reassessment ×1 → ×0; Rallying Cry ×2 → ×3; Reinforcements ×1 → ×0</li>
+            <li><strong>Alchemist:</strong> Spirit Hollow ×1 → ×0; Supplies ×1 → ×2</li>
+            <li><strong>Spirit Walker:</strong> Entrenchment ×1 → ×0; Scouting Report ×1 → ×2</li>
+            <li><strong>Grand Inquisitor:</strong> Heresy ×1 → ×0; Penance ×1 → ×2</li>
+            <li><strong>Witch Hunter:</strong> Contingency Plan ×1 → ×2; Entrenchment ×1 → ×0</li>
+        </ul>
+      </details>
+
+      <h3>Cards, timing, and rules clarifications</h3>
+      <p><strong>New Recruits</strong> is now value 2. Its Action reads: “Discard one other card from your Hand if able, then +3 Cards.” If no other Hand card is available when it resolves, the discard is skipped.</p>
+      <p><strong>Explicit Action timing:</strong> Advance Guard, Forced March, Invasion, and Fate's Toll now say Play only during Opening; Foreclosure and Give Chase say Play only during Denouement. Battlefield Promotion's machine-readable timing now matches its existing Denouement wording.</p>
+      <p><strong>Capture versus Front Line:</strong> Assimilation, Foreclosure's Gambit/Tactic effect, Commandant's Fortify, Executive's Hostile Takeover, Diplomatic Recognition, and Shock and Awe's Consolidate now use direct Capture where appropriate. Foreclosure's Action still advances the next opposing Territory beyond the Front Line.</p>
+      <p><strong>Shared rules:</strong> the territorial Run the Gauntlet route is described as controlling all six Territories. Normal battle commitments are explicitly attacker first, then defender, for both Gambits and Tactics; they are normally face down. Complete Rules also restores compact-shorthand labels and removes redundant glossary redirects. These clarifications do not add new card or Territory titles.</p>
+      <p>Returning players should update printed copies of New Recruits, Advance Guard, Assimilation, Fate's Toll, Forced March, Foreclosure, Give Chase, Invasion, Shock and Awe, Quicksand, Supply Depot, Smuggler's Run, and Diplomatic Recognition, along with affected Leaders and faction references. See the full notes for the complete reprint inventory.</p>
+
+      <h3>Tabletop Simulator — v0.7.2 now available</h3>
+      <p>The <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635">existing Gauntlet Workshop item</a> was updated in place to v0.7.2 on September 23, 2026, as confirmed by the repository owner. The refreshed mod includes all twelve revised starter Decks, current cards and faction references, the shared Player's Guide and Complete Rules on the table, and a matching Faction Guide in every starter Bag. TTS uses reader-order PDFs rather than print-imposed booklet pages.</p>
+      <p>All 18 stable manual QA checks passed; the final asset publication verified all 95 hosted object URLs; and the owner confirmed that a fresh subscribed copy loads successfully. Independent retrieval of the Steam listing remains outstanding.</p>
+
+      <h3>What remains familiar</h3>
+      <p>The release retains 142 playable cards, 25 Territories/Arenas, six factions, twelve Leaders, the six-Rite Mystics system, and the established two-player turn and battle structure. No playable-card or Territory titles were added or retired.</p>
+      <p>For the detailed rule and card changes, full starter-package inventory, print changes, and release certification, read the <a href="https://github.com/tymonius/Gauntlet/blob/main/docs/releases/github/v0.7.2.md">complete v0.7.2 release notes</a>.</p>
     </article>
 
     <article class="changelog-entry" id="v0-7-1">
