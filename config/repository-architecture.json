@@ -101,7 +101,7 @@
         "legacy"
       ],
       "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The archived Browser Rulebook is temporarily materialized at /rulebook/ as the v0.7.1 release-transition bridge until the v0.7.2 cutover."
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/, while current v0.7.2 rules content comes from the frozen release package."
     },
     "media": {
       "role": "production_tooling",
@@ -135,7 +135,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Legacy monolithic Rulebook and version-specific compatibility support plus Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json and maintained rules support lives at packages/rules/. The Browser Rulebook application source is archived under legacy/rulebook-browser/ but remains the deployed /rulebook/ release bridge until v0.7.2 cuts over."
+      "note": "Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json; maintained rules support lives under packages/rules/; current /rulebook/ content is the modular v0.7.2 publication rather than this legacy root."
     },
     "rules-arbiter": {
       "role": "active_application",
