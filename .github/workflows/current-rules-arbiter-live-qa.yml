@@ -9,6 +9,7 @@ on:
         default: smoke
         type: choice
         options:
+          - voice
           - targeted
           - smoke
           - full
@@ -66,6 +67,17 @@ jobs:
             fi
             echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
             echo "Running the full paid Rules Arbiter benchmark for ${{ steps.plan.outputs.version }}."
+          elif [ "$QA_SCOPE" = "voice" ]; then
+            if [ -n "$compact_case_ids" ]; then
+              echo "case_ids is not used for the fixed five-question voice scope."
+              exit 1
+            fi
+            test "${{ steps.plan.outputs.version }}" = "v0.7.2"
+            voice_case_ids="$(node --input-type=module -e 'import { VOICE_SMOKE_CASE_IDS } from "./rules-assistant/v072-voice-smoke-report.js"; process.stdout.write(VOICE_SMOKE_CASE_IDS.join(","));')"
+            echo "GAUNTLET_RULES_QA_CASE_IDS=$voice_case_ids" >> "$GITHUB_ENV"
+            echo "GAUNTLET_RULES_QA_VOICE_ONLY=true" >> "$GITHUB_ENV"
+            echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+            echo "Running five production-model Chief Justice voice questions. No paid semantic-evaluator calls."
           elif [ "$QA_SCOPE" = "targeted" ]; then
             if [ -z "$compact_case_ids" ]; then
               echo "targeted scope requires at least one benchmark case id."
