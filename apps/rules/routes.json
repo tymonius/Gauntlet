@@ -3,15 +3,15 @@
   "status": "compatibility-only",
   "primaryRulesRoute": "/rulebook/",
   "redirects": {
-    "/rules/": "/rulebook/?rules=candidate&doc=player-guide",
-    "/rules/player-guide/": "/rulebook/?rules=candidate&doc=player-guide",
-    "/rules/comprehensive/": "/rulebook/?rules=candidate&doc=complete-rules",
-    "/rules/factions/": "/rulebook/?rules=candidate&doc=player-guide#9-the-six-factions",
-    "/rules/factions/military/": "/rulebook/?rules=candidate&doc=military",
-    "/rules/factions/diplomats/": "/rulebook/?rules=candidate&doc=diplomats",
-    "/rules/factions/financiers/": "/rulebook/?rules=candidate&doc=financiers",
-    "/rules/factions/intelligence/": "/rulebook/?rules=candidate&doc=intelligence",
-    "/rules/factions/mystics/": "/rulebook/?rules=candidate&doc=mystics",
-    "/rules/factions/inquisition/": "/rulebook/?rules=candidate&doc=inquisition"
+    "/rules/": "/rulebook/?doc=player-guide",
+    "/rules/player-guide/": "/rulebook/?doc=player-guide",
+    "/rules/comprehensive/": "/rulebook/?doc=complete-rules",
+    "/rules/factions/": "/rulebook/?doc=player-guide#9-the-six-factions",
+    "/rules/factions/military/": "/rulebook/?doc=military",
+    "/rules/factions/diplomats/": "/rulebook/?doc=diplomats",
+    "/rules/factions/financiers/": "/rulebook/?doc=financiers",
+    "/rules/factions/intelligence/": "/rulebook/?doc=intelligence",
+    "/rules/factions/mystics/": "/rulebook/?doc=mystics",
+    "/rules/factions/inquisition/": "/rulebook/?doc=inquisition"
   }
 }
