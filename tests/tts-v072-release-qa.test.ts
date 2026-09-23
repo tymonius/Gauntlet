@@ -23,7 +23,7 @@ describe('v0.7.2 TTS release QA gate', () => {
     expect(stableQa.approvedForWorkshop).toBe(true);
   });
 
-  it('records the owner's completed 18-check manual QA and explicit Workshop approval', () => {
+  it("records the owner's completed 18-check manual QA and explicit Workshop approval", () => {
     const checks = Object.values(stableQa.checks).flatMap((group: any) => Object.values(group));
     expect(checks).toHaveLength(18);
     expect(checks.every((value) => value === true)).toBe(true);
