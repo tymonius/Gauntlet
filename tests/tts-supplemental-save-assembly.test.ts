@@ -130,6 +130,12 @@ describe('TTS supplemental save assembly release identity', () => {
 });
 
 describe('TTS ready supplemental save assembly', () => {
+  it('accepts a frozen hosted release tag that differs from the candidate gameVersion', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    assets.releaseTag = 'v0.7.2';
+    expect(() => assembleReadySupplementals(save, starters, supplementals, assets)).not.toThrow();
+  });
+
   it('places shared material into every starter and faction material only into its faction', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
