@@ -19,14 +19,14 @@ describe("v0.7.2 candidate Rules Arbiter routing", () => {
     }
   });
 
-  test("keeps the unversioned public Chief Justice on the current v0.7.1 Worker", () => {
+  test("keeps the mutable candidate separate from the published v0.7.2 Chief Justice", () => {
     const start = entry.indexOf("// The unversioned public Rules Arbiter follows the current canonical release.");
     const end = entry.indexOf("// Withdrawn v0.6.2 remains explicitly addressable", start);
     expect(start).toBeGreaterThanOrEqual(0);
     expect(end).toBeGreaterThan(start);
     const publicRouting = entry.slice(start, end);
-    expect(publicRouting).toContain('return worker.fetch(request, env, context);');
-    expect(publicRouting).not.toContain("v072CandidateWorker");
+    expect(publicRouting).toContain("return v072Worker.fetch(request, env, context);");
+    expect(publicRouting).not.toContain("v072CandidateWorker.fetch(request, env, context)");
   });
 
   test("candidate Worker recognizes only the candidate version identity", () => {
