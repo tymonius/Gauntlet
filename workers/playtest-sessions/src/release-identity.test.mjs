@@ -10,10 +10,10 @@ import {
 
 describe("playtest release identity", () => {
   it("derives new session identifiers from the tested rules version", () => {
-    expect(CURRENT_RULES_VERSION).toBe("v0.7.1");
-    expect(serialVersionToken(CURRENT_RULES_VERSION)).toBe("071");
-    expect(GAME_SERIAL_PREFIX).toBe("G071");
-    expect(EVENT_SERIAL_PREFIX).toBe("EV071");
+    expect(CURRENT_RULES_VERSION).toBe("v0.7.2");
+    expect(serialVersionToken(CURRENT_RULES_VERSION)).toBe("072");
+    expect(GAME_SERIAL_PREFIX).toBe("G072");
+    expect(EVENT_SERIAL_PREFIX).toBe("EV072");
     expect(sessionSerialPrefixes("v0.7.2")).toEqual({ game: "G072", event: "EV072" });
   });
 
