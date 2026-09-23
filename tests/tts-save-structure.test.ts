@@ -190,3 +190,59 @@ describe('generated TTS table structure', () => {
     expect(urls.every((url) => /^https:\/\//.test(url))).toBe(true);
   });
 });
+
+
+describe('v0.7.2 modular rules PDF sizing', () => {
+  it('gives every faction guide the same scale as both shared tabletop rulebooks', () => {
+    const factions = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
+    const candidateVersion = 'v0.7.2-candidate';
+    const releaseTag = 'v0.7.2';
+    const sourceFiles = [
+      'rules/player-guide.pdf',
+      'rules/complete-rules.pdf',
+      ...factions.map(faction => `rules/${faction}.pdf`),
+    ];
+    const candidateAssets = {
+      ...releaseAssets,
+      gameVersion: candidateVersion,
+      releaseTag,
+      targetStatus: 'release-candidate',
+      bySourceFile: {
+        ...releaseAssets.bySourceFile,
+        ...Object.fromEntries(sourceFiles.map(file => [file, `https://example.invalid/${releaseTag}/${file}`])),
+      },
+    };
+    const starters = {
+      gameVersion: candidateVersion,
+      decks: factions.map(faction => ({
+        ...structuredClone(starterManifest.decks[0]),
+        id: `${faction}-starter-test`,
+        factionId: faction,
+        leader: {
+          ...structuredClone(starterManifest.decks[0].leader),
+          factionLabel: faction,
+        },
+      })),
+    };
+    const save = buildTtsSave(starters, candidateAssets, releaseTag);
+    const sharedGuides = save.ObjectStates.filter(object => (
+      object.GMNotes === 'gauntlet:shared-player-guide'
+      || object.GMNotes === 'gauntlet:shared-complete-rules'
+    ));
+    expect(sharedGuides).toHaveLength(2);
+    const sharedScale = { scaleX: 2.2, scaleY: 1, scaleZ: 2.2 };
+    for (const rulebook of sharedGuides) {
+      expect(rulebook.Transform).toMatchObject(sharedScale);
+    }
+    const bags = save.ObjectStates.filter(object => object.Name === 'Bag');
+    expect(bags).toHaveLength(factions.length);
+    for (const [index, bag] of bags.entries()) {
+      const factionGuide = bag.ContainedObjects.find(object => (
+        object.Name === 'Custom_PDF'
+        && object.GMNotes === `gauntlet:faction-guide:${factions[index]}`
+      ));
+      expect(factionGuide?.Transform).toMatchObject(sharedScale);
+      expect(factionGuide?.CustomPDF?.PDFUrl).toBe(candidateAssets.bySourceFile[`rules/${factions[index]}.pdf`]);
+    }
+  });
+});

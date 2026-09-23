@@ -367,7 +367,11 @@ function validateBagsAndUtilities(save, manifest, release) {
     const factionGuides = objects.filter(object => object?.Name === 'Custom_PDF' && object?.GMNotes === `${FACTION_GUIDE_NOTE_PREFIX}${faction}`);
     if (String(release?.displayVersion || release?.version || '').startsWith('v0.7.2')) {
       if (factionGuides.length !== 1) throw new Error(`${bag.Nickname} must contain exactly one reader-order ${faction} Faction Guide PDF.`);
-      if (!isContentVersionedReleaseAsset(String(factionGuides[0].CustomPDF?.PDFUrl || ''), `_TTS_Rules_${faction}.pdf`)) {
+      const factionGuide = factionGuides[0];
+      if (!close(factionGuide.Transform?.scaleX, 2.2) || !close(factionGuide.Transform?.scaleY, 1) || !close(factionGuide.Transform?.scaleZ, 2.2)) {
+        throw new Error(`${bag.Nickname} Faction Guide must match the shared tabletop rulebooks at 2.2× scale.`);
+      }
+      if (!isContentVersionedReleaseAsset(String(factionGuide.CustomPDF?.PDFUrl || ''), `_TTS_Rules_${faction}.pdf`)) {
         throw new Error(`${bag.Nickname} Faction Guide must use the content-versioned reader-order ${faction} PDF.`);
       }
     }
