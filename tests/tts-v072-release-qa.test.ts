@@ -5,6 +5,7 @@ const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.jso
 const publicationTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
 const candidateQa = JSON.parse(readFileSync('tts/release-qa/v0.7.2-candidate.json', 'utf8'));
 const stableQa = JSON.parse(readFileSync('tts/release-qa/v0.7.2.json', 'utf8'));
+const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 
 describe('v0.7.2 TTS release QA gate', () => {
   it('preserves candidate QA provenance while opening a stable v0.7.2 Workshop gate', () => {
@@ -34,4 +35,13 @@ describe('v0.7.2 TTS release QA gate', () => {
     expect(stableQa.notes.some((note: string) => /owner explicitly confirmed completion of the full v0\.7\.2 hands-on TTS QA/i.test(note))).toBe(true);
     expect(stableQa.notes.some((note: string) => /six Faction Guides match the 2\.2× tabletop/i.test(note))).toBe(true);
   });
+  it('promotes and releases the approved stable mod JSON only on explicitly dispatched main publication', () => {
+    expect(workflow).toContain("if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'");
+    expect(workflow).toContain('Promote owner-approved stable TTS save for Workshop');
+    expect(workflow).toContain('npm run tts:release:strict');
+    expect(workflow).toContain('npm run tts:save:promote');
+    expect(workflow).toContain('Upload QA-approved v0.7.2 TTS mod save');
+    expect(workflow).toContain('Verify approved Workshop save is attached to the stable release');
+  });
+
 });
