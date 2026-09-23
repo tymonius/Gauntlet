@@ -50,18 +50,45 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check whether the approved v0.7.2 package is already frozen
+        id: publication
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const lifecycle = JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
+          const manifest = JSON.parse(fs.readFileSync('releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json', 'utf8'));
+          const published = lifecycle.current_release === 'v0.7.2'
+            && lifecycle.releases?.['v0.7.2']?.public_cutover === true
+            && manifest.status === 'current'
+            && manifest.authority_set_id === lifecycle.releases['v0.7.2'].frozen_authority_set_id;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `published=${published}\n`);
+          NODE
+
+      - name: Refuse to replace an already-published immutable package
+        if: ${{ steps.publication.outputs.published == 'true' && inputs.publish }}
+        run: |
+          echo 'v0.7.2 is already published; its frozen rules package must not be regenerated.' >&2
+          exit 1
+
       - name: Install JavaScript dependencies
         run: |
           npm install
           npm install --no-save --package-lock=false pdf-lib
 
+      - name: Validate already-published frozen v0.7.2 package
+        if: ${{ steps.publication.outputs.published == 'true' }}
+        run: node scripts/validate-v072-release-package.mjs
+
       - name: Install Chromium and PDF inspection tools
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: |
           npx playwright install --with-deps chromium
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
       - name: Check modular booklet scripts
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: |
           node --check packages/rules/publication/v072-modular-booklets.mjs
           node --check scripts/render-v072-dedicated-booklets.mjs
@@ -72,18 +99,23 @@ jobs:
           node --check apps/rules/booklet/booklet.js
 
       - name: Render all eight modular booklets
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: node scripts/render-v072-dedicated-booklets.mjs
 
       - name: Validate booklet contract and imposition
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: node scripts/validate-v072-modular-booklets.mjs
 
       - name: Promote modular rules into staged v0.7.2 release package
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: node scripts/promote-v072-modular-release-package.mjs
 
       - name: Validate staged v0.7.2 release package
+        if: ${{ steps.publication.outputs.published != 'true' }}
         run: node scripts/validate-v072-release-package.mjs
 
       - name: Render PDF review previews
+        if: ${{ steps.publication.outputs.published != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -112,6 +144,7 @@ jobs:
           done
 
       - name: Upload modular booklet review artifact
+        if: ${{ steps.publication.outputs.published != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-v0.7.2-modular-rules-booklets
@@ -119,7 +152,7 @@ jobs:
           if-no-files-found: error
 
       - name: Commit staged v0.7.2 modular release package
-        if: inputs.publish
+        if: ${{ inputs.publish && steps.publication.outputs.published != 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash

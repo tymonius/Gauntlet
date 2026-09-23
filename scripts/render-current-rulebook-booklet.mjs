@@ -35,9 +35,24 @@ if (!/^releases\/v\d+\.\d+\.\d+$/.test(releaseRoot) || releaseRoot !== `releases
 
 const authorityVersion = String(authority.version || '').trim();
 const authorityStatus = String(authority.status || '').trim();
-const materializationEligible = authorityVersion === version && authorityStatus === 'current-release';
 const bookletPath = `${releaseRoot}/Gauntlet_${version}_Rulebook_Booklet.pdf`;
 const manifestPath = `${releaseRoot}/Gauntlet_${version}_Manifest.json`;
+const publishedManifest = fs.existsSync(path.join(root, manifestPath))
+  ? JSON.parse(fs.readFileSync(path.join(root, manifestPath), 'utf8'))
+  : null;
+// Once a frozen modular package is published, the live current-game authority
+// may be promoted or advanced without ever rematerializing the historic PDF
+// package. Its payload is verified below by the current-release validators.
+const frozenModularPublication = Boolean(
+  release.frozen_authority_set_id
+  && publishedManifest?.status === 'current'
+  && publishedManifest.authority_set_id === release.frozen_authority_set_id
+  && Array.isArray(publishedManifest.modular_rules?.documents)
+  && publishedManifest.modular_rules.documents.length > 0
+);
+const materializationEligible = authorityVersion === version
+  && authorityStatus === 'current-release'
+  && !frozenModularPublication;
 const plan = {
   version,
   releaseRoot,
@@ -48,6 +63,7 @@ const plan = {
   authorityVersion,
   authorityStatus,
   materializationEligible,
+  frozenModularPublication,
 };
 
 function writeOutputs() {
