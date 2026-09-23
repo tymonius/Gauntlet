@@ -1,4 +1,4 @@
-name: Publish v0.7.2 newsletter card image
+name: Publish v0.7.2 newsletter images
 
 on:
   push:
@@ -18,24 +18,64 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Publish verified v0.7.2 New Recruits production render
+      - uses: actions/checkout@v4
+
+      - name: Extract and verify the frozen New Recruits card render
         env:
           GH_TOKEN: ${{ github.token }}
-          ASSET_NAME: Gauntlet_v0.7.2_New_Recruits_Card.png
           ARTIFACT_ID: '10746504620'
           EXPECTED_SHA256: 60e4a13912bf46732df71ae9dec3ac770ffae772257d8a482ccbaf7a2f9e735e
         run: |
           set -euo pipefail
           gh release view v0.7.2 --repo "${GITHUB_REPOSITORY}" >/dev/null
           gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/gauntlet-v072-card-artifact.zip
-          unzip -p /tmp/gauntlet-v072-card-artifact.zip v0.7.2/cards/neutral-new-recruits.png > "${ASSET_NAME}"
-          echo "${EXPECTED_SHA256}  ${ASSET_NAME}" | sha256sum --check -
+          unzip -p /tmp/gauntlet-v072-card-artifact.zip v0.7.2/cards/neutral-new-recruits.png > Gauntlet_v0.7.2_New_Recruits_Card.png
+          echo "${EXPECTED_SHA256}  Gauntlet_v0.7.2_New_Recruits_Card.png" | sha256sum --check -
 
+      - name: Build faint faction watermarks from existing canonical symbols
+        run: |
+          python -m pip install --disable-pip-version-check --quiet cairosvg pillow
+          python - <<'PY'
+          from io import BytesIO
+          from pathlib import Path
+          import cairosvg
+          from PIL import Image
+
+          factions = {
+              "Intelligence": ("#282827", "intelligence"),
+              "Financiers": ("#227044", "financiers"),
+              "Inquisition": ("#a67a27", "inquisition"),
+          }
+          for name, (hex_color, slug) in factions.items():
+              source = Path("images/faction-symbols") / (slug + ".svg")
+              png = cairosvg.svg2png(url=str(source), output_width=220, output_height=220)
+              image = Image.open(BytesIO(png)).convert("RGBA")
+              rgb = tuple(bytes.fromhex(hex_color[1:]))
+              tinted = Image.new("RGBA", image.size)
+              tinted.putdata([(*rgb, round(alpha * .075)) for *_, alpha in image.getdata()])
+              destination = Path(f"Gauntlet_v0.7.2_Email_Watermark_{name}.png")
+              tinted.save(destination, optimize=True)
+              print(f"Derived {destination} from {source}")
+          PY
+
+      - name: Add verified email-only imagery to the existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          assets=(
+            Gauntlet_v0.7.2_New_Recruits_Card.png
+            Gauntlet_v0.7.2_Email_Watermark_Intelligence.png
+            Gauntlet_v0.7.2_Email_Watermark_Financiers.png
+            Gauntlet_v0.7.2_Email_Watermark_Inquisition.png
+          )
           mkdir -p existing
-          if gh release download v0.7.2 --repo "${GITHUB_REPOSITORY}" --pattern "${ASSET_NAME}" --dir existing >/dev/null 2>&1; then
-            cmp "${ASSET_NAME}" "existing/${ASSET_NAME}"
-            echo "The exact approved New Recruits image is already published."
-          else
-            gh release upload v0.7.2 "${ASSET_NAME}" --repo "${GITHUB_REPOSITORY}"
-            echo "Published the exact approved production render without changing the tag or existing assets."
-          fi
+          for asset in "${assets[@]}"; do
+            if gh release download v0.7.2 --repo "${GITHUB_REPOSITORY}" --pattern "${asset}" --dir existing >/dev/null 2>&1; then
+              cmp "${asset}" "existing/${asset}"
+              echo "Confirmed existing ${asset} is byte-identical."
+            else
+              gh release upload v0.7.2 "${asset}" --repo "${GITHUB_REPOSITORY}"
+              echo "Published ${asset} without changing the tag or existing assets."
+            fi
+          done
