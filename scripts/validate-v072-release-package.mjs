@@ -15,10 +15,11 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
 
 assert.equal(manifest.release_version, RELEASE, 'Release manifest version drifted.');
-assert.equal(manifest.status, 'candidate', 'Pre-cutover v0.7.2 manifest must remain candidate.');
+assert(['candidate', 'current'].includes(manifest.status), 'v0.7.2 manifest must be candidate or current.');
 assert.equal(manifest.authority_set_id, EXPECTED_AUTHORITY_SET, 'Frozen authority set drifted.');
-assert.equal(manifest.public_defaults?.website, 'v0.7.1', 'Pre-cutover website default must remain v0.7.1.');
-assert.equal(manifest.public_defaults?.rules_arbiter, 'v0.7.1', 'Pre-cutover Rules Arbiter default must remain v0.7.1.');
+const expectedPublicDefault = manifest.status === 'current' ? 'v0.7.2' : 'v0.7.1';
+assert.equal(manifest.public_defaults?.website, expectedPublicDefault, 'Website public default disagrees with release state.');
+assert.equal(manifest.public_defaults?.rules_arbiter, expectedPublicDefault, 'Rules Arbiter public default disagrees with release state.');
 
 const documents = manifest.modular_rules?.documents;
 assert(Array.isArray(documents), 'Manifest is missing modular_rules.documents.');

@@ -180,7 +180,7 @@ export async function loadV072CandidateRulesCorpus(options = {}) {
     published: false,
     candidate: true,
     reconstruction: false,
-    currentPublicRelease: "v0.7.1",
+    currentPublicRelease: "v0.7.2",
     sourceVersion: V072_CANDIDATE_RULES_VERSION,
     authoritySetId: await candidateAuthoritySetId(currentGameBytes, completeRulesBytes),
     sourceUrls: urls,

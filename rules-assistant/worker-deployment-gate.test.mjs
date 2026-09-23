@@ -20,8 +20,10 @@ describe("Rules Arbiter Worker deployment gate", () => {
     expect(workflow).toContain("scripts/resolve-current-live-publication.mjs");
     expect(workflow).not.toContain("rules-assistant/worker-v071.js");
     expect(workflow).not.toContain("https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health");
-    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.worker_source).toBe('rules-assistant/worker-v071.js');
-    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.health_path).toBe('/api/health');
+    const current = lifecycle.releases[lifecycle.current_release];
+    expect(lifecycle.current_release).toBe('v0.7.2');
+    expect(current.publication.rules_arbiter.worker_source).toBe('rules-assistant/worker-v072.js');
+    expect(current.publication.rules_arbiter.health_path).toBe('/api/health');
     expect(workflow).toContain("behaviorRevision");
     expect(workflow).toContain("behavior_revision_mismatch");
     expect(workflow).toContain("live_revision_unavailable");

@@ -69,6 +69,7 @@ jobs:
 
             const onboarding = any(
               exact('.github/workflows/test-standalone-onboarding-browser.yml'),
+              exact('config/release-lifecycle.json'),
               exact('tests/standalone-new-player-onboarding.test.ts'),
               exact('index.html'),
               exact('start/index.html'),

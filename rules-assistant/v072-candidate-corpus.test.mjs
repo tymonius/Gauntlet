@@ -76,7 +76,7 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
     expect(first.version).toBe(V072_CANDIDATE_RULES_VERSION);
     expect(first.candidate).toBe(true);
     expect(first.published).toBe(false);
-    expect(first.currentPublicRelease).toBe("v0.7.1");
+    expect(first.currentPublicRelease).toBe("v0.7.2");
     expect(first.authoritySetId).toMatch(/^[a-f0-9]{64}$/);
     expect(second.authoritySetId).toBe(first.authoritySetId);
 

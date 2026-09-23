@@ -83,12 +83,12 @@ async function startServer(root) {
   };
 }
 
-async function waitForCandidate(page, document) {
+async function waitForPublication(page, document) {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
 
   await page.waitForFunction(
-    id => document.body.dataset.rulesetMode === 'candidate'
+    id => document.body.dataset.rulesetMode === 'released'
       && document.body.dataset.candidateDocument === id
       && document.querySelector('.rulebook-content.candidate-publication'),
     document.id,
@@ -113,9 +113,8 @@ async function waitForCandidate(page, document) {
   if (document.faction) {
     await page.waitForFunction(
       () => {
-        const profiles = [...document.querySelectorAll('.candidate-leader-profile')];
-        return profiles.length === 2
-          && profiles.every(profile => profile.querySelector('.candidate-leader-figure')?.dataset.leaderArtworkFitted === 'true');
+        const image = document.querySelector('.candidate-faction-guide-woodcut img');
+        return Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0);
       },
       null,
       { timeout: 30000 },
@@ -142,7 +141,7 @@ async function waitForCandidate(page, document) {
       overflow,
       articleWidth: rect.width,
       scrollWidth: article.scrollWidth,
-      leaderProfiles: document.querySelectorAll('.candidate-leader-profile').length,
+      factionWoodcuts: document.querySelectorAll('.candidate-faction-guide-woodcut').length,
       bookletPaths: [...document.querySelectorAll('[data-rulebook-booklet]')]
         .map(link => new URL(link.href, window.location.href).pathname),
     };
@@ -152,7 +151,7 @@ async function waitForCandidate(page, document) {
   }
 
   const expectedBooklet = BOOKLET_FILENAMES.get(document.id);
-  const expectedBookletPath = `/rulebook/booklets/v0.7.2/${expectedBooklet}`;
+  const expectedBookletPath = `/releases/v0.7.2/${expectedBooklet}`;
   if (!expectedBooklet || diagnostics.bookletPaths.length !== 2
     || diagnostics.bookletPaths.some(bookletPath => bookletPath !== expectedBookletPath)) {
     throw new Error(
@@ -183,11 +182,11 @@ try {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
       try {
         await page.goto(
-          `${server.baseUrl}/rulebook/?rules=candidate&doc=${encodeURIComponent(document.id)}`,
+          `${server.baseUrl}/rulebook/?doc=${encodeURIComponent(document.id)}`,
           { waitUntil: 'domcontentloaded', timeout: 60000 },
         );
         await page.addStyleTag({ content: '.analytics-consent { display:none !important; }' });
-        const diagnostics = await waitForCandidate(page, document);
+        const diagnostics = await waitForPublication(page, document);
         await page.screenshot({
           path: path.join(directory, `${document.id}-viewport.png`),
           fullPage: false,
@@ -199,11 +198,10 @@ try {
         });
 
         if (document.faction) {
-          const leaders = page.locator('.candidate-leader-profile');
-          const leaderCount = await leaders.count();
-          for (let index = 0; index < leaderCount; index += 1) {
-            await leaders.nth(index).screenshot({
-              path: path.join(directory, `${document.id}-leader-${index + 1}.png`),
+          const woodcut = page.locator('.candidate-faction-guide-woodcut');
+          if (await woodcut.count()) {
+            await woodcut.screenshot({
+              path: path.join(directory, `${document.id}-leaders-woodcut.png`),
             });
           }
         }

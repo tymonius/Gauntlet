@@ -39,8 +39,8 @@ const currentGameBytes = fs.readFileSync(CURRENT_GAME);
 const completeRulesBytes = fs.readFileSync(COMPLETE_RULES);
 const authoritySetId = hash(Buffer.concat([currentGameBytes, Buffer.from([0]), completeRulesBytes]));
 
-if (releaseManifest.release_version !== RELEASE || releaseManifest.status !== 'candidate') {
-  throw new Error('v0.7.2 release manifest is not the staged candidate.');
+if (releaseManifest.release_version !== RELEASE || !['candidate', 'current'].includes(releaseManifest.status)) {
+  throw new Error('v0.7.2 release manifest is neither the staged candidate nor the current release.');
 }
 if (authoritySetId !== releaseManifest.authority_set_id) {
   throw new Error(`Current authority no longer matches frozen v0.7.2 authority set: ${authoritySetId}`);

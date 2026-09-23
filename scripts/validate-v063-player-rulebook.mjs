@@ -101,17 +101,20 @@ for (const required of [
   if (!published.includes(required)) fail(`Player-facing Rulebook lost approved readthrough wording: ${JSON.stringify(required)}`);
 }
 
-// The Browser Rulebook is retired. Keep validating the archived implementation
-// as historical v0.7.1 publication evidence without treating it as a current app.
+// The Browser Rulebook shell remains in legacy/ for deployment compatibility,
+ // but its current publication binding is the frozen modular v0.7.2 package.
 const app = read('legacy/rulebook-browser/app.js');
-if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';")) {
-  fail('Archived Browser Rulebook is not bound to the published v0.7.1 release manifest.');
+if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json';")) {
+  fail('Browser Rulebook is not bound to the published v0.7.2 release manifest.');
+}
+if (!app.includes('manifest?.modular_rules?.documents')) {
+  fail('Browser Rulebook does not resolve its published modular document bindings.');
 }
 if (app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';") || app.includes('publicRulebookSource')) {
-  fail('Archived Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.1 release.');
+  fail('Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.2 release.');
 }
-if (!app.includes('if (actualHash !== rulebook.sha256)')) {
-  fail('Archived Browser Rulebook does not verify its published Rulebook binding.');
+if (!app.includes('if (actualHash !== document.source.sha256)')) {
+  fail('Browser Rulebook does not verify its published modular source binding.');
 }
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
@@ -154,4 +157,4 @@ if (failures) {
   process.exit(1);
 }
 
-console.log('Validated certified Rulebook integrity, reviewed Chapter 11, archived Browser Rulebook binding, full player-facing readthrough corrections, and booklet routing.');
+console.log('Validated certified v0.6.3 Rulebook integrity, reviewed Chapter 11, current modular Browser Rulebook binding, player-facing readthrough corrections, and booklet routing.');

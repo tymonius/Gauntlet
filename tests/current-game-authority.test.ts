@@ -10,7 +10,7 @@ const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
 const componentLoader = read('scripts/tts-component-contract.mjs');
-const releaseBuilder = read('scripts/build-v071-release-source.mjs');
+const releaseBuilder = read('scripts/build-v072-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const artworkWorker = read('workers/artwork-authoring/src/index.js');
 const artworkSession = read('workers/artwork-authoring/src/index-session.js');
@@ -19,7 +19,7 @@ const artworkServer = read('scripts/card-design-server.mjs');
 const artworkCompositor = read('card-design/artwork-compositor.js');
 const cardRenderer = read('card-design/face-templates/playable.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
-const livePublicationVerifier = read('scripts/verify-v071-live-publication.mjs');
+const livePublicationVerifier = read('scripts/verify-v072-live-publication.mjs');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
   'docs/v0.6.4-card-additions.json',
@@ -497,9 +497,11 @@ describe('complete current-game authority', () => {
     expect(ttsCatalog).not.toContain('readCurrentJsonSource');
     expect(ttsCatalog).not.toContain('resolveCards(');
 
-    expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
-    expect(releaseBuilder).toContain('gameplay: clone(authority.gameplay)');
+    expect(releaseBuilder).toContain('const CURRENT_GAME = "packages/game-data/current-game.json"');
+    expect(releaseBuilder).toContain('const current = JSON.parse(gameBytes.toString("utf8"))');
+    expect(releaseBuilder).toContain('gameplay: clone(current.gameplay)');
     expect(releaseBuilder).toContain('source_version: RELEASE_VERSION');
+    expect(releaseBuilder).toContain('gitBlobSha(gameBytes) !== freeze.sources?.currentGame?.gitBlob');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
@@ -531,13 +533,14 @@ describe('complete current-game authority', () => {
     expect(livePublicationWorkflow).not.toContain("['tts', 'artwork-direction-overrides.js'].join('/')");
   });
 
-  it('verifies the Actions-driven v0.7.1 live publication without the legacy Pages builds API', () => {
+  it('verifies the Actions-driven v0.7.2 live publication without the legacy Pages builds API', () => {
     expect(livePublicationWorkflow).not.toContain('/pages/builds');
     expect(livePublicationVerifier).not.toContain('/pages/builds');
     expect(livePublicationVerifier).toContain('waitForLiveCutover');
-    expect(livePublicationVerifier).toContain('Gauntlet v0\\.7\\.1 Browser Rulebook');
-    expect(livePublicationVerifier).toContain('rulebookVisibleText');
-    expect(livePublicationVerifier).toContain("replace(/<!--[\\s\\S]*?-->/g, '')");
+    expect(livePublicationVerifier).toContain('Gauntlet v0\\.7\\.2 Browser Rulebook');
+    expect(livePublicationVerifier).toContain('EXPECTED_AUTHORITY_SET');
+    expect(livePublicationVerifier).toContain('chief-justice-rules-arbiter.webp');
+    expect(livePublicationVerifier).toContain('requiredBooklets');
   });
 
   it('keeps the maintained Rulebook on the v0.7.2 candidate identity', () => {

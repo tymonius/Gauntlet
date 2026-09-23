@@ -213,7 +213,7 @@ for (const key of ["website", "rulebook", "browser_tools", "rules_arbiter", "dig
 if (
   canonical.release_version !== RELEASE_VERSION
   || canonical.source_version !== RELEASE_VERSION
-  || canonical.status !== "published"
+  || canonical.status !== "release-candidate"
   || canonical.frozen_authority_set_id !== EXPECTED_AUTHORITY_SET
   || canonical.gameplay?.cards?.length !== 142
   || canonical.gameplay?.territories?.length !== 25

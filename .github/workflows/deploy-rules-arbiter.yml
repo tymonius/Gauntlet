@@ -85,7 +85,7 @@ jobs:
         run: |
           revision="$(node --input-type=module - <<'NODE'
           import { readFileSync } from "node:fs";
-          const source = readFileSync("rules-assistant/worker-v071.js", "utf8");
+          const source = readFileSync("rules-assistant/worker-v072.js", "utf8");
           const match = source.match(/BEHAVIOR_REVISION\s*=\s*"([^"]+)"/);
           if (!match) process.exit(1);
           process.stdout.write(match[1]);
@@ -93,7 +93,7 @@ jobs:
           )"
           test -n "$revision"
           echo "value=$revision" >> "$GITHUB_OUTPUT"
-          echo "Deploying Rules Arbiter behavior revision $revision"
+          echo "Deploying current v0.7.2 Rules Arbiter behavior revision $revision"
 
       - name: Resolve expected candidate behavior revision
         id: candidate_revision
@@ -177,7 +177,7 @@ jobs:
                 && payload?.ok === true
                 && payload?.version === "v0.7.2-candidate"
                 && payload?.published === false
-                && payload?.currentPublicRelease === "v0.7.1"
+                && payload?.currentPublicRelease === "v0.7.2"
                 && payload?.behaviorRevision === expected
               ) break;
               if (attempt === 20) throw new Error("candidate health did not converge");
@@ -199,7 +199,7 @@ jobs:
                 response.ok
                 && payload?.ok === true
                 && payload?.version === "v0.7.2-candidate"
-                && payload?.currentPublicRelease === "v0.7.1"
+                && payload?.currentPublicRelease === "v0.7.2"
                 && payload?.behaviorRevision === expected
                 && /^[a-f0-9]{64}$/.test(String(payload?.authoritySetId || ""))
               ) {
@@ -241,17 +241,17 @@ jobs:
                 healthResponse.ok
                 && health?.ok === true
                 && health?.version === "v0.7.2"
-                && health?.published === false
-                && health?.currentPublicRelease === "v0.7.1"
+                && health?.published === true
+                && health?.currentPublicRelease === "v0.7.2"
                 && health?.behaviorRevision === expectedRevision
                 && corpusResponse.ok
                 && corpus?.ok === true
                 && corpus?.version === "v0.7.2"
-                && corpus?.currentPublicRelease === "v0.7.1"
+                && corpus?.currentPublicRelease === "v0.7.2"
                 && corpus?.behaviorRevision === expectedRevision
                 && corpus?.authoritySetId === expectedAuthority
               ) {
-                console.log(`Verified frozen v0.7.2 Rules Arbiter ${expectedRevision} / ${expectedAuthority}.`);
+                console.log(`Verified published frozen v0.7.2 Rules Arbiter ${expectedRevision} / ${expectedAuthority}.`);
                 process.exit(0);
               }
             } catch (error) {
@@ -260,7 +260,7 @@ jobs:
             if (attempt < 60) await sleep(5000);
           }
 
-          console.error("Frozen v0.7.2 Rules Arbiter did not converge to the staged release corpus.");
+          console.error("Published v0.7.2 Rules Arbiter did not converge to the frozen release corpus.");
           process.exit(1);
           NODE
 

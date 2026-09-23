@@ -1,12 +1,12 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "../rules-assistant/local-search.js";
 import {
-  V071_RULES_VERSION as RULES_VERSION,
-  V071_VERSION_LABEL as VERSION_LABEL,
-  defaultV071SourceUrls,
-  loadV071RulesCorpus
-} from "../rules-assistant/v071-public-corpus.js";
+  V072_RULES_VERSION as RULES_VERSION,
+  V072_VERSION_LABEL as VERSION_LABEL,
+  defaultV072SourceUrls,
+  loadV072RulesCorpus
+} from "../rules-assistant/v072-release-corpus.js";
 
-const CURRENT_PUBLIC_RELEASE = "v0.7.1";
+const CURRENT_PUBLIC_RELEASE = "v0.7.2";
 const endpoint = String(window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules").trim();
 const sourceLookupReviewEndpoint = endpoint ? new URL("/api/source-lookup-review", endpoint).href : "";
 const form = document.getElementById("arbiterForm");
@@ -16,11 +16,11 @@ const status = document.getElementById("arbiterStatus");
 const suggestions = document.querySelectorAll("[data-question]");
 const submitButton = form?.querySelector('button[type="submit"]');
 const READY_STATUS = endpoint
-  ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
-  : "Current v0.7.1 local Rulebook lookup mode.";
-const FALLBACK_STATUS = "AI ruling service unavailable or at capacity; canonical v0.7.1 source lookup remains available.";
-const SOURCE_LOOKUP_MESSAGE = "The AI ruling service is unavailable. The closest matching canonical v0.7.1 passages are shown below; this is source lookup, not an interpreted ruling.";
-const SOURCE_LOOKUP_REVIEW_QUEUE_KEY = "gauntlet-v071-source-lookup-review-queue";
+  ? "Connected to the Chief Justice; current v0.7.2 local Rulebook lookup is available as a fallback."
+  : "Current v0.7.2 local Rulebook lookup mode.";
+const FALLBACK_STATUS = "AI ruling service unavailable or at capacity; canonical v0.7.2 source lookup remains available.";
+const SOURCE_LOOKUP_MESSAGE = "The AI ruling service is unavailable. The closest matching canonical v0.7.2 passages are shown below; this is source lookup, not an interpreted ruling.";
+const SOURCE_LOOKUP_REVIEW_QUEUE_KEY = "gauntlet-v072-source-lookup-review-queue";
 const SOURCE_LOOKUP_REVIEW_QUEUE_LIMIT = 20;
 
 let corpusPromise;
@@ -44,7 +44,7 @@ form.addEventListener("submit", async (event) => {
 
   const restoreInputFocus = form.contains(document.activeElement);
   let completionStatus = READY_STATUS;
-  status.textContent = "Checking the current v0.7.1 rules…";
+  status.textContent = "Checking the current v0.7.2 rules…";
   if (restoreInputFocus) status.focus({ preventScroll: true });
   setBusy(true);
   answer.innerHTML = "";
@@ -115,7 +115,7 @@ async function askRemote(question) {
       payload.reconstruction !== false ||
       payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE
     ) {
-      throw new Error("Configured endpoint did not identify itself as the current v0.7.1 Rules Arbiter.");
+      throw new Error("Configured endpoint did not identify itself as the current v0.7.2 Rules Arbiter.");
     }
     void flushFallbackReviewQueue();
     return payload;
@@ -130,8 +130,8 @@ async function askRemote(question) {
 
 async function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultV071SourceUrls(window.location.origin);
-    corpusPromise = loadV071RulesCorpus({
+    const urls = defaultV072SourceUrls(window.location.origin);
+    corpusPromise = loadV072RulesCorpus({
       ...urls,
       fetchImpl: window.fetch.bind(window)
     });
@@ -275,7 +275,7 @@ function setBusy(busy) {
 }
 
 function getSessionId() {
-  const key = "gauntlet-v071-arbiter-session";
+  const key = "gauntlet-v072-arbiter-session";
   try {
     const existing = localStorage.getItem(key);
     if (/^[a-zA-Z0-9_-]{8,80}$/.test(existing || "")) return existing;

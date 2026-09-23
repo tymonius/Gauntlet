@@ -43,7 +43,7 @@ describe("v0.7.1 Gate 2 r6 regressions", () => {
   });
 
   test("does not claim the AI is connected after falling back to source lookup", () => {
-    expect(appSource).toContain("AI ruling service unavailable or at capacity; canonical v0.7.1 source lookup remains available.");
+    expect(appSource).toContain("AI ruling service unavailable or at capacity; canonical v0.7.2 source lookup remains available.");
     expect(appSource).toContain("if (isFallbackResult(result)) completionStatus = FALLBACK_STATUS;");
     expect(appSource).toContain('path.includes("fallback") || path.includes("source lookup")');
   });

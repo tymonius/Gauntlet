@@ -143,7 +143,8 @@
     try { candidateGame = await module.loadCurrentCandidateGame(); }
     catch (error) { console.warn("Unable to detect a release candidate for the Deckbuilder.", error); }
 
-    const distinctCandidate = Boolean(candidateGame?.version && candidateGame.version !== module.PUBLISHED_VERSION);
+    const candidateBaseVersion = String(candidateGame?.version || '').replace(/-candidate$/, '');
+    const distinctCandidate = Boolean(candidateBaseVersion && candidateBaseVersion !== module.PUBLISHED_VERSION);
     const switcher = document.querySelector("[data-ruleset-switch]");
     const note = document.querySelector("[data-candidate-rules-note]");
     const candidateVersion = document.querySelector("[data-candidate-version]");

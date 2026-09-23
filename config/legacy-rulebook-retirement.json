@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "status": "cutover-pending",
+  "status": "cutover-complete",
   "legacySource": "rulebook/player-facing/current-rulebook.md",
   "coverageProof": "config/legacy-rulebook-retirement-crosswalk.json",
   "browserSource": "legacy/rulebook-browser",
@@ -26,5 +26,12 @@
       "source": "packages/rules/player-guide/player-guide.md",
       "publicPath": "/rulebook/player-guide/player-guide.md"
     }
-  ]
+  ],
+  "releasedVersion": "v0.7.2",
+  "completedPublication": {
+    "version": "v0.7.2",
+    "route": "/rulebook/",
+    "defaultDocument": "player-guide",
+    "documentCount": 8
+  }
 }

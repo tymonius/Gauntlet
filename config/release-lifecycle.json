@@ -1,5 +1,5 @@
 {
-  "current_release": "v0.7.1",
+  "current_release": "v0.7.2",
   "releases": {
     "v0.6.1": {
       "status": "historical"
@@ -27,40 +27,33 @@
       "historical_package_path": "releases/v0.7.0/"
     },
     "v0.7.1": {
+      "status": "historical",
+      "artifacts_preserved": true,
+      "public_cutover": false,
+      "authority_set_id": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
+      "publication_date": "2026-08-30",
+      "historical_package_path": "releases/v0.7.1/"
+    },
+    "v0.7.2": {
       "status": "current",
       "artifacts_preserved": true,
       "public_cutover": true,
-      "current_package_path": "releases/v0.7.1/",
-      "publication_date": "2026-08-30",
-      "publication": {
-        "source_builder": "scripts/build-v071-release-source.mjs",
-        "rulebook_booklet_renderer": "scripts/render-v071-booklet.mjs",
-        "rules_arbiter": {
-          "worker_source": "rules-assistant/worker-v071.js",
-          "service_base_url": "https://gauntlet-rules-assistant.tymon-scott.workers.dev",
-          "rules_path": "/api/rules",
-          "health_path": "/api/health",
-          "corpus_health_path": "/api/v071/corpus-health",
-          "qa_runner": "scripts/run-v071-live-rules-qa.mjs",
-          "qa_report_path": "artifacts/rules-qa/v071-live-answer-run.json"
-        }
-      }
-    },
-    "v0.7.2": {
-      "status": "candidate",
-      "artifacts_preserved": true,
-      "public_cutover": false,
-      "staged_package_path": "releases/v0.7.2/",
+      "authority_set_id": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
       "frozen_authority_set_id": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
+      "publication_date": "2026-09-23",
+      "current_package_path": "releases/v0.7.2/",
       "publication": {
         "source_builder": "scripts/build-v072-release-source.mjs",
         "rules_arbiter": {
           "worker_source": "rules-assistant/worker-v072.js",
           "service_base_url": "https://gauntlet-rules-assistant.tymon-scott.workers.dev",
-          "rules_path": "/api/v072/rules",
-          "health_path": "/api/v072/health",
-          "corpus_health_path": "/api/v072/corpus-health"
-        }
+          "rules_path": "/api/rules",
+          "health_path": "/api/health",
+          "corpus_health_path": "/api/corpus-health",
+          "qa_runner": "scripts/run-v072-live-rules-qa.mjs",
+          "qa_report_path": "artifacts/rules-qa/v072-live-answer-run.json"
+        },
+        "rulebook_booklet_renderer": "scripts/render-v072-dedicated-booklets.mjs"
       }
     }
   }

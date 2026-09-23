@@ -24,10 +24,11 @@ const write = async (relative, value) => {
   await writeFile(target, value);
 };
 
-const [gameBytes, rulesBytes, freezeBytes] = await Promise.all([
+const [gameBytes, rulesBytes, freezeBytes, existingManifestBytes] = await Promise.all([
   read(CURRENT_GAME),
   read(COMPLETE_RULES),
   read(FREEZE),
+  read("releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json").catch(() => null),
 ]);
 const freeze = JSON.parse(freezeBytes.toString("utf8"));
 const current = JSON.parse(gameBytes.toString("utf8"));
@@ -144,6 +145,8 @@ const bindingSources = {
   },
 };
 
+const existingManifest = existingManifestBytes ? JSON.parse(existingManifestBytes.toString("utf8")) : null;
+
 const manifest = {
   schema_version: 1,
   release_version: RELEASE_VERSION,
@@ -186,6 +189,16 @@ const manifest = {
     "Gauntlet_v0.7.2_Source_Provenance.json",
   ],
 };
+
+if (existingManifest?.status === "current") {
+  Object.assign(manifest, clone(existingManifest), {
+    schema_version: 1,
+    release_version: RELEASE_VERSION,
+    authority_set_id: authoritySetId,
+    binding_sources: bindingSources,
+  });
+  delete manifest.staged_package_path;
+}
 
 await Promise.all([
   write("releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md", completeRulesText),

@@ -1,4 +1,4 @@
-export const CURRENT_RULES_VERSION = "v0.7.1";
+export const CURRENT_RULES_VERSION = "v0.7.2";
 
 export function serialVersionToken(version) {
   const match = String(version || "").match(/^v(\d+)\.(\d+)\.(\d+)$/);

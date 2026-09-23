@@ -11,7 +11,7 @@ test("reports service, rules version, and configuration state", async () => {
   expect(await response.json()).toEqual({
     ok: true,
     service: "gauntlet-playtest-sessions",
-    version: "v0.7.1",
+    version: "v0.7.2",
     database: false,
     sessionCreationConfigured: false,
     onboardingSupported: true,
@@ -45,7 +45,7 @@ test("does not expose session creation without a configured facilitator secret",
       Origin: "https://gauntlet.run",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ rulesVersion: "v0.7.1" })
+    body: JSON.stringify({ rulesVersion: "v0.7.2" })
   }), allowedEnv);
   expect(response.status).toBe(503);
   expect((await response.json()).error).toContain("not configured");
@@ -59,7 +59,7 @@ test("rejects an incorrect facilitator creation secret before touching D1", asyn
       Authorization: "Bearer wrong",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ rulesVersion: "v0.7.1" })
+    body: JSON.stringify({ rulesVersion: "v0.7.2" })
   }), {
     ...allowedEnv,
     SESSION_ADMIN_TOKEN: "correct"
@@ -68,10 +68,11 @@ test("rejects an incorrect facilitator creation secret before touching D1", asyn
 });
 
 test("normalizes current and historical versioned playtest serials", () => {
-  expect(cleanSerial("g071-abcd23")).toBe("G071-ABCD23");
+  expect(cleanSerial("g072-abcd23")).toBe("G072-ABCD23");
+  expect(cleanSerial("G071-ABCD23")).toBe("G071-ABCD23");
   expect(cleanSerial("G061-ABCD23")).toBe("G061-ABCD23");
   expect(cleanSerial("ev070-abcd23")).toBe("EV070-ABCD23");
-  expect(() => cleanSerial("G071-I")).toThrow("Invalid versioned playtest serial");
+  expect(() => cleanSerial("G072-I")).toThrow("Invalid versioned playtest serial");
 });
 
 test("limits session metadata to safe scalar values", () => {

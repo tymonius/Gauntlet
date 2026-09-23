@@ -1,10 +1,10 @@
 import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
-const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
-const PUBLISHED_VERSION = 'v0.7.1';
-const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md';
-const FALLBACK_PDF_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf';
+const RELEASE_MANIFEST_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json';
+const PUBLISHED_VERSION = 'v0.7.2';
+const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md';
+const FALLBACK_PDF_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';
@@ -108,7 +108,7 @@ const rulesAssistantButton = document.querySelector('[data-open-rules-assistant]
 const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const rulebookBookletLinks = [...document.querySelectorAll('[data-rulebook-booklet]')];
 
-let sourcePromise = null;
+const publishedSourcePromises = new Map();
 let releaseManifestPromise = null;
 const candidateSourcePromises = new Map();
 let publishedSourceUrl = FALLBACK_PUBLISHED_SOURCE_URL;
@@ -150,8 +150,7 @@ function buildToc(headings, mode = activeMode, documentId = activeCandidateDocum
   const candidateDocument = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   const visibleHeadings = headings.filter(({ id, level }) => {
     if (id === 'gauntlet' || id === 'official-rulebook') return false;
-    if (mode === CANDIDATE_MODE) return candidateDocument.tocLevels.has(level);
-    return level <= 2;
+    return candidateDocument.tocLevels.has(level);
   });
 
   const fragment = document.createDocumentFragment();
@@ -161,13 +160,7 @@ function buildToc(headings, mode = activeMode, documentId = activeCandidateDocum
     link.href = `#${id}`;
     link.textContent = label;
     link.dataset.tocId = id;
-    if (mode === CANDIDATE_MODE) {
-      link.className = level === 2 ? 'toc-primary' : 'toc-secondary';
-    } else {
-      link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
-      if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
-      if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
-    }
+    link.className = level === 2 ? 'toc-primary' : 'toc-secondary';
     const faction = FACTIONS.get(chapterLabel);
     if (faction) {
       link.classList.add('toc-faction');
@@ -366,16 +359,13 @@ function documentFromUrl() {
 
 function writeModeToUrl(mode, replace = false, documentId = activeCandidateDocument) {
   const url = new URL(window.location.href);
-  if (mode === CANDIDATE_MODE) {
-    const normalizedDocument = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
-    url.searchParams.set('rules', CANDIDATE_MODE);
-    url.searchParams.set('doc', normalizedDocument);
-  } else {
-    url.searchParams.delete('rules');
-    url.searchParams.delete('doc');
-  }
+  const normalizedDocument = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
+  if (mode === CANDIDATE_MODE) url.searchParams.set('rules', CANDIDATE_MODE);
+  else url.searchParams.delete('rules');
+  if (normalizedDocument === DEFAULT_CANDIDATE_DOCUMENT) url.searchParams.delete('doc');
+  else url.searchParams.set('doc', normalizedDocument);
   const method = replace ? 'replaceState' : 'pushState';
-  window.history[method]({ ruleset: mode, document: documentId }, '', url);
+  window.history[method]({ ruleset: mode, document: normalizedDocument }, '', url);
 }
 
 function candidateBookletUrl(documentId = activeCandidateDocument) {
@@ -397,43 +387,36 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false, docum
   const documentConfig = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   if (rulesetSwitch) rulesetSwitch.hidden = !distinctCandidate;
   if (candidateVersionLabel) candidateVersionLabel.textContent = candidateLabel;
-  if (candidateDocumentSwitch) candidateDocumentSwitch.hidden = !candidate;
+  if (candidateDocumentSwitch) candidateDocumentSwitch.hidden = false;
   if (candidateDocumentSelect) candidateDocumentSelect.value = documentId;
   document.body.dataset.rulesetMode = mode;
-  if (candidate) document.body.dataset.candidateDocument = documentId;
-  else delete document.body.dataset.candidateDocument;
+  document.body.dataset.candidateDocument = documentId;
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
   });
   updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId);
 
-  // The current production Rules Arbiter remains bound to released v0.7.1 until the
-  // v0.7.2 corpus is cut over. Do not expose it as though it were candidate-aware.
   if (rulesAssistantButton) rulesAssistantButton.hidden = candidate;
   if (candidateNote) {
     candidateNote.hidden = !candidate;
     candidateNote.textContent = candidate
-      ? `Candidate view: ${documentConfig.label} from the modular ${candidateLabel} rules publication. The Rules Arbiter still follows released ${PUBLISHED_VERSION} and remains unavailable here until its v0.7.2 corpus is cut over.`
+      ? `Candidate view: ${documentConfig.label} from ${candidateLabel}. The Chief Justice remains bound to released ${PUBLISHED_VERSION}.`
       : '';
   }
 
   if (candidate) {
     if (eyebrow) eyebrow.textContent = `Release candidate rules · ${candidateLabel}`;
-    if (heroTitle) heroTitle.textContent = documentConfig.title;
-    if (heroLede) heroLede.textContent = documentConfig.lede;
     if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · ${documentConfig.label}.`;
-    if (printHeading) printHeading.textContent = `${documentConfig.label} booklet`;
-    if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
     document.title = `${documentConfig.title} — Gauntlet ${candidateLabel}`;
   } else {
-    if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
-    if (heroTitle) heroTitle.textContent = 'Official Browser Rulebook';
-    if (heroLede) heroLede.textContent = 'The complete shared rules and faction systems, presented for comfortable reading at the table or on the go.';
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.1</strong> · Current canonical playtest edition.';
-    if (printHeading) printHeading.textContent = 'Print the released rulebook';
-    if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
-    document.title = 'Gauntlet v0.7.1 Browser Rulebook';
+    if (eyebrow) eyebrow.textContent = `Canonical rules · ${PUBLISHED_VERSION}`;
+    if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${PUBLISHED_VERSION}</strong> · ${documentConfig.label} · current canonical playtest edition.`;
+    document.title = `Gauntlet ${PUBLISHED_VERSION} Browser Rulebook — ${documentConfig.title}`;
   }
+  if (heroTitle) heroTitle.textContent = documentConfig.title;
+  if (heroLede) heroLede.textContent = documentConfig.lede;
+  if (printHeading) printHeading.textContent = `${documentConfig.label} booklet`;
+  if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
 }
 
 function scrollToLocationHash() {
@@ -475,8 +458,8 @@ function initializeControls() {
   candidateDocumentSelect?.addEventListener('change', async () => {
     const requested = candidateDocumentSelect.value;
     activeCandidateDocument = CANDIDATE_DOCUMENTS.has(requested) ? requested : DEFAULT_CANDIDATE_DOCUMENT;
-    writeModeToUrl(CANDIDATE_MODE, false, activeCandidateDocument);
-    await renderRulebook(CANDIDATE_MODE);
+    writeModeToUrl(activeMode, false, activeCandidateDocument);
+    await renderRulebook(activeMode);
   });
 
   searchForm?.addEventListener('submit', (event) => {
@@ -535,25 +518,14 @@ async function loadReleaseManifest() {
       .then(async (response) => {
         if (!response.ok) throw new Error(`Release manifest returned ${response.status}`);
         const manifest = await response.json();
-        if (manifest?.release_version !== PUBLISHED_VERSION) {
-          throw new Error(`Release manifest version mismatch: ${manifest?.release_version || 'missing'}`);
+        if (manifest?.release_version !== PUBLISHED_VERSION || manifest?.status !== 'current') {
+          throw new Error(`Release manifest identity mismatch: ${manifest?.release_version || 'missing'} / ${manifest?.status || 'missing'}`);
         }
-
-        const rulebook = manifest?.binding_sources?.rulebook;
-        if (!rulebook?.path || !/^[a-f0-9]{64}$/i.test(rulebook?.sha256 || '')) {
-          throw new Error('Release manifest is missing a valid Rulebook binding.');
+        const documents = manifest?.modular_rules?.documents;
+        if (!Array.isArray(documents) || documents.length !== CANDIDATE_DOCUMENTS.size) {
+          throw new Error('Release manifest is missing the complete modular rules publication.');
         }
-
-        const booklet = manifest?.pdf_outputs?.find((entry) => entry?.key === 'rulebook-booklet');
-        if (!booklet?.path || !/^[a-f0-9]{64}$/i.test(booklet?.sha256 || '')) {
-          throw new Error('Release manifest is missing a valid Rulebook booklet binding.');
-        }
-
-        publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, rulebook.path));
-        pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
-        if (activeMode === RELEASED_MODE) updateBookletLinks(RELEASED_MODE);
-
-        return { manifest, rulebook, sourceUrl: publishedSourceUrl };
+        return manifest;
       })
       .catch((error) => {
         releaseManifestPromise = null;
@@ -563,26 +535,47 @@ async function loadReleaseManifest() {
   return releaseManifestPromise;
 }
 
-async function loadVerifiedReleasedSource() {
-  if (!sourcePromise) {
-    sourcePromise = (async () => {
-      const { rulebook, sourceUrl } = await loadReleaseManifest();
-      const response = await fetch(sourceUrl, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
+function publishedDocument(manifest, documentId = activeCandidateDocument) {
+  const normalized = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
+  const document = manifest?.modular_rules?.documents?.find((entry) => entry?.id === normalized);
+  const booklet = manifest?.pdf_outputs?.find((entry) => entry?.key === `${normalized}-booklet`);
+  if (!document?.source?.path || !/^[a-f0-9]{64}$/i.test(document?.source?.sha256 || '')) {
+    throw new Error(`Release manifest is missing a valid ${normalized} source binding.`);
+  }
+  if (!booklet?.path || !/^[a-f0-9]{64}$/i.test(booklet?.sha256 || '')) {
+    throw new Error(`Release manifest is missing a valid ${normalized} booklet binding.`);
+  }
+  return { normalized, document, booklet };
+}
 
+async function loadVerifiedReleasedSource(documentId = activeCandidateDocument) {
+  const normalized = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
+  const manifest = await loadReleaseManifest();
+  const { document, booklet } = publishedDocument(manifest, normalized);
+  publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, document.source.path));
+  pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
+  if (activeMode === RELEASED_MODE && activeCandidateDocument === normalized) {
+    updateBookletLinks(RELEASED_MODE, normalized);
+  }
+
+  if (!publishedSourcePromises.has(normalized)) {
+    const sourceUrl = publishedSourceUrl;
+    const promise = (async () => {
+      const response = await fetch(sourceUrl, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`${normalized} source returned ${response.status}`);
       const bytes = await response.arrayBuffer();
       const actualHash = await sha256(bytes);
-      if (actualHash !== rulebook.sha256) {
-        throw new Error(`Rulebook source hash mismatch: expected ${rulebook.sha256}, received ${actualHash}`);
+      if (actualHash !== document.source.sha256) {
+        throw new Error(`${normalized} source hash mismatch: expected ${document.source.sha256}, received ${actualHash}`);
       }
-
       return new TextDecoder().decode(bytes);
     })().catch((error) => {
-      sourcePromise = null;
+      publishedSourcePromises.delete(normalized);
       throw error;
     });
+    publishedSourcePromises.set(normalized, promise);
   }
-  return sourcePromise;
+  return publishedSourcePromises.get(normalized);
 }
 
 async function loadCandidateDocumentSource(documentId) {
@@ -619,31 +612,23 @@ async function renderRulebook(mode) {
     console.warn('Current-game authority unavailable for candidate detection.', error);
   }
   const candidateVersion = currentGame?.displayVersion || currentGame?.version || '';
-  const distinctCandidate = Boolean(candidateVersion && candidateVersion !== PUBLISHED_VERSION);
+  const candidateBaseVersion = String(currentGame?.version || candidateVersion).replace(/-candidate$/, '');
+  const distinctCandidate = Boolean(candidateBaseVersion && candidateBaseVersion !== PUBLISHED_VERSION);
   activeMode = requestedMode === CANDIDATE_MODE && distinctCandidate ? CANDIDATE_MODE : RELEASED_MODE;
-  if (activeMode === CANDIDATE_MODE) activeCandidateDocument = documentFromUrl();
-  if (requestedMode !== activeMode) {
-    writeModeToUrl(activeMode, true, activeCandidateDocument);
-  } else if (activeMode === CANDIDATE_MODE) {
-    const url = new URL(window.location.href);
-    if (url.searchParams.get('doc') !== activeCandidateDocument) {
-      writeModeToUrl(activeMode, true, activeCandidateDocument);
-    }
-  }
+  activeCandidateDocument = documentFromUrl();
+  if (requestedMode !== activeMode) writeModeToUrl(activeMode, true, activeCandidateDocument);
 
   const documentConfig = CANDIDATE_DOCUMENTS.get(activeCandidateDocument) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
   content.setAttribute('aria-busy', 'true');
   clearSearchMarks();
   if (searchInput) searchInput.value = '';
   if (searchStatus) searchStatus.textContent = '';
-  status.textContent = activeMode === CANDIDATE_MODE
-    ? `Loading ${documentConfig.label}…`
-    : 'Loading the canonical rulebook…';
+  status.textContent = `Loading ${documentConfig.label}…`;
 
   try {
     const markdown = activeMode === CANDIDATE_MODE
       ? await loadCandidateDocumentSource(activeCandidateDocument)
-      : await loadVerifiedReleasedSource();
+      : await loadVerifiedReleasedSource(activeCandidateDocument);
 
     const rendered = renderMarkdown(markdown);
     content.innerHTML = rendered.html;
@@ -654,7 +639,7 @@ async function renderRulebook(mode) {
     observeSections();
     setRulesetUi(activeMode, currentGame, distinctCandidate, activeCandidateDocument);
     document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', {
-      detail: { mode: activeMode, document: activeMode === CANDIDATE_MODE ? activeCandidateDocument : 'released-rulebook' },
+      detail: { mode: activeMode, document: activeCandidateDocument },
     }));
     scrollToLocationHash();
 
@@ -662,13 +647,12 @@ async function renderRulebook(mode) {
       0,
       rendered.headings.filter(({ level, id }) => {
         if (id === 'gauntlet' || id === 'official-rulebook') return false;
-        if (activeMode === CANDIDATE_MODE) return documentConfig.tocLevels.has(level);
-        return level === 1;
+        return documentConfig.tocLevels.has(level);
       }).length
     );
     status.textContent = activeMode === CANDIDATE_MODE
       ? `Release candidate ${candidateVersion || 'current development'} · ${documentConfig.label} · ${sectionCount} sections · rules loaded`
-      : `Canonical v0.7.1 · ${sectionCount} sections · rules loaded`;
+      : `Canonical ${PUBLISHED_VERSION} · ${documentConfig.label} · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
@@ -677,7 +661,7 @@ async function renderRulebook(mode) {
         <h1>The browser rulebook could not be loaded.</h1>
         <p>${activeMode === CANDIDATE_MODE
           ? 'The selected release-candidate document is temporarily unavailable.'
-          : `Use the <a href="${pdfUrl}">reader PDF</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.`}</p>
+          : `Use the <a href="${pdfUrl}">printable booklet</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.`}</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';

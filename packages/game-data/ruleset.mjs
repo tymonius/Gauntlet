@@ -2,9 +2,9 @@ import { resolveArtDirection, validateVisualPolicy } from './art-direction.mjs';
 
 export const RELEASED_MODE = 'released';
 export const CANDIDATE_MODE = 'candidate';
-export const PUBLISHED_VERSION = 'v0.7.1';
-export const PUBLISHED_AUTHORITY_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json';
-export const PUBLISHED_STARTER_DECKS_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json';
+export const PUBLISHED_VERSION = 'v0.7.2';
+export const PUBLISHED_AUTHORITY_URL = '/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json';
+export const PUBLISHED_STARTER_DECKS_URL = '/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json';
 export const CURRENT_VISUAL_AUTHORITY_URL = '/game-data/current-game.json';
 
 let publishedPromise = null;
