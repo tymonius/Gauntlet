@@ -245,8 +245,8 @@
     }
 
     const slugs = [...new Set([
-      String(item.id || '').replace(/^territory-/, ''),
       slugify(name),
+      String(item.id || '').replace(/^territory-/, ''),
     ].filter(Boolean))];
     for (const slug of slugs) {
       for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
