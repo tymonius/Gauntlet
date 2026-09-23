@@ -18,6 +18,10 @@ import {
   surfaceDeviceScale,
   surfaceRasterPixels,
 } from '../packages/rendering/production-surface.mjs';
+import {
+  stampTtsFacePublicationVersion,
+  validateTtsFacePublicationSource,
+} from './tts-face-publication.mjs';
 
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
 const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
@@ -184,6 +188,7 @@ async function renderAssets(catalog, componentContract) {
   }
 
   const release = await resolveCurrentTtsRelease();
+  await validateTtsFacePublicationSource(release);
   const outputRoot = release.outputRoot;
   await rm(join(outputRoot, 'cards'), { recursive: true, force: true });
   await rm(join(outputRoot, 'sheets'), { recursive: true, force: true });
@@ -230,6 +235,9 @@ async function renderAssets(catalog, componentContract) {
       }
 
       await validateRenderedCard(page, card);
+      await stampTtsFacePublicationVersion(
+        page, release, '.gauntlet-card', '.card-footer span:last-child',
+      );
       await page.locator('.gauntlet-card').screenshot({
         path: join(outputRoot, 'cards', `${card.id}.png`),
         omitBackground: true,
