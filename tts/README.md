@@ -69,7 +69,7 @@ The candidate inherits the ordinary data-driven TTS pipeline rather than maintai
 
 The v0.7.2 TTS package also consumes the modular publication pipeline. It renders all eight current rules publications in both print-imposed and sequential reader forms, then stages only the reader-order Half Letter PDFs for TTS. The Player's Guide and Complete Rules are placed on the shared table; each starter Bag contains the reader-order guide for its faction. The Letter-landscape saddle-stitch impositions remain print artifacts and are never used as TTS Custom PDF sources.
 
-The repository owner reports updating the permanent Steam Workshop item to **v0.7.2** after the stable release/tag, hosted TTS assets, passed manual QA, explicit approval, and successful final mod-save publication. The Steam listing and a clean subscribed-copy load have not been independently verified. Candidate PR previews remain QA artifacts only.
+The repository owner reports updating the permanent Steam Workshop item to **v0.7.2** after the stable release/tag, hosted TTS assets, passed manual QA, explicit approval, and successful final mod-save publication. The owner subsequently confirmed a fresh subscribed-copy load succeeded; the Steam listing itself has not been independently retrieved. Candidate PR previews remain QA artifacts only.
 
 Historical candidate QA is tracked in `tts/release-qa/v0.7.2-candidate.json`; the stable v0.7.2 approval authority is `tts/release-qa/v0.7.2.json`, with all 18 manual checks passed and `approvedForWorkshop` true on the owner's attestation.
 
@@ -252,7 +252,7 @@ The generator still emits a Review Scaffold by default; final Workshop identity 
 
 ## Manual QA and final promotion
 
-The historical candidate QA record is `tts/release-qa/v0.7.2-candidate.json`; it cannot authorize Workshop publication. The latest stable publication QA record is `tts/release-qa/v0.7.2.json`. It records all 18 table/setup, faction-component, and focused handling checks as passed on the owner's confirmation and sets `approvedForWorkshop` to true. The earlier v0.7.1 and v0.7.0 approvals remain historical evidence. The owner reported uploading the approved v0.7.2 save to Steam; independent listing verification and a subscribed-copy smoke test remain outstanding.
+The historical candidate QA record is `tts/release-qa/v0.7.2-candidate.json`; it cannot authorize Workshop publication. The latest stable publication QA record is `tts/release-qa/v0.7.2.json`. It records all 18 table/setup, faction-component, and focused handling checks as passed on the owner's confirmation and sets `approvedForWorkshop` to true. The earlier v0.7.1 and v0.7.0 approvals remain historical evidence. The owner reported uploading the approved v0.7.2 save to Steam; independent Steam listing verification remains outstanding; the owner confirmed a successful fresh subscribed-copy smoke test on 2026-09-23.
 
 ## GitHub Release asset hosting
 
@@ -272,7 +272,7 @@ Workshop copy, setup notes, publication-gate history, listing images, and post-p
 
 - `tts/WORKSHOP-PUBLISHING.md`
 
-The owner reports publishing v0.7.2 to the existing Workshop item at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635; its permanent ID is unchanged. The v0.7.2 stable QA gate is complete and explicitly Workshop-approved. Independent Steam listing verification and a fresh subscribed-copy smoke test are still pending.
+The owner reports publishing v0.7.2 to the existing Workshop item at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635; its permanent ID is unchanged. The v0.7.2 stable QA gate is complete and explicitly Workshop-approved. The owner confirmed a successful fresh subscribed-copy smoke test on 2026-09-23; independent Steam listing verification remains outstanding.
 
 ## Generated output
 
