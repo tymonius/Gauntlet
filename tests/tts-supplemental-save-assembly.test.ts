@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
 import {
@@ -117,6 +118,16 @@ function fixture() {
   const assets: any = { gameVersion: 'current-test', releaseTag: 'current-test', bySourceFile };
   return { save, starters, supplementals, assets };
 }
+
+describe('TTS supplemental save assembly release identity', () => {
+  it('allows candidate save assembly to consume assets hosted on the frozen published release tag', () => {
+    const source = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
+    expect(source).toContain('resolvePublishedTtsRelease');
+    expect(source).toContain('manifest.gameVersion !== release.version');
+    expect(source).toContain('manifest.releaseTag !== published.version');
+    expect(source).toContain('readReleaseAssetManifest(release)');
+  });
+});
 
 describe('TTS ready supplemental save assembly', () => {
   it('places shared material into every starter and faction material only into its faction', () => {
