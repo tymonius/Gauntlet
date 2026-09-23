@@ -48,7 +48,7 @@ const tagTarget = (tag) => {
 };
 
 const releaseView = (tag) => {
-  const result = run('gh', ['release', 'view', tag, '--repo', repo, '--json', 'tagName,name,isPrerelease,assets,url'], { allowFailure: true });
+  const result = run('gh', ['release', 'view', tag, '--repo', repo, '--json', 'tagName,name,isPrerelease,assets,url,body'], { allowFailure: true });
   if (result.status !== 0) return null;
   return JSON.parse(result.stdout);
 };
@@ -215,4 +215,27 @@ for (const name of expectedAssets.keys()) {
   if (!uploadedNames.has(name)) throw new Error(`${current.tag} GitHub Release is missing required asset ${name}.`);
 }
 
-console.log(`${current.tag} Git tag and GitHub Release contract satisfied at ${currentTarget}.`);
+// Current release notes are maintained after the immutable tag is cut. Keep the
+// existing GitHub Release body in sync without modifying tags, assets, or any
+// historical release. This is idempotent on ordinary main pushes.
+const normalizeNotes = (value) => String(value ?? '').replace(/\r\n/g, '\n').trimEnd();
+const expectedNotes = normalizeNotes(fs.readFileSync(path.join(root, current.notes_file), 'utf8'));
+if (normalizeNotes(currentRelease.body) !== expectedNotes) {
+  if (deferIfMainAdvanced('before updating current release notes')) {
+    process.exit(0);
+  }
+  console.log(`Updating ${current.tag} GitHub Release notes from ${current.notes_file}.`);
+  run('gh', ['release', 'edit', current.tag, '--repo', repo, '--notes-file', current.notes_file]);
+  currentRelease = releaseView(current.tag);
+  verifyReleaseMetadata(current, currentRelease);
+  if (normalizeNotes(currentRelease.body) !== expectedNotes) {
+    throw new Error(`${current.tag} GitHub Release notes did not match the contracted notes file after update.`);
+  }
+  for (const name of expectedAssets.keys()) {
+    if (!(currentRelease.assets || []).some((asset) => asset.name === name)) {
+      throw new Error(`${current.tag} GitHub Release lost required asset ${name} after updating notes.`);
+    }
+  }
+}
+
+console.log(`${current.tag} Git tag, GitHub Release notes, and asset contract satisfied at ${currentTarget}.`);
