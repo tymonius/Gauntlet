@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8'));
 const releaseTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
