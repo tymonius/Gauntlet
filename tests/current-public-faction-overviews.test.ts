@@ -34,13 +34,13 @@ describe('current public faction overviews', () => {
     for (const order of ['Entrench', 'Repel', 'Fortify']) expect(general).not.toContain(order);
   });
 
-  test('identifies the staged homepage with the current-game release identity', () => {
-    expect(stagedVersion).not.toBe('');
-    const homepage = read('index.html');
-    expect(homepage).toContain(stagedVersion);
-    if (String(lifecycle.current_release || '') !== stagedVersion) {
-      expect(['release-candidate', 'release-ready']).toContain(currentGame.status);
-    }
+  test('identifies the homepage with the lifecycle-selected published release', () => {
+    const currentRelease = String(lifecycle.current_release || '');
+    const currentGameBaseVersion = stagedVersion.replace(/-candidate$/, '');
+    expect(currentRelease).toBe('v0.7.2');
+    expect(currentGameBaseVersion).toBe(currentRelease);
+    expect(currentGame.status).toBe('active-development');
+    expect(read('index.html')).toContain(currentRelease);
   });
 
   test('keeps historical v0.6.1 synchronization away from current faction pages', () => {
