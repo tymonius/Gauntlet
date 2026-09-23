@@ -116,14 +116,30 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(workflow).toContain('run: node scripts/render-v072-dedicated-booklets.mjs');
     expect(workflow).toContain('name: Stage hosted TTS release assets');
     expect(workflow).toContain('run: npm run tts:release:stage');
-    expect(workflow).toContain("gh release view \"$tag\" --repo \"$repo\"");
-    expect(workflow).toContain("gh release upload \"$tag\" --repo \"$repo\" --clobber");
+    expect(workflow).toContain('node scripts/upload-tts-release-assets.mjs "$manifest"');
+    expect(workflow).toContain('node scripts/upload-tts-release-assets.mjs "$manifest" --mod-save "$mod_save"');
+    expect(workflow).not.toContain('gh release upload "$tag" --repo "$repo" --clobber');
     const productionPublish = workflow.slice(workflow.indexOf('  publish:'));
     expect(productionPublish).not.toContain('gh release create');
     expect(workflow).toContain('name: Publish TTS PR preview assets');
     expect(workflow).toContain('Prepare immutable PR-preview asset URLs');
     expect(workflow).toContain('preview_tag="tts-${version}-qa-pr-${PR_NUMBER}-${HEAD_SHA:0:12}"');
     expect(workflow).toContain('gh release create "$PREVIEW_TAG"');
+  });
+
+  it('skips matching digests and replaces changed assets across every paginated release-asset page', async () => {
+    const uploader = readFileSync('scripts/upload-tts-release-assets.mjs', 'utf8');
+    const { decideAssetAction } = await import('../scripts/upload-tts-release-assets.mjs');
+    const local = { sha256: 'a'.repeat(64) };
+    expect(decideAssetAction(local, undefined)).toBe('upload');
+    expect(decideAssetAction(local, { id: '100', digest: 'sha256:' + local.sha256 })).toBe('skip');
+    expect(decideAssetAction(local, { id: '100', digest: 'sha256:' + 'b'.repeat(64) })).toBe('replace');
+    expect(uploader).toContain("'--paginate'");
+    expect(uploader).toContain('per_page=100');
+    expect(uploader).toContain('assertLocalAsset(asset)');
+    expect(uploader).toContain('await confirmPublished(repo, releaseId, assets)');
+    expect(uploader).toContain("if (!/^\\d+$/.test(String(hosted.id)))");
+    expect(uploader).not.toContain("gh(['release', 'upload', tag, '--repo', repo, '--clobber'");
   });
 
   it('verifies hosted URLs after upload without moving the release tag', () => {
