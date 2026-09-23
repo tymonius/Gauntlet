@@ -267,10 +267,9 @@ function territoryArtworkCandidates(territory) {
   const displayName = territory?.arena
     ? String(territory.name || '').replace(/^Arena:\s*/i, '')
     : territory?.name;
-  const slugs = [...new Set([
-    slugify(displayName),
-    String(territory?.id || '').replace(/^territory-/, ''),
-  ].filter(Boolean))];
+  const idSlug = String(territory?.id || '').replace(/^territory-/, '');
+  const nameSlug = slugify(displayName);
+  const slugs = [...new Set((territory?.arena ? [idSlug, nameSlug] : [nameSlug, idSlug]).filter(Boolean))];
   return slugs.flatMap(slug => {
     const preferred = (slug === 'high-ground' || slug === 'supply-depot') ? 'jpg' : 'png';
     const extensions = [preferred, ...['png', 'webp', 'jpg', 'jpeg'].filter(extension => extension !== preferred)];
