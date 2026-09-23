@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import dispatcher from './worker-entry.js';
 
 const lifecycle = JSON.parse(readFileSync(new URL('../config/release-lifecycle.json', import.meta.url), 'utf8'));
-const stagedCurrentVersion = 'v0.7.1';
+const stagedCurrentVersion = 'v0.7.2';
 
 async function health(path) {
   const response = await dispatcher.fetch(new Request(`https://gauntlet.run${path}`), {}, {});
