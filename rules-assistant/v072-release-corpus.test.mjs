@@ -47,7 +47,7 @@ describe("frozen v0.7.2 release corpus", () => {
     expect(freeze.sources.completeRules.gitBlob).toBe("c5915af9aa9668ebaf20755a3755f5d12474c7a0");
   });
 
-  test("validates staged release identity and frozen authority binding", () => {
+  test("validates published release identity and frozen authority binding", () => {
     const canonicalData = JSON.parse(read(paths.canonical));
     const manifest = JSON.parse(read(paths.manifest));
     const provenance = JSON.parse(read(paths.provenance));
@@ -57,11 +57,11 @@ describe("frozen v0.7.2 release corpus", () => {
       provenance,
       completeRulesMarkdown: read(paths.rules),
     })).toBe(true);
-    expect(manifest.status).toBe("candidate");
-    expect(manifest.public_defaults.rules_arbiter).toBe("v0.7.1");
+    expect(manifest.status).toBe("current");
+    expect(manifest.public_defaults.rules_arbiter).toBe("v0.7.2");
   });
 
-  test("loads the immutable staged package and binds public release URLs", async () => {
+  test("loads the immutable published package and binds public release URLs", async () => {
     const urls = defaultV072SourceUrls();
     const bodies = new Map([
       [urls.completeRulesUrl, read(paths.rules)],
@@ -75,9 +75,9 @@ describe("frozen v0.7.2 release corpus", () => {
     });
 
     expect(corpus.version).toBe(V072_RULES_VERSION);
-    expect(corpus.published).toBe(false);
-    expect(corpus.candidate).toBe(true);
-    expect(corpus.currentPublicRelease).toBe("v0.7.1");
+    expect(corpus.published).toBe(true);
+    expect(corpus.candidate).toBe(false);
+    expect(corpus.currentPublicRelease).toBe("v0.7.2");
     expect(corpus.authoritySetId).toBe("ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84");
     expect(corpus.documents.some(document =>
       document.kind === "rulebook" && document.sourcePath === V072_COMPLETE_RULES_SOURCE_PATH
@@ -87,30 +87,33 @@ describe("frozen v0.7.2 release corpus", () => {
     )).toBe(true);
   });
 
-  test("registers v0.7.2 as staged candidate without public cutover", () => {
+  test("registers v0.7.2 as the current public release", () => {
     const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));
-    expect(lifecycle.current_release).toBe("v0.7.1");
-    expect(lifecycle.releases["v0.7.1"].status).toBe("current");
-    expect(lifecycle.releases["v0.7.2"].status).toBe("candidate");
-    expect(lifecycle.releases["v0.7.2"].public_cutover).toBe(false);
+    expect(lifecycle.current_release).toBe("v0.7.2");
+    expect(lifecycle.releases["v0.7.1"].status).toBe("historical");
+    expect(lifecycle.releases["v0.7.2"].status).toBe("current");
+    expect(lifecycle.releases["v0.7.2"].public_cutover).toBe(true);
     expect(lifecycle.releases["v0.7.2"].frozen_authority_set_id)
       .toBe("ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84");
   });
 
-  test("publishes only the staged v0.7.2 runtime authority files, not the releases tree", () => {
+  test("publishes the frozen v0.7.2 release package through the explicit publication boundary", () => {
     const boundary = JSON.parse(readFileSync(new URL("../config/publication-boundary.json", import.meta.url), "utf8"));
     expect(boundary.pages.sourceOnlyRepositoryRoots).toContain("releases");
-    const staged = boundary.materializedFiles
-      .filter(item => item.kind === "staged-release-runtime")
-      .map(item => item.publicPath)
-      .sort();
-    expect(staged).toEqual([
+    const published = boundary.materializedFiles
+      .filter(item => item.kind === "current-release-runtime")
+      .map(item => item.publicPath);
+    for (const required of [
       "/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json",
       "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
       "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
       "/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json",
       "/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json",
-    ]);
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+    ]) {
+      expect(published).toContain(required);
+    }
   });
 
   test("fails closed if a staged binding is tampered", async () => {
