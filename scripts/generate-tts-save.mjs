@@ -33,6 +33,7 @@ const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
 const SHARED_PLAYER_GUIDE_NOTE = 'gauntlet:shared-player-guide';
 const SHARED_COMPLETE_RULES_NOTE = 'gauntlet:shared-complete-rules';
 const FACTION_GUIDE_NOTE_PREFIX = 'gauntlet:faction-guide:';
+const MODULAR_RULES_TABLE_SCALE = 2.2;
 
 
 function jsonText(value) {
@@ -129,7 +130,7 @@ function makeSharedModularRules(version, releaseAssets, guid) {
       nickname: `Gauntlet ${version} Player's Guide`,
       description: 'Shared table Player\'s Guide · reader-order PDF',
       sourceFile: MODULAR_RULES_SOURCES.playerGuide,
-      objectTransform: transform(11.4, 1.2, -4.2, 90, 2.2, 1, 2.2),
+      objectTransform: transform(11.4, 1.2, -4.2, 90, MODULAR_RULES_TABLE_SCALE, 1, MODULAR_RULES_TABLE_SCALE),
       gmNotes: SHARED_PLAYER_GUIDE_NOTE,
       releaseAssets,
       guid: guid(),
@@ -138,7 +139,7 @@ function makeSharedModularRules(version, releaseAssets, guid) {
       nickname: `Gauntlet ${version} Complete Rules`,
       description: 'Shared table Complete Rules · reader-order PDF',
       sourceFile: MODULAR_RULES_SOURCES.completeRules,
-      objectTransform: transform(11.4, 1.2, 4.2, 90, 2.2, 1, 2.2),
+      objectTransform: transform(11.4, 1.2, 4.2, 90, MODULAR_RULES_TABLE_SCALE, 1, MODULAR_RULES_TABLE_SCALE),
       gmNotes: SHARED_COMPLETE_RULES_NOTE,
       releaseAssets,
       guid: guid(),
@@ -154,7 +155,7 @@ function makeFactionGuide(starter, releaseAssets, guid) {
     nickname: `${factionLabel} Guide`,
     description: `${factionLabel} faction guide · reader-order PDF`,
     sourceFile,
-    objectTransform: transform(0, 1, 0, 180, 1, 1, 1),
+    objectTransform: transform(0, 1, 0, 180, MODULAR_RULES_TABLE_SCALE, 1, MODULAR_RULES_TABLE_SCALE),
     gmNotes: `${FACTION_GUIDE_NOTE_PREFIX}${starter.factionId}`,
     releaseAssets,
     guid,
