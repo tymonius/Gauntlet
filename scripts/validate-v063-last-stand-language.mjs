@@ -110,12 +110,12 @@ for (const [relativePath, required] of [
 // its published release authority directly. Historical v0.6.3 publication
 // transforms remain confined to the archived v0.6.3 corpus and publication tooling.
 failures += requireText('legacy/rulebook-browser/app.js', 'RELEASE_MANIFEST_URL', 'published release-manifest binding');
-failures += requireText('legacy/rulebook-browser/app.js', 'manifest?.binding_sources?.rulebook', 'manifest Rulebook binding');
+failures += requireText('legacy/rulebook-browser/app.js', 'manifest?.modular_rules?.documents', 'modular published rules bindings');
 failures += requireOrder(
   'legacy/rulebook-browser/app.js',
-  'const { rulebook, sourceUrl } = await loadReleaseManifest();',
-  'if (actualHash !== rulebook.sha256)',
-  'Rulebook must load its published binding before verifying the published source hash.',
+  'const manifest = await loadReleaseManifest();',
+  'if (actualHash !== document.source.sha256)',
+  'Rulebook must load its published modular binding before verifying the published source hash.',
 );
 failures += requireText('legacy/rulebook-browser/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
 failures += requireText('rules-assistant/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
