@@ -11,13 +11,13 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
     <div class="tts-shell">
       <div class="tts-copy">
         <p class="eyebrow declaration-overline">Play remotely</p>
-        <p class="tts-status"><span>v0.7.0</span> · Live on Steam Workshop</p>
+        <p class="tts-status"><span>v0.7.2</span> · Live on Steam Workshop</p>
         <h2 id="tts-title">Bring the Gauntlet to the digital table.</h2>
         <p class="tts-lede">
-          Gauntlet v0.7.0 is now available on the Steam Workshop for Tabletop Simulator, with decks, Leaders, Territories, the six-position Gauntlet, starter Bags, player pieces, and faction-specific components ready for online play.
+          Gauntlet v0.7.2 is available on the Steam Workshop for Tabletop Simulator, with revised starter Bags, updated rules guides, Leaders, Territories, the six-position Gauntlet, player pieces, and faction-specific components ready for online play.
         </p>
         <p class="tts-note">
-          Rules remain player-operated rather than automated, so the same Rulebook and card interactions govern play at the digital table.
+          Rules remain player-operated rather than automated, so the same published rules and card interactions govern play at the digital table.
         </p>
         <div class="tts-actions">
           <a class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Open on Steam Workshop</a>
@@ -39,7 +39,7 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
         <article>
           <span class="tts-feature-number">03</span>
           <h3>Physical-first rules</h3>
-          <p>The mod reproduces the tabletop game instead of replacing it with rules scripting, so the same Rulebook and card interactions govern play online.</p>
+          <p>The mod reproduces the tabletop game instead of replacing it with rules scripting, so the same published rules and card interactions govern play online.</p>
         </article>
       </div>
 
@@ -52,7 +52,7 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
           loading="lazy"
           decoding="async"
         />
-        <figcaption>Gauntlet v0.7.0 set up for online play in Tabletop Simulator.</figcaption>
+        <figcaption>A Gauntlet playtest table in Tabletop Simulator.</figcaption>
       </figure>
     </div>
   `;
