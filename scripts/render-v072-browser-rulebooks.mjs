@@ -113,9 +113,8 @@ async function waitForPublication(page, document) {
   if (document.faction) {
     await page.waitForFunction(
       () => {
-        const profiles = [...document.querySelectorAll('.candidate-leader-profile')];
-        return profiles.length === 2
-          && profiles.every(profile => profile.querySelector('.candidate-leader-figure')?.dataset.leaderArtworkFitted === 'true');
+        const image = document.querySelector('.candidate-faction-guide-woodcut img');
+        return Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0);
       },
       null,
       { timeout: 30000 },
@@ -142,7 +141,7 @@ async function waitForPublication(page, document) {
       overflow,
       articleWidth: rect.width,
       scrollWidth: article.scrollWidth,
-      leaderProfiles: document.querySelectorAll('.candidate-leader-profile').length,
+      factionWoodcuts: document.querySelectorAll('.candidate-faction-guide-woodcut').length,
       bookletPaths: [...document.querySelectorAll('[data-rulebook-booklet]')]
         .map(link => new URL(link.href, window.location.href).pathname),
     };
@@ -199,11 +198,10 @@ try {
         });
 
         if (document.faction) {
-          const leaders = page.locator('.candidate-leader-profile');
-          const leaderCount = await leaders.count();
-          for (let index = 0; index < leaderCount; index += 1) {
-            await leaders.nth(index).screenshot({
-              path: path.join(directory, `${document.id}-leader-${index + 1}.png`),
+          const woodcut = page.locator('.candidate-faction-guide-woodcut');
+          if (await woodcut.count()) {
+            await woodcut.screenshot({
+              path: path.join(directory, `${document.id}-leaders-woodcut.png`),
             });
           }
         }
