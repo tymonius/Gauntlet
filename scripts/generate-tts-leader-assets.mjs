@@ -11,6 +11,7 @@ import {
   loadTtsComponentContract,
   resolveFactionBackFile,
 } from './tts-component-contract.mjs';
+import { resolvePublishedAssetTarget } from './stage-tts-release-assets.mjs';
 import {
   surfaceCssPixels,
   surfaceDeviceScale,
@@ -129,6 +130,26 @@ async function validateLeader(page, leader, displayVersion) {
   }
 }
 
+// The shared Card Design renderer reads the frozen current-game source. Only
+// relabel its presentation for TTS when that source has been checked against
+// the exact published release snapshot; mechanics and artwork remain untouched.
+async function stampLeaderPublicationVersion(page, release, displayVersion) {
+  if (release.authorityVersion === displayVersion) return;
+  if (!release.publicationTargetActive) {
+    throw new Error('Cannot relabel Leader art without an aligned TTS publication target.');
+  }
+  await page.locator(leaderSelector()).evaluate((card, { authorityVersion, displayVersion }) => {
+    const footerVersion = card.querySelector('.card-footer span:last-child');
+    if (!footerVersion
+      || footerVersion.textContent?.trim() !== authorityVersion
+      || card.dataset.leaderCopyVersion !== authorityVersion) {
+      throw new Error('Leader artwork source does not match the verified frozen authority.');
+    }
+    footerVersion.textContent = displayVersion;
+    card.dataset.leaderCopyVersion = displayVersion;
+  }, { authorityVersion: release.authorityVersion, displayVersion });
+}
+
 async function captureLeader(page, leader, outputPath) {
   const card = page.locator(leaderSelector(leader));
   const previousStyle = await card.evaluate((element) => {
@@ -171,6 +192,9 @@ async function captureLeader(page, leader, outputPath) {
 }
 
 async function renderLeaderAssets(release, leaders, componentContract) {
+  if (release.version !== release.authorityVersion) {
+    await resolvePublishedAssetTarget(release);
+  }
   let chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -229,6 +253,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         fontsValidated = true;
       }
 
+      await stampLeaderPublicationVersion(page, release, displayVersion);
       await validateLeader(page, leader, displayVersion);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
