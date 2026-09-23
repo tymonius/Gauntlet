@@ -36,12 +36,12 @@ const TRANSITIONAL_RUNTIME_MARKERS = [
 ];
 
 describe('complete current-game authority', () => {
-  it('is a native, complete v0.7.2 candidate authority rather than a resolution manifest', () => {
+  it('is a native, complete official v0.7.2 authority rather than a resolution manifest', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
-    expect(authority.version).toBe('v0.7.2-candidate');
-    expect(authority.displayVersion).toBe('v0.7.2-candidate');
-    expect(authority.status).toBe('active-development');
+    expect(authority.version).toBe('v0.7.2');
+    expect(authority.displayVersion).toBe('v0.7.2');
+    expect(authority.status).toBe('current-release');
     expect(authority.provenance.currentDevelopmentInputs.v072TimingAndCaptureCleanup)
       .toBe('/docs/v0.7.2-timing-and-capture-cleanup.json');
     expect(authority.provenance.currentDevelopmentInputs.v072FinancierEconomy)
@@ -54,13 +54,13 @@ describe('complete current-game authority', () => {
     }
   });
 
-  it('publishes the v0.7.2 candidate starter Deck authority with the Mystics packages', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.2-candidate');
-    expect(authority.starterDecks.status).toBe('Active v0.7.2-candidate starter set');
+  it('publishes the official v0.7.2 starter Deck authority with the Mystics packages', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.2');
+    expect(authority.starterDecks.status).toBe('Current v0.7.2 starter set');
     expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2-candidate');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.2');
     expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
-    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2-candidate');
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.2');
 
     // Historical source paths remain provenance; active starter identity must not be stale.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
