@@ -23,21 +23,23 @@ function repositoryPathExists(relative) {
 }
 
 assert.equal(transition.schemaVersion, 2, 'Legacy Rulebook transition record must use schemaVersion 2.');
-assert.equal(transition.status, 'cutover-pending', 'Rules publication transition must remain cutover-pending until the v0.7.2 release cutover.');
+assert.equal(transition.status, 'cutover-complete', 'Rules publication transition must be complete once v0.7.2 is current.');
 assert.equal(transition.cutoverModel, 'retain-browser-shell-replace-released-document-set', 'v0.7.2 must retain the Browser Rulebook shell rather than redirecting /rulebook/.');
 assert.equal(transition.legacySource, coverage.legacySource, 'Transition record must identify the source proven by the coverage crosswalk.');
 assert.equal(coverage.retirementReadiness, 'coverage-proven', 'Legacy Rulebook retirement requires a coverage-proven crosswalk.');
 assert.equal(coverage.routeRetirementIncluded, false, 'Coverage proof and public-route migration must remain separate review steps.');
 
-assert.equal(lifecycle.current_release, transition.releasedVersionUntilCutover, 'The transition contract must track the currently released rules version.');
-assert.equal(lifecycle.releases?.[transition.releasedVersionUntilCutover]?.status, 'current', 'The released version preserved by /rulebook/ must remain current until cutover.');
-assert.notEqual(lifecycle.current_release, transition.cutoverRelease, 'When the cutover release becomes current, this pending transition contract must be completed rather than silently retained.');
+assert.equal(lifecycle.current_release, transition.cutoverRelease, 'The completed transition must track v0.7.2 as the current rules release.');
+assert.equal(transition.releasedVersion, transition.cutoverRelease, 'The transition record must identify the released modular rules version.');
+assert.equal(lifecycle.releases?.[transition.cutoverRelease]?.status, 'current', 'The cutover release must be current.');
+assert.equal(lifecycle.releases?.[transition.cutoverRelease]?.public_cutover, true, 'The cutover release must have public_cutover=true.');
+assert.equal(lifecycle.releases?.[transition.releasedVersionUntilCutover]?.status, 'historical', 'The pre-cutover released version must be historical after cutover.');
 
 const primaryRoute = boundary.materializedRoutes.find(route => route.publicPath === transition.primaryPublicRoute);
 assert(primaryRoute, `Primary rules route ${transition.primaryPublicRoute} must remain explicitly materialized.`);
 assert.equal(primaryRoute.source, transition.currentPublicSource, 'The primary rules route must materialize from the Browser Rulebook shell.');
 assert.equal(primaryRoute.source, transition.browserSource, 'The Browser Rulebook source must remain the deployed rules publication shell.');
-assert.equal(primaryRoute.kind, 'release-transition-app', 'Until v0.7.2 cutover, /rulebook/ must remain a release-transition application.');
+assert.equal(primaryRoute.kind, 'current-rules-publication', 'After v0.7.2 cutover, /rulebook/ must be the current modular rules publication.');
 assert.equal(primaryRoute.manageIndexRoutes, true, 'The live /rulebook/ surface must remain in the managed route graph.');
 
 const compatibilityRoute = boundary.materializedRoutes.find(route => route.publicPath === transition.compatibilityRoute);
@@ -51,8 +53,8 @@ for (const alias of transition.transitionalPublicSourceAliases || []) {
   assert(mapping, `Release-transition source alias is missing: ${alias.publicPath}`);
   assert.equal(mapping.source, alias.source, `Release-transition source alias points at the wrong source: ${alias.publicPath}`);
 }
-assert(boundary.managedRoutes.includes('/rulebook/'), 'Browser Rulebook route must remain managed through cutover.');
-assert(boundary.managedRoutes.includes('/rulebook/player-guide-review/'), 'Browser Rulebook review subroute must remain managed while its source tree is publicly staged.');
+assert(boundary.managedRoutes.includes('/rulebook/'), 'Browser Rulebook route must remain managed after cutover.');
+assert(boundary.managedRoutes.includes('/rulebook/player-guide-review/'), 'Browser Rulebook review subroute must remain explicitly managed while retained.');
 assert(boundary.managedRoutes.includes('/rules/'), 'Compatibility /rules/ route must remain managed.');
 assert(!(boundary.materializedFiles || []).some(file => file.publicPath.startsWith('/rules/sources/')), 'Retired standalone /rules/ readers must not stage duplicate Markdown sources.');
 
@@ -66,13 +68,13 @@ assert(repositoryPathExists(transition.historicalRelease.booklet), 'Frozen histo
 
 const browserHtml = fs.readFileSync(`${transition.browserSource}/index.html`, 'utf8');
 const browserApp = fs.readFileSync(`${transition.browserSource}/app.js`, 'utf8');
-assert(browserHtml.includes('data-ruleset="released"'), 'Browser Rulebook must retain the Released ruleset control until cutover.');
-assert(browserHtml.includes('data-ruleset="candidate"'), 'Browser Rulebook must retain the release-candidate ruleset control until cutover.');
-assert(browserHtml.includes('data-candidate-document-switch'), 'Browser Rulebook must expose the modular candidate document selector.');
-assert(browserHtml.includes('<option value="player-guide">Player\'s Guide</option>'), 'Candidate document selector must default to the Player\'s Guide.');
-assert(browserHtml.includes('<option value="complete-rules">Complete Rules</option>'), 'Candidate document selector must expose the Complete Rules.');
-assert(browserApp.includes("const PUBLISHED_VERSION = 'v0.7.1';"), 'Browser Rulebook must keep v0.7.1 as its released ruleset until cutover.');
-assert(browserApp.includes("const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';"), 'Browser Rulebook must default the candidate publication to the Player\'s Guide.');
+assert(browserHtml.includes('data-ruleset="released"'), 'Browser Rulebook must retain its released-ruleset control.');
+assert(browserHtml.includes('data-ruleset="candidate"'), 'Browser Rulebook may retain its future-candidate ruleset control while no distinct candidate is active.');
+assert(browserHtml.includes('data-candidate-document-switch'), 'Browser Rulebook must expose the modular document selector.');
+assert(browserHtml.includes('<option value="player-guide">Player\'s Guide</option>'), 'Modular document selector must default to the Player\'s Guide.');
+assert(browserHtml.includes('<option value="complete-rules">Complete Rules</option>'), 'Modular document selector must expose the Complete Rules.');
+assert(browserApp.includes("const PUBLISHED_VERSION = 'v0.7.2';"), 'Browser Rulebook must publish v0.7.2 after cutover.');
+assert(browserApp.includes("const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';"), 'Browser Rulebook must default the modular publication to the Player\'s Guide.');
 assert(browserApp.includes("sourceUrl: './sources/player-guide.md'"), 'Browser Rulebook candidate view must load the maintained Player\'s Guide source.');
 assert(browserApp.includes("sourceUrl: './sources/complete-rules.md'"), 'Browser Rulebook candidate view must load the maintained Complete Rules source.');
 for (const faction of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
@@ -92,16 +94,16 @@ assert.equal(compatibility.status, 'compatibility-only', 'The standalone rules a
 assert.equal(compatibility.primaryRulesRoute, transition.primaryPublicRoute, 'Compatibility routes must point back to the primary Browser Rulebook publication.');
 
 const expectedRedirects = new Map([
-  ['/rules/', ['apps/rules/index.html', '/rulebook/?rules=candidate&doc=player-guide']],
-  ['/rules/player-guide/', ['apps/rules/player-guide/index.html', '/rulebook/?rules=candidate&doc=player-guide']],
-  ['/rules/comprehensive/', ['apps/rules/comprehensive/index.html', '/rulebook/?rules=candidate&doc=complete-rules']],
-  ['/rules/factions/', ['apps/rules/factions/index.html', '/rulebook/?rules=candidate&doc=player-guide#9-the-six-factions']],
-  ['/rules/factions/military/', ['apps/rules/factions/military/index.html', '/rulebook/?rules=candidate&doc=military']],
-  ['/rules/factions/diplomats/', ['apps/rules/factions/diplomats/index.html', '/rulebook/?rules=candidate&doc=diplomats']],
-  ['/rules/factions/financiers/', ['apps/rules/factions/financiers/index.html', '/rulebook/?rules=candidate&doc=financiers']],
-  ['/rules/factions/intelligence/', ['apps/rules/factions/intelligence/index.html', '/rulebook/?rules=candidate&doc=intelligence']],
-  ['/rules/factions/mystics/', ['apps/rules/factions/mystics/index.html', '/rulebook/?rules=candidate&doc=mystics']],
-  ['/rules/factions/inquisition/', ['apps/rules/factions/inquisition/index.html', '/rulebook/?rules=candidate&doc=inquisition']],
+  ['/rules/', ['apps/rules/index.html', '/rulebook/?doc=player-guide']],
+  ['/rules/player-guide/', ['apps/rules/player-guide/index.html', '/rulebook/?doc=player-guide']],
+  ['/rules/comprehensive/', ['apps/rules/comprehensive/index.html', '/rulebook/?doc=complete-rules']],
+  ['/rules/factions/', ['apps/rules/factions/index.html', '/rulebook/?doc=player-guide#9-the-six-factions']],
+  ['/rules/factions/military/', ['apps/rules/factions/military/index.html', '/rulebook/?doc=military']],
+  ['/rules/factions/diplomats/', ['apps/rules/factions/diplomats/index.html', '/rulebook/?doc=diplomats']],
+  ['/rules/factions/financiers/', ['apps/rules/factions/financiers/index.html', '/rulebook/?doc=financiers']],
+  ['/rules/factions/intelligence/', ['apps/rules/factions/intelligence/index.html', '/rulebook/?doc=intelligence']],
+  ['/rules/factions/mystics/', ['apps/rules/factions/mystics/index.html', '/rulebook/?doc=mystics']],
+  ['/rules/factions/inquisition/', ['apps/rules/factions/inquisition/index.html', '/rulebook/?doc=inquisition']],
 ]);
 
 assert.deepEqual(new Map(Object.entries(compatibility.redirects || {})), new Map([...expectedRedirects].map(([route, [, target]]) => [route, target])), 'Compatibility redirect manifest does not match the reviewed route map.');
@@ -116,4 +118,4 @@ for (const [route, [source, target]] of expectedRedirects) {
   assert(!html.includes('data-guide-source='), `${route} must not remain a standalone faction-guide reader.`);
 }
 
-console.log('Rules publication transition valid: /rulebook/ is the retained publication shell, v0.7.1 remains the released view until cutover, the modular v0.7.2 candidate set is integrated there, and /rules/ is compatibility-only.');
+console.log('Rules publication cutover valid: /rulebook/ is the current modular v0.7.2 publication, v0.7.1 is historical, and /rules/ remains compatibility-only.');
