@@ -480,7 +480,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   };
 }
 
-async function readReleaseAssetManifest(version) {
+async function readReleaseAssetManifest(version, publishedVersion) {
   const names = await readdir(STAGING_ROOT).catch(error => {
     if (error.code === 'ENOENT') throw new Error('TTS save generation requires staged hosted assets. Run npm run tts:release:stage first.');
     throw error;
@@ -488,7 +488,9 @@ async function readReleaseAssetManifest(version) {
   const candidates = names.filter(name => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
   if (candidates.length !== 1) throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
   const manifest = JSON.parse(await readFile(join(STAGING_ROOT, candidates[0]), 'utf8'));
-  if (manifest.gameVersion !== version || manifest.releaseTag !== version) throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
+  if (manifest.gameVersion !== version || manifest.releaseTag !== publishedVersion) {
+    throw new Error(`Staged TTS assets declare source ${manifest.gameVersion || 'unknown'} on tag ${manifest.releaseTag || 'unknown'}; expected ${version} on ${publishedVersion}.`);
+  }
   return manifest;
 }
 
@@ -505,7 +507,7 @@ async function main() {
     if (error.code === 'ENOENT') throw new Error('TTS save generation requires the current starter manifest. Run npm run tts:build first.');
     throw error;
   }));
-  const releaseAssets = await readReleaseAssetManifest(release.version);
+  const releaseAssets = await readReleaseAssetManifest(release.version, release.publishedVersion);
   const save = buildTtsSave(starterManifest, releaseAssets);
   const versionedName = `Gauntlet_${release.version}_TTS_Review_Scaffold.json`;
   const versionedPath = join(release.outputRoot, versionedName);
