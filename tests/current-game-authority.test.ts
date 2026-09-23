@@ -497,9 +497,11 @@ describe('complete current-game authority', () => {
     expect(ttsCatalog).not.toContain('readCurrentJsonSource');
     expect(ttsCatalog).not.toContain('resolveCards(');
 
-    expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
-    expect(releaseBuilder).toContain('gameplay: clone(authority.gameplay)');
+    expect(releaseBuilder).toContain('const CURRENT_GAME = "packages/game-data/current-game.json"');
+    expect(releaseBuilder).toContain('const current = JSON.parse(gameBytes.toString("utf8"))');
+    expect(releaseBuilder).toContain('gameplay: clone(current.gameplay)');
     expect(releaseBuilder).toContain('source_version: RELEASE_VERSION');
+    expect(releaseBuilder).toContain('gitBlobSha(gameBytes) !== freeze.sources?.currentGame?.gitBlob');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
