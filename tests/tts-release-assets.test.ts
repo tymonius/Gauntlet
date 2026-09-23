@@ -71,6 +71,21 @@ describe('TTS GitHub Release asset hosting', () => {
       .toThrow(/SHA-256 digest/);
   });
 
+  it('publishes frozen v0.7.2 TTS assets to the actual current release rather than a candidate-only tag', async () => {
+    const { resolveCurrentTtsRelease } = await import('../scripts/tts-current-catalog.mjs');
+    const { resolvePublishedAssetTarget } = await import('../scripts/stage-tts-release-assets.mjs');
+    const release = await resolveCurrentTtsRelease();
+    const target = await resolvePublishedAssetTarget(release);
+
+    expect(release.version).toBe('v0.7.2-candidate');
+    expect(target.releaseTag).toBe('v0.7.2');
+    expect(target.prefix).toBe('Gauntlet_v0.7.2_TTS');
+    expect(stager).toContain('current-game ${currentKey} differs from frozen');
+    expect(stager).toContain('starter Decks differ from frozen');
+    expect(stager).toContain('releaseUrl(repository, publicationTarget.releaseTag, record.releaseAsset)');
+    expect(stager).toContain('releaseTag: publicationTarget.releaseTag');
+  });
+
   it('uses deterministic release-safe names for every TTS network asset family without creating a Territory-specific back', () => {
     expect(stager).toContain('_Playable_Sheet_');
     expect(stager).toContain('_Back_');
