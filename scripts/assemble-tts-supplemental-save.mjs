@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { buildCatalog, CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
+import { buildCatalog, CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, resolvePublishedTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
 import { trackerPresentation } from './tts-supplemental-geometry.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
@@ -731,8 +731,9 @@ function instantiateApplicableComponents(applicable, starter, releaseAssets, gui
 
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
-  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) {
-    throw new Error('TTS supplemental assembly requires matching starter, supplemental, and hosted-asset versions.');
+  const hostedReleaseTag = String(releaseAssets?.releaseTag || '').trim();
+  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version || !hostedReleaseTag) {
+    throw new Error('TTS supplemental assembly requires matching starter/supplemental/hosted game versions and an explicit hosted release tag.');
   }
   const ready = validateSupplementalManifest(supplementalManifest, version);
   const trackerTags = new Set(ready
@@ -784,7 +785,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   return { save, starterSummaries, assembledIds: [...assembledIds] };
 }
 
-async function readReleaseAssetManifest(version) {
+async function readReleaseAssetManifest(release) {
   const names = await readdir(STAGING_ROOT).catch(error => {
     if (error.code === 'ENOENT') throw new Error('TTS supplemental assembly requires staged hosted assets. Run npm run tts:release:stage first.');
     throw error;
@@ -792,7 +793,10 @@ async function readReleaseAssetManifest(version) {
   const candidates = names.filter(name => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
   if (candidates.length !== 1) throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
   const manifest = JSON.parse(await readFile(join(STAGING_ROOT, candidates[0]), 'utf8'));
-  if (manifest.gameVersion !== version || manifest.releaseTag !== version) throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
+  const published = await resolvePublishedTtsRelease();
+  if (manifest.gameVersion !== release.version || manifest.releaseTag !== published.version) {
+    throw new Error(`Staged TTS release-asset manifest has gameVersion=${manifest.gameVersion || 'unknown'} and releaseTag=${manifest.releaseTag || 'unknown'}; expected gameVersion=${release.version} and releaseTag=${published.version}.`);
+  }
   return manifest;
 }
 
@@ -809,7 +813,7 @@ async function main() {
     readFile(versionedPath, 'utf8').then(JSON.parse),
     readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').then(JSON.parse),
     readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').then(JSON.parse),
-    readReleaseAssetManifest(release.version),
+    readReleaseAssetManifest(release),
     buildCatalog(),
     readFile(join(release.outputRoot, 'manifest.json'), 'utf8').then(JSON.parse),
     readFile(join(release.outputRoot, 'territory-manifest.json'), 'utf8').then(JSON.parse),
