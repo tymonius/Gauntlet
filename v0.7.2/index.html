@@ -34,10 +34,11 @@
   <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <title>Gauntlet v0.7.2 — The Chief Justice</title>
   <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="/release-surface.css" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
-<body>
+<body class="release-page">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
     <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span><span class="site-edition-badge" aria-label="Current playtest edition v0.7.2">v0.7.2</span></a>
@@ -45,25 +46,109 @@
       <a href="/start/">Start</a><a href="/playtest/">Playtest</a><a href="/rulebook/">Rules</a><a href="/factions/">Factions</a><a href="/deckbuilder/">Deckbuilder</a><a href="/card-reference/">Card Reference</a><a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main class="page-shell" id="main-content" tabindex="-1">
-    <p class="eyebrow">Published playtest release</p>
-    <h1>Gauntlet v0.7.2</h1>
-    <p><strong>The Chief Justice</strong></p>
-    <p>v0.7.2 introduces the Chief Justice as the current Rules Arbiter, replaces the monolithic Rulebook with a modular rules library, refreshes the recommended starter packages, and publishes the final v0.7.2 faction and balance revisions.</p>
-    <p><a href="/start/">Start playing</a> · <a href="/rulebook/">Read the rules</a> · <a href="/rules-arbiter/">Ask the Chief Justice</a> · <a href="/deckbuilder/">Deckbuilder</a> · <a href="/card-reference/">Card reference</a></p>
-    <h2>Printable rules</h2>
-    <ul>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf">Player's Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf">Military Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf">Diplomats Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf">Financiers Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf">Intelligence Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf">Mystics Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf">Inquisition Guide</a></li>
-      <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf">Complete Rules</a></li>
-    </ul>
-    <p><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json">Canonical gameplay data</a> · <a href="/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json">Starter Decks</a> · <a href="/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json">Source provenance</a> · <a href="/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json">Release manifest</a></p>
+
+  <main class="release-main" id="main-content" tabindex="-1">
+    <section class="release-hero" aria-labelledby="release-title">
+      <div>
+        <p class="eyebrow">Published playtest release</p>
+        <h1 id="release-title">Gauntlet v0.7.2</h1>
+        <p class="release-kicker">The Chief Justice</p>
+        <p class="release-lede">v0.7.2 introduces the Chief Justice as the current Rules Arbiter, replaces the monolithic Rulebook with a modular rules library, refreshes the recommended starter packages, and publishes the final v0.7.2 faction and balance revisions.</p>
+        <div class="release-actions">
+          <a class="button primary" href="/start/">Start playing</a>
+          <a class="button secondary" href="/rulebook/">Read the rules</a>
+          <a class="button secondary" href="/rules-arbiter/">Ask the Chief Justice</a>
+        </div>
+      </div>
+      <dl class="release-status" aria-label="Release status">
+        <div><dt>Status</dt><dd>Current playtest release</dd></div>
+        <div><dt>Published</dt><dd>September 23, 2026</dd></div>
+        <div><dt>Rules Arbiter</dt><dd>The Chief Justice</dd></div>
+      </dl>
+    </section>
+
+    <section class="release-section" aria-labelledby="release-highlights">
+      <div class="release-section-heading">
+        <p class="eyebrow">What changed</p>
+        <h2 id="release-highlights">Built for faster play and easier rules access</h2>
+        <p>The release brings the final v0.7.2 gameplay authority together with a modular rules library, revised starter packages, and the production Chief Justice Rules Arbiter.</p>
+      </div>
+      <div class="release-grid">
+        <article class="release-card">
+          <span>Rules</span>
+          <h3>Modular rules library</h3>
+          <p>Use the Player's Guide for shared play, a dedicated guide for each faction, and Complete Rules when exact timing or edge cases matter.</p>
+          <a href="/rulebook/">Open the Browser Rulebook</a>
+        </article>
+        <article class="release-card">
+          <span>Rules Arbiter</span>
+          <h3>The Chief Justice</h3>
+          <p>The current Rules Arbiter is bound to the published v0.7.2 rules corpus and available directly from the rules experience.</p>
+          <a href="/rules-arbiter/">Ask the Chief Justice</a>
+        </article>
+        <article class="release-card">
+          <span>Game setup</span>
+          <h3>Revised starter packages</h3>
+          <p>The recommended starter Decks have been regenerated against the final v0.7.2 card and faction authority.</p>
+          <a href="/deckbuilder/">Open Deckbuilder</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="release-section" aria-labelledby="printable-rules">
+      <div class="release-section-heading">
+        <p class="eyebrow">Print edition</p>
+        <h2 id="printable-rules">Printable rules</h2>
+        <p>Download the booklet for the shared rules, your faction, or the complete technical reference.</p>
+      </div>
+      <div class="release-files">
+        <div class="release-file-group">
+          <h3>Core rules</h3>
+          <ul>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf">Player's Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf">Complete Rules</a></li>
+          </ul>
+        </div>
+        <div class="release-file-group">
+          <h3>Faction guides</h3>
+          <ul>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf">Military Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf">Diplomats Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf">Financiers Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf">Intelligence Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf">Mystics Guide</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf">Inquisition Guide</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="release-section" aria-labelledby="release-package">
+      <div class="release-section-heading">
+        <p class="eyebrow">Release package</p>
+        <h2 id="release-package">Canonical data and provenance</h2>
+        <p>The machine-readable release files remain available for reconstruction, verification, and tooling.</p>
+      </div>
+      <div class="release-files">
+        <div class="release-file-group">
+          <h3>Data</h3>
+          <ul>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json">Canonical gameplay data</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json">Starter Decks</a></li>
+          </ul>
+        </div>
+        <div class="release-file-group">
+          <h3>Verification</h3>
+          <ul>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json">Source provenance</a></li>
+            <li><a href="/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json">Release manifest</a></li>
+            <li><a href="/changelog/#v0-7-2">Read the v0.7.2 changelog</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </main>
+
   <footer class="ga-site-footer" data-gauntlet-footer="standard">
     <div class="ga-site-footer__identity">
       <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home"><img src="/images/Gauntlet.svg" alt="" aria-hidden="true" /></a>
