@@ -37,6 +37,10 @@ function portCandidateToFinal(source) {
     result = result.replaceAll(from, to);
   }
   return result
+    .replace(
+      "Every gameplay-rules question must receive one of four classifications:",
+      "${CHIEF_JUSTICE_VOICE}\n\nEvery gameplay-rules question must receive one of four classifications:"
+    )
     .replaceAll('"/v072-candidate/corpus-health"', '"/v072/corpus-health"')
     .replaceAll('"/api/v072-candidate/corpus-health"', '"/api/v072/corpus-health"')
     .replaceAll('"/v072-candidate/health"', '"/v072/health"')
@@ -47,8 +51,18 @@ function portCandidateToFinal(source) {
 }
 
 describe("final v0.7.2 Rules Arbiter Worker staging", () => {
-  test("is a mechanical r02 port from the validated candidate Worker", () => {
+  test("is a mechanical r02 port with the explicit Chief Justice voice correction", () => {
     expect(staged).toBe(portCandidateToFinal(candidate));
+  });
+
+  test("includes the Chief Justice voice in the system prompt actually sent to the model", () => {
+    const voice = staged.match(/const CHIEF_JUSTICE_VOICE = `([\s\S]*?)`;/)?.[1] || "";
+    const systemPrompt = staged.match(/const SYSTEM_PROMPT = `([\s\S]*?)`;/)?.[1] || "";
+
+    expect(voice).toContain("measured, exact, decisive, and restrained");
+    expect(systemPrompt).toContain("${CHIEF_JUSTICE_VOICE}");
+    expect(systemPrompt).toContain("${ADJUDICATION_GUIDE}");
+    expect(staged).toContain('text: SYSTEM_PROMPT');
   });
 
   test("keeps r34/r02 behavior while switching only to the frozen release corpus", () => {
