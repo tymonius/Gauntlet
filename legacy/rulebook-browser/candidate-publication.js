@@ -238,8 +238,8 @@ function decorateCandidatePublication({ mode = document.body.dataset.rulesetMode
   content.style.removeProperty('--candidate-accent');
   content.style.removeProperty('--candidate-symbol');
 
-  if (mode !== 'candidate') return;
   const normalizedDocument = documentId || 'player-guide';
+  if (!['player-guide', 'military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition', 'complete-rules'].includes(normalizedDocument)) return;
   content.classList.add('candidate-publication');
   content.dataset.candidateDocument = normalizedDocument;
 
