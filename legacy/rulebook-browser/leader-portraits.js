@@ -4,25 +4,24 @@ import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs';
 const content = document.querySelector('[data-rulebook-content]');
 
 const heroArt = document.querySelector('.hero-art img');
-const DEFAULT_HERO_ART = '../images/woodcuts/hero compositions/hero 1.png';
+const DEFAULT_HERO_ART = RULES_PUBLICATION_ASSETS.hero.publicUrl;
 
-function updateHeroArt(mode, documentId) {
+function updateHeroArt(_mode, documentId) {
   if (!heroArt) return;
 
-  if (mode === 'candidate' && documentId === 'complete-rules') {
+  if (documentId === 'complete-rules') {
     heroArt.src = RULES_PUBLICATION_ASSETS.completeRulesWoodcut.publicUrl;
     heroArt.alt = 'All twelve faction Leaders woodcut';
     return;
   }
 
-  const faction = mode === 'candidate' ? RULES_PUBLICATION_ASSETS.factions[documentId] : null;
+  const faction = RULES_PUBLICATION_ASSETS.factions[documentId];
   heroArt.src = faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART;
   heroArt.alt = faction ? `${faction.name} faction Leaders woodcut` : '';
 }
 
-// Keep the frozen released-v0.7.1 presentation exactly on its established
-// woodcut assets. Candidate publications reuse the same approved woodcut
-// Leader art through the modular publication asset registry.
+// Preserve the established Leader galleries while the modular v0.7.2
+// publications reuse the approved woodcut registry for document-specific art.
 const RELEASED_FACTION_LEADERS = [
   ['Military', [
     ['General', '../images/woodcuts/general.png'],
@@ -381,7 +380,7 @@ function inferredRenderContext() {
     : 'released';
   return {
     mode,
-    document: mode === 'candidate' ? (url.searchParams.get('doc') || 'player-guide') : 'released-rulebook',
+    document: url.searchParams.get('doc') || 'player-guide',
   };
 }
 
