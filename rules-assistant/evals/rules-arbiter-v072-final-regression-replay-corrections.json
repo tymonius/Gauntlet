@@ -1,8 +1,46 @@
 {
   "schema": "gauntlet.rules-arbiter-v072-final-regression-replay-corrections.v1",
   "rulesVersion": "v0.7.2",
-  "purpose": "No post-freeze corrections. Present only to satisfy the reusable live-QA runner correction contract.",
-  "cases": [],
+  "purpose": "Post-release QA citation-matcher corrections for three false negatives in the 2026-09-23 Chief Justice voice smoke (GitHub Actions run 35879903652). These change only expected source excerpt fragments, not gameplay authority, rulings, classifications, or the frozen benchmark.",
+  "cases": [
+    {
+      "id": "blind-u-line-credit-collateral-destination",
+      "expectedSourceGroups": [
+        [
+          "then discard the collateral"
+        ]
+      ]
+    },
+    {
+      "id": "blind-u-transmutation-payment",
+      "expectedSourceGroups": [
+        [
+          "put one card from your Hand in your Graveyard"
+        ],
+        [
+          "Add its value to your battle total"
+        ]
+      ]
+    },
+    {
+      "id": "blind-u-player-stake",
+      "expectedSourceGroups": [
+        [
+          "Influence staked for Terms is not spent, but it is unavailable while staked"
+        ],
+        [
+          "Spend available Influence to increase your battle total"
+        ]
+      ]
+    }
+  ],
   "behaviorRevision": "v072-qa-20260922-02",
-  "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84"
+  "authoritySetId": "ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84",
+  "qaEvidence": {
+    "workflowRun": "35879903652",
+    "artifact": "current-rules-arbiter-live-qa-v0.7.2",
+    "originalReport": "v072-live-answer-run.json",
+    "correctionScope": "selected-source-excerpt matching only",
+    "paidModelCallsForCorrection": 0
+  }
 }
