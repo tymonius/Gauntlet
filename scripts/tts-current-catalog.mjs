@@ -30,6 +30,7 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
 const CURRENT_GAME_SOURCE = 'packages/game-data/current-game.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
+const TTS_RELEASE_TARGET_SOURCE = 'config/tts-release-target.json';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -85,31 +86,54 @@ export async function resolvePublishedTtsRelease() {
   });
 }
 
-// "Current" TTS is the active development package, not necessarily the latest
-// published release. Its release identity is explicit so current-game source
-// provenance can remain pinned to the approved source bundle until cutover.
+// Current TTS always consumes the complete current-game authority for mechanics.
+// When the explicit TTS publication target is aligned to that authority's base
+// version, use the publication target for package identity. This lets a frozen
+// vX.Y.Z-candidate authority produce the stable vX.Y.Z QA/Workshop package
+// without rewriting the frozen gameplay source after public cutover.
 export async function resolveCurrentTtsRelease() {
-  const [authority, published] = await Promise.all([
+  const [authority, published, target] = await Promise.all([
     loadCurrentGameAuthority(),
     resolvePublishedTtsRelease(),
+    readJson(TTS_RELEASE_TARGET_SOURCE),
   ]);
-  const sourceVersion = String(authority.version || '').trim();
-  const displayVersion = String(authority.displayVersion || sourceVersion).trim();
+  const authorityVersion = String(authority.version || '').trim();
+  const authorityBaseVersion = authorityVersion.replace(/-candidate$/, '');
+  const authorityDisplayVersion = String(authority.displayVersion || authorityVersion).trim();
+  const targetReleaseTag = String(target.releaseTag || '').trim();
+  const targetDisplayVersion = String(target.displayVersion || targetReleaseTag).trim();
+  const targetSourceVersion = String(target.sourceVersion || '').trim();
+  const targetAuthority = String(target.currentGameAuthority || '').replace(/^\/+/, '').trim();
 
-  if (!sourceVersion) throw new Error(`${CURRENT_GAME_SOURCE} does not declare a current version.`);
+  if (!authorityVersion) throw new Error(`${CURRENT_GAME_SOURCE} does not declare a current version.`);
+
+  const publicationTargetActive = (
+    targetAuthority === CURRENT_GAME_SOURCE
+    && targetSourceVersion === authorityBaseVersion
+    && targetReleaseTag === targetSourceVersion
+  );
+  const version = publicationTargetActive ? targetReleaseTag : authorityVersion;
+  const displayVersion = publicationTargetActive ? targetDisplayVersion : authorityDisplayVersion;
+  const sourceVersion = publicationTargetActive ? targetSourceVersion : authorityVersion;
+  const targetStatus = publicationTargetActive
+    ? String(target.status || '').trim()
+    : String(authority.status || '').trim();
 
   return Object.freeze({
-    version: sourceVersion,
+    version,
     displayVersion,
     sourceVersion,
+    authorityVersion,
+    publicationTargetActive,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     starterDecksSource: CURRENT_GAME_SOURCE,
     releasePackageRoot: 'packages/game-data',
-    outputRoot: join(ROOT, 'tts', 'generated', sourceVersion),
+    outputRoot: join(ROOT, 'tts', 'generated', version),
     currentGameSource: CURRENT_GAME_SOURCE,
     authorityProvenance: Object.freeze({ ...(authority.provenance || {}) }),
-    targetStatus: String(authority.status || ''),
+    targetStatus,
     publishedVersion: published.version,
+    ttsReleaseTargetSource: TTS_RELEASE_TARGET_SOURCE,
     lifecycleSource: LIFECYCLE_SOURCE,
     githubReleaseContractSource: GITHUB_RELEASE_CONTRACT_SOURCE,
   });
