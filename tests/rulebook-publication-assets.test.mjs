@@ -50,18 +50,20 @@ describe('Browser Rulebook publication assets', () => {
     expect(anatomy).toContain(`const ARCANE_CARD_ID = '${RULES_PUBLICATION_ASSETS.cardAnatomy.arcaneCardId}'`);
   });
 
-  it('adds assets only to candidate publications while preserving released v0.7.1 woodcuts', async () => {
+  it('uses document-specific header woodcuts for the released modular rules library', async () => {
     const script = await readFile('legacy/rulebook-browser/leader-portraits.js', 'utf8');
 
     expect(script).toContain("import { RULES_PUBLICATION_ASSETS } from './assets/publication-assets.mjs'");
-    expect(script).toContain("if (mode !== 'candidate')");
+    expect(script).toContain('const DEFAULT_HERO_ART = RULES_PUBLICATION_ASSETS.hero.publicUrl');
     expect(script).toContain('decoratePlayerGuideFactions()');
     expect(script).toContain('decorateCompleteRulesFactions()');
     expect(script).toContain('decorateFactionGuide(documentId)');
     expect(script).toContain('updateHeroArt(mode, documentId)');
     expect(script).toContain("documentId === 'complete-rules'");
     expect(script).toContain('RULES_PUBLICATION_ASSETS.completeRulesWoodcut.publicUrl');
+    expect(script).toContain('const faction = RULES_PUBLICATION_ASSETS.factions[documentId]');
     expect(script).toContain("faction?.guideWoodcut?.publicUrl || DEFAULT_HERO_ART");
+    expect(script).toContain("document: url.searchParams.get('doc') || 'player-guide'");
 
     for (const releasedPortrait of [
       '../images/woodcuts/general.png',
