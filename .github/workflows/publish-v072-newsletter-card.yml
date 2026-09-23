@@ -1,0 +1,41 @@
+name: Publish v0.7.2 newsletter card image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-v072-newsletter-card.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Publish verified v0.7.2 New Recruits production render
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSET_NAME: Gauntlet_v0.7.2_New_Recruits_Card.png
+          ARTIFACT_ID: '10746504620'
+          EXPECTED_SHA256: 60e4a13912bf46732df71ae9dec3ac770ffae772257d8a482ccbaf7a2f9e735e
+        run: |
+          set -euo pipefail
+          gh release view v0.7.2 --repo "${GITHUB_REPOSITORY}" >/dev/null
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > /tmp/gauntlet-v072-card-artifact.zip
+          unzip -p /tmp/gauntlet-v072-card-artifact.zip v0.7.2/cards/neutral-new-recruits.png > "${ASSET_NAME}"
+          echo "${EXPECTED_SHA256}  ${ASSET_NAME}" | sha256sum --check -
+
+          mkdir -p existing
+          if gh release download v0.7.2 --repo "${GITHUB_REPOSITORY}" --pattern "${ASSET_NAME}" --dir existing >/dev/null 2>&1; then
+            cmp "${ASSET_NAME}" "existing/${ASSET_NAME}"
+            echo "The exact approved New Recruits image is already published."
+          else
+            gh release upload v0.7.2 "${ASSET_NAME}" --repo "${GITHUB_REPOSITORY}"
+            echo "Published the exact approved production render without changing the tag or existing assets."
+          fi
