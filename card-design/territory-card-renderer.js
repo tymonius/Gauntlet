@@ -244,10 +244,9 @@
       // The production inventory is an optimization, not the only artwork path.
     }
 
-    const slugs = [...new Set([
-      slugify(name),
-      String(item.id || '').replace(/^territory-/, ''),
-    ].filter(Boolean))];
+    const idSlug = String(item.id || '').replace(/^territory-/, '');
+    const nameSlug = slugify(name);
+    const slugs = [...new Set((item.arena ? [idSlug, nameSlug] : [nameSlug, idSlug]).filter(Boolean))];
     for (const slug of slugs) {
       for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
         candidates.push(`/images/artwork/cards/territories/${slug}.${extension}`);
