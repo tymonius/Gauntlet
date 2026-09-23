@@ -731,8 +731,9 @@ function instantiateApplicableComponents(applicable, starter, releaseAssets, gui
 
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
-  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) {
-    throw new Error('TTS supplemental assembly requires matching starter, supplemental, and hosted-asset versions.');
+  const hostedReleaseTag = String(releaseAssets?.releaseTag || '').trim();
+  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version || !hostedReleaseTag) {
+    throw new Error('TTS supplemental assembly requires matching starter/supplemental/hosted game versions and an explicit hosted release tag.');
   }
   const ready = validateSupplementalManifest(supplementalManifest, version);
   const trackerTags = new Set(ready
