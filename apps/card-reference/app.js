@@ -59,8 +59,8 @@ async function init() {
   bindEvents();
 
   try {
-    const { loadCurrentGame } = await import('../game-data/current-game.mjs');
-    const currentGame = await loadCurrentGame();
+    const { loadPublishedGame } = await import('../game-data/ruleset.mjs');
+    const currentGame = await loadPublishedGame();
     state.version = currentGame.displayVersion;
     document.title = `Gauntlet ${state.version} Card Reference`;
     const otherComponents = [
@@ -83,7 +83,7 @@ async function init() {
     el.cardTotal.textContent = cardCount;
     el.otherCardTotal.textContent = otherCardCount;
     el.territoryTotal.textContent = territoryCount;
-    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${otherCardCount} other cards + ${territoryCount} Territories loaded from current-game authority`;
+    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${otherCardCount} other cards + ${territoryCount} Territories loaded from published release authority`;
     el.app.hidden = false;
     render();
   } catch (error) {
@@ -91,7 +91,7 @@ async function init() {
     el.dataStatus.textContent = 'Card Reference data unavailable';
     document.body.insertAdjacentHTML(
       'beforeend',
-      `<p class="noscript">Unable to load the current-game authority. Serve the repository through a web server rather than opening this file directly.</p>`
+      `<p class="noscript">Unable to load the published release authority. Serve the repository through a web server rather than opening this file directly.</p>`
     );
   }
 }
@@ -466,7 +466,7 @@ function renderPreview(entry) {
       <a class="button secondary" href="${RULEBOOK_URL}">Open Browser Rulebook</a>
       <a class="button secondary" href="../deckbuilder/">Open Deckbuilder</a>
     </div>
-    <p class="preview-source">Complete production component rendered with the shared card pipeline and current-game authority.</p>
+    <p class="preview-source">Complete production component rendered with the shared card pipeline and published release authority.</p>
   `;
 
   document.getElementById('copyLink')?.addEventListener('click', copyDirectLink);
