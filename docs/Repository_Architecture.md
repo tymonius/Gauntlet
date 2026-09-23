@@ -156,7 +156,8 @@ These contracts answer different questions and must not silently substitute for 
 | `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
-| `v0.7.1/` | Lifecycle-selected versioned public entrypoint; lifecycle status is determined by `config/release-lifecycle.json` rather than repository placement |
+| `v0.7.1/` | Historical v0.7.1 versioned public entrypoint retained for release compatibility |
+| `v0.7.2/` | Lifecycle-selected current versioned public entrypoint; lifecycle status is determined by `config/release-lifecycle.json` rather than repository placement |
 
 ### Frozen releases and evidence
 
