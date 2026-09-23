@@ -197,6 +197,7 @@ if (existingManifest?.status === "current") {
     authority_set_id: authoritySetId,
     binding_sources: bindingSources,
   });
+  delete manifest.staged_package_path;
 }
 
 await Promise.all([
