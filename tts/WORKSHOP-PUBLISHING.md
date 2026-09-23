@@ -1,6 +1,6 @@
 # Gauntlet — Tabletop Simulator Workshop publication
 
-This file records the permanent Gauntlet Tabletop Simulator Workshop item, the repository owner's reported v0.7.2 publication, the completed release gates, and retained v0.7.1/v0.7.0 history. An independently downloaded subscriber-copy smoke test remains outstanding.
+This file records the permanent Gauntlet Tabletop Simulator Workshop item, the repository owner's reported v0.7.2 publication, the completed release gates, and retained v0.7.1/v0.7.0 history. The owner subsequently confirmed a fresh subscribed-copy smoke test; independent Steam listing verification remains outstanding.
 
 ## Workshop item
 
@@ -11,7 +11,7 @@ This file records the permanent Gauntlet Tabletop Simulator Workshop item, the r
 - **v0.7.2 Workshop update (owner-confirmed):** 2026-09-23
 - **Post-update listing title:** not independently verified
 
-The repository owner reports updating the existing Workshop item in place using the approved v0.7.2 mod JSON. The permanent Workshop ID remains `3790840635`; no new Workshop listing was requested. Independent retrieval of the Steam listing and a fresh subscriber-copy smoke test have not yet been completed.
+The repository owner reports updating the existing Workshop item in place using the approved v0.7.2 mod JSON. The permanent Workshop ID remains `3790840635`; no new Workshop listing was requested. The owner subsequently confirmed that a fresh subscribed Workshop copy loads correctly. Independent retrieval of the Steam listing has not been completed.
 
 ## v0.7.2 prepublication provenance
 
@@ -40,7 +40,7 @@ On 2026-09-23, the owner confirmed that all 18 stable v0.7.2 TTS manual QA check
 
 GitHub Actions run `35855419415` (Generate TTS card assets #2981) completed successfully from `main`. Its guarded publication step passed strict readiness, promoted the save to `Gauntlet_v0.7.2_TTS_Mod.json`, uploaded it to the existing v0.7.2 GitHub release, verified the hosted asset digests, and checked all 95 hosted TTS object URLs. The approved mod save is attached at `https://github.com/tymonius/Gauntlet/releases/download/v0.7.2/Gauntlet_v0.7.2_TTS_Mod.json`.
 
-After that run, the owner reported uploading the final v0.7.2 JSON to the existing Steam Workshop item `3790840635`. This is an owner report, **not** an independent Steam-listing verification. The post-upload listing title and a clean subscriber-copy load remain to be checked separately; do not mark the subscriber smoke test passed until it is actually performed.
+After that run, the owner reported uploading the final v0.7.2 JSON to the existing Steam Workshop item `3790840635`. This is an owner report, **not** an independent Steam-listing verification. The post-upload listing title remains independently unverified. On 2026-09-23 the owner subsequently confirmed loading a fresh subscribed copy of the v0.7.2 Workshop item successfully, completing the subscriber-copy smoke test on owner-reported evidence.
 
 ## v0.7.1 historical Workshop package
 
