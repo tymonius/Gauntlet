@@ -14,9 +14,10 @@ export async function validateTtsFacePublicationSource(release) {
   await resolvePublishedAssetTarget(release);
 }
 
-// The canonical browser renderer is intentionally sourced from current-game.
-// Relabel only the already-verified TTS screenshot, not the underlying authority
-// or the canonical browser/Deckbuilder render surface.
+// The canonical renderer can already show a published footer while retaining
+// candidate source provenance. TTS stamping remains fail-closed and idempotent:
+// the release/source parity check runs before this helper, and neither caller
+// nor renderer may silently stamp an unrelated edition.
 export async function stampTtsFacePublicationVersion(
   page,
   release,
@@ -34,11 +35,11 @@ export async function stampTtsFacePublicationVersion(
     authorityVersion, displayVersion, footerSelector, datasetVersionKey,
   }) => {
     const footer = element.querySelector(footerSelector);
-    if (!footer || footer.textContent?.trim() !== authorityVersion) {
-      throw new Error('Rendered TTS face does not match the verified frozen authority version.');
+    if (!footer || ![authorityVersion, displayVersion].includes(footer.textContent?.trim())) {
+      throw new Error('Rendered TTS face does not match the verified frozen authority or published label.');
     }
-    if (datasetVersionKey && element.dataset[datasetVersionKey] !== authorityVersion) {
-      throw new Error('Rendered TTS face provenance does not match the verified frozen authority.');
+    if (datasetVersionKey && ![authorityVersion, displayVersion].includes(element.dataset[datasetVersionKey])) {
+      throw new Error('Rendered TTS face copy version does not match the verified authority or published label.');
     }
     footer.textContent = displayVersion;
     if (datasetVersionKey) element.dataset[datasetVersionKey] = displayVersion;
