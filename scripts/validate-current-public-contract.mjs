@@ -5,6 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 import { loadPublicationBoundary, sourcePathForPublicPath as resolvePublicationSourcePath } from './publication-boundary.mjs';
+import { validateCurrentReleaseIdentity } from './validate-current-release-identity.mjs';
 
 const root = process.cwd();
 const remoteBase = process.env.GAUNTLET_PUBLIC_BASE_URL?.replace(/\/+$/, '') || null;
@@ -222,6 +223,8 @@ const currentRelease = lifecycle.releases?.[currentVersion];
 assert(currentRelease, `Release lifecycle has no entry for ${currentVersion}.`);
 assert.equal(currentRelease.status, 'current', `${currentVersion} is not marked current.`);
 assert.equal(currentRelease.public_cutover, true, `${currentVersion} is not marked for public cutover.`);
+const currentGameAuthority = JSON.parse(await getText('/game-data/current-game.json'));
+validateCurrentReleaseIdentity(lifecycle, currentGameAuthority);
 
 const releaseRoot = publicPath(currentRelease.current_package_path);
 assert(releaseRoot, `${currentVersion} does not define its current package path.`);

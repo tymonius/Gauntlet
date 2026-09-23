@@ -32,13 +32,17 @@ describe('development and published-release boundary', () => {
     expect(release.publication.source_builder).toBe('scripts/build-v072-release-source.mjs');
     expect(release.publication.rulebook_booklet_renderer).toBe('scripts/render-v072-dedicated-booklets.mjs');
 
-    expect(currentGame.status).toBe('active-development');
-    expect(currentGame.version).not.toBe(lifecycle.current_release);
+    if (currentGame.version === lifecycle.current_release) {
+      expect(currentGame.status).toBe('current-release');
+    } else {
+      expect(currentGame.status).toBe('active-development');
+    }
     expect(plan).toMatchObject({
       version: lifecycle.current_release,
       authorityVersion: currentGame.version,
       authorityStatus: currentGame.status,
       materializationEligible: false,
+      frozenModularPublication: true,
     });
 
     expect(materializer).toContain('node scripts/render-current-rulebook-booklet.mjs --plan');
@@ -47,19 +51,21 @@ describe('development and published-release boundary', () => {
     expect(materializer).not.toContain('node scripts/build-v072-release-source.mjs');
     expect(materializer).not.toContain('node scripts/render-v072-dedicated-booklets.mjs');
     expect(currentBookletWorkflow).toContain("inputs.publish && steps.plan.outputs.eligible != 'true'");
-    expect(currentBookletRouter).toContain("authorityVersion === version && authorityStatus === 'current-release'");
+    expect(currentBookletRouter).toContain("authorityStatus === 'current-release'");
+    expect(currentBookletRouter).toContain('frozenModularPublication');
     expect(currentBookletRouter).toContain('refusing to rebuild frozen');
     expect(releaseBuilder).toContain('freeze?.releaseVersion !== RELEASE_VERSION');
     expect(releaseBuilder).toContain('Frozen v0.7.2 source bytes changed after the release freeze.');
     expect(releaseBuilder).toContain('existingManifest?.status === "current"');
   });
 
-  it('derives current TTS identity from current-game rather than the publication target', () => {
+  it('binds TTS publication identity to both the canonical game and the explicit release target', () => {
     expect(packageJson.scripts['tts:check']).not.toContain('promote-tts-save.mjs --check');
     expect(packageJson.scripts['tts:check']).toContain('node --check scripts/promote-tts-save.mjs');
-    expect(ttsCatalog).not.toContain('TTS_RELEASE_TARGET_SOURCE');
-    expect(ttsCatalog).toContain('version: sourceVersion');
-    expect(ttsCatalog).toContain('targetStatus: String(authority.status');
+    expect(ttsCatalog).toContain('TTS_RELEASE_TARGET_SOURCE');
+    expect(ttsCatalog).toContain('const authorityBaseVersion = authorityVersion.replace(/-candidate$/,');
+    expect(ttsCatalog).toContain('const version = publicationTargetActive ? targetReleaseTag : authorityVersion;');
+    expect(ttsCatalog).toContain('const targetStatus = publicationTargetActive');
   });
 
   it('keeps current-development validators version-agnostic', () => {

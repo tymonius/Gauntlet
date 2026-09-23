@@ -27,6 +27,7 @@ jobs:
             /scripts/publication-boundary.mjs
             /scripts/validate-publication-boundary.mjs
             /scripts/validate-current-public-contract.mjs
+            /scripts/validate-current-release-identity.mjs
             /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs

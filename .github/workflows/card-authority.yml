@@ -98,6 +98,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Require canonical current-game release identity
+        run: node scripts/validate-current-release-identity.mjs
+
       - name: Validate semantic card authority
         run: npm run card-authority:check
 
