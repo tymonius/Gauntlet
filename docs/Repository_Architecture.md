@@ -130,7 +130,7 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `rulebook/` | Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. The current `/rulebook/` route is the modular v0.7.2 publication; maintained rules source/support lives under `packages/rules/`. This root remains transitional historical support rather than current rules authority. |
+| `rulebook/` | Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. The lifecycle-selected `/rulebook/` route uses the modular release publication; maintained rules source/support lives under `packages/rules/`. This root remains transitional historical support rather than gameplay/rules authority. |
 
 ### Shared packages
 
@@ -153,11 +153,11 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`, but current rules content is supplied by the frozen v0.7.2 release package. |
+| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`, while rules content is supplied by the lifecycle-selected frozen release package. |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
 | `v0.7.1/` | Historical v0.7.1 versioned public entrypoint retained for release compatibility |
-| `v0.7.2/` | Lifecycle-selected current versioned public entrypoint; lifecycle status is determined by `config/release-lifecycle.json` rather than repository placement |
+| `v0.7.2/` | Versioned public entrypoint; lifecycle status is determined by `config/release-lifecycle.json` rather than repository placement |
 
 ### Frozen releases and evidence
 
