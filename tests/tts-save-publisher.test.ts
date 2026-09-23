@@ -101,6 +101,7 @@ describe('TTS save publisher', () => {
     expect(validator).toContain("SHARED_PLAYER_GUIDE_NOTE");
     expect(validator).toContain("SHARED_COMPLETE_RULES_NOTE");
     expect(validator).toContain("Faction Guide PDF");
+    expect(validator).toContain('Faction Guide must match the shared tabletop rulebooks at 2.2× scale.');
     expect(validator).toContain("Leader → Faction Guide → trackers");
   });
 
