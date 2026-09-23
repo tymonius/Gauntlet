@@ -24,7 +24,8 @@ describe('public TTS Workshop release copy', () => {
     expect(playtest).toContain(`The public Tabletop Simulator Workshop mod is updated to ${version}.`);
     expect(playtest).toContain('the updated Tabletop Simulator Workshop mod');
     for (const page of [faq, playtest]) {
-      expect(page).not.toMatch(/(?:Workshop mod supports|Workshop item remains on) v0\\.7\\.[01]/);
+      expect(page).not.toContain('v0.7.0');
+      expect(page).not.toContain('v0.7.1');
     }
     expect(playtest).not.toContain('follows its separate publication gate');
   });
