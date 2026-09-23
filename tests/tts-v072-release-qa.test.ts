@@ -18,18 +18,20 @@ describe('v0.7.2 TTS release QA gate', () => {
     expect(publicationTarget.status).toBe('release-candidate');
 
     expect(stableQa.gameVersion).toBe('v0.7.2');
-    expect(stableQa.status).toBe('in-progress');
-    expect(stableQa.approvedForWorkshop).toBe(false);
+    expect(stableQa.status).toBe('passed');
+    expect(stableQa.approvedForWorkshop).toBe(true);
   });
 
-  it('starts all 18 stable manual checks incomplete until hands-on TTS QA is performed', () => {
+  it('records the owner's completed 18-check manual QA and explicit Workshop approval', () => {
     const checks = Object.values(stableQa.checks).flatMap((group: any) => Object.values(group));
     expect(checks).toHaveLength(18);
-    expect(checks.every((value) => value === false)).toBe(true);
+    expect(checks.every((value) => value === true)).toBe(true);
 
     expect(stableQa.notes.some((note: string) => /stable v0\.7\.2 TTS QA/i.test(note))).toBe(true);
     expect(stableQa.notes.some((note: string) => /reader-order/i.test(note))).toBe(true);
     expect(stableQa.notes.some((note: string) => /starter/i.test(note))).toBe(true);
     expect(stableQa.notes.some((note: string) => /Workshop promotion remains blocked/i.test(note))).toBe(true);
+    expect(stableQa.notes.some((note: string) => /owner explicitly confirmed completion of the full v0\.7\.2 hands-on TTS QA/i.test(note))).toBe(true);
+    expect(stableQa.notes.some((note: string) => /six Faction Guides match the 2\.2× tabletop/i.test(note))).toBe(true);
   });
 });
