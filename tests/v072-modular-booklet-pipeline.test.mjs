@@ -177,6 +177,10 @@ describe('v0.7.2 modular booklet pipeline', () => {
     expect(client).toContain('publication.coverArt ||');
     expect(parityCss).toContain('.cover.faction-cover .cover-art img');
     expect(parityCss).toContain('.cover.complete-rules-cover .cover-art img');
+    expect(parityCss).toContain('padding: 4px 4px 5px');
+    expect(parityCss).toContain('object-position: center center');
+    expect(parityCss).toContain('transform: scale(1.06)');
+    expect(parityCss).toContain('transform-origin: center center');
     expect(parityCss).toContain('-webkit-mask-image: none');
     expect(parityCss).toContain('mask-image: none');
     expect(client).toContain('newContinuationPage');
