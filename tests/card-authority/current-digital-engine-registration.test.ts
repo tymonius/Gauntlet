@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, test } from 'vitest';
 import { currentCanonicalContent } from '../../src/content/current';
-import { V070_EXECUTABLE_ACTION_CARD_IDS } from '../../src/v070/turn-engine-core';
+import { CURRENT_EXECUTABLE_ACTION_CARD_IDS } from '../../src/v070/turn-engine-core';
 import {
   V070_SUPPORTED_REVEAL_EFFECT_IDS,
   v070BattleEffectHandler,
@@ -55,7 +55,7 @@ function registrationBaseline(): CurrentDigitalEngineRegistrationBaseline {
 describe('current digital engine effect registration', () => {
   test('locks existing engine registration against current-game authority', () => {
     const baseline = registrationBaseline();
-    const executableActions = new Set<string>(V070_EXECUTABLE_ACTION_CARD_IDS);
+    const executableActions = new Set<string>(CURRENT_EXECUTABLE_ACTION_CARD_IDS);
     const supportedBattle = new Set<string>(V070_SUPPORTED_REVEAL_EFFECT_IDS);
 
     expect(baseline.schemaVersion).toBe(1);
