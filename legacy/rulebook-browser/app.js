@@ -8,7 +8,7 @@ const FALLBACK_PDF_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Bookle
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';
-const CANDIDATE_BOOKLET_BASE_URL = './booklets/v0.7.2/';
+const LIVE_BOOKLET_BASE_URL = './booklets/v0.7.2/';
 
 const CANDIDATE_DOCUMENTS = new Map([
   ['player-guide', {
@@ -368,13 +368,16 @@ function writeModeToUrl(mode, replace = false, documentId = activeCandidateDocum
   window.history[method]({ ruleset: mode, document: normalizedDocument }, '', url);
 }
 
-function candidateBookletUrl(documentId = activeCandidateDocument) {
+function liveBookletUrl(documentId = activeCandidateDocument) {
   const documentConfig = CANDIDATE_DOCUMENTS.get(documentId) || CANDIDATE_DOCUMENTS.get(DEFAULT_CANDIDATE_DOCUMENT);
-  return `${CANDIDATE_BOOKLET_BASE_URL}${documentConfig.bookletFilename}`;
+  return `${LIVE_BOOKLET_BASE_URL}${documentConfig.bookletFilename}`;
 }
 
-function updateBookletLinks(mode, documentId = activeCandidateDocument) {
-  const href = mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl;
+function updateBookletLinks(documentId = activeCandidateDocument) {
+  // The release manifest remains the rules-content authority. Printable PDFs are
+  // presentation artifacts rebuilt by the Pages deployment so visual corrections
+  // do not require mutating the frozen v0.7.2 release package.
+  const href = liveBookletUrl(documentId);
   rulebookBookletLinks.forEach((link) => {
     link.hidden = false;
     link.href = href;
@@ -394,7 +397,7 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false, docum
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
   });
-  updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId);
+  updateBookletLinks(documentId);
 
   if (rulesAssistantButton) rulesAssistantButton.hidden = candidate;
   if (candidateNote) {
@@ -551,11 +554,11 @@ function publishedDocument(manifest, documentId = activeCandidateDocument) {
 async function loadVerifiedReleasedSource(documentId = activeCandidateDocument) {
   const normalized = CANDIDATE_DOCUMENTS.has(documentId) ? documentId : DEFAULT_CANDIDATE_DOCUMENT;
   const manifest = await loadReleaseManifest();
-  const { document, booklet } = publishedDocument(manifest, normalized);
+  const { document } = publishedDocument(manifest, normalized);
   publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, document.source.path));
-  pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
+  pdfUrl = liveBookletUrl(normalized);
   if (activeMode === RELEASED_MODE && activeCandidateDocument === normalized) {
-    updateBookletLinks(RELEASED_MODE, normalized);
+    updateBookletLinks(normalized);
   }
 
   if (!publishedSourcePromises.has(normalized)) {
