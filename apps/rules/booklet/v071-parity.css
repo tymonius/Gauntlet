@@ -297,11 +297,13 @@ h1, h2, h3, h4 {
 }
 
 .cover.complete-rules-cover .cover-art {
-  padding: 6px 4px 0;
+  padding: 4px 4px 5px;
 }
 
 .cover.complete-rules-cover .cover-art img {
-  object-position: center bottom;
+  object-position: center center;
+  transform: scale(1.06);
+  transform-origin: center center;
   filter: grayscale(1) contrast(1.22) brightness(1.08);
   opacity: 1;
   -webkit-mask-image: none;
