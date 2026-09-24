@@ -5,7 +5,7 @@ import { currentCanonicalContent } from '../../src/content/current';
 import { CURRENT_EXECUTABLE_ACTION_CARD_IDS } from '../../src/v070/turn-engine-core';
 import {
   V070_SUPPORTED_REVEAL_EFFECT_IDS,
-  v070BattleEffectHandler,
+  currentBattleEffectHandler,
 } from '../../src/v070/battle-effects';
 
 const OUTPUT = path.join(
@@ -75,7 +75,7 @@ describe('current digital engine effect registration', () => {
           || effect.label === 'Tactic'
           || effect.label === 'Gambit/Tactic'
         );
-      const handler = v070BattleEffectHandler(card.id);
+      const handler = currentBattleEffectHandler(card.id);
 
       return {
         id: card.id,
