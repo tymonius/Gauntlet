@@ -249,16 +249,16 @@ describe('v0.7.0 advanced battle Territory effects', () => {
       playerId: 'A',
       cardInstanceId: first,
     });
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'B',
-    });
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
 
     state = reduceV070BattleAction(state, {
       type: 'choose_tactic',
       playerId: 'A',
       cardInstanceId: second,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'B',
     });
     state = reduceV070BattleAction(state, {
       type: 'choose_tactic',
