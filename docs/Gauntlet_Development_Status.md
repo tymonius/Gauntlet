@@ -1,29 +1,28 @@
 # Gauntlet Development Status
 
 **Current canonical release:** defined by `config/release-lifecycle.json`  
-**Release date:** August 30, 2026  
+**Release date:** September 23, 2026  
 **Status:** Canonical published playtest edition
 
-The release identified by `config/release-lifecycle.json` is the current public tabletop/web playtest edition. Its frozen package path is recorded in that lifecycle entry. Current browser and production tooling derive from `game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
+The release identified by `config/release-lifecycle.json` is the current public tabletop/web playtest edition. Its frozen package path is recorded in that lifecycle entry. Current browser and production tooling derive from `packages/game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
 
 The Steam Workshop publication gate is complete for the release identified by `config/release-lifecycle.json`. The existing public Workshop item at ID `3790840635` has been updated in place to match the current canonical tabletop/web playtest edition.
 
 ## Release baseline
 
-v0.7.1 preserves the v0.7.0 two-player core while adding the approved focused update:
+v0.7.2 preserves the established two-player core and the **142-card / 25-Territory / 6-faction / 12-Leader** playable pool while concentrating on rules access, onboarding, targeted balance tuning, and release reliability:
 
-- **142 playable cards** — 52 Neutral and 15 in each of the six factions;
-- **25 Territories/Arenas**;
-- **6 factions and 12 Leaders**;
-- **12 locked starter Decks**, each 30 cards / 60 Deckbuilding Value;
-- the Onset-based battle sequence and six-Proposal Peace Treaty threshold;
-- a **six-Rite Mystics pool**, with exactly three different Rites selected during game-package construction and no requirement to disclose them until begun;
-- the approved Echoes and Crossing revisions plus the new Shattering, Consecration, and Equivalence Rites;
-- the canonical **Ritual of Ascension** route after all three selected Rites are completed;
-- audited faction/card metadata, including 15 Mystics cards and the Unique status of Plenipotentiary and Martyrdom;
-- **Deckbuilder → TTS Deck Codes** for v0.7.1 Deck packages;
-- current Browser Rulebook, Deckbuilder, Card Reference, faction pages, Rules Arbiter, and playtest surfaces; and
-- TDS Games / Misty Hollow Enterprises publication branding.
+- the Rules Arbiter is now presented to players as the **Chief Justice**, after a major retrieval, clarification, continuity, source-selection, and ruling-quality overhaul;
+- **Start Playing** is rebuilt around the normal move → fight → hold ground → capture → win loop for self-serve first games;
+- the former monolithic Rulebook is replaced as the normal learning/reference path by the **Player's Guide, six Faction Guides, and Complete Rules**, with matching browser and printable booklet surfaces;
+- **Intelligence** gains recurring Intel and Operational Capacity;
+- **Financiers** gain more flexible Action timing, an end-of-Opening Financial Capacity check, revised Deed pricing, and a cumulative same-turn Deed surcharge;
+- **Inquisition** gains stronger Conviction generation and a more efficient low-cost Purge;
+- **New Recruits** is now value 2 and replenishes the Hand; all twelve recommended starter Decks remain exactly 30 cards / 60 Deckbuilding Value after rebalancing;
+- **Supply Depot, Smuggler's Run, and Quicksand** are rebalanced, and ten of the twelve starter Territory packages change;
+- Action timing, Capture versus Front Line advancement, normal battle commitment order, and Run the Gauntlet are made explicit in the current authority and player-facing rules;
+- the v0.7.2 Tabletop Simulator package is live on the existing Workshop item after its manual QA and subscribed-copy smoke test; and
+- TDS Games / Misty Hollow Enterprises publication branding remains the player-facing publishing identity.
 
 Published release snapshots remain immutable historical evidence. Corrections discovered after publication must be made in live/current sources or a later release without silently rewriting the frozen package.
 
@@ -51,7 +50,7 @@ Do not add generic rubber-banding without evidence. Determine whether losses rem
 
 ### 4. Faction and Leader balance
 
-Continue matchup testing across the full v0.7.1 pool.
+Continue matchup testing across the full v0.7.2 pool.
 
 - **Military:** Command pacing, Order chains, General/Commandant parity, attack tempo, and retreat pressure.
 - **Diplomats:** Influence pacing, Proposal incentives, six-Article Peace Treaty timing, refusal pressure, and Ambassador/Senator parity.
