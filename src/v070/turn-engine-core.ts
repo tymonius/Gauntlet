@@ -2739,7 +2739,6 @@ function financierPlayMarket(
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
-  'neutral-bombardment',
   'neutral-advance-guard',
   'neutral-arcane-knowledge',
   'neutral-capital-punishment',
@@ -2813,6 +2812,11 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'mystics-threefold-vision',
 ] as const;
 
+export const CURRENT_EXECUTABLE_ACTION_CARD_IDS = [
+  ...V070_EXECUTABLE_ACTION_CARD_IDS,
+  'neutral-bombardment',
+] as const;
+
 interface V070ActionPlayOptions {
   spendAction?: boolean;
   source?: string;
@@ -2860,7 +2864,7 @@ function playActionCard(
       'That card has no printed Action effect in current gameplay authority.',
     );
   }
-  if (!(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(currentCard.id)) {
+  if (!(CURRENT_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(currentCard.id)) {
     throw new V070GameActionError(
       `The printed Action effect of ${currentCard.name} is not yet executable in the current engine.`,
     );
@@ -3310,7 +3314,7 @@ function conscriptionBankingActionCandidateInstanceIds(
     const cardId = state.cardInstances[instanceId]?.cardId;
     if (!cardId
       || !actionEffectBanksItsOwnCard(cardId)
-      || !(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(cardId)) {
+      || !(CURRENT_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(cardId)) {
       return false;
     }
 
