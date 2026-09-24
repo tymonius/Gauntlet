@@ -118,9 +118,15 @@ function prepareBattle(options: {
   state.players.A.position = origin;
   state.players.B.position = contested;
   state.board.find(item => item.position === origin)!.occupant = 'A';
-  territory.occupant = 'B';
-  territory.controller = options.contestedController;
-  territory.blank = true;
+  const contestedTerritory = state.board.find(
+    item => item.position === contested,
+  );
+  if (!contestedTerritory) {
+    throw new Error('Expected current contested test Territory.');
+  }
+  contestedTerritory.occupant = 'B';
+  contestedTerritory.controller = options.contestedController;
+  contestedTerritory.blank = true;
 
   state = reduceV070TurnAction(state, {
     type: 'pass_opening',
