@@ -6,7 +6,7 @@ const read = (path) => readFile(path, 'utf8');
 const factionIds = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
 
 describe('Browser Rulebook candidate publication', () => {
-  it('keeps released v0.7.1 and exposes the modular candidate set in one shell', async () => {
+  it('keeps released v0.7.2 and exposes the modular candidate set in one shell', async () => {
     const html = await read('legacy/rulebook-browser/index.html');
     const app = await read('legacy/rulebook-browser/app.js');
 
@@ -17,6 +17,7 @@ describe('Browser Rulebook candidate publication', () => {
     expect(html).toContain('<option value="complete-rules">Complete Rules</option>');
     for (const id of factionIds) expect(html).toContain(`<option value="${id}">`);
 
+    expect(app).toContain("const PUBLISHED_VERSION = 'v0.7.2'");
     expect(app).toContain("const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide'");
     expect(app).toContain("url.searchParams.set('rules', CANDIDATE_MODE)");
     expect(app).toContain("url.searchParams.set('doc', normalizedDocument)");
@@ -41,7 +42,8 @@ describe('Browser Rulebook candidate publication', () => {
 
     expect(app).toContain('mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl');
     expect(app).toContain('updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId)');
-    expect(app).toContain('if (activeMode === RELEASED_MODE) updateBookletLinks(RELEASED_MODE)');
+    expect(app).toContain('activeMode === RELEASED_MODE && activeCandidateDocument === normalized');
+    expect(app).toContain('updateBookletLinks(RELEASED_MODE, normalized)');
     expect(app).toContain("printNotes.forEach((note) => { note.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'; });");
 
     expect(workflow).toContain('Stage current modular Rulebook booklets');
@@ -66,9 +68,9 @@ describe('Browser Rulebook candidate publication', () => {
     }
   });
 
-  it('does not present the released Arbiter as candidate-aware before corpus cutover', async () => {
+  it('keeps the Chief Justice tied to released authority in a distinct candidate view', async () => {
     const app = await read('legacy/rulebook-browser/app.js');
-    expect(app).toContain('The current production Rules Arbiter remains bound to released v0.7.1');
+    expect(app).toContain('The Chief Justice remains bound to released ${PUBLISHED_VERSION}.');
     expect(app).toContain('rulesAssistantButton.hidden = candidate');
   });
 
