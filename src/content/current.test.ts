@@ -2,17 +2,24 @@ import { describe, expect, test } from 'vitest';
 import * as current from './current';
 
 describe('current digital rules surface', () => {
-  test('binds current content to the published v0.7.0 authority', () => {
-    expect(current.CURRENT_RULES_VERSION).toBe('v0.7.0');
+  test('binds current content to packages/game-data/current-game.json', () => {
+    expect(current.CURRENT_RULES_VERSION).toBe('v0.7.2');
+    expect(current.currentCanonicalContent.authority).toBe('current-game');
+    expect(current.currentCanonicalContent.status).toBe('current-release');
+    expect(current.currentCanonicalContent.rulesVersion).toBe('v0.7.2');
+    expect(current.currentCanonicalContent.content.cards).toHaveLength(142);
+    expect(current.currentCanonicalContent.content.territories).toHaveLength(25);
+    expect(current.currentCanonicalContent.content.factions).toHaveLength(6);
+
+    // The frozen v0.7.0 adapter remains separately addressable as historical
+    // implementation evidence; it is no longer the current content identity.
     expect(current.V070_RULES_VERSION).toBe('v0.7.0');
     expect(current.V070_CANONICAL_DATA_SOURCE)
       .toBe('releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json');
     expect(current.v070CanonicalContent.rulesVersion).toBe('v0.7.0');
-    expect(current.v070CanonicalContent.content.cards).toHaveLength(142);
-    expect(current.v070CanonicalContent.content.territories).toHaveLength(25);
   });
 
-  test('exposes the released Onset-first v0.7.0 shared-rules API', () => {
+  test('keeps the v0.7.0 reducer API available as the migration implementation surface', () => {
     for (const name of [
       'createV070TurnState',
       'advanceV070TurnPhase',
@@ -46,7 +53,7 @@ describe('current digital rules surface', () => {
     }
   });
 
-  test('exposes the released starter setup and private-view engine surface', () => {
+  test('exposes the maintained starter setup and private-view engine surface', () => {
     for (const name of [
       'loadV070StarterDecks',
       'createV070StarterGame',
@@ -65,15 +72,17 @@ describe('current digital rules surface', () => {
     expect(current.v070StarterDecks.size).toBe(12);
   });
 
-  test('uses released v0.7.0 wording for battle initiation and Onset', () => {
-    const advanceGuard = current.v070CanonicalContent.cardsById.get('neutral-advance-guard');
-    const forcedMarch = current.v070CanonicalContent.cardsById.get('neutral-forced-march');
+  test('uses current v0.7.2 authority for current card wording', () => {
+    const advanceGuard =
+      current.currentCanonicalContent.cardsById.get('neutral-advance-guard');
+    const forcedMarch =
+      current.currentCanonicalContent.cardsById.get('neutral-forced-march');
 
     expect(advanceGuard?.effects.find(effect => effect.label === 'Action')?.text)
       .toContain('initiates a battle');
     expect(forcedMarch?.effects.find(effect => effect.label === 'Action')?.text)
       .toContain('cannot initiate a battle');
-    expect(current.v070CanonicalContent.content.battle.onset)
+    expect(current.currentCanonicalContent.content.battle.onset)
       .toContain('Resolve Terms first');
     expect(JSON.stringify([advanceGuard, forcedMarch])).not.toContain('pending battle');
   });
