@@ -133,7 +133,26 @@ footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: flex-start;
   gap: 10px;
+}
+
+.hero-booklet-action {
+  display: grid;
+  gap: 6px;
+  max-width: 250px;
+}
+
+.hero-booklet-action > a {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hero-booklet-action > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-align: center;
 }
 
 .hero-actions a,
