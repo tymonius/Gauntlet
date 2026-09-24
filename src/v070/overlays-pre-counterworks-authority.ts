@@ -11,6 +11,7 @@ import {
 } from './rules';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { pauseV070ForSpiritHollowAfterBattleCardsCleared } from './spirit-hollow';
+import { V070_FOG_OF_WAR_ID } from './fog-of-war';
 
 export const V070_DEMILITARIZED_ZONE_ID = 'diplomats-demilitarized-zone';
 
@@ -565,15 +566,18 @@ export function resolveV070OverlayAfterBattle(
         state,
         overlay.territoryInstanceId,
       );
-      if (territory
-        && territory.position === territoryPosition
-        && cardIdForV070Overlay(state, overlay) ===
-          V070_DEMILITARIZED_ZONE_ID) {
-        discardV070Overlay(
-          state,
-          activeOverlayAtOnset,
-          'demilitarized_zone_next_battle',
-        );
+      if (territory && territory.position === territoryPosition) {
+        const cardId = cardIdForV070Overlay(state, overlay);
+        if (cardId === V070_DEMILITARIZED_ZONE_ID
+          || cardId === V070_FOG_OF_WAR_ID) {
+          discardV070Overlay(
+            state,
+            activeOverlayAtOnset,
+            cardId === V070_FOG_OF_WAR_ID
+              ? 'fog_of_war_next_battle'
+              : 'demilitarized_zone_next_battle',
+          );
+        }
       }
     }
   }

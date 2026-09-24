@@ -187,11 +187,18 @@ export interface V070FortificationsRetreatRuntime {
 }
 
 export interface V070GambitOrderOverride {
-  source: 'neutral_observers' | 'watchtower';
+  source: 'neutral_observers' | 'watchtower' | 'fog_of_war';
   firstPlayer: PlayerId;
   secondPlayer: PlayerId;
   nextPlayer: PlayerId | null;
   firstCommitmentFaceUp: boolean;
+}
+
+export interface V070TacticOrderOverride {
+  source: 'fog_of_war';
+  firstPlayer: PlayerId;
+  secondPlayer: PlayerId;
+  nextPlayer: PlayerId | null;
 }
 
 export interface V070RefusedTermsContext {
@@ -291,6 +298,7 @@ export interface V070BattleRuntime {
   terms: V070TermsRuntime;
   refusedTermsContext: V070RefusedTermsContext | null;
   gambitOrderOverride: V070GambitOrderOverride | null;
+  tacticOrderOverride: V070TacticOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
   battleAccursedWagerInstanceIds: string[];
@@ -395,6 +403,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     },
     refusedTermsContext: null,
     gambitOrderOverride: null,
+    tacticOrderOverride: null,
     pendingOutcome: null,
     pendingAccursedWager: null,
     battleAccursedWagerInstanceIds: [],

@@ -2,12 +2,10 @@
   "schemaVersion": 1,
   "releaseVersion": "v0.7.2",
   "actionSurfaces": 74,
-  "executableActionSurfaces": 73,
+  "executableActionSurfaces": 74,
   "battleSurfaces": 113,
   "registeredBattleSurfaces": 67,
-  "unsupportedActionSurfaceIds": [
-    "intelligence-fog-of-war"
-  ],
+  "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
     "financiers-corner-the-market::1::Gambit/Tactic",
@@ -56,5 +54,5 @@
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Current-release digital-engine registration baseline after implementing Rearguard's unchanged v0.7.2 Gambit/Tactic effect. Current Action parity remains 73/74 with Fog of War as the sole unsupported Action surface; current battle parity is 67/113, leaving 46 unsupported battle surfaces. Rearguard now exactly matches current authority and banks only after its controller is the recorded loser and has actually retreated off the contested Position. Divine Mercy remains unsupported because its v0.7.2 battle text differs from the frozen handler. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
+  "note": "Current-release digital-engine registration baseline after implementing Fog of War's normalized Action placement and Overlay commitment-order lifecycle. Current Action parity is now 74/74. Current battle parity remains 67/113 with Fog of War's separate Gambit/Tactic surface still unsupported. The maintained reducer also now enforces the v0.7.2 restored normal commitment order: attacker then defender for both Gambits and Tactics, with Fog making the contested Territory's controller commit after the opponent for both stages and Neutral Observers overriding only Gambit order. Fog is discarded after the next battle it actually affects. Divine Mercy remains unsupported because its v0.7.2 battle text differs from the frozen handler. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
 }
