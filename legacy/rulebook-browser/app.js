@@ -4,7 +4,7 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 const RELEASE_MANIFEST_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json';
 const PUBLISHED_VERSION = 'v0.7.2';
 const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide.md';
-const FALLBACK_PDF_URL = '../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf';
+const FALLBACK_PDF_URL = './booklets/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide';
