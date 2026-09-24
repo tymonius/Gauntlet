@@ -5,7 +5,9 @@ import { extname, join, resolve, sep } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from '../current-game-authority.mjs';
 import { resolveAllFaceSpecs } from '../../card-design/face-spec.mjs';
 import { runtimeGameFromAuthority, validateFaceCatalogContract } from './model.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from '../publication-boundary.mjs';
 
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const OUTPUT = resolve(ROOT, 'artifacts/card-authority');
 const FAILURES = join(OUTPUT, 'render-failures');
 const DIMENSION_TOLERANCE = 0.3;
@@ -33,8 +35,9 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
+      const publicPath = decodeURIComponent(url.pathname);
+      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+      const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;

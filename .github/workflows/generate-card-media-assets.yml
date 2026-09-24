@@ -35,12 +35,15 @@ jobs:
             package.json
             design-tokens.css
             packages/rendering
+            config/publication-boundary.json
             scripts/generate-tts-card-assets.mjs
             scripts/generate-card-media-assets.mjs
             scripts/generate-card-media-compositions.mjs
             scripts/generate-card-media-library.mjs
+            scripts/publication-boundary.mjs
             tts/renderer
             card-design
+            tools/card-design/artwork-authoring
             media
             releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json
             images/artwork/cards

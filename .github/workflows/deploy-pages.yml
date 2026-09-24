@@ -27,6 +27,7 @@ on:
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'tools/card-design/artwork-authoring/**'
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'

@@ -22,11 +22,13 @@ import {
   surfaceDeviceScale,
   surfaceRasterPixels,
 } from '../card-design/production-surface.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from './publication-boundary.mjs';
 
 // Territory artwork is authored/exported on the canonical landscape production
 // surface. TTS custom cards still use the canonical portrait card cell and
 // quarter-turn the landscape raster +90 degrees inside that cell so native
 // SidewaysCard presentation reads upright in player hands.
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT } = surfaceRasterPixels('landscape');
 const { width: TTS_CARD_WIDTH, height: TTS_CARD_HEIGHT } = surfaceRasterPixels('portrait');
 const { width: CSS_TERRITORY_WIDTH, height: CSS_TERRITORY_HEIGHT } = surfaceCssPixels('landscape');
@@ -73,22 +75,13 @@ function contentType(path) {
   }[extension] || 'application/octet-stream';
 }
 
-function resolvePublicRequestPath(requestPath) {
-  if (requestPath === 'game-data' || requestPath.startsWith('game-data/')) {
-    const packageRelative = requestPath === 'game-data'
-      ? ''
-      : requestPath.slice('game-data/'.length);
-    return resolve(ROOT, 'packages/game-data', packageRelative || '.');
-  }
-  return resolve(ROOT, requestPath || 'index.html');
-}
-
 async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolvePublicRequestPath(requestPath);
+      const publicPath = decodeURIComponent(url.pathname);
+      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+      const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;

@@ -14,9 +14,9 @@ const releaseBuilder = read('scripts/build-v072-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const artworkWorker = read('workers/artwork-authoring/src/index.js');
 const artworkSession = read('workers/artwork-authoring/src/index-session.js');
-const artworkClient = read('card-design/artwork-authoring-client.js');
+const artworkClient = read('tools/card-design/artwork-authoring/artwork-authoring-client.js');
 const artworkServer = read('scripts/card-design-server.mjs');
-const artworkCompositor = read('card-design/artwork-compositor.js');
+const artworkCompositor = read('tools/card-design/artwork-authoring/artwork-compositor.js');
 const cardRenderer = read('card-design/face-templates/playable.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
 const livePublicationVerifier = read('scripts/verify-v072-live-publication.mjs');
@@ -509,17 +509,17 @@ describe('complete current-game authority', () => {
   });
 
   it('writes artwork composition edits back into the complete current authority', () => {
-    expect(artworkWorker).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
+    expect(artworkWorker).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'packages/game-data/current-game.json')");
     expect(artworkWorker).toContain("const before = authority.artDirection");
     expect(artworkWorker).toContain("const nextAuthority = { ...authority, artDirection: after }");
     expect(artworkWorker).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
     expect(artworkWorker).not.toContain('GITHUB_OVERRIDE_PATH');
 
-    expect(artworkSession).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
+    expect(artworkSession).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'packages/game-data/current-game.json')");
     expect(artworkSession).toContain('file: context.cfg.authorityPath');
     expect(artworkSession).not.toContain('GITHUB_OVERRIDE_PATH');
 
-    expect(artworkClient).toContain('contents/game-data/current-game.json?ref=');
+    expect(artworkClient).toContain('contents/packages/game-data/current-game.json?ref=');
     expect(artworkClient).toContain('const directions = authority?.artDirection');
     expect(artworkClient).not.toContain(['contents', 'tts', 'artwork-direction-overrides.js'].join('/'));
 

@@ -14,6 +14,7 @@ on:
       - 'apps/rules/booklet/**'
       - 'apps/rules/markdown.js'
       - 'config/publication-boundary.json'
+      - 'tools/card-design/artwork-authoring/**'
       - 'legacy/rulebook-browser/**'
       - 'packages/game-data/current-game.json'
       - 'packages/rules/**'
