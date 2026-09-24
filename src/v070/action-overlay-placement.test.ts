@@ -9,6 +9,11 @@ import {
   CURRENT_EXECUTABLE_ACTION_CARD_IDS,
 } from './turn-engine';
 import { currentCanonicalContent } from '../content/current-game';
+import {
+  CURRENT_FOG_OF_WAR_ACTION_TEXT,
+  V070_FOG_OF_WAR_ID,
+  V070_FOG_OF_WAR_OVERLAY_TEXT,
+} from './fog-of-war';
 
 const diplomatStarter = 'diplomats-ambassador-open-channels';
 const militaryStarter = 'military-commandant-holdfast';
@@ -333,6 +338,70 @@ describe('current v0.7.2 Bombardment Action placement', () => {
     expect(state.turnState?.actionsAvailable).toBe(actionsBefore);
     expect(state.players.B.zones.hand).toContain(source);
     expect(state.pendingActionCard).toBeNull();
+  });
+});
+
+describe('current v0.7.2 Fog of War Action placement', () => {
+  test('binds the normalized Action and unchanged Overlay text to current authority', () => {
+    const fog = currentCanonicalContent.cardsById.get(V070_FOG_OF_WAR_ID);
+    expect(CURRENT_FOG_OF_WAR_ACTION_TEXT).toBe('Any Territory.');
+    expect(fog?.effects.find(effect => effect.label === 'Action')?.text)
+      .toBe(CURRENT_FOG_OF_WAR_ACTION_TEXT);
+    expect(fog?.effects.find(effect => effect.label === 'Overlay')?.text)
+      .toBe(V070_FOG_OF_WAR_OVERLAY_TEXT);
+    expect(CURRENT_EXECUTABLE_ACTION_CARD_IDS).toContain(V070_FOG_OF_WAR_ID);
+  });
+
+  test('may target any Territory in the Gauntlet', () => {
+    let state = openingForB();
+    const current = currentPosition(state);
+    const remote = state.board.find(
+      territory => Math.abs(territory.position - current) > 1,
+    );
+    expect(remote).toBeDefined();
+
+    const source = injectHandCard(
+      state,
+      'B',
+      V070_FOG_OF_WAR_ID,
+      'fog-anywhere',
+    );
+    const actionsBefore = state.turnState!.actionsAvailable;
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+
+    expect(state.pendingActionEffectChoice).toEqual({
+      kind: 'territory_overlay_target',
+      playerId: 'B',
+      sourceActionInstanceId: source,
+      purpose: 'Fog of War',
+    });
+    const pending = state.events.find(event =>
+      event.type === 'action_effect_choice_pending'
+      && (event.payload as { purpose?: string })?.purpose === 'Fog of War'
+    );
+    expect((pending?.payload as { territoryPositions?: number[] })
+      ?.territoryPositions)
+      .toEqual(state.board.map(territory => territory.position));
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_territory_overlay_target',
+      playerId: 'B',
+      territoryPosition: remote!.position,
+    });
+
+    expect(state.overlays).toContainEqual(expect.objectContaining({
+      instanceId: source,
+      owner: 'B',
+      territoryInstanceId: remote!.territoryInstanceId,
+    }));
+    expect(state.turnState?.actionsAvailable).toBe(actionsBefore - 1);
+    expect(state.pendingActionCard).toBeNull();
+    expect(state.pendingActionEffectChoice).toBeNull();
   });
 });
 
