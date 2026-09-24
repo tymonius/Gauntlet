@@ -67,6 +67,10 @@ import {
   v070ResistanceBattleBankReplacementInstanceIds,
 } from './resistance';
 import {
+  V070_REARGUARD_ID,
+  bankV070RearguardFromBattle,
+} from './rearguard';
+import {
   recordV070ExecutiveHostileTakeoverEligibility,
   resolveV070CapitalGainsOnBattleLoss,
 } from './financiers';
@@ -2168,10 +2172,13 @@ function pruneIneligibleBattleAftermathControlledEffects(
       )
     );
   runtime.battleCardAftermathAssetBanks =
-    runtime.battleCardAftermathAssetBanks.filter(bank =>
-      bank.condition !== 'owner_win'
-      || battle.winner === bank.owner
-    );
+    runtime.battleCardAftermathAssetBanks.filter(bank => {
+      if (bank.condition === 'owner_win') {
+        return battle.winner === bank.owner;
+      }
+      return battle.loser === bank.owner
+        && battle.positions[bank.owner] !== battle.contestedPosition;
+    });
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -2264,12 +2271,19 @@ function applyBattleAftermathControlledEffect(
       );
     }
     const bank = runtime.battleCardAftermathAssetBanks[index];
-    const banked = bankV070ResistanceFromBattle(
-      state,
-      bank.owner,
-      bank.sourceInstanceId,
-      replaceAssetInstanceId,
-    );
+    const banked = bank.sourceCardId === V070_REARGUARD_ID
+      ? bankV070RearguardFromBattle(
+          state,
+          bank.owner,
+          bank.sourceInstanceId,
+          replaceAssetInstanceId,
+        )
+      : bankV070ResistanceFromBattle(
+          state,
+          bank.owner,
+          bank.sourceInstanceId,
+          replaceAssetInstanceId,
+        );
     runtime.battleCardAftermathAssetBanks.splice(index, 1);
     appendV070Event(state, {
       type: banked
