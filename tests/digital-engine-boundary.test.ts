@@ -47,16 +47,20 @@ describe('digital engine boundary', () => {
     }
   });
 
-  it('distinguishes the published digital-rules target from the promoted implementation baseline', () => {
+  it('binds current content identity to the published target without overstating reducer parity', () => {
     const publishedTarget = currentManifest.public_defaults?.digital_rules;
     expect(publishedTarget).toBe(lifecycle.current_release);
+    expect(CURRENT_RULES_VERSION).toBe(publishedTarget);
 
-    expect(engineReadme).toContain(`current published digital-rules target is ${publishedTarget}`);
-    expect(engineReadme).toContain(`implemented promoted engine baseline is still ${CURRENT_RULES_VERSION}`);
-
-    if (CURRENT_RULES_VERSION !== publishedTarget) {
-      expect(engineReadme).toContain('implementation lag');
-    }
+    expect(engineReadme).toContain(
+      `current published digital-rules target is ${publishedTarget}`,
+    );
+    expect(engineReadme).toContain(
+      'executable reducer implementation namespace remains `src/v070`',
+    );
+    expect(engineReadme).toContain(
+      'not claims of complete v0.7.2 behavioral parity',
+    );
   });
 
   it('keeps historical procedure libraries outside the promoted current API boundary', () => {
