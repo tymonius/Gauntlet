@@ -151,7 +151,7 @@ async function waitForPublication(page, document) {
   }
 
   const expectedBooklet = BOOKLET_FILENAMES.get(document.id);
-  const expectedBookletPath = `/releases/v0.7.2/${expectedBooklet}`;
+  const expectedBookletPath = `/rulebook/booklets/v0.7.2/${expectedBooklet}`;
   if (!expectedBooklet || diagnostics.bookletPaths.length !== 2
     || diagnostics.bookletPaths.some(bookletPath => bookletPath !== expectedBookletPath)) {
     throw new Error(
