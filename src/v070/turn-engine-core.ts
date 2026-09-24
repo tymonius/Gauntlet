@@ -2815,6 +2815,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
 export const CURRENT_EXECUTABLE_ACTION_CARD_IDS = [
   ...V070_EXECUTABLE_ACTION_CARD_IDS,
   'neutral-bombardment',
+  'intelligence-fog-of-war',
 ] as const;
 
 interface V070ActionPlayOptions {
@@ -3789,6 +3790,28 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.playerId,
         pending.instanceId,
       );
+      return;
+    case 'intelligence-fog-of-war':
+      state.pendingActionEffectChoice = {
+        kind: 'territory_overlay_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Fog of War',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'territory_overlay_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Fog of War',
+          territoryPositions: state.board.map(
+            territory => territory.position,
+          ),
+        },
+      });
       return;
     case 'neutral-bombardment': {
       const territoryPosition = bombardmentActionTargetPosition(
@@ -7838,7 +7861,20 @@ function chooseTerritoryOverlayTarget(
     );
   }
 
-  if (pending.cardId === 'neutral-landslide') {
+  if (pending.cardId === 'intelligence-fog-of-war') {
+    if (choice.purpose !== 'Fog of War') {
+      throw new V070GameActionError(
+        'Territory Overlay target state does not match the pending Fog of War.',
+      );
+    }
+    if (!state.board.some(
+      territory => territory.position === territoryPosition,
+    )) {
+      throw new V070GameActionError(
+        'Fog of War must target a Territory currently in the Gauntlet.',
+      );
+    }
+  } else if (pending.cardId === 'neutral-landslide') {
     if (choice.purpose !== 'Landslide') {
       throw new V070GameActionError(
         'Territory Overlay target state does not match the pending Landslide.',
