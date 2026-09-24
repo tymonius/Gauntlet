@@ -164,7 +164,7 @@ export interface V070BattleCardAftermathAssetBank {
   sourceInstanceId: string;
   sourceCardId: string;
   owner: PlayerId;
-  condition: 'owner_win';
+  condition: 'owner_win' | 'owner_loss_after_retreat';
 }
 
 export interface V070BattleAftermathControlledEffectChoiceRuntime {
