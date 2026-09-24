@@ -1,4 +1,5 @@
 import { v070CanonicalContent } from '../content/v070';
+import { currentCanonicalContent } from '../content/current-game';
 import {
   advanceV070TurnPhase,
   applyV070MovementChoice,
@@ -2811,6 +2812,11 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'mystics-threefold-vision',
 ] as const;
 
+export const CURRENT_EXECUTABLE_ACTION_CARD_IDS = [
+  ...V070_EXECUTABLE_ACTION_CARD_IDS,
+  'neutral-bombardment',
+] as const;
+
 interface V070ActionPlayOptions {
   spendAction?: boolean;
   source?: string;
@@ -2847,15 +2853,20 @@ function playActionCard(
 
   const instance = state.cardInstances[cardInstanceId];
   const card = instance ? v070CanonicalContent.cardsById.get(instance.cardId) : undefined;
-  if (!instance || instance.owner !== playerId || !card) {
+  const currentCard = instance
+    ? currentCanonicalContent.cardsById.get(instance.cardId)
+    : undefined;
+  if (!instance || instance.owner !== playerId || !card || !currentCard) {
     throw new V070GameActionError('Unknown or incorrectly owned Action card instance.');
   }
-  if (!card.effects.some(effect => effect.label === 'Action')) {
-    throw new V070GameActionError('That card has no printed Action effect.');
-  }
-  if (!(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(card.id)) {
+  if (!currentCard.effects.some(effect => effect.label === 'Action')) {
     throw new V070GameActionError(
-      `The printed Action effect of ${card.name} is not yet executable in v0.7.0.`,
+      'That card has no printed Action effect in current gameplay authority.',
+    );
+  }
+  if (!(CURRENT_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(currentCard.id)) {
+    throw new V070GameActionError(
+      `The printed Action effect of ${currentCard.name} is not yet executable in the current engine.`,
     );
   }
   if (card.id === 'neutral-arcane-knowledge'
@@ -3004,6 +3015,12 @@ function playActionCard(
     && availableScoutingReportSources(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Scouting Report requires a nonempty Draw Pile or opposing Hand to reveal.',
+    );
+  }
+  if (card.id === 'neutral-bombardment'
+    && bombardmentActionTargetPosition(state, playerId) === null) {
+    throw new V070GameActionError(
+      'Bombardment requires an enemy-controlled Territory ahead without an Overlay.',
     );
   }
   if (card.id === 'neutral-landslide'
@@ -3284,7 +3301,7 @@ function playActionCard(
 }
 
 function actionEffectBanksItsOwnCard(cardId: string): boolean {
-  const card = v070CanonicalContent.cardsById.get(cardId);
+  const card = currentCanonicalContent.cardsById.get(cardId);
   const action = card?.effects.find(effect => effect.label === 'Action');
   return action ? /\bbank this card\b/i.test(action.text) : false;
 }
@@ -3297,7 +3314,7 @@ function conscriptionBankingActionCandidateInstanceIds(
     const cardId = state.cardInstances[instanceId]?.cardId;
     if (!cardId
       || !actionEffectBanksItsOwnCard(cardId)
-      || !(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(cardId)) {
+      || !(CURRENT_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(cardId)) {
       return false;
     }
 
@@ -3773,6 +3790,35 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.instanceId,
       );
       return;
+    case 'neutral-bombardment': {
+      const territoryPosition = bombardmentActionTargetPosition(
+        state,
+        pending.playerId,
+      );
+      if (territoryPosition === null) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Bombardment',
+            reason: 'required_territory_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      placeV070OverlayFromPendingAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        territoryPosition,
+        'Bombardment Action',
+      );
+      finishPendingActionCard(state, 'overlay');
+      return;
+    }
     case 'neutral-landslide': {
       const positions = availableLandslidePositions(state);
       if (positions.length === 0) {
@@ -7835,6 +7881,32 @@ function chooseTerritoryOverlayTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'overlay');
+}
+
+function bombardmentActionTargetPosition(
+  state: V070GameState,
+  playerId: PlayerId,
+): number | null {
+  const currentPosition = state.players[playerId].position;
+  if (currentPosition === null) return null;
+  const opponentId = otherPlayer(playerId);
+
+  const candidates = state.board
+    .filter(territory =>
+      territory.controller === opponentId
+      && v070OverlaysAt(state, territory.position).length === 0
+      && (
+        playerId === 'A'
+          ? territory.position > currentPosition
+          : territory.position < currentPosition
+      )
+    )
+    .sort((left, right) =>
+      Math.abs(left.position - currentPosition)
+      - Math.abs(right.position - currentPosition)
+    );
+
+  return candidates[0]?.position ?? null;
 }
 
 function availableLandslidePositions(

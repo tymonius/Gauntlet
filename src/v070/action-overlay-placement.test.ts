@@ -4,7 +4,11 @@ import {
   reduceV070SetupAction,
   type V070GameState,
 } from './engine';
-import { reduceV070TurnAction } from './turn-engine';
+import {
+  reduceV070TurnAction,
+  CURRENT_EXECUTABLE_ACTION_CARD_IDS,
+} from './turn-engine';
+import { currentCanonicalContent } from '../content/current-game';
 
 const diplomatStarter = 'diplomats-ambassador-open-channels';
 const militaryStarter = 'military-commandant-holdfast';
@@ -205,3 +209,130 @@ describe('v0.7.0 local Territory Overlay Action placement', () => {
     }));
   });
 });
+
+describe('current v0.7.2 Bombardment Action placement', () => {
+  test('binds the normalized Action heading to current authority and the executable registry', () => {
+    const bombardment =
+      currentCanonicalContent.cardsById.get('neutral-bombardment');
+    expect(bombardment?.effects.find(effect => effect.label === 'Action')?.text)
+      .toBe('The first enemy-controlled Territory ahead of you without an Overlay.');
+    expect(CURRENT_EXECUTABLE_ACTION_CARD_IDS).toContain('neutral-bombardment');
+  });
+
+  test('places automatically on the first enemy-controlled Territory ahead without an Overlay', () => {
+    let state = openingForB();
+    const current = currentPosition(state);
+    const ahead = state.board
+      .filter(territory => territory.position < current)
+      .sort((left, right) => right.position - left.position);
+    expect(ahead.length).toBeGreaterThanOrEqual(2);
+
+    for (const territory of state.board) territory.controller = 'B';
+    ahead[0].controller = 'A';
+    ahead[1].controller = 'A';
+
+    const source = injectHandCard(
+      state,
+      'B',
+      'neutral-bombardment',
+      'bombardment-first',
+    );
+    const actionsBefore = state.turnState!.actionsAvailable;
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+
+    expect(state.overlays).toContainEqual(expect.objectContaining({
+      instanceId: source,
+      owner: 'B',
+      territoryInstanceId: ahead[0].territoryInstanceId,
+    }));
+    expect(state.turnState?.actionsAvailable).toBe(actionsBefore - 1);
+    expect(state.pendingActionCard).toBeNull();
+    expect(state.pendingActionEffectChoice).toBeNull();
+    expect(state.players.B.zones.discardPile).not.toContain(source);
+  });
+
+  test('skips a nearer enemy Territory that already has an Overlay', () => {
+    let state = openingForB();
+    const current = currentPosition(state);
+    const ahead = state.board
+      .filter(territory => territory.position < current)
+      .sort((left, right) => right.position - left.position);
+    expect(ahead.length).toBeGreaterThanOrEqual(2);
+
+    for (const territory of state.board) territory.controller = 'B';
+    ahead[0].controller = 'A';
+    ahead[1].controller = 'A';
+
+    const covering = injectHandCard(
+      state,
+      'A',
+      'mystics-circle-of-bones',
+      'existing-overlay',
+    );
+    state.players.A.zones.hand =
+      state.players.A.zones.hand.filter(instanceId => instanceId !== covering);
+    state.overlays.push({
+      instanceId: covering,
+      owner: 'A',
+      territoryInstanceId: ahead[0].territoryInstanceId,
+      placedTurn: state.turnNumber,
+      sequence: state.nextOverlaySequence,
+    });
+    state.nextOverlaySequence += 1;
+
+    const source = injectHandCard(
+      state,
+      'B',
+      'neutral-bombardment',
+      'bombardment-skip',
+    );
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+
+    expect(state.overlays).toContainEqual(expect.objectContaining({
+      instanceId: source,
+      territoryInstanceId: ahead[1].territoryInstanceId,
+    }));
+    expect(state.overlays).not.toContainEqual(expect.objectContaining({
+      instanceId: source,
+      territoryInstanceId: ahead[0].territoryInstanceId,
+    }));
+  });
+
+  test('rejects Bombardment before spending an Action when no legal target exists', () => {
+    const state = openingForB();
+    const current = currentPosition(state);
+    for (const territory of state.board) {
+      if (territory.position < current) territory.controller = 'B';
+    }
+
+    const source = injectHandCard(
+      state,
+      'B',
+      'neutral-bombardment',
+      'bombardment-no-target',
+    );
+    const actionsBefore = state.turnState!.actionsAvailable;
+
+    expect(() => reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    })).toThrow(
+      /enemy-controlled Territory ahead without an Overlay/,
+    );
+
+    expect(state.turnState?.actionsAvailable).toBe(actionsBefore);
+    expect(state.players.B.zones.hand).toContain(source);
+    expect(state.pendingActionCard).toBeNull();
+  });
+});
+

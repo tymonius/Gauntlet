@@ -2,12 +2,11 @@
   "schemaVersion": 1,
   "releaseVersion": "v0.7.2",
   "actionSurfaces": 74,
-  "executableActionSurfaces": 72,
+  "executableActionSurfaces": 73,
   "battleSurfaces": 113,
   "registeredBattleSurfaces": 66,
   "unsupportedActionSurfaceIds": [
-    "intelligence-fog-of-war",
-    "neutral-bombardment"
+    "intelligence-fog-of-war"
   ],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -58,5 +57,5 @@
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Current-release digital-engine registration baseline after the v0.7.2 cutover. The existing engine registers 72 of 74 current Action surfaces by card ID and exactly matches 66 of 113 current battle surfaces by released effect text. Bombardment and Fog of War are the two newly normalized Action surfaces not yet in the executable Action registry. Divine Mercy returns to the unsupported battle queue because its v0.7.2 battle text now explicitly says the card player chooses the Graveyard card, so the old v0.7.0 handler text no longer matches current authority. This is a registration census, not a claim that every registered Action behavior has been revalidated against all v0.7.2 semantic changes."
+  "note": "Current-release digital-engine registration baseline after implementing the v0.7.2 Bombardment Action placement. The existing engine now registers 73 of 74 current Action surfaces by card ID and exactly matches 66 of 113 current battle surfaces by released effect text. Fog of War is the remaining normalized Action surface not yet in the executable Action registry because its Overlay commitment-order lifecycle still requires current-engine implementation. Divine Mercy remains in the unsupported battle queue because its v0.7.2 battle text now explicitly says the card player chooses the Graveyard card, so the old v0.7.0 handler text no longer matches current authority. Action registration is a surface census, not a claim that every historically registered Action behavior has been fully revalidated against all v0.7.2 semantic changes."
 }
