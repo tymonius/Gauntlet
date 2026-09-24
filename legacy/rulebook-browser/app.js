@@ -103,7 +103,7 @@ const candidateDocumentSwitch = document.querySelector('[data-candidate-document
 const candidateDocumentSelect = document.querySelector('[data-candidate-document]');
 const footerVersion = document.querySelector('[data-rulebook-footer-version]');
 const printHeading = document.querySelector('[data-rulebook-print-heading]');
-const printNote = document.querySelector('[data-rulebook-print-note]');
+const printNotes = [...document.querySelectorAll('[data-rulebook-print-note]')];
 const rulesAssistantButton = document.querySelector('[data-open-rules-assistant]');
 const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const rulebookBookletLinks = [...document.querySelectorAll('[data-rulebook-booklet]')];
@@ -416,7 +416,7 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false, docum
   if (heroTitle) heroTitle.textContent = documentConfig.title;
   if (heroLede) heroLede.textContent = documentConfig.lede;
   if (printHeading) printHeading.textContent = `${documentConfig.label} booklet`;
-  if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
+  printNotes.forEach((note) => { note.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'; });
 }
 
 function scrollToLocationHash() {
