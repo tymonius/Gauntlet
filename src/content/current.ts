@@ -1,5 +1,43 @@
 import currentGameJson from '../../packages/game-data/current-game.json';
 
+export {
+  V070_CANONICAL_DATA_SOURCE,
+  V070_RELEASE_MANIFEST_SOURCE,
+  V070_RULES_VERSION,
+  loadV070CanonicalContent,
+  v070CanonicalContent,
+  type V070CanonicalCard,
+  type V070CanonicalCardEffect,
+  type V070CanonicalContentIndex,
+  type V070CanonicalData,
+  type V070CanonicalFaction,
+  type V070CanonicalTerritory,
+  type V070Gameplay,
+  type V070ReleaseManifest,
+} from './v070';
+
+export * from '../v070/rules';
+export * from '../v070/starter-decks';
+export * from '../v070/engine';
+export * from '../v070/turn-engine';
+export * from '../v070/battle-types';
+export * from '../v070/battle-engine';
+export * from '../v070/battle-effects';
+export * from '../v070/diplomats';
+export * from '../v070/front-line';
+export * from '../v070/overlays';
+export * from '../v070/assets';
+export * from '../v070/sanctions';
+export * from '../v070/movement-triggers';
+export * from '../v070/views';
+export * from '../v070/replay';
+
+/**
+ * The executable reducer is still housed under src/v070 while migration work
+ * continues. Those exports are compatibility surfaces, not the current content
+ * authority. Current rules/content identity comes from current-game.json below.
+ */
+
 export interface CurrentCanonicalCardEffect {
   label: string;
   text: string;
@@ -159,3 +197,4 @@ export function loadCurrentCanonicalContent(): CurrentCanonicalContentIndex {
 }
 
 export const currentCanonicalContent = loadCurrentCanonicalContent();
+export const CURRENT_RULES_VERSION = currentCanonicalContent.rulesVersion;
