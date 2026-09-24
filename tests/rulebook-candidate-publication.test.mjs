@@ -30,7 +30,7 @@ describe('Browser Rulebook candidate publication', () => {
     expect(html.match(/data-rulebook-print-note/g)).toHaveLength(2);
     expect(html).toContain('class="hero-booklet-action"');
     expect(app).toContain("const LIVE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
-    expect(app).toContain('function updateBookletLinks(mode, documentId = activeCandidateDocument)');
+    expect(app).toContain('function updateBookletLinks(documentId = activeCandidateDocument)');
     expect(app).not.toContain('link.hidden = candidate');
     for (const publication of V072_MODULAR_BOOKLETS) {
       expect(app).toContain(`bookletFilename: '${publication.filename}'`);
