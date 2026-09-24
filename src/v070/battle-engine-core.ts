@@ -70,6 +70,7 @@ import {
   V070_REARGUARD_ID,
   bankV070RearguardFromBattle,
 } from './rearguard';
+import { applyV070FogOfWarOverlayAtBattleOnset } from './fog-of-war';
 import {
   recordV070ExecutiveHostileTakeoverEligibility,
   resolveV070CapitalGainsOnBattleLoss,
@@ -777,6 +778,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
     applyV070MysticConvergence(state);
     applyV070CoreBattleTerritoryEffects(state);
     applyV070AdvancedBattleTerritoryEffects(state);
+    applyV070FogOfWarOverlayAtBattleOnset(state);
     applyV070ResistanceAssetOnsetEffects(state);
     initializeV070TermsWindow(state);
   }
@@ -853,8 +855,12 @@ function setGambit(
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'set_gambits');
   const order = runtime.gambitOrderOverride;
-  if (order?.nextPlayer && order.nextPlayer !== playerId) {
-    throw new V070GameActionError(`${order.nextPlayer} must make the next Gambit choice.`);
+  const expectedPlayer = order?.nextPlayer
+    ?? normalNextGambitPlayer(state);
+  if (expectedPlayer && expectedPlayer !== playerId) {
+    throw new V070GameActionError(
+      `${expectedPlayer} must make the next Gambit choice.`,
+    );
   }
 
   const participant = runtime.participants[playerId];
@@ -1176,6 +1182,13 @@ function chooseTactic(
     );
   }
 
+  const expectedPlayer = nextTacticChoicePlayer(state);
+  if (expectedPlayer && expectedPlayer !== playerId) {
+    throw new V070GameActionError(
+      `${expectedPlayer} must make the next Tactic choice.`,
+    );
+  }
+
   const participant = runtime.participants[playerId];
   const poisonousGas =
     runtime.activePrintedTerritoryAtOnset?.territoryId ===
@@ -1252,6 +1265,17 @@ function chooseTactic(
         choiceNumber,
       },
     });
+  }
+
+  const tacticOrder = runtime.tacticOrderOverride;
+  if (tacticOrder) {
+    if (playerId === tacticOrder.firstPlayer
+      && participant.tacticChoicesMade >= participant.tacticLimit) {
+      tacticOrder.nextPlayer = tacticOrder.secondPlayer;
+    } else if (playerId === tacticOrder.secondPlayer
+      && participant.tacticChoicesMade >= participant.tacticLimit) {
+      tacticOrder.nextPlayer = null;
+    }
   }
 
   if (bothBattleChoicesMade(runtime, 'tactic')) {
@@ -3120,6 +3144,56 @@ function finalizeCompletedAftermath(state: V070GameState): void {
       },
     });
   }
+}
+
+function normalNextGambitPlayer(
+  state: V070GameState,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  if (runtime.participants[battle.attacker].gambit === undefined) {
+    return battle.attacker;
+  }
+  if (runtime.participants[battle.defender].gambit === undefined) {
+    return battle.defender;
+  }
+  return null;
+}
+
+function tacticChoicesComplete(
+  runtime: V070BattleRuntime,
+  playerId: PlayerId,
+): boolean {
+  const participant = runtime.participants[playerId];
+  return participant.tacticChoicesMade >= participant.tacticLimit;
+}
+
+function nextTacticChoicePlayer(
+  state: V070GameState,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  const order = runtime.tacticOrderOverride;
+
+  if (order) {
+    if (order.nextPlayer === order.firstPlayer
+      && tacticChoicesComplete(runtime, order.firstPlayer)) {
+      order.nextPlayer = order.secondPlayer;
+    }
+    if (order.nextPlayer === order.secondPlayer
+      && tacticChoicesComplete(runtime, order.secondPlayer)) {
+      order.nextPlayer = null;
+    }
+    return order.nextPlayer;
+  }
+
+  if (!tacticChoicesComplete(runtime, battle.attacker)) {
+    return battle.attacker;
+  }
+  if (!tacticChoicesComplete(runtime, battle.defender)) {
+    return battle.defender;
+  }
+  return null;
 }
 
 function bothBattleChoicesMade(
