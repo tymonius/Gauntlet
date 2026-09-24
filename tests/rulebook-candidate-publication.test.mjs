@@ -18,6 +18,7 @@ describe('Browser Rulebook candidate publication', () => {
     for (const id of factionIds) expect(html).toContain(`<option value="${id}">`);
 
     expect(app).toContain("const PUBLISHED_VERSION = 'v0.7.2'");
+    expect(app).toContain("const FALLBACK_PDF_URL = './booklets/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf'");
     expect(app).toContain("const DEFAULT_CANDIDATE_DOCUMENT = 'player-guide'");
     expect(app).toContain("url.searchParams.set('rules', CANDIDATE_MODE)");
     expect(app).toContain("url.searchParams.set('doc', normalizedDocument)");
