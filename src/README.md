@@ -4,14 +4,14 @@ This directory contains the active digital-engine migration plus explicitly vers
 
 ## Current authority boundary
 
-The **current published digital-rules target is v0.7.1**. The v0.7.1 release manifest declares `public_defaults.digital_rules: v0.7.1`, and current tabletop/gameplay authority lives outside this engine under the maintained current authority surfaces.
+The **current published digital-rules target is v0.7.2**. Current gameplay authority is `packages/game-data/current-game.json`, and `content/current.ts` now derives its current version/content identity directly from that authority.
 
-The **implemented promoted engine baseline is still v0.7.0**. Engine-facing released content currently loads from:
+The **executable reducer implementation namespace remains `src/v070`** while current-rules migration continues. Its frozen v0.7.0 content adapter remains available as historical implementation and regression evidence:
 
 - `releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json`
 - `releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json`
 
-That difference is an explicit implementation lag, not an alternate authority claim. `content/current.ts` is the promoted engine API boundary, but until v0.7.1 migration is completed it must not be interpreted as proof of full parity with the current published digital-rules target.
+Current authority identity and implementation completeness are deliberately separate claims. `content/current.ts` identifies v0.7.2 as current, while its re-exported `V070_*` reducer APIs remain compatibility/migration surfaces until each behavior is revalidated against current authority.
 
 ## Migration layers
 
@@ -30,15 +30,15 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `cli/` — promoted v0.7.0 reducer REPL. It uses certified starter Decks and the authoritative setup/turn/battle reducers directly; it does not mask unsupported battle effects.
 - `gui/` — promoted v0.7.0 reducer GUI. It uses certified starter Decks, player-scoped views, and the shared recorded-action dispatcher; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
 
-The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
+The promoted `content/current.ts` boundary identifies current v0.7.2 content from `current-game.json` while continuing to expose the maintained `V070_*` reducer APIs as migration compatibility surfaces. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
 There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or an explicit versioned adapter such as `content/v06.ts`, `content/v063.ts`, or `content/v070.ts` when it means a historical or released rules generation.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 
-## Implemented v0.7.0 content baseline
+## Historical v0.7.0 implementation baseline
 
-The currently implemented v0.7.0 engine content baseline contains:
+The maintained reducer foundation was originally promoted against v0.7.0 and contains:
 
 - 142 playable titles;
 - 52 Neutral cards;
@@ -46,7 +46,7 @@ The currently implemented v0.7.0 engine content baseline contains:
 - 25 Territories/Arenas;
 - 12 Leaders.
 
-Relative to the v0.6.3 baseline, v0.7.0 adds 15 cards, retires **No Martyrs**, formalizes Onset/Terms timing, and raises the Diplomat Peace Treaty threshold to six ratified Proposals. Current behavior must come from the released v0.7.0 contract, not from old tests or candidate terminology.
+Relative to the v0.6.3 baseline, v0.7.0 added 15 cards, retired **No Martyrs**, formalized Onset/Terms timing, and raised the Diplomat Peace Treaty threshold to six ratified Proposals. Those facts remain migration history. Current behavior must now be checked against `packages/game-data/current-game.json` and the current v0.7.2 rules authority.
 
 ## Development commands
 
@@ -62,11 +62,11 @@ npm run dev:legacy:cli
 npm run dev:legacy:gui
 ```
 
-The broad test/typecheck commands exercise maintained source and explicitly versioned migration work that remains under `src/`. Everything under `legacy/` is intentionally outside the default TypeScript/Vitest authority boundary. `dev:v070:cli` and `dev:v070:gui` expose the promoted v0.7.0 reducer over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of v0.7.1 parity or complete battle-card support. The `dev:legacy:*` commands are explicit opt-in runners for `legacy/digital-engine-v06/` only.
+The broad test/typecheck commands exercise maintained source and explicitly versioned migration work that remains under `src/`. Everything under `legacy/` is intentionally outside the default TypeScript/Vitest authority boundary. `dev:v070:cli` and `dev:v070:gui` expose the maintained historical reducer namespace over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of complete v0.7.2 behavioral parity or complete battle-card support. The `dev:legacy:*` commands are explicit opt-in runners for `legacy/digital-engine-v06/` only.
 
 ## Reuse policy
 
-Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
+Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against `packages/game-data/current-game.json` and current v0.7.2 rules before it is claimed as current-supported.
 
 The promoted `src/v070/` implementation must remain structurally isolated from `legacy/digital-engine-v06/`, `legacy/digital-engine-reconstruction/`, and `legacy/digital-engine-migration/`. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
 
@@ -76,4 +76,4 @@ The archived v0.6 package keeps its former card/state/effect/dev sibling layout 
 
 The current engine can complete an ordinary battle when both players pass on Gambits and Tactics. It also supports legal face-down Gambit/Tactic commitments and their private views. Until an audited handler exists for a revealed printed battle-card effect, execution halts explicitly with the card/effect identified; the engine never treats an unimplemented effect as blank.
 
-The published v0.7.0 rulebook refers to the inherited “ordinary battle rules” rather than restating the base battle-total formula. The executable surface preserves the established shared procedure: normally roll one d6, apply the applicable advantage/disadvantage selection and rerolls/die changes, then apply numerical modifiers to obtain the battle total. v0.7.0’s separate unmodified Tiebreak Roll is handled independently.
+The executable surface preserves the established shared battle-total procedure: normally roll one d6, apply the applicable advantage/disadvantage selection and rerolls/die changes, then apply numerical modifiers to obtain the battle total. The current authority’s separate unmodified Tiebreak Roll is handled independently.
