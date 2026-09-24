@@ -6,7 +6,13 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
-import { pendingV070DivineMercyBattleChoice } from './divine-mercy-battle';
+import {
+  CURRENT_DIVINE_MERCY_BATTLE_TEXT,
+  V070_DIVINE_MERCY_ID,
+  pendingV070DivineMercyBattleChoice,
+} from './divine-mercy-battle';
+import { currentCanonicalContent } from '../content/current-game';
+import { currentBattleEffectHandler } from './battle-effects';
 
 function activeBattle(): V070GameState {
   let state = createV070StarterGame({
@@ -114,6 +120,17 @@ function putInGraveyard(
 }
 
 describe('v0.7.0 Divine Mercy battle effect', () => {
+  test('current v0.7.2 wording explicitly binds the choice to the card player', () => {
+    expect(CURRENT_DIVINE_MERCY_BATTLE_TEXT).toBe(
+      "Choose one card in the opponent's Graveyard and move it to their Discard Pile. +2 Battle Total.",
+    );
+    expect(currentCanonicalContent.cardsById.get(V070_DIVINE_MERCY_ID)?.effects
+      .find(effect => effect.label === 'Gambit/Tactic')?.text)
+      .toBe(CURRENT_DIVINE_MERCY_BATTLE_TEXT);
+    expect(currentBattleEffectHandler(V070_DIVINE_MERCY_ID)?.expectedText)
+      .toBe(CURRENT_DIVINE_MERCY_BATTLE_TEXT);
+  });
+
   test('Gambit reveal adds +2 and pauses for the opposing Graveyard recycle', () => {
     let state = activeBattle();
     const mercy = injectCard(
