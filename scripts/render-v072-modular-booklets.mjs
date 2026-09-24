@@ -37,10 +37,6 @@ const REQUIRED_MATERIALIZED_ROUTES = new Set([
   '/game-data/',
   '/rulebook/',
 ]);
-const REQUIRED_MATERIALIZED_FILES = new Set([
-  '/card-design/face-authority.mjs',
-  '/card-design/production-surface.mjs',
-]);
 const MAX_INTERSTITIAL_PAGES = 3;
 
 const hashBytes = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -101,7 +97,7 @@ function bookletPublicationContract(contract) {
     materializedRoutes: (contract.materializedRoutes || [])
       .filter(route => REQUIRED_MATERIALIZED_ROUTES.has(route.publicPath)),
     materializedFiles: (contract.materializedFiles || [])
-      .filter(file => file.publicPath.startsWith('/rulebook/') || REQUIRED_MATERIALIZED_FILES.has(file.publicPath)),
+      .filter(file => file.publicPath.startsWith('/rulebook/') || file.publicPath.startsWith('/card-design/')),
   };
 }
 

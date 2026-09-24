@@ -35,6 +35,7 @@ on:
       - 'scripts/tts-sliding-trackers.mjs'
       - 'tts/**'
       - 'card-design/**'
+      - 'tools/card-design/artwork-authoring/**'
       - 'releases/**'
       - 'artifacts/reconstruction/**/rulebook/**'
       - 'artifacts/reconstruction/**/faction-guides/**'

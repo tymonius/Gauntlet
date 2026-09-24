@@ -39,6 +39,7 @@
       ".github",
       "apps",
       "artifacts",
+      "card-design",
       "docs",
       "governance",
       "legacy",
@@ -51,6 +52,7 @@
       "scripts",
       "src",
       "tests",
+      "tools",
       "workers"
     ]
   },
@@ -257,6 +259,41 @@
       "source": "packages/rendering/production-surface.mjs",
       "publicPath": "/card-design/production-surface.mjs",
       "kind": "shared-browser-contract"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-authoring-client.js",
+      "publicPath": "/card-design/artwork-authoring-client.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-batch-publish-control.js",
+      "publicPath": "/card-design/artwork-batch-publish-control.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-compositor-targets.js",
+      "publicPath": "/card-design/artwork-compositor-targets.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-compositor.css",
+      "publicPath": "/card-design/artwork-compositor.css",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-compositor.js",
+      "publicPath": "/card-design/artwork-compositor.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-crop.js",
+      "publicPath": "/card-design/artwork-crop.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/artwork-authoring/artwork-publish-fetch-recovery.js",
+      "publicPath": "/card-design/artwork-publish-fetch-recovery.js",
+      "kind": "production-tooling"
     },
     {
       "source": "images/sketches/hero-sketches/hero sketch.png",

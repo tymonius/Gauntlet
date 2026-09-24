@@ -5,6 +5,7 @@ on:
     paths:
       - "packages/game-data/**"
       - "card-design/**"
+      - "tools/card-design/artwork-authoring/**"
       - "design-tokens.css"
       - "images/artwork/**"
       - "scripts/validate-territory-mobile-render.mjs"
@@ -30,9 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf game-data
-          mkdir -p game-data
-          cp -a packages/game-data/. game-data/
+          node scripts/materialize-public-route-compatibility.mjs
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT

@@ -3,10 +3,12 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { ROOT } from '../current-game-authority.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from '../publication-boundary.mjs';
 
 const OUTPUT = resolve(ROOT, 'artifacts/card-authority');
 const SCREENSHOT = join(OUTPUT, 'homepage-card-showcase.png');
 const STATIC_ROOT = resolve(process.argv[2] || ROOT);
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -31,8 +33,11 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(STATIC_ROOT, requestPath || 'index.html');
+      const pathname = decodeURIComponent(url.pathname);
+      const requestPath = STATIC_ROOT === ROOT
+        ? sourcePathForPublicPath(PUBLICATION_CONTRACT, pathname)
+        : pathname.replace(/^\/+/, '');
+      const requested = resolve(STATIC_ROOT === ROOT ? ROOT : STATIC_ROOT, requestPath || 'index.html');
       if (!requested.startsWith(`${STATIC_ROOT}${sep}`) && requested !== join(STATIC_ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;

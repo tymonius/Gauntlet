@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const compositor = readFileSync('card-design/artwork-compositor.js', 'utf8');
+const compositor = readFileSync('tools/card-design/artwork-authoring/artwork-compositor.js', 'utf8');
 const localFormat = readFileSync('scripts/art-direction-overrides.mjs', 'utf8');
 const workerFormat = readFileSync('workers/artwork-authoring/src/format.js', 'utf8');
 

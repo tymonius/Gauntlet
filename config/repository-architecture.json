@@ -61,7 +61,7 @@
         "tools"
       ],
       "transitional": true,
-      "note": "Maintained card/component rendering and authoring system. Pure face-catalog and production-surface authority now lives under packages/rendering/, while card-design retains browser-facing compatibility adapters and environment-specific rendering/authoring implementation. Maintained design documentation belongs under docs/card-design/ and historical design studies under legacy/."
+      "note": "Maintained browser rendering, review, and component-presentation boundary. Pure face-catalog and production-surface authority lives under packages/rendering/, and artwork authoring/compositor source lives under tools/card-design/artwork-authoring/ while stable /card-design/ URLs remain materialized. Maintained design documentation belongs under docs/card-design/ and historical design studies under legacy/."
     },
     "config": {
       "role": "authority",
@@ -210,6 +210,14 @@
       ],
       "transitional": true,
       "note": "Lifecycle-selected current v0.7.2 versioned public release entrypoint."
+    },
+    "tools": {
+      "role": "production_tooling",
+      "target_groups": [
+        "tools"
+      ],
+      "transitional": false,
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; currently contains card-design artwork authoring/compositor tooling."
     }
   }
 }

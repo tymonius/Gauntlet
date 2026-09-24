@@ -20,7 +20,9 @@ import {
   surfaceDeviceScale,
   surfaceRasterPixels,
 } from '../card-design/production-surface.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from './publication-boundary.mjs';
 
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
 const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
 const DEVICE_SCALE_FACTOR = surfaceDeviceScale('portrait');
@@ -50,10 +52,8 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const sourcePath = requestPath.startsWith('game-data/')
-        ? `packages/${requestPath}`
-        : requestPath;
+      const publicPath = decodeURIComponent(url.pathname);
+      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
       const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');

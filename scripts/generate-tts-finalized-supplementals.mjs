@@ -17,7 +17,9 @@ import {
   surfaceCssPixels,
   surfaceDeviceScale,
 } from '../card-design/production-surface.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from './publication-boundary.mjs';
 
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const PORTRAIT_CSS = surfaceCssPixels('portrait');
 const LANDSCAPE_CSS = surfaceCssPixels('landscape');
 const DEVICE_SCALE = surfaceDeviceScale('portrait');
@@ -47,8 +49,9 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
+      const publicPath = decodeURIComponent(url.pathname);
+      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+      const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;

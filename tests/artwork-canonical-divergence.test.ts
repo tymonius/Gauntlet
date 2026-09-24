@@ -2,10 +2,10 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
-const compositor = readFileSync('card-design/artwork-compositor.js', 'utf8');
-const authoringClient = readFileSync('card-design/artwork-authoring-client.js', 'utf8');
-const compositorCss = readFileSync('card-design/artwork-compositor.css', 'utf8');
-const targets = readFileSync('card-design/artwork-compositor-targets.js', 'utf8');
+const compositor = readFileSync('tools/card-design/artwork-authoring/artwork-compositor.js', 'utf8');
+const authoringClient = readFileSync('tools/card-design/artwork-authoring/artwork-authoring-client.js', 'utf8');
+const compositorCss = readFileSync('tools/card-design/artwork-authoring/artwork-compositor.css', 'utf8');
+const targets = readFileSync('tools/card-design/artwork-authoring/artwork-compositor-targets.js', 'utf8');
 
 describe('artwork composition canonical guardrails', () => {
   it('publishes the approved Banker composition into current-game authority', () => {

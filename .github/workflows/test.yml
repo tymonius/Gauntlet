@@ -200,10 +200,9 @@ jobs:
               [[ "$match" == scripts/render-v071-booklet.mjs:* ]] && continue
               [[ "$match" == tests/v06*.test.ts:* ]] && continue
               [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
-              # Browser apps may deliberately keep a stable leading-slash public URL even
-              # after its repository source moves under apps/. Do not confuse that route
-              # identity with a source-code dependency on the retired path.
-              if [[ "$match" == apps/* ]] && { [[ "$match" == *"'/$retired"* ]] || [[ "$match" == *"\"/$retired"* ]] || [[ "$match" == *"\`/$retired"* ]]; }; then
+              # A stable leading-slash browser URL is a publication contract, not a
+              # repository-source dependency. Source moves deliberately preserve these URLs.
+              if [[ "$match" == *"'/$retired"* ]] || [[ "$match" == *"\"/$retired"* ]] || [[ "$match" == *"\`/$retired"* ]]; then
                 continue
               fi
               # A versioned public/source path such as v0.6.3/<retired> is historical

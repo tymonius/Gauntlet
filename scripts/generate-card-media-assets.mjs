@@ -4,8 +4,10 @@ import { extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { buildCatalog } from './tts-current-catalog.mjs';
+import { loadPublicationBoundary, sourcePathForPublicPath } from './publication-boundary.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const PUBLICATION_CONTRACT = loadPublicationBoundary(ROOT);
 const VERSION = 'v0.6.2';
 const OUTPUT_ROOT = join(ROOT, 'media', 'generated', VERSION);
 const CSS_CARD_WIDTH = 240;
@@ -58,8 +60,9 @@ async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
+      const publicPath = decodeURIComponent(url.pathname);
+      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+      const requested = resolve(ROOT, sourcePath || 'index.html');
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;
