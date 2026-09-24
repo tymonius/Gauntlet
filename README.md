@@ -8,14 +8,13 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 **Current canonical release:** defined by `config/release-lifecycle.json` and the matching frozen package under `releases/`.
 
-The frozen canonical package is [releases/v0.7.1/](releases/v0.7.1/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
+The frozen canonical package is [releases/v0.7.2/](releases/v0.7.2/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
 
-- the complete v0.7.1 Rulebook source;
-- the imposed half-letter Rulebook booklet PDF;
+- the Player's Guide, six Faction Guides, and Complete Rules sources;
+- eight imposed half-letter printable booklet PDFs;
 - canonical structured gameplay data;
-- the twelve locked starter Decks;
-- source-provenance data; and
-- the production Card Anatomy and Arcane-trait figures.
+- the twelve locked starter Decks; and
+- source-provenance data.
 
 Published release snapshots are immutable. Live browser tools and production renderers consume the complete current authorities in packages/game-data/current-game.json and rulebook/player-facing/current-rulebook.md; release publication freezes copies of those authorities under releases/.
 
@@ -44,7 +43,7 @@ A battle proceeds through:
 7. **Outcome**
 8. **Aftermath**
 
-A player wins by capturing the Territory at the opponent's end or by forcing and winning the opponent's Last Stand. Five factions also have an additional faction victory route.
+A player runs the Gauntlet and wins by controlling the entire Gauntlet or by forcing the opponent to make a Last Stand and winning the resulting battle. Five factions also have an additional faction victory route.
 
 ## Factions
 
@@ -57,19 +56,19 @@ A player wins by capturing the Territory at the opponent's end or by forcing and
 | **Mystics** | Alchemist, Spirit Walker | Rites, Invocation, Transmutation | Ritual |
 | **Inquisition** | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, Purge | Purification |
 
-The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards in each faction**, plus **25 Territories/Arenas**, **12 Leaders**, and **12 locked starter Decks**.
+The v0.7.2 playable pool contains **142 cards**: **52 Neutral cards and 15 cards in each faction**, plus **25 Territories/Arenas**, **12 Leaders**, and **12 locked starter Decks**.
 
 ## Playtest tools
 
 - [Start Playing](https://gauntlet.run/start/) — faction and Leader discovery plus starter-Deck handoff.
 - [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current Rulebook.
-- [Rulebook booklet](releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf) — imposed Letter duplex booklet, printed short-edge.
+- [Player's Guide booklet](releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf) — current shared-game teaching booklet; the release package also contains six Faction Guide booklets and Complete Rules.
 - [Card Reference](https://gauntlet.run/card-reference/) — current card and Territory reference.
 - [Faction pages](https://gauntlet.run/factions/) — current faction systems and Leader references.
-- [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.1 Deck packages.
+- [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.2 Deck packages.
 - [Rules Arbiter](https://gauntlet.run/rules-arbiter/) — current rules lookup and adjudication surface.
 - [Playtest tools](https://gauntlet.run/playtest/) — tracked/formal playtest workflows and feedback tools.
-- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.1 Workshop mod with all twelve starter kits, the six-Rite Mystics package, and Deck Code import.
+- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.2 Workshop mod with all twelve starter kits, the six-Rite Mystics package, and Deck Code import.
 
 ## Canonical source hierarchy
 
@@ -78,9 +77,9 @@ For current development and public browser tooling:
 1. packages/game-data/current-game.json is the complete current gameplay authority.
 2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
 3. config/publishing-authority.json is the current publishing-imprint authority for maintained development and player-facing surfaces; published release snapshots retain their recorded publishing identity.
-4. releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json identifies the frozen v0.7.1 published authority set.
-5. releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json is the frozen machine-readable release snapshot.
-6. releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json defines the frozen public starter Deck set.
+4. releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json identifies the frozen v0.7.2 published authority set.
+5. releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json is the frozen machine-readable release snapshot.
+6. releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json defines the frozen public starter Deck set.
 
 Generated PDFs, browser pages, printable tools, and TTS assets are derived production surfaces. If a derived surface conflicts with its governing current source, correct the governing source and regenerate the supported artifact. Do not silently rewrite a frozen published release package.
 
@@ -102,7 +101,7 @@ Complete current Rulebook authority plus the responsive Browser Rulebook and pri
 
 ### releases/
 
-Frozen versioned release packages and historical release evidence. Published packages include [releases/v0.7.1/](releases/v0.7.1/).
+Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.2/](releases/v0.7.2/); earlier valid packages remain historical evidence.
 
 ### card-design/
 
