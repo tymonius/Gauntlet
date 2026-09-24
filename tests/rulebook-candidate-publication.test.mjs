@@ -25,6 +25,8 @@ describe('Browser Rulebook candidate publication', () => {
     for (const id of factionIds) expect(app).toContain(`sourceUrl: './sources/factions/${id}.md'`);
 
     expect(html.match(/data-rulebook-booklet/g)).toHaveLength(2);
+    expect(html.match(/data-rulebook-print-note/g)).toHaveLength(2);
+    expect(html).toContain('class="hero-booklet-action"');
     expect(app).toContain("const CANDIDATE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
     expect(app).toContain('function updateBookletLinks(mode, documentId = activeCandidateDocument)');
     expect(app).not.toContain('link.hidden = candidate');
@@ -40,7 +42,7 @@ describe('Browser Rulebook candidate publication', () => {
     expect(app).toContain('mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl');
     expect(app).toContain('updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId)');
     expect(app).toContain('if (activeMode === RELEASED_MODE) updateBookletLinks(RELEASED_MODE)');
-    expect(app).toContain("printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'");
+    expect(app).toContain("printNotes.forEach((note) => { note.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'; });");
 
     expect(workflow).toContain('Stage current modular Rulebook booklets');
     expect(workflow).toContain('npm install --no-save --package-lock=false pdf-lib');
