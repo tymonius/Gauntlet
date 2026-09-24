@@ -126,8 +126,14 @@ function attachV070Overlay(
 
   const cardId = state.cardInstances[instanceId]?.cardId;
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
-  if (!card || card.card_form !== 'Territory Overlay') {
-    throw new V070GameActionError('That card is not a released Territory Overlay.');
+  const hasOverlayEffect = card?.effects.some(
+    effect => effect.label === 'Overlay',
+  ) ?? false;
+  if (!card
+    || (card.card_form !== 'Territory Overlay' && !hasOverlayEffect)) {
+    throw new V070GameActionError(
+      'That card is not a released Territory Overlay and has no released Overlay effect.',
+    );
   }
 
   const overlay: V070OverlayAttachment = {
