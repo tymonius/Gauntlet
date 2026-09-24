@@ -75,13 +75,19 @@ function contentType(path) {
   }[extension] || 'application/octet-stream';
 }
 
+function resolvePublicRequestPath(requestPath) {
+  const normalized = String(requestPath || '').replace(/^\/+/, '');
+  const publicPath = `/${normalized}`;
+  const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
+  return resolve(ROOT, sourcePath || 'index.html');
+}
+
 async function startStaticServer() {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const publicPath = decodeURIComponent(url.pathname);
-      const sourcePath = sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath);
-      const requested = resolve(ROOT, sourcePath || 'index.html');
+      const requestPath = decodeURIComponent(url.pathname);
+      const requested = resolvePublicRequestPath(requestPath);
       if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;
