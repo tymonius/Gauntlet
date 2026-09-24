@@ -132,7 +132,7 @@ This extraction does not move the browser face-render runtime or the remaining r
 
 - Canonical gameplay authority is `packages/game-data/current-game.json`.
 - Maintained active rules source/support lives under `packages/rules/`.
-- The Browser Rulebook implementation remains under `legacy/rulebook-browser/`, but the publication contract now classifies `/rulebook/` as the current v0.7.2 rules publication surface.
+- The Browser Rulebook implementation remains under `legacy/rulebook-browser/`, while the publication contract classifies `/rulebook/` as the current rules publication surface selected by release lifecycle.
 - `rulebook/` remains residual compatibility/support material rather than gameplay authority.
 - Rulebook QR assets remain active Player Guide publication support.
 
