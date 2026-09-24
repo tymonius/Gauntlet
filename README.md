@@ -62,7 +62,7 @@ The v0.7.2 playable pool contains **142 cards**: **52 Neutral cards and 15 cards
 
 - [Start Playing](https://gauntlet.run/start/) — faction and Leader discovery plus starter-Deck handoff.
 - [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current Rulebook.
-- [Player's Guide booklet](releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf) — current shared-game teaching booklet; the release package also contains six Faction Guide booklets and Complete Rules.
+- [Player's Guide booklet](releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf) — shared-game teaching booklet; the release package also contains six Faction Guide booklets and Complete Rules.
 - [Card Reference](https://gauntlet.run/card-reference/) — current card and Territory reference.
 - [Faction pages](https://gauntlet.run/factions/) — current faction systems and Leader references.
 - [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.2 Deck packages.
@@ -101,7 +101,7 @@ Complete current Rulebook authority plus the responsive Browser Rulebook and pri
 
 ### releases/
 
-Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.2/](releases/v0.7.2/); earlier valid packages remain historical evidence.
+Frozen versioned release packages and historical release evidence. The lifecycle-selected published package is [releases/v0.7.2/](releases/v0.7.2/); earlier valid packages remain historical evidence.
 
 ### card-design/
 
