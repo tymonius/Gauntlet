@@ -6,7 +6,7 @@ import {
 } from './engine';
 import {
   reduceV070TurnAction,
-  V070_EXECUTABLE_ACTION_CARD_IDS,
+  CURRENT_EXECUTABLE_ACTION_CARD_IDS,
 } from './turn-engine';
 import { currentCanonicalContent } from '../content/current-game';
 
@@ -216,7 +216,7 @@ describe('current v0.7.2 Bombardment Action placement', () => {
       currentCanonicalContent.cardsById.get('neutral-bombardment');
     expect(bombardment?.effects.find(effect => effect.label === 'Action')?.text)
       .toBe('The first enemy-controlled Territory ahead of you without an Overlay.');
-    expect(V070_EXECUTABLE_ACTION_CARD_IDS).toContain('neutral-bombardment');
+    expect(CURRENT_EXECUTABLE_ACTION_CARD_IDS).toContain('neutral-bombardment');
   });
 
   test('places automatically on the first enemy-controlled Territory ahead without an Overlay', () => {
