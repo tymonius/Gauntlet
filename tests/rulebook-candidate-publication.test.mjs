@@ -28,7 +28,7 @@ describe('Browser Rulebook candidate publication', () => {
     expect(html.match(/data-rulebook-booklet/g)).toHaveLength(2);
     expect(html.match(/data-rulebook-print-note/g)).toHaveLength(2);
     expect(html).toContain('class="hero-booklet-action"');
-    expect(app).toContain("const CANDIDATE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
+    expect(app).toContain("const LIVE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
     expect(app).toContain('function updateBookletLinks(mode, documentId = activeCandidateDocument)');
     expect(app).not.toContain('link.hidden = candidate');
     for (const publication of V072_MODULAR_BOOKLETS) {
@@ -40,10 +40,13 @@ describe('Browser Rulebook candidate publication', () => {
     const app = await read('legacy/rulebook-browser/app.js');
     const workflow = await read('.github/workflows/deploy-pages.yml');
 
-    expect(app).toContain('mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl');
-    expect(app).toContain('updateBookletLinks(candidate ? CANDIDATE_MODE : RELEASED_MODE, documentId)');
+    expect(app).toContain('function liveBookletUrl(documentId = activeCandidateDocument)');
+    expect(app).toContain('const href = liveBookletUrl(documentId)');
+    expect(app).toContain('updateBookletLinks(documentId)');
     expect(app).toContain('activeMode === RELEASED_MODE && activeCandidateDocument === normalized');
-    expect(app).toContain('updateBookletLinks(RELEASED_MODE, normalized)');
+    expect(app).toContain('pdfUrl = liveBookletUrl(normalized)');
+    expect(app).toContain('updateBookletLinks(normalized)');
+    expect(app).not.toContain('mode === CANDIDATE_MODE ? candidateBookletUrl(documentId) : pdfUrl');
     expect(app).toContain("printNotes.forEach((note) => { note.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.'; });");
 
     expect(workflow).toContain('Stage current modular Rulebook booklets');
