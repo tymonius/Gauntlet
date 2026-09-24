@@ -259,6 +259,7 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
       purpose:
         | 'Landslide'
+        | 'Fog of War'
         | 'Encampment'
         | 'Circle of Bones'
         | "Nature's Altar"
