@@ -40,6 +40,11 @@ import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 import {
   configureV070WitchcraftBattleEffectHandlerResolver,
 } from './witchcraft-handler-resolver';
+import {
+  V070_REARGUARD_BATTLE_TEXT,
+  V070_REARGUARD_ID,
+  registerV070RearguardBattleEffect,
+} from './rearguard';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -110,7 +115,21 @@ const suppliesHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const rearguardHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_REARGUARD_ID,
+  expectedText: V070_REARGUARD_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070RearguardBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
+  [V070_REARGUARD_ID, rearguardHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -346,6 +365,12 @@ function deferredRegistrationExists(
   if (cardId === V070_SUPPLIES_ID) {
     return state.battleRuntime?.suppliesBattleSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_REARGUARD_ID) {
+    return state.battleRuntime?.battleCardAftermathAssetBanks.some(bank =>
+      bank.sourceCardId === V070_REARGUARD_ID
+      && bank.sourceInstanceId === sourceInstanceId
+    ) ?? false;
   }
   return false;
 }

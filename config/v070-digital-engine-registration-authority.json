@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 67,
+  "registeredBattleSurfaces": 68,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -30,7 +30,6 @@
     "military-give-chase::1::Gambit/Tactic",
     "military-hold-the-line::1::Gambit/Tactic",
     "military-invasion::1::Gambit/Tactic",
-    "military-rearguard::1::Gambit/Tactic",
     "military-reserve-force::2::Gambit/Tactic",
     "military-shock-and-awe::1::Gambit/Tactic",
     "military-war-crimes::1::Gambit/Tactic",
@@ -54,5 +53,5 @@
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the Reconnaissance battle tranche. Action parity is 72/72; battle parity is 67/113, leaving 46 explicitly queued unsupported battle surfaces. The unsupported surface keys are sorted and intentionally review-locked so registry drift fails Card Authority instead of silently changing the parity denominator or queue."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after the Rearguard battle-banking tranche. Action parity remains 72/72; battle parity is 68/113, leaving 45 explicitly queued unsupported battle surfaces. Rearguard's unchanged Gambit/Tactic text is now executable through the shared controlled Aftermath Asset-banking flow. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
