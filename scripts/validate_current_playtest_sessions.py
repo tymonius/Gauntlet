@@ -176,9 +176,12 @@ def main() -> int:
     require(f"{START_SOURCE}/index.html", [
         "Tabletop Simulator",
         "Capture. Draw. Act. Move.",
+        'id="startTrackedPlaytest"',
+        "Start playtest session",
     ], errors)
     require(f"{START_SOURCE}/app.js", [
-        "Create tracked playtest",
+        "startTrackedPlaytest",
+        "openTrackedPlaytest",
     ], errors)
 
     for rel in [
