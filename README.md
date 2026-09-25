@@ -190,7 +190,7 @@ See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The imme
 
 <!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
 
-<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT -->
+<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises, LLC<!-- /PUBLISHING-FACT -->
 
 <!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 
