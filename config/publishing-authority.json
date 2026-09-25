@@ -9,9 +9,9 @@
     "logo": "images/branding/tds-games-mark.svg"
   },
   "parent": {
-    "displayName": "Misty Hollow Enterprises",
-    "intendedLegalName": "Misty Hollow Enterprises LLC",
-    "legalEntityStatus": "formation-pending"
+    "displayName": "Misty Hollow Enterprises, LLC",
+    "intendedLegalName": "Misty Hollow Enterprises, LLC",
+    "legalEntityStatus": "formed"
   },
   "copyright": {
     "holder": "Tymon Scott",
@@ -20,11 +20,11 @@
   },
   "playerFacing": {
     "publisherLine": "Published by TDS Games",
-    "parentLine": "An imprint of Misty Hollow Enterprises",
-    "imprintStatement": "Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review."
+    "parentLine": "An imprint of Misty Hollow Enterprises, LLC",
+    "imprintStatement": "Published by TDS Games, an imprint of Misty Hollow Enterprises, LLC, for playtesting and review."
   },
   "legal": {
-    "ownershipAssertion": "TDS Games is a publishing imprint of Misty Hollow Enterprises. Gauntlet copyright and other underlying intellectual-property ownership remain with Tymon Scott unless separately transferred by written agreement.",
-    "entityStatus": "Misty Hollow Enterprises LLC is the intended legal entity, but this authority record does not represent it as formed until Virginia formation is complete. Player-facing copy therefore omits the LLC suffix while formation is pending."
+    "ownershipAssertion": "TDS Games is a publishing imprint of Misty Hollow Enterprises, LLC. Gauntlet copyright and other underlying intellectual-property ownership remain with Tymon Scott unless separately transferred by written agreement.",
+    "entityStatus": "Misty Hollow Enterprises, LLC has been formed in Virginia. Current maintained player-facing copy uses the legal entity name; frozen published release snapshots retain their recorded publishing identity."
   }
 }
