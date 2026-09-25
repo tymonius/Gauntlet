@@ -39,7 +39,7 @@
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../site.css" />
-  <link rel="stylesheet" href="styles.css?v=20260906-1" />
+  <link rel="stylesheet" href="styles.css?v=20260925-1" />
   <link rel="stylesheet" href="faction-lesson-polish.css?v=20260906-4" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
@@ -71,7 +71,6 @@
         <p class="hero-lede">Learn the simple core of the game, choose a side, learn the one extra layer your side adds, and start playing. You can look up the details when you need them.</p>
         <div class="hero-actions">
           <a class="button primary" href="#overview">Begin</a>
-          <a class="button secondary" href="../rulebook/">Open the rulebook</a>
         </div>
       </div>
       <ol class="journey" aria-label="New-player steps">
@@ -79,7 +78,7 @@
         <li><span>2</span><strong>Choose a side</strong><small>Pick a faction and one of its two Leaders.</small></li>
         <li><span>3</span><strong>Learn to play</strong><small>See what you do on a turn and in a battle.</small></li>
         <li><span>4</span><strong>Learn your faction</strong><small>See the one extra system your chosen side adds.</small></li>
-        <li><span>5</span><strong>Play</strong><small>Set up a physical or Tabletop Simulator game.</small></li>
+        <li><span>5</span><strong>Play</strong><small>Create one playtest session, invite your opponent, then set up the table.</small></li>
       </ol>
     </section>
 
@@ -257,23 +256,43 @@
       <div class="section-heading split-heading">
         <div>
           <p class="eyebrow">Step 5 · Play</p>
-          <h2 id="print-title">Take your chosen side into a game.</h2>
+          <h2 id="print-title">You're ready. Start the playtest here.</h2>
         </div>
-        <p>If you're together, use the physical game. If you're in different locations, use Tabletop Simulator.</p>
+        <p>Create one shared session before you begin. It carries your chosen faction and Leader forward, gives your opponent one join link, keeps Rules Arbiter questions attached to the game, and collects both players' feedback afterward.</p>
+      </div>
+
+      <div class="playtest-handoff" aria-labelledby="playtest-handoff-title">
+        <div class="playtest-handoff-copy">
+          <p class="eyebrow">From learning to playing</p>
+          <h3 id="playtest-handoff-title">One session takes both players from setup through feedback.</h3>
+          <ol class="handoff-steps">
+            <li><span>1</span><strong>Create</strong><small>One player creates the shared playtest session.</small></li>
+            <li><span>2</span><strong>Invite</strong><small>Send the join link to the other player so both seats are attached to the same game.</small></li>
+            <li><span>3</span><strong>Set up</strong><small>The session points you to the correct physical or Tabletop Simulator setup.</small></li>
+            <li><span>4</span><strong>Play</strong><small>Keep the session open for rules questions, then record the result and each player's feedback.</small></li>
+          </ol>
+        </div>
+        <div class="playtest-handoff-action">
+          <p class="eyebrow">Your side</p>
+          <h3 id="playtestSelectionHeading">Choose a faction and Leader first.</h3>
+          <p id="playtestSelectionCopy">Your choice will carry into the playtest session automatically.</p>
+          <button id="startTrackedPlaytest" class="button primary" type="button" disabled>Start playtest session</button>
+          <small>Only one player creates the session. The other player joins from the link it generates.</small>
+        </div>
       </div>
 
       <div class="play-mode-grid">
         <article class="play-mode-card">
           <p class="eyebrow">Together in person</p>
           <h3>Physical tabletop</h3>
-          <p>Prepare the printed Deck, Leader, Territories, references, and faction components for each player, then play at one table.</p>
-          <a class="button secondary" href="#physicalSetup">Prepare the physical game</a>
+          <p>Prepare the printed Deck, Leader, Territories, references, and faction components for each player. The playtest session will keep both players and the result attached to the same game.</p>
+          <a class="button secondary" href="#physicalSetup">Prepare physical components</a>
         </article>
         <article class="play-mode-card">
           <p class="eyebrow">Playing remotely</p>
           <h3>Tabletop Simulator</h3>
-          <p>The public v0.7.2 Workshop mod contains all twelve starter kits and the shared table setup for players in different locations.</p>
-          <a class="button secondary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open the Workshop mod ↗</a>
+          <p>The public v0.7.2 Workshop mod contains all twelve starter kits and the shared table setup for players in different locations. Create the playtest session first so both players enter the same tracked game before opening the table.</p>
+          <a class="text-link" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Workshop mod reference ↗</a>
         </article>
       </div>
 
@@ -323,7 +342,7 @@
     </nav>
   </footer>
 
-  <script src="app.js?v=20260905-6" defer></script>
+  <script src="app.js?v=20260925-1" defer></script>
   <script src="leader-lesson-art.js?v=20260906-1" defer></script>
 </body>
 </html>

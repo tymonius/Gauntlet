@@ -58,6 +58,7 @@
       "loadingPanel", "errorPanel", "errorTitle", "errorMessage", "createPanel", "createForm",
       "createName", "createPlayMode", "createFaction", "createLeader", "createSelectionReason", "savedChoiceNote", "createStatus", "sessionApp",
       "sessionSerial", "lifecycleCopy", "statusLabel", "playerCount", "arbiterCount", "responseCount",
+      "nextStepPanel", "nextStepTitle", "nextStepCopy", "nextStepDetail",
       "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards",
       "transportPanel", "transportEyebrow", "transportTitle", "transportCopy", "transportMatchup",
       "ttsWorkshopLink", "physicalSetupLink", "transportReferences", "joinPanel",
@@ -195,7 +196,9 @@
     document.body.dataset.trackedRole = creator ? "creator" : joinedPlayer ? "participant" : "visitor";
     document.body.dataset.trackedLifecycle = session.lifecycleState || "joining";
 
-    el.sharePanel.hidden = !open || full;
+    renderNextStep({ session, joinedPlayer, creator, open, full, ownResponse });
+
+    el.sharePanel.hidden = !creator || !open || full;
     if (!el.sharePanel.hidden) await renderQrCode();
     el.joinPanel.hidden = !open || Boolean(joinedPlayer) || full;
     el.joinedPanel.hidden = !joinedPlayer;
@@ -205,6 +208,7 @@
       el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}.${riteCopy ? ` Selected Rites: ${riteCopy}.` : ""} Rules Arbiter questions from this device will be attributed to you.`;
     }
 
+    el.transportPanel.hidden = !open || !joinedPlayer || !full;
     el.playPanel.hidden = !creator || !open || !joinedPlayer || !full;
     el.resultSection.hidden = !creator || !open || !joinedPlayer || !full || session.resultSubmitted;
     el.responseSection.hidden = !open || !joinedPlayer || !session.resultSubmitted || ownResponse;
@@ -222,6 +226,61 @@
         : "The shared result is submitted. Complete your private response below.", "success");
     }
     if (state.hostKey) await loadReview();
+  }
+
+  function renderNextStep({ session, joinedPlayer, creator, open, full, ownResponse }) {
+    if (!el.nextStepPanel) return;
+
+    let title = "Keep this page open.";
+    let copy = "This page will guide the rest of the playtest.";
+    let detail = "";
+
+    if (!open) {
+      title = session.complete ? "This playtest is complete." : "This session is no longer accepting actions.";
+      copy = session.complete
+        ? "The shared result and both player responses have been submitted."
+        : "The creator has closed or cancelled this session.";
+    } else if (!joinedPlayer) {
+      title = "Join this playtest.";
+      copy = "Confirm your name, faction, and Leader in the form directly below. This invitation link is already the correct session—do not create a separate one.";
+      detail = "After you join, the table setup and Rules Arbiter controls will appear automatically.";
+    } else if (!full) {
+      title = creator ? "Invite your opponent." : "You are joined. Wait for the other seat.";
+      copy = creator
+        ? "Copy the join link or show the QR code below. Your opponent should open it on their own device and join this same session."
+        : "Keep this page open while the other player joins.";
+      detail = creator ? "Do not start the game yet. The setup handoff appears after both seats are filled." : "";
+    } else if (session.lifecycleState === "ready") {
+      title = creator ? "Set up the table, then start the game." : "Set up your side and get ready to play.";
+      copy = session.playMode === "physical"
+        ? "Use the physical setup below for the selected starter Decks."
+        : "Open the Tabletop Simulator Workshop mod below and take the starter kit for your selected Leader.";
+      detail = creator
+        ? "When both players are ready, press Start game once. Your opponent does not need to press it."
+        : "The game creator records the start for both players. You only need to keep this page available for rules questions and feedback.";
+    } else if (session.lifecycleState === "playing") {
+      title = "Play normally.";
+      copy = "Use the Rules Arbiter whenever a question blocks play; questions opened from this session are linked to the game automatically.";
+      detail = creator
+        ? "When play ends, use Complete game or Stopped early below to open the shared result form."
+        : "The creator records the end of the game. You will get your own private response form after the shared result is submitted.";
+    } else if (session.lifecycleState === "feedback") {
+      title = ownResponse ? "Your response is submitted." : "Complete your private response.";
+      copy = ownResponse
+        ? "Keep this page open until the other player's response is submitted and the session closes."
+        : "The shared result is recorded. Complete the individual response form below; your answers are stored separately from the public game view.";
+      detail = creator && !session.resultSubmitted
+        ? "Record the shared result before either player completes the individual response."
+        : "";
+    } else if (session.lifecycleState === "submitted") {
+      title = "Playtest complete.";
+      copy = "The result and both individual responses are submitted. No further action is required.";
+    }
+
+    el.nextStepTitle.textContent = title;
+    el.nextStepCopy.textContent = copy;
+    el.nextStepDetail.textContent = detail;
+    el.nextStepDetail.hidden = !detail;
   }
 
   function renderPlayers() {
@@ -265,8 +324,8 @@
 
     if (mode === "tts") {
       el.transportEyebrow.textContent = "Remote play · Tabletop Simulator";
-      el.transportTitle.textContent = "Open the v0.7.1 Workshop mod.";
-      el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
+      el.transportTitle.textContent = "Open the v0.7.2 Workshop mod.";
+      el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader. When both players are seated and setup is complete, the creator returns here and presses Start game.";
       el.ttsWorkshopLink.hidden = false;
       el.physicalSetupLink.hidden = true;
     } else {

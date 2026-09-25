@@ -282,33 +282,21 @@
       "starterPreview", "factionLessonEmpty", "factionLesson", "factionLessonEyebrow",
       "factionLessonTitle", "factionLessonIntro", "factionLessonSteps", "factionLessonVictory",
       "leaderLessonTitle", "leaderLessonAbility", "leaderLessonTips", "factionGuideLink",
-      "printForm", "printSelectionHeading", "printSelectionCopy", "openStarterDeck", "printStatus"
+      "printForm", "printSelectionHeading", "printSelectionCopy", "openStarterDeck", "printStatus",
+      "startTrackedPlaytest", "playtestSelectionHeading", "playtestSelectionCopy"
     ]) el[id] = document.getElementById(id);
 
     document.querySelectorAll('input[name="faction"]').forEach(input => {
       input.addEventListener("change", () => selectFaction(input.value));
     });
     el.printForm.addEventListener("submit", openGuidedDeckbuilder);
-    installTrackedPlaytestAction();
+    el.startTrackedPlaytest?.addEventListener("click", openTrackedPlaytest);
 
     await loadCurrentAuthority();
     restoreState();
     renderChoice();
     await loadStarterDecks();
     renderChoice();
-  }
-
-  function installTrackedPlaytestAction() {
-    if (!el.openStarterDeck || document.getElementById("startTrackedPlaytest")) return;
-    const panel = document.createElement("div");
-    panel.className = "tracked-playtest-start";
-    panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
-    panel.innerHTML = `
-      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Track this playtest</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, and record the result and separate player feedback.</span></p>
-      <button id="startTrackedPlaytest" class="button primary" type="button" disabled>Create tracked playtest</button>`;
-    el.openStarterDeck.after(panel);
-    el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");
-    el.startTrackedPlaytest.addEventListener("click", openTrackedPlaytest);
   }
 
   function selectFaction(factionId, preferredLeader = "") {
@@ -551,6 +539,17 @@
         ? `${deck.name} will load automatically in the Deckbuilder. Your choice is saved in this browser.`
         : "The matching starter Deck will load automatically in the Deckbuilder. Your choice is saved in this browser."
       : "Your selection is saved in this browser as you work.";
+
+    if (el.playtestSelectionHeading) {
+      el.playtestSelectionHeading.textContent = faction && leader
+        ? `${leader.name} of the ${faction.name}`
+        : "Choose a faction and Leader first.";
+    }
+    if (el.playtestSelectionCopy) {
+      el.playtestSelectionCopy.textContent = faction && leader
+        ? "Ready to continue. This faction and Leader will be preselected when you create the shared playtest session."
+        : "Your choice will carry into the playtest session automatically.";
+    }
   }
 
   function openGuidedDeckbuilder(event) {

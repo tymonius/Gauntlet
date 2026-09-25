@@ -242,6 +242,85 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   .play-mode-card .button { width: 100%; text-align: center; }
 }
 
+.playtest-handoff {
+  display: grid;
+  grid-template-columns: minmax(0,1.35fr) minmax(320px,.65fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.playtest-handoff-copy,
+.playtest-handoff-action {
+  padding: 2rem;
+  border: 1px solid var(--start-line);
+  background: var(--start-panel);
+  box-shadow: var(--start-shadow);
+}
+.playtest-handoff-copy {
+  border-top: 5px solid var(--start-gold);
+}
+.playtest-handoff-copy h3,
+.playtest-handoff-action h3 {
+  margin: .2rem 0 1rem;
+  font-family: var(--font-display-historical);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.playtest-handoff-copy h3 { font-size: clamp(2rem,3.3vw,3rem); }
+.playtest-handoff-action {
+  border-top: 5px solid var(--start-red);
+  align-self: stretch;
+}
+.playtest-handoff-action h3 { font-size: 2rem; }
+.playtest-handoff-action > p { line-height: 1.55; }
+.playtest-handoff-action .button {
+  width: 100%;
+  justify-content: center;
+  margin-top: .4rem;
+}
+.playtest-handoff-action small {
+  display: block;
+  margin-top: .8rem;
+  color: var(--start-muted);
+  line-height: 1.45;
+}
+.handoff-steps {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: .75rem;
+  list-style: none;
+  margin: 1.4rem 0 0;
+  padding: 0;
+}
+.handoff-steps li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: .1rem .65rem;
+  padding: .9rem;
+  border: 1px solid var(--start-line);
+  background: rgba(143,31,37,.035);
+}
+.handoff-steps span {
+  grid-row: 1/3;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--start-red);
+  color: #fff;
+  font-family: var(--font-interface);
+  font-weight: 900;
+}
+.handoff-steps strong { font-family: var(--font-interface); }
+.handoff-steps small { color: var(--start-muted); line-height: 1.4; }
+@media (max-width: 900px) {
+  .playtest-handoff { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .playtest-handoff-copy,.playtest-handoff-action { padding: 1.35rem; }
+  .handoff-steps { grid-template-columns: 1fr; }
+}
+
 /* Follow-up onboarding polish. */
 [hidden]{display:none!important}
 .leader-choice .leader-summary{display:block;margin-top:.42rem;color:#4f5754;font-size:1rem;line-height:1.5}
