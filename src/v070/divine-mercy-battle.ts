@@ -1,4 +1,5 @@
 import { v070CanonicalContent } from '../content/v070';
+import { currentCanonicalContent } from '../content/current-game';
 import {
   V070GameActionError,
   appendV070Event,
@@ -17,6 +18,8 @@ import {
 export const V070_DIVINE_MERCY_ID = 'inquisition-divine-mercy' as const;
 export const V070_DIVINE_MERCY_BATTLE_TEXT =
   "Move one card from the opponent's Graveyard to their Discard Pile. +2 Battle Total." as const;
+export const CURRENT_DIVINE_MERCY_BATTLE_TEXT =
+  "Choose one card in the opponent's Graveyard and move it to their Discard Pile. +2 Battle Total." as const;
 
 export interface V070DivineMercyBattleEffectRuntime {
   owner: PlayerId;
@@ -30,6 +33,18 @@ function validateV070DivineMercyAuthority(): void {
   if (!card || effect?.text !== V070_DIVINE_MERCY_BATTLE_TEXT) {
     throw new Error(
       'v0.7.0 Divine Mercy battle text drifted from released authority.',
+    );
+  }
+
+  const currentCard =
+    currentCanonicalContent.cardsById.get(V070_DIVINE_MERCY_ID);
+  const currentEffect = currentCard?.effects.find(
+    candidate => candidate.label === 'Gambit/Tactic',
+  );
+  if (!currentCard
+    || currentEffect?.text !== CURRENT_DIVINE_MERCY_BATTLE_TEXT) {
+    throw new Error(
+      'Current Divine Mercy battle text drifted from current gameplay authority.',
     );
   }
 }

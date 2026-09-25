@@ -45,6 +45,10 @@ import {
   V070_REARGUARD_ID,
   registerV070RearguardBattleEffect,
 } from './rearguard';
+import {
+  CURRENT_DIVINE_MERCY_BATTLE_TEXT,
+  V070_DIVINE_MERCY_ID,
+} from './divine-mercy-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -144,6 +148,25 @@ export function v070BattleEffectHandler(
   cardId: string,
 ): previous.V070BattleEffectHandler | undefined {
   return deferredHandlers.get(cardId) ?? previous.v070BattleEffectHandler(cardId);
+}
+
+/**
+ * Current-release audit adapter. Runtime resolution remains on the frozen
+ * v0.7.0 handler graph until migrated deliberately; reviewed wording-only
+ * changes can expose the current exact text here when behavior is unchanged.
+ */
+export function currentBattleEffectHandler(
+  cardId: string,
+): previous.V070BattleEffectHandler | undefined {
+  const handler = v070BattleEffectHandler(cardId);
+  if (!handler) return undefined;
+  if (cardId === V070_DIVINE_MERCY_ID) {
+    return {
+      ...handler,
+      expectedText: CURRENT_DIVINE_MERCY_BATTLE_TEXT,
+    };
+  }
+  return handler;
 }
 
 configureV070WitchcraftBattleEffectHandlerResolver(v070BattleEffectHandler);
