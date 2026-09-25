@@ -22,7 +22,7 @@ v0.7.2 preserves the established two-player core and the **142-card / 25-Territo
 - **Supply Depot, Smuggler's Run, and Quicksand** are rebalanced, and ten of the twelve starter Territory packages change;
 - Action timing, Capture versus Front Line advancement, normal battle commitment order, and Run the Gauntlet are made explicit in the current authority and player-facing rules;
 - the v0.7.2 Tabletop Simulator package is live on the existing Workshop item after its manual QA and subscribed-copy smoke test; and
-- TDS Games / Misty Hollow Enterprises publication branding remains the player-facing publishing identity.
+- TDS Games / Misty Hollow Enterprises, LLC publication branding remains the player-facing publishing identity.
 
 Published release snapshots remain immutable historical evidence. Corrections discovered after publication must be made in live/current sources or a later release without silently rewriting the frozen package.
 

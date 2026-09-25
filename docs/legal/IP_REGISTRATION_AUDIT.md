@@ -211,13 +211,13 @@ Current USPTO base filing fee: **$350 per class**, before possible additional fe
 
 ### Entity ownership
 
-The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises** for maintained development and future publication surfaces. Misty Hollow Enterprises LLC is the intended operating entity but is not represented as formed in player-facing materials until Virginia formation is complete. Frozen published releases retain the publishing identity recorded at publication.
+The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises, LLC** for maintained development and future publication surfaces. Misty Hollow Enterprises, LLC is now formed in Virginia, and maintained current player-facing materials should use the exact legal entity name. Frozen published releases retain the publishing identity recorded at publication.
 
-Gauntlet copyright remains with **Tymon Scott**. The intended operating model is a written game-publishing license from the copyright owner to Misty Hollow Enterprises, operating through TDS Games; the publishing identity does not itself transfer copyright or trademark ownership.
+Gauntlet copyright remains with **Tymon Scott**. The intended operating model is a written game-publishing license from the copyright owner to Misty Hollow Enterprises, LLC, operating through TDS Games; the publishing identity does not itself transfer copyright or trademark ownership.
 
 Trademark ownership should be decided **before** filing, particularly if an intent-to-use application is contemplated.
 
-Copyright registration does not need to be delayed solely to wait for formation of a future company: registrations can be made in the current copyright owner's name and copyright ownership can later be transferred by written assignment. Any transfer should be documented and, where useful, recorded.
+Entity formation is no longer a blocker for copyright registration. Registrations may remain in the current copyright owner's name; any later transfer of copyright ownership would require a written assignment and should be documented and, where useful, recorded.
 
 ## 7. Immediate action queue
 
@@ -242,7 +242,8 @@ Copyright registration does not need to be delayed solely to wait for formation 
 - [ ] Create an asset/IP ledger and keep it current with each release.
 - [ ] Adopt contributor IP terms before accepting substantive outside contributions.
 - [ ] Document licenses for fonts, libraries, textures, and other third-party production assets.
-- [x] Establish working relationship: TDS Games is the MHE game-publishing imprint; Gauntlet IP remains with Tymon Scott and is intended to be licensed to the operating company. Finalize the written license after entity formation.
+- [x] Establish working relationship: TDS Games is the Misty Hollow Enterprises, LLC game-publishing imprint; Gauntlet IP remains with Tymon Scott.
+- [ ] Finalize the written Gauntlet publishing license from Tymon Scott to Misty Hollow Enterprises, LLC.
 - [ ] Evaluate website terms/privacy and commercial product-liability needs before paid release.
 
 ## 8. Authoritative reference points
