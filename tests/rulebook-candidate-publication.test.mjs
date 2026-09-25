@@ -29,6 +29,8 @@ describe('Browser Rulebook candidate publication', () => {
     expect(html.match(/data-rulebook-booklet/g)).toHaveLength(2);
     expect(html.match(/data-rulebook-print-note/g)).toHaveLength(2);
     expect(html).toContain('class="hero-booklet-action"');
+    expect(html.match(/\.\/booklets\/v0\.7\.2\/Gauntlet_v0\.7\.2_Player_Guide_Booklet\.pdf/g)).toHaveLength(3);
+    expect(html).not.toContain('../releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf');
     expect(app).toContain("const LIVE_BOOKLET_BASE_URL = './booklets/v0.7.2/'");
     expect(app).toContain('function updateBookletLinks(documentId = activeCandidateDocument)');
     expect(app).not.toContain('link.hidden = candidate');
