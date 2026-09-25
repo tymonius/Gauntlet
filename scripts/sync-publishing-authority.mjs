@@ -42,15 +42,7 @@ const websiteFooterTargets = [
 ];
 
 const targets = [
-  {
-    path: 'rulebook/player-facing/current-rulebook.md',
-    expectedCounts: {
-      'publisher.line': 0,
-      'publisher.parent_line': 0,
-      'imprint.statement': 1,
-      'copyright.notice': 1,
-    },
-  },
+
   {
     path: 'README.md',
     expectedCounts: {
