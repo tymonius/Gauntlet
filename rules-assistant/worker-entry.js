@@ -89,7 +89,7 @@ export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
         <span class="brand-mark" aria-hidden="true">G</span>
         <span>Gauntlet</span>
       </a>
-      <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p>
+      <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises, LLC<!-- /PUBLISHING-FACT --></p>
     </div>
     <p class="copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
   </footer>`;
