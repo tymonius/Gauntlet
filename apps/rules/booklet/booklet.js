@@ -173,7 +173,7 @@ function createBackCover(publication) {
       <div class="back-url">GAUNTLET.RUN</div>
       <div class="back-accounting">
         <img src="/images/branding/tds-games-mark.svg" alt="TDS Games" />
-        <div><strong>Gauntlet v0.7.2 · ${publication.title}</strong><span>Published by TDS Games, an imprint of Misty Hollow Enterprises.</span><span>Copyright © 2026 Tymon Scott. All rights reserved.</span></div>
+        <div><strong>Gauntlet v0.7.2 · ${publication.title}</strong><span><!-- PUBLISHING-FACT:publisher.publication_line -->Published by TDS Games, an imprint of Misty Hollow Enterprises, LLC.<!-- /PUBLISHING-FACT --></span><span><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></span></div>
       </div>
     </div>`;
 }

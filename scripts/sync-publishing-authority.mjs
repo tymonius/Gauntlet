@@ -52,6 +52,13 @@ const targets = [
       'copyright.notice': 1,
     },
   },
+  {
+    path: 'apps/rules/booklet/booklet.js',
+    expectedCounts: {
+      'publisher.publication_line': 1,
+      'copyright.notice': 1,
+    },
+  },
   ...websiteFooterTargets.map(path => ({
     path,
     expectedCounts: {

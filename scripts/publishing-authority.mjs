@@ -30,6 +30,7 @@ export function validatePublishingAuthority(authority) {
     ['copyright.notice', copyright?.notice],
     ['playerFacing.publisherLine', playerFacing?.publisherLine],
     ['playerFacing.parentLine', playerFacing?.parentLine],
+    ['playerFacing.publicationLine', playerFacing?.publicationLine],
     ['playerFacing.imprintStatement', playerFacing?.imprintStatement],
   ];
   for (const [label, value] of required) {
@@ -64,6 +65,12 @@ export function validatePublishingAuthority(authority) {
   if (playerFacing.parentLine !== expectedParentLine) {
     throw new Error(
       `playerFacing.parentLine is "${playerFacing.parentLine}", expected "${expectedParentLine}".`,
+    );
+  }
+  const expectedPublicationLine = `Published by ${imprint.displayName}, an imprint of ${parent.displayName}.`;
+  if (playerFacing.publicationLine !== expectedPublicationLine) {
+    throw new Error(
+      `playerFacing.publicationLine is "${playerFacing.publicationLine}", expected "${expectedPublicationLine}".`,
     );
   }
   if (!playerFacing.imprintStatement.includes(imprint.displayName) || !playerFacing.imprintStatement.includes(parent.displayName)) {
@@ -102,6 +109,7 @@ export function derivePublishingFacts(authority) {
     'imprint.display_name': authority.imprint.displayName,
     'publisher.line': authority.playerFacing.publisherLine,
     'publisher.parent_line': authority.playerFacing.parentLine,
+    'publisher.publication_line': authority.playerFacing.publicationLine,
     'imprint.statement': authority.playerFacing.imprintStatement,
     'copyright.notice': authority.copyright.notice,
   });
