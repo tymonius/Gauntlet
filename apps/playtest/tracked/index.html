@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
-  <link rel="stylesheet" href="styles.css?v=20260922-1" />
+  <link rel="stylesheet" href="styles.css?v=20260925-1" />
   <link rel="stylesheet" href="live-state.css?v=20260802-1" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
@@ -53,10 +53,10 @@
       <div>
         <p class="eyebrow">One game · two players · digital feedback</p>
         <h1 id="tracked-title">Track this <span>playtest.</span></h1>
-        <p class="hero-lede">Create one game, let your opponent scan one code, ask the Rules Arbiter normally, and complete the questionnaire together when play ends.</p>
+        <p class="hero-lede">One player creates the session, the other joins from one link, and this page tells each person what to do next—from setup through the final feedback.</p>
       </div>
       <div class="tracked-principles" aria-label="Tracked playtest steps">
-        <span>1 · Join</span><span>2 · Play</span><span>3 · Record</span><span>4 · Respond</span>
+        <span>1 · Create</span><span>2 · Invite</span><span>3 · Play</span><span>4 · Respond</span>
       </div>
     </section>
 
@@ -73,14 +73,14 @@
     <section id="createPanel" class="create-layout" hidden>
       <div class="tracked-panel create-copy">
         <p class="eyebrow">Self-serve playtest · v0.7.2</p>
-        <h2>One player creates the game.</h2>
-        <p>The creator receives a public join link and QR code. Both players join from their own devices so faction choices, Rules Arbiter questions, live observations, and individual questionnaire responses stay attached to the same game.</p>
+        <h2>Only one player creates the session.</h2>
+        <p>If you came here from Start Playing, your faction and Leader are already suggested. Create the session once, then send the generated join link to your opponent. They should join that session from their own device—not create a second one.</p>
         <ol>
-          <li>Create the game using your faction and Leader.</li>
-          <li>Let the opponent scan the QR code and confirm their own choice.</li>
-          <li>If you're together in person, use the physical tabletop. If you're in different locations, use Tabletop Simulator.</li>
-          <li>The creator records the start once, then both players play normally.</li>
-          <li>The creator submits the shared result; both players submit separate individual responses.</li>
+          <li><strong>Create:</strong> confirm your name, play method, faction, and Leader.</li>
+          <li><strong>Invite:</strong> send the public join link or QR code to your opponent.</li>
+          <li><strong>Set up:</strong> once both seats are filled, this page shows the correct physical or Tabletop Simulator handoff.</li>
+          <li><strong>Play:</strong> the creator records the start once; both players can use the Rules Arbiter and live observation controls.</li>
+          <li><strong>Finish:</strong> the creator records the shared result, then each player submits their own response.</li>
         </ol>
         <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
         <p class="privacy-note"><strong>Already finished the game?</strong> <a href="../retrospective/">Create a retrospective record</a> if both players can still join that record.</p>
@@ -106,7 +106,7 @@
         <label>What made this faction or Leader appeal to you?
           <textarea id="createSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing; this is part of the playtest evidence."></textarea>
         </label>
-        <button class="button primary full-width" type="submit">Start a tracked playtest</button>
+        <button class="button primary full-width" type="submit">Create playtest session</button>
         <p id="createStatus" class="form-status" aria-live="polite"></p>
       </form>
     </section>
@@ -123,6 +123,77 @@
           <div><span>Players</span><strong id="playerCount">0 / 2</strong></div>
           <div><span>Arbiter</span><strong id="arbiterCount">0</strong></div>
           <div><span>Responses</span><strong id="responseCount">0 / 2</strong></div>
+        </div>
+      </section>
+
+      <section id="nextStepPanel" class="tracked-panel next-step-panel" aria-live="polite" aria-labelledby="nextStepTitle">
+        <div>
+          <p class="eyebrow">Your next step</p>
+          <h2 id="nextStepTitle">Opening the session…</h2>
+          <p id="nextStepCopy">Checking which action belongs to you.</p>
+        </div>
+        <p id="nextStepDetail" class="next-step-detail"></p>
+      </section>
+
+      <section id="joinPanel" class="tracked-panel form-panel" hidden>
+        <p class="eyebrow">Join this game</p>
+        <h2>Confirm your side.</h2>
+        <form id="joinForm">
+          <label>Your name<input id="joinName" type="text" maxlength="80" autocomplete="name" required /></label>
+          <div class="two-field-grid">
+            <label>Faction<select id="joinFaction" required></select></label>
+            <label>Leader<select id="joinLeader" required disabled></select></label>
+          </div>
+          <label>What made this faction or Leader appeal to you?
+            <textarea id="joinSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing."></textarea>
+          </label>
+          <button class="button primary" type="submit">Join game</button>
+          <p id="joinStatus" class="form-status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="joinedPanel" class="tracked-panel joined-panel" hidden>
+        <div><p class="eyebrow">Your seat</p><h2 id="joinedHeading">You are connected.</h2><p id="joinedCopy"></p></div>
+        <button id="openArbiter" type="button" class="button primary">Ask the Rules Arbiter</button>
+      </section>
+
+
+
+      <section id="sharePanel" class="tracked-panel share-panel">
+        <div>
+          <p class="eyebrow">Invite the other player</p>
+          <h2>Both players use this game.</h2>
+          <p>Send the public link or QR code to your opponent and keep this page open. They should join from their own device. Do not share a URL containing a review key.</p>
+          <div class="button-row">
+            <button id="copyJoinLink" type="button" class="button primary">Copy join link</button>
+            <button id="shareJoinLink" type="button" class="button secondary">Share</button>
+          </div>
+          <p id="shareStatus" class="form-status" aria-live="polite"></p>
+        </div>
+        <div id="qrCode" class="qr-code" aria-label="Tracked game QR code"><span>Preparing QR code…</span></div>
+      </section>
+
+      <section class="players-section" aria-labelledby="players-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Game seats</p><h2 id="players-title">The matchup.</h2></div>
+          <p>Each player joins from their own device. The saved faction and Leader from the Start page are suggested automatically.</p>
+        </div>
+        <div id="playerCards" class="player-cards"></div>
+      </section>
+
+      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transportTitle">
+        <div>
+          <p id="transportEyebrow" class="eyebrow">Play method</p>
+          <h2 id="transportTitle">Preparing the play handoff…</h2>
+          <p id="transportCopy"></p>
+          <p id="transportMatchup" class="transport-matchup"></p>
+        </div>
+        <div>
+          <div class="transport-actions">
+            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
+            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+          </div>
+          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
         </div>
       </section>
 
@@ -199,68 +270,6 @@
         </details>
         <p id="eventStatus" class="form-status" aria-live="polite"></p>
       </section>
-
-      <section id="sharePanel" class="tracked-panel share-panel">
-        <div>
-          <p class="eyebrow">Invite the other player</p>
-          <h2>Both players use this game.</h2>
-          <p>Have the opponent scan the QR code or send the public link. Do not share a URL containing a review key.</p>
-          <div class="button-row">
-            <button id="copyJoinLink" type="button" class="button primary">Copy join link</button>
-            <button id="shareJoinLink" type="button" class="button secondary">Share</button>
-          </div>
-          <p id="shareStatus" class="form-status" aria-live="polite"></p>
-        </div>
-        <div id="qrCode" class="qr-code" aria-label="Tracked game QR code"><span>Preparing QR code…</span></div>
-      </section>
-
-      <section class="players-section" aria-labelledby="players-title">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Game seats</p><h2 id="players-title">The matchup.</h2></div>
-          <p>Each player joins from their own device. The saved faction and Leader from the Start page are suggested automatically.</p>
-        </div>
-        <div id="playerCards" class="player-cards"></div>
-      </section>
-
-      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transportTitle">
-        <div>
-          <p id="transportEyebrow" class="eyebrow">Play method</p>
-          <h2 id="transportTitle">Preparing the play handoff…</h2>
-          <p id="transportCopy"></p>
-          <p id="transportMatchup" class="transport-matchup"></p>
-        </div>
-        <div>
-          <div class="transport-actions">
-            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
-            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
-          </div>
-          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
-        </div>
-      </section>
-
-      <section id="joinPanel" class="tracked-panel form-panel" hidden>
-        <p class="eyebrow">Join this game</p>
-        <h2>Confirm your side.</h2>
-        <form id="joinForm">
-          <label>Your name<input id="joinName" type="text" maxlength="80" autocomplete="name" required /></label>
-          <div class="two-field-grid">
-            <label>Faction<select id="joinFaction" required></select></label>
-            <label>Leader<select id="joinLeader" required disabled></select></label>
-          </div>
-          <label>What made this faction or Leader appeal to you?
-            <textarea id="joinSelectionReason" rows="3" maxlength="1000" required placeholder="Record the reason before playing."></textarea>
-          </label>
-          <button class="button primary" type="submit">Join game</button>
-          <p id="joinStatus" class="form-status" aria-live="polite"></p>
-        </form>
-      </section>
-
-      <section id="joinedPanel" class="tracked-panel joined-panel" hidden>
-        <div><p class="eyebrow">Your seat</p><h2 id="joinedHeading">You are connected.</h2><p id="joinedCopy"></p></div>
-        <button id="openArbiter" type="button" class="button primary">Ask the Rules Arbiter</button>
-      </section>
-
-
 
       <section id="resultSection" class="feedback-section" hidden aria-labelledby="result-title">
         <div class="section-heading split-heading">
@@ -380,7 +389,7 @@
     </nav>
   </footer>
 
-  <script src="app.js?v=20260802-1" defer></script>
+  <script src="app.js?v=20260925-1" defer></script>
   <script src="live-state.js?v=20260802-1" defer></script>
   <script src="journal.js?v=20260802-1" defer></script>
   <script src="session-controls.js?v=20260803-1" defer></script>
