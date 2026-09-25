@@ -2408,7 +2408,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 ![TDS Games publisher mark](../../images/branding/tds-games-mark.svg)
 
-<!-- PUBLISHING-FACT:imprint.statement -->Published by TDS Games, an imprint of Misty Hollow Enterprises, LLC, for playtesting and review.<!-- /PUBLISHING-FACT -->
+<!-- PUBLISHING-FACT:imprint.statement -->Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
 
 <!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 
