@@ -35,6 +35,7 @@ jobs:
           mkdir -p deckbuilder game-data
           cp -a apps/deckbuilder/. deckbuilder/
           cp -a packages/game-data/. game-data/
+          node scripts/materialize-public-route-compatibility.mjs
 
       - name: Install matching Playwright package
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1
