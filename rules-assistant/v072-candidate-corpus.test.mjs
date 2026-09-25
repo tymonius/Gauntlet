@@ -20,6 +20,13 @@ const completeRulesText = readFileSync(
   "utf8"
 );
 const currentGame = JSON.parse(currentGameText);
+const candidateGame = {
+  ...currentGame,
+  version: V072_CANDIDATE_RULES_VERSION,
+  displayVersion: V072_CANDIDATE_RULES_VERSION,
+  status: "active-development",
+};
+const candidateGameText = JSON.stringify(candidateGame);
 
 function responseFor(body) {
   return new Response(body, {
@@ -29,15 +36,20 @@ function responseFor(body) {
 }
 
 describe("v0.7.2 candidate Rules Arbiter corpus", () => {
-  test("binds to the canonical active-development authority and reviewed Complete Rules", () => {
-    expect(validateV072CandidateData({
+  test("validates candidate identity without requiring the live authority to remain a candidate", () => {
+    expect(() => validateV072CandidateData({
       currentGame,
+      completeRulesMarkdown: completeRulesText,
+    })).toThrow(/wrong identity or status/);
+
+    expect(validateV072CandidateData({
+      currentGame: candidateGame,
       completeRulesMarkdown: completeRulesText,
     })).toBe(true);
 
-    expect(currentGame.authority).toBe("current-game");
-    expect(currentGame.version).toBe(V072_CANDIDATE_RULES_VERSION);
-    expect(currentGame.status).toBe("active-development");
+    expect(candidateGame.authority).toBe("current-game");
+    expect(candidateGame.version).toBe(V072_CANDIDATE_RULES_VERSION);
+    expect(candidateGame.status).toBe("active-development");
     expect(completeRulesText).toContain("<!-- RULES-REVIEW-MODE:reviewed-technical -->");
   });
 
@@ -51,13 +63,13 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
   });
 
   test("removes duplicate legacy card-face fields when structured effects are authoritative", () => {
-    const sanitized = sanitizeV072CandidateDataForRules(currentGame);
+    const sanitized = sanitizeV072CandidateDataForRules(candidateGame);
     const card = sanitized.gameplay.cards.find(item => item.id === "neutral-advance-guard");
     expect(card.effects).toHaveLength(2);
     expect(card.action).toBeUndefined();
     expect(card.gambit_tactic).toBeUndefined();
 
-    const original = currentGame.gameplay.cards.find(item => item.id === "neutral-advance-guard");
+    const original = candidateGame.gameplay.cards.find(item => item.id === "neutral-advance-guard");
     expect(original.action).toBeTruthy();
     expect(original.gambit_tactic).toBeTruthy();
   });
@@ -65,7 +77,7 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
   test("builds a deterministic candidate corpus with player-facing and canonical source binding", async () => {
     const urls = defaultV072CandidateSourceUrls();
     const fetchImpl = async url => {
-      if (url === urls.currentGameUrl) return responseFor(currentGameText);
+      if (url === urls.currentGameUrl) return responseFor(candidateGameText);
       if (url === urls.completeRulesUrl) return responseFor(completeRulesText);
       return new Response("not found", { status: 404 });
     };
