@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 const page = read("apps/playtest/tracked/index.html");
 const app = read("apps/playtest/tracked/app.js");
 const styles = read("apps/playtest/tracked/styles.css");
+const startPage = read("apps/start/index.html");
 const start = read("apps/start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const analysisWorker = read("workers/playtest-sessions/src/analysis.js");
@@ -19,7 +20,7 @@ const wrangler = read("workers/playtest-sessions/wrangler.toml");
 describe("streamlined tracked playtests", () => {
   it("is a public one-game workflow rather than an event or roster workflow", () => {
     expect(page).toContain("One game · two players · digital feedback");
-    expect(page).toContain("Start a tracked playtest");
+    expect(page).toContain("Create playtest session");
     expect(page).toContain("Both players use this game");
     expect(app).toContain('api("/api/tracked-games"');
     expect(app).not.toContain("event-participants");
@@ -38,7 +39,9 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain('gauntlet_standalone_onboarding_v1');
     expect(app).toContain("restoreStartChoice");
     expect(app).toContain("standalone-onboarding");
-    expect(start).toContain("Create tracked playtest");
+    expect(startPage).toContain('id="startTrackedPlaytest"');
+    expect(startPage).toContain("Start playtest session");
+    expect(start).toContain("startTrackedPlaytest");
     expect(start).toContain('new URL("../playtest/tracked/"');
   });
 
