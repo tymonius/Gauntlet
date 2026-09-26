@@ -128,6 +128,69 @@ export function placeV070OverlayFromBattle(
   return overlay;
 }
 
+
+export function placeV070RuinsOverlayFromBattle(
+  state: V070GameState,
+  owner: PlayerId,
+  instanceId: string,
+  territoryPosition: number,
+  source: string,
+): V070OverlayAttachment | null {
+  if (preventV070OverlayPlacementWithCounterworks(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    source,
+  )) {
+    return null;
+  }
+
+  const territory = state.board.find(
+    item => item.position === territoryPosition,
+  );
+  if (!territory) {
+    throw new V070GameActionError(
+      'A Ruins Overlay must be attached to a Territory in the Gauntlet.',
+    );
+  }
+
+  const cardId = state.cardInstances[instanceId]?.cardId;
+  if (!cardId || !v070CanonicalContent.cardsById.has(cardId)) {
+    throw new V070GameActionError(
+      'A Ruins Overlay must come from a released card instance.',
+    );
+  }
+
+  const overlay: V070OverlayAttachment = {
+    instanceId,
+    owner,
+    territoryInstanceId: territory.territoryInstanceId,
+    placedTurn: state.turnNumber,
+    sequence: state.nextOverlaySequence,
+  };
+  state.nextOverlaySequence += 1;
+  state.overlays.push(overlay);
+
+  appendV070Event(state, {
+    type: 'overlay_placed',
+    actor: owner,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+      territoryId: territory.territoryId,
+      source,
+      sequence: overlay.sequence,
+      ruins: true,
+    },
+  });
+  turnV070OverlayIntoRuins(state, instanceId, source);
+  return overlay;
+}
+
 export function resolveV070OverlayCaptureEffects(
   state: V070GameState,
   territoryPosition: number,
