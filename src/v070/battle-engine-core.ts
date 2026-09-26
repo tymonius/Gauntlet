@@ -3939,6 +3939,185 @@ function passBattlePostClearAftermathEffectChoice(
   completeAftermathInternal(state, null);
 }
 
+function openMonetaryCrisisAftermath(
+  state: V070GameState,
+  sourceOwner: PlayerId,
+  sourceInstanceId: string,
+  sourceCardId: string,
+  immediateWinner: PlayerId | null,
+): void {
+  const runtime = requireRuntime(state);
+  const requiredPlayerIds = (['A', 'B'] as const).filter(
+    playerId => state.players[playerId].zones.hand.length > 1,
+  );
+
+  if (requiredPlayerIds.length === 0) {
+    appendV070Event(state, {
+      type: 'monetary_crisis_aftermath_resolved',
+      actor: sourceOwner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId,
+        sourceCardId,
+        affectedPlayerIds: [],
+        discardCounts: { A: 0, B: 0 },
+      },
+    });
+    return;
+  }
+
+  runtime.pendingMonetaryCrisisAftermath = {
+    sourceOwner,
+    sourceInstanceId,
+    sourceCardId,
+    requiredPlayerIds: [...requiredPlayerIds],
+    keepInstanceIds: {},
+    immediateWinner,
+  };
+
+  appendV070Event(state, {
+    type: 'monetary_crisis_aftermath_choice_pending',
+    actor: sourceOwner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId,
+      requiredPlayerIds: [...requiredPlayerIds],
+    },
+  });
+
+  for (const playerId of requiredPlayerIds) {
+    appendV070Event(state, {
+      type: 'monetary_crisis_aftermath_keeper_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        sourceInstanceId,
+        sourceCardId,
+        candidateInstanceIds: [
+          ...state.players[playerId].zones.hand,
+        ],
+      },
+    });
+  }
+}
+
+function resolveMonetaryCrisisAftermathKeep(
+  state: V070GameState,
+  playerId: PlayerId,
+  keepInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingMonetaryCrisisAftermath;
+  if (!pending
+    || !pending.requiredPlayerIds.includes(playerId)) {
+    throw new V070GameActionError(
+      'No Monetary Crisis keeper choice is pending for that player.',
+    );
+  }
+  if (pending.keepInstanceIds[playerId]) {
+    throw new V070GameActionError(
+      'That player already chose a Monetary Crisis keeper.',
+    );
+  }
+  if (!state.players[playerId].zones.hand.includes(keepInstanceId)) {
+    throw new V070GameActionError(
+      'Monetary Crisis must keep one card currently in your Hand.',
+    );
+  }
+
+  pending.keepInstanceIds[playerId] = keepInstanceId;
+  appendV070Event(state, {
+    type: 'monetary_crisis_aftermath_keeper_selected',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      playerId,
+    },
+  });
+  appendV070Event(state, {
+    type: 'monetary_crisis_aftermath_keeper_identity',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      keepInstanceId,
+      keepCardId: state.cardInstances[keepInstanceId]?.cardId ?? null,
+    },
+  });
+
+  const complete = pending.requiredPlayerIds.every(
+    requiredPlayerId => Boolean(
+      pending.keepInstanceIds[requiredPlayerId],
+    ),
+  );
+  if (!complete) return;
+
+  const discardCounts: Record<PlayerId, number> = {
+    A: 0,
+    B: 0,
+  };
+  for (const owner of pending.requiredPlayerIds) {
+    const keep = pending.keepInstanceIds[owner];
+    if (!keep) {
+      throw new V070GameActionError(
+        'Every Monetary Crisis player must choose a keeper before discards resolve.',
+      );
+    }
+    const hand = state.players[owner].zones.hand;
+    if (!hand.includes(keep)) {
+      throw new V070GameActionError(
+        'A chosen Monetary Crisis keeper is no longer in Hand.',
+      );
+    }
+    const discarded = hand.filter(instanceId => instanceId !== keep);
+    state.players[owner].zones.hand = [keep];
+    state.players[owner].zones.discardPile.push(...discarded);
+    discardCounts[owner] = discarded.length;
+
+    appendV070Event(state, {
+      type: 'monetary_crisis_aftermath_cards_discarded',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: pending.sourceInstanceId,
+        sourceCardId: pending.sourceCardId,
+        playerId: owner,
+        discarded: discarded.map(instanceId => ({
+          instanceId,
+          cardId: state.cardInstances[instanceId]?.cardId ?? null,
+        })),
+      },
+    });
+  }
+
+  const sourceOwner = pending.sourceOwner;
+  const immediateWinner = pending.immediateWinner;
+  const sourceInstanceId = pending.sourceInstanceId;
+  const sourceCardId = pending.sourceCardId;
+  runtime.pendingMonetaryCrisisAftermath = null;
+
+  appendV070Event(state, {
+    type: 'monetary_crisis_aftermath_resolved',
+    actor: sourceOwner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId,
+      affectedPlayerIds: [...pending.requiredPlayerIds],
+      discardCounts,
+    },
+  });
+
+  runtime.battleAftermathControlledEffectNextPlayer =
+    nextBattleAftermathControlledEffectPlayer(state, sourceOwner);
+  completeAftermathInternal(state, immediateWinner);
+}
+
 function openBattleAftermathHandDiscard(
   state: V070GameState,
 ): boolean {
