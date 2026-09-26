@@ -12,7 +12,6 @@ import {
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { pauseV070ForSpiritHollowAfterBattleCardsCleared } from './spirit-hollow';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
-import { turnV070OverlayIntoRuins } from './overlay-ruins';
 
 export const V070_DEMILITARIZED_ZONE_ID = 'diplomats-demilitarized-zone';
 
@@ -114,32 +113,12 @@ export function placeV070OverlayFromBattle(
   );
 }
 
-export function placeV070RuinsOverlayFromBattle(
-  state: V070GameState,
-  owner: PlayerId,
-  instanceId: string,
-  territoryPosition: number,
-  source: string,
-): V070OverlayAttachment {
-  const overlay = attachV070Overlay(
-    state,
-    owner,
-    instanceId,
-    territoryPosition,
-    source,
-    true,
-  );
-  turnV070OverlayIntoRuins(state, instanceId, source);
-  return overlay;
-}
-
 function attachV070Overlay(
   state: V070GameState,
   owner: PlayerId,
   instanceId: string,
   territoryPosition: number,
   source: string,
-  allowRuinsOnlyCard = false,
 ): V070OverlayAttachment {
   const territory = territoryAtPosition(state, territoryPosition);
   if (!territory) {
@@ -152,11 +131,7 @@ function attachV070Overlay(
     effect => effect.label === 'Overlay',
   ) ?? false;
   if (!card
-    || (
-      !allowRuinsOnlyCard
-      && card.card_form !== 'Territory Overlay'
-      && !hasOverlayEffect
-    )) {
+    || (card.card_form !== 'Territory Overlay' && !hasOverlayEffect)) {
     throw new V070GameActionError(
       'That card is not a released Territory Overlay and has no released Overlay effect.',
     );
