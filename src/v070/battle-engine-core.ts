@@ -1606,9 +1606,15 @@ function resumeBattlePostRollResolution(
 
   pruneUnavailablePostRollRerolls(state);
 
-  const nextPlayer =
-    runtime.battlePostRollNextPlayer
-    ?? nextBattlePostRollPlayer(state, null);
+  const preferred = runtime.battlePostRollNextPlayer;
+  const preferredStillHasEffect = preferred
+    ? runtime.battleCardPostRollRerolls.some(
+        effect => effect.owner === preferred,
+      )
+    : false;
+  const nextPlayer = preferredStillHasEffect
+    ? preferred
+    : nextBattlePostRollPlayer(state, null);
   if (nextPlayer) {
     runtime.battlePostRollNextPlayer = nextPlayer;
     if (openBattlePostRollChoice(state, nextPlayer)) return;
