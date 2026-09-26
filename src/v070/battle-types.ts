@@ -162,6 +162,21 @@ export interface V070BattleCardAftermathHandDiscardRequirement {
   prompted: boolean;
 }
 
+export interface V070BattleCardAftermathMonetaryCrisis {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+}
+
+export interface V070MonetaryCrisisAftermathRuntime {
+  sourceOwner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+  requiredPlayerIds: PlayerId[];
+  keepInstanceIds: Partial<Record<PlayerId, string>>;
+  immediateWinner: PlayerId | null;
+}
+
 export interface V070BattleCardPostClearAftermathEffect {
   owner: PlayerId;
   sourceInstanceId: string;
@@ -380,6 +395,10 @@ export interface V070BattleRuntime {
     V070BattleCardAftermathDestinationChoice[];
   battleCardAftermathHandDiscardRequirements:
     V070BattleCardAftermathHandDiscardRequirement[];
+  battleCardAftermathMonetaryCrises:
+    V070BattleCardAftermathMonetaryCrisis[];
+  pendingMonetaryCrisisAftermath:
+    V070MonetaryCrisisAftermathRuntime | null;
   battleCardPostClearAftermathEffects:
     V070BattleCardPostClearAftermathEffect[];
   battleCardPostRollRerolls:
@@ -494,6 +513,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     battleCardAftermathDestinationOverrides: [],
     battleCardAftermathDestinationChoices: [],
     battleCardAftermathHandDiscardRequirements: [],
+    battleCardAftermathMonetaryCrises: [],
+    pendingMonetaryCrisisAftermath: null,
     battleCardPostClearAftermathEffects: [],
     battleCardPostRollRerolls: [],
     pendingBattlePostRollChoice: null,
