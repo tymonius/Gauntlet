@@ -281,6 +281,11 @@ export type V070BattleAction =
       cardInstanceId: string;
     }
   | {
+      type: 'resolve_monetary_crisis_aftermath_keep';
+      playerId: PlayerId;
+      keepInstanceId: string;
+    }
+  | {
       type: 'resolve_battle_post_clear_aftermath_effect';
       playerId: PlayerId;
       sourceInstanceId: string;
@@ -408,6 +413,12 @@ export function reduceV070BattleAction(
     && action.type !== 'pass_retribution_asset') {
     throw new V070GameActionError(
       'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingMonetaryCrisisAftermath
+    && action.type !== 'resolve_monetary_crisis_aftermath_keep') {
+    throw new V070GameActionError(
+      'Resolve every pending Monetary Crisis keeper choice before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.aftermathCardsCleared
@@ -696,6 +707,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.cardInstanceId,
+      );
+      break;
+    case 'resolve_monetary_crisis_aftermath_keep':
+      resolveMonetaryCrisisAftermathKeep(
+        next,
+        action.playerId,
+        action.keepInstanceId,
       );
       break;
     case 'resolve_battle_post_clear_aftermath_effect':
@@ -2738,7 +2756,13 @@ function territoryAftermathDestination(
 type V070BattleAftermathControlledEffectRef = {
   owner: PlayerId;
   sourceInstanceId: string;
-  kind: 'overlay' | 'destination' | 'territory' | 'asset' | 'retribution';
+  kind:
+    | 'overlay'
+    | 'destination'
+    | 'territory'
+    | 'asset'
+    | 'retribution'
+    | 'monetary_crisis';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -2833,6 +2857,11 @@ function remainingBattleAftermathControlledEffects(
       sourceInstanceId: bank.sourceInstanceId,
       kind: 'asset' as const,
     })),
+    ...runtime.battleCardAftermathMonetaryCrises.map(crisis => ({
+      owner: crisis.owner,
+      sourceInstanceId: crisis.sourceInstanceId,
+      kind: 'monetary_crisis' as const,
+    })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
         owner: battle.defender,
@@ -2891,6 +2920,29 @@ function applyBattleAftermathControlledEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
+      immediateWinner,
+    );
+    return;
+  }
+
+  if (effect.kind === 'monetary_crisis') {
+    const index = runtime.battleCardAftermathMonetaryCrises.findIndex(
+      crisis =>
+        crisis.owner === effect.owner
+        && crisis.sourceInstanceId === effect.sourceInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'That Monetary Crisis battle effect is no longer pending.',
+      );
+    }
+    const [crisis] =
+      runtime.battleCardAftermathMonetaryCrises.splice(index, 1);
+    openMonetaryCrisisAftermath(
+      state,
+      crisis.owner,
+      crisis.sourceInstanceId,
+      crisis.sourceCardId,
       immediateWinner,
     );
     return;
@@ -3134,6 +3186,7 @@ function battleAftermathControlledEffectNeedsChoice(
     || battleAftermathControlledEffectIsOptional(state, effect)) {
     return true;
   }
+  if (effect.kind === 'monetary_crisis') return false;
   if (effect.kind === 'destination') {
     return battleAftermathDestinationChoiceCandidates(
       state,
@@ -3246,7 +3299,10 @@ function advanceBattleAftermathControlledEffects(
         immediateWinner,
         undefined,
       );
-      if (runtime.pendingRetributionResponse) return true;
+      if (runtime.pendingRetributionResponse
+        || runtime.pendingMonetaryCrisisAftermath) {
+        return true;
+      }
     }
 
     nextPlayer =
@@ -3298,7 +3354,8 @@ function resolveBattleAftermathControlledEffectChoice(
     targetInstanceId,
     replaceAssetInstanceId,
   );
-  if (runtime.pendingRetributionResponse) return;
+  if (runtime.pendingRetributionResponse
+    || runtime.pendingMonetaryCrisisAftermath) return;
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
   completeAftermathInternal(state, immediateWinner);
