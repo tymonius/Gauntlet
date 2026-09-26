@@ -77,6 +77,13 @@ import {
   V070_SOUL_FOR_SOUL_ID,
   registerV070PostClearMysticBattleEffect,
 } from './post-clear-mystic-cards';
+import {
+  V070_FATES_TOLL_BATTLE_TEXT,
+  V070_FATES_TOLL_ID,
+  V070_VALOR_BATTLE_TEXT,
+  V070_VALOR_ID,
+  registerV070PostRollRerollEffect,
+} from './post-roll-reroll-cards';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -267,6 +274,34 @@ const necromancyHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const valorHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_VALOR_ID,
+  expectedText: V070_VALOR_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PostRollRerollEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_VALOR_ID,
+    );
+  },
+};
+
+const fatesTollHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_FATES_TOLL_ID,
+  expectedText: V070_FATES_TOLL_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PostRollRerollEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_FATES_TOLL_ID,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -277,6 +312,8 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_GRAVE_WARD_ID, graveWardHandler],
   [V070_SOUL_FOR_SOUL_ID, soulForSoulHandler],
   [V070_NECROMANCY_ID, necromancyHandler],
+  [V070_VALOR_ID, valorHandler],
+  [V070_FATES_TOLL_ID, fatesTollHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -576,6 +613,13 @@ function deferredRegistrationExists(
     || cardId === V070_SOUL_FOR_SOUL_ID
     || cardId === V070_NECROMANCY_ID) {
     return state.battleRuntime?.battleCardPostClearAftermathEffects.some(
+      effect =>
+        effect.sourceCardId === cardId
+        && effect.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_VALOR_ID || cardId === V070_FATES_TOLL_ID) {
+    return state.battleRuntime?.battleCardPostRollRerolls.some(
       effect =>
         effect.sourceCardId === cardId
         && effect.sourceInstanceId === sourceInstanceId,
