@@ -249,6 +249,11 @@ export type V070BattleAction =
       sourceInstanceId: string;
     }
   | {
+      type: 'resolve_battle_aftermath_hand_discard';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'pass_retribution_asset';
       playerId: PlayerId;
       assetInstanceId: string;
@@ -362,6 +367,12 @@ export function reduceV070BattleAction(
     && action.type !== 'pass_retribution_asset') {
     throw new V070GameActionError(
       'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattleAftermathHandDiscard
+    && action.type !== 'resolve_battle_aftermath_hand_discard') {
+    throw new V070GameActionError(
+      'Resolve the pending Aftermath Hand discard before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingRetributionResponse
@@ -602,6 +613,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.sourceInstanceId,
+      );
+      break;
+    case 'resolve_battle_aftermath_hand_discard':
+      resolveBattleAftermathHandDiscard(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
       break;
     case 'pass_retribution_asset':
@@ -2374,6 +2392,52 @@ function applyBattleAftermathControlledEffect(
     }
 
     runtime.battleCardAftermathDestinationChoices.splice(index, 1);
+
+    if (choice.followUp === 'discard_one_hand') {
+      const reserve = runtime.participants[choice.owner].reserve;
+      const reserveIndex = reserve.indexOf(selected);
+      if (reserveIndex < 0) {
+        throw new V070GameActionError(
+          'That Salvage recovery card is no longer in Reserve.',
+        );
+      }
+      reserve.splice(reserveIndex, 1);
+      state.players[choice.owner].zones.hand.push(selected);
+      runtime.pendingBattleAftermathHandDiscard = {
+        owner: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        recoveredInstanceId: selected,
+        immediateWinner,
+      };
+      appendV070Event(state, {
+        type: 'battle_card_aftermath_destination_selected',
+        actor: choice.owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: choice.sourceInstanceId,
+          sourceCardId: choice.sourceCardId,
+          targetInstanceId: selected,
+          targetCardId: state.cardInstances[selected]?.cardId ?? null,
+          destination: choice.destination,
+          immediate: true,
+          followUp: choice.followUp,
+        },
+      });
+      appendV070Event(state, {
+        type: 'battle_aftermath_hand_discard_pending',
+        actor: choice.owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: choice.sourceInstanceId,
+          sourceCardId: choice.sourceCardId,
+          recoveredInstanceId: selected,
+          handSize: state.players[choice.owner].zones.hand.length,
+        },
+      });
+      return;
+    }
+
     runtime.battleCardAftermathDestinationOverrides.push({
       sourceCardId: choice.sourceCardId,
       playerId: choice.owner,
@@ -2689,7 +2753,8 @@ function advanceBattleAftermathControlledEffects(
         immediateWinner,
         undefined,
       );
-      if (runtime.pendingRetributionResponse) return true;
+      if (runtime.pendingRetributionResponse
+        || runtime.pendingBattleAftermathHandDiscard) return true;
     }
 
     nextPlayer =
@@ -2741,7 +2806,8 @@ function resolveBattleAftermathControlledEffectChoice(
     targetInstanceId,
     replaceAssetInstanceId,
   );
-  if (runtime.pendingRetributionResponse) return;
+  if (runtime.pendingRetributionResponse
+    || runtime.pendingBattleAftermathHandDiscard) return;
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
   completeAftermathInternal(state, immediateWinner);
@@ -2805,6 +2871,50 @@ function passBattleAftermathControlledEffectChoice(
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
   completeAftermathInternal(state, immediateWinner);
+}
+
+function resolveBattleAftermathHandDiscard(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingBattleAftermathHandDiscard;
+  if (!pending || pending.owner !== playerId) {
+    throw new V070GameActionError(
+      'No Aftermath Hand discard is pending for that player.',
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The Aftermath discard must choose a card from your Hand.',
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[playerId].zones.discardPile.push(targetInstanceId);
+  runtime.pendingBattleAftermathHandDiscard = null;
+
+  appendV070Event(state, {
+    type: 'battle_aftermath_hand_card_discarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      recoveredInstanceId: pending.recoveredInstanceId,
+      targetInstanceId,
+      targetCardId: state.cardInstances[targetInstanceId]?.cardId ?? null,
+    },
+  });
+
+  runtime.battleAftermathControlledEffectNextPlayer =
+    nextBattleAftermathControlledEffectPlayer(state, playerId);
+  completeAftermathInternal(state, pending.immediateWinner);
 }
 
 function passRetributionControlledEffect(
