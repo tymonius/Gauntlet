@@ -59,6 +59,7 @@ import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
   type V070BattleCardPostClearAftermathEffect,
+  type V070BattleCardPostRollReroll,
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
@@ -161,6 +162,10 @@ import {
   V070_NECROMANCY_ID,
   V070_SOUL_FOR_SOUL_ID,
 } from './post-clear-mystic-cards';
+import {
+  V070_FATES_TOLL_ID,
+  V070_VALOR_ID,
+} from './post-roll-reroll-cards';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -238,6 +243,18 @@ export type V070BattleAction =
   | { type: 'choose_tactic'; playerId: PlayerId; cardInstanceId?: string }
   | { type: 'reveal_tactics'; playerId: PlayerId }
   | { type: 'submit_battle_dice'; playerId: PlayerId; values: readonly number[] }
+  | {
+      type: 'resolve_battle_post_roll_reroll';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+      value: number;
+      costInstanceId?: string;
+    }
+  | {
+      type: 'pass_battle_post_roll_reroll';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
   | { type: 'submit_tiebreak_roll'; playerId: PlayerId; value: number }
   | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'pass_loss_replacement'; playerId: PlayerId }
@@ -398,6 +415,15 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_battle_aftermath_hand_discard') {
     throw new V070GameActionError(
       'Resolve the pending Aftermath hand discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattlePostRollChoice
+    && action.type !== 'resolve_battle_post_roll_reroll'
+    && action.type !== 'pass_battle_post_roll_reroll'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
+    throw new V070GameActionError(
+      'Resolve the pending post-roll reroll effect before continuing the battle.',
     );
   }
   if (state.battleRuntime?.pendingBattlePostClearAftermathChoice
@@ -617,6 +643,22 @@ export function reduceV070BattleAction(
     case 'submit_battle_dice':
       submitBattleDice(next, action.playerId, action.values);
       break;
+    case 'resolve_battle_post_roll_reroll':
+      resolveBattlePostRollReroll(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+        action.value,
+        action.costInstanceId,
+      );
+      break;
+    case 'pass_battle_post_roll_reroll':
+      passBattlePostRollReroll(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
     case 'submit_tiebreak_roll':
       submitTiebreak(next, action.playerId, action.value);
       break;
@@ -754,14 +796,20 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
-      if (next.battleRuntime?.stage === 'aftermath'
+      if (next.battleRuntime?.stage === 'outcome'
+        && next.battleRuntime.battlePostRollComplete === false) {
+        resumePostRollAfterInvocation(next, action.playerId);
+      } else if (next.battleRuntime?.stage === 'aftermath'
         && next.battleRuntime.aftermathCardsCleared) {
         completeAftermathInternal(next, null);
       }
       break;
     case 'pass_mystic_invocation':
       passV070MysticInvocation(next, action.playerId);
-      if (next.battleRuntime?.stage === 'aftermath'
+      if (next.battleRuntime?.stage === 'outcome'
+        && next.battleRuntime.battlePostRollComplete === false) {
+        resumePostRollAfterInvocation(next, action.playerId);
+      } else if (next.battleRuntime?.stage === 'aftermath'
         && next.battleRuntime.aftermathCardsCleared) {
         completeAftermathInternal(next, null);
       }
@@ -1416,7 +1464,428 @@ function submitBattleDice(
     },
   });
 
-  if (bothBattleTotalsReady(runtime)) resolveOrEnterTiebreak(state);
+  if (openFatesTollAfterRoll(state, playerId)) return;
+  if (bothBattleTotalsReady(runtime)) {
+    resumeBattlePostRollResolution(state);
+  }
+}
+
+function fatesTollAvailable(
+  state: V070GameState,
+  effect: V070BattleCardPostRollReroll,
+): boolean {
+  return effect.sourceCardId === V070_FATES_TOLL_ID
+    && state.players[effect.owner].zones.hand.length > 0;
+}
+
+function valorAvailable(
+  state: V070GameState,
+  effect: V070BattleCardPostRollReroll,
+): boolean {
+  if (effect.sourceCardId !== V070_VALOR_ID) return false;
+  const runtime = requireRuntime(state);
+  const own = runtime.participants[effect.owner].battleTotal;
+  const opposing =
+    runtime.participants[otherPlayer(effect.owner)].battleTotal;
+  return own !== null && opposing !== null && own < opposing;
+}
+
+function takeBattlePostRollReroll(
+  state: V070GameState,
+  effect: V070BattleCardPostRollReroll,
+): void {
+  const runtime = requireRuntime(state);
+  const index = runtime.battleCardPostRollRerolls.findIndex(
+    candidate =>
+      candidate.owner === effect.owner
+      && candidate.sourceInstanceId === effect.sourceInstanceId,
+  );
+  if (index < 0) {
+    throw new V070GameActionError(
+      'That post-roll reroll effect is no longer pending.',
+    );
+  }
+  runtime.battleCardPostRollRerolls.splice(index, 1);
+}
+
+function postRollEffectsFor(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardId: string,
+): V070BattleCardPostRollReroll[] {
+  return requireRuntime(state).battleCardPostRollRerolls.filter(
+    effect =>
+      effect.owner === playerId
+      && effect.sourceCardId === cardId,
+  );
+}
+
+function openPostRollChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  effects: V070BattleCardPostRollReroll[],
+  timing: 'after_you_roll' | 'after_battle_dice',
+): boolean {
+  if (effects.length === 0) return false;
+  const runtime = requireRuntime(state);
+  runtime.pendingBattlePostRollChoice = {
+    playerId,
+    candidateSourceInstanceIds: effects.map(
+      effect => effect.sourceInstanceId,
+    ),
+  };
+  appendV070Event(state, {
+    type: 'battle_post_roll_reroll_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      timing,
+      candidateCount: effects.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'battle_post_roll_reroll_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      timing,
+      effects: effects.map(effect => ({
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: effect.sourceCardId,
+        costInstanceIds:
+          effect.sourceCardId === V070_FATES_TOLL_ID
+            ? [...state.players[playerId].zones.hand]
+            : [],
+      })),
+    },
+  });
+  return true;
+}
+
+function pruneUnavailableFatesTollForPlayer(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  const retained: V070BattleCardPostRollReroll[] = [];
+  for (const effect of runtime.battleCardPostRollRerolls) {
+    if (effect.owner !== playerId
+      || effect.sourceCardId !== V070_FATES_TOLL_ID
+      || fatesTollAvailable(state, effect)) {
+      retained.push(effect);
+      continue;
+    }
+    appendV070Event(state, {
+      type: 'battle_post_roll_reroll_unavailable',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: effect.sourceCardId,
+        timing: 'after_you_roll',
+      },
+    });
+  }
+  runtime.battleCardPostRollRerolls = retained;
+}
+
+function openFatesTollAfterRoll(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  pruneUnavailableFatesTollForPlayer(state, playerId);
+  return openPostRollChoice(
+    state,
+    playerId,
+    postRollEffectsFor(state, playerId, V070_FATES_TOLL_ID),
+    'after_you_roll',
+  );
+}
+
+function pruneUnavailableValor(
+  state: V070GameState,
+): void {
+  const runtime = requireRuntime(state);
+  const retained: V070BattleCardPostRollReroll[] = [];
+  for (const effect of runtime.battleCardPostRollRerolls) {
+    if (effect.sourceCardId !== V070_VALOR_ID
+      || valorAvailable(state, effect)) {
+      retained.push(effect);
+      continue;
+    }
+    appendV070Event(state, {
+      type: 'battle_post_roll_reroll_unavailable',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: effect.sourceCardId,
+        timing: 'after_battle_dice',
+      },
+    });
+  }
+  runtime.battleCardPostRollRerolls = retained;
+}
+
+function nextValorPlayer(
+  state: V070GameState,
+  previousPlayer: PlayerId | null,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const hasValor = (playerId: PlayerId) =>
+    postRollEffectsFor(state, playerId, V070_VALOR_ID).length > 0;
+
+  if (previousPlayer === null) {
+    if (hasValor(battle.attacker)) return battle.attacker;
+    if (hasValor(battle.defender)) return battle.defender;
+    return null;
+  }
+  const other =
+    previousPlayer === battle.attacker
+      ? battle.defender
+      : battle.attacker;
+  if (hasValor(other)) return other;
+  if (hasValor(previousPlayer)) return previousPlayer;
+  return null;
+}
+
+function resumeBattlePostRollResolution(
+  state: V070GameState,
+): void {
+  const runtime = requireRuntime(state);
+  if (!bothBattleTotalsReady(runtime)) return;
+  if (runtime.pendingBattlePostRollChoice) return;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return;
+
+  for (const playerId of ['A', 'B'] as const) {
+    pruneUnavailableFatesTollForPlayer(state, playerId);
+    if (postRollEffectsFor(
+      state,
+      playerId,
+      V070_FATES_TOLL_ID,
+    ).length > 0) {
+      throw new V070GameActionError(
+        "Resolve Fate's Toll immediately after its owner's roll before completing the Battle Dice step.",
+      );
+    }
+  }
+
+  pruneUnavailableValor(state);
+
+  const preferred = runtime.battlePostRollNextPlayer;
+  const preferredStillHasValor = preferred
+    ? postRollEffectsFor(state, preferred, V070_VALOR_ID).length > 0
+    : false;
+  const nextPlayer = preferredStillHasValor
+    ? preferred
+    : nextValorPlayer(state, null);
+  if (nextPlayer) {
+    runtime.battlePostRollNextPlayer = nextPlayer;
+    if (openPostRollChoice(
+      state,
+      nextPlayer,
+      postRollEffectsFor(state, nextPlayer, V070_VALOR_ID),
+      'after_battle_dice',
+    )) return;
+  }
+
+  runtime.battlePostRollComplete = true;
+  runtime.battlePostRollNextPlayer = null;
+  resolveOrEnterTiebreak(state);
+}
+
+function resumePostRollAfterInvocation(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  if (runtime.stage !== 'outcome' || runtime.battlePostRollComplete) {
+    return;
+  }
+  if (openFatesTollAfterRoll(state, playerId)) return;
+  if (bothBattleTotalsReady(runtime)) {
+    resumeBattlePostRollResolution(state);
+  }
+}
+
+function resolveBattlePostRollReroll(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+  value: number,
+  costInstanceId?: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'outcome');
+  assertDie(value);
+
+  const pending = runtime.pendingBattlePostRollChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That post-roll reroll effect is not pending for this player.',
+    );
+  }
+
+  const effect = runtime.battleCardPostRollRerolls.find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId,
+  );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That post-roll reroll effect is no longer available.',
+    );
+  }
+
+  if (effect.sourceCardId === V070_FATES_TOLL_ID) {
+    if (!fatesTollAvailable(state, effect)) {
+      throw new V070GameActionError(
+        "Fate's Toll is no longer payable.",
+      );
+    }
+    if (!costInstanceId) {
+      throw new V070GameActionError(
+        "Fate's Toll requires one other card from your Hand.",
+      );
+    }
+    const hand = state.players[playerId].zones.hand;
+    const index = hand.indexOf(costInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        "Fate's Toll must put one card currently in your Hand in your Graveyard.",
+      );
+    }
+    hand.splice(index, 1);
+    state.players[playerId].zones.graveyard.push(costInstanceId);
+    appendV070Event(state, {
+      type: 'card_moved_to_graveyard',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: costInstanceId,
+        cardId: state.cardInstances[costInstanceId]?.cardId ?? null,
+        purpose: "Fate's Toll battle reroll",
+      },
+    });
+    recordV070MysticQualifyingHandSacrifice(
+      state,
+      playerId,
+      "Fate's Toll",
+    );
+  } else if (effect.sourceCardId === V070_VALOR_ID) {
+    if (!valorAvailable(state, effect)) {
+      throw new V070GameActionError(
+        'Valor requires your current battle total to be lower than the opponent\'s.',
+      );
+    }
+    if (costInstanceId !== undefined) {
+      throw new V070GameActionError(
+        'Valor does not require a Hand-card cost.',
+      );
+    }
+  } else {
+    throw new V070GameActionError(
+      'That card is not a supported post-roll reroll effect.',
+    );
+  }
+
+  const participant = runtime.participants[playerId];
+  const previousSelected = participant.selectedBattleDie;
+  const previousTotal = participant.battleTotal;
+  participant.selectedBattleDie = value;
+  participant.battleTotal = value + participant.battleModifier;
+
+  takeBattlePostRollReroll(state, effect);
+  runtime.pendingBattlePostRollChoice = null;
+
+  appendV070Event(state, {
+    type: 'battle_die_rerolled',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+      previousSelected,
+      rerolledSelected: value,
+      modifier: participant.battleModifier,
+      previousBattleTotal: previousTotal,
+      battleTotal: participant.battleTotal,
+      costInstanceId: costInstanceId ?? null,
+    },
+  });
+
+  if (effect.sourceCardId === V070_FATES_TOLL_ID) {
+    recordV070MysticBattleEffectApplied(
+      state,
+      playerId,
+      sourceInstanceId,
+    );
+    if (v070MysticInvocationPendingPlayers(state).length > 0) return;
+    if (openFatesTollAfterRoll(state, playerId)) return;
+    if (bothBattleTotalsReady(runtime)) {
+      resumeBattlePostRollResolution(state);
+    }
+    return;
+  }
+
+  runtime.battlePostRollNextPlayer =
+    nextValorPlayer(state, playerId);
+  resumeBattlePostRollResolution(state);
+}
+
+function passBattlePostRollReroll(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'outcome');
+  const pending = runtime.pendingBattlePostRollChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That optional post-roll reroll is not pending.',
+    );
+  }
+
+  const effect = runtime.battleCardPostRollRerolls.find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId,
+  );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That post-roll reroll is no longer available.',
+    );
+  }
+
+  takeBattlePostRollReroll(state, effect);
+  runtime.pendingBattlePostRollChoice = null;
+  appendV070Event(state, {
+    type: 'battle_post_roll_reroll_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+    },
+  });
+
+  if (effect.sourceCardId === V070_FATES_TOLL_ID) {
+    if (openFatesTollAfterRoll(state, playerId)) return;
+    if (bothBattleTotalsReady(runtime)) {
+      resumeBattlePostRollResolution(state);
+    }
+    return;
+  }
+
+  runtime.battlePostRollNextPlayer =
+    nextValorPlayer(state, playerId);
+  resumeBattlePostRollResolution(state);
 }
 
 function resolveOrEnterTiebreak(state: V070GameState): void {

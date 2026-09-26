@@ -185,7 +185,7 @@ describe('v0.7.0 Inquisition doctrine integration', () => {
     const arcane = injectHand(
       state,
       'B',
-      'mystics-fate-s-toll',
+      'mystics-paths-of-shadow',
       'arcane-gambit',
     );
 
