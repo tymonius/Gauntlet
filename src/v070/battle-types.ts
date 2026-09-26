@@ -149,7 +149,9 @@ export interface V070BattleCardAftermathOverlayPlacement {
   sourceCardId: string;
   owner: PlayerId;
   territoryInstanceId: string;
-  condition: 'always' | 'owner_win';
+  condition: 'always' | 'owner_win' | 'owner_loss_after_retreat';
+  optional?: boolean;
+  asRuins?: boolean;
 }
 
 export interface V070BattleCardAftermathTerritoryInsertion {
