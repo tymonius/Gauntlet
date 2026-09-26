@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("card-design/card-inspector.js", "utf8");
+const source = readFileSync("tools/card-design/review/card-inspector.js", "utf8");
 
 describe("card inspection accessibility", () => {
   it("names the modal inspection dialog from its contextual card label", () => {
