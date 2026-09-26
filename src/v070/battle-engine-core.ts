@@ -59,6 +59,7 @@ import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
   type V070BattleCardPostClearAftermathEffect,
+  type V070BattleCardPostRollReroll,
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
@@ -161,6 +162,10 @@ import {
   V070_NECROMANCY_ID,
   V070_SOUL_FOR_SOUL_ID,
 } from './post-clear-mystic-cards';
+import {
+  V070_FATES_TOLL_ID,
+  V070_VALOR_ID,
+} from './post-roll-reroll-cards';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
