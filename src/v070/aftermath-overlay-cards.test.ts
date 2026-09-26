@@ -165,6 +165,15 @@ function resolveOutcome(
 
 describe('current v0.7.2 Aftermath Overlay battle cards', () => {
   test('binds Nature\'s Altar and Scorched Earth to unchanged frozen/current authority', () => {
+    expect(V070_NATURES_ALTAR_ID).toBe('mystics-nature-s-altar');
+    expect(V070_NATURES_ALTAR_BATTLE_TEXT).toBe(
+      "In the Aftermath, if you win, you may place this Overlay on the contested Territory.",
+    );
+    expect(V070_SCORCHED_EARTH_ID).toBe('neutral-scorched-earth');
+    expect(V070_SCORCHED_EARTH_BATTLE_TEXT).toBe(
+      'In the Aftermath, if you lose while defending a Territory you control and retreat, place this card on that Territory as a Ruins Overlay.',
+    );
+
     for (const [cardId, text] of [
       [V070_NATURES_ALTAR_ID, V070_NATURES_ALTAR_BATTLE_TEXT],
       [V070_SCORCHED_EARTH_ID, V070_SCORCHED_EARTH_BATTLE_TEXT],
