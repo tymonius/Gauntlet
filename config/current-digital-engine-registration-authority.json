@@ -4,7 +4,7 @@
   "actionSurfaces": 74,
   "executableActionSurfaces": 74,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 73,
+  "registeredBattleSurfaces": 76,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -34,10 +34,7 @@
     "military-war-crimes::1::Gambit/Tactic",
     "mystics-black-covenant::0::Tactic",
     "mystics-fate-s-toll::1::Gambit/Tactic",
-    "mystics-grave-ward::1::Gambit/Tactic",
-    "mystics-necromancy::1::Gambit/Tactic",
     "mystics-paths-of-shadow::1::Gambit/Tactic",
-    "mystics-soul-for-soul::1::Gambit/Tactic",
     "neutral-assimilation::1::Gambit/Tactic",
     "neutral-contraband::1::Gambit/Tactic",
     "neutral-liberation::1::Gambit/Tactic",
@@ -48,5 +45,5 @@
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Current-release digital-engine registration baseline after implementing Salvage through the shared pre-clear Aftermath destination flow plus a queued post-cleanup Hand discard. Current Action parity remains 74/74. Current battle parity is 73/113, leaving 40 unsupported battle surfaces. Salvage may redirect one remaining Reserve card to Hand after a win, then requires its owner to discard one card from Hand after battle-card cleanup; declining Salvage or losing leaves normal cleanup unchanged. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
+  "note": "Current-release digital-engine registration baseline after implementing the shared post-clear Mystics Aftermath timing for Grave Ward, Soul for Soul, and Necromancy. Current Action parity remains 74/74. Current battle parity is 76/113, leaving 37 unsupported battle surfaces. These effects resolve after battle cards clear, under the normal shared-timing procedure, with current Graveyard state re-evaluated after each effect. Grave Ward recovers one other Gambit, Soul for Soul optionally exchanges a Hand card with one other Gambit, and Necromancy chooses up to three non-Necromancy Graveyard cards before moving the entire Hand to the Graveyard and returning the chosen cards. Deferred Arcane handlers now also honor Monastery suppression before registration. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
 }

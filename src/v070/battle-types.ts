@@ -162,6 +162,17 @@ export interface V070BattleCardAftermathHandDiscardRequirement {
   prompted: boolean;
 }
 
+export interface V070BattleCardPostClearAftermathEffect {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+}
+
+export interface V070BattlePostClearAftermathChoiceRuntime {
+  playerId: PlayerId;
+  candidateSourceInstanceIds: string[];
+}
+
 export interface V070BattleCardAftermathOverlayPlacement {
   sourceInstanceId: string;
   sourceCardId: string;
@@ -358,6 +369,11 @@ export interface V070BattleRuntime {
     V070BattleCardAftermathDestinationChoice[];
   battleCardAftermathHandDiscardRequirements:
     V070BattleCardAftermathHandDiscardRequirement[];
+  battleCardPostClearAftermathEffects:
+    V070BattleCardPostClearAftermathEffect[];
+  pendingBattlePostClearAftermathChoice:
+    V070BattlePostClearAftermathChoiceRuntime | null;
+  battlePostClearAftermathNextPlayer: PlayerId | null;
   battleCardAftermathOverlayPlacements:
     V070BattleCardAftermathOverlayPlacement[];
   battleCardAftermathTerritoryInsertions:
@@ -461,6 +477,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     battleCardAftermathDestinationOverrides: [],
     battleCardAftermathDestinationChoices: [],
     battleCardAftermathHandDiscardRequirements: [],
+    battleCardPostClearAftermathEffects: [],
+    pendingBattlePostClearAftermathChoice: null,
+    battlePostClearAftermathNextPlayer: null,
     battleCardAftermathOverlayPlacements: [],
     battleCardAftermathTerritoryInsertions: [],
     battleCardAftermathAssetBanks: [],

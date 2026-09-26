@@ -58,6 +58,7 @@ import {
 import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
+  type V070BattleCardPostClearAftermathEffect,
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
@@ -94,7 +95,9 @@ import {
   V070_FIELD_HOSPITAL_ID,
   V070_OLD_BATTLEFIELD_ID,
   V070_POISONOUS_GAS_ID,
+  assertV070GraveyardExitAllowed,
   v070DisruptedSupplyLinesSelectionRequired,
+  v070MonasteryBlocksGraveyardExit,
 } from './territories';
 import { releaseV070SmugglersRunStashForUse } from './smugglers-run';
 import {
@@ -142,7 +145,9 @@ import {
   completeV070MysticBloodAfterBattleWin,
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
+  recordV070MysticBattleEffectApplied,
   recordV070MysticCrossingEligibility,
+  recordV070MysticQualifyingHandSacrifice,
   passV070MysticInvocation,
   resolveV070MateriaPrimaAfterAftermath,
   resolveV070MysticRitualVictory,
@@ -151,6 +156,11 @@ import {
   useV070MysticTransmutation,
   v070MysticInvocationPendingPlayers,
 } from './mystics';
+import {
+  V070_GRAVE_WARD_ID,
+  V070_NECROMANCY_ID,
+  V070_SOUL_FOR_SOUL_ID,
+} from './post-clear-mystic-cards';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -252,6 +262,20 @@ export type V070BattleAction =
       type: 'resolve_battle_aftermath_hand_discard';
       playerId: PlayerId;
       cardInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_post_clear_aftermath_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+      targetInstanceId?: string;
+      handInstanceId?: string;
+      graveyardInstanceId?: string;
+      targetInstanceIds?: readonly string[];
+    }
+  | {
+      type: 'pass_battle_post_clear_aftermath_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
     }
   | {
       type: 'pass_retribution_asset';
@@ -374,6 +398,15 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_battle_aftermath_hand_discard') {
     throw new V070GameActionError(
       'Resolve the pending Aftermath hand discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattlePostClearAftermathChoice
+    && action.type !== 'resolve_battle_post_clear_aftermath_effect'
+    && action.type !== 'pass_battle_post_clear_aftermath_effect'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
+    throw new V070GameActionError(
+      'Resolve the pending post-clear Aftermath effect before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingRetributionResponse
@@ -623,6 +656,26 @@ export function reduceV070BattleAction(
         action.cardInstanceId,
       );
       break;
+    case 'resolve_battle_post_clear_aftermath_effect':
+      resolveBattlePostClearAftermathEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+        {
+          targetInstanceId: action.targetInstanceId,
+          handInstanceId: action.handInstanceId,
+          graveyardInstanceId: action.graveyardInstanceId,
+          targetInstanceIds: action.targetInstanceIds,
+        },
+      );
+      break;
+    case 'pass_battle_post_clear_aftermath_effect':
+      passBattlePostClearAftermathEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
     case 'pass_retribution_asset':
       passRetributionControlledEffect(
         next,
@@ -701,9 +754,17 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
+      if (next.battleRuntime?.stage === 'aftermath'
+        && next.battleRuntime.aftermathCardsCleared) {
+        completeAftermathInternal(next, null);
+      }
       break;
     case 'pass_mystic_invocation':
       passV070MysticInvocation(next, action.playerId);
+      if (next.battleRuntime?.stage === 'aftermath'
+        && next.battleRuntime.aftermathCardsCleared) {
+        completeAftermathInternal(next, null);
+      }
       break;
     case 'use_guardians_of_the_circle':
       useV070GuardiansOfTheCircle(
@@ -2834,6 +2895,524 @@ function passBattleAftermathControlledEffectChoice(
   completeAftermathInternal(state, immediateWinner);
 }
 
+type V070PostClearEffectResolution = {
+  targetInstanceId?: string;
+  handInstanceId?: string;
+  graveyardInstanceId?: string;
+  targetInstanceIds?: readonly string[];
+};
+
+function otherGambitsInGraveyard(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): string[] {
+  if (v070MonasteryBlocksGraveyardExit(state)) return [];
+  const participant = requireRuntime(state).participants[effect.owner];
+  return [
+    ...(participant.gambit ? [participant.gambit] : []),
+    ...participant.additionalGambits,
+  ]
+    .map(commitment => commitment.instanceId)
+    .filter(instanceId =>
+      instanceId !== effect.sourceInstanceId
+      && state.players[effect.owner].zones.graveyard.includes(instanceId)
+    );
+}
+
+function necromancyGraveyardCandidates(
+  state: V070GameState,
+  owner: PlayerId,
+): string[] {
+  if (v070MonasteryBlocksGraveyardExit(state)) return [];
+  return state.players[owner].zones.graveyard.filter(instanceId =>
+    state.cardInstances[instanceId]?.cardId !== V070_NECROMANCY_ID
+  );
+}
+
+function battlePostClearEffectAvailable(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): boolean {
+  if (effect.sourceCardId === V070_GRAVE_WARD_ID) {
+    return otherGambitsInGraveyard(state, effect).length > 0;
+  }
+  if (effect.sourceCardId === V070_SOUL_FOR_SOUL_ID) {
+    return otherGambitsInGraveyard(state, effect).length > 0
+      && state.players[effect.owner].zones.hand.length > 0;
+  }
+  if (effect.sourceCardId === V070_NECROMANCY_ID) {
+    return true;
+  }
+  return false;
+}
+
+function pruneUnavailableBattlePostClearEffects(
+  state: V070GameState,
+): void {
+  const runtime = requireRuntime(state);
+  const retained: V070BattleCardPostClearAftermathEffect[] = [];
+  for (const effect of runtime.battleCardPostClearAftermathEffects) {
+    if (battlePostClearEffectAvailable(state, effect)) {
+      retained.push(effect);
+      continue;
+    }
+    appendV070Event(state, {
+      type: 'battle_post_clear_aftermath_effect_unavailable',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: effect.sourceCardId,
+        reason: 'no_valid_option',
+      },
+    });
+  }
+  runtime.battleCardPostClearAftermathEffects = retained;
+}
+
+function remainingBattlePostClearEffects(
+  state: V070GameState,
+): V070BattleCardPostClearAftermathEffect[] {
+  return requireRuntime(state).battleCardPostClearAftermathEffects;
+}
+
+function nextBattlePostClearEffectPlayer(
+  state: V070GameState,
+  previousPlayer: PlayerId | null,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const effects = remainingBattlePostClearEffects(state);
+  const hasEffect = (playerId: PlayerId) =>
+    effects.some(effect => effect.owner === playerId);
+
+  if (previousPlayer === null) {
+    if (hasEffect(battle.attacker)) return battle.attacker;
+    if (hasEffect(battle.defender)) return battle.defender;
+    return null;
+  }
+
+  const other =
+    previousPlayer === battle.attacker
+      ? battle.defender
+      : battle.attacker;
+  if (hasEffect(other)) return other;
+  if (hasEffect(previousPlayer)) return previousPlayer;
+  return null;
+}
+
+function battlePostClearEffectNeedsChoice(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): boolean {
+  if (effect.sourceCardId === V070_GRAVE_WARD_ID) {
+    return otherGambitsInGraveyard(state, effect).length > 1;
+  }
+  if (effect.sourceCardId === V070_SOUL_FOR_SOUL_ID) {
+    return true;
+  }
+  if (effect.sourceCardId === V070_NECROMANCY_ID) {
+    return necromancyGraveyardCandidates(state, effect.owner).length > 0;
+  }
+  return false;
+}
+
+function postClearEffectPrivateOptions(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): Record<string, unknown> {
+  if (effect.sourceCardId === V070_GRAVE_WARD_ID) {
+    return {
+      sourceInstanceId: effect.sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+      targetInstanceIds: otherGambitsInGraveyard(state, effect),
+    };
+  }
+  if (effect.sourceCardId === V070_SOUL_FOR_SOUL_ID) {
+    return {
+      sourceInstanceId: effect.sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+      optional: true,
+      handInstanceIds: [...state.players[effect.owner].zones.hand],
+      graveyardInstanceIds: otherGambitsInGraveyard(state, effect),
+    };
+  }
+  return {
+    sourceInstanceId: effect.sourceInstanceId,
+    sourceCardId: effect.sourceCardId,
+    targetInstanceIds: necromancyGraveyardCandidates(
+      state,
+      effect.owner,
+    ),
+    minTargets: 0,
+    maxTargets: 3,
+  };
+}
+
+function openBattlePostClearAftermathChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  effects: V070BattleCardPostClearAftermathEffect[],
+): void {
+  const runtime = requireRuntime(state);
+  runtime.pendingBattlePostClearAftermathChoice = {
+    playerId,
+    candidateSourceInstanceIds: effects.map(
+      effect => effect.sourceInstanceId,
+    ),
+  };
+  appendV070Event(state, {
+    type: 'battle_post_clear_aftermath_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      candidateCount: effects.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'battle_post_clear_aftermath_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      effects: effects.map(effect =>
+        postClearEffectPrivateOptions(state, effect)
+      ),
+    },
+  });
+}
+
+function takeBattlePostClearEffect(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): void {
+  const runtime = requireRuntime(state);
+  const index = runtime.battleCardPostClearAftermathEffects.findIndex(
+    candidate =>
+      candidate.owner === effect.owner
+      && candidate.sourceInstanceId === effect.sourceInstanceId,
+  );
+  if (index < 0) {
+    throw new V070GameActionError(
+      'That post-clear Aftermath effect is no longer pending.',
+    );
+  }
+  runtime.battleCardPostClearAftermathEffects.splice(index, 1);
+}
+
+function applyBattlePostClearAftermathEffect(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+  resolution: V070PostClearEffectResolution,
+): void {
+  takeBattlePostClearEffect(state, effect);
+  const player = state.players[effect.owner];
+
+  if (effect.sourceCardId === V070_GRAVE_WARD_ID) {
+    const candidates = otherGambitsInGraveyard(state, effect);
+    const target = resolution.targetInstanceId;
+    if (!target || !candidates.includes(target)) {
+      throw new V070GameActionError(
+        'Grave Ward must choose one other Gambit you set in this battle that is still in your Graveyard.',
+      );
+    }
+    assertV070GraveyardExitAllowed(state, 'Grave Ward');
+    player.zones.graveyard.splice(
+      player.zones.graveyard.indexOf(target),
+      1,
+    );
+    player.zones.discardPile.push(target);
+    appendV070Event(state, {
+      type: 'grave_ward_gambit_recovered',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        targetInstanceId: target,
+        targetCardId: state.cardInstances[target]?.cardId ?? null,
+      },
+    });
+  } else if (effect.sourceCardId === V070_SOUL_FOR_SOUL_ID) {
+    const graveyardCandidates = otherGambitsInGraveyard(state, effect);
+    const handInstanceId = resolution.handInstanceId;
+    const graveyardInstanceId = resolution.graveyardInstanceId;
+    if (!handInstanceId
+      || !player.zones.hand.includes(handInstanceId)) {
+      throw new V070GameActionError(
+        'Soul for Soul must choose one card currently in your Hand.',
+      );
+    }
+    if (!graveyardInstanceId
+      || !graveyardCandidates.includes(graveyardInstanceId)) {
+      throw new V070GameActionError(
+        'Soul for Soul must choose one other Gambit you set in this battle that is still in your Graveyard.',
+      );
+    }
+
+    assertV070GraveyardExitAllowed(state, 'Soul for Soul');
+    player.zones.hand.splice(
+      player.zones.hand.indexOf(handInstanceId),
+      1,
+    );
+    player.zones.graveyard.splice(
+      player.zones.graveyard.indexOf(graveyardInstanceId),
+      1,
+    );
+    player.zones.graveyard.push(handInstanceId);
+    player.zones.hand.push(graveyardInstanceId);
+
+    appendV070Event(state, {
+      type: 'hand_graveyard_cards_exchanged',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        purpose: 'Soul for Soul battle effect',
+        sourceInstanceId: effect.sourceInstanceId,
+        handToGraveyardInstanceId: handInstanceId,
+        handToGraveyardCardId:
+          state.cardInstances[handInstanceId]?.cardId ?? null,
+        graveyardToHandInstanceId: graveyardInstanceId,
+        graveyardToHandCardId:
+          state.cardInstances[graveyardInstanceId]?.cardId ?? null,
+      },
+    });
+    recordV070MysticQualifyingHandSacrifice(
+      state,
+      effect.owner,
+      'Soul for Soul',
+    );
+  } else if (effect.sourceCardId === V070_NECROMANCY_ID) {
+    const targets = [...(resolution.targetInstanceIds ?? [])];
+    if (new Set(targets).size !== targets.length || targets.length > 3) {
+      throw new V070GameActionError(
+        'Necromancy may choose up to three different Graveyard cards.',
+      );
+    }
+    const candidates = necromancyGraveyardCandidates(
+      state,
+      effect.owner,
+    );
+    if (targets.some(instanceId => !candidates.includes(instanceId))) {
+      throw new V070GameActionError(
+        'Necromancy may choose only non-Necromancy cards currently in your Graveyard.',
+      );
+    }
+    if (targets.length > 0) {
+      assertV070GraveyardExitAllowed(state, 'Necromancy');
+    }
+
+    const handToGraveyard = player.zones.hand.splice(0);
+    player.zones.graveyard.push(...handToGraveyard);
+    for (const instanceId of targets) {
+      const index = player.zones.graveyard.indexOf(instanceId);
+      if (index < 0) {
+        throw new V070GameActionError(
+          'A chosen Necromancy card is no longer in your Graveyard.',
+        );
+      }
+      player.zones.graveyard.splice(index, 1);
+      player.zones.hand.push(instanceId);
+    }
+
+    appendV070Event(state, {
+      type: 'necromancy_reclaim_resolved',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        purpose: 'Necromancy battle effect',
+        sourceInstanceId: effect.sourceInstanceId,
+        handToGraveyard: handToGraveyard.map(instanceId => ({
+          instanceId,
+          cardId: state.cardInstances[instanceId]?.cardId ?? null,
+        })),
+        reclaimed: targets.map(instanceId => ({
+          instanceId,
+          cardId: state.cardInstances[instanceId]?.cardId ?? null,
+        })),
+      },
+    });
+    if (handToGraveyard.length > 0) {
+      recordV070MysticQualifyingHandSacrifice(
+        state,
+        effect.owner,
+        'Necromancy',
+      );
+    }
+  } else {
+    throw new V070GameActionError(
+      'Unknown post-clear Mystics battle effect.',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'battle_post_clear_aftermath_effect_resolved',
+    actor: effect.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: effect.sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+    },
+  });
+  recordV070MysticBattleEffectApplied(
+    state,
+    effect.owner,
+    effect.sourceInstanceId,
+  );
+}
+
+function automaticBattlePostClearResolution(
+  state: V070GameState,
+  effect: V070BattleCardPostClearAftermathEffect,
+): V070PostClearEffectResolution {
+  if (effect.sourceCardId === V070_GRAVE_WARD_ID) {
+    const [targetInstanceId] = otherGambitsInGraveyard(state, effect);
+    return { targetInstanceId };
+  }
+  if (effect.sourceCardId === V070_NECROMANCY_ID) {
+    return { targetInstanceIds: [] };
+  }
+  throw new V070GameActionError(
+    'That post-clear Aftermath effect requires a player choice.',
+  );
+}
+
+function advanceBattlePostClearAftermathEffects(
+  state: V070GameState,
+): boolean {
+  const runtime = requireRuntime(state);
+  if (!runtime.aftermathCardsCleared) return false;
+
+  pruneUnavailableBattlePostClearEffects(state);
+  if (runtime.pendingBattlePostClearAftermathChoice) return true;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return true;
+
+  let nextPlayer =
+    runtime.battlePostClearAftermathNextPlayer
+    ?? nextBattlePostClearEffectPlayer(state, null);
+
+  while (nextPlayer) {
+    runtime.battlePostClearAftermathNextPlayer = nextPlayer;
+    const effects = remainingBattlePostClearEffects(state)
+      .filter(effect => effect.owner === nextPlayer);
+
+    if (effects.length > 1
+      || (effects.length === 1
+        && battlePostClearEffectNeedsChoice(state, effects[0]))) {
+      openBattlePostClearAftermathChoice(
+        state,
+        nextPlayer,
+        effects,
+      );
+      return true;
+    }
+
+    if (effects.length === 1) {
+      applyBattlePostClearAftermathEffect(
+        state,
+        effects[0],
+        automaticBattlePostClearResolution(state, effects[0]),
+      );
+      if (v070MysticInvocationPendingPlayers(state).length > 0) {
+        return true;
+      }
+    }
+
+    pruneUnavailableBattlePostClearEffects(state);
+    nextPlayer =
+      nextBattlePostClearEffectPlayer(state, nextPlayer);
+  }
+
+  runtime.battlePostClearAftermathNextPlayer = null;
+  return false;
+}
+
+function resolveBattlePostClearAftermathEffectChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+  resolution: V070PostClearEffectResolution,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  if (!runtime.aftermathCardsCleared) {
+    throw new V070GameActionError(
+      'Post-clear Aftermath effects resolve only after battle cards are cleared.',
+    );
+  }
+
+  const pending = runtime.pendingBattlePostClearAftermathChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That post-clear Aftermath effect is not pending for this player.',
+    );
+  }
+
+  const effect = remainingBattlePostClearEffects(state).find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId,
+  );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That post-clear Aftermath effect is no longer available.',
+    );
+  }
+
+  runtime.pendingBattlePostClearAftermathChoice = null;
+  applyBattlePostClearAftermathEffect(
+    state,
+    effect,
+    resolution,
+  );
+  runtime.battlePostClearAftermathNextPlayer =
+    nextBattlePostClearEffectPlayer(state, playerId);
+  completeAftermathInternal(state, null);
+}
+
+function passBattlePostClearAftermathEffectChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingBattlePostClearAftermathChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That optional post-clear Aftermath effect is not pending.',
+    );
+  }
+
+  const effect = remainingBattlePostClearEffects(state).find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId,
+  );
+  if (!effect || effect.sourceCardId !== V070_SOUL_FOR_SOUL_ID) {
+    throw new V070GameActionError(
+      'Only Soul for Soul may be declined at this post-clear timing.',
+    );
+  }
+
+  takeBattlePostClearEffect(state, effect);
+  runtime.pendingBattlePostClearAftermathChoice = null;
+  appendV070Event(state, {
+    type: 'battle_post_clear_aftermath_effect_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: effect.sourceCardId,
+    },
+  });
+  runtime.battlePostClearAftermathNextPlayer =
+    nextBattlePostClearEffectPlayer(state, playerId);
+  completeAftermathInternal(state, null);
+}
+
 function openBattleAftermathHandDiscard(
   state: V070GameState,
 ): boolean {
@@ -3203,6 +3782,9 @@ function completeAftermathInternal(
   }
 
   if (openBattleAftermathHandDiscard(state)) return;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return;
+  if (advanceBattlePostClearAftermathEffects(state)) return;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return;
 
   if (runtime.pendingGameVictory) {
     finalizeCompletedAftermath(state);

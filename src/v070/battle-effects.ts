@@ -68,6 +68,15 @@ import {
   registerV070SecondLineBattleEffect,
   registerV070SalvageBattleEffect,
 } from './aftermath-destination-cards';
+import {
+  V070_GRAVE_WARD_BATTLE_TEXT,
+  V070_GRAVE_WARD_ID,
+  V070_NECROMANCY_BATTLE_TEXT,
+  V070_NECROMANCY_ID,
+  V070_SOUL_FOR_SOUL_BATTLE_TEXT,
+  V070_SOUL_FOR_SOUL_ID,
+  registerV070PostClearMysticBattleEffect,
+} from './post-clear-mystic-cards';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -216,6 +225,48 @@ const salvageHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const graveWardHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_GRAVE_WARD_ID,
+  expectedText: V070_GRAVE_WARD_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PostClearMysticBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_GRAVE_WARD_ID,
+    );
+  },
+};
+
+const soulForSoulHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SOUL_FOR_SOUL_ID,
+  expectedText: V070_SOUL_FOR_SOUL_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PostClearMysticBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_SOUL_FOR_SOUL_ID,
+    );
+  },
+};
+
+const necromancyHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_NECROMANCY_ID,
+  expectedText: V070_NECROMANCY_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PostClearMysticBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_NECROMANCY_ID,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -223,6 +274,9 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_BATTLEFIELD_PROMOTION_ID, battlefieldPromotionHandler],
   [V070_SECOND_LINE_ID, secondLineHandler],
   [V070_SALVAGE_ID, salvageHandler],
+  [V070_GRAVE_WARD_ID, graveWardHandler],
+  [V070_SOUL_FOR_SOUL_ID, soulForSoulHandler],
+  [V070_NECROMANCY_ID, necromancyHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -353,6 +407,23 @@ export function resolveV070SupportedRevealEffects(
           instanceId: commitment.instanceId,
           cardId,
           role: commitment.role,
+        },
+      });
+      continue;
+    }
+
+    const card = v070CanonicalContent.cardsById.get(cardId);
+    if (card?.trait === 'Arcane'
+      && v070MonasterySuppressesArcaneBattleEffects(state)) {
+      appendV070Event(state, {
+        type: 'battle_card_effect_suppressed',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          cardId,
+          role: commitment.role,
+          reason: 'Monastery',
         },
       });
       continue;
@@ -499,6 +570,15 @@ function deferredRegistrationExists(
       choice =>
         choice.sourceCardId === cardId
         && choice.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_GRAVE_WARD_ID
+    || cardId === V070_SOUL_FOR_SOUL_ID
+    || cardId === V070_NECROMANCY_ID) {
+    return state.battleRuntime?.battleCardPostClearAftermathEffects.some(
+      effect =>
+        effect.sourceCardId === cardId
+        && effect.sourceInstanceId === sourceInstanceId,
     ) ?? false;
   }
   return false;
