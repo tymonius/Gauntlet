@@ -62,8 +62,11 @@ import {
   V070_BATTLEFIELD_PROMOTION_ID,
   V070_SECOND_LINE_BATTLE_TEXT,
   V070_SECOND_LINE_ID,
+  V070_SALVAGE_BATTLE_TEXT,
+  V070_SALVAGE_ID,
   registerV070BattlefieldPromotionBattleEffect,
   registerV070SecondLineBattleEffect,
+  registerV070SalvageBattleEffect,
 } from './aftermath-destination-cards';
 
 export * from './battle-effects-pre-capital-gains';
@@ -200,12 +203,26 @@ const secondLineHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const salvageHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SALVAGE_ID,
+  expectedText: V070_SALVAGE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070SalvageBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
   [V070_SCORCHED_EARTH_ID, scorchedEarthHandler],
   [V070_BATTLEFIELD_PROMOTION_ID, battlefieldPromotionHandler],
   [V070_SECOND_LINE_ID, secondLineHandler],
+  [V070_SALVAGE_ID, salvageHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -476,7 +493,8 @@ function deferredRegistrationExists(
     ) ?? false;
   }
   if (cardId === V070_BATTLEFIELD_PROMOTION_ID
-    || cardId === V070_SECOND_LINE_ID) {
+    || cardId === V070_SECOND_LINE_ID
+    || cardId === V070_SALVAGE_ID) {
     return state.battleRuntime?.battleCardAftermathDestinationChoices.some(
       choice =>
         choice.sourceCardId === cardId
