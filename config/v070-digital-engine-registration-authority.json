@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 70,
+  "registeredBattleSurfaces": 72,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -24,7 +24,6 @@
     "intelligence-operational-reassessment::1::Gambit/Tactic",
     "intelligence-spies::1::Gambit/Tactic",
     "intelligence-treason::1::Gambit/Tactic",
-    "military-battlefield-promotion::1::Gambit/Tactic",
     "military-countercharge::1::Gambit/Tactic",
     "military-field-command::1::Gambit/Tactic",
     "military-give-chase::1::Gambit/Tactic",
@@ -44,12 +43,11 @@
     "neutral-liberation::1::Gambit/Tactic",
     "neutral-redemption::1::Gambit/Tactic",
     "neutral-reinforcements::1::Gambit/Tactic",
-    "neutral-reserves::1::Gambit/Tactic",
     "neutral-revolution::1::Gambit/Tactic",
     "neutral-salvage::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic",
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the shared Aftermath Overlay tranche. Action parity remains 72/72; battle parity is 70/113, leaving 43 explicitly queued unsupported battle surfaces. Nature's Altar preserves its optional owner-win placement and Scorched Earth places itself as Ruins only after a qualifying defending loss and retreat. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after the pre-clear Aftermath destination-choice tranche. Action parity remains 72/72; battle parity is 72/113, leaving 41 explicitly queued unsupported battle surfaces. Battlefield Promotion redirects one other chosen Tactic to Hand after a win; Second Line optionally redirects one remaining Reserve card to the top of the Draw Pile. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
