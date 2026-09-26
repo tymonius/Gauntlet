@@ -49,6 +49,14 @@ import {
   CURRENT_DIVINE_MERCY_BATTLE_TEXT,
   V070_DIVINE_MERCY_ID,
 } from './divine-mercy-battle';
+import {
+  V070_NATURES_ALTAR_BATTLE_TEXT,
+  V070_NATURES_ALTAR_ID,
+  V070_SCORCHED_EARTH_BATTLE_TEXT,
+  V070_SCORCHED_EARTH_ID,
+  registerV070NaturesAltarBattleEffect,
+  registerV070ScorchedEarthBattleEffect,
+} from './aftermath-overlay-cards';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -132,8 +140,36 @@ const rearguardHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const naturesAltarHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_NATURES_ALTAR_ID,
+  expectedText: V070_NATURES_ALTAR_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070NaturesAltarBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const scorchedEarthHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SCORCHED_EARTH_ID,
+  expectedText: V070_SCORCHED_EARTH_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ScorchedEarthBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
+  [V070_NATURES_ALTAR_ID, naturesAltarHandler],
+  [V070_SCORCHED_EARTH_ID, scorchedEarthHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -393,6 +429,14 @@ function deferredRegistrationExists(
     return state.battleRuntime?.battleCardAftermathAssetBanks.some(bank =>
       bank.sourceCardId === V070_REARGUARD_ID
       && bank.sourceInstanceId === sourceInstanceId
+    ) ?? false;
+  }
+  if (cardId === V070_NATURES_ALTAR_ID
+    || cardId === V070_SCORCHED_EARTH_ID) {
+    return state.battleRuntime?.battleCardAftermathOverlayPlacements.some(
+      placement =>
+        placement.sourceCardId === cardId
+        && placement.sourceInstanceId === sourceInstanceId,
     ) ?? false;
   }
   return false;
