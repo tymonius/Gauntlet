@@ -152,6 +152,15 @@ export interface V070BattleCardAftermathDestinationChoice {
   optional: boolean;
   candidateSource: 'other_tactics' | 'reserve';
   destination: 'hand' | 'draw_top';
+  followUp?: 'discard_one_hand';
+}
+
+export interface V070BattleAftermathHandDiscardRuntime {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+  recoveredInstanceId: string;
+  immediateWinner: PlayerId | null;
 }
 
 export interface V070BattleCardAftermathOverlayPlacement {
@@ -316,6 +325,8 @@ export interface V070BattleRuntime {
   battleAccursedWagerInstanceIds: string[];
   pendingBattleAftermathControlledEffectChoice:
     V070BattleAftermathControlledEffectChoiceRuntime | null;
+  pendingBattleAftermathHandDiscard:
+    V070BattleAftermathHandDiscardRuntime | null;
   battleAftermathControlledEffectNextPlayer: PlayerId | null;
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceRuntime | null;
@@ -422,6 +433,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingAccursedWager: null,
     battleAccursedWagerInstanceIds: [],
     pendingBattleAftermathControlledEffectChoice: null,
+    pendingBattleAftermathHandDiscard: null,
     battleAftermathControlledEffectNextPlayer: null,
     pendingTerritoryAftermathChoice: null,
     territoryAftermathChoiceResolved: false,
