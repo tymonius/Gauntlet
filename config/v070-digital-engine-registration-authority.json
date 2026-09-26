@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 68,
+  "registeredBattleSurfaces": 70,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -36,7 +36,6 @@
     "mystics-black-covenant::0::Tactic",
     "mystics-fate-s-toll::1::Gambit/Tactic",
     "mystics-grave-ward::1::Gambit/Tactic",
-    "mystics-nature-s-altar::1::Gambit/Tactic",
     "mystics-necromancy::1::Gambit/Tactic",
     "mystics-paths-of-shadow::1::Gambit/Tactic",
     "mystics-soul-for-soul::1::Gambit/Tactic",
@@ -48,10 +47,9 @@
     "neutral-reserves::1::Gambit/Tactic",
     "neutral-revolution::1::Gambit/Tactic",
     "neutral-salvage::1::Gambit/Tactic",
-    "neutral-scorched-earth::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic",
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the Rearguard battle-banking tranche. Action parity remains 72/72; battle parity is 68/113, leaving 45 explicitly queued unsupported battle surfaces. Rearguard's unchanged Gambit/Tactic text is now executable through the shared controlled Aftermath Asset-banking flow. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after the shared Aftermath Overlay tranche. Action parity remains 72/72; battle parity is 70/113, leaving 43 explicitly queued unsupported battle surfaces. Nature's Altar preserves its optional owner-win placement and Scorched Earth places itself as Ruins only after a qualifying defending loss and retreat. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
