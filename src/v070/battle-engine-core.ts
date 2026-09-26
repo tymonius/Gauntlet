@@ -249,6 +249,11 @@ export type V070BattleAction =
       sourceInstanceId: string;
     }
   | {
+      type: 'resolve_battle_aftermath_hand_discard';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
       type: 'pass_retribution_asset';
       playerId: PlayerId;
       assetInstanceId: string;
@@ -362,6 +367,13 @@ export function reduceV070BattleAction(
     && action.type !== 'pass_retribution_asset') {
     throw new V070GameActionError(
       'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.aftermathCardsCleared
+    && state.battleRuntime.battleCardAftermathHandDiscardRequirements.length > 0
+    && action.type !== 'resolve_battle_aftermath_hand_discard') {
+    throw new V070GameActionError(
+      'Resolve the pending Aftermath hand discard before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingRetributionResponse
@@ -602,6 +614,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.sourceInstanceId,
+      );
+      break;
+    case 'resolve_battle_aftermath_hand_discard':
+      resolveBattleAftermathHandDiscard(
+        next,
+        action.playerId,
+        action.cardInstanceId,
       );
       break;
     case 'pass_retribution_asset':
@@ -2380,6 +2399,14 @@ function applyBattleAftermathControlledEffect(
       instanceId: selected,
       destination: choice.destination,
     });
+    if (choice.afterDestination === 'discard_one_from_hand') {
+      runtime.battleCardAftermathHandDiscardRequirements.push({
+        owner: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        prompted: false,
+      });
+    }
     appendV070Event(state, {
       type: 'battle_card_aftermath_destination_selected',
       actor: choice.owner,
@@ -2807,6 +2834,96 @@ function passBattleAftermathControlledEffectChoice(
   completeAftermathInternal(state, immediateWinner);
 }
 
+function openBattleAftermathHandDiscard(
+  state: V070GameState,
+): boolean {
+  const runtime = requireRuntime(state);
+  if (!runtime.aftermathCardsCleared) return false;
+
+  const pending = runtime.battleCardAftermathHandDiscardRequirements[0];
+  if (!pending) return false;
+
+  const hand = state.players[pending.owner].zones.hand;
+  if (hand.length === 0) {
+    throw new V070GameActionError(
+      'A required Aftermath hand discard has no eligible card.',
+    );
+  }
+
+  if (!pending.prompted) {
+    pending.prompted = true;
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_hand_discard_pending',
+      actor: pending.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: pending.sourceInstanceId,
+        sourceCardId: pending.sourceCardId,
+        candidateCount: hand.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_hand_discard_options',
+      actor: pending.owner,
+      visibility: pending.owner,
+      payload: {
+        sourceInstanceId: pending.sourceInstanceId,
+        sourceCardId: pending.sourceCardId,
+        candidateInstanceIds: [...hand],
+      },
+    });
+  }
+
+  return true;
+}
+
+function resolveBattleAftermathHandDiscard(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  if (!runtime.aftermathCardsCleared) {
+    throw new V070GameActionError(
+      'Aftermath hand discards resolve only after battle-card cleanup.',
+    );
+  }
+
+  const pending = runtime.battleCardAftermathHandDiscardRequirements[0];
+  if (!pending || pending.owner !== playerId) {
+    throw new V070GameActionError(
+      'No Aftermath hand discard is pending for that player.',
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(cardInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The Aftermath discard must choose a card currently in your Hand.',
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[playerId].zones.discardPile.push(cardInstanceId);
+  runtime.battleCardAftermathHandDiscardRequirements.shift();
+
+  appendV070Event(state, {
+    type: 'battle_card_aftermath_hand_card_discarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      cardInstanceId,
+      cardId: state.cardInstances[cardInstanceId]?.cardId ?? null,
+    },
+  });
+
+  completeAftermathInternal(state, null);
+}
+
 function passRetributionControlledEffect(
   state: V070GameState,
   playerId: PlayerId,
@@ -3084,6 +3201,8 @@ function completeAftermathInternal(
     );
     runtime.aftermathCardsCleared = true;
   }
+
+  if (openBattleAftermathHandDiscard(state)) return;
 
   if (runtime.pendingGameVictory) {
     finalizeCompletedAftermath(state);
