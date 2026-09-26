@@ -28,6 +28,7 @@ on:
       - 'tts/renderer/**'
       - 'card-design/**'
       - 'tools/card-design/artwork-authoring/**'
+      - 'tools/card-design/review/**'
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'

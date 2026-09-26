@@ -33,7 +33,9 @@ These modules should not be moved into `packages/rendering/` merely to reduce th
 
 Artwork compositor/authoring source now lives under [`tools/card-design/artwork-authoring/`](../tools/card-design/artwork-authoring/). `config/publication-boundary.json` materializes those files back onto their established `/card-design/artwork-*` URLs, so browser consumers and the public compositor do not depend on repository placement.
 
-Catalog/review/inspection surfaces, family-specific renderer scripts/styles, and print/review pages remain in `card-design/` pending their own dependency/lifecycle audit. They are production tooling around the browser renderer, not shared model authority.
+Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. The catalog entry page remains at `card-design/index.html` for now, while its filter/catalog/review/inspection assets are source-owned by `tools/`.
+
+Family-specific renderer scripts/styles and print/review compatibility pages remain in `card-design/` pending their own dependency/lifecycle audit. They are production tooling around the browser renderer, not shared model authority.
 
 ## Source and lifecycle boundaries
 
