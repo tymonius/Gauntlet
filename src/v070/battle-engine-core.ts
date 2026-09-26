@@ -94,7 +94,9 @@ import {
   V070_FIELD_HOSPITAL_ID,
   V070_OLD_BATTLEFIELD_ID,
   V070_POISONOUS_GAS_ID,
+  assertV070GraveyardExitAllowed,
   v070DisruptedSupplyLinesSelectionRequired,
+  v070MonasteryBlocksGraveyardExit,
 } from './territories';
 import { releaseV070SmugglersRunStashForUse } from './smugglers-run';
 import {
@@ -142,7 +144,9 @@ import {
   completeV070MysticBloodAfterBattleWin,
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
+  recordV070MysticBattleEffectApplied,
   recordV070MysticCrossingEligibility,
+  recordV070MysticQualifyingHandSacrifice,
   passV070MysticInvocation,
   resolveV070MateriaPrimaAfterAftermath,
   resolveV070MysticRitualVictory,
@@ -151,6 +155,11 @@ import {
   useV070MysticTransmutation,
   v070MysticInvocationPendingPlayers,
 } from './mystics';
+import {
+  V070_GRAVE_WARD_ID,
+  V070_NECROMANCY_ID,
+  V070_SOUL_FOR_SOUL_ID,
+} from './post-clear-mystic-cards';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -252,6 +261,20 @@ export type V070BattleAction =
       type: 'resolve_battle_aftermath_hand_discard';
       playerId: PlayerId;
       cardInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_post_clear_aftermath_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+      targetInstanceId?: string;
+      handInstanceId?: string;
+      graveyardInstanceId?: string;
+      targetInstanceIds?: readonly string[];
+    }
+  | {
+      type: 'pass_battle_post_clear_aftermath_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
     }
   | {
       type: 'pass_retribution_asset';
@@ -374,6 +397,15 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_battle_aftermath_hand_discard') {
     throw new V070GameActionError(
       'Resolve the pending Aftermath hand discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattlePostClearAftermathChoice
+    && action.type !== 'resolve_battle_post_clear_aftermath_effect'
+    && action.type !== 'pass_battle_post_clear_aftermath_effect'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
+    throw new V070GameActionError(
+      'Resolve the pending post-clear Aftermath effect before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingRetributionResponse
@@ -623,6 +655,26 @@ export function reduceV070BattleAction(
         action.cardInstanceId,
       );
       break;
+    case 'resolve_battle_post_clear_aftermath_effect':
+      resolveBattlePostClearAftermathEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+        {
+          targetInstanceId: action.targetInstanceId,
+          handInstanceId: action.handInstanceId,
+          graveyardInstanceId: action.graveyardInstanceId,
+          targetInstanceIds: action.targetInstanceIds,
+        },
+      );
+      break;
+    case 'pass_battle_post_clear_aftermath_effect':
+      passBattlePostClearAftermathEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
     case 'pass_retribution_asset':
       passRetributionControlledEffect(
         next,
@@ -701,9 +753,17 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
+      if (next.battleRuntime?.stage === 'aftermath'
+        && next.battleRuntime.aftermathCardsCleared) {
+        completeAftermathInternal(next, null);
+      }
       break;
     case 'pass_mystic_invocation':
       passV070MysticInvocation(next, action.playerId);
+      if (next.battleRuntime?.stage === 'aftermath'
+        && next.battleRuntime.aftermathCardsCleared) {
+        completeAftermathInternal(next, null);
+      }
       break;
     case 'use_guardians_of_the_circle':
       useV070GuardiansOfTheCircle(
@@ -3203,6 +3263,9 @@ function completeAftermathInternal(
   }
 
   if (openBattleAftermathHandDiscard(state)) return;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return;
+  if (advanceBattlePostClearAftermathEffects(state)) return;
+  if (v070MysticInvocationPendingPlayers(state).length > 0) return;
 
   if (runtime.pendingGameVictory) {
     finalizeCompletedAftermath(state);
