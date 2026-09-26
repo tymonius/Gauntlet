@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 72,
+  "registeredBattleSurfaces": 73,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -44,10 +44,9 @@
     "neutral-redemption::1::Gambit/Tactic",
     "neutral-reinforcements::1::Gambit/Tactic",
     "neutral-revolution::1::Gambit/Tactic",
-    "neutral-salvage::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic",
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the pre-clear Aftermath destination-choice tranche. Action parity remains 72/72; battle parity is 72/113, leaving 41 explicitly queued unsupported battle surfaces. Battlefield Promotion redirects one other chosen Tactic to Hand after a win; Second Line optionally redirects one remaining Reserve card to the top of the Draw Pile. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after implementing Salvage's battle recovery sequence. Action parity remains 72/72; battle parity is 73/113, leaving 40 explicitly queued unsupported battle surfaces. Salvage may recover one remaining Reserve card to Hand after a win, then requires one Hand discard before the remaining Aftermath continues. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
