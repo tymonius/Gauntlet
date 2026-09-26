@@ -4,7 +4,7 @@
   "actionSurfaces": 74,
   "executableActionSurfaces": 74,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 72,
+  "registeredBattleSurfaces": 73,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -44,10 +44,9 @@
     "neutral-redemption::1::Gambit/Tactic",
     "neutral-reinforcements::1::Gambit/Tactic",
     "neutral-revolution::1::Gambit/Tactic",
-    "neutral-salvage::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic",
     "neutral-strategic-withdrawal::1::Gambit/Tactic",
     "neutral-valor::1::Gambit/Tactic"
   ],
-  "note": "Current-release digital-engine registration baseline after implementing Battlefield Promotion and Second Line through the shared pre-clear Aftermath destination-choice flow. Current Action parity remains 74/74. Current battle parity is 72/113, leaving 41 unsupported battle surfaces. Battlefield Promotion redirects one other chosen Tactic to Hand after a win; Second Line optionally redirects one remaining Reserve card to the top of the Draw Pile. Both preserve normal shared-timing order and defer actual movement until battle-card cleanup. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
+  "note": "Current-release digital-engine registration baseline after implementing Salvage's battle recovery sequence on the shared pre-clear Aftermath destination flow. Current Action parity remains 74/74. Current battle parity is 73/113, leaving 40 unsupported battle surfaces. On a qualifying win, Salvage may recover one card remaining in Reserve to Hand, then requires one card from Hand to be discarded before the remaining Aftermath continues; decline and loss preserve normal cleanup. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
 }
