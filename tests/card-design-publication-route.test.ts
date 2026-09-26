@@ -36,6 +36,23 @@ describe('card-design publication route boundary', () => {
     }
   });
 
+  it('materializes extracted review tooling at stable public card-design URLs', () => {
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    for (const name of [
+      'card-review.js',
+      'card-review.css',
+      'card-inspector.js',
+      'card-inspector.css',
+      'catalog-filter.js',
+      'current-card-catalog.js',
+      'card-catalog-shell.css',
+    ]) {
+      expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/review/${name}`);
+      expect(existsSync(`tools/card-design/review/${name}`)).toBe(true);
+      expect(existsSync(`card-design/${name}`)).toBe(false);
+    }
+  });
+
   it('preserves package-owned rendering modules at their stable public card-design URLs', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/card-design/face-authority.mjs')).toBe('packages/rendering/face-authority.mjs');
