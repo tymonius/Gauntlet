@@ -240,6 +240,7 @@ export type V070BattleAction =
       type: 'resolve_battle_aftermath_controlled_effect';
       playerId: PlayerId;
       sourceInstanceId: string;
+      targetInstanceId?: string;
       replaceAssetInstanceId?: string;
     }
   | {
@@ -592,6 +593,7 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.sourceInstanceId,
+        action.targetInstanceId,
         action.replaceAssetInstanceId,
       );
       break;
@@ -2167,7 +2169,7 @@ function territoryAftermathDestination(
   playerId: PlayerId,
   instanceId: string,
   normalDestination: 'discard' | 'graveyard',
-): 'discard' | 'graveyard' | 'hand' {
+): 'discard' | 'graveyard' | 'hand' | 'draw_top' {
   const cardOverride =
     runtime.battleCardAftermathDestinationOverrides.find(
       override =>
@@ -2187,14 +2189,47 @@ function territoryAftermathDestination(
 type V070BattleAftermathControlledEffectRef = {
   owner: PlayerId;
   sourceInstanceId: string;
-  kind: 'overlay' | 'territory' | 'asset' | 'retribution';
+  kind: 'overlay' | 'destination' | 'territory' | 'asset' | 'retribution';
 };
+
+function battleAftermathDestinationChoiceCandidates(
+  state: V070GameState,
+  sourceInstanceId: string,
+): string[] {
+  const runtime = requireRuntime(state);
+  const choice = runtime.battleCardAftermathDestinationChoices.find(
+    candidate => candidate.sourceInstanceId === sourceInstanceId,
+  );
+  if (!choice) return [];
+
+  const participant = runtime.participants[choice.owner];
+  if (choice.candidateSource === 'reserve') {
+    return [...participant.reserve];
+  }
+
+  return [
+    ...(participant.tactic ? [participant.tactic.instanceId] : []),
+    ...participant.additionalTactics.map(tactic => tactic.instanceId),
+  ].filter(instanceId => instanceId !== choice.sourceInstanceId);
+}
 
 function pruneIneligibleBattleAftermathControlledEffects(
   state: V070GameState,
 ): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
+
+  runtime.battleCardAftermathDestinationChoices =
+    runtime.battleCardAftermathDestinationChoices.filter(choice => {
+      if (choice.condition === 'owner_win'
+        && battle.winner !== choice.owner) {
+        return false;
+      }
+      return battleAftermathDestinationChoiceCandidates(
+        state,
+        choice.sourceInstanceId,
+      ).length > 0;
+    });
 
   runtime.battleCardAftermathOverlayPlacements =
     runtime.battleCardAftermathOverlayPlacements.filter(placement => {
@@ -2229,6 +2264,11 @@ function remainingBattleAftermathControlledEffects(
   const runtime = requireRuntime(state);
   const battle = requireBattle(state);
   return [
+    ...runtime.battleCardAftermathDestinationChoices.map(choice => ({
+      owner: choice.owner,
+      sourceInstanceId: choice.sourceInstanceId,
+      kind: 'destination' as const,
+    })),
     ...runtime.battleCardAftermathOverlayPlacements.map(placement => ({
       owner: placement.owner,
       sourceInstanceId: placement.sourceInstanceId,
@@ -2281,6 +2321,7 @@ function applyBattleAftermathControlledEffect(
   state: V070GameState,
   effect: V070BattleAftermathControlledEffectRef,
   immediateWinner: PlayerId | null,
+  targetInstanceId?: string,
   replaceAssetInstanceId?: string,
 ): void {
   const runtime = requireRuntime(state);
@@ -2288,6 +2329,11 @@ function applyBattleAftermathControlledEffect(
   if (effect.kind !== 'asset' && replaceAssetInstanceId) {
     throw new V070GameActionError(
       'Asset replacement applies only to an Aftermath effect that banks an Asset.',
+    );
+  }
+  if (effect.kind !== 'destination' && targetInstanceId) {
+    throw new V070GameActionError(
+      'A target card applies only to an Aftermath destination effect.',
     );
   }
 
@@ -2298,6 +2344,54 @@ function applyBattleAftermathControlledEffect(
       effect.sourceInstanceId,
       immediateWinner,
     );
+    return;
+  }
+
+  if (effect.kind === 'destination') {
+    const index = runtime.battleCardAftermathDestinationChoices.findIndex(
+      choice =>
+        choice.owner === effect.owner
+        && choice.sourceInstanceId === effect.sourceInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'That battle destination effect is no longer pending.',
+      );
+    }
+    const choice = runtime.battleCardAftermathDestinationChoices[index];
+    const candidates = battleAftermathDestinationChoiceCandidates(
+      state,
+      choice.sourceInstanceId,
+    );
+    const selected = targetInstanceId
+      ?? (candidates.length === 1 && !choice.optional
+        ? candidates[0]
+        : undefined);
+    if (!selected || !candidates.includes(selected)) {
+      throw new V070GameActionError(
+        'Choose an eligible card for that Aftermath destination effect.',
+      );
+    }
+
+    runtime.battleCardAftermathDestinationChoices.splice(index, 1);
+    runtime.battleCardAftermathDestinationOverrides.push({
+      sourceCardId: choice.sourceCardId,
+      playerId: choice.owner,
+      instanceId: selected,
+      destination: choice.destination,
+    });
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_destination_selected',
+      actor: choice.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+        targetInstanceId: selected,
+        targetCardId: state.cardInstances[selected]?.cardId ?? null,
+        destination: choice.destination,
+      },
+    });
     return;
   }
 
@@ -2454,13 +2548,25 @@ function battleAftermathControlledEffectIsOptional(
   state: V070GameState,
   effect: V070BattleAftermathControlledEffectRef,
 ): boolean {
-  if (effect.kind !== 'overlay') return false;
-  return state.battleRuntime?.battleCardAftermathOverlayPlacements.some(
-    placement =>
-      placement.owner === effect.owner
-      && placement.sourceInstanceId === effect.sourceInstanceId
-      && placement.optional === true,
-  ) ?? false;
+  const runtime = state.battleRuntime;
+  if (!runtime) return false;
+  if (effect.kind === 'overlay') {
+    return runtime.battleCardAftermathOverlayPlacements.some(
+      placement =>
+        placement.owner === effect.owner
+        && placement.sourceInstanceId === effect.sourceInstanceId
+        && placement.optional === true,
+    );
+  }
+  if (effect.kind === 'destination') {
+    return runtime.battleCardAftermathDestinationChoices.some(
+      choice =>
+        choice.owner === effect.owner
+        && choice.sourceInstanceId === effect.sourceInstanceId
+        && choice.optional,
+    );
+  }
+  return false;
 }
 
 function battleAftermathControlledEffectNeedsChoice(
@@ -2470,6 +2576,12 @@ function battleAftermathControlledEffectNeedsChoice(
   if (effect.kind === 'retribution'
     || battleAftermathControlledEffectIsOptional(state, effect)) {
     return true;
+  }
+  if (effect.kind === 'destination') {
+    return battleAftermathDestinationChoiceCandidates(
+      state,
+      effect.sourceInstanceId,
+    ).length > 1;
   }
   return effect.kind === 'asset'
     && v070ResistanceBattleBankNeedsReplacementChoice(
@@ -2514,6 +2626,15 @@ function openBattleAftermathControlledEffectChoice(
           battleAftermathControlledEffectIsOptional(state, effect)
         )
         .map(effect => effect.sourceInstanceId),
+      destinationTargetOptions: candidates
+        .filter(effect => effect.kind === 'destination')
+        .map(effect => ({
+          sourceInstanceId: effect.sourceInstanceId,
+          targetInstanceIds: battleAftermathDestinationChoiceCandidates(
+            state,
+            effect.sourceInstanceId,
+          ),
+        })),
       assetReplacementOptions: candidates
         .filter(effect => effect.kind === 'asset')
         .map(effect => ({
@@ -2566,6 +2687,7 @@ function advanceBattleAftermathControlledEffects(
         state,
         candidates[0],
         immediateWinner,
+        undefined,
       );
       if (runtime.pendingRetributionResponse) return true;
     }
@@ -2582,6 +2704,7 @@ function resolveBattleAftermathControlledEffectChoice(
   state: V070GameState,
   playerId: PlayerId,
   sourceInstanceId: string,
+  targetInstanceId?: string,
   replaceAssetInstanceId?: string,
 ): void {
   const runtime = requireRuntime(state);
@@ -2615,6 +2738,7 @@ function resolveBattleAftermathControlledEffectChoice(
     state,
     effect,
     immediateWinner,
+    targetInstanceId,
     replaceAssetInstanceId,
   );
   if (runtime.pendingRetributionResponse) return;
@@ -2656,6 +2780,14 @@ function passBattleAftermathControlledEffectChoice(
         placement =>
           placement.owner !== playerId
           || placement.sourceInstanceId !== sourceInstanceId,
+      );
+  }
+  if (effect.kind === 'destination') {
+    runtime.battleCardAftermathDestinationChoices =
+      runtime.battleCardAftermathDestinationChoices.filter(
+        choice =>
+          choice.owner !== playerId
+          || choice.sourceInstanceId !== sourceInstanceId,
       );
   }
 
@@ -2746,7 +2878,7 @@ function placeAftermathCard(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string,
-  destination: 'discard' | 'graveyard' | 'hand',
+  destination: 'discard' | 'graveyard' | 'hand' | 'draw_top',
   graveyarded: string[],
 ): void {
   if (state.overlays.some(overlay => overlay.instanceId === instanceId)
@@ -2763,6 +2895,10 @@ function placeAftermathCard(
   }
   if (destination === 'hand') {
     state.players[playerId].zones.hand.push(instanceId);
+    return;
+  }
+  if (destination === 'draw_top') {
+    state.players[playerId].zones.drawPile.unshift(instanceId);
     return;
   }
   state.players[playerId].zones.discardPile.push(instanceId);
