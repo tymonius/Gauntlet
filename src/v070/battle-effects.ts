@@ -84,6 +84,11 @@ import {
   V070_VALOR_ID,
   registerV070PostRollRerollEffect,
 } from './post-roll-reroll-cards';
+import {
+  V070_MONETARY_CRISIS_BATTLE_TEXT,
+  V070_MONETARY_CRISIS_ID,
+  registerV070MonetaryCrisisBattleEffect,
+} from './monetary-crisis-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -302,6 +307,19 @@ const fatesTollHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const monetaryCrisisHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_MONETARY_CRISIS_ID,
+  expectedText: V070_MONETARY_CRISIS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070MonetaryCrisisBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -314,6 +332,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_NECROMANCY_ID, necromancyHandler],
   [V070_VALOR_ID, valorHandler],
   [V070_FATES_TOLL_ID, fatesTollHandler],
+  [V070_MONETARY_CRISIS_ID, monetaryCrisisHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -623,6 +642,11 @@ function deferredRegistrationExists(
       effect =>
         effect.sourceCardId === cardId
         && effect.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_MONETARY_CRISIS_ID) {
+    return state.battleRuntime?.battleCardAftermathMonetaryCrises.some(
+      effect => effect.sourceInstanceId === sourceInstanceId,
     ) ?? false;
   }
   return false;
