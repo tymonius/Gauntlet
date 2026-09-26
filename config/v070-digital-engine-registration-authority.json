@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 76,
+  "registeredBattleSurfaces": 78,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -33,7 +33,6 @@
     "military-shock-and-awe::1::Gambit/Tactic",
     "military-war-crimes::1::Gambit/Tactic",
     "mystics-black-covenant::0::Tactic",
-    "mystics-fate-s-toll::1::Gambit/Tactic",
     "mystics-paths-of-shadow::1::Gambit/Tactic",
     "neutral-assimilation::1::Gambit/Tactic",
     "neutral-contraband::1::Gambit/Tactic",
@@ -42,8 +41,7 @@
     "neutral-reinforcements::1::Gambit/Tactic",
     "neutral-revolution::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic",
-    "neutral-strategic-withdrawal::1::Gambit/Tactic",
-    "neutral-valor::1::Gambit/Tactic"
+    "neutral-strategic-withdrawal::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the shared post-clear Mystics Aftermath tranche. Action parity remains 72/72; battle parity is 76/113, leaving 37 explicitly queued unsupported battle surfaces. Grave Ward, Soul for Soul, and Necromancy now resolve after Gambits enter the Graveyard, with shared-timing ordering and dynamic option re-evaluation. Deferred Arcane handlers also honor Monastery suppression before registration. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after the Valor and Fate's Toll post-roll reroll tranche. Action parity remains 72/72; battle parity is 78/113, leaving 35 explicitly queued unsupported battle surfaces. Fate's Toll resolves immediately after its owner rolls; Valor resolves after both battle totals are present and only while its owner's total is lower. Rerolls replace the selected Battle Die result and recalculate the battle total. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
