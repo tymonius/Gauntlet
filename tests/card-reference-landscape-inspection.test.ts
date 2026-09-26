@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const sharedInspection = readFileSync('card-design/card-inspector.js', 'utf8');
+const sharedInspection = readFileSync('tools/card-design/review/card-inspector.js', 'utf8');
 
 describe('shared card inspector orientation', () => {
   it('uses renderer-reported orientation for unified face inspection', () => {
