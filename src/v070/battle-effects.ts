@@ -57,6 +57,14 @@ import {
   registerV070NaturesAltarBattleEffect,
   registerV070ScorchedEarthBattleEffect,
 } from './aftermath-overlay-cards';
+import {
+  V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT,
+  V070_BATTLEFIELD_PROMOTION_ID,
+  V070_SECOND_LINE_BATTLE_TEXT,
+  V070_SECOND_LINE_ID,
+  registerV070BattlefieldPromotionBattleEffect,
+  registerV070SecondLineBattleEffect,
+} from './aftermath-destination-cards';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -166,10 +174,38 @@ const scorchedEarthHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const battlefieldPromotionHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_BATTLEFIELD_PROMOTION_ID,
+  expectedText: V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070BattlefieldPromotionBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const secondLineHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SECOND_LINE_ID,
+  expectedText: V070_SECOND_LINE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070SecondLineBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
   [V070_SCORCHED_EARTH_ID, scorchedEarthHandler],
+  [V070_BATTLEFIELD_PROMOTION_ID, battlefieldPromotionHandler],
+  [V070_SECOND_LINE_ID, secondLineHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -437,6 +473,14 @@ function deferredRegistrationExists(
       placement =>
         placement.sourceCardId === cardId
         && placement.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_BATTLEFIELD_PROMOTION_ID
+    || cardId === V070_SECOND_LINE_ID) {
+    return state.battleRuntime?.battleCardAftermathDestinationChoices.some(
+      choice =>
+        choice.sourceCardId === cardId
+        && choice.sourceInstanceId === sourceInstanceId,
     ) ?? false;
   }
   return false;
