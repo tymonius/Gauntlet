@@ -243,6 +243,18 @@ export type V070BattleAction =
   | { type: 'choose_tactic'; playerId: PlayerId; cardInstanceId?: string }
   | { type: 'reveal_tactics'; playerId: PlayerId }
   | { type: 'submit_battle_dice'; playerId: PlayerId; values: readonly number[] }
+  | {
+      type: 'resolve_battle_post_roll_reroll';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+      value: number;
+      costInstanceId?: string;
+    }
+  | {
+      type: 'pass_battle_post_roll_reroll';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
   | { type: 'submit_tiebreak_roll'; playerId: PlayerId; value: number }
   | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'pass_loss_replacement'; playerId: PlayerId }
@@ -403,6 +415,15 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_battle_aftermath_hand_discard') {
     throw new V070GameActionError(
       'Resolve the pending Aftermath hand discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattlePostRollChoice
+    && action.type !== 'resolve_battle_post_roll_reroll'
+    && action.type !== 'pass_battle_post_roll_reroll'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
+    throw new V070GameActionError(
+      'Resolve the pending post-roll reroll effect before continuing the battle.',
     );
   }
   if (state.battleRuntime?.pendingBattlePostClearAftermathChoice
@@ -622,6 +643,22 @@ export function reduceV070BattleAction(
     case 'submit_battle_dice':
       submitBattleDice(next, action.playerId, action.values);
       break;
+    case 'resolve_battle_post_roll_reroll':
+      resolveBattlePostRollReroll(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+        action.value,
+        action.costInstanceId,
+      );
+      break;
+    case 'pass_battle_post_roll_reroll':
+      passBattlePostRollReroll(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
     case 'submit_tiebreak_roll':
       submitTiebreak(next, action.playerId, action.value);
       break;
@@ -759,14 +796,22 @@ export function reduceV070BattleAction(
         action.playerId,
         action.targetInstanceId,
       );
-      if (next.battleRuntime?.stage === 'aftermath'
+      if (next.battleRuntime?.stage === 'outcome'
+        && next.battleRuntime.battlePostRollComplete === false
+        && bothBattleTotalsReady(next.battleRuntime)) {
+        resumeBattlePostRollResolution(next);
+      } else if (next.battleRuntime?.stage === 'aftermath'
         && next.battleRuntime.aftermathCardsCleared) {
         completeAftermathInternal(next, null);
       }
       break;
     case 'pass_mystic_invocation':
       passV070MysticInvocation(next, action.playerId);
-      if (next.battleRuntime?.stage === 'aftermath'
+      if (next.battleRuntime?.stage === 'outcome'
+        && next.battleRuntime.battlePostRollComplete === false
+        && bothBattleTotalsReady(next.battleRuntime)) {
+        resumeBattlePostRollResolution(next);
+      } else if (next.battleRuntime?.stage === 'aftermath'
         && next.battleRuntime.aftermathCardsCleared) {
         completeAftermathInternal(next, null);
       }
