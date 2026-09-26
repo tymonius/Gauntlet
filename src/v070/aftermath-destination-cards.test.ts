@@ -14,6 +14,8 @@ import {
   V070_BATTLEFIELD_PROMOTION_ID,
   V070_SECOND_LINE_BATTLE_TEXT,
   V070_SECOND_LINE_ID,
+  V070_SALVAGE_BATTLE_TEXT,
+  V070_SALVAGE_ID,
 } from './aftermath-destination-cards';
 import {
   V070_SUPPORTED_REVEAL_EFFECT_IDS,
@@ -169,7 +171,7 @@ function resolveOutcome(
 }
 
 describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
-  test('binds Battlefield Promotion and Second Line to unchanged frozen/current authority', () => {
+  test('binds Battlefield Promotion, Second Line, and Salvage to unchanged frozen/current authority', () => {
     expect(V070_BATTLEFIELD_PROMOTION_ID)
       .toBe('military-battlefield-promotion');
     expect(V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT).toBe(
@@ -179,10 +181,15 @@ describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
     expect(V070_SECOND_LINE_BATTLE_TEXT).toBe(
       'In the Aftermath, you may place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile.',
     );
+    expect(V070_SALVAGE_ID).toBe('neutral-salvage');
+    expect(V070_SALVAGE_BATTLE_TEXT).toBe(
+      'In the Aftermath, if you win, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile, then discard one card from your Hand.',
+    );
 
     for (const [cardId, text] of [
       [V070_BATTLEFIELD_PROMOTION_ID, V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT],
       [V070_SECOND_LINE_ID, V070_SECOND_LINE_BATTLE_TEXT],
+      [V070_SALVAGE_ID, V070_SALVAGE_BATTLE_TEXT],
     ] as const) {
       expect(v070CanonicalContent.cardsById.get(cardId)?.effects
         .find(effect => effect.label === 'Gambit/Tactic')?.text)
@@ -374,4 +381,136 @@ describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
       }),
     }));
   });
+
+  test('Salvage may return one Reserve card to Hand after a win, then requires one Hand discard', () => {
+    let state = startBattle();
+    const salvage = inject(
+      state,
+      'A',
+      V070_SALVAGE_ID,
+      'salvage-use',
+      'hand',
+    );
+    const otherHand = inject(
+      state,
+      'A',
+      'neutral-rallying-cry',
+      'salvage-other-hand',
+      'hand',
+    );
+
+    state = revealGambits(state, salvage);
+    state = revealTactics(state);
+    const candidates = [...state.battleRuntime!.participants.A.reserve];
+    expect(candidates.length).toBeGreaterThan(0);
+    const target = candidates[0];
+
+    state = resolveOutcome(state, 6, 1);
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(
+      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
+    ).toEqual(expect.objectContaining({
+      playerId: 'A',
+      candidateSourceInstanceIds: [salvage],
+    }));
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_battle_aftermath_controlled_effect',
+      playerId: 'A',
+      sourceInstanceId: salvage,
+      targetInstanceId: target,
+    });
+
+    expect(state.players.A.zones.hand).toContain(target);
+    expect(state.players.A.zones.discardPile).not.toContain(target);
+    expect(state.players.A.zones.graveyard).toContain(salvage);
+    expect(
+      state.battleRuntime?.battleCardAftermathHandDiscardRequirements,
+    ).toEqual([
+      expect.objectContaining({
+        owner: 'A',
+        sourceInstanceId: salvage,
+        sourceCardId: V070_SALVAGE_ID,
+        prompted: true,
+      }),
+    ]);
+
+    const options = [...state.events].reverse().find(event =>
+      event.type === 'battle_card_aftermath_hand_discard_options'
+      && event.actor === 'A'
+    );
+    expect(options?.payload).toEqual(expect.objectContaining({
+      sourceInstanceId: salvage,
+      sourceCardId: V070_SALVAGE_ID,
+      candidateInstanceIds: expect.arrayContaining([target, otherHand]),
+    }));
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_battle_aftermath_hand_discard',
+      playerId: 'A',
+      cardInstanceId: otherHand,
+    });
+
+    expect(state.players.A.zones.hand).toContain(target);
+    expect(state.players.A.zones.hand).not.toContain(otherHand);
+    expect(state.players.A.zones.discardPile).toContain(otherHand);
+    expect(state.battleRuntime).toBeNull();
+  });
+
+  test('Salvage may be declined, and does not trigger after a loss', () => {
+    let declined = startBattle();
+    const declinedSalvage = inject(
+      declined,
+      'A',
+      V070_SALVAGE_ID,
+      'salvage-decline',
+      'hand',
+    );
+    declined = revealGambits(declined, declinedSalvage);
+    declined = revealTactics(declined);
+    const reserve = [...declined.battleRuntime!.participants.A.reserve];
+    declined = resolveOutcome(declined, 6, 1);
+    declined = reduceV070BattleAction(declined, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+    declined = reduceV070BattleAction(declined, {
+      type: 'pass_battle_aftermath_controlled_effect',
+      playerId: 'A',
+      sourceInstanceId: declinedSalvage,
+    });
+
+    for (const instanceId of reserve) {
+      expect(declined.players.A.zones.discardPile).toContain(instanceId);
+    }
+    expect(declined.battleRuntime).toBeNull();
+
+    let lost = startBattle();
+    const lostSalvage = inject(
+      lost,
+      'A',
+      V070_SALVAGE_ID,
+      'salvage-loss',
+      'hand',
+    );
+    lost = revealGambits(lost, lostSalvage);
+    lost = revealTactics(lost);
+    lost = resolveOutcome(lost, 1, 6);
+    lost = reduceV070BattleAction(lost, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(lost.battleRuntime).toBeNull();
+    expect(lost.players.A.zones.graveyard).toContain(lostSalvage);
+    expect(lost.events.some(event =>
+      event.type === 'battle_card_aftermath_hand_discard_pending'
+      && event.actor === 'A'
+    )).toBe(false);
+  });
+
 });
