@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const inspectorSource = readFileSync("card-design/card-inspector.js", "utf8");
+const inspectorSource = readFileSync("tools/card-design/review/card-inspector.js", "utf8");
 const rendererSource = readFileSync("card-design/face-render.mjs", "utf8");
-const reviewSource = readFileSync("card-design/card-review.js", "utf8");
+const reviewSource = readFileSync("tools/card-design/review/card-review.js", "utf8");
 const cardDesignIndex = readFileSync("card-design/index.html", "utf8");
 const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
 const deckbuilderPreview = readFileSync("apps/deckbuilder/mobile-card-preview.js", "utf8");
@@ -42,10 +42,10 @@ describe("shared card inspector", () => {
   it("routes Card Design, Card Reference, and Deckbuilder to the same inspector assets", () => {
     expect(cardDesignIndex).toContain('href="card-inspector.css?v=20260905-2"');
     expect(cardDesignIndex).toContain('src="card-inspector.js?v=20260905-2"');
-    expect(cardReferenceIndex).toContain('href="../card-design/card-inspector.css?v=20260905-2"');
-    expect(cardReferenceIndex).toContain('src="../card-design/card-inspector.js?v=20260905-2"');
-    expect(deckbuilderPreview).toContain('../card-design/card-inspector.css?v=20260905-2');
-    expect(deckbuilderPreview).toContain('../card-design/card-inspector.js?v=20260905-2');
+    expect(cardReferenceIndex).toContain('href="/card-design/card-inspector.css?v=20260905-2"');
+    expect(cardReferenceIndex).toContain('src="/card-design/card-inspector.js?v=20260905-2"');
+    expect(deckbuilderPreview).toContain('/card-design/card-inspector.css?v=20260905-2');
+    expect(deckbuilderPreview).toContain('/card-design/card-inspector.js?v=20260905-2');
   });
 
   it("keeps Card Design catalog rendering separate from inspector state", () => {
