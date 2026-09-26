@@ -144,6 +144,16 @@ export interface V070BattleCardAftermathDestinationOverride {
   destination: 'discard' | 'graveyard' | 'hand';
 }
 
+export interface V070BattleCardAftermathDestinationChoice {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  condition: 'always' | 'owner_win';
+  optional: boolean;
+  candidateSource: 'other_tactics' | 'reserve';
+  destination: 'hand' | 'draw_top';
+}
+
 export interface V070BattleCardAftermathOverlayPlacement {
   sourceInstanceId: string;
   sourceCardId: string;
@@ -336,6 +346,8 @@ export interface V070BattleRuntime {
   aftermathDrawEffects: V070AftermathDrawEffect[];
   battleCardAftermathDestinationOverrides:
     V070BattleCardAftermathDestinationOverride[];
+  battleCardAftermathDestinationChoices:
+    V070BattleCardAftermathDestinationChoice[];
   battleCardAftermathOverlayPlacements:
     V070BattleCardAftermathOverlayPlacement[];
   battleCardAftermathTerritoryInsertions:
@@ -437,6 +449,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     additionalRetreatEffects: [],
     aftermathDrawEffects: [],
     battleCardAftermathDestinationOverrides: [],
+    battleCardAftermathDestinationChoices: [],
     battleCardAftermathOverlayPlacements: [],
     battleCardAftermathTerritoryInsertions: [],
     battleCardAftermathAssetBanks: [],
