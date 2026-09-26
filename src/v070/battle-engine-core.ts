@@ -27,9 +27,9 @@ import {
 import {
   activeV070OverlayAtBattleOnset,
   placeV070OverlayFromBattle,
+  placeV070RuinsOverlayFromBattle,
   resolveV070OverlayAfterBattle,
 } from './overlays';
-import { turnV070OverlayIntoRuins } from './overlay-ruins';
 import { insertV070TerritoryAtFrontLine } from './gauntlet';
 import {
   applyV070Leverage,
@@ -2375,18 +2375,22 @@ function applyBattleAftermathControlledEffect(
       return;
     }
 
-    placeV070OverlayFromBattle(
-      state,
-      placement.owner,
-      placement.sourceInstanceId,
-      territory.position,
-      `${placement.sourceCardId} battle Aftermath`,
-    );
+    const source = `${placement.sourceCardId} battle Aftermath`;
     if (placement.asRuins) {
-      turnV070OverlayIntoRuins(
+      placeV070RuinsOverlayFromBattle(
         state,
+        placement.owner,
         placement.sourceInstanceId,
-        `${placement.sourceCardId} battle Aftermath`,
+        territory.position,
+        source,
+      );
+    } else {
+      placeV070OverlayFromBattle(
+        state,
+        placement.owner,
+        placement.sourceInstanceId,
+        territory.position,
+        source,
       );
     }
     appendV070Event(state, {
