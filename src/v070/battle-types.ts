@@ -141,7 +141,7 @@ export interface V070BattleCardAftermathDestinationOverride {
   sourceCardId: string;
   playerId: PlayerId;
   instanceId: string;
-  destination: 'discard' | 'graveyard' | 'hand';
+  destination: 'discard' | 'graveyard' | 'hand' | 'draw_top';
 }
 
 export interface V070BattleCardAftermathDestinationChoice {
