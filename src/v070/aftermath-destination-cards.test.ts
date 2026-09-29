@@ -16,6 +16,8 @@ import {
   V070_SECOND_LINE_ID,
   V070_SALVAGE_BATTLE_TEXT,
   V070_SALVAGE_ID,
+  V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT,
+  V070_STRATEGIC_WITHDRAWAL_ID,
 } from './aftermath-destination-cards';
 import {
   V070_SUPPORTED_REVEAL_EFFECT_IDS,
@@ -171,7 +173,7 @@ function resolveOutcome(
 }
 
 describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
-  test('binds Battlefield Promotion, Second Line, and Salvage to unchanged frozen/current authority', () => {
+  test('binds Battlefield Promotion, Second Line, Salvage, and Strategic Withdrawal to unchanged frozen/current authority', () => {
     expect(V070_BATTLEFIELD_PROMOTION_ID)
       .toBe('military-battlefield-promotion');
     expect(V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT).toBe(
@@ -185,11 +187,17 @@ describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
     expect(V070_SALVAGE_BATTLE_TEXT).toBe(
       'In the Aftermath, if you win, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile, then discard one card from your Hand.',
     );
+    expect(V070_STRATEGIC_WITHDRAWAL_ID)
+      .toBe('neutral-strategic-withdrawal');
+    expect(V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT).toBe(
+      'In the Aftermath, if you lose, after your normal retreat you may move one additional Position toward your own end and return one other card you controlled in this battle to your Hand.',
+    );
 
     for (const [cardId, text] of [
       [V070_BATTLEFIELD_PROMOTION_ID, V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT],
       [V070_SECOND_LINE_ID, V070_SECOND_LINE_BATTLE_TEXT],
       [V070_SALVAGE_ID, V070_SALVAGE_BATTLE_TEXT],
+      [V070_STRATEGIC_WITHDRAWAL_ID, V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT],
     ] as const) {
       expect(v070CanonicalContent.cardsById.get(cardId)?.effects
         .find(effect => effect.label === 'Gambit/Tactic')?.text)
@@ -510,6 +518,132 @@ describe('current v0.7.2 pre-clear Aftermath destination cards', () => {
     expect(lost.events.some(event =>
       event.type === 'battle_card_aftermath_hand_discard_pending'
       && event.actor === 'A'
+    )).toBe(false);
+  });
+
+
+  test('Strategic Withdrawal may move one additional Position toward home and return another battle card to Hand after a loss', () => {
+    let state = startBattle();
+    const strategic = inject(
+      state,
+      'A',
+      V070_STRATEGIC_WITHDRAWAL_ID,
+      'strategic-withdrawal',
+      'hand',
+    );
+    state = revealGambits(state, strategic);
+
+    const tactic = state.battleRuntime!.participants.A.reserve[0];
+    expect(tactic).toBeDefined();
+    state.cardInstances[tactic].cardId = 'neutral-rallying-cry';
+    expect(cardEligibleForV070BattleRole(
+      state.cardInstances[tactic].cardId,
+      'tactic',
+    )).toBe(true);
+
+    state = revealTactics(state, tactic);
+    state = resolveOutcome(state, 1, 6);
+
+    expect(state.battle?.loser).toBe('A');
+    expect(state.battle?.positions.A).toBe(2);
+
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(
+      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
+    ).toEqual(expect.objectContaining({
+      playerId: 'A',
+      candidateSourceInstanceIds: [strategic],
+    }));
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_battle_aftermath_controlled_effect',
+      playerId: 'A',
+      sourceInstanceId: strategic,
+      targetInstanceId: tactic,
+    });
+
+    expect(state.players.A.position).toBe(1);
+    expect(state.players.A.zones.hand).toContain(tactic);
+    expect(state.players.A.zones.discardPile).not.toContain(tactic);
+    expect(state.players.A.zones.graveyard).toContain(strategic);
+    expect(state.events).toContainEqual(expect.objectContaining({
+      type: 'battle_card_aftermath_movement',
+      actor: 'A',
+      payload: expect.objectContaining({
+        sourceInstanceId: strategic,
+        sourceCardId: V070_STRATEGIC_WITHDRAWAL_ID,
+        from: 2,
+        to: 1,
+        movementKind: 'ordinary_effect_movement',
+        direction: 'toward_own_end',
+      }),
+    }));
+    expect(state.events.some(event =>
+      event.type === 'battle_retreat_step'
+      && (event.payload as { sourceInstanceId?: string })
+        .sourceInstanceId === strategic
+    )).toBe(false);
+  });
+
+  test('Strategic Withdrawal may be declined, leaving the normal retreat and battle-card cleanup unchanged', () => {
+    let state = startBattle();
+    const strategic = inject(
+      state,
+      'A',
+      V070_STRATEGIC_WITHDRAWAL_ID,
+      'strategic-decline',
+      'hand',
+    );
+    state = revealGambits(state, strategic);
+
+    const tactic = state.battleRuntime!.participants.A.reserve[0];
+    state.cardInstances[tactic].cardId = 'neutral-rallying-cry';
+    state = revealTactics(state, tactic);
+    state = resolveOutcome(state, 1, 6);
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    state = reduceV070BattleAction(state, {
+      type: 'pass_battle_aftermath_controlled_effect',
+      playerId: 'A',
+      sourceInstanceId: strategic,
+    });
+
+    expect(state.players.A.position).toBe(2);
+    expect(state.players.A.zones.hand).not.toContain(tactic);
+    expect(state.players.A.zones.discardPile).toContain(tactic);
+    expect(state.players.A.zones.graveyard).toContain(strategic);
+  });
+
+  test('Strategic Withdrawal does not trigger after a win', () => {
+    let state = startBattle();
+    const strategic = inject(
+      state,
+      'A',
+      V070_STRATEGIC_WITHDRAWAL_ID,
+      'strategic-win',
+      'hand',
+    );
+    state = revealGambits(state, strategic);
+    state = revealTactics(state);
+    state = resolveOutcome(state, 6, 1);
+
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime).toBeNull();
+    expect(state.events.some(event =>
+      event.type === 'battle_card_aftermath_movement'
+      && (event.payload as { sourceInstanceId?: string })
+        .sourceInstanceId === strategic
     )).toBe(false);
   });
 
