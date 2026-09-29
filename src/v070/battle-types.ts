@@ -207,7 +207,8 @@ export interface V070BattleCardAftermathCapture {
   sourceCardId: string;
   owner: PlayerId;
   territoryInstanceId: string;
-  condition: 'owner_win_as_attacker_on_opponent_controlled';
+  condition: 'owner_win_as_attacker';
+  requiresOpponentControlAtOnset?: boolean;
   requiresDeedOwnedAtOnset?: boolean;
   sourceToGraveyard?: boolean;
 }
