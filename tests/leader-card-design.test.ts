@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const leaderRedirect = readFileSync("card-design/leaders.html", "utf8");
+const leaderRedirect = readFileSync("legacy/public-compatibility/card-design/leaders.html", "utf8");
 const leaderCatalog = readFileSync("tools/card-design/review/card-review.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const reviewPage = readFileSync("card-design/index.html", "utf8");
