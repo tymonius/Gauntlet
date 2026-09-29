@@ -6,7 +6,7 @@ const reference = readFileSync('docs/v0.6.4-territory-reference.md', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const territoryTemplate = readFileSync('card-design/face-templates/territory.mjs', 'utf8');
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
-const legacyTerritoryRoute = readFileSync('card-design/territory-review-render.html', 'utf8');
+const legacyTerritoryRoute = readFileSync('legacy/public-compatibility/card-design/territory-review-render.html', 'utf8');
 const specimen = readFileSync('card-design/territories/index.html', 'utf8');
 const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
