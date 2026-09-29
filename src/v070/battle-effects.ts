@@ -85,6 +85,11 @@ import {
   registerV070PostRollRerollEffect,
 } from './post-roll-reroll-cards';
 import {
+  V070_REVOLUTION_BATTLE_TEXT,
+  V070_REVOLUTION_ID,
+  registerV070RevolutionBattleEffect,
+} from './post-roll-exchange-cards';
+import {
   CURRENT_ASSIMILATION_BATTLE_TEXT,
   CURRENT_FORECLOSURE_BATTLE_TEXT,
   V070_ASSIMILATION_BATTLE_TEXT,
@@ -312,6 +317,19 @@ const fatesTollHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const revolutionHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_REVOLUTION_ID,
+  expectedText: V070_REVOLUTION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070RevolutionBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const assimilationHandler: previous.V070BattleEffectHandler = {
   cardId: V070_ASSIMILATION_ID,
   expectedText: V070_ASSIMILATION_BATTLE_TEXT,
@@ -350,6 +368,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_NECROMANCY_ID, necromancyHandler],
   [V070_VALOR_ID, valorHandler],
   [V070_FATES_TOLL_ID, fatesTollHandler],
+  [V070_REVOLUTION_ID, revolutionHandler],
   [V070_ASSIMILATION_ID, assimilationHandler],
   [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
@@ -670,6 +689,13 @@ function deferredRegistrationExists(
   }
   if (cardId === V070_VALOR_ID || cardId === V070_FATES_TOLL_ID) {
     return state.battleRuntime?.battleCardPostRollRerolls.some(
+      effect =>
+        effect.sourceCardId === cardId
+        && effect.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_REVOLUTION_ID) {
+    return state.battleRuntime?.battleCardPostRollExchanges.some(
       effect =>
         effect.sourceCardId === cardId
         && effect.sourceInstanceId === sourceInstanceId,
