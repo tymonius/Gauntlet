@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const renderer = readFileSync('card-design/proposal-card.js', 'utf8');
+const renderer = readFileSync('tools/card-design/review/proposal-card.js', 'utf8');
 const approvedArtwork = [
   'capitulation',
   'de-escalation',
