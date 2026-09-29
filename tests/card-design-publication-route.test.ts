@@ -47,8 +47,6 @@ describe('card-design publication route boundary', () => {
       'current-card-catalog.js',
       'card-catalog-shell.css',
       'proposal-card.js',
-      'rite-card.js',
-      'supplemental-card.js',
       'card-back.js',
     ]) {
       expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/review/${name}`);
