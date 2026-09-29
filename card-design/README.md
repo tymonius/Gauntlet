@@ -33,9 +33,9 @@ These modules should not be moved into `packages/rendering/` merely to reduce th
 
 Artwork compositor/authoring source now lives under [`tools/card-design/artwork-authoring/`](../tools/card-design/artwork-authoring/). `config/publication-boundary.json` materializes those files back onto their established `/card-design/artwork-*` URLs, so browser consumers and the public compositor do not depend on repository placement.
 
-Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. The catalog entry page remains at `card-design/index.html` for now, while its filter/catalog/review/inspection assets are source-owned by `tools/`.
+Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. This now includes the Proposal, Rite/Ritual, supplemental-component, and card-back catalog builders. The catalog entry page remains at `card-design/index.html` for now, while those review assets are source-owned by `tools/`.
 
-Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Family-specific renderer scripts/styles remain in `card-design/` pending their own dependency/lifecycle audit; they are production presentation/runtime code around the canonical browser renderer, not shared model authority.
+Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Canonical family styles and browser-runtime dependencies remain in `card-design/` pending their own dependency/lifecycle audit; they are production presentation/runtime code around the canonical browser renderer, not shared model authority.
 
 ## Source and lifecycle boundaries
 
