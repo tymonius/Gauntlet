@@ -63,6 +63,7 @@ import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
   type V070BattleCardPostClearAftermathEffect,
+  type V070BattleCardPostRollExchange,
   type V070BattleCardPostRollReroll,
   type V070BattleRuntime
 } from './battle-types';
@@ -171,6 +172,7 @@ import {
   V070_FATES_TOLL_ID,
   V070_VALOR_ID,
 } from './post-roll-reroll-cards';
+import { V070_REVOLUTION_ID } from './post-roll-exchange-cards';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -257,6 +259,16 @@ export type V070BattleAction =
     }
   | {
       type: 'pass_battle_post_roll_reroll';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_post_roll_exchange';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
+      type: 'pass_battle_post_roll_exchange';
       playerId: PlayerId;
       sourceInstanceId: string;
     }
@@ -429,6 +441,13 @@ export function reduceV070BattleAction(
     && action.type !== 'pass_mystic_invocation') {
     throw new V070GameActionError(
       'Resolve the pending post-roll reroll effect before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattlePostRollExchangeChoice
+    && action.type !== 'resolve_battle_post_roll_exchange'
+    && action.type !== 'pass_battle_post_roll_exchange') {
+    throw new V070GameActionError(
+      'Resolve the pending post-reroll exchange effect before continuing the battle.',
     );
   }
   if (state.battleRuntime?.pendingBattlePostClearAftermathChoice
@@ -659,6 +678,20 @@ export function reduceV070BattleAction(
       break;
     case 'pass_battle_post_roll_reroll':
       passBattlePostRollReroll(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
+    case 'resolve_battle_post_roll_exchange':
+      resolveBattlePostRollExchange(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
+      );
+      break;
+    case 'pass_battle_post_roll_exchange':
+      passBattlePostRollExchange(
         next,
         action.playerId,
         action.sourceInstanceId,
@@ -1666,7 +1699,8 @@ function resumeBattlePostRollResolution(
 ): void {
   const runtime = requireRuntime(state);
   if (!bothBattleTotalsReady(runtime)) return;
-  if (runtime.pendingBattlePostRollChoice) return;
+  if (runtime.pendingBattlePostRollChoice
+    || runtime.pendingBattlePostRollExchangeChoice) return;
   if (v070MysticInvocationPendingPlayers(state).length > 0) return;
 
   for (const playerId of ['A', 'B'] as const) {
@@ -1701,8 +1735,10 @@ function resumeBattlePostRollResolution(
     )) return;
   }
 
-  runtime.battlePostRollComplete = true;
   runtime.battlePostRollNextPlayer = null;
+  if (advanceBattlePostRollExchangeEffects(state)) return;
+
+  runtime.battlePostRollComplete = true;
   resolveOrEnterTiebreak(state);
 }
 
@@ -1896,6 +1932,245 @@ function passBattlePostRollReroll(
 
   runtime.battlePostRollNextPlayer =
     nextValorPlayer(state, playerId);
+  resumeBattlePostRollResolution(state);
+}
+
+function postRollExchangeEffectsFor(
+  state: V070GameState,
+  playerId: PlayerId,
+): V070BattleCardPostRollExchange[] {
+  return requireRuntime(state).battleCardPostRollExchanges.filter(
+    effect =>
+      effect.owner === playerId
+      && effect.sourceCardId === V070_REVOLUTION_ID,
+  );
+}
+
+function takeBattlePostRollExchange(
+  state: V070GameState,
+  effect: V070BattleCardPostRollExchange,
+): void {
+  const runtime = requireRuntime(state);
+  const index = runtime.battleCardPostRollExchanges.findIndex(
+    candidate =>
+      candidate.owner === effect.owner
+      && candidate.sourceInstanceId === effect.sourceInstanceId,
+  );
+  if (index < 0) {
+    throw new V070GameActionError(
+      'That post-reroll exchange effect is no longer pending.',
+    );
+  }
+  runtime.battleCardPostRollExchanges.splice(index, 1);
+}
+
+function nextPostRollExchangePlayer(
+  state: V070GameState,
+  previousPlayer: PlayerId | null,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const hasExchange = (playerId: PlayerId) =>
+    postRollExchangeEffectsFor(state, playerId).length > 0;
+
+  if (previousPlayer === null) {
+    if (hasExchange(battle.attacker)) return battle.attacker;
+    if (hasExchange(battle.defender)) return battle.defender;
+    return null;
+  }
+
+  const other =
+    previousPlayer === battle.attacker
+      ? battle.defender
+      : battle.attacker;
+  if (hasExchange(other)) return other;
+  if (hasExchange(previousPlayer)) return previousPlayer;
+  return null;
+}
+
+function openBattlePostRollExchangeChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const effects = postRollExchangeEffectsFor(state, playerId);
+  if (effects.length === 0) return false;
+
+  const runtime = requireRuntime(state);
+  runtime.pendingBattlePostRollExchangeChoice = {
+    playerId,
+    candidateSourceInstanceIds: effects.map(
+      effect => effect.sourceInstanceId,
+    ),
+  };
+  appendV070Event(state, {
+    type: 'battle_post_roll_exchange_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      timing: 'after_all_rerolls',
+      candidateCount: effects.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'battle_post_roll_exchange_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      sourceInstanceIds: effects.map(
+        effect => effect.sourceInstanceId,
+      ),
+      sourceCardId: V070_REVOLUTION_ID,
+    },
+  });
+  return true;
+}
+
+function advanceBattlePostRollExchangeEffects(
+  state: V070GameState,
+): boolean {
+  const runtime = requireRuntime(state);
+  if (runtime.pendingBattlePostRollExchangeChoice) return true;
+
+  const preferred = runtime.battlePostRollExchangeNextPlayer;
+  const preferredStillHasExchange = preferred
+    ? postRollExchangeEffectsFor(state, preferred).length > 0
+    : false;
+  const nextPlayer = preferredStillHasExchange
+    ? preferred
+    : nextPostRollExchangePlayer(state, null);
+
+  if (!nextPlayer) {
+    runtime.battlePostRollExchangeNextPlayer = null;
+    return false;
+  }
+
+  runtime.battlePostRollExchangeNextPlayer = nextPlayer;
+  return openBattlePostRollExchangeChoice(state, nextPlayer);
+}
+
+function resolveBattlePostRollExchange(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'outcome');
+  const pending = runtime.pendingBattlePostRollExchangeChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That post-reroll exchange effect is not pending for this player.',
+    );
+  }
+
+  const effect = runtime.battleCardPostRollExchanges.find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId
+      && candidate.sourceCardId === V070_REVOLUTION_ID,
+  );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That Revolution exchange effect is no longer available.',
+    );
+  }
+
+  const battle = requireBattle(state);
+  const attacker = runtime.participants[battle.attacker];
+  const defender = runtime.participants[battle.defender];
+  if (attacker.selectedBattleDie === null
+    || defender.selectedBattleDie === null) {
+    throw new V070GameActionError(
+      'Revolution requires both final selected die results.',
+    );
+  }
+
+  const before = {
+    attackerSelected: attacker.selectedBattleDie,
+    defenderSelected: defender.selectedBattleDie,
+    attackerTotal: attacker.battleTotal,
+    defenderTotal: defender.battleTotal,
+  };
+
+  const attackerSelected = attacker.selectedBattleDie;
+  attacker.selectedBattleDie = defender.selectedBattleDie;
+  defender.selectedBattleDie = attackerSelected;
+  attacker.battleTotal =
+    attacker.selectedBattleDie + attacker.battleModifier;
+  defender.battleTotal =
+    defender.selectedBattleDie + defender.battleModifier;
+
+  takeBattlePostRollExchange(state, effect);
+  runtime.pendingBattlePostRollExchangeChoice = null;
+  runtime.battlePostRollExchangeNextPlayer =
+    nextPostRollExchangePlayer(state, playerId);
+
+  appendV070Event(state, {
+    type: 'battle_selected_dice_exchanged',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: V070_REVOLUTION_ID,
+      before,
+      after: {
+        attackerSelected: attacker.selectedBattleDie,
+        defenderSelected: defender.selectedBattleDie,
+        attackerTotal: attacker.battleTotal,
+        defenderTotal: defender.battleTotal,
+      },
+      attackerModifier: attacker.battleModifier,
+      defenderModifier: defender.battleModifier,
+    },
+  });
+
+  resumeBattlePostRollResolution(state);
+}
+
+function passBattlePostRollExchange(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'outcome');
+  const pending = runtime.pendingBattlePostRollExchangeChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That optional post-reroll exchange effect is not pending.',
+    );
+  }
+
+  const effect = runtime.battleCardPostRollExchanges.find(
+    candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId
+      && candidate.sourceCardId === V070_REVOLUTION_ID,
+  );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That Revolution exchange effect is no longer available.',
+    );
+  }
+
+  takeBattlePostRollExchange(state, effect);
+  runtime.pendingBattlePostRollExchangeChoice = null;
+  runtime.battlePostRollExchangeNextPlayer =
+    nextPostRollExchangePlayer(state, playerId);
+
+  appendV070Event(state, {
+    type: 'battle_post_roll_exchange_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: V070_REVOLUTION_ID,
+    },
+  });
+
   resumeBattlePostRollResolution(state);
 }
 
