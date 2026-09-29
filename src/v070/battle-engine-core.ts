@@ -32,6 +32,10 @@ import {
 } from './overlays';
 import { insertV070TerritoryAtFrontLine } from './gauntlet';
 import {
+  advanceV070FrontLine,
+  nextV070FrontLineTarget,
+} from './front-line';
+import {
   applyV070Leverage,
   initializeV070TermsWindow,
   offerV070Terms,
@@ -77,6 +81,7 @@ import { applyV070FogOfWarOverlayAtBattleOnset } from './fog-of-war';
 import {
   recordV070ExecutiveHostileTakeoverEligibility,
   resolveV070CapitalGainsOnBattleLoss,
+  v070DeedOwner,
 } from './financiers';
 import {
   recordV070IntelligenceBattleOutcomeForMission,
@@ -919,6 +924,12 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state,
       state.battle.contestedPosition,
     );
+    const contestedTerritory = state.board.find(
+      territory => territory.position === state.battle!.contestedPosition,
+    );
+    state.battleRuntime.contestedDeedOwnerAtOnset = contestedTerritory
+      ? v070DeedOwner(state, contestedTerritory.territoryInstanceId)
+      : null;
     applyV070MysticConvergence(state);
     applyV070CoreBattleTerritoryEffects(state);
     applyV070AdvancedBattleTerritoryEffects(state);
@@ -2738,7 +2749,13 @@ function territoryAftermathDestination(
 type V070BattleAftermathControlledEffectRef = {
   owner: PlayerId;
   sourceInstanceId: string;
-  kind: 'overlay' | 'destination' | 'territory' | 'asset' | 'retribution';
+  kind:
+    | 'overlay'
+    | 'destination'
+    | 'territory'
+    | 'capture'
+    | 'asset'
+    | 'retribution';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -2797,6 +2814,25 @@ function pruneIneligibleBattleAftermathControlledEffects(
         && battle.attacker === insertion.owner
       )
     );
+  runtime.battleCardAftermathCaptures =
+    runtime.battleCardAftermathCaptures.filter(capture => {
+      if (capture.condition === 'owner_win_as_attacker'
+        && (
+          battle.winner !== capture.owner
+          || battle.attacker !== capture.owner
+        )) {
+        return false;
+      }
+      if (capture.requiresOpponentControlAtOnset
+        && !battle.defenderControlsContested) {
+        return false;
+      }
+      if (capture.requiresDeedOwnedAtOnset
+        && runtime.contestedDeedOwnerAtOnset !== capture.owner) {
+        return false;
+      }
+      return true;
+    });
   runtime.battleCardAftermathAssetBanks =
     runtime.battleCardAftermathAssetBanks.filter(bank => {
       if (bank.condition === 'owner_win') {
@@ -2827,6 +2863,11 @@ function remainingBattleAftermathControlledEffects(
       owner: insertion.owner,
       sourceInstanceId: insertion.sourceInstanceId,
       kind: 'territory' as const,
+    })),
+    ...runtime.battleCardAftermathCaptures.map(capture => ({
+      owner: capture.owner,
+      sourceInstanceId: capture.sourceInstanceId,
+      kind: 'capture' as const,
     })),
     ...runtime.battleCardAftermathAssetBanks.map(bank => ({
       owner: bank.owner,
@@ -3055,6 +3096,78 @@ function applyBattleAftermathControlledEffect(
         territoryPosition: territory.position,
         condition: placement.condition,
         asRuins: Boolean(placement.asRuins),
+      },
+    });
+    return;
+  }
+
+  if (effect.kind === 'capture') {
+    const index = runtime.battleCardAftermathCaptures.findIndex(
+      capture =>
+        capture.owner === effect.owner
+        && capture.sourceInstanceId === effect.sourceInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'That battle capture effect is no longer pending.',
+      );
+    }
+    const [capture] = runtime.battleCardAftermathCaptures.splice(index, 1);
+    const territory = state.board.find(
+      candidate =>
+        candidate.territoryInstanceId === capture.territoryInstanceId,
+    );
+
+    let captured = false;
+    let reachedOpponentEnd = false;
+    const nextTarget = nextV070FrontLineTarget(state, capture.owner);
+    if (territory
+      && territory.controller !== capture.owner
+      && nextTarget?.territoryInstanceId === capture.territoryInstanceId) {
+      const result = advanceV070FrontLine(
+        state,
+        capture.owner,
+        1,
+        `${capture.sourceCardId} battle Aftermath`,
+      );
+      captured = result.captures.some(
+        item => item.position === territory.position,
+      );
+      reachedOpponentEnd = result.reachedOpponentEnd;
+    }
+
+    if (capture.sourceToGraveyard) {
+      runtime.battleCardAftermathDestinationOverrides.push({
+        sourceCardId: capture.sourceCardId,
+        playerId: capture.owner,
+        instanceId: capture.sourceInstanceId,
+        destination: 'graveyard',
+      });
+    }
+
+    if (captured) {
+      const battle = requireBattle(state);
+      battle.occupier = null;
+      if (reachedOpponentEnd) {
+        runtime.pendingGameVictory = {
+          winner: capture.owner,
+          route: 'final_territory_capture',
+        };
+      }
+    }
+
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_capture_resolved',
+      actor: capture.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: capture.sourceInstanceId,
+        sourceCardId: capture.sourceCardId,
+        territoryInstanceId: capture.territoryInstanceId,
+        territoryPosition: territory?.position ?? null,
+        captured,
+        reachedOpponentEnd,
+        deedOwnerAtOnset: runtime.contestedDeedOwnerAtOnset,
       },
     });
     return;
