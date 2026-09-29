@@ -35,11 +35,12 @@ Artwork compositor/authoring source now lives under [`tools/card-design/artwork-
 
 Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. The catalog entry page remains at `card-design/index.html` for now, while its filter/catalog/review/inspection assets are source-owned by `tools/`.
 
-Family-specific renderer scripts/styles and print/review compatibility pages remain in `card-design/` pending their own dependency/lifecycle audit. They are production tooling around the browser renderer, not shared model authority.
+Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Family-specific renderer scripts/styles remain in `card-design/` pending their own dependency/lifecycle audit; they are production presentation/runtime code around the canonical browser renderer, not shared model authority.
 
 ## Source and lifecycle boundaries
 
 - Maintained card-design standards belong under `docs/card-design/`.
 - Historical design studies and superseded review material belong under `legacy/`.
+- Compatibility-only card-design render/review entrypoints belong under `legacy/public-compatibility/card-design/` while their established `/card-design/` public URLs remain materialized.
 - The maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/` because it is an active presentation source consumed by the renderer/TTS component contract.
 - Canonical gameplay authority remains `packages/game-data/current-game.json`; rendering code must not reconstruct gameplay mechanics from presentation files.
