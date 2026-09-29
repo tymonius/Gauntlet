@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
-const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
+const supplemental = readFileSync('tools/card-design/review/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
 const deckbuilderMobilePreview = readFileSync('apps/deckbuilder/mobile-card-preview.js', 'utf8');
