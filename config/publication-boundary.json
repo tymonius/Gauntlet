@@ -509,6 +509,51 @@
       "source": "releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
       "publicPath": "/releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json",
       "kind": "current-release-runtime"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/card-back-render.html",
+      "publicPath": "/card-design/card-back-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/card-print-render.html",
+      "publicPath": "/card-design/card-print-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/card-review-render.html",
+      "publicPath": "/card-design/card-review-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/component-print-render.html",
+      "publicPath": "/card-design/component-print-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/component-render.html",
+      "publicPath": "/card-design/component-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/territory-print-render.html",
+      "publicPath": "/card-design/territory-print-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/territory-review-render.html",
+      "publicPath": "/card-design/territory-review-render.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/leaders.html",
+      "publicPath": "/card-design/leaders.html",
+      "kind": "retired-compatibility"
+    },
+    {
+      "source": "legacy/public-compatibility/card-design/legacy-face-redirect.mjs",
+      "publicPath": "/card-design/legacy-face-redirect.mjs",
+      "kind": "retired-compatibility"
     }
   ],
   "managedRoutes": [

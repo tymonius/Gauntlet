@@ -8,6 +8,7 @@ The preserved public compatibility sources are:
 - `deckbuilder-v0.5/` — historical pre-faction Deckbuilder.
 - `deckbuilder-v0.6/` — historical faction-era Deckbuilder.
 - `faction-sheets/` — retired printable faction-sheet browser surface.
+- `card-design/` — compatibility-only card/review/render entrypoints preserved behind their established `/card-design/...` URLs; canonical rendering authority remains the maintained `card-design/face-render.html` pipeline.
 
 GitHub Pages stages only the compatibility sources declared by `config/publication-boundary.json`. Prepared-but-dormant landings remain repository artifacts until their explicit lifecycle cutover.
 

@@ -53,6 +53,25 @@ describe('card-design publication route boundary', () => {
     }
   });
 
+  it('archives compatibility-only card-design routes behind stable public URLs', () => {
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    for (const name of [
+      'card-back-render.html',
+      'card-print-render.html',
+      'card-review-render.html',
+      'component-print-render.html',
+      'component-render.html',
+      'territory-print-render.html',
+      'territory-review-render.html',
+      'leaders.html',
+      'legacy-face-redirect.mjs',
+    ]) {
+      expect(files.get(`/card-design/${name}`)).toBe(`legacy/public-compatibility/card-design/${name}`);
+      expect(existsSync(`legacy/public-compatibility/card-design/${name}`)).toBe(true);
+      expect(existsSync(`card-design/${name}`)).toBe(false);
+    }
+  });
+
   it('preserves package-owned rendering modules at their stable public card-design URLs', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     expect(files.get('/card-design/face-authority.mjs')).toBe('packages/rendering/face-authority.mjs');
