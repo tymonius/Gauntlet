@@ -6,6 +6,7 @@ import {
   proceedV070ToGambits,
   resolveV070BattleOutcome,
   resolveV070Withdrawal,
+  retreatV070Position,
   type PlayerId,
   type V070BattleOutcome,
 } from './rules';
@@ -3047,6 +3048,15 @@ function battleAftermathDestinationChoiceCandidates(
   if (choice.candidateSource === 'reserve') {
     return [...participant.reserve];
   }
+  if (choice.candidateSource === 'other_battle_cards') {
+    return [
+      ...(participant.gambit ? [participant.gambit.instanceId] : []),
+      ...participant.additionalGambits.map(gambit => gambit.instanceId),
+      ...(participant.tactic ? [participant.tactic.instanceId] : []),
+      ...participant.additionalTactics.map(tactic => tactic.instanceId),
+      ...participant.reserve,
+    ].filter(instanceId => instanceId !== choice.sourceInstanceId);
+  }
 
   return [
     ...(participant.tactic ? [participant.tactic.instanceId] : []),
@@ -3065,6 +3075,20 @@ function pruneIneligibleBattleAftermathControlledEffects(
       if (choice.condition === 'owner_win'
         && battle.winner !== choice.owner) {
         return false;
+      }
+      if (choice.condition === 'owner_loss_after_retreat') {
+        if (battle.loser !== choice.owner
+          || battle.positions[choice.owner] === battle.contestedPosition) {
+          return false;
+        }
+        const current = battle.positions[choice.owner];
+        if (retreatV070Position(
+          choice.owner,
+          current,
+          battle.territoryCount,
+        ) === current) {
+          return false;
+        }
       }
       return battleAftermathDestinationChoiceCandidates(
         state,
@@ -3239,6 +3263,46 @@ function applyBattleAftermathControlledEffect(
     }
 
     runtime.battleCardAftermathDestinationChoices.splice(index, 1);
+
+    if (choice.beforeDestination === 'move_one_position_toward_own_end') {
+      const battle = requireBattle(state);
+      const from = battle.positions[choice.owner];
+      const to = retreatV070Position(
+        choice.owner,
+        from,
+        battle.territoryCount,
+      );
+      if (to === from) {
+        throw new V070GameActionError(
+          'That Aftermath movement cannot move farther toward your own end.',
+        );
+      }
+
+      battle.positions[choice.owner] = to;
+      openV070BlockadeChoicesForPositionChange(
+        state,
+        choice.owner,
+        from,
+        to,
+      );
+      state.players[choice.owner].position = to;
+      syncBoardOccupants(state);
+
+      appendV070Event(state, {
+        type: 'battle_card_aftermath_movement',
+        actor: choice.owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: choice.sourceInstanceId,
+          sourceCardId: choice.sourceCardId,
+          from,
+          to,
+          movementKind: 'ordinary_effect_movement',
+          direction: 'toward_own_end',
+        },
+      });
+    }
+
     runtime.battleCardAftermathDestinationOverrides.push({
       sourceCardId: choice.sourceCardId,
       playerId: choice.owner,
