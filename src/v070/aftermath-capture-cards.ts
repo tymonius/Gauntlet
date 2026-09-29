@@ -60,6 +60,7 @@ function registerBattleCapture(
   sourceInstanceId: string,
   sourceCardId: string,
   options: {
+    requiresOpponentControlAtOnset?: boolean;
     requiresDeedOwnedAtOnset?: boolean;
     sourceToGraveyard?: boolean;
   } = {},
@@ -91,7 +92,9 @@ function registerBattleCapture(
     sourceInstanceId,
     sourceCardId,
     territoryInstanceId: territory.territoryInstanceId,
-    condition: 'owner_win_as_attacker_on_opponent_controlled',
+    condition: 'owner_win_as_attacker',
+    requiresOpponentControlAtOnset:
+      options.requiresOpponentControlAtOnset,
     requiresDeedOwnedAtOnset: options.requiresDeedOwnedAtOnset,
     sourceToGraveyard: options.sourceToGraveyard,
   });
@@ -107,7 +110,10 @@ export function registerV070AssimilationBattleEffect(
     owner,
     sourceInstanceId,
     V070_ASSIMILATION_ID,
-    { sourceToGraveyard: true },
+    {
+      requiresOpponentControlAtOnset: true,
+      sourceToGraveyard: true,
+    },
   );
 }
 
