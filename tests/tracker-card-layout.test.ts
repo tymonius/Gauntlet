@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const renderer = readFileSync('card-design/supplemental-card.js', 'utf8');
+const renderer = readFileSync('tools/card-design/review/supplemental-card.js', 'utf8');
 const styles = readFileSync('card-design/supplemental-card.css', 'utf8');
 const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
 
