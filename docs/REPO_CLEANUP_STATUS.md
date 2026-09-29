@@ -143,16 +143,16 @@ Archived compatibility scope:
 
 These files remain compatibility surfaces only. Canonical face rendering remains `/card-design/face-render.html`.
 
-## Completed tranche — family catalog builder extraction
+## Completed tranche — catalog-only family builder extraction
 
-The ownership audit identified four family-specific JavaScript modules that build the developer review catalog but are not imported by the canonical `face-render.html` pipeline:
+The ownership audit identified two family-specific JavaScript modules that are catalog-only despite canonical physical-face equivalents under `face-templates/`:
 
 - `proposal-card.js`;
-- `rite-card.js`;
-- `supplemental-card.js`;
 - `card-back.js`.
 
-Their canonical physical-face equivalents are implemented by `face-templates/`, while the four extracted modules are driven by `card-design/index.html`. Their source now lives under `tools/card-design/review/` and their established `/card-design/...` browser URLs remain materialized.
+Their source now lives under `tools/card-design/review/` and their established `/card-design/...` browser URLs remain materialized.
+
+The audit also established an important boundary: `rite-card.js` and `supplemental-card.js` remain in `card-design/` because current component authority still names them as production `renderSource.surface` values. They must not move until that authority contract is deliberately migrated.
 
 ## Current tranche — remaining presentation/runtime boundary audit
 
@@ -171,7 +171,7 @@ The next move therefore requires an ownership matrix that distinguishes canonica
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
-- review/catalog/inspection source, including Proposal/Rite/supplemental/card-back catalog builders, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
+- review/catalog/inspection source, including Proposal/card-back catalog builders, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
 - canonical family styles and unresolved browser/runtime helpers remain under `card-design/` pending the active ownership audit.
 
