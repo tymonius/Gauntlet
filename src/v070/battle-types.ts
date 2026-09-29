@@ -202,6 +202,17 @@ export interface V070BattleCardAftermathTerritoryInsertion {
   location: 'front_line';
 }
 
+export interface V070BattleCardAftermathCapture {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  condition: 'owner_win_as_attacker';
+  requiresOpponentControlAtOnset?: boolean;
+  requiresDeedOwnedAtOnset?: boolean;
+  sourceToGraveyard?: boolean;
+}
+
 export interface V070BattleCardAftermathAssetBank {
   sourceInstanceId: string;
   sourceCardId: string;
@@ -395,6 +406,8 @@ export interface V070BattleRuntime {
     V070BattleCardAftermathOverlayPlacement[];
   battleCardAftermathTerritoryInsertions:
     V070BattleCardAftermathTerritoryInsertion[];
+  battleCardAftermathCaptures:
+    V070BattleCardAftermathCapture[];
   battleCardAftermathAssetBanks:
     V070BattleCardAftermathAssetBank[];
   militaryOrderUsedPlayers: PlayerId[];
@@ -407,6 +420,7 @@ export interface V070BattleRuntime {
       | 'ritual_of_ascension';
   } | null;
   activeOverlayAtOnset: string | null;
+  contestedDeedOwnerAtOnset: PlayerId | null;
   activePrintedTerritoryAtOnset: {
     territoryInstanceId: string;
     territoryId: string;
@@ -503,11 +517,13 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     battlePostClearAftermathNextPlayer: null,
     battleCardAftermathOverlayPlacements: [],
     battleCardAftermathTerritoryInsertions: [],
+    battleCardAftermathCaptures: [],
     battleCardAftermathAssetBanks: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,
     activeOverlayAtOnset: null,
+    contestedDeedOwnerAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     assetInactivePlayers: [],
     assetUseProhibitedPlayers: [],

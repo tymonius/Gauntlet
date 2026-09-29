@@ -4,13 +4,12 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 78,
+  "registeredBattleSurfaces": 80,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
     "financiers-corner-the-market::1::Gambit/Tactic",
     "financiers-divestment::1::Gambit/Tactic",
-    "financiers-foreclosure::1::Gambit/Tactic",
     "financiers-leveraged-buyout::1::Gambit/Tactic",
     "financiers-liquidation::1::Gambit/Tactic",
     "financiers-margin-loan::2::Gambit/Tactic",
@@ -34,7 +33,6 @@
     "military-war-crimes::1::Gambit/Tactic",
     "mystics-black-covenant::0::Tactic",
     "mystics-paths-of-shadow::1::Gambit/Tactic",
-    "neutral-assimilation::1::Gambit/Tactic",
     "neutral-contraband::1::Gambit/Tactic",
     "neutral-liberation::1::Gambit/Tactic",
     "neutral-redemption::1::Gambit/Tactic",
@@ -43,5 +41,5 @@
     "neutral-scouting-report::1::Gambit/Tactic",
     "neutral-strategic-withdrawal::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after the Valor and Fate's Toll post-roll reroll tranche. Action parity remains 72/72; battle parity is 78/113, leaving 35 explicitly queued unsupported battle surfaces. Fate's Toll resolves immediately after its owner rolls; Valor resolves after both battle totals are present and only while its owner's total is lower. Rerolls replace the selected Battle Die result and recalculate the battle total. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after the shared Assimilation/Foreclosure battle-capture tranche. Action parity remains 72/72; battle parity is 80/113, leaving 33 explicitly queued unsupported battle surfaces. Both effects resolve through the released Front Line control procedure. Assimilation requires an attacker win on an opponent-controlled contested Territory and moves its source battle card to the Graveyard; Foreclosure additionally uses Deed ownership snapshotted at battle Onset. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }
