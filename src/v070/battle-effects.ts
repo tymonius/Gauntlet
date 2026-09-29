@@ -84,6 +84,16 @@ import {
   V070_VALOR_ID,
   registerV070PostRollRerollEffect,
 } from './post-roll-reroll-cards';
+import {
+  CURRENT_ASSIMILATION_BATTLE_TEXT,
+  CURRENT_FORECLOSURE_BATTLE_TEXT,
+  V070_ASSIMILATION_BATTLE_TEXT,
+  V070_ASSIMILATION_ID,
+  V070_FORECLOSURE_BATTLE_TEXT,
+  V070_FORECLOSURE_ID,
+  registerV070AssimilationBattleEffect,
+  registerV070ForeclosureBattleEffect,
+} from './aftermath-capture-cards';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -302,6 +312,32 @@ const fatesTollHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const assimilationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_ASSIMILATION_ID,
+  expectedText: V070_ASSIMILATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070AssimilationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const foreclosureHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_FORECLOSURE_ID,
+  expectedText: V070_FORECLOSURE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ForeclosureBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -314,6 +350,8 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_NECROMANCY_ID, necromancyHandler],
   [V070_VALOR_ID, valorHandler],
   [V070_FATES_TOLL_ID, fatesTollHandler],
+  [V070_ASSIMILATION_ID, assimilationHandler],
+  [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -344,6 +382,18 @@ export function currentBattleEffectHandler(
     return {
       ...handler,
       expectedText: CURRENT_DIVINE_MERCY_BATTLE_TEXT,
+    };
+  }
+  if (cardId === V070_ASSIMILATION_ID) {
+    return {
+      ...handler,
+      expectedText: CURRENT_ASSIMILATION_BATTLE_TEXT,
+    };
+  }
+  if (cardId === V070_FORECLOSURE_ID) {
+    return {
+      ...handler,
+      expectedText: CURRENT_FORECLOSURE_BATTLE_TEXT,
     };
   }
   return handler;
@@ -620,6 +670,14 @@ function deferredRegistrationExists(
   }
   if (cardId === V070_VALOR_ID || cardId === V070_FATES_TOLL_ID) {
     return state.battleRuntime?.battleCardPostRollRerolls.some(
+      effect =>
+        effect.sourceCardId === cardId
+        && effect.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
+  }
+  if (cardId === V070_ASSIMILATION_ID
+    || cardId === V070_FORECLOSURE_ID) {
+    return state.battleRuntime?.battleCardAftermathCaptures.some(
       effect =>
         effect.sourceCardId === cardId
         && effect.sourceInstanceId === sourceInstanceId,
