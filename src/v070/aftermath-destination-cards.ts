@@ -19,11 +19,17 @@ export const V070_SALVAGE_ID = 'neutral-salvage' as const;
 export const V070_SALVAGE_BATTLE_TEXT =
   'In the Aftermath, if you win, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile, then discard one card from your Hand.' as const;
 
+export const V070_STRATEGIC_WITHDRAWAL_ID =
+  'neutral-strategic-withdrawal' as const;
+export const V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT =
+  'In the Aftermath, if you lose, after your normal retreat you may move one additional Position toward your own end and return one other card you controlled in this battle to your Hand.' as const;
+
 function validateAftermathDestinationAuthority(): void {
   for (const [cardId, expectedText] of [
     [V070_BATTLEFIELD_PROMOTION_ID, V070_BATTLEFIELD_PROMOTION_BATTLE_TEXT],
     [V070_SECOND_LINE_ID, V070_SECOND_LINE_BATTLE_TEXT],
     [V070_SALVAGE_ID, V070_SALVAGE_BATTLE_TEXT],
+    [V070_STRATEGIC_WITHDRAWAL_ID, V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT],
   ] as const) {
     const frozen = v070CanonicalContent.cardsById.get(cardId);
     const current = currentCanonicalContent.cardsById.get(cardId);
@@ -111,5 +117,30 @@ export function registerV070SalvageBattleEffect(
     candidateSource: 'reserve',
     destination: 'hand',
     afterDestination: 'discard_one_from_hand',
+  });
+}
+
+
+export function registerV070StrategicWithdrawalBattleEffect(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Strategic Withdrawal battle resolution requires an active battle.',
+    );
+  }
+
+  runtime.battleCardAftermathDestinationChoices.push({
+    owner,
+    sourceInstanceId,
+    sourceCardId: V070_STRATEGIC_WITHDRAWAL_ID,
+    condition: 'owner_loss_after_retreat',
+    optional: true,
+    candidateSource: 'other_battle_cards',
+    destination: 'hand',
+    beforeDestination: 'move_one_position_toward_own_end',
   });
 }
