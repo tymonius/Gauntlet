@@ -174,6 +174,12 @@ export interface V070BattleCardPostRollReroll {
   sourceCardId: string;
 }
 
+export interface V070BattleCardPostRollExchange {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+}
+
 export interface V070BattlePostRollChoiceRuntime {
   playerId: PlayerId;
   candidateSourceInstanceIds: string[];
@@ -398,6 +404,11 @@ export interface V070BattleRuntime {
   pendingBattlePostRollChoice:
     V070BattlePostRollChoiceRuntime | null;
   battlePostRollNextPlayer: PlayerId | null;
+  battleCardPostRollExchanges:
+    V070BattleCardPostRollExchange[];
+  pendingBattlePostRollExchangeChoice:
+    V070BattlePostRollChoiceRuntime | null;
+  battlePostRollExchangeNextPlayer: PlayerId | null;
   battlePostRollComplete: boolean;
   pendingBattlePostClearAftermathChoice:
     V070BattlePostClearAftermathChoiceRuntime | null;
@@ -512,6 +523,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     battleCardPostRollRerolls: [],
     pendingBattlePostRollChoice: null,
     battlePostRollNextPlayer: null,
+    battleCardPostRollExchanges: [],
+    pendingBattlePostRollExchangeChoice: null,
+    battlePostRollExchangeNextPlayer: null,
     battlePostRollComplete: false,
     pendingBattlePostClearAftermathChoice: null,
     battlePostClearAftermathNextPlayer: null,

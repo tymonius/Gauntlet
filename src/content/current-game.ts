@@ -12,6 +12,7 @@ export interface CurrentCanonicalCard {
   cost: number;
   trait?: string | null;
   card_form?: string | null;
+  rules_notes?: string[];
   effects: CurrentCanonicalCardEffect[];
 }
 
