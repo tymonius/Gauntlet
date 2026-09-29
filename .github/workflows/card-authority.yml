@@ -44,6 +44,7 @@ jobs:
                 || under('packages/rendering/')
                 || under('card-design/')
                 || under('tools/card-design/artwork-authoring/')
+                || under('tools/card-design/review/')
                 || under('images/artwork/')
                 || under('apps/card-reference/')
                 || under('apps/deckbuilder/')

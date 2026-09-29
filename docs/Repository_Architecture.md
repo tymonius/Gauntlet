@@ -142,8 +142,8 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `card-design/` | Browser rendering, review, and component-presentation tooling; transitional as classified tooling moves behind stable `/card-design/` URLs |
-| `tools/` | Canonical maintained production-tooling container; first established boundary is `tools/card-design/artwork-authoring/` |
+| `card-design/` | Browser face rendering and component-presentation tooling; transitional as classified tooling moves behind stable `/card-design/` URLs |
+| `tools/` | Canonical maintained production-tooling container; established card-design boundaries are `tools/card-design/artwork-authoring/` and `tools/card-design/review/` |
 | `tts/` | TTS generation, packaging, renderer support, QA, and versioned release evidence |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
@@ -217,6 +217,7 @@ packages/
 tools/
   card-design/
     artwork-authoring/
+    review/
   release/
   print/
   tts/

@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
 const catalogPage = readFileSync("card-design/index.html", "utf8");
-const catalogOverlay = readFileSync("card-design/current-card-catalog.js", "utf8");
+const catalogOverlay = readFileSync("tools/card-design/review/current-card-catalog.js", "utf8");
 const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 const playableTemplate = readFileSync("card-design/face-templates/playable.mjs", "utf8");
-const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const currentAuthority = JSON.parse(readFileSync("packages/game-data/current-game.json", "utf8"));
 const starterDecks = currentAuthority.starterDecks;
 
 const expectedByAllegiance: Record<string, string[]> = {
@@ -158,7 +158,7 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
   });
 
   it("preserves the v0.6.4 staging document only as provenance for the flattened current card pool", () => {
-    expect(currentAuthority.version).toBe("v0.7.1");
+    expect(currentAuthority.version).toBe("v0.7.2");
     expect(currentAuthority.status).toBe("current-release");
     expect(currentAuthority.provenance.historicalInputs.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
     expect(currentAuthority).not.toHaveProperty("sources");

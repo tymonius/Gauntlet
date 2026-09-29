@@ -8,6 +8,7 @@ on:
       - "apps/deckbuilder/custom-print.*"
       - "card-design/**"
       - "tools/card-design/artwork-authoring/**"
+      - "tools/card-design/review/**"
       - "packages/game-data/**"
       - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
   workflow_dispatch:

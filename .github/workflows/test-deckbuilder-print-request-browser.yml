@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "apps/deckbuilder/**"
+      - "tools/card-design/review/**"
       - "packages/game-data/**"
       - "tests/deckbuilder-print-request.test.ts"
       - ".github/workflows/test-deckbuilder-print-request-browser.yml"

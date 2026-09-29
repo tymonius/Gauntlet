@@ -296,6 +296,41 @@
       "kind": "production-tooling"
     },
     {
+      "source": "tools/card-design/review/card-review.js",
+      "publicPath": "/card-design/card-review.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/card-review.css",
+      "publicPath": "/card-design/card-review.css",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/card-inspector.js",
+      "publicPath": "/card-design/card-inspector.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/card-inspector.css",
+      "publicPath": "/card-design/card-inspector.css",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/catalog-filter.js",
+      "publicPath": "/card-design/catalog-filter.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/current-card-catalog.js",
+      "publicPath": "/card-design/current-card-catalog.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/card-catalog-shell.css",
+      "publicPath": "/card-design/card-catalog-shell.css",
+      "kind": "production-tooling"
+    },
+    {
       "source": "images/sketches/hero-sketches/hero sketch.png",
       "publicPath": "/images/sketches/hero sketch.png",
       "kind": "retired-compatibility"

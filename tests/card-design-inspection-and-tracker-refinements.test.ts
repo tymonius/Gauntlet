@@ -7,7 +7,7 @@ const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
 const deckbuilderMobilePreview = readFileSync('apps/deckbuilder/mobile-card-preview.js', 'utf8');
-const sharedInspection = readFileSync('card-design/card-inspector.js', 'utf8');
+const sharedInspection = readFileSync('tools/card-design/review/card-inspector.js', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 
 describe('Card Design inspection navigation', () => {
@@ -50,7 +50,7 @@ describe('Card Design inspection navigation', () => {
 
 describe('Deckbuilder inspection navigation', () => {
   it('keeps the shared card inspector and makes the mobile preview Back-aware too', () => {
-    expect(deckbuilderMobilePreview).toContain('../card-design/card-inspector.js');
+    expect(deckbuilderMobilePreview).toContain('/card-design/card-inspector.js');
     expect(sharedInspection).toContain("const INSPECTION_HISTORY_KEY = 'gauntletCardInspection'");
     expect(sharedInspection).toContain('history.pushState(');
     expect(sharedInspection).toContain('history.back()');

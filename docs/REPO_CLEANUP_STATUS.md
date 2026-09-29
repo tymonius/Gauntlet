@@ -100,7 +100,7 @@ This tranche removes that second coupling before files move:
 
 With both deployed and local URL resolution decoupled from source placement, the verified first physical extraction is now safe.
 
-## Current tranche — artwork authoring/compositor extraction
+## Completed tranche — artwork authoring/compositor extraction
 
 The first classified production-tooling cluster is moving from the transitional `card-design/` source root to `tools/card-design/artwork-authoring/`.
 
@@ -115,6 +115,21 @@ Verified scope:
 
 This extraction does not move the browser face-render runtime or the remaining review/inspection and family-specific presentation tooling.
 
+## Current tranche — review/catalog/inspection tooling extraction
+
+The next classified production-tooling cluster moves the unified review catalog's browser assets and the shared card inspector out of the transitional `card-design/` source root into `tools/card-design/review/`.
+
+Scope:
+
+- move `card-review.js`, `card-review.css`, `card-inspector.js`, `card-inspector.css`, `catalog-filter.js`, `current-card-catalog.js`, and `card-catalog-shell.css` together;
+- preserve their established `/card-design/` browser URLs through explicit publication-file mappings;
+- keep `card-design/index.html` as the catalog entry surface for now;
+- keep Card Reference and Deckbuilder on the shared inspector through the stable public `/card-design/card-inspector.*` URLs rather than repository-relative source placement;
+- update source-reading tests and workflow triggers to the maintained tooling location;
+- leave the canonical browser face-render runtime, family-specific renderer styles/scripts, compatibility render redirects, and maintained reference-copy subtree in `card-design/`.
+
+This tranche is source-placement cleanup only; it does not change gameplay, face authority, or the public card-review routes.
+
 ## Card-design lifecycle state
 
 `card-design/` remains a transitional production-tooling root, but its major roles are now classified:
@@ -126,7 +141,8 @@ This extraction does not move the browser face-render runtime or the remaining r
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
-- review/inspection and family-specific presentation tooling remains under `card-design/` pending the next tools-boundary audit.
+- review/catalog/inspection source lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
+- family-specific presentation tooling remains under `card-design/` pending the next tools-boundary audit.
 
 ## Rules boundary state
 
@@ -142,8 +158,8 @@ This extraction does not move the browser face-render runtime or the remaining r
 
 ## Next top-down queue
 
-1. Finish and verify the artwork authoring/compositor extraction under `tools/card-design/artwork-authoring/` with stable `/card-design/` publication and render-harness routes.
-2. Audit the remaining review/inspection and family-specific presentation tooling before deciding the next card-design extraction.
+1. Finish and verify the review/catalog/inspection extraction under `tools/card-design/review/` with stable `/card-design/` publication and browser-consumer routes.
+2. Audit the remaining family-specific presentation tooling and compatibility render surfaces before deciding the next card-design extraction.
 3. Inspect Rules Arbiter implementation/data/export placement now that the v0.7.2 release work has stabilized.
 4. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
 5. Audit governance/traceability and CI paths that still encode transitional locations.
