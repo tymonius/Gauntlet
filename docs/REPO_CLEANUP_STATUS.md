@@ -143,9 +143,20 @@ Archived compatibility scope:
 
 These files remain compatibility surfaces only. Canonical face rendering remains `/card-design/face-render.html`.
 
-## Current tranche — family-specific presentation/runtime boundary audit
+## Completed tranche — family catalog builder extraction
 
-The remaining `card-design/` family-specific scripts and styles cannot be treated as a single disposable review-tool cluster. `face-spec.mjs` declares many of those styles as direct dependencies of canonical FaceSpec templates, and the canonical reference template still imports `reference-card.js` when rendering reference faces.
+The ownership audit identified four family-specific JavaScript modules that build the developer review catalog but are not imported by the canonical `face-render.html` pipeline:
+
+- `proposal-card.js`;
+- `rite-card.js`;
+- `supplemental-card.js`;
+- `card-back.js`.
+
+Their canonical physical-face equivalents are implemented by `face-templates/`, while the four extracted modules are driven by `card-design/index.html`. Their source now lives under `tools/card-design/review/` and their established `/card-design/...` browser URLs remain materialized.
+
+## Current tranche — remaining presentation/runtime boundary audit
+
+The remaining `card-design/` scripts and styles still cannot be treated as a single disposable review-tool cluster. `face-spec.mjs` declares many styles as direct dependencies of canonical FaceSpec templates, and the canonical reference template still imports `reference-card.js` when rendering reference faces. Older standalone renderers/specimen helpers also remain and need consumer/lifecycle classification before relocation or deletion.
 
 The next move therefore requires an ownership matrix that distinguishes canonical browser-runtime dependencies from catalog-only helpers before any additional physical extraction. Do not move family-specific files merely to shrink the root; preserve the stable `/card-design/` publication contract and the canonical `face-render.html` pipeline.
 
@@ -160,9 +171,9 @@ The next move therefore requires an ownership matrix that distinguishes canonica
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
-- review/catalog/inspection source lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
+- review/catalog/inspection source, including Proposal/Rite/supplemental/card-back catalog builders, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- family-specific presentation/runtime code remains under `card-design/` pending the active ownership audit.
+- canonical family styles and unresolved browser/runtime helpers remain under `card-design/` pending the active ownership audit.
 
 ## Rules boundary state
 
@@ -178,7 +189,7 @@ The next move therefore requires an ownership matrix that distinguishes canonica
 
 ## Next top-down queue
 
-1. Complete the family-specific presentation/runtime ownership audit and separate canonical FaceSpec/runtime dependencies from catalog-only helpers before moving either group.
+1. Complete the remaining presentation/runtime ownership audit, especially standalone legacy renderer/specimen helpers versus canonical FaceSpec/runtime dependencies.
 2. Inspect Rules Arbiter implementation/data/export placement now that the v0.7.2 release work has stabilized.
 3. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
 4. Audit governance/traceability and CI paths that still encode transitional locations.
