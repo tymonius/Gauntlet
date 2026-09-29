@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-09-24
+Last updated: 2026-09-29
 
 ## Governing objective
 
@@ -115,7 +115,7 @@ Verified scope:
 
 This extraction does not move the browser face-render runtime or the remaining review/inspection and family-specific presentation tooling.
 
-## Current tranche — review/catalog/inspection tooling extraction
+## Completed tranche — review/catalog/inspection tooling extraction
 
 The next classified production-tooling cluster moves the unified review catalog's browser assets and the shared card inspector out of the transitional `card-design/` source root into `tools/card-design/review/`.
 
@@ -130,6 +130,25 @@ Scope:
 
 This tranche is source-placement cleanup only; it does not change gameplay, face authority, or the public card-review routes.
 
+## Completed tranche — card-design compatibility route archival
+
+The canonical physical-face renderer has already replaced several older print/review entrypoints, but those stable browser URLs still matter for compatibility. Those redirect-only sources now live under `legacy/public-compatibility/card-design/` rather than masquerading as maintained renderer implementation.
+
+Archived compatibility scope:
+
+- `card-back-render.html`, `card-print-render.html`, `card-review-render.html`, `component-print-render.html`, `component-render.html`, `territory-print-render.html`, `territory-review-render.html`, and `leaders.html`;
+- the shared `legacy-face-redirect.mjs` compatibility resolver used by the legacy face routes;
+- every established `/card-design/...` URL is preserved through explicit `materializedFiles` mappings;
+- source-reading tests now follow the archived repository locations while continuing to assert the stable public routes.
+
+These files remain compatibility surfaces only. Canonical face rendering remains `/card-design/face-render.html`.
+
+## Current tranche — family-specific presentation/runtime boundary audit
+
+The remaining `card-design/` family-specific scripts and styles cannot be treated as a single disposable review-tool cluster. `face-spec.mjs` declares many of those styles as direct dependencies of canonical FaceSpec templates, and the canonical reference template still imports `reference-card.js` when rendering reference faces.
+
+The next move therefore requires an ownership matrix that distinguishes canonical browser-runtime dependencies from catalog-only helpers before any additional physical extraction. Do not move family-specific files merely to shrink the root; preserve the stable `/card-design/` publication contract and the canonical `face-render.html` pipeline.
+
 ## Card-design lifecycle state
 
 `card-design/` remains a transitional production-tooling root, but its major roles are now classified:
@@ -142,7 +161,8 @@ This tranche is source-placement cleanup only; it does not change gameplay, face
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
 - review/catalog/inspection source lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
-- family-specific presentation tooling remains under `card-design/` pending the next tools-boundary audit.
+- compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
+- family-specific presentation/runtime code remains under `card-design/` pending the active ownership audit.
 
 ## Rules boundary state
 
@@ -158,12 +178,11 @@ This tranche is source-placement cleanup only; it does not change gameplay, face
 
 ## Next top-down queue
 
-1. Finish and verify the review/catalog/inspection extraction under `tools/card-design/review/` with stable `/card-design/` publication and browser-consumer routes.
-2. Audit the remaining family-specific presentation tooling and compatibility render surfaces before deciding the next card-design extraction.
-3. Inspect Rules Arbiter implementation/data/export placement now that the v0.7.2 release work has stabilized.
-4. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-5. Audit governance/traceability and CI paths that still encode transitional locations.
-6. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Complete the family-specific presentation/runtime ownership audit and separate canonical FaceSpec/runtime dependencies from catalog-only helpers before moving either group.
+2. Inspect Rules Arbiter implementation/data/export placement now that the v0.7.2 release work has stabilized.
+3. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+4. Audit governance/traceability and CI paths that still encode transitional locations.
+5. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 
