@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const html = readFileSync("card-design/index.html", "utf8");
 const css = readFileSync("card-design/card-back.css", "utf8");
-const renderer = readFileSync("card-design/card-back.js", "utf8");
+const renderer = readFileSync("tools/card-design/review/card-back.js", "utf8");
 const frontCss = readFileSync("card-design/card-design.css", "utf8");
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
 

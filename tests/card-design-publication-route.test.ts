@@ -46,6 +46,8 @@ describe('card-design publication route boundary', () => {
       'catalog-filter.js',
       'current-card-catalog.js',
       'card-catalog-shell.css',
+      'proposal-card.js',
+      'card-back.js',
     ]) {
       expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/review/${name}`);
       expect(existsSync(`tools/card-design/review/${name}`)).toBe(true);

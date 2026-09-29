@@ -554,6 +554,16 @@
       "source": "legacy/public-compatibility/card-design/legacy-face-redirect.mjs",
       "publicPath": "/card-design/legacy-face-redirect.mjs",
       "kind": "retired-compatibility"
+    },
+    {
+      "source": "tools/card-design/review/proposal-card.js",
+      "publicPath": "/card-design/proposal-card.js",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/card-back.js",
+      "publicPath": "/card-design/card-back.js",
+      "kind": "production-tooling"
     }
   ],
   "managedRoutes": [
