@@ -10,7 +10,7 @@ A legacy subtree may be removed later when its provenance value is no longer nee
 
 ## Archived subtrees
 
-- `card-design-studies/` — superseded card-design studies, review notes, and design rationale removed from the maintained `card-design/` production and authoring surface; their established `/card-design/...` URLs are materialized from this source for compatibility.
+- `card-design-studies/` — superseded card-design studies, review notes, and design rationale removed from the maintained `card-design/` production and authoring surface, including the v0.6.1 faction specimen and typography studies; their established `/card-design/...` URLs are materialized from this source for compatibility.
 - `card-design-v0.6.3/` — historical v0.6.3 card-design review material, including the long-card review surface, generated review catalog, and superseded bespoke reference-card copy; stable `/card-design/...` compatibility URLs are materialized from this source by the publication contract.
 - `digital-prototype-data/` — early machine-readable prototype data.
 - `digital-engine-dev-runners/` — retired generic pre-faction/v0.5.6 CLI and GUI development runners, preserved as non-executable provenance.
@@ -21,4 +21,4 @@ A legacy subtree may be removed later when its provenance value is no longer nee
 - `public-versions/` — source for historical versioned browser surfaces that still publish at stable public URLs.
 - `rulebook-browser/` — archived Browser Rulebook application source retained for provenance and historical publication adapters; temporarily still staged at `/rulebook/` as the v0.7.1 release bridge.
 - `v0.6.1-rulebook-publication/` — preserved v0.6.1 Rulebook proof/production system used for historical reproduction and later publication adapters.
-- `v0.6.4-candidate/` — historical candidate inputs and review records retained for provenance.
+- `v0.6.4-candidate/` — historical candidate inputs and review records retained for provenance, including the archived Territory-card mockup formerly kept under `card-design/territories/`.

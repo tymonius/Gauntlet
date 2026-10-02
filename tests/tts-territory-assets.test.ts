@@ -14,7 +14,7 @@ const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
 const specimenPage = readFileSync("card-design/index.html", "utf8");
 const reviewScript = readFileSync("tools/card-design/review/card-review.js", "utf8");
 const territoryReviewPage = readFileSync("card-design/territory-review-render.html", "utf8");
-const dedicatedSpecimenPage = readFileSync("card-design/territories/index.html", "utf8");
+const dedicatedSpecimenPage = readFileSync("legacy/v0.6.4-candidate/card-design/territories/index.html", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
 describe("TTS Territory assets", () => {

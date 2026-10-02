@@ -48,7 +48,7 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "card-design/card-back-render.html",
   "card-design/card-showcase-embed.html",
   // Internal card-design review/study surfaces; they are not public navigation pages.
-  "card-design/capital-ledger-preview.html",
+  "tools/card-design/review/capital-ledger-preview.html",
   "card-design/deed-ornament-study.html",
   "card-design/deed-rule-font-study.html",
   // Canonical embedded card-face surfaces; parent pages own analytics.
