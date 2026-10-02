@@ -28,7 +28,7 @@ export function v070TreasuryValue(
 ): number {
   const financier = requireFinancierState(state, playerId);
   return financier.treasury.reduce(
-    (total, instanceId) => total + cardValue(state, instanceId),
+    (total, instanceId) => total + v070FinancierCardValue(state, instanceId),
     0,
   );
 }
@@ -234,7 +234,7 @@ export function placeV070CardInTreasury(
     payload: {
       instanceId,
       cardId: state.cardInstances[instanceId]?.cardId,
-      value: cardValue(state, instanceId),
+      value: v070FinancierCardValue(state, instanceId),
       treasuryValue: v070TreasuryValue(state, playerId),
       capitalLimit: v070CapitalLimit(state, playerId),
       reason,
@@ -546,7 +546,7 @@ export function buyV070DeedWithLineOfCredit(
     );
   }
 
-  const collateralCardValue = cardValue(state, collateralInstanceId);
+  const collateralCardValue = v070FinancierCardValue(state, collateralInstanceId);
   const cost = v070DeedCost(state, buyer, territoryInstanceId);
   const collateralContribution = Math.min(
     collateralCardValue,
@@ -787,7 +787,7 @@ export function resolveV070CapitalGainsAfterIncome(
       continue;
     }
 
-    const value = cardValue(state, binding.hostId);
+    const value = v070FinancierCardValue(state, binding.hostId);
     removeV070CardFromTreasury(
       state,
       playerId,
@@ -993,7 +993,7 @@ function requireDeed(
   return deed;
 }
 
-function cardValue(
+export function v070FinancierCardValue(
   state: V070GameState,
   instanceId: string,
 ): number {
