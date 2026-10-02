@@ -75,6 +75,7 @@ export interface V070LateAdditionalTacticBattleRevealChoice {
   candidateInstanceIds: string[];
   candidateZone?: 'reserve' | 'hand';
   chosenDestination?: 'discard' | 'graveyard';
+  recordMysticSourceEffectAfterChoice?: boolean;
 }
 
 export type V070FinancierPreDiceBattleRevealChoice =
