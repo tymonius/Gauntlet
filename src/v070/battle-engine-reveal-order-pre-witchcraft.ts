@@ -82,6 +82,9 @@ import {
   resolveV070SpeculationBattleChoice,
 } from './speculation-battle';
 import {
+  applyV070UnderwritingAftermathEffects,
+} from './underwriting-battle';
+import {
   openV070TariffsBattleChoice,
   resolveV070TariffsBattleChoice,
 } from './tariffs-battle';
@@ -401,6 +404,7 @@ export function reduceV070BattleAction(
   const next = reduceV070BattleActionPreWarBonds(prepared, action as V070PreWarBondsBattleAction);
   applyV070PropertyDuesAftermathEffects(next);
   applyV070SpeculationAftermathEffects(next);
+  applyV070UnderwritingAftermathEffects(next);
   applyV070CapitalPunishmentAftermathEffects(next);
   resolveV070ProtractedSiegeDepartures(next, previousPositions, battleOrPlayerPositions(next));
 
