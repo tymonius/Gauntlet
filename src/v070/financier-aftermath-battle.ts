@@ -506,8 +506,17 @@ export function resolveV070MonetaryCrisisAftermathChoice(
     payload: {
       sourceInstanceId: pending.sourceInstanceId,
       sourceOwner: pending.sourceOwner,
-      keptInstanceId: keepInstanceId,
       discardedInstanceIds: discarded,
+    },
+  });
+  appendV070Event(state, {
+    type: 'monetary_crisis_aftermath_kept_card',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      keptInstanceId: keepInstanceId,
+      keptCardId: state.cardInstances[keepInstanceId]?.cardId ?? null,
     },
   });
 
