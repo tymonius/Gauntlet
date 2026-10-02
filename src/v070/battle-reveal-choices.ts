@@ -78,6 +78,13 @@ export interface V070LateAdditionalTacticBattleRevealChoice {
   recordMysticSourceEffectAfterChoice?: boolean;
 }
 
+export interface V070HellfireBattleRevealChoice {
+  kind: 'hellfire';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  maximumConviction: number;
+}
+
 export type V070FinancierPreDiceBattleRevealChoice =
   | {
       kind: 'financier_divestment';
@@ -114,6 +121,7 @@ export type V070BattleRevealChoice =
   | V070RendTheVeilBattleRevealChoice
   | V070ReconnaissanceBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
+  | V070HellfireBattleRevealChoice
   | V070FinancierPreDiceBattleRevealChoice;
 
 declare module './battle-types' {
@@ -130,6 +138,8 @@ declare module './battle-types' {
     reconnaissanceBattleRevealChoiceOpen?: boolean;
     pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
+    pendingHellfireBattleRevealChoice?: V070HellfireBattleRevealChoice | null;
+    hellfireBattleRevealChoiceOpen?: boolean;
     pendingFinancierPreDiceBattleRevealChoice?: V070FinancierPreDiceBattleRevealChoice | null;
     financierPreDiceBattleRevealChoiceOpen?: boolean;
   }
@@ -153,6 +163,37 @@ export function queueV070FinancierPreDiceBattleRevealChoice(
   runtime.pendingFinancierPreDiceBattleRevealChoice =
     structuredClone(choice);
   runtime.financierPreDiceBattleRevealChoiceOpen = true;
+}
+
+export function queueV070HellfireBattleRevealChoice(
+  state: V070GameState,
+  choice: V070HellfireBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'A Hellfire battle choice requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Hellfire cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingHellfireBattleRevealChoice = { ...choice };
+  runtime.hellfireBattleRevealChoiceOpen = true;
+  appendV070Event(state, {
+    type: 'hellfire_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'inquisition-hellfire',
+      minimumConviction: 0,
+      maximumConviction: choice.maximumConviction,
+      mandatoryChoice: true,
+    },
+  });
 }
 
 export function queueV070LateAdditionalTacticBattleRevealChoice(
@@ -420,6 +461,7 @@ export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
   return state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
+    ?? state.battleRuntime?.pendingHellfireBattleRevealChoice
     ?? state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
     ?? state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
     ?? state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
@@ -436,6 +478,9 @@ export function isV070BattleRevealChoiceOpen(
     return Boolean(
       state.battleRuntime.financierPreDiceBattleRevealChoiceOpen,
     );
+  }
+  if (state.battleRuntime?.pendingHellfireBattleRevealChoice) {
+    return Boolean(state.battleRuntime.hellfireBattleRevealChoiceOpen);
   }
   if (state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice) {
     return Boolean(
@@ -480,6 +525,21 @@ export function completeV070FinancierPreDiceBattleRevealChoice(
   }
   runtime.pendingFinancierPreDiceBattleRevealChoice = null;
   runtime.financierPreDiceBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070HellfireBattleRevealChoice(
+  state: V070GameState,
+): V070HellfireBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingHellfireBattleRevealChoice;
+  if (!runtime || !pending || !runtime.hellfireBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Hellfire battle choice.',
+    );
+  }
+  runtime.pendingHellfireBattleRevealChoice = null;
+  runtime.hellfireBattleRevealChoiceOpen = false;
   return pending;
 }
 
