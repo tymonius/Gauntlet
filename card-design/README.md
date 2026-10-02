@@ -35,7 +35,7 @@ Artwork compositor/authoring source now lives under [`tools/card-design/artwork-
 
 Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. This now includes the Proposal and card-back catalog builders. Rite/Ritual and supplemental-component modules remain in `card-design/` because current component authority still names them as production render surfaces. The catalog entry page remains at `card-design/index.html` for now, while those review assets are source-owned by `tools/`.
 
-Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Canonical family styles and browser-runtime dependencies remain in `card-design/` pending their own dependency/lifecycle audit; they are production presentation/runtime code around the canonical browser renderer, not shared model authority.
+Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Canonical family styles and browser-runtime dependencies remain in `card-design/`; superseded standalone JS renderers are no longer kept there merely for historical tests. The v0.6.3 playable renderer now lives under `legacy/card-design-v0.6.3/` while its historical `/card-design/playable-card-renderer.js` URL is materialized for compatibility.
 
 ## Source and lifecycle boundaries
 

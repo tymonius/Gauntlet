@@ -55,6 +55,13 @@ describe('card-design publication route boundary', () => {
     }
   });
 
+  it('preserves the archived v0.6.3 playable renderer at its historical public URL', () => {
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(files.get('/card-design/playable-card-renderer.js')).toBe('legacy/card-design-v0.6.3/playable-card-renderer.js');
+    expect(existsSync('legacy/card-design-v0.6.3/playable-card-renderer.js')).toBe(true);
+    expect(existsSync('card-design/playable-card-renderer.js')).toBe(false);
+  });
+
   it('archives compatibility-only card-design routes behind stable public URLs', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     for (const name of [

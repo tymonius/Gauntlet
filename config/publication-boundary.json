@@ -336,6 +336,11 @@
       "kind": "retired-compatibility"
     },
     {
+      "source": "legacy/card-design-v0.6.3/playable-card-renderer.js",
+      "publicPath": "/card-design/playable-card-renderer.js",
+      "kind": "historical-card-review"
+    },
+    {
       "source": "legacy/card-design-v0.6.3/long-card-render.html",
       "publicPath": "/card-design/long-card-render.html",
       "kind": "historical-card-review"

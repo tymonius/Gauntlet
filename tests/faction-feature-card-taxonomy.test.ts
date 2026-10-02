@@ -3,9 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 const taxonomy = readFileSync('card-design/faction-feature-taxonomy.md', 'utf8');
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
-const leaderRenderer = readFileSync('card-design/leader-card-copy.js', 'utf8');
+const leaderRenderer = readFileSync('card-design/face-templates/leader.mjs', 'utf8');
 const leaderStyles = readFileSync('card-design/leader-card-copy.css', 'utf8');
-const catalogOverlay = readFileSync('tools/card-design/review/current-card-catalog.js', 'utf8');
 const diplomatReference = readFileSync('card-design/reference-copy/v0.6.3/diplomat-reference.md', 'utf8');
 const financierReference = readFileSync('card-design/reference-copy/v0.6.3/financier-reference.md', 'utf8');
 
@@ -156,9 +155,8 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
   });
 
   it('renders named concepts from current-game instead of a second Leader copy file', () => {
-    expect(catalogOverlay).toContain("import './leader-card-copy.js';");
-    expect(leaderRenderer).toContain("import('../game-data/current-game.mjs')");
-    expect(leaderRenderer).toContain('currentGame.leaders');
+    expect(leaderRenderer).toContain('const leader = spec.content.leader;');
+    expect(leaderRenderer).toContain('leader.sections.map(renderSection)');
     expect(leaderRenderer).not.toContain('leader-card-copy.json');
     expect(leaderRenderer).toContain('leader-section-name');
     expect(leaderRenderer).toContain('leader-section-kind');
@@ -169,8 +167,8 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
     expect(leaderRenderer).toContain('if (showName && feature.cost)');
     expect(leaderRenderer).not.toContain('leader-feature-group-name');
     expect(leaderRenderer).not.toContain('leader-feature-divider');
-    expect(leaderRenderer).toContain("leaderCard.dataset.artMin = '0.98'");
-    expect(leaderRenderer).toContain("root.dataset.leaderCopyReady = 'true'");
+    expect(leaderRenderer).toContain('data-art-min="0.98"');
+    expect(leaderRenderer).toContain('data-leader-copy-source="${esc(spec.provenance.gameplay)}"');
 
     expect(leaderStyles).toContain('.leader-section-name');
     expect(leaderStyles).toContain('.leader-section-kind');

@@ -154,11 +154,22 @@ Their source now lives under `tools/card-design/review/` and their established `
 
 The audit also established an important boundary: `rite-card.js` and `supplemental-card.js` remain in `card-design/` because current component authority still names them as production `renderSource.surface` values. They must not move until that authority contract is deliberately migrated.
 
-## Current tranche — remaining presentation/runtime boundary audit
+## Completed tranche — superseded standalone renderer cleanup
 
-The remaining `card-design/` scripts and styles still cannot be treated as a single disposable review-tool cluster. `face-spec.mjs` declares many styles as direct dependencies of canonical FaceSpec templates, and the canonical reference template still imports `reference-card.js` when rendering reference faces. Older standalone renderers/specimen helpers also remain and need consumer/lifecycle classification before relocation or deletion.
+The remaining presentation/runtime audit identified four JavaScript helpers that no longer belong in the maintained browser-rendering root:
 
-The next move therefore requires an ownership matrix that distinguishes canonical browser-runtime dependencies from catalog-only helpers before any additional physical extraction. Do not move family-specific files merely to shrink the root; preserve the stable `/card-design/` publication contract and the canonical `face-render.html` pipeline.
+- `playable-card-renderer.js` is a v0.6.3-era renderer still required only by historical v0.6.3 review tooling. Its source now lives under `legacy/card-design-v0.6.3/`, while `/card-design/playable-card-renderer.js` remains materialized for the historical browser review.
+- `territory-card-renderer.js` had no repository consumers; canonical Territory rendering is implemented by `face-templates/territory.mjs` plus `face-preparation.mjs`.
+- `leader-card-copy.js` had no live catalog/runtime consumer; canonical Leader markup now comes from `face-templates/leader.mjs`.
+- `print-artwork-normalizer.js` was test-only after Deckbuilder printing switched to canonical FaceSpec artwork and had no production caller.
+
+Current tests now assert the canonical FaceSpec templates/preparation pipeline instead of preserving superseded implementations for their own sake.
+
+## Current tranche — remaining specimen/helper boundary audit
+
+The maintained `card-design/` root still contains a smaller set of mixed-lifecycle surfaces. `face-spec.mjs` directly depends on canonical family styles, `face-render.mjs` depends on `reference-card.js`, and current component authority still names `rite-card.js` and `supplemental-card.js` as production `renderSource.surface` values. `capital-ledger.js` and `deed-card.js` are live dependencies of that supplemental renderer.
+
+The remaining audit should therefore focus on standalone specimen/review pages such as `capital-ledger-preview.html` and `faction-specimens.html`, plus any tests colocated in `card-design/`. Do not move authority-linked renderer sources until the current-game render-source contract is deliberately migrated.
 
 ## Card-design lifecycle state
 
@@ -166,14 +177,14 @@ The next move therefore requires an ownership matrix that distinguishes canonica
 
 - maintained design standards live under `docs/card-design/`;
 - historical design studies/review notes live under `legacy/card-design-studies/`;
-- v0.6.3 long-review and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
+- v0.6.3 long-review, playable-renderer, and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
 - the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
 - review/catalog/inspection source, including Proposal/card-back catalog builders, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- canonical family styles and unresolved browser/runtime helpers remain under `card-design/` pending the active ownership audit.
+- canonical family styles and authority-linked renderer helpers remain under `card-design/`; remaining standalone specimen/test surfaces are pending the active ownership audit.
 
 ## Rules boundary state
 
