@@ -108,6 +108,11 @@ import {
 import {
   V070_REINFORCEMENTS_ID,
 } from './additional-tactic-battle';
+import {
+  V070_UNDERWRITING_BATTLE_TEXT,
+  V070_UNDERWRITING_ID,
+  registerV070UnderwritingBattleEffect,
+} from './underwriting-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -379,6 +384,19 @@ const foreclosureHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const underwritingHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_UNDERWRITING_ID,
+  expectedText: V070_UNDERWRITING_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070UnderwritingBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -395,6 +413,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REVOLUTION_ID, revolutionHandler],
   [V070_ASSIMILATION_ID, assimilationHandler],
   [V070_FORECLOSURE_ID, foreclosureHandler],
+  [V070_UNDERWRITING_ID, underwritingHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
