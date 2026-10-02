@@ -129,8 +129,17 @@ describe('v0.7.0 Inquisition Conviction core', () => {
   });
 
   test('current authority scales normal Aftermath Conviction to +1 for one card and +2 for two or more', () => {
-    const conviction = currentCanonicalContent.content.faction_rules
-      .inquisition.conviction;
+    const factionRules = currentCanonicalContent.content.faction_rules as {
+      inquisition: {
+        conviction: {
+          gain_by_opposing_card_count: {
+            exactly_one: number;
+            two_or_more: number;
+          };
+        };
+      };
+    };
+    const conviction = factionRules.inquisition.conviction;
     expect(conviction.gain_by_opposing_card_count).toEqual({
       exactly_one: 1,
       two_or_more: 2,
