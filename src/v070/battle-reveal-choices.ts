@@ -75,6 +75,34 @@ export interface V070LateAdditionalTacticBattleRevealChoice {
   candidateInstanceIds: string[];
 }
 
+export type V070FinancierPreDiceBattleRevealChoice =
+  | {
+      kind: 'financier_divestment';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      candidateTerritoryInstanceIds: string[];
+    }
+  | {
+      kind: 'financier_liquidation';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'financier_margin_loan';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'financier_immediate_subsidize';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      sourceCardId: string;
+      minimumBonus: number;
+      maximumBonus: number;
+    };
+
 export type V070BattleRevealChoice =
   | previous.V070BattleRevealChoice
   | V070WitchcraftBattleRevealChoice
@@ -82,7 +110,8 @@ export type V070BattleRevealChoice =
   | V070HeresyBattleRevealChoice
   | V070RendTheVeilBattleRevealChoice
   | V070ReconnaissanceBattleRevealChoice
-  | V070LateAdditionalTacticBattleRevealChoice;
+  | V070LateAdditionalTacticBattleRevealChoice
+  | V070FinancierPreDiceBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
@@ -98,7 +127,29 @@ declare module './battle-types' {
     reconnaissanceBattleRevealChoiceOpen?: boolean;
     pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
+    pendingFinancierPreDiceBattleRevealChoice?: V070FinancierPreDiceBattleRevealChoice | null;
+    financierPreDiceBattleRevealChoiceOpen?: boolean;
   }
+}
+
+export function queueV070FinancierPreDiceBattleRevealChoice(
+  state: V070GameState,
+  choice: V070FinancierPreDiceBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'A Financier pre-dice battle choice requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'A Financier pre-dice choice cannot open while another reveal-timing choice is pending.',
+    );
+  }
+  runtime.pendingFinancierPreDiceBattleRevealChoice =
+    structuredClone(choice);
+  runtime.financierPreDiceBattleRevealChoiceOpen = true;
 }
 
 export function queueV070LateAdditionalTacticBattleRevealChoice(
@@ -363,7 +414,8 @@ export function queueV070ReconnaissanceBattleRevealChoice(
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
+  return state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
+    ?? state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
     ?? state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
     ?? state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
     ?? state.battleRuntime?.pendingHeresyBattleRevealChoice
@@ -375,6 +427,11 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice) {
+    return Boolean(
+      state.battleRuntime.financierPreDiceBattleRevealChoiceOpen,
+    );
+  }
   if (state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice) {
     return Boolean(
       state.battleRuntime.lateAdditionalTacticBattleRevealChoiceOpen,
@@ -396,6 +453,29 @@ export function isV070BattleRevealChoiceOpen(
     return Boolean(state.battleRuntime.witchcraftBattleRevealChoiceOpen);
   }
   return previous.isV070BattleRevealChoiceOpen(state);
+}
+
+export function completeV070FinancierPreDiceBattleRevealChoice(
+  state: V070GameState,
+  expectedKind: V070FinancierPreDiceBattleRevealChoice['kind'],
+): V070FinancierPreDiceBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingFinancierPreDiceBattleRevealChoice;
+  if (!runtime
+    || !pending
+    || !runtime.financierPreDiceBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Financier pre-dice battle choice.',
+    );
+  }
+  if (pending.kind !== expectedKind) {
+    throw new V070GameActionError(
+      `The pending Financier pre-dice choice is ${pending.kind}, not ${expectedKind}.`,
+    );
+  }
+  runtime.pendingFinancierPreDiceBattleRevealChoice = null;
+  runtime.financierPreDiceBattleRevealChoiceOpen = false;
+  return pending;
 }
 
 export function completeV070LateAdditionalTacticBattleRevealChoice(
