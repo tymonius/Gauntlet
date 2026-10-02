@@ -4,7 +4,7 @@
   "actionSurfaces": 72,
   "executableActionSurfaces": 72,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 81,
+  "registeredBattleSurfaces": 82,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -37,8 +37,7 @@
     "neutral-liberation::1::Gambit/Tactic",
     "neutral-redemption::1::Gambit/Tactic",
     "neutral-reinforcements::1::Gambit/Tactic",
-    "neutral-scouting-report::1::Gambit/Tactic",
-    "neutral-strategic-withdrawal::1::Gambit/Tactic"
+    "neutral-scouting-report::1::Gambit/Tactic"
   ],
-  "note": "Frozen v0.7.0 digital-engine registration baseline after implementing Revolution's unchanged battle surface through a shared post-reroll exchange window. Action parity remains 72/72; battle parity is 81/113, leaving 32 explicitly queued unsupported battle surfaces. Revolution resolves after all rerolls, alternates under shared timing, swaps only final selected die results, and preserves each player's own modifiers. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
+  "note": "Frozen v0.7.0 digital-engine registration baseline after implementing Strategic Withdrawal's unchanged battle surface through the shared pre-clear Aftermath destination flow. Action parity remains 72/72; battle parity is 82/113, leaving 31 explicitly queued unsupported battle surfaces. The effect remains optional, requires the owner's normal loss retreat plus another Position toward home, returns one other battle card to Hand, and treats the extra Position as ordinary effect movement rather than an additional Retreat. The unsupported surface keys remain sorted and review-locked so registry drift fails Card Authority."
 }

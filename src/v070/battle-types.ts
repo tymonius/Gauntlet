@@ -148,10 +148,11 @@ export interface V070BattleCardAftermathDestinationChoice {
   sourceInstanceId: string;
   sourceCardId: string;
   owner: PlayerId;
-  condition: 'always' | 'owner_win';
+  condition: 'always' | 'owner_win' | 'owner_loss_after_retreat';
   optional: boolean;
-  candidateSource: 'other_tactics' | 'reserve';
+  candidateSource: 'other_tactics' | 'reserve' | 'other_battle_cards';
   destination: 'hand' | 'draw_top';
+  beforeDestination?: 'move_one_position_toward_own_end';
   afterDestination?: 'discard_one_from_hand';
 }
 

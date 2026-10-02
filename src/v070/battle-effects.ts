@@ -64,9 +64,12 @@ import {
   V070_SECOND_LINE_ID,
   V070_SALVAGE_BATTLE_TEXT,
   V070_SALVAGE_ID,
+  V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT,
+  V070_STRATEGIC_WITHDRAWAL_ID,
   registerV070BattlefieldPromotionBattleEffect,
   registerV070SecondLineBattleEffect,
   registerV070SalvageBattleEffect,
+  registerV070StrategicWithdrawalBattleEffect,
 } from './aftermath-destination-cards';
 import {
   V070_GRAVE_WARD_BATTLE_TEXT,
@@ -247,6 +250,19 @@ const salvageHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const strategicWithdrawalHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_STRATEGIC_WITHDRAWAL_ID,
+  expectedText: V070_STRATEGIC_WITHDRAWAL_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070StrategicWithdrawalBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const graveWardHandler: previous.V070BattleEffectHandler = {
   cardId: V070_GRAVE_WARD_ID,
   expectedText: V070_GRAVE_WARD_BATTLE_TEXT,
@@ -363,6 +379,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_BATTLEFIELD_PROMOTION_ID, battlefieldPromotionHandler],
   [V070_SECOND_LINE_ID, secondLineHandler],
   [V070_SALVAGE_ID, salvageHandler],
+  [V070_STRATEGIC_WITHDRAWAL_ID, strategicWithdrawalHandler],
   [V070_GRAVE_WARD_ID, graveWardHandler],
   [V070_SOUL_FOR_SOUL_ID, soulForSoulHandler],
   [V070_NECROMANCY_ID, necromancyHandler],
@@ -671,7 +688,8 @@ function deferredRegistrationExists(
   }
   if (cardId === V070_BATTLEFIELD_PROMOTION_ID
     || cardId === V070_SECOND_LINE_ID
-    || cardId === V070_SALVAGE_ID) {
+    || cardId === V070_SALVAGE_ID
+    || cardId === V070_STRATEGIC_WITHDRAWAL_ID) {
     return state.battleRuntime?.battleCardAftermathDestinationChoices.some(
       choice =>
         choice.sourceCardId === cardId
