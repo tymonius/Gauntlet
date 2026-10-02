@@ -29,6 +29,8 @@ The remaining canonical face pipeline is intentionally browser-side production t
 
 These modules should not be moved into `packages/rendering/` merely to reduce the size of this root. A future physical relocation belongs under a browser/production-tooling boundary and must preserve the deployed `/card-design/` contract and all renderer consumers.
 
+`card-design.js` is a separate direct-card browser runtime: current non-FaceSpec specimens use it for parchment loading, adaptive fitting, and direct-card inspection, while archived long-card render tooling still loads the stable public script for fitting. Historical review composition is owned by archived review surfaces and is no longer injected by this maintained runtime.
+
 ## Authoring and review tooling
 
 Artwork compositor/authoring source now lives under [`tools/card-design/artwork-authoring/`](../tools/card-design/artwork-authoring/). `config/publication-boundary.json` materializes those files back onto their established `/card-design/artwork-*` URLs, so browser consumers and the public compositor do not depend on repository placement.
