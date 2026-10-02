@@ -16,11 +16,13 @@ import {
   pendingV070SuppliesAftermath,
   resolveV070SuppliesAftermathChoice,
 } from './supplies-battle';
+import { useV070Subsidize } from './financiers';
 
 export * from './battle-engine-pre-capital-gains';
 
 export type V070BattleAction =
   | previous.V070BattleAction
+  | { type: 'use_subsidize'; playerId: PlayerId; bonus: number }
   | {
       type: 'resolve_capital_gains_aftermath';
       playerId: PlayerId;
@@ -87,6 +89,12 @@ export function reduceV070BattleAction(
       action.targetInstanceId,
     );
     return resumeAfterDeferredAftermath(next, resolvedOwner);
+  }
+
+  if (action.type === 'use_subsidize') {
+    const next = structuredClone(state) as V070GameState;
+    useV070Subsidize(next, action.playerId, action.bonus);
+    return next;
   }
 
   if (action.type === 'resolve_capital_gains_aftermath') {
