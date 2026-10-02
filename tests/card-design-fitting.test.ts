@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const fittingScript = readFileSync("card-design/card-design.js", "utf8");
+const fittingScript = readFileSync("tools/card-design/review/card-design.js", "utf8");
 const refinementCss = readFileSync("card-design/card-design-refinement.css", "utf8");
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
 

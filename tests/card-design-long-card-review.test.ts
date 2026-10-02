@@ -17,7 +17,7 @@ const expectedIds = [
 ];
 
 const publicCardDesignRoot = "/card-design";
-const cardDesign = readFileSync("card-design/card-design.js", "utf8");
+const cardDesign = readFileSync("tools/card-design/review/card-design.js", "utf8");
 const renderSurface = readFileSync("legacy/card-design-v0.6.3/long-card-render.html", "utf8");
 const renderer = readFileSync("legacy/card-design-v0.6.3/playable-card-renderer.js", "utf8");
 const renderBridge = readFileSync("legacy/card-design-v0.6.3/long-card-render.js", "utf8");
