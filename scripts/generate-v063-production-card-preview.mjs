@@ -164,7 +164,7 @@ async function writePreviewSurface(catalog) {
   );
   await writeFile(join(OUTPUT_ROOT, 'renderer.html'), previewHtml());
 
-  const productionRendererPath = join(ROOT, 'card-design', 'playable-card-renderer.js');
+  const productionRendererPath = join(ROOT, 'legacy', 'card-design-v0.6.3', 'playable-card-renderer.js');
   const rendererSource = await readFile(productionRendererPath, 'utf8');
   await writeFile(join(OUTPUT_ROOT, 'renderer-production.js'), rendererSource);
 }

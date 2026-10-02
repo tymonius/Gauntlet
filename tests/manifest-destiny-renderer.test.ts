@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
+const renderer = readFileSync("card-design/face-templates/playable.mjs", "utf8");
 const canonical = JSON.parse(
   readFileSync("releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json", "utf8"),
 );
@@ -17,16 +17,14 @@ describe("Manifest Destiny renderer treatment", () => {
       effect.text.includes("It becomes a blank Territory under your control."),
     )).toBe(true);
 
-    expect(renderer).toContain(
-      "const usesOverlayTemplate = isOverlayCard || card.id === 'neutral-manifest-destiny';",
-    );
+    expect(renderer).toContain("|| card.id === 'neutral-manifest-destiny';");
     expect(renderer).toContain('data-overlay-card="${usesOverlayTemplate}"');
-    expect(renderer).toContain("${usesOverlayTemplate ? `");
+    expect(renderer).toContain('overlay-title-bar');
   });
 
-  it("does not redefine Manifest Destiny itself as an Overlay", () => {
-    expect(renderer).toContain("const isOverlayCard = /\\boverlay\\b/i.test(card.form || '')");
-    expect(renderer).toContain("|| sectionEntries.some(([label]) => label.toLowerCase() === 'overlay');");
-    expect(renderer).not.toContain("const isOverlayCard = card.id === 'neutral-manifest-destiny'");
+  it("derives normal Overlay status from canonical form/effects rather than redefining Manifest Destiny", () => {
+    expect(renderer).toContain("/\\boverlay\\b/i.test(card.card_form || '')");
+    expect(renderer).toContain("(card.effects || []).some(effect => String(effect?.label || '').trim().toLowerCase() === 'overlay')");
+    expect(renderer).not.toContain("card.card_form = 'Overlay'");
   });
 });
