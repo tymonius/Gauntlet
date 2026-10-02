@@ -125,6 +125,11 @@ import {
   registerV070UnderwritingBattleEffect,
 } from './underwriting-battle';
 import {
+  V070_BLACK_COVENANT_BATTLE_TEXT,
+  V070_BLACK_COVENANT_ID,
+  registerV070BlackCovenantBattleEffect,
+} from './black-covenant-battle';
+import {
   V070_CORNER_THE_MARKET_BATTLE_TEXT,
   V070_CORNER_THE_MARKET_ID,
   V070_LEVERAGED_BUYOUT_BATTLE_TEXT,
@@ -404,6 +409,19 @@ const foreclosureHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const blackCovenantHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_BLACK_COVENANT_ID,
+  expectedText: V070_BLACK_COVENANT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070BlackCovenantBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const underwritingHandler: previous.V070BattleEffectHandler = {
   cardId: V070_UNDERWRITING_ID,
   expectedText: V070_UNDERWRITING_BATTLE_TEXT,
@@ -515,6 +533,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_ASSIMILATION_ID, assimilationHandler],
   [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_UNDERWRITING_ID, underwritingHandler],
+  [V070_BLACK_COVENANT_ID, blackCovenantHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
   [V070_MARGIN_LOAN_ID, marginLoanHandler],
