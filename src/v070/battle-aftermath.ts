@@ -19,6 +19,11 @@ import {
   pendingV070SuppliesAftermath,
   unresolvedV070SuppliesSourcesForPlayer,
 } from './supplies-battle';
+import {
+  openV070GuiltByAssociationAftermathForSource,
+  pendingV070GuiltByAssociationAftermath,
+  unresolvedV070GuiltByAssociationSourcesForPlayer,
+} from './guilt-by-association-battle';
 
 export * from './battle-aftermath-pre-capital-gains';
 
@@ -46,6 +51,10 @@ export function v070DeferredBattleAftermathEffectRefs(
       unresolvedV070SuppliesSourcesForPlayer(state, owner)) {
       refs.push({ owner, sourceInstanceId });
     }
+    for (const sourceInstanceId of
+      unresolvedV070GuiltByAssociationSourcesForPlayer(state, owner)) {
+      refs.push({ owner, sourceInstanceId });
+    }
   }
   return refs;
 }
@@ -69,6 +78,12 @@ export function openV070DeferredBattleAftermathEffect(
   }
   if (cardId === 'neutral-supplies') {
     return openV070SuppliesAftermathForSource(
+      state,
+      sourceInstanceId,
+    );
+  }
+  if (cardId === 'inquisition-guilt-by-association') {
+    return openV070GuiltByAssociationAftermathForSource(
       state,
       sourceInstanceId,
     );
@@ -108,6 +123,7 @@ export function v070DeferredBattleAftermathEffectPending(
     previous.v070DeferredBattleAftermathEffectPending(state)
     || pendingV070CapitalGainsAftermath(state)
     || pendingV070ExcommunicationAftermath(state)
-    || pendingV070SuppliesAftermath(state),
+    || pendingV070SuppliesAftermath(state)
+    || pendingV070GuiltByAssociationAftermath(state),
   );
 }
