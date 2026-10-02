@@ -4,7 +4,7 @@
   "actionSurfaces": 74,
   "executableActionSurfaces": 74,
   "battleSurfaces": 113,
-  "registeredBattleSurfaces": 82,
+  "registeredBattleSurfaces": 85,
   "unsupportedActionSurfaceIds": [],
   "unsupportedBattleSurfaceKeys": [
     "diplomats-plenipotentiary::1::Gambit",
@@ -27,17 +27,14 @@
     "military-field-command::1::Gambit/Tactic",
     "military-give-chase::1::Gambit/Tactic",
     "military-hold-the-line::1::Gambit/Tactic",
-    "military-invasion::1::Gambit/Tactic",
     "military-reserve-force::2::Gambit/Tactic",
     "military-shock-and-awe::1::Gambit/Tactic",
     "military-war-crimes::1::Gambit/Tactic",
     "mystics-black-covenant::0::Tactic",
     "mystics-paths-of-shadow::1::Gambit/Tactic",
     "neutral-contraband::1::Gambit/Tactic",
-    "neutral-liberation::1::Gambit/Tactic",
     "neutral-redemption::1::Gambit/Tactic",
-    "neutral-reinforcements::1::Gambit/Tactic",
     "neutral-scouting-report::1::Gambit/Tactic"
   ],
-  "note": "Current-release digital-engine registration baseline after implementing Strategic Withdrawal through the shared pre-clear Aftermath destination flow. Current Action parity remains 74/74. Current battle parity is 82/113, leaving 31 unsupported battle surfaces. Strategic Withdrawal is an optional owner-loss effect available only after a real normal retreat when another Position toward the owner's end remains and another battle card is available to return. Its additional Position is ordinary effect movement, not a Retreat step, so Retreat-only triggers such as Landslide do not fire; the selected other Gambit, Tactic, or Reserve card returns to Hand instead of its normal battle cleanup destination. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
+  "note": "Current-release digital-engine registration baseline after Strategic Withdrawal plus the shared +Reserve/+Tactic implementation for Invasion, Liberation, and Reinforcements. Current Action parity remains 74/74. Current battle parity is 85/113, leaving 28 unsupported battle surfaces. Strategic Withdrawal resolves through the shared pre-clear Aftermath destination/movement procedure. Invasion and Liberation grant +1 Reserve and +1 Tactic at their reveal timing when their attacker/counterattack condition is met; before normal Tactic selection the grant raises the normal Tactic limit, while after Tactics are revealed it opens an optional face-up additional-Tactic choice. Reinforcements defers a Gambit until after Tactics and restricts its extra Tactic to the exact card drawn. Registration remains a surface census, not a claim that every historically registered behavior has been fully revalidated against all v0.7.2 semantic changes."
 }
