@@ -158,7 +158,7 @@ The audit also established an important boundary: `rite-card.js` and `supplement
 
 The remaining presentation/runtime audit identified four JavaScript helpers that no longer belong in the maintained browser-rendering root:
 
-- `playable-card-renderer.js` is a v0.6.3-era renderer still required only by historical v0.6.3 review tooling. Its source now lives under `legacy/card-design-v0.6.3/`, while `/card-design/playable-card-renderer.js` remains materialized for the historical browser review.
+- `playable-card-renderer.js` is a v0.6.3-era renderer still required only by historical long-card review tooling. Its source now lives under `legacy/card-design-v0.6.3/`, while `/card-design/playable-card-renderer.js` remains materialized for the historical browser review.
 - `territory-card-renderer.js` had no repository consumers; canonical Territory rendering is implemented by `face-templates/territory.mjs` plus `face-preparation.mjs`.
 - `leader-card-copy.js` had no live catalog/runtime consumer; canonical Leader markup now comes from `face-templates/leader.mjs`.
 - `print-artwork-normalizer.js` was test-only after Deckbuilder printing switched to canonical FaceSpec artwork and had no production caller.
@@ -179,7 +179,7 @@ All established `/card-design/...` browser URLs for the moved HTML/CSS studies a
 
 ## Completed tranche — review catalog entry extraction
 
-The catalog/runtime seam audit established that the developer catalog entry page is review tooling, while `card-design.js` remains a mixed current runtime used by direct-rendered card specimens as well as historical v0.6.3 review tooling.
+The catalog/runtime seam audit established that the developer catalog entry page is review tooling, while `card-design.js` remains a mixed current runtime used by direct-rendered card specimens as well as historical long-card review tooling.
 
 This tranche therefore moves only the catalog shell:
 
@@ -188,11 +188,11 @@ This tranche therefore moves only the catalog shell:
 - the shared publication resolver now lets a directory URL resolve through an explicitly mapped `index.html`, keeping the local card-design server aligned with off-tree Pages staging;
 - publishing-authority synchronization and source-reading tests follow the maintained review-tool source location.
 
-The runtime stays put deliberately. Current catalog modules still create direct `.gauntlet-card` specimens that rely on `card-design.js` for parchment loading, adaptive fitting, and clone-based direct-card inspection, while historical v0.6.3 tooling also loads the same stable public script.
+The runtime stays put deliberately. Current catalog modules still create direct `.gauntlet-card` specimens that rely on `card-design.js` for parchment loading, adaptive fitting, and clone-based direct-card inspection, while historical long-card tooling also loads the same stable public script.
 
 ## Current tranche — card-design runtime decomposition audit
 
-Audit `card-design.js` by responsibility rather than moving it wholesale. In particular, separate current direct-card fitting/parchment behavior from historical v0.6.3 long-card review injection and determine whether direct-card inspection can converge on the shared `tools/card-design/review/card-inspector.js` runtime without changing current catalog behavior.
+Audit `card-design.js` by responsibility rather than moving it wholesale. In particular, separate current direct-card fitting/parchment behavior from historical long-card review injection and determine whether direct-card inspection can converge on the shared `tools/card-design/review/card-inspector.js` runtime without changing current catalog behavior.
 
 Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-ledger.js`, `deed-card.js`, canonical family styles, `reference-card.js`, or the FaceSpec/browser-render pipeline until their live consumers or current-game render-source contracts are deliberately migrated.
 
