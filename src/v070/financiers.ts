@@ -82,15 +82,54 @@ export function v070SubsidizeBonusThisBattle(
   return state.battleRuntime?.subsidizeBonusByPlayer[playerId] ?? 0;
 }
 
+export function v070MaximumSubsidizeBonus(
+  state: V070GameState,
+  playerId: PlayerId,
+): number {
+  const financier = requireFinancierState(state, playerId);
+  const currentBonus = v070SubsidizeBonusThisBattle(state, playerId);
+  const previousCost = v070SubsidizeCost(currentBonus);
+  let maximum = currentBonus;
+  while (
+    v070SubsidizeCost(maximum + 1) - previousCost
+      <= financier.capital
+  ) {
+    maximum += 1;
+  }
+  return maximum;
+}
+
 export function useV070Subsidize(
   state: V070GameState,
   playerId: PlayerId,
   bonus: number,
 ): void {
+  applyV070Subsidize(state, playerId, bonus, false);
+}
+
+export function useV070ImmediateSubsidize(
+  state: V070GameState,
+  playerId: PlayerId,
+  bonus: number,
+): void {
+  applyV070Subsidize(state, playerId, bonus, true);
+}
+
+function applyV070Subsidize(
+  state: V070GameState,
+  playerId: PlayerId,
+  bonus: number,
+  cardGrantedImmediateWindow: boolean,
+): void {
   requireFinancierState(state, playerId);
   const battle = state.battle;
   const runtime = state.battleRuntime;
-  if (!battle || !runtime || runtime.stage !== 'outcome') {
+  if (!battle || !runtime) {
+    throw new V070GameActionError(
+      'Subsidize requires an active battle.',
+    );
+  }
+  if (!cardGrantedImmediateWindow && runtime.stage !== 'outcome') {
     throw new V070GameActionError(
       'Subsidize is available only before battle dice are rolled.',
     );
@@ -135,6 +174,9 @@ export function useV070Subsidize(
       additionalCost,
       totalCost,
       capitalRemaining: state.players[playerId].financiers!.capital,
+      timing: cardGrantedImmediateWindow
+        ? 'card_granted_immediate'
+        : 'normal_before_dice',
     },
   });
 }
