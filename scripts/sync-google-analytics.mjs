@@ -25,6 +25,10 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   // Archived card-design studies are not public navigation pages.
   "legacy/card-design-studies/deed-ornament-study.html",
   "legacy/card-design-studies/deed-rule-font-study.html",
+  "legacy/card-design-studies/faction-specimens-v0.6.1.html",
+  "legacy/card-design-studies/typography/index.html",
+  "legacy/card-design-studies/typography/interface-comparison.html",
+  "legacy/v0.6.4-candidate/card-design/territories/index.html",
   "images/tools/mystics_rite_completed_P22_compositor_v2.html",
   "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
   "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
@@ -45,21 +49,19 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "tts/supplemental-renderer/index.html",
   "tts/finalized-supplemental-renderer/index.html",
   // Embedded/render-only card surfaces; parent pages own analytics.
-  "card-design/card-back-render.html",
+  "legacy/public-compatibility/card-design/card-back-render.html",
   "card-design/card-showcase-embed.html",
   // Internal card-design review/study surfaces; they are not public navigation pages.
   "tools/card-design/review/capital-ledger-preview.html",
-  "card-design/deed-ornament-study.html",
-  "card-design/deed-rule-font-study.html",
   // Canonical embedded card-face surfaces; parent pages own analytics.
-  "card-design/card-review-render.html",
-  "card-design/component-render.html",
+  "legacy/public-compatibility/card-design/card-review-render.html",
+  "legacy/public-compatibility/card-design/component-render.html",
   "card-design/face-render.html",
-  "card-design/territory-review-render.html",
+  "legacy/public-compatibility/card-design/territory-review-render.html",
   // Legacy aliases retained only for old bookmarks/callers.
-  "card-design/card-print-render.html",
-  "card-design/component-print-render.html",
-  "card-design/territory-print-render.html",
+  "legacy/public-compatibility/card-design/card-print-render.html",
+  "legacy/public-compatibility/card-design/component-print-render.html",
+  "legacy/public-compatibility/card-design/territory-print-render.html",
   // Retired route redirect shim; analytics belongs on the active /rules/ destination.
   "legacy/public-compatibility/rulebook/index.html",
   // Historical public-version archive; these are frozen, non-canonical pages.
