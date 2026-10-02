@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const parchmentCss = readFileSync("card-design/card-parchment.css", "utf8");
 const refinementCss = readFileSync("card-design/card-design-refinement.css", "utf8");
-const cardScript = readFileSync("card-design/card-design.js", "utf8");
+const cardScript = readFileSync("tools/card-design/review/card-design.js", "utf8");
 
 const factions = [
   "neutral",

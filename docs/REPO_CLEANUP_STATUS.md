@@ -212,11 +212,21 @@ Direct Card Design catalog inspection now belongs to the shared `tools/card-desi
 
 Archived review pages still load the stable public `card-design.js` fitting runtime, but no longer inherit the current catalog inspector implicitly.
 
-## Current tranche — card-design browser runtime ownership audit
+## Completed tranche — direct-card preparation ownership
 
-With review composition and inspection removed, audit the remaining browser-preparation runtime in `card-design.js`: parchment loading, production-font readiness, and adaptive fitting. Determine whether these responsibilities should remain as one maintained browser-runtime module or move under a more explicit production-tooling source boundary while preserving the stable public `/card-design/card-design.js` dependency used by archived render tooling.
+The remaining direct-card browser-preparation runtime is review tooling rather than canonical face authority:
 
-Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-ledger.js`, `deed-card.js`, canonical family styles, `reference-card.js`, or the FaceSpec/browser-render pipeline until their live consumers or current-game render-source contracts are deliberately migrated.
+- `card-design.js` moved to `tools/card-design/review/card-design.js`;
+- the stable public `/card-design/card-design.js` URL remains materialized through the publication contract;
+- current review-catalog specimens continue to use it for parchment loading, production-font readiness, adaptive fitting, and resize/print refitting;
+- archived long-card render tooling continues to consume the same stable public URL;
+- canonical `packages/game-data/current-game.json` does not name this runtime, and canonical FaceSpec rendering does not depend on it.
+
+At this point the remaining `card-design/` root is intentionally the canonical browser face/component presentation boundary plus its live family styles and active reference-copy support, not a catch-all review-tool directory.
+
+## Current tranche — Rules Arbiter placement audit
+
+Inspect the current Rules Arbiter implementation, data, exports, deployment surfaces, and compatibility paths. Establish which pieces are canonical current application/runtime code, which are generated or release artifacts, and which are historical/compatibility material before moving anything.
 
 ## Card-design lifecycle state
 
@@ -227,11 +237,11 @@ Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-le
 - v0.6.3 long-review, playable-renderer, and reference-copy provenance lives under `legacy/card-design-v0.6.3/`;
 - the maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/`;
 - pure shared rendering model authority lives under `packages/rendering/`;
-- browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
+- canonical browser FaceSpec/component runtime remains under `card-design/`; direct-card review preparation now lives under `tools/card-design/review/`;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
-- review/catalog/inspection source, including the catalog entry page, Proposal/card-back catalog builders, and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
+- review/catalog/inspection source, including the catalog entry page, direct-card preparation runtime, Proposal/card-back catalog builders, and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- canonical family styles, authority-linked renderer helpers, the canonical browser face runtime, and the direct-card fitting/parchment runtime remain under `card-design/`; direct inspection is shared review tooling, and the next audit is browser-runtime ownership.
+- canonical family styles, authority-linked renderer helpers, and the canonical browser face/component runtime remain under `card-design/`; review preparation and inspection are owned by `tools/card-design/review/`.
 
 ## Rules boundary state
 
@@ -247,11 +257,10 @@ Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-le
 
 ## Next top-down queue
 
-1. Complete the remaining presentation/runtime ownership audit, especially standalone legacy renderer/specimen helpers versus canonical FaceSpec/runtime dependencies.
-2. Inspect Rules Arbiter implementation/data/export placement now that the v0.7.2 release work has stabilized.
-3. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
-4. Audit governance/traceability and CI paths that still encode transitional locations.
-5. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
+1. Inspect Rules Arbiter implementation/data/export placement now that the card-design presentation/runtime ownership audit is complete.
+2. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
+3. Audit governance/traceability and CI paths that still encode transitional locations.
+4. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
 
 ## Resume protocol
 

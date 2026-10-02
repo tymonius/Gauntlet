@@ -301,6 +301,11 @@
       "kind": "production-tooling"
     },
     {
+      "source": "tools/card-design/review/card-design.js",
+      "publicPath": "/card-design/card-design.js",
+      "kind": "production-tooling"
+    },
+    {
       "source": "tools/card-design/review/card-review.js",
       "publicPath": "/card-design/card-review.js",
       "kind": "production-tooling"

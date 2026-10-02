@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const inspectorSource = readFileSync("tools/card-design/review/card-inspector.js", "utf8");
 const rendererSource = readFileSync("card-design/face-render.mjs", "utf8");
 const reviewSource = readFileSync("tools/card-design/review/card-review.js", "utf8");
-const cardDesignRuntime = readFileSync("card-design/card-design.js", "utf8");
+const cardDesignRuntime = readFileSync("tools/card-design/review/card-design.js", "utf8");
 const cardDesignIndex = readFileSync("tools/card-design/review/index.html", "utf8");
 const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
 const deckbuilderPreview = readFileSync("apps/deckbuilder/mobile-card-preview.js", "utf8");

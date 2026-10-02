@@ -40,6 +40,7 @@ describe('card-design publication route boundary', () => {
     const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
     for (const name of [
       'index.html',
+      'card-design.js',
       'card-review.js',
       'card-review.css',
       'card-inspector.js',
