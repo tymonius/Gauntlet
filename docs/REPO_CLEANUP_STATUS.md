@@ -199,9 +199,22 @@ The first `card-design.js` decomposition pass separated live direct-card runtime
 - retained the stable `/card-design/card-design.js` dependency used by archived long-card render tooling for fitting;
 - changed the historical regression test to protect the archived review surface and assert that current runtime no longer owns its composition.
 
-## Current tranche — direct-card inspection convergence audit
+## Completed tranche — direct-card inspection convergence
 
-The remaining mixed responsibility in `card-design.js` is direct-card inspection. Determine whether top-level direct specimens can hand off to the shared `tools/card-design/review/card-inspector.js` runtime without losing focus restoration, artwork inspection, dynamically hydrated supplemental cards, or historical fitting consumers. Keep adaptive fitting/parchment behavior in place unless a separate browser-runtime owner is established.
+Direct Card Design catalog inspection now belongs to the shared `tools/card-design/review/card-inspector.js` runtime:
+
+- the shared inspector handles both URL-backed iframe faces and top-level direct DOM-card clones;
+- direct-card activation is event-delegated and scoped to the Card Design developer catalog, so dynamically hydrated supplemental cards do not require per-node listeners;
+- direct clone artwork inspection, focus restoration, and Escape/backdrop return-to-card behavior are owned by the shared inspector;
+- the old clone/frame/lightbox inspector and modal CSS were removed from `card-design.js` and `card-design-refinement.css`;
+- the supplemental reference-card hydration workaround for preserving inspection listeners was removed;
+- `card-design.js` now owns parchment loading, production-font readiness, adaptive fitting, and resize/print refitting only.
+
+Archived review pages still load the stable public `card-design.js` fitting runtime, but no longer inherit the current catalog inspector implicitly.
+
+## Current tranche — card-design browser runtime ownership audit
+
+With review composition and inspection removed, audit the remaining browser-preparation runtime in `card-design.js`: parchment loading, production-font readiness, and adaptive fitting. Determine whether these responsibilities should remain as one maintained browser-runtime module or move under a more explicit production-tooling source boundary while preserving the stable public `/card-design/card-design.js` dependency used by archived render tooling.
 
 Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-ledger.js`, `deed-card.js`, canonical family styles, `reference-card.js`, or the FaceSpec/browser-render pipeline until their live consumers or current-game render-source contracts are deliberately migrated.
 
@@ -218,7 +231,7 @@ Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-le
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
 - review/catalog/inspection source, including the catalog entry page, Proposal/card-back catalog builders, and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- canonical family styles, authority-linked renderer helpers, the canonical browser face runtime, and the direct-card fitting/parchment runtime remain under `card-design/`; the next audit is direct-card inspection convergence.
+- canonical family styles, authority-linked renderer helpers, the canonical browser face runtime, and the direct-card fitting/parchment runtime remain under `card-design/`; direct inspection is shared review tooling, and the next audit is browser-runtime ownership.
 
 ## Rules boundary state
 

@@ -211,16 +211,6 @@
   box-shadow: none;
 }
 
-@media screen {
-  /* card-catalog-shell.css intentionally promotes the page's direct children,
-     but the shared inspector dialog is also appended directly to body. Keep
-     the modal pinned to the viewport instead of inheriting that shell rule. */
-  body.developer-catalog-page > .card-inspection-dialog {
-    position: fixed;
-    z-index: 200;
-  }
-}
-
 @media print {
   .card-back-review-shell {
     padding: 0;
