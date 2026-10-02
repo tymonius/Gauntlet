@@ -130,6 +130,12 @@ import {
   registerV070BlackCovenantBattleEffect,
 } from './black-covenant-battle';
 import {
+  V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
+  V070_GUILT_BY_ASSOCIATION_ID,
+  registerV070GuiltByAssociationBattleEffect,
+  v070GuiltByAssociationAftermathEffects,
+} from './guilt-by-association-battle';
+import {
   V070_CORNER_THE_MARKET_BATTLE_TEXT,
   V070_CORNER_THE_MARKET_ID,
   V070_LEVERAGED_BUYOUT_BATTLE_TEXT,
@@ -422,6 +428,19 @@ const blackCovenantHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const guiltByAssociationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_GUILT_BY_ASSOCIATION_ID,
+  expectedText: V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070GuiltByAssociationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const underwritingHandler: previous.V070BattleEffectHandler = {
   cardId: V070_UNDERWRITING_ID,
   expectedText: V070_UNDERWRITING_BATTLE_TEXT,
@@ -534,6 +553,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_UNDERWRITING_ID, underwritingHandler],
   [V070_BLACK_COVENANT_ID, blackCovenantHandler],
+  [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
   [V070_MARGIN_LOAN_ID, marginLoanHandler],
@@ -949,6 +969,11 @@ function deferredRegistrationExists(
   if (cardId === V070_SUPPLIES_ID) {
     return state.battleRuntime?.suppliesBattleSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_GUILT_BY_ASSOCIATION_ID) {
+    return v070GuiltByAssociationAftermathEffects(state).some(
+      effect => effect.sourceInstanceId === sourceInstanceId,
+    );
   }
   if (cardId === V070_REARGUARD_ID) {
     return state.battleRuntime?.battleCardAftermathAssetBanks.some(bank =>
