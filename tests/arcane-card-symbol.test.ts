@@ -5,8 +5,8 @@ const renderer = readFileSync("card-design/face-templates/playable.mjs", "utf8")
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
 const markerUi = readFileSync("arcane-trait-markers.js", "utf8");
 const markerUiCss = readFileSync("arcane-trait-markers.css", "utf8");
-const cardReferenceIndex = readFileSync("card-reference/index.html", "utf8");
-const deckbuilderIndex = readFileSync("deckbuilder/index.html", "utf8");
+const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
+const deckbuilderIndex = readFileSync("apps/deckbuilder/index.html", "utf8");
 
 describe("Arcane playable-card symbol", () => {
   it("renders the Mystics sigil only for cards with the Arcane trait", () => {
