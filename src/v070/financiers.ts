@@ -70,6 +70,75 @@ export function gainV070Capital(
   return gain;
 }
 
+export function v070SubsidizeCost(bonus: number): number {
+  const normalized = nonnegativeInteger(bonus, 'Subsidize bonus');
+  return normalized * (normalized + 1) / 2;
+}
+
+export function v070SubsidizeBonusThisBattle(
+  state: V070GameState,
+  playerId: PlayerId,
+): number {
+  return state.battleRuntime?.subsidizeBonusByPlayer[playerId] ?? 0;
+}
+
+export function useV070Subsidize(
+  state: V070GameState,
+  playerId: PlayerId,
+  bonus: number,
+): void {
+  requireFinancierState(state, playerId);
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || runtime.stage !== 'outcome') {
+    throw new V070GameActionError(
+      'Subsidize is available only before battle dice are rolled.',
+    );
+  }
+  if (runtime.participants.A.battleDice.length > 0
+    || runtime.participants.B.battleDice.length > 0) {
+    throw new V070GameActionError(
+      'Subsidize must be completed before any battle dice are rolled.',
+    );
+  }
+
+  const targetBonus = nonnegativeInteger(bonus, 'Subsidize bonus');
+  const currentBonus = runtime.subsidizeBonusByPlayer[playerId] ?? 0;
+  if (targetBonus < currentBonus) {
+    throw new V070GameActionError(
+      'A committed Subsidize bonus cannot be reduced before dice are rolled.',
+    );
+  }
+  if (targetBonus === currentBonus) return;
+
+  const totalCost = v070SubsidizeCost(targetBonus);
+  const previousCost = v070SubsidizeCost(currentBonus);
+  const additionalCost = totalCost - previousCost;
+  spendV070Capital(
+    state,
+    playerId,
+    additionalCost,
+    `Subsidize +${targetBonus}`,
+  );
+
+  runtime.participants[playerId].battleModifier +=
+    targetBonus - currentBonus;
+  runtime.subsidizeBonusByPlayer[playerId] = targetBonus;
+
+  appendV070Event(state, {
+    type: 'subsidize_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      bonus: targetBonus,
+      previousBonus: currentBonus,
+      additionalCost,
+      totalCost,
+      capitalRemaining: state.players[playerId].financiers!.capital,
+    },
+  });
+}
+
 export function spendV070Capital(
   state: V070GameState,
   playerId: PlayerId,
