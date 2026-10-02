@@ -17,6 +17,10 @@ import {
   resolveV070SuppliesAftermathChoice,
 } from './supplies-battle';
 import {
+  pendingV070GuiltByAssociationAftermath,
+  resolveV070GuiltByAssociationAftermathChoice,
+} from './guilt-by-association-battle';
+import {
   pendingV070FinancierAftermathChoice,
   resolveV070CornerTheMarketAftermathChoice,
   resolveV070LeveragedBuyoutAftermathChoice,
@@ -58,6 +62,11 @@ export type V070BattleAction =
       type: 'resolve_supplies_aftermath';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_guilt_by_association_aftermath';
+      playerId: PlayerId;
+      targetCardId: string;
     };
 
 export function reduceV070BattleAction(
@@ -104,6 +113,22 @@ export function reduceV070BattleAction(
       action.keepInstanceId,
     );
     return complete ? resumeAfterFinancierAftermath(next) : next;
+  }
+
+  const guilt = pendingV070GuiltByAssociationAftermath(state);
+  if (guilt) {
+    if (action.type !== 'resolve_guilt_by_association_aftermath') {
+      throw new V070GameActionError(
+        'Choose the title for Guilt by Association before continuing the Aftermath.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const resolvedOwner = resolveV070GuiltByAssociationAftermathChoice(
+      next,
+      action.playerId,
+      action.targetCardId,
+    );
+    return resumeAfterDeferredAftermath(next, resolvedOwner);
   }
 
   const capitalGains = pendingV070CapitalGainsAftermath(state);
@@ -188,6 +213,12 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_supplies_aftermath') {
     throw new V070GameActionError(
       'There is no pending Supplies Aftermath choice.',
+    );
+  }
+
+  if (action.type === 'resolve_guilt_by_association_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Guilt by Association Aftermath choice.',
     );
   }
 
