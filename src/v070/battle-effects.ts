@@ -8,7 +8,10 @@ import type {
   V070UnsupportedBattleEffect,
 } from './battle-types';
 import * as previous from './battle-effects-pre-capital-gains';
-import { isV070BattleCardEffectNegated } from './battle-effect-status';
+import {
+  isV070BattleCardEffectNegated,
+  markV070BattleCardEffectApplied,
+} from './battle-effect-status';
 import {
   V070_CAPITAL_GAINS_BATTLE_TEXT,
   V070_CAPITAL_GAINS_ID,
@@ -102,6 +105,9 @@ import {
   registerV070AssimilationBattleEffect,
   registerV070ForeclosureBattleEffect,
 } from './aftermath-capture-cards';
+import {
+  V070_REINFORCEMENTS_ID,
+} from './additional-tactic-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -109,6 +115,7 @@ declare module './battle-types' {
   interface V070BattleRuntime {
     deferredWitchcraftGambitCommitments?: V070BattleCardCommitment[];
     deferredRendTheVeilGambitCommitments?: V070BattleCardCommitment[];
+    deferredReinforcementsGambitCommitments?: V070BattleCardCommitment[];
   }
 }
 
@@ -404,6 +411,97 @@ export function v070BattleEffectHandler(
   return deferredHandlers.get(cardId) ?? previous.v070BattleEffectHandler(cardId);
 }
 
+export function applyV070LateAdditionalTacticRevealEffect(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): V070UnsupportedBattleEffect[] {
+  const cardId =
+    state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  const handler = deferredHandlers.get(cardId);
+  if (!handler) {
+    return previous.applyV070LateAdditionalTacticRevealEffect(
+      state,
+      commitment,
+    );
+  }
+
+  const card = v070CanonicalContent.cardsById.get(cardId);
+  const relevant = card?.effects.filter(effect =>
+    effect.label === 'Tactic'
+    || effect.label === 'Gambit/Tactic'
+  ) ?? [];
+  if (relevant.length !== 1
+    || relevant[0]?.text !== handler.expectedText) {
+    return relevant.map(effect => ({
+      owner: commitment.owner,
+      instanceId: commitment.instanceId,
+      cardId,
+      role: 'tactic' as const,
+      label: effect.label,
+      text: effect.text,
+      encounteredAt: 'reveal_tactics' as const,
+    }));
+  }
+
+  if (isV070BattleCardEffectNegated(
+    state,
+    commitment.instanceId,
+  )) {
+    appendV070Event(state, {
+      type: 'battle_card_effect_skipped_negated',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+      },
+    });
+    return [];
+  }
+
+  if (card?.trait === 'Arcane'
+    && v070MonasterySuppressesArcaneBattleEffects(state)) {
+    appendV070Event(state, {
+      type: 'battle_card_effect_suppressed',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+        reason: 'Monastery',
+      },
+    });
+    return [];
+  }
+
+  handler.apply({
+    state,
+    owner: commitment.owner,
+    opponent: commitment.owner === 'A' ? 'B' : 'A',
+    commitment,
+  });
+  markV070BattleCardEffectApplied(
+    state,
+    commitment.instanceId,
+  );
+  appendV070Event(state, {
+    type: 'battle_card_effect_applied',
+    actor: commitment.owner,
+    visibility: 'public',
+    payload: {
+      instanceId: commitment.instanceId,
+      cardId,
+      role: commitment.role,
+      timing: 'reveal',
+      revealClass: 'ordinary',
+      lateAdditionalTactic: true,
+    },
+  });
+  return [];
+}
+
 /**
  * Current-release audit adapter. Runtime resolution remains on the frozen
  * v0.7.0 handler graph until migrated deliberately; reviewed wording-only
@@ -477,6 +575,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeDeferredWitchcraftGambits(state),
         ...takeDeferredRendTheVeilGambits(state),
         ...takeV070DeferredReconnaissanceGambits(state),
+        ...takeDeferredReinforcementsGambits(state),
       ]
     : [];
   const effectiveCommitments = [...commitments, ...deferredPostTactics];
@@ -504,13 +603,16 @@ export function resolveV070SupportedRevealEffects(
         cardId === V070_WITCHCRAFT_ID
         || cardId === V070_REND_THE_VEIL_ID
         || cardId === V070_RECONNAISSANCE_ID
+        || cardId === V070_REINFORCEMENTS_ID
       )) {
       if (cardId === V070_WITCHCRAFT_ID) {
         deferWitchcraftGambit(state, commitment);
       } else if (cardId === V070_REND_THE_VEIL_ID) {
         deferRendTheVeilGambit(state, commitment);
-      } else {
+      } else if (cardId === V070_RECONNAISSANCE_ID) {
         deferV070ReconnaissanceGambit(state, commitment);
+      } else {
+        deferReinforcementsGambit(state, commitment);
       }
       continue;
     }
@@ -632,6 +734,37 @@ function takeDeferredRendTheVeilGambits(
   runtime.deferredRendTheVeilGambitCommitments = [];
   return deferred.filter(commitment =>
     state.cardInstances[commitment.instanceId]?.cardId === V070_REND_THE_VEIL_ID
+    && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+    && battleContainsCommitment(state, commitment)
+  );
+}
+
+function deferReinforcementsGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredReinforcementsGambitCommitments ??= [];
+  if (runtime.deferredReinforcementsGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredReinforcementsGambitCommitments.push({
+    ...commitment,
+  });
+}
+
+function takeDeferredReinforcementsGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred =
+    runtime.deferredReinforcementsGambitCommitments ?? [];
+  runtime.deferredReinforcementsGambitCommitments = [];
+  return deferred.filter(commitment =>
+    state.cardInstances[commitment.instanceId]?.cardId
+      === V070_REINFORCEMENTS_ID
     && !isV070BattleCardEffectNegated(state, commitment.instanceId)
     && battleContainsCommitment(state, commitment)
   );
