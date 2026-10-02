@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const reviewPage = readFileSync("card-design/index.html", "utf8");
+const reviewPage = readFileSync("tools/card-design/review/index.html", "utf8");
 const faceAuthority = readFileSync("card-design/face-authority.mjs", "utf8");
 const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 const deedTemplate = readFileSync("card-design/face-templates/deed.mjs", "utf8");
 const productionSurface = readFileSync("card-design/production-surface.mjs", "utf8");
-const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
+const ornamentStudy = readFileSync("legacy/card-design-studies/deed-ornament-study.html", "utf8");
 const deedDivider = readFileSync("card-design/deed-ornamental-divider.svg", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
@@ -16,7 +16,7 @@ const refinementStyles = readFileSync("card-design/card-design-refinement.css", 
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
 const deedComponent = componentContract.components.find((component: { id?: string }) => component.id === "financiers-deed");
 

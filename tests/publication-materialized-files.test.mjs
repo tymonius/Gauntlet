@@ -43,6 +43,30 @@ describe('materialized public files', () => {
     expect(sourcePathForPublicPath(contract, '/images/legacy.png')).toBe('images/canonical.png');
   });
 
+  it('resolves a directory URL through an explicitly materialized index file before the containing route', () => {
+    const contract = {
+      materializedRoutes: [
+        {
+          source: 'card-design',
+          publicPath: '/card-design/',
+          kind: 'production-tooling',
+          manageIndexRoutes: false,
+        },
+      ],
+      materializedFiles: [
+        {
+          source: 'tools/card-design/review/index.html',
+          publicPath: '/card-design/index.html',
+          kind: 'production-tooling',
+        },
+      ],
+    };
+
+    expect(sourcePathForPublicPath(contract, '/card-design/')).toBe('tools/card-design/review/index.html');
+    expect(sourcePathForPublicPath(contract, '/card-design/index.html')).toBe('tools/card-design/review/index.html');
+    expect(sourcePathForPublicPath(contract, '/card-design/card-design.css')).toBe(path.join('card-design', 'card-design.css'));
+  });
+
   it('rejects route-like and traversal file aliases', () => {
     expect(() => cleanPublicFilePath('/images/legacy/')).toThrow(/name a file/);
     expect(() => cleanPublicFilePath('/images/../secret.png')).toThrow(/unsupported traversal/);

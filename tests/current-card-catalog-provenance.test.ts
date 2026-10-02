@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
-const catalogPage = readFileSync("card-design/index.html", "utf8");
+const catalogPage = readFileSync("tools/card-design/review/index.html", "utf8");
 const catalogOverlay = readFileSync("tools/card-design/review/current-card-catalog.js", "utf8");
 const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 const playableTemplate = readFileSync("card-design/face-templates/playable.mjs", "utf8");
