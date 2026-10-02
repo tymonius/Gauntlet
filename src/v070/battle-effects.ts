@@ -109,6 +109,17 @@ import {
   V070_REINFORCEMENTS_ID,
 } from './additional-tactic-battle';
 import {
+  V070_DIVESTMENT_BATTLE_TEXT,
+  V070_DIVESTMENT_ID,
+  V070_LIQUIDATION_BATTLE_TEXT,
+  V070_LIQUIDATION_ID,
+  V070_MARGIN_LOAN_BATTLE_TEXT,
+  V070_MARGIN_LOAN_ID,
+  registerV070DivestmentBattleEffect,
+  registerV070LiquidationBattleEffect,
+  registerV070MarginLoanBattleEffect,
+} from './financier-pre-dice-battle';
+import {
   V070_UNDERWRITING_BATTLE_TEXT,
   V070_UNDERWRITING_ID,
   registerV070UnderwritingBattleEffect,
@@ -397,6 +408,45 @@ const underwritingHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const divestmentHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_DIVESTMENT_ID,
+  expectedText: V070_DIVESTMENT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070DivestmentBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const liquidationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_LIQUIDATION_ID,
+  expectedText: V070_LIQUIDATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070LiquidationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const marginLoanHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_MARGIN_LOAN_ID,
+  expectedText: V070_MARGIN_LOAN_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070MarginLoanBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -414,6 +464,9 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_ASSIMILATION_ID, assimilationHandler],
   [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_UNDERWRITING_ID, underwritingHandler],
+  [V070_DIVESTMENT_ID, divestmentHandler],
+  [V070_LIQUIDATION_ID, liquidationHandler],
+  [V070_MARGIN_LOAN_ID, marginLoanHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
