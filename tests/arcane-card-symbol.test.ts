@@ -1,24 +1,24 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
+const renderer = readFileSync("card-design/face-templates/playable.mjs", "utf8");
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
 const markerUi = readFileSync("arcane-trait-markers.js", "utf8");
 const markerUiCss = readFileSync("arcane-trait-markers.css", "utf8");
-const cardReferenceIndex = readFileSync("card-reference/index.html", "utf8");
-const deckbuilderIndex = readFileSync("deckbuilder/index.html", "utf8");
+const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
+const deckbuilderIndex = readFileSync("apps/deckbuilder/index.html", "utf8");
 
 describe("Arcane playable-card symbol", () => {
   it("renders the Mystics sigil only for cards with the Arcane trait", () => {
-    expect(renderer).toContain("const isArcane = hasTrait(card.trait, 'arcane');");
+    expect(renderer).toContain("const arcaneMarker = hasTrait(card.trait, 'arcane')");
     expect(renderer).toContain('class="arcane-trait-marker"');
     expect(renderer).toContain('aria-label="Arcane trait"');
     expect(renderer).toContain("function hasTrait(value, expected)");
   });
 
   it("places the Arcane marker immediately before the production card title", () => {
-    expect(renderer).toContain('<h1 class="card-title">${arcaneMarker}${escapeHtml(card.name)}</h1>');
-    expect(renderer).toContain('<span>${escapeHtml(card.factionLabel)}</span>');
+    expect(renderer).toContain('<h1 class="card-title">${arcaneMarker}${esc(card.name)}</h1>');
+    expect(renderer).toContain('<span>${esc(card.allegiance)}</span>');
     expect(renderer).not.toContain('card-footer-allegiance');
     expect(factionCss).toMatch(/\.card-title \.arcane-trait-marker\s*\{/);
   });
