@@ -265,7 +265,7 @@ describe('v0.7.0 Excommunication battle effect', () => {
     );
     expect(state.players.B.zones.discardPile).toContain(twinValueTwo);
     expect(state.players.B.zones.discardPile).not.toContain(chosenValueTwo);
-    expect(state.players.A.inquisition?.conviction).toBe(convictionBefore + 1);
+    expect(state.players.A.inquisition?.conviction).toBe(convictionBefore + 2);
     expect(state.events).toEqual(expect.arrayContaining([
       expect.objectContaining({
         type: 'excommunication_battle_resolved',
