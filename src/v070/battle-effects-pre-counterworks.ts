@@ -93,6 +93,15 @@ import {
   registerV070TariffsBattleEffect,
 } from './tariffs-battle';
 import {
+  V070_INVASION_BATTLE_TEXT,
+  V070_INVASION_ID,
+  V070_LIBERATION_BATTLE_TEXT,
+  V070_LIBERATION_ID,
+  V070_REINFORCEMENTS_BATTLE_TEXT,
+  V070_REINFORCEMENTS_ID,
+  applyV070ReserveTacticGrantBattleEffect,
+} from './additional-tactic-battle';
+import {
   isV070BattleCardEffectNegated,
   markV070BattleCardEffectApplied,
 } from './battle-effect-status';
@@ -299,6 +308,48 @@ const decoysHandler: V070SpecializedBattleEffectHandler = {
     registerV070DecoysBattleEffect(state, owner, commitment.instanceId);
   },
 };
+const invasionHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_INVASION_ID,
+  expectedText: V070_INVASION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    applyV070ReserveTacticGrantBattleEffect(
+      state,
+      owner,
+      commitment,
+      V070_INVASION_ID,
+    );
+  },
+};
+
+const liberationHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_LIBERATION_ID,
+  expectedText: V070_LIBERATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    applyV070ReserveTacticGrantBattleEffect(
+      state,
+      owner,
+      commitment,
+      V070_LIBERATION_ID,
+    );
+  },
+};
+
+const reinforcementsHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_REINFORCEMENTS_ID,
+  expectedText: V070_REINFORCEMENTS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    applyV070ReserveTacticGrantBattleEffect(
+      state,
+      owner,
+      commitment,
+      V070_REINFORCEMENTS_ID,
+    );
+  },
+};
+
 const armisticeHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_ARMISTICE_ID,
   expectedText: V070_ARMISTICE_BATTLE_TEXT,
@@ -329,6 +380,9 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [sabotageHandler.cardId, sabotageHandler],
   [decoysHandler.cardId, decoysHandler],
   [armisticeHandler.cardId, armisticeHandler],
+  [invasionHandler.cardId, invasionHandler],
+  [liberationHandler.cardId, liberationHandler],
+  [reinforcementsHandler.cardId, reinforcementsHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
@@ -654,6 +708,24 @@ function applyValidatedRevealCommitment(
       revealClass: specialized.revealClass ?? 'ordinary',
     },
   });
+}
+
+export function applyV070LateAdditionalTacticRevealEffect(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): V070UnsupportedBattleEffect[] {
+  const unsupported = unsupportedRevealEffect(
+    state,
+    commitment,
+    'reveal_tactics',
+  );
+  if (unsupported.length > 0) return unsupported;
+  applyValidatedRevealCommitment(
+    state,
+    commitment,
+    'reveal_tactics',
+  );
+  return [];
 }
 
 function isDeferredOnlyRevealEffect(cardId: string, text: string): boolean {
