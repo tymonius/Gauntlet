@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const reviewPage = readFileSync("card-design/index.html", "utf8");
+const reviewPage = readFileSync("tools/card-design/review/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
-const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const currentGame = JSON.parse(readFileSync("packages/game-data/current-game.json", "utf8"));
 const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");

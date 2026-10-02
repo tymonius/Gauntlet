@@ -296,6 +296,11 @@
       "kind": "production-tooling"
     },
     {
+      "source": "tools/card-design/review/index.html",
+      "publicPath": "/card-design/index.html",
+      "kind": "production-tooling"
+    },
+    {
       "source": "tools/card-design/review/card-review.js",
       "publicPath": "/card-design/card-review.js",
       "kind": "production-tooling"

@@ -177,9 +177,22 @@ The remaining standalone specimen/helper audit classified the non-runtime surfac
 
 All established `/card-design/...` browser URLs for the moved HTML/CSS studies and review shell remain materialized through the publication contract. Source-reading tests now follow lifecycle ownership instead of keeping obsolete repository placement alive.
 
-## Current tranche — catalog entry/runtime boundary audit
+## Completed tranche — review catalog entry extraction
 
-The remaining `card-design/` root is now substantially closer to its intended production-runtime role. The next ownership question is the catalog entry/runtime seam: `card-design/index.html` is a review-tool entry surface, while `card-design.js` still participates in browser fitting/inspection behavior and historical review tooling. Audit those consumers before deciding whether the catalog shell can move under `tools/card-design/review/` and whether any part of `card-design.js` can be split or retired.
+The catalog/runtime seam audit established that the developer catalog entry page is review tooling, while `card-design.js` remains a mixed current runtime used by direct-rendered card specimens as well as historical v0.6.3 review tooling.
+
+This tranche therefore moves only the catalog shell:
+
+- `card-design/index.html` moves to `tools/card-design/review/index.html`;
+- the public route remains `/card-design/` through an explicit `/card-design/index.html` publication mapping;
+- the shared publication resolver now lets a directory URL resolve through an explicitly mapped `index.html`, keeping the local card-design server aligned with off-tree Pages staging;
+- publishing-authority synchronization and source-reading tests follow the maintained review-tool source location.
+
+The runtime stays put deliberately. Current catalog modules still create direct `.gauntlet-card` specimens that rely on `card-design.js` for parchment loading, adaptive fitting, and clone-based direct-card inspection, while historical v0.6.3 tooling also loads the same stable public script.
+
+## Current tranche — card-design runtime decomposition audit
+
+Audit `card-design.js` by responsibility rather than moving it wholesale. In particular, separate current direct-card fitting/parchment behavior from historical v0.6.3 long-card review injection and determine whether direct-card inspection can converge on the shared `tools/card-design/review/card-inspector.js` runtime without changing current catalog behavior.
 
 Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-ledger.js`, `deed-card.js`, canonical family styles, `reference-card.js`, or the FaceSpec/browser-render pipeline until their live consumers or current-game render-source contracts are deliberately migrated.
 
@@ -194,9 +207,9 @@ Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-le
 - pure shared rendering model authority lives under `packages/rendering/`;
 - browser rendering runtime remains under `card-design/` pending a deliberate tooling relocation now that the public route is independently materialized;
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
-- review/catalog/inspection source, including Proposal/card-back catalog builders and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
+- review/catalog/inspection source, including the catalog entry page, Proposal/card-back catalog builders, and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- canonical family styles, authority-linked renderer helpers, and the canonical browser face runtime remain under `card-design/`; the next audit is the catalog-entry/runtime seam.
+- canonical family styles, authority-linked renderer helpers, and the canonical browser face runtime remain under `card-design/`; the next audit decomposes the remaining mixed responsibilities in `card-design.js`.
 
 ## Rules boundary state
 
