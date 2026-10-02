@@ -1,13 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const reviewPage = readFileSync("card-design/index.html", "utf8");
+const reviewPage = readFileSync("tools/card-design/review/index.html", "utf8");
 const proposalRenderer = readFileSync("tools/card-design/review/proposal-card.js", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const cardRefinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const approved = JSON.parse(readFileSync("docs/v0.6.4-diplomat-proposals.json", "utf8"));
-const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const currentAuthority = JSON.parse(readFileSync("packages/game-data/current-game.json", "utf8"));
 const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
 
 const proposalIds = [

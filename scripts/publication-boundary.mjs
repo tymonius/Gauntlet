@@ -122,8 +122,14 @@ export function materializePublicFiles({
 export function sourcePathForPublicPath(contract, urlPath) {
   const pathname = decodeURIComponent(String(urlPath || '').split(/[?#]/, 1)[0]);
   const clean = pathname.replace(/^\/+/, '');
-  const fileMapping = (contract.materializedFiles || []).find((mapping) => mapping.publicPath === pathname);
+  const fileMappings = contract.materializedFiles || [];
+  const fileMapping = fileMappings.find((mapping) => mapping.publicPath === pathname);
   if (fileMapping) return fileMapping.source;
+
+  if (pathname.endsWith('/')) {
+    const indexMapping = fileMappings.find((mapping) => mapping.publicPath === `${pathname}index.html`);
+    if (indexMapping) return indexMapping.source;
+  }
 
   const mappings = [...(contract.materializedRoutes || [])]
     .sort((a, b) => b.publicPath.length - a.publicPath.length);

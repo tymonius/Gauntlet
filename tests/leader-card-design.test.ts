@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const leaderRedirect = readFileSync("legacy/public-compatibility/card-design/leaders.html", "utf8");
 const leaderCatalog = readFileSync("tools/card-design/review/card-review.js", "utf8");
-const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
-const reviewPage = readFileSync("card-design/index.html", "utf8");
+const currentGame = JSON.parse(readFileSync("packages/game-data/current-game.json", "utf8"));
+const reviewPage = readFileSync("tools/card-design/review/index.html", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const factionComponentStyles = readFileSync("card-design/faction-component.css", "utf8");
 const refinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");

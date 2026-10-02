@@ -38,7 +38,7 @@ const websiteFooterTargets = [
   'apps/press/index.html',
   'apps/privacy/index.html',
   'apps/start/index.html',
-  'card-design/index.html',
+  'tools/card-design/review/index.html',
   'rules-assistant/worker-entry.js',
 ];
 

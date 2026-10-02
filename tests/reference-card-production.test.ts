@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
-const catalogHtml = readFileSync('card-design/index.html', 'utf8');
+const catalogHtml = readFileSync('tools/card-design/review/index.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
