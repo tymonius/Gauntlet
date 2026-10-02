@@ -220,16 +220,20 @@ export function reduceV070BattleAction(
         'A late additional Tactic requires an active participant.',
       );
     }
-    const index = participant.reserve.indexOf(
+    const candidateZone = choice.candidateZone ?? 'reserve';
+    const sourceZone = candidateZone === 'hand'
+      ? next.players[action.playerId].zones.hand
+      : participant.reserve;
+    const index = sourceZone.indexOf(
       action.cardInstanceId,
     );
     if (index < 0) {
       throw new V070GameActionError(
-        'The chosen additional Tactic is no longer in Reserve.',
+        `The chosen additional Tactic is no longer in ${candidateZone === 'hand' ? 'Hand' : 'Reserve'}.`,
       );
     }
 
-    participant.reserve.splice(index, 1);
+    sourceZone.splice(index, 1);
     const commitment = {
       instanceId: action.cardInstanceId,
       owner: action.playerId,
@@ -249,6 +253,7 @@ export function reduceV070BattleAction(
         lateAdditionalTactic: true,
         sourceInstanceId: choice.sourceInstanceId,
         sourceCardId: choice.sourceCardId,
+        sourceZone: candidateZone,
       },
     });
     appendV070Event(next, {
@@ -267,6 +272,27 @@ export function reduceV070BattleAction(
       cardId,
       'tactic',
     );
+
+    if (choice.chosenDestination === 'graveyard') {
+      const runtime = next.battleRuntime!;
+      const existing =
+        runtime.battleCardAftermathDestinationOverrides.find(
+          override =>
+            override.playerId === action.playerId
+            && override.instanceId === action.cardInstanceId,
+        );
+      if (existing) {
+        existing.destination = 'graveyard';
+        existing.sourceCardId = choice.sourceCardId;
+      } else {
+        runtime.battleCardAftermathDestinationOverrides.push({
+          sourceCardId: choice.sourceCardId,
+          playerId: action.playerId,
+          instanceId: action.cardInstanceId,
+          destination: 'graveyard',
+        });
+      }
+    }
 
     const unsupported =
       applyV070LateAdditionalTacticRevealEffect(
