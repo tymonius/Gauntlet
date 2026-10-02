@@ -27,6 +27,7 @@ import {
   resolveV070LiquidationBattleChoice,
   resolveV070MarginLoanBattleChoice,
 } from './financier-pre-dice-battle';
+import { recordV070MysticBattleEffectApplied } from './mystics';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -202,6 +203,13 @@ export function reduceV070BattleAction(
           sourceCardId: choice.sourceCardId,
         },
       });
+      if (choice.recordMysticSourceEffectAfterChoice) {
+        recordV070MysticBattleEffectApplied(
+          next,
+          action.playerId,
+          choice.sourceInstanceId,
+        );
+      }
       resumeV070SupportedRevealEffects(next);
       return next;
     }
@@ -319,6 +327,13 @@ export function reduceV070BattleAction(
       return next;
     }
 
+    if (choice.recordMysticSourceEffectAfterChoice) {
+      recordV070MysticBattleEffectApplied(
+        next,
+        action.playerId,
+        choice.sourceInstanceId,
+      );
+    }
     resumeV070SupportedRevealEffects(next);
     return next;
   }
