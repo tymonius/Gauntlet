@@ -133,6 +133,11 @@ import {
   V070_MONETARY_CRISIS_ID,
   registerV070FinancierAftermathBattleEffect,
 } from './financier-aftermath-battle';
+import {
+  V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
+  V070_GUILT_BY_ASSOCIATION_ID,
+  registerV070GuiltByAssociationBattleEffect,
+} from './guilt-by-association-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -141,6 +146,7 @@ declare module './battle-types' {
     deferredWitchcraftGambitCommitments?: V070BattleCardCommitment[];
     deferredRendTheVeilGambitCommitments?: V070BattleCardCommitment[];
     deferredReinforcementsGambitCommitments?: V070BattleCardCommitment[];
+    deferredGuiltByAssociationGambitCommitments?: V070BattleCardCommitment[];
   }
 }
 
@@ -498,6 +504,26 @@ const monetaryCrisisHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const guiltByAssociationHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_GUILT_BY_ASSOCIATION_ID,
+  expectedText: V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070GuiltByAssociationBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+    registerV070DeferredBattleAftermathCarrier(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_GUILT_BY_ASSOCIATION_ID,
+      'always',
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -521,6 +547,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_CORNER_THE_MARKET_ID, cornerTheMarketHandler],
   [V070_LEVERAGED_BUYOUT_ID, leveragedBuyoutHandler],
   [V070_MONETARY_CRISIS_ID, monetaryCrisisHandler],
+  [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
@@ -702,6 +729,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeDeferredRendTheVeilGambits(state),
         ...takeV070DeferredReconnaissanceGambits(state),
         ...takeDeferredReinforcementsGambits(state),
+        ...takeDeferredGuiltByAssociationGambits(state),
       ]
     : [];
   const effectiveCommitments = [...commitments, ...deferredPostTactics];
@@ -730,6 +758,7 @@ export function resolveV070SupportedRevealEffects(
         || cardId === V070_REND_THE_VEIL_ID
         || cardId === V070_RECONNAISSANCE_ID
         || cardId === V070_REINFORCEMENTS_ID
+        || cardId === V070_GUILT_BY_ASSOCIATION_ID
       )) {
       if (cardId === V070_WITCHCRAFT_ID) {
         deferWitchcraftGambit(state, commitment);
@@ -737,8 +766,10 @@ export function resolveV070SupportedRevealEffects(
         deferRendTheVeilGambit(state, commitment);
       } else if (cardId === V070_RECONNAISSANCE_ID) {
         deferV070ReconnaissanceGambit(state, commitment);
-      } else {
+      } else if (cardId === V070_REINFORCEMENTS_ID) {
         deferReinforcementsGambit(state, commitment);
+      } else {
+        deferGuiltByAssociationGambit(state, commitment);
       }
       continue;
     }
@@ -896,6 +927,37 @@ function takeDeferredReinforcementsGambits(
   );
 }
 
+function deferGuiltByAssociationGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredGuiltByAssociationGambitCommitments ??= [];
+  if (runtime.deferredGuiltByAssociationGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredGuiltByAssociationGambitCommitments.push({
+    ...commitment,
+  });
+}
+
+function takeDeferredGuiltByAssociationGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred =
+    runtime.deferredGuiltByAssociationGambitCommitments ?? [];
+  runtime.deferredGuiltByAssociationGambitCommitments = [];
+  return deferred.filter(commitment =>
+    state.cardInstances[commitment.instanceId]?.cardId
+      === V070_GUILT_BY_ASSOCIATION_ID
+    && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+    && battleContainsCommitment(state, commitment)
+  );
+}
+
 function battleContainsCommitment(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
@@ -930,6 +992,11 @@ function deferredRegistrationExists(
   if (cardId === V070_SUPPLIES_ID) {
     return state.battleRuntime?.suppliesBattleSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_GUILT_BY_ASSOCIATION_ID) {
+    return state.battleRuntime?.guiltByAssociationBattleSources?.some(
+      effect => effect.sourceInstanceId === sourceInstanceId,
+    ) ?? false;
   }
   if (cardId === V070_REARGUARD_ID) {
     return state.battleRuntime?.battleCardAftermathAssetBanks.some(bank =>
