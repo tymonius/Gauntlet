@@ -16,12 +16,33 @@ import {
   pendingV070SuppliesAftermath,
   resolveV070SuppliesAftermathChoice,
 } from './supplies-battle';
+import {
+  pendingV070FinancierAftermathChoice,
+  resolveV070CornerTheMarketAftermathChoice,
+  resolveV070LeveragedBuyoutAftermathChoice,
+  resolveV070MonetaryCrisisAftermathChoice,
+} from './financier-aftermath-battle';
 import { useV070Subsidize } from './financiers';
 
 export * from './battle-engine-pre-capital-gains';
 
 export type V070BattleAction =
   | previous.V070BattleAction
+  | {
+      type: 'resolve_corner_the_market_aftermath';
+      playerId: PlayerId;
+      territoryInstanceId?: string;
+    }
+  | {
+      type: 'resolve_leveraged_buyout_aftermath';
+      playerId: PlayerId;
+      collateralInstanceIds?: readonly string[];
+    }
+  | {
+      type: 'resolve_monetary_crisis_aftermath';
+      playerId: PlayerId;
+      keepInstanceId: string;
+    }
   | { type: 'use_subsidize'; playerId: PlayerId; bonus: number }
   | {
       type: 'resolve_capital_gains_aftermath';
@@ -43,6 +64,48 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const financierAftermath = pendingV070FinancierAftermathChoice(state);
+  if (financierAftermath) {
+    const next = structuredClone(state) as V070GameState;
+    if (financierAftermath.kind === 'corner_the_market') {
+      if (action.type !== 'resolve_corner_the_market_aftermath') {
+        throw new V070GameActionError(
+          'Resolve or finish the pending Corner the Market purchases before continuing the Aftermath.',
+        );
+      }
+      const complete = resolveV070CornerTheMarketAftermathChoice(
+        next,
+        action.playerId,
+        action.territoryInstanceId,
+      );
+      return complete ? resumeAfterFinancierAftermath(next) : next;
+    }
+    if (financierAftermath.kind === 'leveraged_buyout') {
+      if (action.type !== 'resolve_leveraged_buyout_aftermath') {
+        throw new V070GameActionError(
+          'Resolve or decline the pending Leveraged Buyout before continuing the Aftermath.',
+        );
+      }
+      resolveV070LeveragedBuyoutAftermathChoice(
+        next,
+        action.playerId,
+        action.collateralInstanceIds,
+      );
+      return resumeAfterFinancierAftermath(next);
+    }
+    if (action.type !== 'resolve_monetary_crisis_aftermath') {
+      throw new V070GameActionError(
+        'Choose the card kept through Monetary Crisis before continuing the Aftermath.',
+      );
+    }
+    const complete = resolveV070MonetaryCrisisAftermathChoice(
+      next,
+      action.playerId,
+      action.keepInstanceId,
+    );
+    return complete ? resumeAfterFinancierAftermath(next) : next;
+  }
+
   const capitalGains = pendingV070CapitalGainsAftermath(state);
   if (capitalGains) {
     if (action.type !== 'resolve_capital_gains_aftermath') {
@@ -97,6 +160,21 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_corner_the_market_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Corner the Market Aftermath choice.',
+    );
+  }
+  if (action.type === 'resolve_leveraged_buyout_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Leveraged Buyout Aftermath choice.',
+    );
+  }
+  if (action.type === 'resolve_monetary_crisis_aftermath') {
+    throw new V070GameActionError(
+      'There is no pending Monetary Crisis Aftermath choice.',
+    );
+  }
   if (action.type === 'resolve_capital_gains_aftermath') {
     throw new V070GameActionError(
       'There is no pending Capital Gains Aftermath choice.',
@@ -114,6 +192,16 @@ export function reduceV070BattleAction(
   }
 
   return previous.reduceV070BattleAction(state, action);
+}
+
+function resumeAfterFinancierAftermath(
+  state: V070GameState,
+): V070GameState {
+  if (state.stage === 'ended' || !state.battle) return state;
+  return previous.reduceV070BattleAction(state, {
+    type: 'complete_aftermath',
+    playerId: state.battle.attacker,
+  });
 }
 
 function resumeAfterDeferredAftermath(
