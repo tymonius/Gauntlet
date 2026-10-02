@@ -28,6 +28,7 @@ export interface V070HellfireAftermathEffect {
 declare module './battle-types' {
   interface V070BattleRuntime {
     hellfireAftermathEffects?: V070HellfireAftermathEffect[];
+    hellfireResolvedSourceInstanceIds?: string[];
   }
 }
 
@@ -76,6 +77,10 @@ export function registerV070HellfireBattleEffect(
 
   const maximumConviction = convictionAvailable(state, owner);
   if (maximumConviction === 0) {
+    runtime.hellfireResolvedSourceInstanceIds ??= [];
+    if (!runtime.hellfireResolvedSourceInstanceIds.includes(sourceInstanceId)) {
+      runtime.hellfireResolvedSourceInstanceIds.push(sourceInstanceId);
+    }
     appendV070Event(state, {
       type: 'hellfire_battle_resolved',
       actor: owner,
@@ -141,6 +146,15 @@ export function resolveV070HellfireBattleChoice(
   }
 
   const choice = completeV070HellfireBattleRevealChoice(state);
+  const runtime = state.battleRuntime!;
+  runtime.hellfireResolvedSourceInstanceIds ??= [];
+  if (!runtime.hellfireResolvedSourceInstanceIds.includes(
+    choice.sourceInstanceId,
+  )) {
+    runtime.hellfireResolvedSourceInstanceIds.push(
+      choice.sourceInstanceId,
+    );
+  }
   if (convictionSpent > 0) {
     spendV070Conviction(
       state,
@@ -150,7 +164,6 @@ export function resolveV070HellfireBattleChoice(
     );
   }
 
-  const runtime = state.battleRuntime!;
   runtime.participants[playerId].battleModifier += battleTotalBonus;
 
   if (aftermathCardCount > 0) {
