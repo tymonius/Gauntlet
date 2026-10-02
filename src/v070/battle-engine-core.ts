@@ -187,6 +187,11 @@ import {
   v070GuiltByAssociationAftermathEffects,
   v070GuiltByAssociationTargetInstanceIds,
 } from './guilt-by-association-battle';
+import {
+  resolveV070HellfireAftermathEffect,
+  v070HellfireAftermathEffectEligible,
+  v070HellfireAftermathEffects,
+} from './hellfire-battle';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -3046,7 +3051,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'asset'
     | 'retribution'
     | 'financier'
-    | 'guilt_by_association';
+    | 'guilt_by_association'
+    | 'hellfire';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3171,6 +3177,12 @@ function pruneIneligibleBattleAftermathControlledEffects(
         ).length > 0
       );
   }
+  if (runtime.hellfireAftermathEffects) {
+    runtime.hellfireAftermathEffects =
+      runtime.hellfireAftermathEffects.filter(effect =>
+        v070HellfireAftermathEffectEligible(state, effect)
+      );
+  }
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -3213,6 +3225,11 @@ function remainingBattleAftermathControlledEffects(
       owner: effect.owner,
       sourceInstanceId: effect.sourceInstanceId,
       kind: 'guilt_by_association' as const,
+    })),
+    ...v070HellfireAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'hellfire' as const,
     })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
@@ -3281,6 +3298,15 @@ function applyBattleAftermathControlledEffect(
 
   if (effect.kind === 'financier') {
     beginV070FinancierAftermathEffect(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    );
+    return;
+  }
+
+  if (effect.kind === 'hellfire') {
+    resolveV070HellfireAftermathEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
