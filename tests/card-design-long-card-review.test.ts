@@ -25,17 +25,15 @@ const catalogSource = readFileSync("legacy/card-design-v0.6.3/generated/long-car
 const catalog = JSON.parse(catalogSource.slice(catalogSource.indexOf("{"), catalogSource.lastIndexOf("};") + 1));
 
 describe("v0.6.3 long-card render review", () => {
-  it("adds the requested review section to the existing card-design page in exact order", () => {
-    expect(cardDesign).toContain("Long-card render review");
-    expect(cardDesign).toContain("territorySection.before(section)");
-    expect(cardDesign).toContain("long-card-render.html?fit=production");
+  it("keeps historical review composition out of the maintained card runtime", () => {
+    expect(cardDesign).not.toContain("Long-card render review");
+    expect(cardDesign).not.toContain("territorySection.before(section)");
+    expect(cardDesign).not.toContain("long-card-render.html?fit=production");
+    expect(cardDesign).not.toContain("LONG_CARD_REVIEW");
 
-    let cursor = -1;
-    for (const id of expectedIds) {
-      const next = cardDesign.indexOf(`['${id}'`, cursor + 1);
-      expect(next).toBeGreaterThan(cursor);
-      cursor = next;
-    }
+    expect(renderSurface).toContain(`${publicCardDesignRoot}/generated/v0.6.3/long-card-review-catalog.js`);
+    expect(renderSurface).toContain(`${publicCardDesignRoot}/long-card-render.js`);
+    expect(catalog.reviewCardIds).toEqual(expectedIds);
   });
 
   it("renders through the shared production card renderer without the TTS rescue fit", () => {

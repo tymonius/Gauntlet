@@ -190,9 +190,18 @@ This tranche therefore moves only the catalog shell:
 
 The runtime stays put deliberately. Current catalog modules still create direct `.gauntlet-card` specimens that rely on `card-design.js` for parchment loading, adaptive fitting, and clone-based direct-card inspection, while historical long-card tooling also loads the same stable public script.
 
-## Current tranche — card-design runtime decomposition audit
+## Completed tranche — dead long-card injection removal
 
-Audit `card-design.js` by responsibility rather than moving it wholesale. In particular, separate current direct-card fitting/parchment behavior from historical long-card review injection and determine whether direct-card inspection can converge on the shared `tools/card-design/review/card-inspector.js` runtime without changing current catalog behavior.
+The first `card-design.js` decomposition pass separated live direct-card runtime behavior from historical review composition:
+
+- removed the retired long-card review catalog array and DOM injection from the maintained runtime;
+- retained parchment loading, production font preparation, adaptive card fitting, and direct-card/artwork inspection;
+- retained the stable `/card-design/card-design.js` dependency used by archived long-card render tooling for fitting;
+- changed the historical regression test to protect the archived review surface and assert that current runtime no longer owns its composition.
+
+## Current tranche — direct-card inspection convergence audit
+
+The remaining mixed responsibility in `card-design.js` is direct-card inspection. Determine whether top-level direct specimens can hand off to the shared `tools/card-design/review/card-inspector.js` runtime without losing focus restoration, artwork inspection, dynamically hydrated supplemental cards, or historical fitting consumers. Keep adaptive fitting/parchment behavior in place unless a separate browser-runtime owner is established.
 
 Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-ledger.js`, `deed-card.js`, canonical family styles, `reference-card.js`, or the FaceSpec/browser-render pipeline until their live consumers or current-game render-source contracts are deliberately migrated.
 
@@ -209,7 +218,7 @@ Do not move authority-linked `rite-card.js`, `supplemental-card.js`, `capital-le
 - artwork authoring/compositor source lives under `tools/card-design/artwork-authoring/` behind stable `/card-design/` URLs;
 - review/catalog/inspection source, including the catalog entry page, Proposal/card-back catalog builders, and the Capital Ledger preview shell, lives under `tools/card-design/review/` behind stable `/card-design/` URLs;
 - compatibility-only render/review entrypoints live under `legacy/public-compatibility/card-design/` behind stable `/card-design/` URLs;
-- canonical family styles, authority-linked renderer helpers, and the canonical browser face runtime remain under `card-design/`; the next audit decomposes the remaining mixed responsibilities in `card-design.js`.
+- canonical family styles, authority-linked renderer helpers, the canonical browser face runtime, and the direct-card fitting/parchment runtime remain under `card-design/`; the next audit is direct-card inspection convergence.
 
 ## Rules boundary state
 

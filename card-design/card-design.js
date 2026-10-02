@@ -257,51 +257,6 @@
     document.querySelectorAll('.gauntlet-card[data-art-max]:not(.card-inspection-clone)').forEach(fitCard);
   }
 
-  const LONG_CARD_REVIEW = Object.freeze([
-    ['military-shock-and-awe', 'Shock and Awe'],
-    ['financiers-margin-loan', 'Margin Loan'],
-    ['diplomats-trade-concessions', 'Trade Concessions'],
-    ['intelligence-sleeper-network', 'Sleeper Network'],
-    ['intelligence-fog-of-war', 'Fog of War'],
-    ['diplomats-nonbinding-resolution', 'Nonbinding Resolution'],
-    ['military-reserve-force', 'Reserve Force'],
-    ['mystics-spirit-hollow', 'Spirit Hollow'],
-    ['diplomats-demilitarized-zone', 'Demilitarized Zone'],
-    ['financiers-leveraged-buyout', 'Leveraged Buyout'],
-    ['mystics-nature-s-altar', "Nature's Altar"],
-    ['military-field-command', 'Field Command'],
-  ]);
-
-  function integrateLongCardReview() {
-    if (document.body?.classList.contains('developer-catalog-page')) return;
-    const territorySection = document.querySelector('.territory-specimen-section');
-    if (!territorySection || document.querySelector('.long-card-review-section')) return;
-
-    const section = document.createElement('section');
-    section.className = 'card-section long-card-review-section';
-    section.setAttribute('aria-labelledby', 'long-card-review-title');
-    section.innerHTML = `
-      <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">v0.6.3 production check</p>
-        <h2 id="long-card-review-title">Long-card render review</h2>
-        <p>Manual visual review of the twelve longest or tightest v0.6.3 card faces. These specimens use the v0.6.3 production catalog and the shared production renderer; the embedded cards do not use the TTS emergency-fitting fallback.</p>
-      </div>
-      <div class="card-sheet long-card-review-grid">
-        ${LONG_CARD_REVIEW.map(([id, name]) => `
-          <div class="specimen-column">
-            <p class="specimen-label screen-only"><strong>${name}</strong><span>v0.6.3 production</span></p>
-            <iframe
-              class="long-card-review-frame"
-              src="long-card-render.html?fit=production&amp;card=${encodeURIComponent(id)}"
-              title="${name} v0.6.3 production render"
-              style="width:2.5in;height:3.5in;border:0;display:block;background:transparent;box-shadow:0 0.16in 0.36in var(--card-shadow);border-radius:0.12in"
-            ></iframe>
-          </div>`).join('')}
-      </div>`;
-
-    territorySection.before(section);
-  }
-
   function inspectionLabel(card) {
     return card.getAttribute('aria-label')
       || card.querySelector('.card-title, .territory-title')?.textContent?.trim()
@@ -628,7 +583,6 @@
   }
 
   async function prepareCards() {
-    integrateLongCardReview();
     await loadProductionFonts();
 
     await Promise.all(Array.from(document.images).map(image => {
