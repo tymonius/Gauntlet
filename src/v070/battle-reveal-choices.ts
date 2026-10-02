@@ -67,13 +67,22 @@ export interface V070ReconnaissanceBattleRevealChoice {
   sourceInstanceId: string;
 }
 
+export interface V070LateAdditionalTacticBattleRevealChoice {
+  kind: 'late_additional_tactic';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceCardId: string;
+  candidateInstanceIds: string[];
+}
+
 export type V070BattleRevealChoice =
   | previous.V070BattleRevealChoice
   | V070WitchcraftBattleRevealChoice
   | V070ArcaneKnowledgeBattleRevealChoice
   | V070HeresyBattleRevealChoice
   | V070RendTheVeilBattleRevealChoice
-  | V070ReconnaissanceBattleRevealChoice;
+  | V070ReconnaissanceBattleRevealChoice
+  | V070LateAdditionalTacticBattleRevealChoice;
 
 declare module './battle-types' {
   interface V070BattleRuntime {
@@ -87,7 +96,52 @@ declare module './battle-types' {
     rendTheVeilBattleRevealChoiceOpen?: boolean;
     pendingReconnaissanceBattleRevealChoice?: V070ReconnaissanceBattleRevealChoice | null;
     reconnaissanceBattleRevealChoiceOpen?: boolean;
+    pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
+    lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
   }
+}
+
+export function queueV070LateAdditionalTacticBattleRevealChoice(
+  state: V070GameState,
+  choice: V070LateAdditionalTacticBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'A late additional Tactic requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'A late additional Tactic cannot open while another reveal-timing choice is pending.',
+    );
+  }
+  runtime.pendingLateAdditionalTacticBattleRevealChoice = {
+    ...choice,
+    candidateInstanceIds: [...choice.candidateInstanceIds],
+  };
+  runtime.lateAdditionalTacticBattleRevealChoiceOpen = true;
+  appendV070Event(state, {
+    type: 'late_additional_tactic_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: choice.sourceCardId,
+      candidateCount: choice.candidateInstanceIds.length,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'late_additional_tactic_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: choice.sourceCardId,
+      candidateInstanceIds: [...choice.candidateInstanceIds],
+    },
+  });
 }
 
 export function queueV070WitchcraftBattleRevealChoice(
@@ -309,7 +363,8 @@ export function queueV070ReconnaissanceBattleRevealChoice(
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
+  return state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
+    ?? state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
     ?? state.battleRuntime?.pendingRendTheVeilBattleRevealChoice
     ?? state.battleRuntime?.pendingHeresyBattleRevealChoice
     ?? state.battleRuntime?.pendingArcaneKnowledgeBattleRevealChoice
@@ -320,6 +375,11 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice) {
+    return Boolean(
+      state.battleRuntime.lateAdditionalTacticBattleRevealChoiceOpen,
+    );
+  }
   if (state.battleRuntime?.pendingReconnaissanceBattleRevealChoice) {
     return Boolean(state.battleRuntime.reconnaissanceBattleRevealChoiceOpen);
   }
@@ -336,6 +396,23 @@ export function isV070BattleRevealChoiceOpen(
     return Boolean(state.battleRuntime.witchcraftBattleRevealChoiceOpen);
   }
   return previous.isV070BattleRevealChoiceOpen(state);
+}
+
+export function completeV070LateAdditionalTacticBattleRevealChoice(
+  state: V070GameState,
+): V070LateAdditionalTacticBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingLateAdditionalTacticBattleRevealChoice;
+  if (!runtime
+    || !pending
+    || !runtime.lateAdditionalTacticBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open late additional-Tactic choice.',
+    );
+  }
+  runtime.pendingLateAdditionalTacticBattleRevealChoice = null;
+  runtime.lateAdditionalTacticBattleRevealChoiceOpen = false;
+  return pending;
 }
 
 export function completeV070WitchcraftBattleRevealChoice(
