@@ -340,7 +340,7 @@ describe('remaining Financier Aftermath battle cards', () => {
 
     expect(
       state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
-    ).toBeUndefined();
+    ).toBeNull();
     expect(pendingV070FinancierAftermathChoice(state)).toEqual(
       expect.objectContaining({
         kind: 'monetary_crisis',
@@ -415,7 +415,7 @@ describe('remaining Financier Aftermath battle cards', () => {
     });
     expect(
       state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
-    ).toBeNull();
+    ).toBeUndefined();
     expect(pendingV070FinancierAftermathChoice(state)).toBeNull();
   });
 });
