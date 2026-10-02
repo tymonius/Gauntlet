@@ -22,6 +22,12 @@
   let dialog;
   let cardStage;
   let cardFrame;
+  let directStage;
+  let directClone = null;
+  let directDimensions = null;
+  let directSource = null;
+  let directObserver = null;
+  let directArtworkTrigger = null;
   let artStage;
   let artImage;
   let backButton;
@@ -45,6 +51,7 @@
     window.addEventListener('message', handleRendererMessage);
     window.addEventListener('resize', scaleCardStage);
     window.addEventListener('popstate', handlePopState);
+    installDirectCardInspection();
   }
 
   function buildDialog() {
@@ -65,6 +72,7 @@
             title="Enlarged Gauntlet card"
             scrolling="no"
           ></iframe>
+          <div class="gauntlet-card-inspector-direct" hidden></div>
         </div>
         <div class="gauntlet-card-inspector-art-stage" aria-hidden="true" hidden>
           <img class="gauntlet-card-inspector-art-image" alt="" />
@@ -74,6 +82,7 @@
 
     cardStage = dialog.querySelector('.gauntlet-card-inspector-card-stage');
     cardFrame = dialog.querySelector('.gauntlet-card-inspector-frame');
+    directStage = dialog.querySelector('.gauntlet-card-inspector-direct');
     artStage = dialog.querySelector('.gauntlet-card-inspector-art-stage');
     artImage = dialog.querySelector('.gauntlet-card-inspector-art-image');
     backButton = dialog.querySelector('.gauntlet-card-inspector-back');
@@ -171,12 +180,12 @@
   }
 
   function currentCardDimensions() {
-    return CARD_FORMATS[normalizeCardFormat(currentCardFormat)];
+    return directDimensions || CARD_FORMATS[normalizeCardFormat(currentCardFormat)];
   }
 
   function applyCardFormat(format) {
     currentCardFormat = normalizeCardFormat(format);
-    const { width, height } = currentCardDimensions();
+    const { width, height } = CARD_FORMATS[currentCardFormat];
     if (cardFrame) {
       cardFrame.style.width = `${width}px`;
       cardFrame.style.height = `${height}px`;
@@ -261,6 +270,7 @@
   }
 
   function openCard(href, label, pushHistory = true, cardFormat = 'portrait', sourceFrame = null) {
+    clearDirectCard();
     currentCardHref = href;
     currentSourceFrame = sourceFrame || currentSourceFrame;
     applyCardFormat(cardFormat);
@@ -278,18 +288,20 @@
     artStage.setAttribute('aria-hidden', 'true');
     cardStage.hidden = false;
     cardStage.setAttribute('aria-hidden', 'false');
+    cardFrame.hidden = Boolean(directClone);
+    directStage.hidden = !directClone;
     backButton.hidden = true;
     if (updateHistory) replaceInspectionHistory();
     requestAnimationFrame(() => {
       scaleCardStage();
       if (restoreCardFocus && dialog?.open && !cardStage.hidden) {
-        cardFrame.focus({ preventScroll: true });
+        (directClone || cardFrame).focus?.({ preventScroll: true });
       }
     });
   }
 
   function openArtwork(source, label) {
-    showArtwork(source, label, true);
+    showArtwork(source, label, Boolean(currentCardHref));
   }
 
   function showArtwork(source, label, pushHistory) {
@@ -301,7 +313,7 @@
     cardStage.setAttribute('aria-hidden', 'true');
     artStage.hidden = false;
     artStage.setAttribute('aria-hidden', 'false');
-    backButton.hidden = !currentCardHref;
+    backButton.hidden = !(currentCardHref || directClone);
     openDialog(pushHistory);
     if (wasOpen) {
       replaceInspectionHistory();
@@ -319,8 +331,8 @@
   function scaleCardStage() {
     if (!dialog?.open || cardStage?.hidden) return;
     const { width, height } = currentCardDimensions();
-    const availableWidth = Math.max(width, window.innerWidth - 72);
-    const availableHeight = Math.max(height, window.innerHeight - 132);
+    const availableWidth = Math.max(1, window.innerWidth - 72);
+    const availableHeight = Math.max(1, window.innerHeight - 132);
     const scale = Math.min(
       MAX_SCALE,
       availableWidth / width,
@@ -329,11 +341,18 @@
 
     cardStage.style.width = `${width * scale}px`;
     cardStage.style.height = `${height * scale}px`;
-    cardFrame.style.transform = `scale(${scale})`;
+    const subject = directClone || cardFrame;
+    if (subject) subject.style.transform = `scale(${scale})`;
   }
 
   function requestCloseInspection() {
     if (!dialog?.open) return;
+    if (!artStage.hidden && directClone) {
+      showCard(false);
+      directArtworkTrigger?.focus?.({ preventScroll: true });
+      directArtworkTrigger = null;
+      return;
+    }
     if (readInspectionState()) {
       history.back();
       return;
@@ -343,7 +362,7 @@
 
   function dismissInspection() {
     if (!dialog?.open) return;
-    const sourceFrame = currentSourceFrame;
+    const source = directSource || currentSourceFrame;
     dialog.close();
     document.body.classList.remove('gauntlet-card-inspector-open');
     replaceCardFrameLocation('about:blank');
@@ -351,11 +370,149 @@
     artImage.alt = '';
     currentCardHref = '';
     currentSourceFrame = null;
+    clearDirectCard();
     applyCardFormat('portrait');
-    if (sourceFrame instanceof HTMLElement && sourceFrame.isConnected) {
-      sourceFrame.focus({ preventScroll: true });
+    if (source instanceof HTMLElement && source.isConnected) {
+      source.focus({ preventScroll: true });
     }
   }
+
+
+  function directCardLabel(card) {
+    return card.getAttribute('aria-label')
+      || card.querySelector('.card-title, .territory-title')?.textContent?.trim()
+      || 'Gauntlet card';
+  }
+
+  function prepareDirectCard(card) {
+    if (!(card instanceof HTMLElement) || card.closest('.gauntlet-card-inspector')) return;
+    card.classList.add('card-inspectable');
+    if (!card.hasAttribute('tabindex')) card.tabIndex = 0;
+    if (!card.hasAttribute('role')) card.setAttribute('role', 'button');
+    card.setAttribute('aria-haspopup', 'dialog');
+    if (!card.hasAttribute('title')) card.title = 'Open enlarged card view';
+  }
+
+  function prepareDirectCards(root = document) {
+    if (!document.body?.classList.contains('developer-catalog-page')) return;
+    if (root instanceof Element && root.matches('.gauntlet-card, .territory-card')) prepareDirectCard(root);
+    root.querySelectorAll?.('.gauntlet-card, .territory-card').forEach(prepareDirectCard);
+  }
+
+  function directCardFromTarget(target) {
+    if (!(target instanceof Element) || !document.body?.classList.contains('developer-catalog-page')) return null;
+    if (target.closest('.gauntlet-card-inspector')) return null;
+    const card = target.closest('.gauntlet-card, .territory-card');
+    return card instanceof HTMLElement ? card : null;
+  }
+
+  function prepareDirectArtwork(clone) {
+    const image = clone.querySelector('.card-art img, .territory-art img');
+    const frame = image?.closest('.card-art, .territory-art');
+    if (!image || !frame) return;
+
+    frame.classList.add('art-inspectable');
+    frame.tabIndex = 0;
+    frame.setAttribute('role', 'button');
+    frame.setAttribute('aria-haspopup', 'dialog');
+    frame.setAttribute('aria-label', `View full artwork for ${currentLabel}`);
+    frame.title = 'View full artwork';
+
+    const activate = event => {
+      if (event.type === 'click' && event.button !== 0) return;
+      if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      event.stopPropagation();
+      const source = image.currentSrc || image.src;
+      if (!source) return;
+      directArtworkTrigger = frame;
+      openArtwork(source, currentLabel);
+    };
+
+    frame.addEventListener('click', activate);
+    frame.addEventListener('keydown', activate);
+  }
+
+  function clearDirectCard() {
+    directStage?.replaceChildren();
+    directClone = null;
+    directDimensions = null;
+    directSource = null;
+    directArtworkTrigger = null;
+    if (directStage) directStage.hidden = true;
+    if (cardFrame) cardFrame.hidden = false;
+  }
+
+  function openDirectCard(card) {
+    const rect = card.getBoundingClientRect();
+    const width = rect.width || card.offsetWidth;
+    const height = rect.height || card.offsetHeight;
+    if (!width || !height) return;
+
+    currentCardHref = '';
+    currentSourceFrame = null;
+    directSource = card;
+    directDimensions = { width, height };
+    setLabel(directCardLabel(card));
+    replaceCardFrameLocation('about:blank');
+
+    const clone = card.cloneNode(true);
+    clone.classList.remove('card-inspectable');
+    clone.classList.add('card-inspection-clone');
+    clone.removeAttribute('tabindex');
+    clone.removeAttribute('role');
+    clone.removeAttribute('aria-haspopup');
+    clone.removeAttribute('title');
+    clone.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+    clone.style.width = `${width}px`;
+    clone.style.height = `${height}px`;
+    clone.tabIndex = -1;
+
+    directStage.replaceChildren(clone);
+    directClone = clone;
+    prepareDirectArtwork(clone);
+    showCard(false);
+    openDialog(false);
+    requestAnimationFrame(scaleCardStage);
+  }
+
+  function handleDirectCardClick(event) {
+    if (event.button !== 0) return;
+    const card = directCardFromTarget(event.target);
+    if (!card) return;
+    openDirectCard(card);
+  }
+
+  function handleDirectCardKeydown(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const card = directCardFromTarget(event.target);
+    if (!card || event.target !== card) return;
+    event.preventDefault();
+    openDirectCard(card);
+  }
+
+  function installDirectCardInspection() {
+    if (!document.body?.classList.contains('developer-catalog-page')) return;
+    prepareDirectCards();
+    document.addEventListener('click', handleDirectCardClick);
+    document.addEventListener('keydown', handleDirectCardKeydown);
+    window.addEventListener('load', () => prepareDirectCards(), { once: true });
+
+    directObserver = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        if (mutation.target instanceof Element) {
+          const containingCard = mutation.target.closest('.gauntlet-card, .territory-card');
+          if (containingCard) prepareDirectCard(containingCard);
+        }
+        mutation.addedNodes.forEach(node => {
+          if (node instanceof Element) prepareDirectCards(node);
+        });
+      }
+    });
+    directObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  inspector.refreshDirectCards = prepareDirectCards;
 
   inspector.close = requestCloseInspection;
 })().catch(error => {

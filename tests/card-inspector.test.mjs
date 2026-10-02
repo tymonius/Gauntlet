@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const inspectorSource = readFileSync("tools/card-design/review/card-inspector.js", "utf8");
 const rendererSource = readFileSync("card-design/face-render.mjs", "utf8");
 const reviewSource = readFileSync("tools/card-design/review/card-review.js", "utf8");
+const cardDesignRuntime = readFileSync("card-design/card-design.js", "utf8");
 const cardDesignIndex = readFileSync("tools/card-design/review/index.html", "utf8");
 const cardReferenceIndex = readFileSync("apps/card-reference/index.html", "utf8");
 const deckbuilderPreview = readFileSync("apps/deckbuilder/mobile-card-preview.js", "utf8");
@@ -37,6 +38,18 @@ describe("shared card inspector", () => {
     expect(inspectorSource).toContain("PRODUCTION_SURFACES.landscape.widthCssPx");
     expect(inspectorSource).toContain("gauntlet-territory-inspect");
     expect(inspectorSource).toContain("data-face-inspection-host=\"true\"");
+  });
+
+  it("owns direct Card Design catalog inspection without leaking into the fitting runtime", () => {
+    expect(inspectorSource).toContain("function openDirectCard(card)");
+    expect(inspectorSource).toContain("function installDirectCardInspection()");
+    expect(inspectorSource).toContain("document.addEventListener('click', handleDirectCardClick)");
+    expect(inspectorSource).toContain("clone.classList.add('card-inspection-clone')");
+    expect(inspectorSource).toContain("function prepareDirectArtwork(clone)");
+
+    expect(cardDesignRuntime).not.toContain("openCloneInspection");
+    expect(cardDesignRuntime).not.toContain("installCardInspection");
+    expect(cardDesignRuntime).not.toContain("gauntlet-card-inspect");
   });
 
   it("routes Card Design, Card Reference, and Deckbuilder to the same inspector assets", () => {

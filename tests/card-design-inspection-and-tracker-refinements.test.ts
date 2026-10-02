@@ -23,11 +23,15 @@ describe('Card Design inspection navigation', () => {
 
   it('keeps every reference face inspectable when async hydration finishes', () => {
     expect(supplemental).toContain('function hydrateReferenceElement(loadingCard, rendered)');
-    expect(supplemental).toContain("loadingCard.dataset.inspectionReady === 'true'");
     expect(supplemental).toContain('loadingCard.replaceChildren(...Array.from(rendered.childNodes))');
-    expect(supplemental).toContain("if (inspectionReady) loadingCard.classList.add('card-inspectable')");
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
+    expect(supplemental).not.toContain('inspectionReady');
     expect(supplemental).not.toContain('loadingCard.replaceWith(rendered)');
+
+    expect(sharedInspection).toContain("document.body?.classList.contains('developer-catalog-page')");
+    expect(sharedInspection).toContain("document.addEventListener('click', handleDirectCardClick)");
+    expect(sharedInspection).toContain("document.addEventListener('keydown', handleDirectCardKeydown)");
+    expect(sharedInspection).toContain('new MutationObserver(');
   });
 
   it('keeps unified face previews inspectable without recursive modal inspection', () => {
