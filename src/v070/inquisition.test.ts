@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { currentCanonicalContent } from '../content/current-game';
 import { createV070StarterGame } from './engine';
 import {
   V070_MAX_CONVICTION,
@@ -125,6 +126,51 @@ describe('v0.7.0 Inquisition Conviction core', () => {
     )).toThrow(/nonnegative integer/);
 
     expect(v070Conviction(state, 'A')).toBe(0);
+  });
+
+  test('current authority scales normal Aftermath Conviction to +1 for one card and +2 for two or more', () => {
+    const factionRules = currentCanonicalContent.content.faction_rules as {
+      inquisition: {
+        conviction: {
+          gain_by_opposing_card_count: {
+            exactly_one: number;
+            two_or_more: number;
+          };
+        };
+      };
+    };
+    const conviction = factionRules.inquisition.conviction;
+    expect(conviction.gain_by_opposing_card_count).toEqual({
+      exactly_one: 1,
+      two_or_more: 2,
+    });
+
+    const one = game();
+    one.turnNumber = 3;
+    expect(applyV070NormalAftermathConviction(
+      one,
+      'A',
+      ['opposing-card-1'],
+    )).toBe(true);
+    expect(v070Conviction(one, 'A')).toBe(1);
+
+    const multiple = game();
+    multiple.turnNumber = 4;
+    expect(applyV070NormalAftermathConviction(
+      multiple,
+      'A',
+      ['opposing-card-1', 'opposing-card-2'],
+    )).toBe(true);
+    expect(v070Conviction(multiple, 'A')).toBe(2);
+
+    const three = game();
+    three.turnNumber = 5;
+    expect(applyV070NormalAftermathConviction(
+      three,
+      'A',
+      ['opposing-card-1', 'opposing-card-2', 'opposing-card-3'],
+    )).toBe(true);
+    expect(v070Conviction(three, 'A')).toBe(2);
   });
 
   test('normal Aftermath gain is limited to the first qualifying event each turn even when capped', () => {
