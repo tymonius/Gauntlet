@@ -119,6 +119,7 @@ export function registerV070BlackCovenantBattleEffect(
       candidateInstanceIds: candidates,
       candidateZone: 'hand',
       chosenDestination: 'graveyard',
+      recordMysticSourceEffectAfterChoice: true,
     });
   } else {
     appendV070Event(state, {
@@ -131,11 +132,10 @@ export function registerV070BlackCovenantBattleEffect(
         reason: 'no_eligible_tactic_in_hand',
       },
     });
+    recordV070MysticBattleEffectApplied(
+      state,
+      owner,
+      sourceInstanceId,
+    );
   }
-
-  recordV070MysticBattleEffectApplied(
-    state,
-    owner,
-    sourceInstanceId,
-  );
 }
