@@ -17,14 +17,16 @@ import {
   v070BattleEffectHandler,
 } from './battle-effects';
 
-function startBattle(): V070GameState {
+function startBattle(mystic = false): V070GameState {
   let state = createV070StarterGame({
     gameId: 'black-covenant',
     seed: 'black-covenant-seed',
     players: {
       A: {
         name: 'Alpha',
-        starterDeckId: 'military-general-forward-doctrine',
+        starterDeckId: mystic
+          ? 'mystics-alchemist-first-principles'
+          : 'military-general-forward-doctrine',
       },
       B: {
         name: 'Bravo',
@@ -254,6 +256,48 @@ describe('Black Covenant battle effect', () => {
       .toEqual(expect.arrayContaining([source, extra]));
     expect(state.players.A.zones.discardPile).not.toContain(source);
     expect(state.players.A.zones.discardPile).not.toContain(extra);
+  });
+
+  test('does not open Mystic Invocation until the additional-Tactic decision completes', () => {
+    let state = startBattle(true);
+    const mystics = state.players.A.mystics!;
+    mystics.rites.echoes.status = 'completed';
+    mystics.rites.echoes.completedTurn = Math.max(
+      0,
+      state.turnNumber - 1,
+    );
+    const graveyardCandidate = 'black-covenant-invocation-graveyard';
+    state.cardInstances[graveyardCandidate] = {
+      instanceId: graveyardCandidate,
+      cardId: 'neutral-rallying-cry',
+      owner: 'A',
+    };
+    state.players.A.zones.graveyard.push(graveyardCandidate);
+
+    injectHand(
+      state,
+      'neutral-rallying-cry',
+      'invocation-extra',
+    );
+    const source = setBlackCovenantAsTactic(state);
+    state = revealBlackCovenant(state, source);
+
+    expect(state.players.A.mystics?.invocationPending).toBeNull();
+    expect(
+      state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice,
+    ).not.toBeNull();
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_late_additional_tactic',
+      playerId: 'A',
+    });
+
+    expect(state.players.A.mystics?.invocationPending)
+      .toEqual(expect.objectContaining({
+        sourceInstanceId: source,
+        sourceCardId: V070_BLACK_COVENANT_ID,
+        duringBattle: true,
+      }));
   });
 
   test('declining the additional Tactic leaves the Hand card in place but still graveyards Black Covenant', () => {
