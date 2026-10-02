@@ -4,6 +4,7 @@ import * as previous from './views-pre-capital-gains';
 import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
 import { pendingV070ExcommunicationAftermath } from './excommunication-battle';
 import { pendingV070SuppliesAftermath } from './supplies-battle';
+import { pendingV070GuiltByAssociationAftermath } from './guilt-by-association-battle';
 import { pendingV070FinancierAftermathChoice } from './financier-aftermath-battle';
 
 export * from './views-pre-capital-gains';
@@ -34,6 +35,15 @@ export interface V070SuppliesAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070GuiltByAssociationAftermathView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  candidateCardIds?: string[];
+}
+
 export interface V070FinancierAftermathView {
   kind: 'corner_the_market' | 'leveraged_buyout' | 'monetary_crisis';
   playerId: PlayerId;
@@ -49,6 +59,8 @@ export type V070GameView = previous.V070GameView & {
   pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
   pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
   pendingSuppliesAftermath: V070SuppliesAftermathView | null;
+  pendingGuiltByAssociationAftermath:
+    V070GuiltByAssociationAftermathView | null;
   pendingFinancierAftermath: V070FinancierAftermathView | null;
 };
 
@@ -142,11 +154,27 @@ export function viewV070GameForPlayer(
         }
       : null;
 
+  const guilt = pendingV070GuiltByAssociationAftermath(state);
+  const pendingGuiltByAssociationAftermath:
+    V070GuiltByAssociationAftermathView | null = guilt
+      ? {
+          playerId: guilt.playerId,
+          owner: guilt.owner,
+          opponent: guilt.opponent,
+          sourceInstanceId: guilt.sourceInstanceId,
+          candidateCount: guilt.candidateCardIds.length,
+          ...(viewer === guilt.playerId
+            ? { candidateCardIds: [...guilt.candidateCardIds] }
+            : {}),
+        }
+      : null;
+
   return {
     ...core,
     pendingCapitalGainsAftermath,
     pendingExcommunicationAftermath,
     pendingSuppliesAftermath,
     pendingFinancierAftermath,
+    pendingGuiltByAssociationAftermath,
   };
 }
