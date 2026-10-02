@@ -73,6 +73,9 @@ export interface V070LateAdditionalTacticBattleRevealChoice {
   sourceInstanceId: string;
   sourceCardId: string;
   candidateInstanceIds: string[];
+  candidateZone?: 'reserve' | 'hand';
+  chosenDestination?: 'discard' | 'graveyard';
+  recordMysticSourceEffectAfterChoice?: boolean;
 }
 
 export type V070FinancierPreDiceBattleRevealChoice =
@@ -180,6 +183,7 @@ export function queueV070LateAdditionalTacticBattleRevealChoice(
       sourceInstanceId: choice.sourceInstanceId,
       sourceCardId: choice.sourceCardId,
       candidateCount: choice.candidateInstanceIds.length,
+      candidateZone: choice.candidateZone ?? 'reserve',
       optional: true,
     },
   });
@@ -190,6 +194,7 @@ export function queueV070LateAdditionalTacticBattleRevealChoice(
     payload: {
       sourceInstanceId: choice.sourceInstanceId,
       sourceCardId: choice.sourceCardId,
+      candidateZone: choice.candidateZone ?? 'reserve',
       candidateInstanceIds: [...choice.candidateInstanceIds],
     },
   });
