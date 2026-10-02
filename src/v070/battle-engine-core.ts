@@ -182,6 +182,11 @@ import {
   v070FinancierAftermathEffectIsOptional,
   v070FinancierAftermathEffects,
 } from './financier-aftermath-battle';
+import {
+  resolveV070GuiltByAssociationAftermath,
+  v070GuiltByAssociationAftermathEffects,
+  v070GuiltByAssociationTargetInstanceIds,
+} from './guilt-by-association-battle';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -3040,7 +3045,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'capture'
     | 'asset'
     | 'retribution'
-    | 'financier';
+    | 'financier'
+    | 'guilt_by_association';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3155,6 +3161,16 @@ function pruneIneligibleBattleAftermathControlledEffects(
         v070FinancierAftermathEffectEligible(state, effect)
       );
   }
+  if (runtime.guiltByAssociationAftermathEffects) {
+    runtime.guiltByAssociationAftermathEffects =
+      runtime.guiltByAssociationAftermathEffects.filter(effect =>
+        v070GuiltByAssociationTargetInstanceIds(
+          state,
+          effect.owner,
+          effect.sourceInstanceId,
+        ).length > 0
+      );
+  }
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -3192,6 +3208,11 @@ function remainingBattleAftermathControlledEffects(
       owner: effect.owner,
       sourceInstanceId: effect.sourceInstanceId,
       kind: 'financier' as const,
+    })),
+    ...v070GuiltByAssociationAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'guilt_by_association' as const,
     })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
@@ -3240,9 +3261,11 @@ function applyBattleAftermathControlledEffect(
       'Asset replacement applies only to an Aftermath effect that banks an Asset.',
     );
   }
-  if (effect.kind !== 'destination' && targetInstanceId) {
+  if (effect.kind !== 'destination'
+    && effect.kind !== 'guilt_by_association'
+    && targetInstanceId) {
     throw new V070GameActionError(
-      'A target card applies only to an Aftermath destination effect.',
+      'A target card applies only to an Aftermath effect that chooses a card.',
     );
   }
 
@@ -3261,6 +3284,28 @@ function applyBattleAftermathControlledEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
+    );
+    return;
+  }
+
+  if (effect.kind === 'guilt_by_association') {
+    const candidates = v070GuiltByAssociationTargetInstanceIds(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    );
+    const selected = targetInstanceId
+      ?? (candidates.length === 1 ? candidates[0] : undefined);
+    if (!selected || !candidates.includes(selected)) {
+      throw new V070GameActionError(
+        'Choose a card the opponent controlled in this battle for Guilt by Association.',
+      );
+    }
+    resolveV070GuiltByAssociationAftermath(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+      selected,
     );
     return;
   }
@@ -3631,6 +3676,13 @@ function battleAftermathControlledEffectNeedsChoice(
       effect.sourceInstanceId,
     ).length > 1;
   }
+  if (effect.kind === 'guilt_by_association') {
+    return v070GuiltByAssociationTargetInstanceIds(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    ).length > 1;
+  }
   return effect.kind === 'asset'
     && v070ResistanceBattleBankNeedsReplacementChoice(
       state,
@@ -3680,6 +3732,16 @@ function openBattleAftermathControlledEffectChoice(
           sourceInstanceId: effect.sourceInstanceId,
           targetInstanceIds: battleAftermathDestinationChoiceCandidates(
             state,
+            effect.sourceInstanceId,
+          ),
+        })),
+      guiltByAssociationTargetOptions: candidates
+        .filter(effect => effect.kind === 'guilt_by_association')
+        .map(effect => ({
+          sourceInstanceId: effect.sourceInstanceId,
+          targetInstanceIds: v070GuiltByAssociationTargetInstanceIds(
+            state,
+            effect.owner,
             effect.sourceInstanceId,
           ),
         })),
