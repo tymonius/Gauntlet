@@ -455,20 +455,16 @@ function markupToElement(markup) {
   return element;
 }
 
-// card-design.js installs inspection directly on each physical card node. The
-// reference faces begin as loading shells, so replacing those nodes during
-// async hydration also discarded their click/keyboard inspection listeners.
-// Hydrate the existing node in place instead: whether inspection was installed
-// before or after hydration, every reference face remains inspectable.
+// Hydrate the existing shell in place so any external references remain stable.
+// Shared Card Design inspection is event-delegated and does not depend on
+// per-card listeners surviving this async content replacement.
 function hydrateReferenceElement(loadingCard, rendered) {
-  const inspectionReady = loadingCard.dataset.inspectionReady === 'true';
   loadingCard.className = rendered.className;
   for (const attribute of Array.from(rendered.attributes)) {
     if (attribute.name === 'class') continue;
     loadingCard.setAttribute(attribute.name, attribute.value);
   }
   loadingCard.replaceChildren(...Array.from(rendered.childNodes));
-  if (inspectionReady) loadingCard.classList.add('card-inspectable');
   return loadingCard;
 }
 

@@ -29,7 +29,7 @@ The remaining canonical face pipeline is intentionally browser-side production t
 
 These modules should not be moved into `packages/rendering/` merely to reduce the size of this root. A future physical relocation belongs under a browser/production-tooling boundary and must preserve the deployed `/card-design/` contract and all renderer consumers.
 
-`card-design.js` is a separate direct-card browser runtime: current non-FaceSpec specimens use it for parchment loading, adaptive fitting, and direct-card inspection, while archived long-card render tooling still loads the stable public script for fitting. Historical review composition is owned by archived review surfaces and is no longer injected by this maintained runtime.
+`card-design.js` is now focused on direct-card browser preparation: current non-FaceSpec specimens use it for parchment loading, production-font readiness, and adaptive fitting, while archived long-card render tooling still loads the stable public script for fitting. Direct-card inspection now belongs to the shared review inspector under `tools/card-design/review/`; historical review composition is owned by archived review surfaces.
 
 ## Authoring and review tooling
 

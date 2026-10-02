@@ -2,34 +2,33 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const cardDesign = readFileSync("card-design/card-design.js", "utf8");
-const lightboxStyles = readFileSync("card-design/card-art-lightbox.css", "utf8");
+const inspector = readFileSync("tools/card-design/review/card-inspector.js", "utf8");
+const inspectorStyles = readFileSync("tools/card-design/review/card-inspector.css", "utf8");
 
 describe("expanded card artwork inspection", () => {
-  it("makes only rendered artwork inside the enlarged card independently inspectable", () => {
-    expect(cardDesign).toContain(".card-art img, .territory-art img");
-    expect(cardDesign).toContain("makeArtworkInspectable(clone, openArtworkInspection)");
-    expect(cardDesign).toContain("image.currentSrc || image.src");
-    expect(cardDesign).toContain("View full uncropped artwork");
+  it("keeps direct-card inspection out of the fitting runtime", () => {
+    expect(cardDesign).not.toContain("openCloneInspection");
+    expect(cardDesign).not.toContain("gauntlet-card-inspect");
+    expect(cardDesign).not.toContain("card-art-lightbox.css");
   });
 
-  it("bridges artwork clicks from embedded production-card inspections", () => {
-    expect(cardDesign).toContain("type: 'gauntlet-art-inspect'");
-    expect(cardDesign).toContain("event.data?.type === 'gauntlet-art-inspect'");
-    expect(cardDesign).toContain("installEmbeddedArtworkBridge()");
+  it("makes artwork inside an enlarged direct card independently inspectable", () => {
+    expect(inspector).toContain("function prepareDirectArtwork(clone)");
+    expect(inspector).toContain(".card-art img, .territory-art img");
+    expect(inspector).toContain("image.currentSrc || image.src");
+    expect(inspector).toContain("directArtworkTrigger = frame");
   });
 
-  it("returns Escape and backdrop clicks to the enlarged card before closing it", () => {
-    expect(cardDesign).toContain("inspectionDialog.addEventListener('cancel'");
-    expect(cardDesign).toContain("event.preventDefault();\n      closeArtworkInspection();");
-    expect(cardDesign).toContain("if (artworkInspectionOpen) closeArtworkInspection();");
-    expect(cardDesign).toContain("← Back to card");
+  it("returns Escape/backdrop to the direct card before closing the inspector", () => {
+    expect(inspector).toContain("if (!artStage.hidden && directClone)");
+    expect(inspector).toContain("showCard(false);");
+    expect(inspector).toContain("directArtworkTrigger?.focus?.({ preventScroll: true });");
   });
 
-  it("shows the original image without cover cropping", () => {
-    expect(lightboxStyles).toContain("object-fit: contain");
-    expect(lightboxStyles).toContain("max-width: 100%");
-    expect(lightboxStyles).toContain("max-height: calc(100vh - 6.5rem)");
-    expect(lightboxStyles).toContain(".card-inspection-clone .art-inspectable");
-    expect(lightboxStyles).toContain("pointer-events: auto");
+  it("keeps cloned card interaction limited to the artwork hit area", () => {
+    expect(inspectorStyles).toContain(".card-inspection-clone");
+    expect(inspectorStyles).toContain("pointer-events: none");
+    expect(inspectorStyles).toContain(".card-inspection-clone .art-inspectable");
+    expect(inspectorStyles).toContain("pointer-events: auto");
   });
 });
