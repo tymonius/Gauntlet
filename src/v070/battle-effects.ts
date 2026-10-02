@@ -124,6 +124,15 @@ import {
   V070_UNDERWRITING_ID,
   registerV070UnderwritingBattleEffect,
 } from './underwriting-battle';
+import {
+  V070_CORNER_THE_MARKET_BATTLE_TEXT,
+  V070_CORNER_THE_MARKET_ID,
+  V070_LEVERAGED_BUYOUT_BATTLE_TEXT,
+  V070_LEVERAGED_BUYOUT_ID,
+  V070_MONETARY_CRISIS_BATTLE_TEXT,
+  V070_MONETARY_CRISIS_ID,
+  registerV070FinancierAftermathBattleEffect,
+} from './financier-aftermath-battle';
 
 export * from './battle-effects-pre-capital-gains';
 
@@ -447,6 +456,48 @@ const marginLoanHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const cornerTheMarketHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_CORNER_THE_MARKET_ID,
+  expectedText: V070_CORNER_THE_MARKET_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070FinancierAftermathBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_CORNER_THE_MARKET_ID,
+    );
+  },
+};
+
+const leveragedBuyoutHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_LEVERAGED_BUYOUT_ID,
+  expectedText: V070_LEVERAGED_BUYOUT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070FinancierAftermathBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_LEVERAGED_BUYOUT_ID,
+    );
+  },
+};
+
+const monetaryCrisisHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_MONETARY_CRISIS_ID,
+  expectedText: V070_MONETARY_CRISIS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070FinancierAftermathBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      V070_MONETARY_CRISIS_ID,
+    );
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -467,6 +518,9 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
   [V070_MARGIN_LOAN_ID, marginLoanHandler],
+  [V070_CORNER_THE_MARKET_ID, cornerTheMarketHandler],
+  [V070_LEVERAGED_BUYOUT_ID, leveragedBuyoutHandler],
+  [V070_MONETARY_CRISIS_ID, monetaryCrisisHandler],
   [V070_CAPITAL_GAINS_ID, capitalGainsHandler],
   [V070_EXCOMMUNICATION_ID, excommunicationHandler],
   [V070_SUPPLIES_ID, suppliesHandler],
