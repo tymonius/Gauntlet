@@ -126,10 +126,11 @@ export function applyV070NormalAftermathConviction(
   }
 
   inquisition.normalConvictionGainTurn = state.turnNumber;
+  const gain = opposingCardsGraveyarded.length === 1 ? 1 : 2;
   gainV070Conviction(
     state,
     playerId,
-    1,
+    gain,
     'Inquisition normal Aftermath gain',
   );
   appendV070Event(state, {
@@ -139,6 +140,7 @@ export function applyV070NormalAftermathConviction(
     payload: {
       turnNumber: state.turnNumber,
       opposingCardInstanceIds: [...opposingCardsGraveyarded],
+      requestedGain: gain,
     },
   });
   return true;
