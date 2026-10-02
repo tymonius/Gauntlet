@@ -21,6 +21,12 @@ import { resolveV070HeresyBattleChoice } from './heresy-battle';
 import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
 import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
 import { applyV070BlasphemyForBattleReveal } from './inquisition';
+import {
+  resolveV070DivestmentBattleChoice,
+  resolveV070FinancierImmediateSubsidizeChoice,
+  resolveV070LiquidationBattleChoice,
+  resolveV070MarginLoanBattleChoice,
+} from './financier-pre-dice-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -70,6 +76,26 @@ export type V070BattleAction =
       type: 'resolve_late_additional_tactic';
       playerId: PlayerId;
       cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_financier_divestment_battle';
+      playerId: PlayerId;
+      territoryInstanceId?: string;
+    }
+  | {
+      type: 'resolve_financier_liquidation_battle';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_financier_margin_loan_battle';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_financier_immediate_subsidize';
+      playerId: PlayerId;
+      bonus: number;
     };
 
 export function reduceV070BattleAction(
@@ -77,6 +103,79 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'financier_divestment'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_financier_divestment_battle') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Divestment battle choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070DivestmentBattleChoice(
+      next,
+      action.playerId,
+      action.territoryInstanceId,
+    );
+    if (!pendingV070BattleRevealChoice(next)) {
+      resumeV070SupportedRevealEffects(next);
+    }
+    return next;
+  }
+
+  if (pending?.kind === 'financier_liquidation'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_financier_liquidation_battle') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Liquidation battle choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070LiquidationBattleChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+    if (!pendingV070BattleRevealChoice(next)) {
+      resumeV070SupportedRevealEffects(next);
+    }
+    return next;
+  }
+
+  if (pending?.kind === 'financier_margin_loan'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_financier_margin_loan_battle') {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Margin Loan battle choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070MarginLoanBattleChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+    if (!pendingV070BattleRevealChoice(next)) {
+      resumeV070SupportedRevealEffects(next);
+    }
+    return next;
+  }
+
+  if (pending?.kind === 'financier_immediate_subsidize'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_financier_immediate_subsidize') {
+      throw new V070GameActionError(
+        'Resolve or decline the card-granted immediate Subsidize choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070FinancierImmediateSubsidizeChoice(
+      next,
+      action.playerId,
+      action.bonus,
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
   if (pending?.kind === 'late_additional_tactic'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_late_additional_tactic') {

@@ -85,6 +85,9 @@ import {
   applyV070UnderwritingAftermathEffects,
 } from './underwriting-battle';
 import {
+  applyV070MarginLoanBattleAftermathEffects,
+} from './financier-pre-dice-battle';
+import {
   openV070TariffsBattleChoice,
   resolveV070TariffsBattleChoice,
 } from './tariffs-battle';
@@ -405,6 +408,7 @@ export function reduceV070BattleAction(
   applyV070PropertyDuesAftermathEffects(next);
   applyV070SpeculationAftermathEffects(next);
   applyV070UnderwritingAftermathEffects(next);
+  applyV070MarginLoanBattleAftermathEffects(next);
   applyV070CapitalPunishmentAftermathEffects(next);
   resolveV070ProtractedSiegeDepartures(next, previousPositions, battleOrPlayerPositions(next));
 
