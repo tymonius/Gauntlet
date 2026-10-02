@@ -4,6 +4,7 @@ import * as previous from './views-pre-capital-gains';
 import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
 import { pendingV070ExcommunicationAftermath } from './excommunication-battle';
 import { pendingV070SuppliesAftermath } from './supplies-battle';
+import { pendingV070FinancierAftermathChoice } from './financier-aftermath-battle';
 
 export * from './views-pre-capital-gains';
 
@@ -33,10 +34,22 @@ export interface V070SuppliesAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070FinancierAftermathView {
+  kind: 'corner_the_market' | 'leveraged_buyout' | 'monetary_crisis';
+  playerId: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  candidateInstanceIds?: string[];
+  territoryInstanceId?: string;
+  cost?: number;
+  sourceOwner?: PlayerId;
+}
+
 export type V070GameView = previous.V070GameView & {
   pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
   pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
   pendingSuppliesAftermath: V070SuppliesAftermathView | null;
+  pendingFinancierAftermath: V070FinancierAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -95,10 +108,45 @@ export function viewV070GameForPlayer(
       }
     : null;
 
+  const financier = pendingV070FinancierAftermathChoice(state);
+  const pendingFinancierAftermath: V070FinancierAftermathView | null =
+    financier
+      ? {
+          kind: financier.kind,
+          playerId: financier.playerId,
+          sourceInstanceId: financier.sourceInstanceId,
+          candidateCount: financier.kind === 'corner_the_market'
+            ? financier.candidateTerritoryInstanceIds.length
+            : financier.kind === 'leveraged_buyout'
+              ? financier.candidateCollateralInstanceIds.length
+              : financier.candidateInstanceIds.length,
+          ...(financier.kind === 'leveraged_buyout'
+            ? {
+                territoryInstanceId: financier.territoryInstanceId,
+                cost: financier.cost,
+              }
+            : {}),
+          ...(financier.kind === 'monetary_crisis'
+            ? { sourceOwner: financier.sourceOwner }
+            : {}),
+          ...(viewer === financier.playerId
+            ? {
+                candidateInstanceIds:
+                  financier.kind === 'corner_the_market'
+                    ? [...financier.candidateTerritoryInstanceIds]
+                    : financier.kind === 'leveraged_buyout'
+                      ? [...financier.candidateCollateralInstanceIds]
+                      : [...financier.candidateInstanceIds],
+              }
+            : {}),
+        }
+      : null;
+
   return {
     ...core,
     pendingCapitalGainsAftermath,
     pendingExcommunicationAftermath,
     pendingSuppliesAftermath,
+    pendingFinancierAftermath,
   };
 }

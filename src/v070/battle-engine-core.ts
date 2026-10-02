@@ -174,6 +174,14 @@ import {
   V070_VALOR_ID,
 } from './post-roll-reroll-cards';
 import { V070_REVOLUTION_ID } from './post-roll-exchange-cards';
+import {
+  beginV070FinancierAftermathEffect,
+  declineV070FinancierAftermathEffect,
+  pendingV070FinancierAftermathChoice,
+  v070FinancierAftermathEffectEligible,
+  v070FinancierAftermathEffectIsOptional,
+  v070FinancierAftermathEffects,
+} from './financier-aftermath-battle';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -3031,7 +3039,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'territory'
     | 'capture'
     | 'asset'
-    | 'retribution';
+    | 'retribution'
+    | 'financier';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3140,6 +3149,12 @@ function pruneIneligibleBattleAftermathControlledEffects(
       return battle.loser === bank.owner
         && battle.positions[bank.owner] !== battle.contestedPosition;
     });
+  if (runtime.financierAftermathEffects) {
+    runtime.financierAftermathEffects =
+      runtime.financierAftermathEffects.filter(effect =>
+        v070FinancierAftermathEffectEligible(state, effect)
+      );
+  }
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -3172,6 +3187,11 @@ function remainingBattleAftermathControlledEffects(
       owner: bank.owner,
       sourceInstanceId: bank.sourceInstanceId,
       kind: 'asset' as const,
+    })),
+    ...v070FinancierAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'financier' as const,
     })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
@@ -3232,6 +3252,15 @@ function applyBattleAftermathControlledEffect(
       effect.owner,
       effect.sourceInstanceId,
       immediateWinner,
+    );
+    return;
+  }
+
+  if (effect.kind === 'financier') {
+    beginV070FinancierAftermathEffect(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
     );
     return;
   }
@@ -3575,6 +3604,16 @@ function battleAftermathControlledEffectIsOptional(
         && choice.optional,
     );
   }
+  if (effect.kind === 'financier') {
+    const financier = v070FinancierAftermathEffects(state).find(
+      candidate =>
+        candidate.owner === effect.owner
+        && candidate.sourceInstanceId === effect.sourceInstanceId,
+    );
+    return financier
+      ? v070FinancierAftermathEffectIsOptional(financier)
+      : false;
+  }
   return false;
 }
 
@@ -3699,6 +3738,11 @@ function advanceBattleAftermathControlledEffects(
         undefined,
       );
       if (runtime.pendingRetributionResponse) return true;
+      if (pendingV070FinancierAftermathChoice(state)) {
+        runtime.battleAftermathControlledEffectNextPlayer =
+          nextBattleAftermathControlledEffectPlayer(state, nextPlayer);
+        return true;
+      }
     }
 
     nextPlayer =
@@ -3751,6 +3795,11 @@ function resolveBattleAftermathControlledEffectChoice(
     replaceAssetInstanceId,
   );
   if (runtime.pendingRetributionResponse) return;
+  if (pendingV070FinancierAftermathChoice(state)) {
+    runtime.battleAftermathControlledEffectNextPlayer =
+      nextBattleAftermathControlledEffectPlayer(state, playerId);
+    return;
+  }
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
   completeAftermathInternal(state, immediateWinner);
@@ -3798,6 +3847,13 @@ function passBattleAftermathControlledEffectChoice(
           choice.owner !== playerId
           || choice.sourceInstanceId !== sourceInstanceId,
       );
+  }
+  if (effect.kind === 'financier') {
+    declineV070FinancierAftermathEffect(
+      state,
+      playerId,
+      sourceInstanceId,
+    );
   }
 
   const immediateWinner = pending.immediateWinner;
