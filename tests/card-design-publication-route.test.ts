@@ -48,11 +48,24 @@ describe('card-design publication route boundary', () => {
       'card-catalog-shell.css',
       'proposal-card.js',
       'card-back.js',
+      'capital-ledger-preview.html',
+      'ledger-print.css',
     ]) {
       expect(files.get(`/card-design/${name}`)).toBe(`tools/card-design/review/${name}`);
       expect(existsSync(`tools/card-design/review/${name}`)).toBe(true);
       expect(existsSync(`card-design/${name}`)).toBe(false);
     }
+  });
+
+  it('materializes archived design studies at their stable public card-design URLs', () => {
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry.source]));
+    expect(files.get('/card-design/faction-specimens.html')).toBe('legacy/card-design-studies/faction-specimens-v0.6.1.html');
+    expect(files.get('/card-design/territories/index.html')).toBe('legacy/v0.6.4-candidate/card-design/territories/index.html');
+    expect(files.get('/card-design/typography/index.html')).toBe('legacy/card-design-studies/typography/index.html');
+    expect(files.get('/card-design/typography/interface-comparison.html')).toBe('legacy/card-design-studies/typography/interface-comparison.html');
+    expect(files.get('/card-design/typography/typography.css')).toBe('legacy/card-design-studies/typography/typography.css');
+    expect(files.get('/card-design/typography/interface-comparison.css')).toBe('legacy/card-design-studies/typography/interface-comparison.css');
+    expect(files.get('/card-design/typography/card-print-review.css')).toBe('legacy/card-design-studies/typography/card-print-review.css');
   });
 
   it('preserves the archived v0.6.3 playable renderer at its historical public URL', () => {

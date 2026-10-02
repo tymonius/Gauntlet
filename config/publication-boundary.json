@@ -569,6 +569,51 @@
       "source": "tools/card-design/review/card-back.js",
       "publicPath": "/card-design/card-back.js",
       "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/capital-ledger-preview.html",
+      "publicPath": "/card-design/capital-ledger-preview.html",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "tools/card-design/review/ledger-print.css",
+      "publicPath": "/card-design/ledger-print.css",
+      "kind": "production-tooling"
+    },
+    {
+      "source": "legacy/card-design-studies/faction-specimens-v0.6.1.html",
+      "publicPath": "/card-design/faction-specimens.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/v0.6.4-candidate/card-design/territories/index.html",
+      "publicPath": "/card-design/territories/index.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/typography/index.html",
+      "publicPath": "/card-design/typography/index.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/typography/interface-comparison.html",
+      "publicPath": "/card-design/typography/interface-comparison.html",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/typography/typography.css",
+      "publicPath": "/card-design/typography/typography.css",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/typography/interface-comparison.css",
+      "publicPath": "/card-design/typography/interface-comparison.css",
+      "kind": "historical-design-study"
+    },
+    {
+      "source": "legacy/card-design-studies/typography/card-print-review.css",
+      "publicPath": "/card-design/typography/card-print-review.css",
+      "kind": "historical-design-study"
     }
   ],
   "managedRoutes": [

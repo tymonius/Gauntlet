@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const renderer = readFileSync('card-design/capital-ledger.js', 'utf8');
 const css = readFileSync('card-design/capital-ledger.css', 'utf8');
-const preview = readFileSync('card-design/capital-ledger-preview.html', 'utf8');
+const preview = readFileSync('tools/card-design/review/capital-ledger-preview.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 
 describe('Financiers Capital Ledger production component', () => {

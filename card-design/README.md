@@ -33,14 +33,14 @@ These modules should not be moved into `packages/rendering/` merely to reduce th
 
 Artwork compositor/authoring source now lives under [`tools/card-design/artwork-authoring/`](../tools/card-design/artwork-authoring/). `config/publication-boundary.json` materializes those files back onto their established `/card-design/artwork-*` URLs, so browser consumers and the public compositor do not depend on repository placement.
 
-Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. This now includes the Proposal and card-back catalog builders. Rite/Ritual and supplemental-component modules remain in `card-design/` because current component authority still names them as production render surfaces. The catalog entry page remains at `card-design/index.html` for now, while those review assets are source-owned by `tools/`.
+Unified catalog/review/inspection source lives under [`tools/card-design/review/`](../tools/card-design/review/) and is materialized back onto its established `/card-design/` URLs. This now includes the Proposal and card-back catalog builders plus the Capital Ledger preview shell and its print-only review stylesheet. Rite/Ritual and supplemental-component modules remain in `card-design/` because current component authority still names them as production render surfaces. The catalog entry page remains at `card-design/index.html` for now, while those review assets are source-owned by `tools/`.
 
 Compatibility-only print/review/render entrypoints now live under [`legacy/public-compatibility/card-design/`](../legacy/public-compatibility/card-design/) and are materialized back onto their established `/card-design/` URLs. Canonical family styles and browser-runtime dependencies remain in `card-design/`; superseded standalone JS renderers are no longer kept there merely for historical tests. The v0.6.3 playable renderer now lives under `legacy/card-design-v0.6.3/` while its historical `/card-design/playable-card-renderer.js` URL is materialized for compatibility.
 
 ## Source and lifecycle boundaries
 
 - Maintained card-design standards belong under `docs/card-design/`.
-- Historical design studies and superseded review material belong under `legacy/`.
+- Historical design studies and superseded review material belong under `legacy/`. The archived set now includes the v0.6.1 faction comparison, the v0.6.4 Territory mockup, and the typography studies; their established `/card-design/...` URLs remain materialized.
 - Compatibility-only card-design render/review entrypoints belong under `legacy/public-compatibility/card-design/` while their established `/card-design/` public URLs remain materialized.
 - The maintained reference-copy subtree selected by current component authority remains under `card-design/reference-copy/` because it is an active presentation source consumed by the renderer/TTS component contract.
 - Canonical gameplay authority remains `packages/game-data/current-game.json`; rendering code must not reconstruct gameplay mechanics from presentation files.

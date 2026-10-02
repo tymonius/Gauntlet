@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const specimenHtml = readFileSync("card-design/faction-specimens.html", "utf8");
+const specimenHtml = readFileSync("legacy/card-design-studies/faction-specimens-v0.6.1.html", "utf8");
 const specimenCss = readFileSync("card-design/faction-specimens.css", "utf8");
 
 describe("faction card-front specimens", () => {
