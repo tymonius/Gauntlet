@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const historical = JSON.parse(readFileSync('docs/v0.6.4-territories.json', 'utf8'));
-const reference = readFileSync('docs/v0.6.4-territory-reference.md', 'utf8');
+const historical = JSON.parse(readFileSync('legacy/v0.6.4-candidate/v0.6.4-territories.json', 'utf8'));
+const reference = readFileSync('legacy/v0.6.4-candidate/v0.6.4-territory-reference.md', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const territoryTemplate = readFileSync('card-design/face-templates/territory.mjs', 'utf8');
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const legacyTerritoryRoute = readFileSync('legacy/public-compatibility/card-design/territory-review-render.html', 'utf8');
 const specimen = readFileSync('legacy/v0.6.4-candidate/card-design/territories/index.html', 'utf8');
-const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentAuthority = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 
 describe('historical v0.6.4 Territory derivation and current authority propagation', () => {
   it('keeps the accepted v0.6.4 Territory document only as derivation provenance', () => {
