@@ -411,6 +411,7 @@ export interface V070BattleRuntime {
     V070BattlePostRollChoiceRuntime | null;
   battlePostRollExchangeNextPlayer: PlayerId | null;
   battlePostRollComplete: boolean;
+  subsidizeBonusByPlayer: Record<PlayerId, number>;
   pendingBattlePostClearAftermathChoice:
     V070BattlePostClearAftermathChoiceRuntime | null;
   battlePostClearAftermathNextPlayer: PlayerId | null;
@@ -528,6 +529,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingBattlePostRollExchangeChoice: null,
     battlePostRollExchangeNextPlayer: null,
     battlePostRollComplete: false,
+    subsidizeBonusByPlayer: { A: 0, B: 0 },
     pendingBattlePostClearAftermathChoice: null,
     battlePostClearAftermathNextPlayer: null,
     battleCardAftermathOverlayPlacements: [],
