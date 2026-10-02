@@ -1,20 +1,26 @@
 import {
   V070GameActionError,
+  appendV070Event,
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
 import type { V070CopyableEffectLabel } from './copied-effects';
 import * as previous from './battle-engine-reveal-order-pre-witchcraft';
 import {
+  completeV070LateAdditionalTacticBattleRevealChoice,
   isV070BattleRevealChoiceOpen,
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
-import { resumeV070SupportedRevealEffects } from './battle-effects';
+import {
+  applyV070LateAdditionalTacticRevealEffect,
+  resumeV070SupportedRevealEffects,
+} from './battle-effects';
 import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
 import { resolveV070ArcaneKnowledgeBattleChoice } from './arcane-knowledge-battle';
 import { resolveV070HeresyBattleChoice } from './heresy-battle';
 import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
 import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
+import { applyV070BlasphemyForBattleReveal } from './inquisition';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -59,6 +65,11 @@ export type V070BattleAction =
       type: 'resolve_reconnaissance_battle';
       playerId: PlayerId;
       withdraw: boolean;
+    }
+  | {
+      type: 'resolve_late_additional_tactic';
+      playerId: PlayerId;
+      cardInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
@@ -66,6 +77,127 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'late_additional_tactic'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_late_additional_tactic') {
+      throw new V070GameActionError(
+        'Choose or decline the pending late additional Tactic before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const choice =
+      completeV070LateAdditionalTacticBattleRevealChoice(next);
+    if (choice.owner !== action.playerId) {
+      throw new V070GameActionError(
+        'Only the player granted the additional Tactic may resolve it.',
+      );
+    }
+
+    if (action.cardInstanceId === undefined) {
+      appendV070Event(next, {
+        type: 'late_additional_tactic_declined',
+        actor: action.playerId,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: choice.sourceInstanceId,
+          sourceCardId: choice.sourceCardId,
+        },
+      });
+      resumeV070SupportedRevealEffects(next);
+      return next;
+    }
+
+    if (!choice.candidateInstanceIds.includes(
+      action.cardInstanceId,
+    )) {
+      throw new V070GameActionError(
+        'That card is not eligible for this additional Tactic.',
+      );
+    }
+    const participant =
+      next.battleRuntime?.participants[action.playerId];
+    if (!participant) {
+      throw new V070GameActionError(
+        'A late additional Tactic requires an active participant.',
+      );
+    }
+    const index = participant.reserve.indexOf(
+      action.cardInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'The chosen additional Tactic is no longer in Reserve.',
+      );
+    }
+
+    participant.reserve.splice(index, 1);
+    const commitment = {
+      instanceId: action.cardInstanceId,
+      owner: action.playerId,
+      role: 'tactic' as const,
+      faceUp: true,
+    };
+    participant.additionalTactics.push(commitment);
+
+    const cardId =
+      next.cardInstances[action.cardInstanceId]?.cardId ?? '';
+    appendV070Event(next, {
+      type: 'tactic_chosen',
+      actor: action.playerId,
+      visibility: 'public',
+      payload: {
+        faceDown: false,
+        lateAdditionalTactic: true,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: choice.sourceCardId,
+      },
+    });
+    appendV070Event(next, {
+      type: 'tactic_revealed',
+      actor: action.playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: action.cardInstanceId,
+        cardId,
+        lateAdditionalTactic: true,
+      },
+    });
+    applyV070BlasphemyForBattleReveal(
+      next,
+      action.playerId,
+      cardId,
+      'tactic',
+    );
+
+    const unsupported =
+      applyV070LateAdditionalTacticRevealEffect(
+        next,
+        commitment,
+      );
+    if (unsupported.length > 0 && next.battleRuntime) {
+      next.battleRuntime.unsupportedEffects.push(...unsupported);
+      next.battleRuntime.stage = 'halted';
+      appendV070Event(next, {
+        type: 'battle_halted_unsupported_effect',
+        visibility: 'public',
+        payload: {
+          effects: unsupported.map(effect => ({
+            owner: effect.owner,
+            cardId: effect.cardId,
+            role: effect.role,
+            label: effect.label,
+            text: effect.text,
+            encounteredAt: effect.encounteredAt,
+          })),
+        },
+      });
+      return next;
+    }
+
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
   if (pending?.kind === 'reconnaissance'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_reconnaissance_battle') {
@@ -151,6 +283,11 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_late_additional_tactic') {
+    throw new V070GameActionError(
+      'There is no open late additional-Tactic choice.',
+    );
+  }
   if (action.type === 'resolve_reconnaissance_battle') {
     throw new V070GameActionError(
       'There is no open Reconnaissance battle-effect choice.',
