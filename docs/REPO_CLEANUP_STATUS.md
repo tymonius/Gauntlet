@@ -235,17 +235,29 @@ The current Rules Arbiter browser shell is now classified as application source:
 - verified the browser app and public widget both target the lifecycle-selected current Rules Arbiter/release corpus;
 - corrected stale `rules-assistant/README.md` language that still described a historical Rules Arbiter release as current.
 
-## Current tranche — Rules Assistant public/backend split audit
+## Completed tranche — Rules Assistant Pages/public boundary
 
-The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
+The `rules-assistant/` repository root is no longer published wholesale to GitHub Pages.
 
-- browser-public widget assets and their stable `/rules-assistant/` URLs;
-- the current Cloudflare Worker entry/deployment runtime and D1 migrations;
+- the 316-file mixed source root is now source-only for Pages;
+- the stable `/rules-assistant/` browser contract materializes only the verified eight-file dependency closure: `widget.js`, `widget.css`, `widget-mobile.css`, `feedback.css`, `answer-presentation.js`, `answer-presentation.css`, `local-search.js`, and `v072-release-corpus.js`;
+- Pages workflow triggers explicitly cover those browser files;
+- Worker/admin/refinement source, D1 migrations, tests, eval corpora, audit records, and Wrangler configuration are no longer carried into the Pages artifact merely because they share the source root;
+- public filenames and browser behavior remain unchanged.
+
+This establishes the deployment boundary without prematurely deciding ownership for `local-search.js` and `v072-release-corpus.js`, which are shared by the browser and Worker.
+
+## Current tranche — Rules Assistant Worker/admin/eval source ownership audit
+
+Classify the remaining source roles mechanically before moving them:
+
+- current Cloudflare Worker entry/deployment runtime and D1 migrations;
+- shared browser/Worker retrieval and current-release corpus modules;
 - admin/refinement/review/export tooling;
 - current QA/eval corpora and regression harnesses;
 - explicitly versioned historical/compatibility workers and corpora.
 
-Do not move versioned worker/corpus files until their live routing, QA, and historical compatibility consumers are mechanically classified.
+Do not move shared or versioned modules until their live routing, deployment, QA, and historical compatibility consumers are mechanically classified.
 
 ## Card-design lifecycle state
 
@@ -276,7 +288,7 @@ Do not move versioned worker/corpus files until their live routing, QA, and hist
 
 ## Next top-down queue
 
-1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
+1. Complete the Rules Assistant Worker/admin/eval/versioned-support source split now that Pages publication is narrowed.
 2. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
 3. Audit governance/traceability and CI paths that still encode transitional locations.
 4. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
