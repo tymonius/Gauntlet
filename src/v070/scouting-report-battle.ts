@@ -508,7 +508,9 @@ function replaceScoutingReport(
     instanceId: replacementInstanceId,
     owner,
     role,
-    faceUp: true,
+    // Insert face down for one atomic step so the shared early-reveal helper
+    // records the expressly face-up replacement and its provenance.
+    faceUp: false,
   };
 
   if (role === 'gambit') {
