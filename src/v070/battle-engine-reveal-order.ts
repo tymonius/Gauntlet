@@ -28,6 +28,7 @@ import {
   resolveV070MarginLoanBattleChoice,
 } from './financier-pre-dice-battle';
 import { recordV070MysticBattleEffectApplied } from './mystics';
+import { resolveV070HellfireBattleChoice } from './hellfire-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -97,6 +98,12 @@ export type V070BattleAction =
       type: 'resolve_financier_immediate_subsidize';
       playerId: PlayerId;
       bonus: number;
+    }
+  | {
+      type: 'resolve_hellfire_battle';
+      playerId: PlayerId;
+      battleTotalBonus: number;
+      aftermathCardCount: number;
     };
 
 export function reduceV070BattleAction(
@@ -104,6 +111,24 @@ export function reduceV070BattleAction(
   action: V070BattleAction,
 ): V070GameState {
   const pending = pendingV070BattleRevealChoice(state);
+  if (pending?.kind === 'hellfire'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_hellfire_battle') {
+      throw new V070GameActionError(
+        'Resolve the pending Hellfire Conviction allocation before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070HellfireBattleChoice(
+      next,
+      action.playerId,
+      action.battleTotalBonus,
+      action.aftermathCardCount,
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
   if (pending?.kind === 'financier_divestment'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_financier_divestment_battle') {

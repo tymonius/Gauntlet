@@ -130,6 +130,11 @@ import {
   registerV070BlackCovenantBattleEffect,
 } from './black-covenant-battle';
 import {
+  V070_HELLFIRE_BATTLE_TEXT,
+  V070_HELLFIRE_ID,
+  registerV070HellfireBattleEffect,
+} from './hellfire-battle';
+import {
   V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
   V070_GUILT_BY_ASSOCIATION_ID,
   registerV070GuiltByAssociationBattleEffect,
@@ -152,6 +157,7 @@ declare module './battle-types' {
     deferredWitchcraftGambitCommitments?: V070BattleCardCommitment[];
     deferredRendTheVeilGambitCommitments?: V070BattleCardCommitment[];
     deferredReinforcementsGambitCommitments?: V070BattleCardCommitment[];
+    deferredHellfireGambitCommitments?: V070BattleCardCommitment[];
   }
 }
 
@@ -441,6 +447,19 @@ const guiltByAssociationHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const hellfireHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_HELLFIRE_ID,
+  expectedText: V070_HELLFIRE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070HellfireBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const underwritingHandler: previous.V070BattleEffectHandler = {
   cardId: V070_UNDERWRITING_ID,
   expectedText: V070_UNDERWRITING_BATTLE_TEXT,
@@ -553,6 +572,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_FORECLOSURE_ID, foreclosureHandler],
   [V070_UNDERWRITING_ID, underwritingHandler],
   [V070_BLACK_COVENANT_ID, blackCovenantHandler],
+  [V070_HELLFIRE_ID, hellfireHandler],
   [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
@@ -741,6 +761,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeDeferredRendTheVeilGambits(state),
         ...takeV070DeferredReconnaissanceGambits(state),
         ...takeDeferredReinforcementsGambits(state),
+        ...takeDeferredHellfireGambits(state),
       ]
     : [];
   const effectiveCommitments = [...commitments, ...deferredPostTactics];
@@ -769,6 +790,7 @@ export function resolveV070SupportedRevealEffects(
         || cardId === V070_REND_THE_VEIL_ID
         || cardId === V070_RECONNAISSANCE_ID
         || cardId === V070_REINFORCEMENTS_ID
+        || cardId === V070_HELLFIRE_ID
       )) {
       if (cardId === V070_WITCHCRAFT_ID) {
         deferWitchcraftGambit(state, commitment);
@@ -776,8 +798,10 @@ export function resolveV070SupportedRevealEffects(
         deferRendTheVeilGambit(state, commitment);
       } else if (cardId === V070_RECONNAISSANCE_ID) {
         deferV070ReconnaissanceGambit(state, commitment);
-      } else {
+      } else if (cardId === V070_REINFORCEMENTS_ID) {
         deferReinforcementsGambit(state, commitment);
+      } else {
+        deferHellfireGambit(state, commitment);
       }
       continue;
     }
@@ -904,6 +928,33 @@ function takeDeferredRendTheVeilGambits(
   );
 }
 
+function deferHellfireGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredHellfireGambitCommitments ??= [];
+  if (runtime.deferredHellfireGambitCommitments.some(
+    candidate => candidate.instanceId === commitment.instanceId,
+  )) return;
+  runtime.deferredHellfireGambitCommitments.push({ ...commitment });
+}
+
+function takeDeferredHellfireGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred = runtime.deferredHellfireGambitCommitments ?? [];
+  runtime.deferredHellfireGambitCommitments = [];
+  return deferred.filter(commitment =>
+    state.cardInstances[commitment.instanceId]?.cardId === V070_HELLFIRE_ID
+    && !isV070BattleCardEffectNegated(state, commitment.instanceId)
+    && battleContainsCommitment(state, commitment)
+  );
+}
+
 function deferReinforcementsGambit(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
@@ -968,6 +1019,10 @@ function deferredRegistrationExists(
   }
   if (cardId === V070_SUPPLIES_ID) {
     return state.battleRuntime?.suppliesBattleSourceInstanceIds
+      ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_HELLFIRE_ID) {
+    return state.battleRuntime?.hellfireResolvedSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
   }
   if (cardId === V070_GUILT_BY_ASSOCIATION_ID) {
