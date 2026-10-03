@@ -38,6 +38,13 @@ import {
   takeV070DeferredReconnaissanceGambits,
 } from './reconnaissance-battle';
 import {
+  V070_OPERATIONAL_REASSESSMENT_BATTLE_TEXT,
+  V070_OPERATIONAL_REASSESSMENT_ID,
+  deferV070OperationalReassessmentGambit,
+  registerV070OperationalReassessmentBattleEffect,
+  takeV070DeferredOperationalReassessmentGambits,
+} from './operational-reassessment-battle';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -537,6 +544,21 @@ const redemptionHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+
+const operationalReassessmentHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_OPERATIONAL_REASSESSMENT_ID,
+  expectedText: V070_OPERATIONAL_REASSESSMENT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070OperationalReassessmentBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
+
 const contrabandHandler: previous.V070BattleEffectHandler = {
   cardId: V070_CONTRABAND_ID,
   expectedText: V070_CONTRABAND_BATTLE_TEXT,
@@ -666,6 +688,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_CONFESSION_ID, confessionHandler],
   [V070_SCOUTING_REPORT_ID, scoutingReportHandler],
   [V070_REDEMPTION_ID, redemptionHandler],
+  [V070_OPERATIONAL_REASSESSMENT_ID, operationalReassessmentHandler],
   [V070_CONTRABAND_ID, contrabandHandler],
   [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
@@ -781,6 +804,92 @@ export function applyV070LateAdditionalTacticRevealEffect(
   return [];
 }
 
+export function applyV070PostTacticsReplacementRevealEffect(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): V070UnsupportedBattleEffect[] {
+  const cardId =
+    state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  const card = v070CanonicalContent.cardsById.get(cardId);
+  const relevant = card?.effects.filter(effect =>
+    effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
+    || effect.label === 'Gambit/Tactic'
+  ) ?? [];
+  const handler = v070BattleEffectHandler(cardId);
+
+  if (!handler
+    || relevant.length !== 1
+    || relevant[0]?.text !== handler.expectedText) {
+    return relevant.map(effect => ({
+      owner: commitment.owner,
+      instanceId: commitment.instanceId,
+      cardId,
+      role: commitment.role,
+      label: effect.label,
+      text: effect.text,
+      encounteredAt: 'reveal_tactics' as const,
+    }));
+  }
+
+  if (isV070BattleCardEffectNegated(
+    state,
+    commitment.instanceId,
+  )) {
+    appendV070Event(state, {
+      type: 'battle_card_effect_skipped_negated',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+      },
+    });
+    return [];
+  }
+
+  if (card?.trait === 'Arcane'
+    && v070MonasterySuppressesArcaneBattleEffects(state)) {
+    appendV070Event(state, {
+      type: 'battle_card_effect_suppressed',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+        reason: 'Monastery',
+      },
+    });
+    return [];
+  }
+
+  handler.apply({
+    state,
+    owner: commitment.owner,
+    opponent: commitment.owner === 'A' ? 'B' : 'A',
+    commitment,
+  });
+  markV070BattleCardEffectApplied(
+    state,
+    commitment.instanceId,
+  );
+  appendV070Event(state, {
+    type: 'battle_card_effect_applied',
+    actor: commitment.owner,
+    visibility: 'public',
+    payload: {
+      instanceId: commitment.instanceId,
+      cardId,
+      role: commitment.role,
+      timing: 'reveal',
+      revealClass: 'ordinary',
+      postTacticsReplacement: true,
+    },
+  });
+  return [];
+}
+
 /**
  * Current-release audit adapter. Runtime resolution remains on the frozen
  * v0.7.0 handler graph until migrated deliberately; reviewed wording-only
@@ -855,6 +964,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeDeferredWitchcraftGambits(state),
         ...takeDeferredRendTheVeilGambits(state),
         ...takeV070DeferredReconnaissanceGambits(state),
+        ...takeV070DeferredOperationalReassessmentGambits(state),
         ...takeDeferredReinforcementsGambits(state),
         ...takeDeferredHellfireGambits(state),
       ]
@@ -884,6 +994,7 @@ export function resolveV070SupportedRevealEffects(
         cardId === V070_WITCHCRAFT_ID
         || cardId === V070_REND_THE_VEIL_ID
         || cardId === V070_RECONNAISSANCE_ID
+        || cardId === V070_OPERATIONAL_REASSESSMENT_ID
         || cardId === V070_REINFORCEMENTS_ID
         || cardId === V070_HELLFIRE_ID
       )) {
@@ -893,6 +1004,8 @@ export function resolveV070SupportedRevealEffects(
         deferRendTheVeilGambit(state, commitment);
       } else if (cardId === V070_RECONNAISSANCE_ID) {
         deferV070ReconnaissanceGambit(state, commitment);
+      } else if (cardId === V070_OPERATIONAL_REASSESSMENT_ID) {
+        deferV070OperationalReassessmentGambit(state, commitment);
       } else if (cardId === V070_REINFORCEMENTS_ID) {
         deferReinforcementsGambit(state, commitment);
       } else {
