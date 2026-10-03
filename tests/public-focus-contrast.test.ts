@@ -5,7 +5,7 @@ const focusStyles = [
   "site.css",
   "rulebook/styles.css",
   "deckbuilder/styles.css",
-  "rules-arbiter/styles.css",
+  "apps/apps/rules-arbiter/styles.css",
   "playtest/retrospective/styles.css",
 ];
 

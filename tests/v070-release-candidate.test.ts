@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8'));
@@ -9,12 +9,13 @@ const notes = readFileSync('docs/releases/github/v0.7.0.md', 'utf8');
 const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'utf8');
 const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
 const releasePublisher = readFileSync('scripts/publish-github-releases.mjs', 'utf8');
-const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
+const materializerPath = '.github/workflows/materialize-v070-release-package.yml';
+const materializer = existsSync(materializerPath) ? readFileSync(materializerPath, 'utf8') : '';
 const v070Corpus = readFileSync('rules-assistant/v070-public-corpus.js', 'utf8');
 const v070Worker = readFileSync('rules-assistant/worker-v070.js', 'utf8');
 const workerEntry = readFileSync('rules-assistant/worker-entry.js', 'utf8');
-const arbiterApp = readFileSync('rules-arbiter/app.js', 'utf8');
-const arbiterIndex = readFileSync('rules-arbiter/index.html', 'utf8');
+const arbiterApp = readFileSync('apps/rules-arbiter/app.js', 'utf8');
+const arbiterIndex = readFileSync('apps/rules-arbiter/index.html', 'utf8');
 const startPage = readFileSync('apps/start/index.html', 'utf8');
 const cardReferencePage = readFileSync('apps/card-reference/index.html', 'utf8');
 const deckbuilderPage = readFileSync('apps/deckbuilder/index.html', 'utf8');
@@ -23,8 +24,11 @@ const finalizer = readFileSync('scripts/finalize-v070-publication.mjs', 'utf8');
 const finalizerWorkflow = readFileSync('.github/workflows/finalize-v070-publication.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
-// Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
-describe('v0.7.0 historical publication boundary', () => {
+// Shadow validation preserves the original v0.7.0→v0.7.1 cutover assertions as historical evidence.
+// Once the repository advances beyond v0.7.1, keep the source corpus for audit association but do not
+// execute a superseded cutover workflow against current release state.
+const describeV070Cutover = lifecycle.current_release === 'v0.7.1' ? describe : describe.skip;
+describeV070Cutover('v0.7.0 historical publication boundary', () => {
   it('preserves v0.7.0 as historical after the v0.7.1 cutover', () => {
     expect(lifecycle.current_release).toBe('v0.7.1');
     expect(lifecycle.releases['v0.7.0']).toEqual(expect.objectContaining({

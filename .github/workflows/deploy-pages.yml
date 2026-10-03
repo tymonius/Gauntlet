@@ -19,6 +19,7 @@ on:
       - 'images/woodcuts/factions/**'
       - 'images/sketches/*.png'
       - 'apps/card-reference/**'
+      - 'apps/rules-arbiter/**'
       - 'apps/deckbuilder/**'
       - 'apps/factions/**'
       - 'apps/rules/**'

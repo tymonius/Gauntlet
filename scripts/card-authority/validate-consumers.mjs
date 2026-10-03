@@ -10,7 +10,7 @@ const LIVE_SOURCE_DIRS = Object.freeze([
   'apps/factions',
   'apps/playtest',
   'rulebook',
-  'rules-arbiter',
+  'apps/rules-arbiter',
   'scripts',
   'apps/start',
   'tts',

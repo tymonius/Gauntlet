@@ -224,9 +224,28 @@ The remaining direct-card browser-preparation runtime is review tooling rather t
 
 At this point the remaining `card-design/` root is intentionally the canonical browser face/component presentation boundary plus its live family styles and active reference-copy support, not a catch-all review-tool directory.
 
-## Current tranche — Rules Arbiter placement audit
+## Completed tranche — Rules Arbiter browser app placement
 
-Inspect the current Rules Arbiter implementation, data, exports, deployment surfaces, and compatibility paths. Establish which pieces are canonical current application/runtime code, which are generated or release artifacts, and which are historical/compatibility material before moving anything.
+The current Rules Arbiter browser shell is now classified as application source:
+
+- moved the maintained browser shell and its local accessibility tests from `rules-arbiter/` to `apps/rules-arbiter/`;
+- preserved the stable public `/rules-arbiter/` route through the publication boundary;
+- removed the old top-level directory from direct Pages publication;
+- updated current source-reading tests, publication sync, and CI path classification to follow the app source;
+- verified the browser app and public widget both target the lifecycle-selected current Rules Arbiter/release corpus;
+- corrected stale `rules-assistant/README.md` language that still described a historical Rules Arbiter release as current.
+
+## Current tranche — Rules Assistant public/backend split audit
+
+The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
+
+- browser-public widget assets and their stable `/rules-assistant/` URLs;
+- the current Cloudflare Worker entry/deployment runtime and D1 migrations;
+- admin/refinement/review/export tooling;
+- current QA/eval corpora and regression harnesses;
+- explicitly versioned historical/compatibility workers and corpora.
+
+Do not move versioned worker/corpus files until their live routing, QA, and historical compatibility consumers are mechanically classified.
 
 ## Card-design lifecycle state
 
@@ -257,7 +276,7 @@ Inspect the current Rules Arbiter implementation, data, exports, deployment surf
 
 ## Next top-down queue
 
-1. Inspect Rules Arbiter implementation/data/export placement now that the card-design presentation/runtime ownership audit is complete.
+1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
 2. Continue production-tool consolidation (`scripts/`, `media/`, `tts/`, related tooling) only after callers and lifecycle are classified.
 3. Audit governance/traceability and CI paths that still encode transitional locations.
 4. Only then begin repository-wide individual-file cleanup: dead files, stale tests, naming, factoring, comments, formatting, and local organization.
