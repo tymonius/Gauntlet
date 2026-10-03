@@ -236,9 +236,8 @@ describe('Redemption battle effect', () => {
       playerId: 'A',
     });
 
-    const participant = state.battleRuntime!.participants.A;
-    const source = participant.reserve[0];
-    const target = participant.reserve[1];
+    const source = state.battleRuntime!.participants.A.reserve[0];
+    const target = state.battleRuntime!.participants.A.reserve[1];
     state.cardInstances[source].cardId = V070_REDEMPTION_ID;
     state.cardInstances[target].cardId = 'neutral-rallying-cry';
 
@@ -247,10 +246,11 @@ describe('Redemption battle effect', () => {
       playerId: 'A',
       cardInstanceId: source,
     });
-    participant.reserve = participant.reserve.filter(
-      instanceId => instanceId !== target,
-    );
-    participant.additionalTactics.push({
+    state.battleRuntime!.participants.A.reserve =
+      state.battleRuntime!.participants.A.reserve.filter(
+        instanceId => instanceId !== target,
+      );
+    state.battleRuntime!.participants.A.additionalTactics.push({
       instanceId: target,
       owner: 'A',
       role: 'tactic',
@@ -294,9 +294,8 @@ describe('Redemption battle effect', () => {
   test('one Redemption chooses among multiple eligible negated Tactics', () => {
     let { state, source } =
       reachChooseTacticsWithRedemptionGambit(startBattle());
-    const participant = state.battleRuntime!.participants.A;
-    const first = participant.reserve[0];
-    const second = participant.reserve[1];
+    const first = state.battleRuntime!.participants.A.reserve[0];
+    const second = state.battleRuntime!.participants.A.reserve[1];
     state.cardInstances[first].cardId = 'neutral-rallying-cry';
     state.cardInstances[second].cardId = 'neutral-stand-ground';
 
@@ -305,10 +304,11 @@ describe('Redemption battle effect', () => {
       playerId: 'A',
       cardInstanceId: first,
     });
-    participant.reserve = participant.reserve.filter(
-      instanceId => instanceId !== second,
-    );
-    participant.additionalTactics.push({
+    state.battleRuntime!.participants.A.reserve =
+      state.battleRuntime!.participants.A.reserve.filter(
+        instanceId => instanceId !== second,
+      );
+    state.battleRuntime!.participants.A.additionalTactics.push({
       instanceId: second,
       owner: 'A',
       role: 'tactic',
