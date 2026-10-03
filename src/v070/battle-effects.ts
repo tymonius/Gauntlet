@@ -9,6 +9,7 @@ import type {
 } from './battle-types';
 import * as previous from './battle-effects-pre-capital-gains';
 import {
+  hasV070BattleCardEffectApplied,
   isV070BattleCardEffectNegated,
   markV070BattleCardEffectApplied,
 } from './battle-effect-status';
@@ -134,6 +135,10 @@ import {
   V070_HELLFIRE_ID,
   registerV070HellfireBattleEffect,
 } from './hellfire-battle';
+import {
+  V070_CONFESSION_BATTLE_TEXT,
+  V070_CONFESSION_ID,
+} from './confession-battle';
 import {
   V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
   V070_GUILT_BY_ASSOCIATION_ID,
@@ -460,6 +465,28 @@ const hellfireHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const confessionHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_CONFESSION_ID,
+  expectedText: V070_CONFESSION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    // Confession's real timing is before the normal Tactic reveal. The
+    // pre-reveal procedure marks a physical source applied before this ordinary
+    // reveal pass reaches it. A Confession introduced only at/after normal
+    // reveal has missed its printed timing and does not reopen that window.
+    markV070BattleCardEffectApplied(state, commitment.instanceId);
+    appendV070Event(state, {
+      type: 'confession_battle_timing_passed',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: commitment.instanceId,
+        sourceCardId: V070_CONFESSION_ID,
+      },
+    });
+  },
+};
+
 const underwritingHandler: previous.V070BattleEffectHandler = {
   cardId: V070_UNDERWRITING_ID,
   expectedText: V070_UNDERWRITING_BATTLE_TEXT,
@@ -573,6 +600,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_UNDERWRITING_ID, underwritingHandler],
   [V070_BLACK_COVENANT_ID, blackCovenantHandler],
   [V070_HELLFIRE_ID, hellfireHandler],
+  [V070_CONFESSION_ID, confessionHandler],
   [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
@@ -1024,6 +1052,9 @@ function deferredRegistrationExists(
   if (cardId === V070_HELLFIRE_ID) {
     return state.battleRuntime?.hellfireResolvedSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
+  }
+  if (cardId === V070_CONFESSION_ID) {
+    return hasV070BattleCardEffectApplied(state, sourceInstanceId);
   }
   if (cardId === V070_GUILT_BY_ASSOCIATION_ID) {
     return v070GuiltByAssociationAftermathEffects(state).some(

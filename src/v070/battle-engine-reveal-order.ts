@@ -29,6 +29,11 @@ import {
 } from './financier-pre-dice-battle';
 import { recordV070MysticBattleEffectApplied } from './mystics';
 import { resolveV070HellfireBattleChoice } from './hellfire-battle';
+import {
+  advanceV070ConfessionPreReveal,
+  pendingV070ConfessionBattleChoice,
+  resolveV070ConfessionBattleChoice,
+} from './confession-battle';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -104,13 +109,56 @@ export type V070BattleAction =
       playerId: PlayerId;
       battleTotalBonus: number;
       aftermathCardCount: number;
+    }
+  | {
+      type: 'resolve_confession_battle';
+      playerId: PlayerId;
+      cardInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const confessionPending = pendingV070ConfessionBattleChoice(state);
+  if (confessionPending) {
+    if (action.type !== 'resolve_confession_battle') {
+      throw new V070GameActionError(
+        'Resolve the pending Confession pre-reveal choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ConfessionBattleChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+    if (pendingV070ConfessionBattleChoice(next)) return next;
+    if (advanceV070ConfessionPreReveal(next)) return next;
+    if (!next.battle) {
+      throw new V070GameActionError(
+        'Confession lost the active battle before normal Tactics could reveal.',
+      );
+    }
+    return previous.reduceV070BattleAction(next, {
+      type: 'reveal_tactics',
+      playerId: next.battle.attacker,
+    });
+  }
+  if (action.type === 'resolve_confession_battle') {
+    throw new V070GameActionError(
+      'There is no pending Confession battle choice.',
+    );
+  }
+
   const pending = pendingV070BattleRevealChoice(state);
+  if (!pending
+    && action.type === 'reveal_tactics'
+    && state.battleRuntime?.stage === 'reveal_tactics') {
+    const next = structuredClone(state) as V070GameState;
+    if (advanceV070ConfessionPreReveal(next)) return next;
+    return previous.reduceV070BattleAction(next, action);
+  }
   if (pending?.kind === 'hellfire'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_hellfire_battle') {
