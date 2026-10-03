@@ -778,6 +778,7 @@ configureV070WitchcraftBattleEffectHandlerResolver(v070BattleEffectHandler);
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
+  if (cardId === V070_SCOUTING_REPORT_ID) return 'interference';
   if (deferredHandlers.has(cardId)) return 'ordinary';
   return previous.v070BattleRevealEffectClass(cardId);
 }
