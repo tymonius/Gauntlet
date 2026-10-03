@@ -373,7 +373,13 @@ for (const route of ['/', ...siteInfoRoutes, releaseLandingRoute, changelogRoute
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
 const rulebook = pages.get(rulebookRoute) ?? await getText(rulebookRoute);
 const rulebookRefs = htmlRefs(rulebook).map((ref) => normalizeRef(rulebookRoute, ref)).filter(Boolean);
-assert(rulebookRefs.includes(bookletPath), 'Rulebook does not expose the current printable booklet.');
+// The frozen release package is validated above at bookletPath. The live Rulebook
+// intentionally exposes the Pages-staged booklet route, not the immutable release URL.
+const liveBookletPath = new URL(
+  `./booklets/${currentVersion}/${bookletEntry.path}`,
+  `https://gauntlet.invalid${rulebookRoute}`,
+).pathname;
+assert(rulebookRefs.includes(liveBookletPath), 'Rulebook does not expose the current printable booklet.');
 const readerEntry = manifest.pdf_outputs?.find((item) => item.key === 'rulebook');
 if (readerEntry) {
   assert(!rulebookRefs.includes(`${normalizedReleaseRoot}${readerEntry.path}`), 'Rulebook still exposes a competing Reader PDF action.');
