@@ -624,6 +624,46 @@
       "source": "legacy/card-design-studies/typography/card-print-review.css",
       "publicPath": "/card-design/typography/card-print-review.css",
       "kind": "historical-design-study"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Player_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Military_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Diplomats_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Financiers_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Intelligence_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Mystics_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Inquisition_Guide_Booklet.pdf",
+      "kind": "current-rules-publication"
+    },
+    {
+      "source": "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "publicPath": "/rulebook/booklets/v0.7.2/Gauntlet_v0.7.2_Complete_Rules_Booklet.pdf",
+      "kind": "current-rules-publication"
     }
   ],
   "managedRoutes": [
