@@ -13,6 +13,7 @@ import {
 } from './battle-reveal-choices';
 import {
   applyV070LateAdditionalTacticRevealEffect,
+  applyV070PostTacticsReplacementRevealEffect,
   resumeV070SupportedRevealEffects,
 } from './battle-effects';
 import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
@@ -21,6 +22,9 @@ import { resolveV070HeresyBattleChoice } from './heresy-battle';
 import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
 import { resolveV070ContrabandBattleChoice } from './contraband-battle';
 import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
+import {
+  resolveV070OperationalReassessmentBattleChoice,
+} from './operational-reassessment-battle';
 import { applyV070BlasphemyForBattleReveal } from './inquisition';
 import {
   resolveV070DivestmentBattleChoice,
@@ -94,6 +98,12 @@ export type V070BattleAction =
       type: 'resolve_reconnaissance_battle';
       playerId: PlayerId;
       withdraw: boolean;
+    }
+  | {
+      type: 'resolve_operational_reassessment_battle';
+      playerId: PlayerId;
+      choice: 'withdraw' | 'replace';
+      cardInstanceId?: string;
     }
   | {
       type: 'resolve_late_additional_tactic';
@@ -504,6 +514,56 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (pending?.kind === 'operational_reassessment'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_operational_reassessment_battle') {
+      throw new V070GameActionError(
+        'Choose whether Operational Reassessment withdraws or replaces itself before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    const result = resolveV070OperationalReassessmentBattleChoice(
+      next,
+      action.playerId,
+      action.choice,
+      action.cardInstanceId,
+    );
+    if (result.withdrew) return next;
+
+    const unsupported =
+      applyV070PostTacticsReplacementRevealEffect(
+        next,
+        result.replacement,
+      );
+    if (unsupported.length > 0 && next.battleRuntime) {
+      next.battleRuntime.unsupportedEffects.push(...unsupported);
+      next.battleRuntime.stage = 'halted';
+      appendV070Event(next, {
+        type: 'battle_halted_unsupported_effect',
+        visibility: 'public',
+        payload: {
+          effects: unsupported.map(effect => ({
+            owner: effect.owner,
+            cardId: effect.cardId,
+            role: effect.role,
+            label: effect.label,
+            text: effect.text,
+            encounteredAt: effect.encounteredAt,
+          })),
+          source: 'Operational Reassessment replacement',
+        },
+      });
+      return next;
+    }
+
+    if (!pendingV070BattleRevealChoice(next)
+      && next.battleRuntime?.stage !== 'aftermath'
+      && next.battleRuntime?.stage !== 'halted') {
+      resumeV070SupportedRevealEffects(next);
+    }
+    return next;
+  }
+
   if (pending?.kind === 'reconnaissance'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_reconnaissance_battle') {
@@ -613,6 +673,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_reconnaissance_battle') {
     throw new V070GameActionError(
       'There is no open Reconnaissance battle-effect choice.',
+    );
+  }
+  if (action.type === 'resolve_operational_reassessment_battle') {
+    throw new V070GameActionError(
+      'There is no open Operational Reassessment battle-effect choice.',
     );
   }
   if (action.type === 'resolve_rend_the_veil_battle') {
