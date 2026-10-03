@@ -33,7 +33,7 @@ function startBattle(): V070GameState {
     players: {
       A: {
         name: 'Alpha',
-        starterDeckId: 'mystics-spirit-walker-old-ways',
+        starterDeckId: 'mystics-spirit-walker-unbroken-circle',
       },
       B: {
         name: 'Bravo',
