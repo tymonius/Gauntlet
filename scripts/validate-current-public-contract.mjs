@@ -250,6 +250,9 @@ const primaryBookletKey = Array.isArray(modularDocuments) && modularDocuments.le
 const bookletEntry = manifest.pdf_outputs?.find((item) => item.key === primaryBookletKey);
 assert(bookletEntry, `Current release manifest is missing the primary printable rules booklet (${primaryBookletKey}).`);
 const bookletPath = `${normalizedReleaseRoot}${bookletEntry.path}`;
+const exposedBookletPath = Array.isArray(modularDocuments) && modularDocuments.length > 0
+  ? `/rulebook/booklets/${currentVersion}/${bookletEntry.path}`
+  : bookletPath;
 const bookletBytes = await getBytes(bookletPath);
 assert.equal(bookletBytes.length, bookletEntry.bytes, 'Published booklet byte count does not match the manifest.');
 assert.equal(sha256(bookletBytes), bookletEntry.sha256, 'Published booklet hash does not match the manifest.');
@@ -373,7 +376,7 @@ for (const route of ['/', ...siteInfoRoutes, releaseLandingRoute, changelogRoute
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
 const rulebook = pages.get(rulebookRoute) ?? await getText(rulebookRoute);
 const rulebookRefs = htmlRefs(rulebook).map((ref) => normalizeRef(rulebookRoute, ref)).filter(Boolean);
-assert(rulebookRefs.includes(bookletPath), 'Rulebook does not expose the current printable booklet.');
+assert(rulebookRefs.includes(exposedBookletPath), 'Rulebook does not expose the current printable booklet.');
 const readerEntry = manifest.pdf_outputs?.find((item) => item.key === 'rulebook');
 if (readerEntry) {
   assert(!rulebookRefs.includes(`${normalizedReleaseRoot}${readerEntry.path}`), 'Rulebook still exposes a competing Reader PDF action.');
