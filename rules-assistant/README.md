@@ -48,6 +48,21 @@ The system does not store names, email addresses, raw IP addresses, or user-agen
 
 The curated Rules Assistant tests remain separate from live interaction analytics.
 
+## Pages publication boundary
+
+The repository `rules-assistant/` directory is source-only for GitHub Pages. Pages does **not** publish the directory wholesale. The stable `/rules-assistant/` browser contract materializes only the current browser dependency closure:
+
+- `widget.js`
+- `widget.css`
+- `widget-mobile.css`
+- `feedback.css`
+- `answer-presentation.js`
+- `answer-presentation.css`
+- `local-search.js`
+- `v072-release-corpus.js`
+
+Worker entrypoints, admin/refinement modules, D1 migrations, tests, evals, audit records, and Wrangler configuration remain repository/deployment source and are not part of the GitHub Pages payload. The public filenames above remain stable even if their maintained source ownership moves later.
+
 ## Static-site integration
 
 Include the stylesheet and module on a page:
