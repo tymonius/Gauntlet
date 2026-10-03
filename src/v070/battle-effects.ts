@@ -140,6 +140,10 @@ import {
   V070_CONFESSION_ID,
 } from './confession-battle';
 import {
+  V070_SCOUTING_REPORT_BATTLE_TEXT,
+  V070_SCOUTING_REPORT_ID,
+} from './scouting-report-battle';
+import {
   V070_GUILT_BY_ASSOCIATION_BATTLE_TEXT,
   V070_GUILT_BY_ASSOCIATION_ID,
   registerV070GuiltByAssociationBattleEffect,
@@ -487,6 +491,28 @@ const confessionHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const scoutingReportHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_SCOUTING_REPORT_ID,
+  expectedText: V070_SCOUTING_REPORT_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    // Scouting Report is reveal-stage interference and is consumed by the
+    // pre-normal-reveal scheduler. If a copy appears only after that window,
+    // its reveal timing has passed and replacing it cannot reopen the window.
+    markV070BattleCardEffectApplied(state, commitment.instanceId);
+    appendV070Event(state, {
+      type: 'scouting_report_battle_timing_passed',
+      actor: owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: commitment.instanceId,
+        sourceCardId: V070_SCOUTING_REPORT_ID,
+        role: commitment.role,
+      },
+    });
+  },
+};
+
 const underwritingHandler: previous.V070BattleEffectHandler = {
   cardId: V070_UNDERWRITING_ID,
   expectedText: V070_UNDERWRITING_BATTLE_TEXT,
@@ -601,6 +627,7 @@ const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_BLACK_COVENANT_ID, blackCovenantHandler],
   [V070_HELLFIRE_ID, hellfireHandler],
   [V070_CONFESSION_ID, confessionHandler],
+  [V070_SCOUTING_REPORT_ID, scoutingReportHandler],
   [V070_GUILT_BY_ASSOCIATION_ID, guiltByAssociationHandler],
   [V070_DIVESTMENT_ID, divestmentHandler],
   [V070_LIQUIDATION_ID, liquidationHandler],
@@ -1054,6 +1081,9 @@ function deferredRegistrationExists(
       ?.includes(sourceInstanceId) ?? false;
   }
   if (cardId === V070_CONFESSION_ID) {
+    return hasV070BattleCardEffectApplied(state, sourceInstanceId);
+  }
+  if (cardId === V070_SCOUTING_REPORT_ID) {
     return hasV070BattleCardEffectApplied(state, sourceInstanceId);
   }
   if (cardId === V070_GUILT_BY_ASSOCIATION_ID) {
