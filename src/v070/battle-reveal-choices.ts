@@ -61,6 +61,21 @@ export interface V070RendTheVeilBattleRevealChoice {
   parentApplication?: V070CopiedEffectApplication;
 }
 
+export interface V070ContrabandBattleRevealCandidate {
+  sourceInstanceId: string;
+  cardId: string;
+  effectLabel: V070CopyableEffectLabel;
+  text: string;
+}
+
+export interface V070ContrabandBattleRevealChoice {
+  kind: 'contraband';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  role: 'gambit' | 'tactic';
+  candidates: V070ContrabandBattleRevealCandidate[];
+}
+
 export interface V070ReconnaissanceBattleRevealChoice {
   kind: 'reconnaissance';
   owner: PlayerId;
@@ -119,6 +134,7 @@ export type V070BattleRevealChoice =
   | V070ArcaneKnowledgeBattleRevealChoice
   | V070HeresyBattleRevealChoice
   | V070RendTheVeilBattleRevealChoice
+  | V070ContrabandBattleRevealChoice
   | V070ReconnaissanceBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
   | V070HellfireBattleRevealChoice
@@ -134,6 +150,8 @@ declare module './battle-types' {
     heresyBattleRevealChoiceOpen?: boolean;
     pendingRendTheVeilBattleRevealChoice?: V070RendTheVeilBattleRevealChoice | null;
     rendTheVeilBattleRevealChoiceOpen?: boolean;
+    pendingContrabandBattleRevealChoice?: V070ContrabandBattleRevealChoice | null;
+    contrabandBattleRevealChoiceOpen?: boolean;
     pendingReconnaissanceBattleRevealChoice?: V070ReconnaissanceBattleRevealChoice | null;
     reconnaissanceBattleRevealChoiceOpen?: boolean;
     pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
@@ -427,6 +445,55 @@ export function queueV070RendTheVeilBattleRevealChoice(
   });
 }
 
+export function queueV070ContrabandBattleRevealChoice(
+  state: V070GameState,
+  choice: V070ContrabandBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Contraband battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Contraband cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingContrabandBattleRevealChoice = {
+    ...choice,
+    candidates: choice.candidates.map(candidate => ({ ...candidate })),
+  };
+  runtime.contrabandBattleRevealChoiceOpen = true;
+
+  appendV070Event(state, {
+    type: 'contraband_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'neutral-contraband',
+      role: choice.role,
+      candidateCount: choice.candidates.length,
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'contraband_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      role: choice.role,
+      candidates: choice.candidates.map(candidate => ({
+        sourceInstanceId: candidate.sourceInstanceId,
+        cardId: candidate.cardId,
+        effectLabel: candidate.effectLabel,
+      })),
+    },
+  });
+}
+
 export function queueV070ReconnaissanceBattleRevealChoice(
   state: V070GameState,
   choice: V070ReconnaissanceBattleRevealChoice,
@@ -460,7 +527,8 @@ export function queueV070ReconnaissanceBattleRevealChoice(
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
+  return state.battleRuntime?.pendingContrabandBattleRevealChoice
+    ?? state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
     ?? state.battleRuntime?.pendingHellfireBattleRevealChoice
     ?? state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
     ?? state.battleRuntime?.pendingReconnaissanceBattleRevealChoice
@@ -474,6 +542,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingContrabandBattleRevealChoice) {
+    return Boolean(state.battleRuntime.contrabandBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice) {
     return Boolean(
       state.battleRuntime.financierPreDiceBattleRevealChoiceOpen,
@@ -617,6 +688,21 @@ export function completeV070RendTheVeilBattleRevealChoice(
   }
   runtime.pendingRendTheVeilBattleRevealChoice = null;
   runtime.rendTheVeilBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070ContrabandBattleRevealChoice(
+  state: V070GameState,
+): V070ContrabandBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingContrabandBattleRevealChoice;
+  if (!runtime || !pending || !runtime.contrabandBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Contraband battle replacement choice.',
+    );
+  }
+  runtime.pendingContrabandBattleRevealChoice = null;
+  runtime.contrabandBattleRevealChoiceOpen = false;
   return pending;
 }
 

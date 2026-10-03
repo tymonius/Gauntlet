@@ -3037,6 +3037,12 @@ function territoryAftermathDestination(
     );
   if (cardOverride) return cardOverride.destination;
 
+  // Contraband's replacement defaults to the Graveyard, but an explicit
+  // destination created by the chosen card's own effect takes precedence.
+  if (runtime.contrabandBattleTargetInstanceIds?.includes(instanceId)) {
+    return 'graveyard';
+  }
+
   const territoryOverride = runtime.territoryAftermathOverride;
   return territoryOverride
     && territoryOverride.playerId === playerId
