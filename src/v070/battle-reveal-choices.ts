@@ -82,6 +82,14 @@ export interface V070ReconnaissanceBattleRevealChoice {
   sourceInstanceId: string;
 }
 
+export interface V070OperationalReassessmentBattleRevealChoice {
+  kind: 'operational_reassessment';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  role: 'gambit' | 'tactic';
+  candidateInstanceIds: string[];
+}
+
 export interface V070LateAdditionalTacticBattleRevealChoice {
   kind: 'late_additional_tactic';
   owner: PlayerId;
@@ -136,6 +144,7 @@ export type V070BattleRevealChoice =
   | V070RendTheVeilBattleRevealChoice
   | V070ContrabandBattleRevealChoice
   | V070ReconnaissanceBattleRevealChoice
+  | V070OperationalReassessmentBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
   | V070HellfireBattleRevealChoice
   | V070FinancierPreDiceBattleRevealChoice;
@@ -154,6 +163,8 @@ declare module './battle-types' {
     contrabandBattleRevealChoiceOpen?: boolean;
     pendingReconnaissanceBattleRevealChoice?: V070ReconnaissanceBattleRevealChoice | null;
     reconnaissanceBattleRevealChoiceOpen?: boolean;
+    pendingOperationalReassessmentBattleRevealChoice?: V070OperationalReassessmentBattleRevealChoice | null;
+    operationalReassessmentBattleRevealChoiceOpen?: boolean;
     pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
     pendingHellfireBattleRevealChoice?: V070HellfireBattleRevealChoice | null;
@@ -524,10 +535,61 @@ export function queueV070ReconnaissanceBattleRevealChoice(
   });
 }
 
+
+export function queueV070OperationalReassessmentBattleRevealChoice(
+  state: V070GameState,
+  choice: V070OperationalReassessmentBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Operational Reassessment battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Operational Reassessment cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+
+  runtime.pendingOperationalReassessmentBattleRevealChoice = {
+    ...choice,
+    candidateInstanceIds: [...choice.candidateInstanceIds],
+  };
+  runtime.operationalReassessmentBattleRevealChoiceOpen = true;
+
+  appendV070Event(state, {
+    type: 'operational_reassessment_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'intelligence-operational-reassessment',
+      role: choice.role,
+      replacementCount: choice.candidateInstanceIds.length,
+      choices: choice.candidateInstanceIds.length > 0
+        ? ['withdraw', 'replace']
+        : ['withdraw'],
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'operational_reassessment_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      role: choice.role,
+      candidateInstanceIds: [...choice.candidateInstanceIds],
+    },
+  });
+}
+
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingContrabandBattleRevealChoice
+  return state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
+    ?? state.battleRuntime?.pendingContrabandBattleRevealChoice
     ?? state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
     ?? state.battleRuntime?.pendingHellfireBattleRevealChoice
     ?? state.battleRuntime?.pendingLateAdditionalTacticBattleRevealChoice
@@ -542,6 +604,11 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice) {
+    return Boolean(
+      state.battleRuntime.operationalReassessmentBattleRevealChoiceOpen,
+    );
+  }
   if (state.battleRuntime?.pendingContrabandBattleRevealChoice) {
     return Boolean(state.battleRuntime.contrabandBattleRevealChoiceOpen);
   }
@@ -703,6 +770,23 @@ export function completeV070ContrabandBattleRevealChoice(
   }
   runtime.pendingContrabandBattleRevealChoice = null;
   runtime.contrabandBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070OperationalReassessmentBattleRevealChoice(
+  state: V070GameState,
+): V070OperationalReassessmentBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingOperationalReassessmentBattleRevealChoice;
+  if (!runtime
+    || !pending
+    || !runtime.operationalReassessmentBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Operational Reassessment battle-effect choice.',
+    );
+  }
+  runtime.pendingOperationalReassessmentBattleRevealChoice = null;
+  runtime.operationalReassessmentBattleRevealChoiceOpen = false;
   return pending;
 }
 
