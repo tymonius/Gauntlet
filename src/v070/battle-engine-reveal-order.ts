@@ -19,6 +19,7 @@ import { resolveV070WitchcraftBattleChoice } from './witchcraft-battle';
 import { resolveV070ArcaneKnowledgeBattleChoice } from './arcane-knowledge-battle';
 import { resolveV070HeresyBattleChoice } from './heresy-battle';
 import { resolveV070RendTheVeilBattleChoice } from './rend-the-veil-battle';
+import { resolveV070ContrabandBattleChoice } from './contraband-battle';
 import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
 import { applyV070BlasphemyForBattleReveal } from './inquisition';
 import {
@@ -80,6 +81,12 @@ export type V070BattleAction =
       type: 'resolve_rend_the_veil_battle';
       playerId: PlayerId;
       use: true;
+      targetInstanceId: string;
+      targetEffectLabel: V070CopyableEffectLabel;
+    }
+  | {
+      type: 'resolve_contraband_battle';
+      playerId: PlayerId;
       targetInstanceId: string;
       targetEffectLabel: V070CopyableEffectLabel;
     }
@@ -516,6 +523,22 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (pending?.kind === 'contraband' && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_contraband_battle') {
+      throw new V070GameActionError(
+        'Choose the Discard Pile card Contraband places into this battle before continuing.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ContrabandBattleChoice(
+      next,
+      action.playerId,
+      action.targetInstanceId,
+      action.targetEffectLabel,
+    );
+    return next;
+  }
+
   if (pending?.kind === 'rend_the_veil' && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_rend_the_veil_battle') {
       throw new V070GameActionError(
@@ -594,6 +617,9 @@ export function reduceV070BattleAction(
   }
   if (action.type === 'resolve_rend_the_veil_battle') {
     throw new V070GameActionError('There is no open Rend the Veil battle-effect choice.');
+  }
+  if (action.type === 'resolve_contraband_battle') {
+    throw new V070GameActionError('There is no open Contraband battle replacement choice.');
   }
   if (action.type === 'resolve_heresy_battle') {
     throw new V070GameActionError('There is no open Heresy battle-effect choice.');
