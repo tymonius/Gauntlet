@@ -84,7 +84,7 @@ function tacticCommitments(state: V070GameState, playerId: PlayerId) {
   ];
 }
 
-function liveConfessionSources(
+export function v070ConfessionPreRevealSourceInstanceIds(
   state: V070GameState,
   playerId: PlayerId,
 ): string[] {
@@ -104,7 +104,7 @@ function nextConfessionPlayer(
   const battle = state.battle;
   if (!battle) return null;
   const has = (playerId: PlayerId) =>
-    liveConfessionSources(state, playerId).length > 0;
+    v070ConfessionPreRevealSourceInstanceIds(state, playerId).length > 0;
 
   if (previousPlayer === null) {
     if (has(battle.attacker)) return battle.attacker;
@@ -413,7 +413,7 @@ function revealTargetOrContinue(
   openReplacementOrFinish(state, owner, sourceInstanceId);
 }
 
-function beginSource(
+export function beginV070ConfessionPreRevealSource(
   state: V070GameState,
   owner: PlayerId,
   sourceInstanceId: string,
@@ -466,7 +466,7 @@ export function advanceV070ConfessionPreReveal(
     ?? nextConfessionPlayer(state, null);
 
   while (nextPlayer) {
-    const sources = liveConfessionSources(state, nextPlayer);
+    const sources = v070ConfessionPreRevealSourceInstanceIds(state, nextPlayer);
     if (sources.length === 0) {
       nextPlayer = nextConfessionPlayer(state, nextPlayer);
       runtime.confessionPreRevealNextPlayer = nextPlayer;
@@ -474,7 +474,7 @@ export function advanceV070ConfessionPreReveal(
     }
 
     runtime.confessionPreRevealNextPlayer = nextPlayer;
-    beginSource(state, nextPlayer, sources[0]);
+    beginV070ConfessionPreRevealSource(state, nextPlayer, sources[0]);
     if (runtime.pendingConfessionBattleChoice) return true;
     nextPlayer = runtime.confessionPreRevealNextPlayer ?? null;
   }
