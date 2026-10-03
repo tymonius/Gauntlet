@@ -144,7 +144,7 @@
         "packages"
       ],
       "transitional": true,
-      "note": "Current Rules Arbiter Worker/retrieval/admin/refinement implementation plus browser-public widget assets, versioned compatibility implementations, tests, and eval material. This root remains transitional pending separation of deployed backend, browser-public assets, current QA/eval tooling, and historical version support."
+      "note": "Current Rules Arbiter Worker/retrieval/admin/refinement implementation plus the source for the browser widget, versioned compatibility implementations, tests, and eval material. The root is source-only for GitHub Pages; exactly the current eight-file browser dependency closure is materialized to stable /rules-assistant/ URLs. This root remains transitional pending separation of deployed Worker/D1 source, browser/shared runtime ownership, current QA/eval tooling, and historical version support."
     },
     "scripts": {
       "role": "production_tooling",
