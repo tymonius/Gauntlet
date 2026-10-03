@@ -30,10 +30,19 @@ import {
 import { recordV070MysticBattleEffectApplied } from './mystics';
 import { resolveV070HellfireBattleChoice } from './hellfire-battle';
 import {
-  advanceV070ConfessionPreReveal,
   pendingV070ConfessionBattleChoice,
   resolveV070ConfessionBattleChoice,
 } from './confession-battle';
+import {
+  pendingV070ScoutingReportBattleChoice,
+  resolveV070ScoutingReportBattleChoice,
+} from './scouting-report-battle';
+import {
+  advanceV070PreNormalRevealEffects,
+  pendingV070PreNormalRevealEffectOrderChoice,
+  resolveV070PreNormalRevealEffectOrderChoice,
+  type V070PreNormalRevealRole,
+} from './battle-pre-normal-reveal';
 
 export * from './battle-engine-reveal-order-pre-witchcraft';
 
@@ -114,12 +123,92 @@ export type V070BattleAction =
       type: 'resolve_confession_battle';
       playerId: PlayerId;
       cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_scouting_report_battle';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_pre_normal_reveal_effect_order';
+      playerId: PlayerId;
+      sourceInstanceId: string;
     };
+
+function resumeAfterPreNormalReveal(
+  state: V070GameState,
+  role: V070PreNormalRevealRole,
+): V070GameState {
+  if (pendingV070ConfessionBattleChoice(state)
+    || pendingV070ScoutingReportBattleChoice(state)
+    || pendingV070PreNormalRevealEffectOrderChoice(state)) {
+    return state;
+  }
+  if (advanceV070PreNormalRevealEffects(state, role)) return state;
+  if (!state.battle) {
+    throw new V070GameActionError(
+      'The active battle ended before the normal reveal could resume.',
+    );
+  }
+  return previous.reduceV070BattleAction(state, {
+    type: role === 'gambit' ? 'reveal_gambits' : 'reveal_tactics',
+    playerId: state.battle.attacker,
+  });
+}
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const preNormalOrder =
+    pendingV070PreNormalRevealEffectOrderChoice(state);
+  if (preNormalOrder) {
+    if (action.type !== 'resolve_pre_normal_reveal_effect_order') {
+      throw new V070GameActionError(
+        'Choose which pre-normal-reveal effect applies next before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070PreNormalRevealEffectOrderChoice(
+      next,
+      action.playerId,
+      action.sourceInstanceId,
+    );
+    if (pendingV070ConfessionBattleChoice(next)
+      || pendingV070ScoutingReportBattleChoice(next)
+      || pendingV070PreNormalRevealEffectOrderChoice(next)) {
+      return next;
+    }
+    return resumeAfterPreNormalReveal(next, preNormalOrder.role);
+  }
+  if (action.type === 'resolve_pre_normal_reveal_effect_order') {
+    throw new V070GameActionError(
+      'There is no pending pre-normal-reveal effect-order choice.',
+    );
+  }
+
+  const scoutingPending = pendingV070ScoutingReportBattleChoice(state);
+  if (scoutingPending) {
+    if (action.type !== 'resolve_scouting_report_battle') {
+      throw new V070GameActionError(
+        'Resolve the pending Scouting Report battle choice before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ScoutingReportBattleChoice(
+      next,
+      action.playerId,
+      action.cardInstanceId,
+    );
+    if (pendingV070ScoutingReportBattleChoice(next)) return next;
+    return resumeAfterPreNormalReveal(next, scoutingPending.role);
+  }
+  if (action.type === 'resolve_scouting_report_battle') {
+    throw new V070GameActionError(
+      'There is no pending Scouting Report battle choice.',
+    );
+  }
+
   const confessionPending = pendingV070ConfessionBattleChoice(state);
   if (confessionPending) {
     if (action.type !== 'resolve_confession_battle') {
@@ -134,16 +223,7 @@ export function reduceV070BattleAction(
       action.cardInstanceId,
     );
     if (pendingV070ConfessionBattleChoice(next)) return next;
-    if (advanceV070ConfessionPreReveal(next)) return next;
-    if (!next.battle) {
-      throw new V070GameActionError(
-        'Confession lost the active battle before normal Tactics could reveal.',
-      );
-    }
-    return previous.reduceV070BattleAction(next, {
-      type: 'reveal_tactics',
-      playerId: next.battle.attacker,
-    });
+    return resumeAfterPreNormalReveal(next, 'tactic');
   }
   if (action.type === 'resolve_confession_battle') {
     throw new V070GameActionError(
@@ -153,10 +233,16 @@ export function reduceV070BattleAction(
 
   const pending = pendingV070BattleRevealChoice(state);
   if (!pending
-    && action.type === 'reveal_tactics'
-    && state.battleRuntime?.stage === 'reveal_tactics') {
+    && (
+      (action.type === 'reveal_gambits'
+        && state.battleRuntime?.stage === 'reveal_gambits')
+      || (action.type === 'reveal_tactics'
+        && state.battleRuntime?.stage === 'reveal_tactics')
+    )) {
+    const role: V070PreNormalRevealRole =
+      action.type === 'reveal_gambits' ? 'gambit' : 'tactic';
     const next = structuredClone(state) as V070GameState;
-    if (advanceV070ConfessionPreReveal(next)) return next;
+    if (advanceV070PreNormalRevealEffects(next, role)) return next;
     return previous.reduceV070BattleAction(next, action);
   }
   if (pending?.kind === 'hellfire'
