@@ -192,6 +192,11 @@ import {
   v070HellfireAftermathEffectEligible,
   v070HellfireAftermathEffects,
 } from './hellfire-battle';
+import {
+  resolveV070RedemptionAftermath,
+  v070RedemptionAftermathEffects,
+  v070RedemptionTargetInstanceIds,
+} from './redemption-battle';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -3052,7 +3057,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'retribution'
     | 'financier'
     | 'guilt_by_association'
-    | 'hellfire';
+    | 'hellfire'
+    | 'redemption';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3183,6 +3189,16 @@ function pruneIneligibleBattleAftermathControlledEffects(
         v070HellfireAftermathEffectEligible(state, effect)
       );
   }
+  if (runtime.redemptionBattleEffects) {
+    runtime.redemptionBattleEffects =
+      runtime.redemptionBattleEffects.filter(effect =>
+        v070RedemptionTargetInstanceIds(
+          state,
+          effect.owner,
+          effect.sourceInstanceId,
+        ).length > 0
+      );
+  }
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -3230,6 +3246,11 @@ function remainingBattleAftermathControlledEffects(
       owner: effect.owner,
       sourceInstanceId: effect.sourceInstanceId,
       kind: 'hellfire' as const,
+    })),
+    ...v070RedemptionAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'redemption' as const,
     })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
@@ -3280,6 +3301,7 @@ function applyBattleAftermathControlledEffect(
   }
   if (effect.kind !== 'destination'
     && effect.kind !== 'guilt_by_association'
+    && effect.kind !== 'redemption'
     && targetInstanceId) {
     throw new V070GameActionError(
       'A target card applies only to an Aftermath effect that chooses a card.',
@@ -3310,6 +3332,28 @@ function applyBattleAftermathControlledEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
+    );
+    return;
+  }
+
+  if (effect.kind === 'redemption') {
+    const candidates = v070RedemptionTargetInstanceIds(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    );
+    const selected = targetInstanceId
+      ?? (candidates.length === 1 ? candidates[0] : undefined);
+    if (!selected || !candidates.includes(selected)) {
+      throw new V070GameActionError(
+        'Choose a Tactic protected by Redemption.',
+      );
+    }
+    resolveV070RedemptionAftermath(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+      selected,
     );
     return;
   }
@@ -3709,6 +3753,13 @@ function battleAftermathControlledEffectNeedsChoice(
       effect.sourceInstanceId,
     ).length > 1;
   }
+  if (effect.kind === 'redemption') {
+    return v070RedemptionTargetInstanceIds(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    ).length > 1;
+  }
   return effect.kind === 'asset'
     && v070ResistanceBattleBankNeedsReplacementChoice(
       state,
@@ -3766,6 +3817,16 @@ function openBattleAftermathControlledEffectChoice(
         .map(effect => ({
           sourceInstanceId: effect.sourceInstanceId,
           targetInstanceIds: v070GuiltByAssociationTargetInstanceIds(
+            state,
+            effect.owner,
+            effect.sourceInstanceId,
+          ),
+        })),
+      redemptionTargetOptions: candidates
+        .filter(effect => effect.kind === 'redemption')
+        .map(effect => ({
+          sourceInstanceId: effect.sourceInstanceId,
+          targetInstanceIds: v070RedemptionTargetInstanceIds(
             state,
             effect.owner,
             effect.sourceInstanceId,
