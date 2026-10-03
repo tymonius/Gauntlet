@@ -373,7 +373,21 @@ for (const route of ['/', ...siteInfoRoutes, releaseLandingRoute, changelogRoute
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
 const rulebook = pages.get(rulebookRoute) ?? await getText(rulebookRoute);
 const rulebookRefs = htmlRefs(rulebook).map((ref) => normalizeRef(rulebookRoute, ref)).filter(Boolean);
-assert(rulebookRefs.includes(bookletPath), 'Rulebook does not expose the current printable booklet.');
+// The frozen release package is validated above at bookletPath. The live Rulebook
+// intentionally exposes the Pages-staged booklet route, not the immutable release URL.
+const liveBookletBase = new URL(
+  `./booklets/${currentVersion}/`,
+  `https://gauntlet.invalid${rulebookRoute}`,
+).pathname;
+const liveBookletPath = `${liveBookletBase}${bookletEntry.path}`;
+const generatedBookletPaths = new Set(
+  (Array.isArray(modularDocuments) ? modularDocuments : [])
+    .map((document) => document?.booklet?.path)
+    .filter(Boolean)
+    .map((filename) => `${liveBookletBase}${filename}`),
+);
+generatedBookletPaths.add(liveBookletPath);
+assert(rulebookRefs.includes(liveBookletPath), 'Rulebook does not expose the current printable booklet.');
 const readerEntry = manifest.pdf_outputs?.find((item) => item.key === 'rulebook');
 if (readerEntry) {
   assert(!rulebookRefs.includes(`${normalizedReleaseRoot}${readerEntry.path}`), 'Rulebook still exposes a competing Reader PDF action.');
@@ -413,6 +427,9 @@ for (const normalized of localReferences) {
   if (remoteBase) {
     await getBytes(normalized);
   } else {
+    // Current modular booklet PDFs are generated into the Pages artifact after source-route
+    // materialization. Their frozen release copies were already hash/byte/page validated above.
+    if (generatedBookletPaths.has(normalized)) continue;
     const relative = localPath(normalized);
     assert(repositoryPathExists(relative), `Public reference ${normalized} resolves to missing ${relative}`);
   }
