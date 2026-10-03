@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-10-02
+Last updated: 2026-10-03
 
 ## Governing objective
 
