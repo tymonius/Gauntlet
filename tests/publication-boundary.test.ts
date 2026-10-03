@@ -30,11 +30,43 @@ describe('public route and Pages publication boundary', () => {
   });
 
   it('keeps repository source boundaries non-public by default', () => {
-    for (const root of ['.github', 'apps', 'card-design', 'docs', 'governance', 'legacy', 'media', 'packages', 'releases', 'rulebook', 'scripts', 'src', 'tests', 'tools', 'workers']) {
+    for (const root of ['.github', 'apps', 'card-design', 'docs', 'governance', 'legacy', 'media', 'packages', 'releases', 'rulebook', 'rules-assistant', 'scripts', 'src', 'tests', 'tools', 'workers']) {
       expect(contract.pages.sourceOnlyRepositoryRoots).toContain(root);
       expect(contract.pages.publishedDirectories).not.toContain(root);
     }
     expect(contract.pages.publishedDirectories).toContain('config');
+  });
+
+  it('publishes only the Rules Assistant browser dependency closure', () => {
+    expect(contract.pages.publishedDirectories).not.toContain('rules-assistant');
+    expect(contract.pages.sourceOnlyRepositoryRoots).toContain('rules-assistant');
+
+    const files = new Map(contract.materializedFiles.map((entry: any) => [entry.publicPath, entry]));
+    const browserFiles = [
+      'widget.js',
+      'widget.css',
+      'widget-mobile.css',
+      'feedback.css',
+      'answer-presentation.js',
+      'answer-presentation.css',
+      'local-search.js',
+      'v072-release-corpus.js',
+    ];
+
+    for (const filename of browserFiles) {
+      const publicPath = `/rules-assistant/${filename}`;
+      expect(files.get(publicPath)?.source).toBe(`rules-assistant/${filename}`);
+      expect(pagesWorkflow).toContain(`'rules-assistant/${filename}'`);
+    }
+
+    for (const privateSource of [
+      '/rules-assistant/worker-entry.js',
+      '/rules-assistant/admin-refinement-worker.js',
+      '/rules-assistant/wrangler.toml',
+      '/rules-assistant/evals/rules-arbiter-v072-final-regression-replay.json',
+    ]) {
+      expect(files.has(privateSource)).toBe(false);
+    }
   });
 
   it('keeps release binaries explicit rather than publishing the releases root wholesale', () => {
