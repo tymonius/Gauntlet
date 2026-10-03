@@ -72,6 +72,7 @@ Source organization may therefore change independently of deployed URL layout. C
 - `apps/playtest/` → `/playtest/`
 - `packages/game-data/` → `/game-data/`
 - maintained files under `packages/rules/` → stable `/rules/sources/...` paths where the publication contract explicitly materializes them
+- selected browser-runtime files under `rules-assistant/` → stable `/rules-assistant/...` paths while the repository root itself remains source-only
 - `legacy/public-versions/v0.6.2/` → `/v0.6.2/`
 - `legacy/public-versions/v0.6.3/` → `/v0.6.3/`
 - `legacy/public-versions/v0.7.0/` → `/v0.7.0/`.
@@ -121,7 +122,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the current Rules Arbiter browser shell at `apps/rules-arbiter/` |
-| `rules-assistant/` | Rules Arbiter Worker/retrieval/admin/refinement implementation plus browser-public widget assets, tests, evals, and versioned compatibility support; still transitional |
+| `rules-assistant/` | Rules Arbiter Worker/retrieval/admin/refinement source plus browser/shared runtime source, tests, evals, and versioned compatibility support. The root is source-only for Pages; the eight-file browser dependency closure is materialized explicitly at stable `/rules-assistant/...` URLs. Source ownership remains transitional. |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
