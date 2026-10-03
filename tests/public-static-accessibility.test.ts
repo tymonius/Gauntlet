@@ -19,7 +19,7 @@ const PUBLIC_ROOTS = [
   "apps/privacy",
   "apps/rules",
   "apps/start",
-  "rules-arbiter",
+  "apps/rules-arbiter",
 ];
 
 const ID_REFERENCE_ATTRIBUTES = [

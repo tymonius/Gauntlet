@@ -6,7 +6,6 @@
       "assets",
       "config",
       "images",
-      "rules-arbiter",
       "rules-assistant",
       "tts",
       "v0.7.1",
@@ -121,6 +120,12 @@
       "source": "legacy/rulebook-browser",
       "publicPath": "/rulebook/",
       "kind": "current-rules-publication",
+      "manageIndexRoutes": true
+    },
+    {
+      "source": "apps/rules-arbiter",
+      "publicPath": "/rules-arbiter/",
+      "kind": "current-app",
       "manageIndexRoutes": true
     },
     {
@@ -646,6 +651,7 @@
     "/privacy/",
     "/rulebook/",
     "/rulebook/player-guide-review/",
+    "/rules-arbiter/",
     "/rules/",
     "/rules/comprehensive/",
     "/rules/factions/",

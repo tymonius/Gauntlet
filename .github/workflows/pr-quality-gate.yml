@@ -62,7 +62,7 @@ jobs:
               under('card-reference/'),
               under('factions/'),
               under('deckbuilder/'),
-              under('rules-arbiter/'),
+              under('apps/rules-arbiter/'),
               exact('design-tokens.css'),
               under('images/faction-symbols/')
             );

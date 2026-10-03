@@ -1,10 +1,10 @@
-import { buildLocalFallbackAnswer, retrieveRules } from "../rules-assistant/local-search.js";
+import { buildLocalFallbackAnswer, retrieveRules } from "/rules-assistant/local-search.js";
 import {
   V072_RULES_VERSION as RULES_VERSION,
   V072_VERSION_LABEL as VERSION_LABEL,
   defaultV072SourceUrls,
   loadV072RulesCorpus
-} from "../rules-assistant/v072-release-corpus.js";
+} from "/rules-assistant/v072-release-corpus.js";
 
 const CURRENT_PUBLIC_RELEASE = "v0.7.2";
 const endpoint = String(window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules").trim();

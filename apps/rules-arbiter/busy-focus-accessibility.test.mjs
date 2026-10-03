@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("rules-arbiter/app.js", "utf8");
+const source = readFileSync("apps/rules-arbiter/app.js", "utf8");
 
 describe("standalone Rules Arbiter busy focus", () => {
   it("makes the live request status programmatically focusable", () => {
@@ -10,7 +10,7 @@ describe("standalone Rules Arbiter busy focus", () => {
 
   it("moves focus before disabling the active question form", () => {
     expect(source).toContain("const restoreInputFocus = form.contains(document.activeElement);");
-    expect(source).toContain('status.textContent = "Checking the current v0.7.1 rules…";');
+    expect(source).toContain('status.textContent = "Checking the current v0.7.2 rules…";');
     expect(source).toContain("if (restoreInputFocus) status.focus({ preventScroll: true });");
 
     const focusIndex = source.indexOf("if (restoreInputFocus) status.focus");
@@ -20,6 +20,12 @@ describe("standalone Rules Arbiter busy focus", () => {
   });
 
   it("returns focus to the question after the request finishes", () => {
-    expect(source).toContain("setBusy(false);\n    status.textContent = READY_STATUS;\n    if (restoreInputFocus) input.focus({ preventScroll: true });");
+    const busyOffIndex = source.indexOf("setBusy(false);");
+    const completionIndex = source.indexOf("status.textContent = completionStatus;");
+    const restoreIndex = source.indexOf("if (restoreInputFocus) input.focus({ preventScroll: true });");
+
+    expect(busyOffIndex).toBeGreaterThan(-1);
+    expect(completionIndex).toBeGreaterThan(busyOffIndex);
+    expect(restoreIndex).toBeGreaterThan(completionIndex);
   });
 });

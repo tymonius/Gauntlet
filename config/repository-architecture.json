@@ -36,7 +36,7 @@
         "apps"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Rules Arbiter, Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -137,14 +137,6 @@
       "transitional": true,
       "note": "Legacy monolithic Rulebook source, version-specific compatibility support, and Rulebook QR assets. Gameplay authority lives at packages/game-data/current-game.json; maintained rules support lives under packages/rules/; current /rulebook/ content is the modular v0.7.2 publication rather than this legacy root."
     },
-    "rules-arbiter": {
-      "role": "active_application",
-      "target_groups": [
-        "apps"
-      ],
-      "transitional": true,
-      "note": "Current static Rules Arbiter browser shell."
-    },
     "rules-assistant": {
       "role": "active_application",
       "target_groups": [
@@ -152,7 +144,7 @@
         "packages"
       ],
       "transitional": true,
-      "note": "Rules Arbiter implementation, retrieval, tests, and deployable endpoint."
+      "note": "Current Rules Arbiter Worker/retrieval/admin/refinement implementation plus browser-public widget assets, versioned compatibility implementations, tests, and eval material. This root remains transitional pending separation of deployed backend, browser-public assets, current QA/eval tooling, and historical version support."
     },
     "scripts": {
       "role": "production_tooling",

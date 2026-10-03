@@ -120,9 +120,8 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `apps/` | Canonical source container for maintained applications separated from deployed URL layout |
-| `rules-assistant/` | Rules Arbiter implementation, retrieval, tests, and deployable endpoint; still transitional |
-| `rules-arbiter/` | Current static Rules Arbiter browser shell; still transitional |
+| `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the current Rules Arbiter browser shell at `apps/rules-arbiter/` |
+| `rules-assistant/` | Rules Arbiter Worker/retrieval/admin/refinement implementation plus browser-public widget assets, tests, evals, and versioned compatibility support; still transitional |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 

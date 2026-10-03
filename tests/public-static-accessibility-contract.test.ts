@@ -36,7 +36,7 @@ const PUBLIC_HTML = [
   "apps/privacy/index.html",
   "apps/rulebook/index.html",
   "apps/rulebook/player-guide-review/index.html",
-  "rules-arbiter/index.html",
+  "apps/apps/rules-arbiter/index.html",
   "apps/start/index.html",
   "v0.7.1/index.html",
 ];

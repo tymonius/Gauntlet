@@ -18,7 +18,7 @@ const CORE_PLAYER_HTML = [
   "factions/mystics/index.html",
   "factions/inquisition/index.html",
   "deckbuilder/index.html",
-  "rules-arbiter/index.html"
+  "apps/rules-arbiter/index.html"
 ];
 
 const GLOBAL_TOOL_TARGETS = [
@@ -26,7 +26,7 @@ const GLOBAL_TOOL_TARGETS = [
   "factions/index.html",
   "deckbuilder/index.html",
   "card-reference/index.html",
-  "rules-arbiter/index.html"
+  "apps/rules-arbiter/index.html"
 ];
 
 function visibleText(html: string) {
@@ -103,7 +103,7 @@ describe("v0.7.2 player-site release", () => {
   });
 
   it("restores coherent primary navigation on the rules and reference tools", () => {
-    for (const file of ["card-reference/index.html", "rules-arbiter/index.html"]) {
+    for (const file of ["card-reference/index.html", "apps/rules-arbiter/index.html"]) {
       expectNavigationTargets(file, GLOBAL_TOOL_TARGETS);
     }
 
@@ -111,7 +111,7 @@ describe("v0.7.2 player-site release", () => {
       "rulebook/index.html",
       "factions/index.html",
       "card-reference/index.html",
-      "rules-arbiter/index.html"
+      "apps/rules-arbiter/index.html"
     ]);
     expect(resolvedTargets("deckbuilder/index.html").has("deckbuilder/index.html")).toBe(true);
 
@@ -119,7 +119,7 @@ describe("v0.7.2 player-site release", () => {
       "factions/index.html",
       "deckbuilder/index.html",
       "card-reference/index.html",
-      "rules-arbiter/index.html"
+      "apps/rules-arbiter/index.html"
     ]);
   });
 
@@ -155,15 +155,15 @@ describe("v0.7.2 player-site release", () => {
     expect(app).not.toContain("Authority set");
   });
   it("uses the published v0.7.2 Chief Justice remotely and preserves frozen local fallback", () => {
-    const html = read("rules-arbiter/index.html");
-    const app = read("rules-arbiter/app.js");
+    const html = read("apps/rules-arbiter/index.html");
+    const app = read("apps/rules-arbiter/app.js");
     const corpus = read("rules-assistant/v072-release-corpus.js");
     const workerEntry = read("rules-assistant/worker-entry.js");
 
     expect(html).toContain("Gauntlet Rules Arbiter · v0.7.2");
     expect(html).toContain("current published rules and cards");
     expect(app).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.2";');
-    expect(app).toContain("../rules-assistant/v072-release-corpus.js");
+    expect(app).toContain("/rules-assistant/v072-release-corpus.js");
     expect(app).toContain("payload.published !== true");
     expect(app).toContain("payload.reconstruction !== false");
     expect(app).toContain("payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE");
@@ -208,7 +208,7 @@ describe("v0.7.2 player-site release", () => {
       "start/index.html",
       "card-reference/index.html",
       "deckbuilder/index.html",
-      "rules-arbiter/index.html",
+      "apps/rules-arbiter/index.html",
       "factions/military/index.html",
     ]) {
       const text = visibleText(read(file));

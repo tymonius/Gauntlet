@@ -62,7 +62,7 @@ assert(!cardReferenceApp.includes('publication remains locked'));
 assert(!cardReferenceApp.includes('Authority set'));
 
 const arbiterIndex = read('rules-arbiter/index.html');
-const arbiterApp = read('rules-arbiter/app.js');
+const arbiterApp = read('apps/rules-arbiter/app.js');
 assert(arbiterIndex.includes('Rules support · v0.6.3'));
 assert(!/downstream review only|current release remains v0\.6\.1|authority set/i.test(arbiterIndex));
 assert(arbiterApp.includes('payload.published !== true'));

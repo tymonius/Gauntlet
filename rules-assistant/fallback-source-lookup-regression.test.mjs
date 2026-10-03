@@ -99,7 +99,7 @@ describe("client source-lookup review capture", () => {
 
 describe("public fallback presentation regression", () => {
   it("queues failed remote questions for later review capture and removes internal annotations from display", () => {
-    const app = readFileSync(resolve("rules-arbiter/app.js"), "utf8");
+    const app = readFileSync(resolve("apps/rules-arbiter/app.js"), "utf8");
     expect(app).toContain("/api/source-lookup-review");
     expect(app).toContain("SOURCE_LOOKUP_REVIEW_QUEUE_KEY");
     expect(app).toContain("queueFallbackReview(question, fallback)");
