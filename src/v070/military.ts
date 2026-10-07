@@ -9,7 +9,10 @@ import {
 } from './rules';
 import { advanceV070FrontLine } from './front-line';
 import { v070QuicksandCapsMovement } from './territories';
-import { applyV070BattleRetreatStep } from './retreat-step';
+import {
+  applyV070BattleRetreatStep,
+  v070NormalBattleRetreatApplied,
+} from './retreat-step';
 
 export const V070_MILITARY_COMMAND_MAX = 2 as const;
 
@@ -253,7 +256,8 @@ export function useV070CommandantRepel(
     || runtime.aftermathCardsCleared
     || battle.winner !== playerId
     || battle.defender !== playerId
-    || battle.loser !== battle.attacker) {
+    || battle.loser !== battle.attacker
+    || !v070NormalBattleRetreatApplied(state)) {
     throw new V070GameActionError(
       'Repel may be used during Aftermath only after winning as defender.',
     );

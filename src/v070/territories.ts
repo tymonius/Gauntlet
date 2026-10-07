@@ -5,6 +5,7 @@ import {
 import {
   applyV070BattleRetreatStep,
   observeV070NormalBattleRetreat,
+  v070NormalBattleRetreatApplied,
 } from './retreat-step';
 import {
   V070_ARENA_NO_QUARTER_ID,
@@ -22,6 +23,7 @@ export function applyV070NoQuarterAdditionalRetreat(
   state: V070GameState,
 ): boolean {
   observeV070NormalBattleRetreat(state);
+  if (!v070NormalBattleRetreatApplied(state)) return false;
 
   const battle = state.battle;
   const runtime = state.battleRuntime;

@@ -109,7 +109,10 @@ import {
   openV070BattleRevealEffectOrderChoice,
   pendingV070BattleRevealEffectOrderChoice,
 } from './battle-reveal-order';
-import { applyV070BattleRetreatStep } from './retreat-step';
+import {
+  applyV070BattleRetreatStep,
+  v070NormalBattleRetreatApplied,
+} from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 import { v070MysticInvocationPendingPlayers } from './mystics';
 import { pendingV070BattleRevealChoice } from './battle-reveal-choices';
@@ -785,6 +788,7 @@ export function applyV070BattleCardAdditionalRetreats(
   const battle = state.battle;
   const runtime = state.battleRuntime;
   if (!battle || !runtime || !battle.loser) return;
+  if (!v070NormalBattleRetreatApplied(state)) return;
 
   const loser = battle.loser;
   for (const effect of runtime.additionalRetreatEffects) {

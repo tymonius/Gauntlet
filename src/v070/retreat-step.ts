@@ -18,7 +18,36 @@ import {
 declare module './battle-types' {
   interface V070BattleRuntime {
     normalRetreatStepObserved?: boolean;
+    normalRetreatStepApplied?: boolean;
+    battleRetreatStepPlayers?: PlayerId[];
   }
+}
+
+export function v070PlayerRetreatedInBattle(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  return state.battleRuntime?.battleRetreatStepPlayers?.includes(playerId)
+    ?? false;
+}
+
+export function v070NormalBattleRetreatApplied(
+  state: V070GameState,
+): boolean {
+  const runtime = state.battleRuntime;
+  if (runtime?.normalRetreatStepApplied !== undefined) {
+    return runtime.normalRetreatStepApplied;
+  }
+  if (runtime?.normalRetreatStepObserved) return false;
+
+  // Backward compatibility for older serialized/synthetic aftermath states
+  // created before explicit Retreat observation existed. Live outcome
+  // resolution always writes the explicit flag before Aftermath effects run.
+  const battle = state.battle;
+  return Boolean(
+    battle?.loser
+    && battle.positions[battle.loser] !== battle.contestedPosition,
+  );
 }
 
 export interface V070BattleRetreatStepSource {
@@ -117,6 +146,14 @@ export function observeV070BattleRetreatStep(
     );
   }
 
+  const runtime = state.battleRuntime;
+  if (runtime) {
+    runtime.battleRetreatStepPlayers ??= [];
+    if (!runtime.battleRetreatStepPlayers.includes(playerId)) {
+      runtime.battleRetreatStepPlayers.push(playerId);
+    }
+  }
+
   openV070BlockadeChoicesForPositionChange(
     state,
     playerId,
@@ -212,9 +249,11 @@ export function observeV070NormalBattleRetreat(
   const from = battle.contestedPosition;
   const to = battle.positions[loser];
   if (to === from) {
+    runtime.normalRetreatStepApplied = false;
     return { playerId: loser, from, to, moved: false };
   }
 
+  runtime.normalRetreatStepApplied = true;
   return observeV070BattleRetreatStep(
     state,
     loser,

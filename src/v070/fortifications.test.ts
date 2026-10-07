@@ -267,16 +267,19 @@ describe('v0.7.0 Fortifications', () => {
     state.battle!.stage = 'resolved';
     state.battle!.winner = 'A';
     state.battle!.loser = 'B';
-    state.battle!.positions.B = 3;
+    // The normal Retreat from contested Position 3 has already resolved.
+    state.battle!.positions.B = 4;
+    state.battleRuntime.normalRetreatStepObserved = true;
+    state.battleRuntime.normalRetreatStepApplied = true;
     const first = inject(state, 'B', 'neutral-fortifications', 'retreat-one');
     const second = inject(state, 'B', 'neutral-fortifications', 'retreat-two');
     state.battleRuntime.fortificationsRetreatSourceInstanceIds = [first, second];
     expect(openV070FortificationsRetreatChoice(state)).toBe(true);
     expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId).toBe(first);
     expect(resolveV070FortificationsRetreatChoice(state, 'B', true)).toBe(true);
-    expect(state.battle?.positions.B).toBe(4);
+    expect(state.battle?.positions.B).toBe(5);
     expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId).toBe(second);
     expect(resolveV070FortificationsRetreatChoice(state, 'B', true)).toBe(false);
-    expect(state.battle?.positions.B).toBe(5);
+    expect(state.battle?.positions.B).toBe(6);
   });
 });
