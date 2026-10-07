@@ -2,8 +2,8 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { inspectVoiceSmokeReport } from "../rules-assistant/v072-voice-smoke-report.js";
 
-process.env.GAUNTLET_RULES_QA_BENCHMARK ??= "rules-assistant/evals/rules-arbiter-v072-final-regression-replay.json";
-process.env.GAUNTLET_RULES_QA_CORRECTIONS ??= "rules-assistant/evals/rules-arbiter-v072-final-regression-replay-corrections.json";
+process.env.GAUNTLET_RULES_QA_BENCHMARK ??= "tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json";
+process.env.GAUNTLET_RULES_QA_CORRECTIONS ??= "tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json";
 process.env.GAUNTLET_RULES_QA_OUTPUT ??= "artifacts/rules-qa/v072-live-answer-run.json";
 
 const collect = spawnSync(process.execPath, ["scripts/run-v071-live-rules-qa.mjs"], {

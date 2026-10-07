@@ -145,7 +145,7 @@ jobs:
         continue-on-error: true
         env:
           GAUNTLET_RULES_QA_ENDPOINT: ${{ steps.plan.outputs.rules_url }}
-          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-gate3-blind-v-clarifications.v071.json
+          GAUNTLET_RULES_CLARIFICATION_BENCHMARK: tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-v-clarifications.v071.json
           GAUNTLET_RULES_CLARIFICATION_OUTPUT: ${{ env.GATE3_CLARIFICATION_REPORT }}
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '4'

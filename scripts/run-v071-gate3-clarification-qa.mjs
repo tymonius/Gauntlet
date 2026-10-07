@@ -5,7 +5,7 @@ const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
   || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const benchmarkPath = resolve(
   process.env.GAUNTLET_RULES_CLARIFICATION_BENCHMARK
-  || "rules-assistant/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json"
+  || "tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json"
 );
 const outputPath = resolve(
   process.env.GAUNTLET_RULES_CLARIFICATION_OUTPUT

@@ -8,11 +8,11 @@ import {
 } from "./v071-live-rules-qa-support.mjs";
 
 const benchmark = JSON.parse(readFileSync(
-  new URL("../rules-assistant/evals/rules-arbiter-evals.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json", import.meta.url),
   "utf8"
 ));
 const corrections = JSON.parse(readFileSync(
-  new URL("../rules-assistant/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url),
   "utf8"
 ));
 const corrected = applyBenchmarkCorrections(benchmark, corrections);
