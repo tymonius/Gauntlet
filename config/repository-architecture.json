@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, refinement engine/support, QA/eval material, and explicitly versioned compatibility implementations. Browser-public widget presentation source lives under apps/rules-assistant-widget/; admin review/export presentation and handlers live under tools/rules-assistant/admin/. The remaining root is source-only for Pages except explicitly materialized shared browser modules."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, QA/eval material, and explicitly versioned compatibility implementations. Browser-public widget presentation lives under apps/rules-assistant-widget/; private admin review/export tooling lives under tools/rules-assistant/admin/; refinement triage/scaffold/snapshot/governance helpers live under tools/rules-assistant/refinement/. The remaining root is source-only for Pages except explicitly materialized shared browser modules."
     },
     "scripts": {
       "role": "production_tooling",
@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; contains card-design authoring/review tooling and Rules Arbiter private admin review/export tooling under tools/rules-assistant/admin/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; contains card-design authoring/review tooling, Rules Arbiter private admin review/export tooling under tools/rules-assistant/admin/, and Rules Arbiter refinement tooling under tools/rules-assistant/refinement/."
     }
   }
 }

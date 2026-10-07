@@ -5,13 +5,13 @@ import {
   adminRefinementRuntimeSource,
   allowAdminRefinementRuntime
 } from "../tools/rules-assistant/admin/admin-refinement-runtime.js";
-import { refinementTriage } from "./refinement-triage.js";
-import { refinementScaffold } from "./refinement-scaffold.js";
+import { refinementTriage } from "../tools/rules-assistant/refinement/refinement-triage.js";
+import { refinementScaffold } from "../tools/rules-assistant/refinement/refinement-scaffold.js";
 import {
   applyRefinementResolutionLedger,
   refinementResolutionLedger
-} from "./refinement-resolution-ledger.js";
-import { applyCurrentValidityToRefinementReport } from "./refinement-current-validity.js";
+} from "../tools/rules-assistant/refinement/refinement-resolution-ledger.js";
+import { applyCurrentValidityToRefinementReport } from "../tools/rules-assistant/refinement/refinement-current-validity.js";
 import { handleV071ScopePrecheck } from "./v071-scope-precheck.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 

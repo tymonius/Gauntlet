@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { createTriageEngine } from "./refinement-triage.js";
+import { createTriageEngine } from "../tools/rules-assistant/refinement/refinement-triage.js";
 
 const engine = createTriageEngine();
 

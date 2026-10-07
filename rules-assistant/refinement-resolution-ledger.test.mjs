@@ -3,7 +3,7 @@ import {
   applyRefinementResolutionLedger,
   refinementResolutionLedger,
   validateRefinementResolutionLedger
-} from "./refinement-resolution-ledger.js";
+} from "../tools/rules-assistant/refinement/refinement-resolution-ledger.js";
 
 function report(interactions, scope = "reviewed_backlog") {
   return {

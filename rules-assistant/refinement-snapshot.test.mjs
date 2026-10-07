@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createPrivacySafeRefinementSnapshot, REFINEMENT_SNAPSHOT_SCHEMA } from "./refinement-snapshot.js";
+import { createPrivacySafeRefinementSnapshot, REFINEMENT_SNAPSHOT_SCHEMA } from "../tools/rules-assistant/refinement/refinement-snapshot.js";
 
 describe("Rules Arbiter refinement snapshot", () => {
   it("retains queue diagnostics while excluding interaction content and reviewer prose", () => {

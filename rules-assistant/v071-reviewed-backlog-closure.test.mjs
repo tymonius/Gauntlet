@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   refinementResolutionLedger,
   validateRefinementResolutionLedger
-} from "./refinement-resolution-ledger.js";
+} from "../tools/rules-assistant/refinement/refinement-resolution-ledger.js";
 
 const reviewedBacklogIds = [
   "c301bfdb-ae51-44c2-8a4a-7f98743afa02",

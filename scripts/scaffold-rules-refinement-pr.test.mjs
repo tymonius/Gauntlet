@@ -1,6 +1,7 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { buildRefinementPlan } from "./scaffold-rules-refinement-pr.mjs";
-import { refinementScaffold } from "../rules-assistant/refinement-scaffold.js";
+import { refinementScaffold } from "../tools/rules-assistant/refinement/refinement-scaffold.js";
 
 const report = {
   schema: "gauntlet.rules-triage.v1",
@@ -42,3 +43,13 @@ test("materialization public manifest stays free of player question text", () =>
   expect(JSON.stringify(plan.publicManifest)).not.toContain("Can this move there?");
   expect(plan.publicManifest.cluster.interactionIds).toEqual(["aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"]);
 });
+
+
+test("materializer records refinement manifests under governed artifacts", () => {
+  const source = requireSource();
+  expect(source).toContain("artifacts/rules-refinement/manifests/");
+});
+
+function requireSource() {
+  return readFileSync(new URL("./scaffold-rules-refinement-pr.mjs", import.meta.url), "utf8");
+}

@@ -27,6 +27,8 @@ on:
       - 'design-tokens.css'
       - 'images/faction-symbols/**'
       - 'rules-assistant/**'
+      - 'tools/rules-assistant/admin/**'
+      - 'tools/rules-assistant/refinement/**'
       - 'artifacts/rules-refinement/resolution-ledger.json'
   workflow_dispatch:
 
@@ -83,7 +85,7 @@ jobs:
           else
             while IFS= read -r file; do
               case "$file" in
-                .github/workflows/verify-current-live-publication.yml|artifacts/rules-refinement/resolution-ledger.json|rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v071-answer-verifier.js|rules-assistant/github-actions-qa-auth.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/refinement-*.js|rules-assistant/wrangler.toml)
+                .github/workflows/verify-current-live-publication.yml|artifacts/rules-refinement/resolution-ledger.json|rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v071-answer-verifier.js|rules-assistant/github-actions-qa-auth.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-refinement-worker.js|tools/rules-assistant/admin/*.js|tools/rules-assistant/refinement/*.js|rules-assistant/wrangler.toml)
                   worker=true
                   reason=worker_inputs_changed
                   ;;

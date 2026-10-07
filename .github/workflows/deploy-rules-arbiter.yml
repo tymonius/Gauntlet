@@ -7,6 +7,7 @@ on:
     paths:
       - "rules-assistant/admin-refinement-worker.js"
       - "tools/rules-assistant/admin/**"
+      - "tools/rules-assistant/refinement/**"
       - "rules-assistant/worker-entry.js"
       - "rules-assistant/worker-v071.js"
       - "rules-assistant/worker-v072-candidate.js"
@@ -69,6 +70,11 @@ jobs:
           node --check tools/rules-assistant/admin/review-export.js
           node --check tools/rules-assistant/admin/review-intelligence.js
           node --check tools/rules-assistant/admin/review-export-checkpoint.js
+          node --check tools/rules-assistant/refinement/refinement-current-validity.js
+          node --check tools/rules-assistant/refinement/refinement-resolution-ledger.js
+          node --check tools/rules-assistant/refinement/refinement-scaffold.js
+          node --check tools/rules-assistant/refinement/refinement-snapshot.js
+          node --check tools/rules-assistant/refinement/refinement-triage.js
           node --check rules-assistant/worker-entry.js
           node --check rules-assistant/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js
