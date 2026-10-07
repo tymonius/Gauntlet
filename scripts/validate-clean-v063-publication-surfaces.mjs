@@ -81,7 +81,7 @@ assert(!pointer.includes("'./v063'"));
 const workerEntry = read('rules-assistant/worker-entry.js');
 const worker = read('rules-assistant/worker-v063.js');
 const corpus = read('rules-assistant/v063-public-corpus.js');
-const widget = read('rules-assistant/widget.js');
+const widget = read('apps/rules-assistant-widget/widget.js');
 assert(workerEntry.includes('import v061Worker from "./worker-v061.js";'));
 assert(workerEntry.includes('import worker from "./worker-v063.js";'));
 assert(workerEntry.includes('return v061Worker.fetch(rewriteVersionedPath(request), env, context);'));
@@ -142,7 +142,7 @@ try {
     'tests/current-rulebook-player-experience.test.ts',
     'tests/current-player-site-integrity.test.ts',
     'config/release-lifecycle.json','src/content/current.ts','index.html',
-    'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','rules-assistant/widget.js',
+    'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','apps/rules-assistant-widget/widget.js',
   ]);
   const allowedPrefixes = ['rulebook/','card-reference/','factions/','start/','deckbuilder/','rules-arbiter/','v0.6.3/',`${releaseDir}/`, ...legacyAliasPrefixes];
   for (const file of changed) {
