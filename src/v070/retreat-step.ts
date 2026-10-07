@@ -18,6 +18,7 @@ import {
 declare module './battle-types' {
   interface V070BattleRuntime {
     normalRetreatStepObserved?: boolean;
+    normalRetreatStepApplied?: boolean;
     battleRetreatStepPlayers?: PlayerId[];
   }
 }
@@ -28,6 +29,12 @@ export function v070PlayerRetreatedInBattle(
 ): boolean {
   return state.battleRuntime?.battleRetreatStepPlayers?.includes(playerId)
     ?? false;
+}
+
+export function v070NormalBattleRetreatApplied(
+  state: V070GameState,
+): boolean {
+  return state.battleRuntime?.normalRetreatStepApplied ?? false;
 }
 
 export interface V070BattleRetreatStepSource {
@@ -229,9 +236,11 @@ export function observeV070NormalBattleRetreat(
   const from = battle.contestedPosition;
   const to = battle.positions[loser];
   if (to === from) {
+    runtime.normalRetreatStepApplied = false;
     return { playerId: loser, from, to, moved: false };
   }
 
+  runtime.normalRetreatStepApplied = true;
   return observeV070BattleRetreatStep(
     state,
     loser,
