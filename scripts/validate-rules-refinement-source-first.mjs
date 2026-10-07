@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 export const SOURCE_AUTHORITY_PATHS = Object.freeze([
   'rulebook/player-facing/current-rulebook.md',
-  'game-data/current-game.json',
+  'packages/game-data/current-game.json',
 ]);
 export const REFINEMENT_LEDGER_PATH = 'artifacts/rules-refinement/resolution-ledger.json';
 export const REFINEMENT_LEDGER_SCHEMA = 'gauntlet.rules-refinement-resolution-ledger.v1';

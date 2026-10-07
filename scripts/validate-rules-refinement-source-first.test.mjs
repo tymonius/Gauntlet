@@ -142,3 +142,15 @@ test('ignores unchanged historical refinement manifests', () => {
 
   expect(result.ok).toBe(true);
 });
+
+test('recognizes packaged current-game authority as a source-authority change', () => {
+  const manifestPath = 'artifacts/rules-refinement/manifests/source-specificity.json';
+  const result = validateSourceFirstRefinements({
+    changedFiles: [manifestPath, REFINEMENT_LEDGER_PATH, 'packages/game-data/current-game.json'],
+    manifests: [{ path: manifestPath, manifest: requiredManifest }],
+    resolutionLedger: ledger([resolution()]),
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.authorityChanges).toEqual(['packages/game-data/current-game.json']);
+});

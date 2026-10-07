@@ -143,7 +143,7 @@ function main() {
   });
   const publicManifest = refinementScaffold.toPublicManifest(finalizedScaffold);
   const stamp = String(finalizedScaffold.generatedAt || new Date().toISOString()).slice(0, 10);
-  const manifestPath = `rules-assistant/refinement-manifests/${finalizedScaffold.rootCause}-${stamp}.json`;
+  const manifestPath = `artifacts/rules-refinement/manifests/${finalizedScaffold.rootCause}-${stamp}.json`;
   mkdirSync(dirname(manifestPath), { recursive: true });
   writeFileSync(manifestPath, `${JSON.stringify(publicManifest, null, 2)}\n`, "utf8");
 
