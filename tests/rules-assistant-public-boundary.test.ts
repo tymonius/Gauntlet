@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const boundary = JSON.parse(read('config/publication-boundary.json'));
 const materialized = new Map(
-  boundary.materializedFiles.map((entry: { publicPath: string; source: string }) => [entry.publicPath, entry.source]),
+  boundary.materializedFiles.map((entry: { publicPath: string; source: string }) => [entry.publicPath, entry.source] as const),
 );
 
 const widgetFiles = [
