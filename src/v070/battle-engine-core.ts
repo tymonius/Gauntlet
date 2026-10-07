@@ -115,6 +115,13 @@ import {
 } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
+  openV070PathsOfShadowBattleChoice,
+  resolveV070PathsOfShadowBattleChoice,
+} from './paths-of-shadow-battle';
+import {
+  v070PlayerRetreatedInBattle,
+} from './retreat-step';
+import {
   clearV070AssetFaceState,
   isV070AssetActive,
 } from './asset-face-state';
@@ -300,6 +307,12 @@ export type V070BattleAction =
   | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'pass_loss_replacement'; playerId: PlayerId }
   | {
+      type: 'resolve_paths_of_shadow_battle';
+      playerId: PlayerId;
+      territoryPosition?: number;
+      discardInstanceId?: string;
+    }
+  | {
       type: 'resolve_accursed_wager_discard';
       playerId: PlayerId;
       cardInstanceId: string;
@@ -435,6 +448,12 @@ export function reduceV070BattleAction(
     )) {
     throw new V070GameActionError(
       'Choose each required active Asset for Disrupted Supply Lines before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.pendingPathsOfShadowBattleChoice
+    && action.type !== 'resolve_paths_of_shadow_battle') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Paths of Shadow loss replacement before continuing the battle.',
     );
   }
   if (state.battleRuntime?.pendingAccursedWager
@@ -730,6 +749,26 @@ export function reduceV070BattleAction(
     case 'pass_loss_replacement':
       passLossReplacement(next, action.playerId);
       break;
+    case 'resolve_paths_of_shadow_battle': {
+      const resolved = resolveV070PathsOfShadowBattleChoice(
+        next,
+        action.playerId,
+        action.territoryPosition,
+        action.discardInstanceId,
+      );
+      finalizeOutcome(
+        next,
+        resolved.outcome,
+        resolved.replacementPosition === null
+          ? undefined
+          : {
+              playerId: action.playerId,
+              position: resolved.replacementPosition,
+              sourceInstanceId: resolved.sourceInstanceId,
+            },
+      );
+      break;
+    }
     case 'resolve_accursed_wager_discard':
       resolveAccursedWagerDiscard(
         next,
@@ -2291,6 +2330,10 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
     return;
   }
 
+  if (openV070PathsOfShadowBattleChoice(state, outcome)) {
+    return;
+  }
+
   finalizeOutcome(state, outcome);
 }
 
@@ -2361,6 +2404,9 @@ function passLossReplacement(
     visibility: 'public',
     payload: { source: 'safe_conduct' },
   });
+  if (openV070PathsOfShadowBattleChoice(state, pending)) {
+    return;
+  }
   finalizeOutcome(state, pending);
 }
 
@@ -2385,11 +2431,54 @@ function safeConductAvailable(
 function finalizeOutcome(
   state: V070GameState,
   outcome: V070BattleOutcome,
+  normalRetreatReplacement?: {
+    playerId: PlayerId;
+    position: number;
+    sourceInstanceId: string | null;
+  },
 ): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+
+  if (normalRetreatReplacement) {
+    if (normalRetreatReplacement.playerId !== outcome.loser) {
+      throw new V070GameActionError(
+        'A normal Retreat replacement must belong to the losing player.',
+      );
+    }
+    const from = battle.contestedPosition;
+    const to = normalRetreatReplacement.position;
+    state.battle.positions[outcome.loser] = to;
+
+    // The pure outcome helper has already computed the normal Retreat
+    // position, but Paths of Shadow replaces that movement before any
+    // Retreat observer sees it. Explicit later Retreat +1 effects still use
+    // the shared Retreat-step procedure and are tracked normally.
+    runtime.normalRetreatStepObserved = true;
+
+    openV070BlockadeChoicesForPositionChange(
+      state,
+      outcome.loser,
+      from,
+      to,
+    );
+    appendV070Event(state, {
+      type: 'paths_of_shadow_battle_movement',
+      actor: outcome.loser,
+      visibility: 'public',
+      payload: {
+        playerId: outcome.loser,
+        sourceInstanceId:
+          normalRetreatReplacement.sourceInstanceId,
+        from,
+        to,
+        movementKind: 'ordinary_effect_movement',
+        replacedNormalRetreat: true,
+      },
+    });
+  }
   recordV070IntelligenceBattleOutcomeForMission(state, outcome);
   recordV070ExecutiveHostileTakeoverEligibility(
     state,
@@ -3111,7 +3200,7 @@ function pruneIneligibleBattleAftermathControlledEffects(
       }
       if (choice.condition === 'owner_loss_after_retreat') {
         if (battle.loser !== choice.owner
-          || battle.positions[choice.owner] === battle.contestedPosition) {
+          || !v070PlayerRetreatedInBattle(state, choice.owner)) {
           return false;
         }
         const current = battle.positions[choice.owner];
@@ -3136,7 +3225,7 @@ function pruneIneligibleBattleAftermathControlledEffects(
         return battle.winner === placement.owner;
       }
       return battle.loser === placement.owner
-        && battle.positions[placement.owner] !== battle.contestedPosition;
+        && v070PlayerRetreatedInBattle(state, placement.owner);
     });
   runtime.battleCardAftermathTerritoryInsertions =
     runtime.battleCardAftermathTerritoryInsertions.filter(insertion =>
@@ -3171,7 +3260,7 @@ function pruneIneligibleBattleAftermathControlledEffects(
         return battle.winner === bank.owner;
       }
       return battle.loser === bank.owner
-        && battle.positions[bank.owner] !== battle.contestedPosition;
+        && v070PlayerRetreatedInBattle(state, bank.owner);
     });
   if (runtime.financierAftermathEffects) {
     runtime.financierAftermathEffects =
