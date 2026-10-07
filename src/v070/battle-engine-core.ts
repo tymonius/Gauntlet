@@ -2455,18 +2455,12 @@ function finalizeOutcome(
     state.battle.positions[outcome.loser] = to;
 
     // The pure outcome helper has already computed the normal Retreat
-    // position, but Paths of Shadow replaces that movement before any
-    // Retreat observer sees it. Explicit later Retreat +1 effects still use
-    // the shared Retreat-step procedure and are tracked normally.
+    // position, but Paths of Shadow replaces that Retreat before any Retreat
+    // observer sees it. Retreat +N modifies that identified normal Retreat,
+    // so those modifiers do not become a separate Retreat after replacement.
     runtime.normalRetreatStepObserved = true;
     runtime.normalRetreatStepApplied = false;
 
-    openV070BlockadeChoicesForPositionChange(
-      state,
-      outcome.loser,
-      from,
-      to,
-    );
     appendV070Event(state, {
       type: 'paths_of_shadow_battle_movement',
       actor: outcome.loser,
