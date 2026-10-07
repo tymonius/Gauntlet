@@ -34,7 +34,20 @@ export function v070PlayerRetreatedInBattle(
 export function v070NormalBattleRetreatApplied(
   state: V070GameState,
 ): boolean {
-  return state.battleRuntime?.normalRetreatStepApplied ?? false;
+  const runtime = state.battleRuntime;
+  if (runtime?.normalRetreatStepApplied !== undefined) {
+    return runtime.normalRetreatStepApplied;
+  }
+  if (runtime?.normalRetreatStepObserved) return false;
+
+  // Backward compatibility for older serialized/synthetic aftermath states
+  // created before explicit Retreat observation existed. Live outcome
+  // resolution always writes the explicit flag before Aftermath effects run.
+  const battle = state.battle;
+  return Boolean(
+    battle?.loser
+    && battle.positions[battle.loser] !== battle.contestedPosition,
+  );
 }
 
 export interface V070BattleRetreatStepSource {
