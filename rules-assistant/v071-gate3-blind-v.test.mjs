@@ -5,13 +5,13 @@ import { githubActionsQaAuthContract } from "./github-actions-qa-auth.js";
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const clarifications = loadJson("./evals/rules-arbiter-gate3-blind-v-clarifications.v071.json");
-const gate2 = loadJson("./evals/rules-arbiter-evals.v071.json");
+const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-v-clarifications.v071.json");
+const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 const priorLetters = "abcdefghijklmnopqrstu".split("");
 const priorPaths = priorLetters.flatMap((letter) => [
-  `./evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
-  `./evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
-  `./evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
+  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
+  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
+  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
 ]);
 const prior = priorPaths.map(loadJson);
 

@@ -5,7 +5,7 @@ const reviewIntelligence = readFileSync(new URL("../tools/rules-assistant/admin/
 const workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const adminPage = readFileSync(new URL("../tools/rules-assistant/admin/admin-intelligence-page.js", import.meta.url), "utf8");
 const benchmark = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-evals.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json", import.meta.url),
   "utf8"
 ));
 

@@ -2,19 +2,19 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 
 const gate3 = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-gate3-blind-a.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a.v071.json", import.meta.url),
   "utf8"
 ));
 const playerLanguage = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-gate3-blind-a-player-language.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-player-language.v071.json", import.meta.url),
   "utf8"
 ));
 const clarifications = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-gate3-blind-a-clarifications.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json", import.meta.url),
   "utf8"
 ));
 const gate2 = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-evals.v071.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json", import.meta.url),
   "utf8"
 ));
 
