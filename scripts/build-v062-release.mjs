@@ -147,7 +147,7 @@ function page({ title, description, body, canonicalPath }) {
     <nav class="release-nav" aria-label="v0.6.2 release navigation"><a href="/">Gauntlet home</a><a href="/v0.6.2/">v0.6.2</a><a href="/v0.6.2/start/">Start</a><a href="/v0.6.2/deckbuilder/">Deckbuilder</a><a href="/v0.6.2/reference/">Card reference</a><a href="/v0.6.2/changes/">What changed</a></nav>
     <article class="release-doc">${body}</article>
   </main>
-  <script type="module" src="/apps/rules-assistant-widget/widget.js"></script>
+  <script type="module" src="/rules-assistant/widget.js"></script>
 </body>
 </html>`;
 }
@@ -401,7 +401,7 @@ if (!workerEntry.includes('/api/v061/rules')) {
 }
 expectedFile('rules-assistant/worker-entry.js', workerEntry);
 
-let widget = read('apps/rules-assistant-widget/widget.js');
+let widget = read('rules-assistant/widget.js');
 widget = widget
   .replace(`import {\n  buildLocalFallbackAnswer,\n  defaultSourceUrls,\n  loadRulesCorpus,\n  retrieveRules\n} from "./local-search.js";`, `import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";\nimport { defaultPublishedV062SourceUrls, loadPublishedV062RulesCorpus } from "./v062-published-corpus.js";`)
   .replace('version: "v0.6.1"', 'version: "v0.6.2"')
@@ -410,7 +410,7 @@ widget = widget
   .replace('"When is an occupied Territory captured?"', '"How does Front Line Capture work?"')
   .replace('"Can Onward continue after a battle?"', '"When do Terms occur before Onset?"')
   .replace('"How does defender advantage work?"', '"How does Defensive Edge work?"');
-expectedFile('apps/rules-assistant-widget/widget.js', widget);
+expectedFile('rules-assistant/widget.js', widget);
 
 let home = read('index.html');
 home = home

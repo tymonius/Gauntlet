@@ -193,7 +193,9 @@ jobs:
               [[ "$match" == docs/Archive/* ]] && continue
               [[ "$match" == docs/recovery/frozen-scripts/* ]] && continue
               [[ "$match" == scripts/build-clean-v06*.mjs:* ]] && continue
+              [[ "$match" == scripts/build-v062-release.mjs:* ]] && continue
               [[ "$match" == scripts/render-clean-v06*.mjs:* ]] && continue
+              [[ "$match" == scripts/validate-clean-v06*.mjs:* ]] && continue
               [[ "$match" == scripts/validate-v06*.mjs:* ]] && continue
               [[ "$match" == scripts/finalize-v070-publication.mjs:* ]] && continue
               [[ "$match" == scripts/render-v070-booklet.mjs:* ]] && continue
