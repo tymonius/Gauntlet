@@ -1,4 +1,4 @@
-import { interactionsToCsv, isAdminAuthorized } from "./worker.js";
+import { interactionsToCsv, isAdminAuthorized } from "../../../rules-assistant/worker.js";
 
 const LIVE_REVIEW_SCOPE_SQL = "session_id NOT LIKE 'qa_v071_%'";
 

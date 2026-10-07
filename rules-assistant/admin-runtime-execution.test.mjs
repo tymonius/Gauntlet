@@ -5,8 +5,8 @@ import {
   adminRefinementRuntimeSource,
   allowAdminRefinementRuntime,
   attachAdminRefinementRuntime
-} from "./admin-refinement-runtime.js";
-import { enhanceRulesScaffoldAdmin } from "./admin-scaffold-page.js";
+} from "../tools/rules-assistant/admin/admin-refinement-runtime.js";
+import { enhanceRulesScaffoldAdmin } from "../tools/rules-assistant/admin/admin-scaffold-page.js";
 
 function composedPage() {
   const base = `<!doctype html><html><body><main id="admin-dashboard" class="visible"><section class="review-panel"></section></main></body></html>`;

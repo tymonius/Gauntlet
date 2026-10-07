@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "vitest";
-import { handleLiveReviewExport } from "./review-export.js";
+import { handleLiveReviewExport } from "../tools/rules-assistant/admin/review-export.js";
 
 test("admin review export excludes v0.7.1 QA sessions from interactions, sources, and reviews", async () => {
   const statements = [];
@@ -39,7 +39,7 @@ test("admin review export excludes v0.7.1 QA sessions from interactions, sources
 
 test("worker entry routes the legacy admin export URL through the live-scoped exporter", async () => {
   const source = await readFile(new URL("./worker-entry.js", import.meta.url), "utf8");
-  expect(source).toMatch(/import \{ handleLiveReviewExport \} from "\.\/review-export\.js"/);
+  expect(source).toMatch(/import \{ handleLiveReviewExport \} from "\.\.\/tools\/rules-assistant\/admin\/review-export\.js"/);
   expect(source).toMatch(/request\.method === "GET" && url\.pathname === "\/api\/admin\/export"/);
   expect(source).toMatch(/return handleLiveReviewExport\(request, env\)/);
 });

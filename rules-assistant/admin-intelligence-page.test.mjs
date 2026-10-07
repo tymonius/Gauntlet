@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
+import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../tools/rules-assistant/admin/admin-intelligence-page.js";
 
 test("admin review export includes current corpus and retrieval diagnostics", () => {
   expect(ADMIN_PAGE_WITH_RULES_INTELLIGENCE).toContain("gauntlet.rules-review-bundle.v2");

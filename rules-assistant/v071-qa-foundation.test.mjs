@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const reviewIntelligence = readFileSync(new URL("./review-intelligence.js", import.meta.url), "utf8");
+const reviewIntelligence = readFileSync(new URL("../tools/rules-assistant/admin/review-intelligence.js", import.meta.url), "utf8");
 const workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
-const adminPage = readFileSync(new URL("./admin-intelligence-page.js", import.meta.url), "utf8");
+const adminPage = readFileSync(new URL("../tools/rules-assistant/admin/admin-intelligence-page.js", import.meta.url), "utf8");
 const benchmark = JSON.parse(readFileSync(
   new URL("./evals/rules-arbiter-evals.v071.json", import.meta.url),
   "utf8"
@@ -11,7 +11,7 @@ const benchmark = JSON.parse(readFileSync(
 
 describe("v0.7.1 Rules Arbiter QA foundation", () => {
   test("review exports use the actual current v0.7.1 published corpus", () => {
-    expect(reviewIntelligence).toContain('from "./v071-public-corpus.js"');
+    expect(reviewIntelligence).toContain('from "../../../rules-assistant/v071-public-corpus.js"');
     expect(reviewIntelligence).toContain("defaultV071SourceUrls");
     expect(reviewIntelligence).toContain("loadV071RulesCorpus");
     expect(reviewIntelligence).not.toContain("loadRulesCorpus(defaultSourceUrls");

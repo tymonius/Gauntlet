@@ -246,12 +246,22 @@ The browser-public Rules Arbiter widget presentation boundary is now separated f
 - Pages/quality-gate/live-verification path routing follows the separated source boundary;
 - backend/admin/eval/versioned source is no longer published merely because it shares the `rules-assistant/` root.
 
+## Completed subtranche — Rules Assistant admin review/export extraction
+
+The private review/dashboard cluster is now separated from the deployable backend root:
+
+- admin dashboard composition, import, incremental-export, intelligence, triage, scaffold, and browser runtime helpers live under `tools/rules-assistant/admin/`;
+- review export/checkpoint and review-intelligence handlers move with that private admin surface because they exist to support review operations rather than player-facing rulings;
+- the Worker entry and refinement wrapper import those modules from the tooling boundary without changing the public/admin URLs;
+- Rules Arbiter deployment now watches and syntax-checks the extracted tooling so a tooling change cannot miss production deployment;
+- current source-reading tests follow the maintained tooling location while the test suites themselves remain in the existing Rules Assistant regression boundary.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
 
 - current Cloudflare Worker routing/deployment runtime, shared retrieval/runtime support, and D1 migrations;
-- admin/refinement/review/export tooling;
+- refinement engine/support that is still coupled to the deployed Worker;
 - current QA/eval corpora and regression harnesses;
 - explicitly versioned historical/compatibility workers and corpora.
 

@@ -113,7 +113,7 @@ Historical Deckbuilder surfaces retained for versioned compatibility.
 
 ### rules-assistant/
 
-Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, admin/refinement tooling, QA/evals, and versioned compatibility implementations. The browser widget presentation source lives under `apps/rules-assistant-widget/`; only explicitly declared shared browser modules from this root are staged to Pages.
+Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, refinement support, QA/evals, and versioned compatibility implementations. Browser widget presentation lives under `apps/rules-assistant-widget/`, while private admin review/export tooling lives under `tools/rules-assistant/admin/`; only explicitly declared shared browser modules from the transitional root are staged to Pages.
 
 ### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/rules-arbiter/, apps/rules-assistant-widget/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 

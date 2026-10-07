@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { ADMIN_PAGE_WITH_IMPORT, enhanceAdminPage } from "./admin-import-page.js";
+import { ADMIN_PAGE_WITH_IMPORT, enhanceAdminPage } from "../tools/rules-assistant/admin/admin-import-page.js";
 import workerEntry, { addSiteFaviconLinks, allowSiteImages } from "./worker-entry.js";
 
 const SITE_ORIGIN = "https://gauntlet.run";
