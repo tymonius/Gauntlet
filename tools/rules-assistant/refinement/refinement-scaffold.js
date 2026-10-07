@@ -26,7 +26,7 @@ export function createRefinementScaffoldEngine() {
     source_specificity: {
       likelyFiles: [
         "rulebook/player-facing/current-rulebook.md",
-        "game-data/current-game.json",
+        "packages/game-data/current-game.json",
         "rules-assistant/v071-public-corpus.js"
       ],
       deterministicChecks: [
@@ -96,7 +96,7 @@ export function createRefinementScaffoldEngine() {
       reasonSignalCodes,
       authorityFileCandidates: [
         "rulebook/player-facing/current-rulebook.md",
-        "game-data/current-game.json"
+        "packages/game-data/current-game.json"
       ],
       rule: required
         ? "Resolve missing or ambiguous game semantics in current game authority before changing Rules Arbiter behavior."
