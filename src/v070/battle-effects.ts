@@ -57,6 +57,11 @@ import {
   registerV070RearguardBattleEffect,
 } from './rearguard';
 import {
+  V070_PATHS_OF_SHADOW_BATTLE_TEXT,
+  V070_PATHS_OF_SHADOW_ID,
+  registerV070PathsOfShadowBattleEffect,
+} from './paths-of-shadow-battle';
+import {
   CURRENT_DIVINE_MERCY_BATTLE_TEXT,
   V070_DIVINE_MERCY_ID,
 } from './divine-mercy-battle';
@@ -254,6 +259,19 @@ const rearguardHandler: previous.V070BattleEffectHandler = {
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
     registerV070RearguardBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
+const pathsOfShadowHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_PATHS_OF_SHADOW_ID,
+  expectedText: V070_PATHS_OF_SHADOW_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070PathsOfShadowBattleEffect(
       state,
       owner,
       commitment.instanceId,
@@ -668,6 +686,7 @@ const monetaryCrisisHandler: previous.V070BattleEffectHandler = {
 
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
   [V070_REARGUARD_ID, rearguardHandler],
+  [V070_PATHS_OF_SHADOW_ID, pathsOfShadowHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
   [V070_SCORCHED_EARTH_ID, scorchedEarthHandler],
   [V070_BATTLEFIELD_PROMOTION_ID, battlefieldPromotionHandler],
@@ -1217,6 +1236,10 @@ function deferredRegistrationExists(
   cardId: string,
   sourceInstanceId: string,
 ): boolean {
+  if (cardId === V070_PATHS_OF_SHADOW_ID) {
+    return state.battleRuntime?.pathsOfShadowBattleSourceInstanceIds
+      ?.includes(sourceInstanceId) ?? false;
+  }
   if (cardId === V070_CAPITAL_GAINS_ID) {
     return state.battleRuntime?.capitalGainsBattleSourceInstanceIds
       ?.includes(sourceInstanceId) ?? false;
