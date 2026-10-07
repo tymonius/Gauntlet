@@ -112,7 +112,7 @@ export function registerV070OperationalReassessmentBattleEffect(
     owner,
     sourceInstanceId,
     role,
-    candidateInstanceIds: eligibleReplacementInstanceIds(
+    candidateInstanceIds: v070PostTacticsReplacementEligibleHandInstanceIds(
       state,
       owner,
       role,
@@ -162,7 +162,7 @@ export function resolveV070OperationalReassessmentBattleChoice(
     );
   }
 
-  const liveCandidates = eligibleReplacementInstanceIds(
+  const liveCandidates = v070PostTacticsReplacementEligibleHandInstanceIds(
     state,
     playerId,
     pending.role,
@@ -192,10 +192,10 @@ export function v070OperationalReassessmentReplacementInstanceIds(
   owner: PlayerId,
   role: 'gambit' | 'tactic',
 ): string[] {
-  return eligibleReplacementInstanceIds(state, owner, role);
+  return v070PostTacticsReplacementEligibleHandInstanceIds(state, owner, role);
 }
 
-function eligibleReplacementInstanceIds(
+export function v070PostTacticsReplacementEligibleHandInstanceIds(
   state: V070GameState,
   owner: PlayerId,
   role: 'gambit' | 'tactic',
