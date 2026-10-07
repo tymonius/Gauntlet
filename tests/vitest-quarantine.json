@@ -13,10 +13,10 @@
       "id": "rules-arbiter-refactor-drift",
       "reason": "Rules Arbiter / Chief Justice tests whose literal workflow, markup, or interaction assertions predate the current refactor. Rehabilitate against current behavior before removing from quarantine.",
       "files": [
-        "rules-assistant/busy-focus-accessibility.test.mjs",
+        "apps/rules-assistant-widget/busy-focus-accessibility.test.mjs",
         "rules-assistant/reliable-worker.test.mjs",
         "rules-assistant/v071-corpus-sync-guard.test.mjs",
-        "rules-assistant/widget-accessibility.test.mjs",
+        "apps/rules-assistant-widget/widget-accessibility.test.mjs",
         "tests/homepage-chief-justice.test.ts",
         "tests/rules-arbiter-live-qa-transport.test.ts",
         "tests/rules-arbiter-live-qa-workflow.test.ts"

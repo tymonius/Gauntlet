@@ -3,8 +3,8 @@ import { expect, test } from "vitest";
 
 const entry = readFileSync(new URL("./worker-entry.js", import.meta.url), "utf8");
 const reliable = readFileSync(new URL("./reliable-worker.js", import.meta.url), "utf8");
-const widget = readFileSync(new URL("./widget.js", import.meta.url), "utf8");
-const widgetCss = readFileSync(new URL("./widget.css", import.meta.url), "utf8");
+const widget = readFileSync(new URL("../apps/rules-assistant-widget/widget.js", import.meta.url), "utf8");
+const widgetCss = readFileSync(new URL("../apps/rules-assistant-widget/widget.css", import.meta.url), "utf8");
 
 test("production rulings use the reliable wrapper by default", () => {
   expect(entry).toContain('import reliableWorker from "./reliable-worker.js"');

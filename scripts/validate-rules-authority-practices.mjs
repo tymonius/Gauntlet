@@ -21,7 +21,7 @@ const CURRENT_PLAYER_LANGUAGE_DIRECTORIES = [
 ];
 const CURRENT_PLAYER_LANGUAGE_FILES = [
   'rules-assistant/rules-deterministic.js',
-  'rules-assistant/answer-presentation.js',
+  'apps/rules-assistant-widget/answer-presentation.js',
   'apps/start/index.html',
 ];
 
@@ -206,7 +206,7 @@ function validateCurrentPlayerFacingSurfaces(authority, rulebook) {
   const thresholdWord = ruleNumberWord(facts['diplomats.peace_treaty_threshold']);
   for (const path of [
     'legacy/public-compatibility/faction-sheets/diplomat.js',
-    'rules-assistant/answer-presentation.js',
+    'apps/rules-assistant-widget/answer-presentation.js',
     'rules-assistant/rules-deterministic.js',
   ]) {
     const source = readText(path);
