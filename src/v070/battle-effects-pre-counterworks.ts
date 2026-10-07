@@ -643,7 +643,9 @@ function revealEffectInterruptPending(state: V070GameState): boolean {
   return Boolean(
     pendingV070BattleRevealChoice(state)
     || pendingV070BattleRevealEffectOrderChoice(state)
-    || v070MysticInvocationPendingPlayers(state).length > 0,
+    || v070MysticInvocationPendingPlayers(state).length > 0
+    || (state.battleRuntime?.pendingReserveForceReplacementCommitments
+      ?.length ?? 0) > 0,
   );
 }
 
