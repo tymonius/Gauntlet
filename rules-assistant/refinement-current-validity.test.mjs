@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { applyCurrentValidityToRefinementReport } from "./refinement-current-validity.js";
+import { applyCurrentValidityToRefinementReport } from "../tools/rules-assistant/refinement/refinement-current-validity.js";
 
 function report(interactions, scope = "reviewed_backlog") {
   return {

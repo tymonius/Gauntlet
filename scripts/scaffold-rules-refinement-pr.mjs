@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { mergeRegressionCandidates } from "./ingest-rules-regression-candidates.mjs";
-import { refinementScaffold } from "../rules-assistant/refinement-scaffold.js";
+import { refinementScaffold } from "../tools/rules-assistant/refinement/refinement-scaffold.js";
 
 const DEFAULT_BENCHMARK = "rules-assistant/evals/rules-arbiter-evals.v071.json";
 

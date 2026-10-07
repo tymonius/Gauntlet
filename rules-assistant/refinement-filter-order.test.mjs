@@ -2,8 +2,8 @@ import { expect, test } from "vitest";
 import {
   applyRefinementResolutionLedger,
   refinementResolutionLedger
-} from "./refinement-resolution-ledger.js";
-import { applyCurrentValidityToRefinementReport } from "./refinement-current-validity.js";
+} from "../tools/rules-assistant/refinement/refinement-resolution-ledger.js";
+import { applyCurrentValidityToRefinementReport } from "../tools/rules-assistant/refinement/refinement-current-validity.js";
 
 const resolvedId = "f9ae058b-e4de-4140-bd1f-189879e77678";
 

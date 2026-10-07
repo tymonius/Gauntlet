@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { buildRefinementPlan } from "./scaffold-rules-refinement-pr.mjs";
-import { refinementScaffold } from "../rules-assistant/refinement-scaffold.js";
+import { refinementScaffold } from "../tools/rules-assistant/refinement/refinement-scaffold.js";
 
 const report = {
   schema: "gauntlet.rules-triage.v1",

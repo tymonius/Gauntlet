@@ -2,7 +2,7 @@
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { buildPrivacySafeReviewedBacklogSnapshot } from "../rules-assistant/refinement-snapshot.js";
+import { buildPrivacySafeReviewedBacklogSnapshot } from "../tools/rules-assistant/refinement/refinement-snapshot.js";
 
 function usage() {
   return "Usage: node scripts/build-rules-refinement-snapshot.mjs --interactions <wrangler.json> --diagnostics <wrangler.json> --audits <wrangler.json> --output <snapshot.json>";
