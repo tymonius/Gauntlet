@@ -2,15 +2,15 @@
 
 The unversioned public Rules Arbiter serves the canonical Gauntlet v0.7.2 release. Explicitly versioned older routes remain available for historical and compatibility purposes.
 
-The public widget is framework-free and can be loaded on any Gauntlet browser page. It first tries the configured AI endpoint. The unversioned Worker routes current requests to the v0.7.2 implementation, and browser-side direct source lookup uses the frozen v0.7.2 release corpus when the service is unavailable. The dedicated browser shell source lives under `apps/rules-arbiter/` and is published at the stable `/rules-arbiter/` route.
+The public widget is framework-free and can be loaded on any Gauntlet browser page. It first tries the configured AI endpoint. The unversioned Worker routes current requests to the v0.7.2 implementation, and browser-side direct source lookup uses the frozen v0.7.2 release corpus when the service is unavailable. The dedicated browser shell source lives under `apps/rules-arbiter/`; widget presentation source lives under `apps/rules-assistant-widget/`. Publication materializes those sources at the stable `/rules-arbiter/` and `/rules-assistant/` URLs.
 
 When a Cloudflare D1 database is attached, the Worker also records live website questions and answers, accepts optional player feedback, and exposes a token-protected review dashboard. The database starts empty. It does **not** import development chats, historical conversations, or curated regression questions.
 
 ## Files
 
-- `widget.js` — floating accessible chat panel, anonymous session grouping, feedback controls, and API/fallback orchestration.
-- `widget.css` — isolated responsive widget styling.
-- `feedback.css` — feedback-control styling loaded automatically by the widget.
+- `../apps/rules-assistant-widget/widget.js` — floating accessible chat panel, anonymous session grouping, feedback controls, and API/fallback orchestration.
+- `../apps/rules-assistant-widget/widget.css` — isolated responsive widget styling.
+- `../apps/rules-assistant-widget/feedback.css`, answer-presentation assets, and mobile overrides — browser presentation support materialized with the widget.
 - `local-search.js` — generic document builder, retrieval, and lexical-fallback support shared by current and versioned corpora.
 - `v072-release-corpus.js` — current v0.7.2 frozen-release corpus loader and release/deployment validation.
 - `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.7.2 Worker while preserving explicitly versioned older routes.
@@ -31,7 +31,7 @@ For the unversioned public v0.7.2 Rules Arbiter, the governing live corpus is th
 
 The model is instructed to use only retrieved passages, apply specific-over-general precedence, distinguish explicit rules from interpretations, and state when the rules do not resolve a question.
 
-Explicit v0.6.1 and v0.6.2 routes intentionally continue to use their matching historical sources. The generic `local-search.js` defaults are current-version defaults; callers that need an older corpus must provide or use an explicitly versioned source path rather than relying on those defaults.
+Explicit v0.6.1 and v0.6.2 routes intentionally continue to use their matching historical sources. The generic `local-search.js` retains older compatibility defaults; maintained callers must use an explicitly versioned corpus loader rather than relying on those defaults.
 
 ## Interaction data
 
@@ -157,10 +157,11 @@ From the repository root:
 
 ```bash
 npm run test:rules-assistant
-python3 -m http.server 8000
+node scripts/stage-pages-publication.mjs /tmp/gauntlet-pages
+python3 -m http.server 8000 --directory /tmp/gauntlet-pages
 ```
 
-Open `http://localhost:8000/`. With no backend configured, direct source lookup should use the current v0.7.2 release sources. Run `wrangler dev` in a second terminal to exercise the current Worker behavior locally.
+Open `http://localhost:8000/`. The staged preview preserves the production source-to-URL mappings. With no backend configured, direct source lookup should use the release-selected rules sources. Run `wrangler dev` in a second terminal to exercise the Worker behavior locally.
 
 For local D1 testing after the binding is configured:
 
