@@ -312,6 +312,65 @@ describe('Reserve Force battle effect', () => {
     expect(state.players.A.zones.discardPile).toContain(second);
   });
 
+  test('a nested replacement choice pauses the second replacement and resumes it first', () => {
+    let state = setAndRevealGambits(startBattle());
+    const source = state.battleRuntime!.participants.A.reserve[0]!;
+    state.cardInstances[source].cardId = V070_RESERVE_FORCE_ID;
+
+    const first = injectHand(
+      state,
+      'A',
+      'mystics-dark-omens',
+      'nested-first',
+    );
+    const second = injectHand(
+      state,
+      'A',
+      'neutral-rallying-cry',
+      'nested-second',
+    );
+
+    state = chooseAndRevealTactics(state, source);
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_reserve_force_battle',
+      playerId: 'A',
+      cardInstanceIds: [first, second],
+    });
+
+    expect(pendingV070BattleRevealChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'dark_omens',
+        owner: 'A',
+        sourceInstanceId: first,
+      }),
+    );
+    expect(state.battleRuntime?.participants.A.battleModifier).toBe(0);
+    expect(
+      state.battleRuntime?.pendingReserveForceReplacementCommitments,
+    ).toEqual([
+      expect.objectContaining({ instanceId: second }),
+    ]);
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_dark_omens_battle',
+      playerId: 'A',
+      use: false,
+    });
+
+    expect(pendingV070BattleRevealChoice(state)).toBeNull();
+    expect(
+      state.battleRuntime?.pendingReserveForceReplacementCommitments,
+    ).toEqual([]);
+    expect(state.battleRuntime?.participants.A.battleModifier).toBe(1);
+
+    const secondApplied = state.events.find(event =>
+      event.type === 'battle_card_effect_applied'
+      && (event.payload as { instanceId?: string } | undefined)
+        ?.instanceId === second
+    );
+    expect(secondApplied).toBeDefined();
+  });
+
   test('rejects more than two replacements and duplicate physical cards', () => {
     let state = startBattle();
     const source = injectHand(
