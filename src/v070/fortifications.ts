@@ -10,7 +10,10 @@ import {
 } from './rules';
 import { isV070AssetUsable } from './asset-face-state';
 import { recordV070IntelligenceBattleAssetUseForMission } from './intelligence';
-import { applyV070BattleRetreatStep } from './retreat-step';
+import {
+  applyV070BattleRetreatStep,
+  v070NormalBattleRetreatApplied,
+} from './retreat-step';
 
 export const V070_FORTIFICATIONS_ID = 'neutral-fortifications' as const;
 export const V070_FORTIFICATIONS_ASSET_TEXT =
@@ -115,6 +118,7 @@ export function openV070FortificationsRetreatChoice(
   if (!battle || !runtime || runtime.stage !== 'aftermath') return false;
   if (runtime.pendingFortificationsRetreat) return true;
   if (!battle.loser || battle.loser !== battle.defender) return false;
+  if (!v070NormalBattleRetreatApplied(state)) return false;
 
   const playerId = battle.loser;
   while (true) {
