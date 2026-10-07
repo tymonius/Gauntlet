@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("rules-assistant/widget.js", "utf8");
+const source = readFileSync("apps/rules-assistant-widget/widget.js", "utf8");
 
 describe("Rules Arbiter feedback accessibility", () => {
   it("groups repeated rating buttons under a descriptive accessible name", () => {

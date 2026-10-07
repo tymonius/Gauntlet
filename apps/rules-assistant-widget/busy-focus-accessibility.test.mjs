@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("rules-assistant/widget.js", "utf8");
+const source = readFileSync("apps/rules-assistant-widget/widget.js", "utf8");
 
 describe("Chief Justice busy-state focus", () => {
   it("provides a programmatic focus target for request status", () => {
