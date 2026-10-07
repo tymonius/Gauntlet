@@ -256,12 +256,21 @@ The private review/dashboard cluster is now separated from the deployable backen
 - Rules Arbiter deployment now watches and syntax-checks the extracted tooling so a tooling change cannot miss production deployment;
 - current source-reading tests follow the maintained tooling location while the test suites themselves remain in the existing Rules Assistant regression boundary.
 
+## Completed subtranche — Rules Assistant refinement tooling extraction
+
+The deterministic refinement engine is now separated from the deployed backend source boundary:
+
+- triage, scaffold, privacy-safe snapshot, current-validity filtering, and resolution-ledger helpers live under `tools/rules-assistant/refinement/`;
+- the deployed admin refinement wrapper imports the runtime-needed helpers from that tooling boundary, while repository scripts import scaffold/snapshot helpers from the same maintained source;
+- generated refinement manifests now land under `artifacts/rules-refinement/manifests/`, matching the source-first validator's established artifact scan instead of creating a new source subtree under `rules-assistant/`;
+- source-first governance now recognizes canonical `packages/game-data/current-game.json` rather than the retired pre-package path;
+- Worker deployment and current-live verification follow both extracted Rules Assistant tooling boundaries.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
 
 - current Cloudflare Worker routing/deployment runtime, shared retrieval/runtime support, and D1 migrations;
-- refinement engine/support that is still coupled to the deployed Worker;
 - current QA/eval corpora and regression harnesses;
 - explicitly versioned historical/compatibility workers and corpora.
 
