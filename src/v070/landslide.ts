@@ -10,6 +10,7 @@ import {
   v070OverlaysAt,
 } from './overlays';
 import type { PlayerId } from './rules';
+import { v070PlayerRetreatedInBattle } from './retreat-step';
 
 export const V070_LANDSLIDE_ID = 'neutral-landslide' as const;
 export const V070_LANDSLIDE_BATTLE_TEXT =
@@ -91,7 +92,7 @@ export function openV070LandslideAftermathChoice(
   }
 
   const loser = battle.loser;
-  if (battle.positions[loser] === battle.contestedPosition) {
+  if (!v070PlayerRetreatedInBattle(state, loser)) {
     runtime.landslideAftermathResolved = true;
     return false;
   }
