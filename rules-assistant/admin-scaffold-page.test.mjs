@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
-import { enhanceRulesScaffoldAdmin } from "./admin-scaffold-page.js";
+import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../tools/rules-assistant/admin/admin-intelligence-page.js";
+import { enhanceRulesScaffoldAdmin } from "../tools/rules-assistant/admin/admin-scaffold-page.js";
 
 const page = enhanceRulesScaffoldAdmin(ADMIN_PAGE_WITH_RULES_INTELLIGENCE);
 

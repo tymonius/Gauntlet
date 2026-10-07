@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import {
   ADMIN_PAGE_WITH_INCREMENTAL_EXPORT,
   enhanceIncrementalExport
-} from "./admin-incremental-export-page.js";
+} from "../tools/rules-assistant/admin/admin-incremental-export-page.js";
 import workerEntry from "./worker-entry.js";
 
 test("enhances the dashboard with scoped incremental review exports", () => {
