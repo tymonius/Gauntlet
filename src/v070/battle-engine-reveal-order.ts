@@ -25,6 +25,9 @@ import { resolveV070ReconnaissanceBattleChoice } from './reconnaissance-battle';
 import {
   resolveV070OperationalReassessmentBattleChoice,
 } from './operational-reassessment-battle';
+import {
+  resolveV070ReserveForceBattleChoice,
+} from './reserve-force-battle';
 import { applyV070BlasphemyForBattleReveal } from './inquisition';
 import {
   resolveV070DivestmentBattleChoice,
@@ -104,6 +107,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       choice: 'withdraw' | 'replace';
       cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_reserve_force_battle';
+      playerId: PlayerId;
+      cardInstanceIds: readonly string[];
     }
   | {
       type: 'resolve_late_additional_tactic';
@@ -564,6 +572,23 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (pending?.kind === 'reserve_force'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_reserve_force_battle') {
+      throw new V070GameActionError(
+        'Choose up to two Reserve Force replacements before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070ReserveForceBattleChoice(
+      next,
+      action.playerId,
+      action.cardInstanceIds,
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
   if (pending?.kind === 'reconnaissance'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_reconnaissance_battle') {
@@ -678,6 +703,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_operational_reassessment_battle') {
     throw new V070GameActionError(
       'There is no open Operational Reassessment battle-effect choice.',
+    );
+  }
+  if (action.type === 'resolve_reserve_force_battle') {
+    throw new V070GameActionError(
+      'There is no open Reserve Force battle replacement choice.',
     );
   }
   if (action.type === 'resolve_rend_the_veil_battle') {
