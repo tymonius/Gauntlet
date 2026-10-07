@@ -16,7 +16,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.7.2 Worker while preserving explicitly versioned older routes.
 - `worker-v072.js` — current v0.7.2 Rules Arbiter Worker.
 - `worker-v061.js` and v0.6.2-specific files — retained versioned implementations and compatibility/history surfaces.
-- `admin-page.js` and related admin modules — private review dashboards served by the Worker.
+- `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.
 - `migrations/` — D1 schema migrations.
 - `wrangler.toml` — Worker deployment configuration.
 - focused Vitest regression suites — current and version-specific behavior checks.
