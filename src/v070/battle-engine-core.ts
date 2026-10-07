@@ -119,6 +119,7 @@ import {
   resolveV070PathsOfShadowBattleChoice,
 } from './paths-of-shadow-battle';
 import {
+  observeV070NormalBattleRetreat,
   v070NormalBattleRetreatApplied,
   v070PlayerRetreatedInBattle,
 } from './retreat-step';
@@ -2480,6 +2481,8 @@ function finalizeOutcome(
         replacedNormalRetreat: true,
       },
     });
+  } else {
+    observeV070NormalBattleRetreat(state);
   }
   recordV070IntelligenceBattleOutcomeForMission(state, outcome);
   recordV070ExecutiveHostileTakeoverEligibility(
