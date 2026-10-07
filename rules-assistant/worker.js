@@ -1,4 +1,4 @@
-import { ADMIN_PAGE } from "./admin-page.js";
+import { ADMIN_PAGE } from "../tools/rules-assistant/admin/admin-page.js";
 import {
   defaultSourceUrls,
   loadRulesCorpus,

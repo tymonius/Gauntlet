@@ -1,4 +1,4 @@
-import { isAdminAuthorized } from "./worker.js";
+import { isAdminAuthorized } from "../../../rules-assistant/worker.js";
 
 const TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS rules_review_export_checkpoints (

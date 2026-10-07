@@ -1,10 +1,10 @@
 import worker from "./worker-entry.js";
-import { enhanceRulesScaffoldAdmin } from "./admin-scaffold-page.js";
+import { enhanceRulesScaffoldAdmin } from "../tools/rules-assistant/admin/admin-scaffold-page.js";
 import {
   ADMIN_REFINEMENT_RUNTIME_PATH,
   adminRefinementRuntimeSource,
   allowAdminRefinementRuntime
-} from "./admin-refinement-runtime.js";
+} from "../tools/rules-assistant/admin/admin-refinement-runtime.js";
 import { refinementTriage } from "./refinement-triage.js";
 import { refinementScaffold } from "./refinement-scaffold.js";
 import {

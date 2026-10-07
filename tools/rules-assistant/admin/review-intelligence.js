@@ -1,7 +1,7 @@
-import { isAdminAuthorized } from "./worker.js";
-import { buildRulesCorpus } from "./local-search.js";
-import { V071_RULES_VERSION, defaultV071SourceUrls, loadV071RulesCorpus } from "./v071-public-corpus.js";
-import { buildCorpusReviewSnapshot } from "./rules-intelligence.js";
+import { isAdminAuthorized } from "../../../rules-assistant/worker.js";
+import { buildRulesCorpus } from "../../../rules-assistant/local-search.js";
+import { V071_RULES_VERSION, defaultV071SourceUrls, loadV071RulesCorpus } from "../../../rules-assistant/v071-public-corpus.js";
+import { buildCorpusReviewSnapshot } from "../../../rules-assistant/rules-intelligence.js";
 
 const HISTORICAL_ACCURACY = new Set(["correct", "incorrect", "indeterminate", "not_applicable"]);
 const CURRENT_VALIDITY = new Set(["current", "stale", "superseded", "indeterminate", "not_applicable"]);

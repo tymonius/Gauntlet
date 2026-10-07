@@ -8,11 +8,11 @@ import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
 import smartWorker from "./smart-worker.js";
 import reliableWorker from "./reliable-worker.js";
-import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
-import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
-import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
-import { handleLiveReviewExport } from "./review-export.js";
-import { handleReviewIntelligence } from "./review-intelligence.js";
+import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "../tools/rules-assistant/admin/admin-incremental-export-page.js";
+import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../tools/rules-assistant/admin/admin-intelligence-page.js";
+import { handleReviewExportCheckpoint } from "../tools/rules-assistant/admin/review-export-checkpoint.js";
+import { handleLiveReviewExport } from "../tools/rules-assistant/admin/review-export.js";
+import { handleReviewIntelligence } from "../tools/rules-assistant/admin/review-intelligence.js";
 import { handleClientSourceLookupReview } from "./source-lookup-review.js";
 import { handleQaSemanticEvaluation } from "./qa-semantic-evaluator.js";
 
