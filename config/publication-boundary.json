@@ -6,7 +6,6 @@
       "assets",
       "config",
       "images",
-      "rules-assistant",
       "tts",
       "v0.7.1",
       "v0.7.2"
@@ -48,6 +47,7 @@
       "rulebook",
       "rulebook-design",
       "rulebook-production",
+      "rules-assistant",
       "scripts",
       "src",
       "tests",
@@ -205,6 +205,46 @@
     }
   ],
   "materializedFiles": [
+    {
+      "source": "apps/rules-assistant-widget/widget.js",
+      "publicPath": "/rules-assistant/widget.js",
+      "kind": "current-app"
+    },
+    {
+      "source": "apps/rules-assistant-widget/widget.css",
+      "publicPath": "/rules-assistant/widget.css",
+      "kind": "current-app"
+    },
+    {
+      "source": "apps/rules-assistant-widget/feedback.css",
+      "publicPath": "/rules-assistant/feedback.css",
+      "kind": "current-app"
+    },
+    {
+      "source": "apps/rules-assistant-widget/answer-presentation.js",
+      "publicPath": "/rules-assistant/answer-presentation.js",
+      "kind": "current-app"
+    },
+    {
+      "source": "apps/rules-assistant-widget/answer-presentation.css",
+      "publicPath": "/rules-assistant/answer-presentation.css",
+      "kind": "current-app"
+    },
+    {
+      "source": "apps/rules-assistant-widget/widget-mobile.css",
+      "publicPath": "/rules-assistant/widget-mobile.css",
+      "kind": "current-app"
+    },
+    {
+      "source": "rules-assistant/local-search.js",
+      "publicPath": "/rules-assistant/local-search.js",
+      "kind": "shared-browser-contract"
+    },
+    {
+      "source": "rules-assistant/v072-release-corpus.js",
+      "publicPath": "/rules-assistant/v072-release-corpus.js",
+      "kind": "shared-browser-contract"
+    },
     {
       "source": "rulebook/player-facing/current-rulebook.md",
       "publicPath": "/rulebook/player-facing/current-rulebook.md",
