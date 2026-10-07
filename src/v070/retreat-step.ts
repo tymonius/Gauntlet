@@ -18,7 +18,16 @@ import {
 declare module './battle-types' {
   interface V070BattleRuntime {
     normalRetreatStepObserved?: boolean;
+    battleRetreatStepPlayers?: PlayerId[];
   }
+}
+
+export function v070PlayerRetreatedInBattle(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  return state.battleRuntime?.battleRetreatStepPlayers?.includes(playerId)
+    ?? false;
 }
 
 export interface V070BattleRetreatStepSource {
@@ -115,6 +124,14 @@ export function observeV070BattleRetreatStep(
     throw new V070GameActionError(
       'The observed Retreat destination must match the live battle Position.',
     );
+  }
+
+  const runtime = state.battleRuntime;
+  if (runtime) {
+    runtime.battleRetreatStepPlayers ??= [];
+    if (!runtime.battleRetreatStepPlayers.includes(playerId)) {
+      runtime.battleRetreatStepPlayers.push(playerId);
+    }
   }
 
   openV070BlockadeChoicesForPositionChange(
