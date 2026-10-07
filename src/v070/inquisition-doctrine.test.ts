@@ -180,7 +180,7 @@ describe('v0.7.0 Inquisition doctrine integration', () => {
     expect(played!.index).toBeLessThan(conviction!.index);
   });
 
-  test('Blasphemy gains Conviction when an opposing Arcane Gambit is revealed, even if its effect then halts as unsupported', () => {
+  test('Blasphemy gains Conviction when an opposing Arcane Gambit is revealed before its later conditional effect resolves', () => {
     let state = activeBattle();
     const arcane = injectHand(
       state,
@@ -208,7 +208,9 @@ describe('v0.7.0 Inquisition doctrine integration', () => {
     });
 
     expect(v070Conviction(state, 'A')).toBe(1);
-    expect(state.battleRuntime?.stage).toBe('halted');
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.pathsOfShadowBattleSourceInstanceIds)
+      .toContain(arcane);
 
     const revealed = state.events.find(event =>
       event.type === 'gambit_revealed'
@@ -219,15 +221,10 @@ describe('v0.7.0 Inquisition doctrine integration', () => {
       && (event.payload as { reason?: string })?.reason
         === 'Blasphemy: opposing Arcane gambit revealed'
     );
-    const halted = state.events.find(event =>
-      event.type === 'battle_halted_unsupported_effect'
-    );
 
     expect(revealed).toBeDefined();
     expect(conviction).toBeDefined();
-    expect(halted).toBeDefined();
     expect(revealed!.index).toBeLessThan(conviction!.index);
-    expect(conviction!.index).toBeLessThan(halted!.index);
   });
 
   test('Condemnation sends an opposing Tactic to Graveyard and that qualifying Aftermath grants normal Conviction', () => {
