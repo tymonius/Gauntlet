@@ -119,6 +119,7 @@ import {
   resolveV070PathsOfShadowBattleChoice,
 } from './paths-of-shadow-battle';
 import {
+  v070NormalBattleRetreatApplied,
   v070PlayerRetreatedInBattle,
 } from './retreat-step';
 import {
@@ -2457,6 +2458,7 @@ function finalizeOutcome(
     // Retreat observer sees it. Explicit later Retreat +1 effects still use
     // the shared Retreat-step procedure and are tracked normally.
     runtime.normalRetreatStepObserved = true;
+    runtime.normalRetreatStepApplied = false;
 
     openV070BlockadeChoicesForPositionChange(
       state,
@@ -3201,6 +3203,10 @@ function pruneIneligibleBattleAftermathControlledEffects(
       if (choice.condition === 'owner_loss_after_retreat') {
         if (battle.loser !== choice.owner
           || !v070PlayerRetreatedInBattle(state, choice.owner)) {
+          return false;
+        }
+        if (choice.sourceCardId === 'neutral-strategic-withdrawal'
+          && !v070NormalBattleRetreatApplied(state)) {
           return false;
         }
         const current = battle.positions[choice.owner];
