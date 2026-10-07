@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("apps/rules-assistant-widget/widget.js", "utf8");
+const source = readFileSync("rules-assistant/widget.js", "utf8");
 
 describe("Rules Arbiter widget accessibility", () => {
   it("connects the launcher to the dialog and exposes the conversation as a live log", () => {

@@ -156,7 +156,7 @@ The dashboard shell is publicly retrievable, but no interaction data or mutation
 From the repository root:
 
 ```bash
-npm run test:rules-assistant
+npx vitest run rules-assistant/*.test.mjs apps/rules-assistant-widget/*.test.mjs
 node scripts/stage-pages-publication.mjs /tmp/gauntlet-pages
 python3 -m http.server 8000 --directory /tmp/gauntlet-pages
 ```

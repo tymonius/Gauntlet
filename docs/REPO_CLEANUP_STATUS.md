@@ -239,7 +239,7 @@ The current Rules Arbiter browser shell is now classified as application source:
 
 The browser-public Rules Arbiter widget presentation boundary is now separated from the mixed backend root:
 
-- widget JavaScript/CSS, answer presentation, feedback styling, mobile overrides, and their focused UI/accessibility tests live under `apps/rules-assistant-widget/`;
+- widget JavaScript/CSS, answer presentation, feedback styling, mobile overrides, and maintained co-located presentation tests live under `apps/rules-assistant-widget/`; two already-quarantined accessibility regressions remain at their existing path until the broader test-debt pass;
 - stable `/rules-assistant/...` browser URLs are preserved through explicit publication-file mappings;
 - `rules-assistant/` is no longer copied wholesale into GitHub Pages;
 - the shared browser/runtime modules `local-search.js` and `v072-release-corpus.js` remain in the transitional root for now and are individually materialized;
