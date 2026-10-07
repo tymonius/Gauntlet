@@ -381,7 +381,7 @@ describe('Reserve Force battle effect', () => {
     );
     const first = injectHand(state, 'A', 'neutral-rallying-cry', 'limit-1');
     const second = injectHand(state, 'A', 'neutral-new-recruits', 'limit-2');
-    const third = injectHand(state, 'A', 'neutral-contingency-plan', 'limit-3');
+    const third = injectHand(state, 'A', 'neutral-rallying-cry', 'limit-3');
     state = setAndRevealGambits(state, source);
     state = chooseAndRevealTactics(state);
 
