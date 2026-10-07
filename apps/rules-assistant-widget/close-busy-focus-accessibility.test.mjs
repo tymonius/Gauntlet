@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync("rules-assistant/widget.js", "utf8");
+const source = readFileSync("apps/rules-assistant-widget/widget.js", "utf8");
 
 describe("Rules Assistant close focus", () => {
   it("returns focus when the panel closes", () => {

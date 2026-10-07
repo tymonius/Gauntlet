@@ -113,11 +113,11 @@ Historical Deckbuilder surfaces retained for versioned compatibility.
 
 ### rules-assistant/
 
-Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
+Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, admin/refinement tooling, QA/evals, and versioned compatibility implementations. The browser widget presentation source lives under `apps/rules-assistant-widget/`; only explicitly declared shared browser modules from this root are staged to Pages.
 
-### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/start/, apps/playtest/, and workers/playtest-sessions/
+### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/rules-arbiter/, apps/rules-assistant-widget/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 
-Canonical Card Reference, Deckbuilder, Factions, Start, and Playtest browser source plus the Playtest session service. GitHub Pages stages the browser source at the stable public `/card-reference/`, `/deckbuilder/`, `/factions/`, `/start/`, and `/playtest/` paths; do not recreate maintained root `card-reference/`, `deckbuilder/`, `factions/`, `start/`, or `playtest/` source aliases.
+Canonical browser application source plus the Playtest session service. GitHub Pages stages these sources at their stable public routes, including `/rules-arbiter/` for the dedicated Rules Arbiter and `/rules-assistant/` for the embedded widget assets; do not recreate maintained root source aliases for application routes.
 
 ### tts/
 

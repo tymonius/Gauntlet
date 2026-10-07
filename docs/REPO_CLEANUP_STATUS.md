@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-10-02
+Last updated: 2026-10-07
 
 ## Governing objective
 
@@ -235,12 +235,22 @@ The current Rules Arbiter browser shell is now classified as application source:
 - verified the browser app and public widget both target the lifecycle-selected current Rules Arbiter/release corpus;
 - corrected stale `rules-assistant/README.md` language that still described a historical Rules Arbiter release as current.
 
-## Current tranche — Rules Assistant public/backend split audit
+## Completed subtranche — Rules Assistant public-widget extraction
+
+The browser-public Rules Arbiter widget presentation boundary is now separated from the mixed backend root:
+
+- widget JavaScript/CSS, answer presentation, feedback styling, mobile overrides, and maintained co-located presentation tests live under `apps/rules-assistant-widget/`; two already-quarantined accessibility regressions remain at their existing path until the broader test-debt pass;
+- stable `/rules-assistant/...` browser URLs are preserved through explicit publication-file mappings;
+- `rules-assistant/` is no longer copied wholesale into GitHub Pages;
+- the shared browser/runtime modules `local-search.js` and `v072-release-corpus.js` remain in the transitional root for now and are individually materialized;
+- Pages/quality-gate/live-verification path routing follows the separated source boundary;
+- backend/admin/eval/versioned source is no longer published merely because it shares the `rules-assistant/` root.
+
+## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
 
-- browser-public widget assets and their stable `/rules-assistant/` URLs;
-- the current Cloudflare Worker entry/deployment runtime and D1 migrations;
+- current Cloudflare Worker routing/deployment runtime, shared retrieval/runtime support, and D1 migrations;
 - admin/refinement/review/export tooling;
 - current QA/eval corpora and regression harnesses;
 - explicitly versioned historical/compatibility workers and corpora.

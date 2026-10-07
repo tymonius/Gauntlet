@@ -30,7 +30,6 @@ const BUILD_EPOCH = new Date('2000-01-01T00:00:00.000Z');
 const REQUIRED_PUBLIC_DIRECTORIES = Object.freeze([
   'assets',
   'images',
-  'rules-assistant',
 ]);
 const REQUIRED_MATERIALIZED_ROUTES = new Set([
   '/card-design/',
@@ -97,7 +96,11 @@ function bookletPublicationContract(contract) {
     materializedRoutes: (contract.materializedRoutes || [])
       .filter(route => REQUIRED_MATERIALIZED_ROUTES.has(route.publicPath)),
     materializedFiles: (contract.materializedFiles || [])
-      .filter(file => file.publicPath.startsWith('/rulebook/') || file.publicPath.startsWith('/card-design/')),
+      .filter(file =>
+        file.publicPath.startsWith('/rulebook/')
+        || file.publicPath.startsWith('/card-design/')
+        || file.publicPath.startsWith('/rules-assistant/')
+      ),
   };
 }
 

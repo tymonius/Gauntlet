@@ -36,7 +36,7 @@
         "apps"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Rules Arbiter, Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
+      "note": "Canonical container for maintained application source whose deployed URL layout is staged independently; contains the current Rules Arbiter browser shell and embedded Rules Arbiter widget presentation source, plus Card Reference, Deckbuilder, Factions, Rules, Start, Playtest, About, Accessibility, Changelog, Contact, FAQ, Press, and Privacy surfaces."
     },
     "artifacts": {
       "role": "generated_evidence",
@@ -141,10 +141,12 @@
       "role": "active_application",
       "target_groups": [
         "apps",
-        "packages"
+        "packages",
+        "tools",
+        "legacy"
       ],
       "transitional": true,
-      "note": "Current Rules Arbiter Worker/retrieval/admin/refinement implementation plus browser-public widget assets, versioned compatibility implementations, tests, and eval material. This root remains transitional pending separation of deployed backend, browser-public assets, current QA/eval tooling, and historical version support."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, admin/refinement/review/export tooling, QA/eval material, and explicitly versioned compatibility implementations. Browser-public widget presentation source lives under apps/rules-assistant-widget/ and is materialized to stable /rules-assistant/ URLs; the remaining root is source-only for Pages except explicitly materialized shared browser modules."
     },
     "scripts": {
       "role": "production_tooling",

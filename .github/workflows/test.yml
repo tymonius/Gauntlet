@@ -193,12 +193,16 @@ jobs:
               [[ "$match" == docs/Archive/* ]] && continue
               [[ "$match" == docs/recovery/frozen-scripts/* ]] && continue
               [[ "$match" == scripts/build-clean-v06*.mjs:* ]] && continue
+              [[ "$match" == scripts/build-v062-release.mjs:* ]] && continue
               [[ "$match" == scripts/render-clean-v06*.mjs:* ]] && continue
+              [[ "$match" == scripts/validate-clean-v06*.mjs:* ]] && continue
               [[ "$match" == scripts/validate-v06*.mjs:* ]] && continue
               [[ "$match" == scripts/finalize-v070-publication.mjs:* ]] && continue
               [[ "$match" == scripts/render-v070-booklet.mjs:* ]] && continue
               [[ "$match" == scripts/render-v071-booklet.mjs:* ]] && continue
               [[ "$match" == tests/v06*.test.ts:* ]] && continue
+              [[ "$match" == rules-assistant/busy-focus-accessibility.test.mjs:* ]] && continue
+              [[ "$match" == rules-assistant/widget-accessibility.test.mjs:* ]] && continue
               [[ "$match" == *"legacy/public-compatibility/$retired"* ]] && continue
               # A stable leading-slash browser URL is a publication contract, not a
               # repository-source dependency. Source moves deliberately preserve these URLs.
