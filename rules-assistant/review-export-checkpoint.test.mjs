@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import {
   normalizeCheckpoint,
   normalizeExportFilters
-} from "./review-export-checkpoint.js";
+} from "../tools/rules-assistant/admin/review-export-checkpoint.js";
 
 test("normalizes filter scopes deterministically", () => {
   expect(normalizeExportFilters({

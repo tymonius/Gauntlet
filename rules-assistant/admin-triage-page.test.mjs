@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { ADMIN_PAGE_WITH_RULES_TRIAGE, enhanceRulesTriageAdmin } from "./admin-triage-page.js";
+import { ADMIN_PAGE_WITH_RULES_TRIAGE, enhanceRulesTriageAdmin } from "../tools/rules-assistant/admin/admin-triage-page.js";
 
 test("admin dashboard exposes deterministic triage controls and both scopes", () => {
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain('id="rules-triage"');

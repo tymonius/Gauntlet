@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 
 const migration = readFileSync(new URL("./migrations/0007_rules_intelligence.sql", import.meta.url), "utf8");
-const worker = readFileSync(new URL("./review-intelligence.js", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../tools/rules-assistant/admin/review-intelligence.js", import.meta.url), "utf8");
 const entry = readFileSync(new URL("./worker-entry.js", import.meta.url), "utf8");
 
 test("migration stores answer-time diagnostics separately from reviewed conclusions", () => {
