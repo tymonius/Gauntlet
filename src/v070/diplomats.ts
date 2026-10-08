@@ -1479,7 +1479,7 @@ function removeHandCardToTerms(
   hand.splice(hand.indexOf(instanceId), 1);
 }
 
-function proposalRequirementMet(
+export function proposalRequirementMet(
   state: V070GameState,
   diplomatId: PlayerId,
   opponentId: PlayerId,
@@ -1597,7 +1597,7 @@ function discardRequiredHandCard(
   discardOptionalHandCard(state, playerId, instanceId, purpose);
 }
 
-function discardOptionalHandCard(
+export function discardOptionalHandCard(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string,
@@ -1621,7 +1621,7 @@ function discardOptionalHandCard(
   });
 }
 
-function moveOptionalGraveyardCardToDiscard(
+export function moveOptionalGraveyardCardToDiscard(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string | undefined,
@@ -1647,7 +1647,7 @@ function moveOptionalGraveyardCardToDiscard(
   });
 }
 
-function bankOptionalAssetFromHand(
+export function bankOptionalAssetFromHand(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string | undefined,
@@ -1773,7 +1773,7 @@ function endGameFromFrontLine(
   });
 }
 
-function drawIntoHand(
+export function drawIntoHand(
   state: V070GameState,
   playerId: PlayerId,
   count: number,
@@ -1814,7 +1814,7 @@ function revealBothHands(state: V070GameState): void {
   });
 }
 
-function revealHandTo(
+export function revealHandTo(
   state: V070GameState,
   owner: PlayerId,
   viewer: PlayerId,
