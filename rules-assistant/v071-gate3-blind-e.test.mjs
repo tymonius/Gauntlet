@@ -6,24 +6,24 @@ import { validateSemanticBenchmark } from "../scripts/v071-semantic-rules-qa-sup
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const standard = loadJson("./evals/rules-arbiter-gate3-blind-e.v071.json");
-const player = loadJson("./evals/rules-arbiter-gate3-blind-e-player-language.v071.json");
-const clarifications = loadJson("./evals/rules-arbiter-gate3-blind-e-clarifications.v071.json");
-const gate2 = loadJson("./evals/rules-arbiter-evals.v071.json");
+const standard = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-e.v071.json");
+const player = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-e-player-language.v071.json");
+const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-e-clarifications.v071.json");
+const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 
 const prior = [
-  loadJson("./evals/rules-arbiter-gate3-blind-a.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-a-player-language.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-a-clarifications.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-b.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-b-player-language.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-b-clarifications.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-c.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-c-player-language.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-c-clarifications.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-d.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-d-player-language.v071.json"),
-  loadJson("./evals/rules-arbiter-gate3-blind-d-clarifications.v071.json")
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-player-language.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-player-language.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-player-language.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-clarifications.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-d.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-d-player-language.v071.json"),
+  loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-d-clarifications.v071.json")
 ];
 
 const trancheD = prior[9];
