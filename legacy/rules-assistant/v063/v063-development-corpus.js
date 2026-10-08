@@ -1,4 +1,4 @@
-import { buildRulesCorpus } from "./local-search.js";
+import { buildRulesCorpus } from "../../../rules-assistant/local-search.js";
 
 export const V063_RULES_VERSION = "v0.6.3-candidate-2026-08-11";
 export const V063_VERSION_LABEL = "Gauntlet v0.6.3 candidate";
