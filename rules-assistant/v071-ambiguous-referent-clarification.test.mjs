@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BEHAVIOR_REVISION, buildAmbiguousReferentClarification } from "./worker-v071.js";
+import { BEHAVIOR_REVISION, buildAmbiguousReferentClarification } from "../legacy/rules-assistant/v071/worker-v071.js";
 import { normalizeCurrentAnswerMode, toLegacyAnswerMode } from "./rules-status.js";
 
 const reviewedHistory = [

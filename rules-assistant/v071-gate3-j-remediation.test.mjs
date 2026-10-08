@@ -7,7 +7,7 @@ import {
   buildAmbiguousReferentClarification,
   buildQuestionSpecificAdjudicationReminder,
   contextualQuery
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 import { normalizeR13RulingStatus } from "./r13-classification.js";
 
 const canonicalData = JSON.parse(readFileSync(
