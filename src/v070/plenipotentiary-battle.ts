@@ -323,7 +323,8 @@ export function v070PlenipotentiaryAftermathEffectEligible(
   effect: V070PlenipotentiaryAftermathEffect,
 ): boolean {
   const battle = state.battle;
-  if (!battle) return false;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || runtime.stage !== 'aftermath') return false;
   if (effect.proposalId === 'capitulation') {
     return battle.loser === effect.owner;
   }
