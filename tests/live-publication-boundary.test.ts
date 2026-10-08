@@ -8,25 +8,25 @@ const plan = JSON.parse(execFileSync(process.execPath, ['scripts/resolve-current
 describe('current live-publication boundary', () => {
   it('resolves current Rules Arbiter deployment details through the lifecycle adapter', () => {
     expect(plan).toMatchObject({
-      version: 'v0.7.1',
-      workerSource: 'rules-assistant/worker-v071.js',
+      version: 'v0.7.2',
+      workerSource: 'rules-assistant/worker-v072.js',
       healthUrl: 'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health',
-      corpusHealthUrl: 'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health',
-      manifestPath: 'releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json',
+      corpusHealthUrl: 'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/corpus-health',
+      manifestPath: 'releases/v0.7.2/Gauntlet_v0.7.2_Manifest.json',
     });
-    expect(plan.behaviorRevision).toMatch(/^v071-/);
+    expect(plan.behaviorRevision).toMatch(/^v072-/);
     expect(plan.authoritySetId).toMatch(/^[a-f0-9]{64}$/);
   });
 
-  it('keeps current workflow identity independent of release-specific v0.7.1 details', () => {
+  it('keeps current workflow identity independent of release-specific details', () => {
     expect(workflow).toContain('scripts/resolve-current-live-publication.mjs');
     expect(workflow).toContain('steps.release.outputs.health_url');
     expect(workflow).toContain('steps.release.outputs.corpus_health_url');
     expect(workflow).toContain('steps.release.outputs.manifest_path');
     expect(workflow).toContain('steps.release.outputs.authority_set_id');
-    expect(workflow).not.toContain('rules-assistant/worker-v071.js');
-    expect(workflow).not.toContain('/api/v071/corpus-health');
-    expect(workflow).not.toContain("steps.release.outputs.version == 'v0.7.1'");
-    expect(workflow).not.toContain('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json');
+    expect(workflow).not.toContain('legacy/rules-assistant/v071/worker-v071.js');
+    expect(workflow).not.toContain('/api/v071/corpus-health'); // DOC-HISTORICAL
+    expect(workflow).not.toContain("steps.release.outputs.version == 'v0.7.1'"); // DOC-HISTORICAL
+    expect(workflow).not.toContain('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json'); // DOC-HISTORICAL
   });
 });

@@ -164,7 +164,7 @@ describeV070Cutover('v0.7.0 historical publication boundary', () => {
     expect(v070Worker).toContain('export const RULES_VERSION = V070_RULES_VERSION');
     expect(v070Worker).toContain('current canonical v0.7.0 playtest edition');
     expect(workerEntry).toContain('import v070Worker from "../legacy/rules-assistant/v070/worker-v070.js";');
-    expect(workerEntry).toContain('import worker from "./worker-v071.js";');
+    expect(workerEntry).toContain('import worker from "../legacy/rules-assistant/v071/worker-v071.js";');
     expect(workerEntry).toContain('requestedVersion === "v0.7.0"');
     expect(workerEntry).toContain('url.pathname === "/api/v070/rules"');
     expect(workerEntry).toContain('url.pathname === "/api/v071/rules"');

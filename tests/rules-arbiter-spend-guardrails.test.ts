@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const workflowDir = '.github/workflows';
 const paidWorkflowName = 'v071-rules-arbiter-live-qa.yml';
-const worker = readFileSync('rules-assistant/worker-v071.js', 'utf8');
+const worker = readFileSync('legacy/rules-assistant/v071/worker-v071.js', 'utf8');
 const entry = readFileSync('rules-assistant/worker-entry.js', 'utf8');
 const wrangler = readFileSync('rules-assistant/wrangler.toml', 'utf8');
 const migration = readFileSync('rules-assistant/migrations/0011_rules_model_usage_budget.sql', 'utf8');
