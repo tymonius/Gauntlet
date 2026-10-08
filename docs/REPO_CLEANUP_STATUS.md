@@ -306,6 +306,16 @@ The still-routed v071 compatibility Worker is now separated from the backend roo
 - historical regression tests, live-publication/source-first contracts, and refinement hints now follow the archived source location;
 - deployment and current-live verification already treat `legacy/rules-assistant/**` as a production compatibility dependency.
 
+## Completed subtranche — Rules Assistant v063 compatibility archive
+
+The certified v063 Rules Arbiter compatibility implementation is now separated from the backend root:
+
+- `worker-v063.js` and `v063-public-corpus.js` live under `legacy/rules-assistant/v063/`;
+- the current `worker-entry.js` preserves the explicit v063 rules/health routes and requested-version dispatch to the archived Worker;
+- the archived corpus still uses the maintained shared retrieval runtime and the existing v063 publication-language normalizer; no certified source hashes or gameplay content changed;
+- the v064 candidate corpus, Last Stand language validation, Playtest Session deployment triggers, and Rules Arbiter deployment checks now follow the archived corpus source;
+- historical v063 build/finalization scripts remain preserved at their original assumptions and are not rewritten as current source authority.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
