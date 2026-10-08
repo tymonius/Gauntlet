@@ -4,7 +4,7 @@ import {
   V071_VERSION_LABEL,
   defaultV071SourceUrls,
   loadV071RulesCorpus
-} from "./v071-public-corpus.js";
+} from "../legacy/rules-assistant/v071/v071-public-corpus.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "./r13-classification.js";

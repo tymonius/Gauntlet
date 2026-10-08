@@ -27,7 +27,7 @@ export function createRefinementScaffoldEngine() {
       likelyFiles: [
         "rulebook/player-facing/current-rulebook.md",
         "packages/game-data/current-game.json",
-        "rules-assistant/v071-public-corpus.js"
+        "legacy/rules-assistant/v071/v071-public-corpus.js"
       ],
       deterministicChecks: [
         "npm run rules:authority:check",

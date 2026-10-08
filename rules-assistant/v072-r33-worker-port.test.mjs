@@ -14,7 +14,7 @@ function portR33Worker(source) {
   V071_VERSION_LABEL,
   defaultV071SourceUrls,
   loadV071RulesCorpus
-} from "./v071-public-corpus.js";`,
+} from "../legacy/rules-assistant/v071/v071-public-corpus.js";`,
 `import {
   V072_CANDIDATE_RULES_VERSION,
   V072_CANDIDATE_VERSION_LABEL,
@@ -73,6 +73,6 @@ describe("v0.7.2 candidate r34 Worker port", () => {
     expect(candidate).toContain("v0.7.2 candidate current-game and reviewed Complete Rules passages");
     expect(candidate.match(/published: false/g)?.length).toBe(2);
     expect(candidate).not.toContain("published: true");
-    expect(candidate).not.toContain('from "./v071-public-corpus.js";');
+    expect(candidate).not.toContain('from "../legacy/rules-assistant/v071/v071-public-corpus.js";');
   });
 });

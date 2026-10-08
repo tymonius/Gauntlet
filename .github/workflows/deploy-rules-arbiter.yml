@@ -21,7 +21,7 @@ on:
       - "releases/v0.7.2/Gauntlet_v0.7.2_Source_Provenance.json"
       - "releases/v0.7.2/Gauntlet_v0.7.2_Starter_Decks.json"
       - "rules-assistant/local-search.js"
-      - "rules-assistant/v071-public-corpus.js"
+      - "legacy/rules-assistant/v071/v071-public-corpus.js"
       - "rules-assistant/r13-classification.js"
       - "rules-assistant/v071-gate3-c-remediation.js"
       - "rules-assistant/v071-answer-verifier.js"
@@ -79,6 +79,7 @@ jobs:
           node --check legacy/rules-assistant/v070/worker-v070.js
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
           node --check rules-assistant/worker-entry.js
+          node --check legacy/rules-assistant/v071/v071-public-corpus.js
           node --check rules-assistant/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js
           node --check rules-assistant/worker-v072.js

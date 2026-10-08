@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { buildRulesCorpus, retrieveRules } from './local-search.js';
 import { augmentRetrievalForContext, contextualQuery } from './worker-v071.js';
-import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from './v071-public-corpus.js';
+import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from '../legacy/rules-assistant/v071/v071-public-corpus.js';
 
 const canonicalData = JSON.parse(fs.readFileSync(V071_CANONICAL_SOURCE_PATH, 'utf8'));
 const rulebookMarkdown = fs.readFileSync(V071_RULEBOOK_SOURCE_PATH, 'utf8');

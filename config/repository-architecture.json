@@ -101,7 +101,7 @@
         "legacy"
       ],
       "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/; compatibility-only card-design entrypoints live under legacy/public-compatibility/card-design/; historical Rules Arbiter compatibility source begins under legacy/rules-assistant/, including the still-routed v0.7.0 Worker/corpus at legacy/rules-assistant/v070/."
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/; compatibility-only card-design entrypoints live under legacy/public-compatibility/card-design/; historical Rules Arbiter compatibility source lives under legacy/rules-assistant/, including the still-routed v070 Worker/corpus and the frozen v071 corpus loader."
     },
     "media": {
       "role": "production_tooling",
@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned compatibility implementations. v0.7.0 compatibility source has moved to legacy/rules-assistant/v070/ while its live versioned route is preserved by the current Worker entry. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their previously separated boundaries."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned compatibility implementations. Historical compatibility source is progressively moving under legacy/rules-assistant/: v070 Worker/corpus source and the v071 frozen corpus loader are archived there while live versioned routing remains preserved. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries."
     },
     "scripts": {
       "role": "production_tooling",

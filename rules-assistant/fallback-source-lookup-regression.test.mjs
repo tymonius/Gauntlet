@@ -116,7 +116,7 @@ describe("public fallback presentation regression", () => {
   });
 
   it("builds the v0.7.1 search corpus from annotation-free Rulebook text while hashing the published bytes", () => {
-    const corpus = readFileSync(resolve("rules-assistant/v071-public-corpus.js"), "utf8");
+    const corpus = readFileSync(resolve("legacy/rules-assistant/v071/v071-public-corpus.js"), "utf8");
     expect(corpus).toContain("const cleanRulebookMarkdown = stripRulebookAnnotations(rulebookMarkdown)");
     expect(corpus).toContain("rulebookMarkdown: cleanRulebookMarkdown");
     expect(corpus).toContain("sha256(rulebookBytes)");

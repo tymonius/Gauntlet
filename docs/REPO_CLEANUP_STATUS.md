@@ -286,6 +286,16 @@ The first live-routed historical Worker has been separated from the backend sour
 - Worker deployment, current-live verification, and historical-regression CI now treat `legacy/rules-assistant/**` as an imported production compatibility input;
 - the remaining v0.6.x/v0.7.1 versioned implementations stay in the transitional root until their consumers are classified with the same standard.
 
+## Completed subtranche — Rules Assistant v071 corpus archive
+
+The frozen v071 release corpus loader is now separated from the transitional backend root:
+
+- `v071-public-corpus.js` lives under `legacy/rules-assistant/v071/`;
+- the still-routed v071 Worker, scope precheck, admin review intelligence, and refinement scaffold now consume the archived corpus source explicitly;
+- deployment continues to watch and syntax-check the archived corpus because it remains a live compatibility dependency;
+- regression tests that exercise the historical release corpus now read the archived source directly;
+- the v071 Worker itself remains in `rules-assistant/` for a later tranche because its behavior module is referenced broadly by historical regression and current refinement support.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
