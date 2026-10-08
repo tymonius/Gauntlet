@@ -1,16 +1,16 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "vitest";
 import workerEntry from "./worker-entry.js";
-import candidateWorker from "./worker-v062-candidate.js";
+import candidateWorker from "../legacy/rules-assistant/v062/worker-v062-candidate.js";
 import {
   buildV062RulesCorpus,
   V062_CORPUS_SOURCES
-} from "./v062-corpus.js";
+} from "../legacy/rules-assistant/v062/v062-corpus.js";
 import {
   materializeV062DeterministicSources,
   resolveV062DeterministicRuling,
   V062_DETERMINISTIC_CASE_COUNT
-} from "./rules-deterministic-v062.js";
+} from "../legacy/rules-assistant/v062/rules-deterministic-v062.js";
 
 const root = new URL("../", import.meta.url);
 const baseData = JSON.parse(await readFile(new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url), "utf8"));

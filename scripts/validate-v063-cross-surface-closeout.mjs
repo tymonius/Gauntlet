@@ -164,7 +164,7 @@ assert(currentContent.includes("CURRENT_RULES_VERSION = 'v0.6.2'"), 'Digital cur
 const publicWidget = read('rules-assistant/widget.js');
 const publicWorkerEntry = read('rules-assistant/worker-entry.js');
 assert(publicWidget.includes('version: "v0.6.2"'), 'Public Rules Arbiter widget is not v0.6.2 before cutover.');
-assert(publicWorkerEntry.includes('./worker-v062.js'), 'Public Rules Arbiter worker entry is not routed to v0.6.2 before cutover.');
+assert(publicWorkerEntry.includes('../legacy/rules-assistant/v062/worker-v062.js'), 'Public Rules Arbiter worker entry is not routed to v0.6.2 before cutover.');
 assert(!publicWorkerEntry.includes('v063'), 'Public Rules Arbiter worker entry routes to v0.6.3 before cutover.');
 
 const publishedV063Exists = fs.existsSync(path.join(root, 'releases/v0.6.3'));
@@ -183,7 +183,7 @@ if (process.env.GITHUB_BASE_REF) {
   const protectedV062 = changed.filter((file) =>
     file.startsWith('releases/v0.6.2/') ||
     file.startsWith('v0.6.2/') ||
-    ['rules-assistant/worker-v062.js', 'rules-assistant/v062-published-corpus.js'].includes(file)
+    ['legacy/rules-assistant/v062/worker-v062.js', 'legacy/rules-assistant/v062/v062-published-corpus.js'].includes(file)
   );
   assert.deepEqual(protectedV062, [], `Closeout changed protected v0.6.2 release/implementation files: ${protectedV062.join(', ')}`);
 

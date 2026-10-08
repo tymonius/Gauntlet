@@ -316,6 +316,16 @@ The certified v063 Rules Arbiter compatibility implementation is now separated f
 - the v064 candidate corpus, Last Stand language validation, Playtest Session deployment triggers, and Rules Arbiter deployment checks now follow the archived corpus source;
 - historical v063 build/finalization scripts remain preserved at their original assumptions and are not rewritten as current source authority.
 
+## Completed subtranche — Rules Assistant v062 compatibility archive
+
+The withdrawn v062 Rules Arbiter implementation and its candidate predecessor are now separated from the backend root:
+
+- the published `worker-v062.js` / `v062-published-corpus.js`, candidate `worker-v062-candidate.js` / `v062-corpus.js`, and shared `rules-deterministic-v062.js` live together under `legacy/rules-assistant/v062/`;
+- `worker-entry.js` preserves the explicit withdrawn v062 and candidate routes; neither is a current/unversioned authority;
+- the archived Workers continue to depend on the maintained shared retrieval/persistence/v061 helper runtime rather than duplicating it;
+- active v062 digital/withdrawal validators and the v062 candidate regression test now read the archived source directly;
+- frozen recovery scripts and the historical v062 release builder retain their original source-path assumptions as recovery evidence and are not rewritten.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

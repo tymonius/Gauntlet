@@ -1,4 +1,4 @@
-import { buildCanonicalDocuments, parseRulebookSections } from './local-search.js';
+import { buildCanonicalDocuments, parseRulebookSections } from '../../../rules-assistant/local-search.js';
 
 export const V062_PUBLISHED_VERSION = 'v0.6.2';
 export const V062_PUBLISHED_SOURCES = Object.freeze([

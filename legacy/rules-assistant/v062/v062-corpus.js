@@ -1,11 +1,11 @@
 import {
   buildV062CanonicalData,
   V062_VERSION
-} from "../legacy/public-versions/v0.6.2/data/canonical-data.js";
+} from "../../public-versions/v0.6.2/data/canonical-data.js";
 import {
   buildCanonicalDocuments,
   parseRulebookSections
-} from "./local-search.js";
+} from "../../../rules-assistant/local-search.js";
 
 const BASE_CANONICAL_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 const V062_CANONICAL_PATH = "v0.6.2/data/Gauntlet_v0.6.2_Canonical_Data.json";

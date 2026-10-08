@@ -8,11 +8,11 @@ import {
 import {
   buildV062RulesCorpus,
   V062_CORPUS_SOURCES
-} from "../rules-assistant/v062-corpus.js";
+} from "../legacy/rules-assistant/v062/v062-corpus.js";
 import {
   resolveV062DeterministicRuling,
   V062_DETERMINISTIC_CASE_COUNT
-} from "../rules-assistant/rules-deterministic-v062.js";
+} from "../legacy/rules-assistant/v062/rules-deterministic-v062.js";
 
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), "utf8");
@@ -38,16 +38,16 @@ assert(String(packageJson.scripts?.test || "").includes("validate-v062-arbiter-d
 assert(packageJson.scripts?.["test:v062-arbiter-digital"] === "node scripts/validate-v062-arbiter-digital.mjs", "missing dedicated Wave E test script");
 
 const workerEntry = read("rules-assistant/worker-entry.js");
-const candidateWorker = read("rules-assistant/worker-v062-candidate.js");
-const corpusSource = read("rules-assistant/v062-corpus.js");
-const deterministicSource = read("rules-assistant/rules-deterministic-v062.js");
+const candidateWorker = read("legacy/rules-assistant/v062/worker-v062-candidate.js");
+const corpusSource = read("legacy/rules-assistant/v062/v062-corpus.js");
+const deterministicSource = read("legacy/rules-assistant/v062/rules-deterministic-v062.js");
 const digitalRules = read("src/v062/rules.ts");
 const digitalTests = read("src/v062/rules.test.ts");
 const contentLoader = read("src/content/v062.ts");
 
 assert(workerEntry.includes('import worker from "./worker-v061.js"'), "historical v0.6.1 worker is not imported");
-assert(workerEntry.includes('import candidateWorker from "./worker-v062-candidate.js"'), "candidate worker is not imported");
-assert(workerEntry.includes('import publishedWorker from "./worker-v062.js"'), "published v0.6.2 worker is not imported");
+assert(workerEntry.includes('import candidateWorker from "../legacy/rules-assistant/v062/worker-v062-candidate.js"'), "candidate worker is not imported");
+assert(workerEntry.includes('import publishedWorker from "../legacy/rules-assistant/v062/worker-v062.js"'), "published v0.6.2 worker is not imported");
 assert(workerEntry.includes('url.pathname.startsWith("/api/v062-candidate/")'), "candidate API route is not version-separated");
 assert(workerEntry.includes('url.pathname === "/api/v062/rules"'), "published v0.6.2 API route is not explicit");
 assert(workerEntry.includes("return candidateWorker.fetch(rewriteCandidatePath(request)"), "candidate route does not reach the candidate worker");
