@@ -1,4 +1,4 @@
-import { buildRulesCorpus } from './local-search.js';
+import { buildRulesCorpus } from '../../../rules-assistant/local-search.js';
 
 export const V070_RULES_VERSION = 'v0.7.0';
 export const V070_VERSION_LABEL = 'Gauntlet v0.7.0';
