@@ -326,6 +326,16 @@ The withdrawn v062 Rules Arbiter implementation and its candidate predecessor ar
 - active v062 digital/withdrawal validators and the v062 candidate regression test now read the archived source directly;
 - frozen recovery scripts and the historical v062 release builder retain their original source-path assumptions as recovery evidence and are not rewritten.
 
+## Completed subtranche — Rules Assistant v063 candidate archive
+
+The superseded v063 candidate stack is now co-located with the already archived published v063 compatibility implementation:
+
+- `worker-v063-candidate.js`, `v063-development-corpus.js`, `rules-deterministic-v063.js`, `worker-entry-v063-candidate.js`, and `wrangler-v063-candidate.toml` live under `legacy/rules-assistant/v063/`;
+- candidate implementation imports now resolve shared retrieval support from the maintained backend root while keeping candidate-only corpus/deterministic modules local;
+- candidate/development regression tests and Last Stand language validation follow the archived source directly;
+- the active v063 Last Stand validation workflow watches the archived v063 source so historical compatibility changes cannot bypass its checks;
+- frozen recovery snapshots remain untouched.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

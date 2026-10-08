@@ -7,7 +7,7 @@ import {
   candidateRulebookHtmlToMarkdown,
   loadDevelopmentV063RulesCorpus,
   V063_RULES_VERSION
-} from "./v063-development-corpus.js";
+} from "../legacy/rules-assistant/v063/v063-development-corpus.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");

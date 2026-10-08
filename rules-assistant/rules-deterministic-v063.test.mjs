@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveV063DeterministicRuling, V063_DETERMINISTIC_CASE_COUNT } from "./rules-deterministic-v063.js";
+import { resolveV063DeterministicRuling, V063_DETERMINISTIC_CASE_COUNT } from "../legacy/rules-assistant/v063/rules-deterministic-v063.js";
 
 const cases = [
   ["What is the setup order?", "draw four", "Setup"],
