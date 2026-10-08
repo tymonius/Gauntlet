@@ -20,7 +20,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 answer logging preserves retrieval candidates for later review", () => {
-    expect(workerV071).toContain('import { persistSmartInteraction } from "./rules-persistence.js"');
+    expect(workerV071).toContain('import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js"');
     expect(workerV071).toContain("const retrievalQuery = contextualQuery(question, history)");
     expect(workerV071).toContain("retrievalQueries: [retrievalQuery]");
     expect(workerV071).toContain("candidateSources: retrieval.map(toDiagnosticSource)");
