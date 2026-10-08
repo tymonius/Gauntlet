@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { contextualQuery } from "./worker-v071.js";
+import { contextualQuery } from "../legacy/rules-assistant/v071/worker-v071.js";
 
 describe("v0.7.1 contextual retrieval query", () => {
   const intelligenceHistory = [

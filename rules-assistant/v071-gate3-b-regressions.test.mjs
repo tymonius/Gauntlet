@@ -4,9 +4,9 @@ import {
   BEHAVIOR_REVISION,
   buildAmbiguousReferentClarification,
   buildQuestionSpecificAdjudicationReminder
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 
-const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerSource = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 
 function source(canonicalId, title, excerpt = "") {
   return { id: "S1", canonicalId, title, heading: title, excerpt, body: excerpt, sourcePath: "test" };
