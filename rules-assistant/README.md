@@ -17,8 +17,9 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `worker-v072.js` — current v0.7.2 Rules Arbiter Worker.
 - `../legacy/rules-assistant/v070/` — historical v0.7.0 Worker/corpus source; the current `worker-entry.js` still serves its stable versioned compatibility route.
 - `../legacy/rules-assistant/v071/` — historical v071 Worker and frozen release corpus loader; `worker-entry.js` preserves the versioned route, while review/refinement tooling and regression tests read the archived implementation explicitly.
+- `../legacy/rules-assistant/v062/` — withdrawn published v062 Worker/corpus plus the historical candidate Worker/corpus and deterministic rulings; `worker-entry.js` preserves both explicit historical routes. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v063/` — historical v063 Worker and certified public-corpus loader; `worker-entry.js` preserves the versioned compatibility route. <!-- DOC-HISTORICAL -->
-- `worker-v061.js`, v0.6.2-specific implementations, and residual v063 helper/candidate files — remaining versioned material still awaiting mechanically verified classification. <!-- DOC-HISTORICAL -->
+- `worker-v061.js` and residual v063 helper/candidate files — remaining versioned material still awaiting mechanically verified classification. <!-- DOC-HISTORICAL -->
 - `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.
 - `../tools/rules-assistant/refinement/` — deterministic triage, scaffold, snapshot, current-validity, and resolution-ledger tooling used by admin refinement workflows and repository scripts.
 - `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests.
