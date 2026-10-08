@@ -227,6 +227,10 @@ describe('War Crimes battle effect', () => {
     });
 
     expect(state.players.B.position).toBe(5);
+    expect(state.board.find(space => space.position === 5)?.occupant)
+      .toBe('B');
+    expect(state.board.find(space => space.position === 4)?.occupant)
+      .not.toBe('B');
     expect(state.players.B.zones.graveyard).toContain(opposingTactic);
     expect(state.players.B.zones.discardPile)
       .not.toContain(opposingTactic);
