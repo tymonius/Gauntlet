@@ -508,6 +508,12 @@ export function resolveV070PlenipotentiaryAftermathEffect(
         capture => capture.position === territory.position,
       )) {
         recordV070VictoryResultBenefit(state, owner, 'capture');
+        if (result.reachedOpponentEnd) {
+          requireRuntime(state).pendingGameVictory = {
+            winner: owner,
+            route: 'final_territory_capture',
+          };
+        }
       }
     }
   }
