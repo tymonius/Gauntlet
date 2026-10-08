@@ -1,24 +1,24 @@
-import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
+import { buildLocalFallbackAnswer, retrieveRules } from "../../../rules-assistant/local-search.js";
 import {
   V071_RULES_VERSION,
   V071_VERSION_LABEL,
   defaultV071SourceUrls,
   loadV071RulesCorpus
-} from "../legacy/rules-assistant/v071/v071-public-corpus.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
-import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
-import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "./r13-classification.js";
+} from "./v071-public-corpus.js";
+import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
+import { authorizeGitHubActionsQa } from "../../../rules-assistant/github-actions-qa-auth.js";
+import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "../../../rules-assistant/r13-classification.js";
 import {
   buildGate3CAdjudicationReminder,
   hasTerseSurveillanceLanguage,
   isOccupationControlQuestion,
   shouldCarryImmediateHistory
-} from "./v071-gate3-c-remediation.js";
+} from "../../../rules-assistant/v071-gate3-c-remediation.js";
 import {
   applyHighRiskVerification,
   highRiskVerificationReasons,
   verifyHighRiskDraft
-} from "./v071-answer-verifier.js";
+} from "../../../rules-assistant/v071-answer-verifier.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
 export const BEHAVIOR_REVISION = "v071-qa-20260922-34";

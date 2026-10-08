@@ -10,14 +10,14 @@ const RESOLUTION_LEDGER_PATH = "artifacts/rules-refinement/resolution-ledger.jso
 export function createRefinementScaffoldEngine() {
   const TARGETS = {
     conversation_continuity: {
-      likelyFiles: ["rules-assistant/local-search.js", "rules-assistant/worker-v071.js"],
+      likelyFiles: ["rules-assistant/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
       deterministicChecks: [
         "npx vitest run rules-assistant/refinement-loop.test.mjs rules-assistant/refinement-triage.test.mjs",
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
     },
     retrieval: {
-      likelyFiles: ["rules-assistant/local-search.js", "rules-assistant/worker-v071.js"],
+      likelyFiles: ["rules-assistant/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
       deterministicChecks: [
         "npx vitest run rules-assistant/refinement-loop.test.mjs",
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
@@ -36,25 +36,25 @@ export function createRefinementScaffoldEngine() {
       ]
     },
     classification: {
-      likelyFiles: ["rules-assistant/worker-v071.js", "rules-assistant/reliable-worker.js"],
+      likelyFiles: ["legacy/rules-assistant/v071/worker-v071.js", "rules-assistant/reliable-worker.js"],
       deterministicChecks: [
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
     },
     answer_completeness: {
-      likelyFiles: ["rules-assistant/worker-v071.js"],
+      likelyFiles: ["legacy/rules-assistant/v071/worker-v071.js"],
       deterministicChecks: [
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
     },
     provisional_overuse: {
-      likelyFiles: ["rules-assistant/worker-v071.js", "rules-assistant/reliable-worker.js"],
+      likelyFiles: ["legacy/rules-assistant/v071/worker-v071.js", "rules-assistant/reliable-worker.js"],
       deterministicChecks: [
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
     },
     terminology_voice: {
-      likelyFiles: ["rules-assistant/worker-v071.js", "rules-assistant/Rules_Arbiter_Adjudication_Guide.md"],
+      likelyFiles: ["legacy/rules-assistant/v071/worker-v071.js", "rules-assistant/Rules_Arbiter_Adjudication_Guide.md"],
       deterministicChecks: [
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
