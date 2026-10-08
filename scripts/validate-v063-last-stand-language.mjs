@@ -118,9 +118,9 @@ failures += requireOrder(
   'Rulebook must load its published modular binding before verifying the published source hash.',
 );
 failures += requireText('legacy/rulebook-browser/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
-failures += requireText('rules-assistant/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
+failures += requireText('legacy/rules-assistant/v063/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
 failures += requireOrder(
-  'rules-assistant/v063-public-corpus.js',
+  'legacy/rules-assistant/v063/v063-public-corpus.js',
   'validateV063Inputs({ rulebookMarkdown, canonicalData });',
   'const publishedRulebookMarkdown = publicRulebookSource(rulebookMarkdown);',
   'Rules Arbiter must validate certified inputs before applying publication terminology.',

@@ -1,4 +1,4 @@
-import { loadV063RulesCorpus } from "./v063-public-corpus.js";
+import { loadV063RulesCorpus } from "../legacy/rules-assistant/v063/v063-public-corpus.js";
 
 export const V064_CANDIDATE_RULES_VERSION = "v0.6.4-candidate";
 export const V064_CANDIDATE_VERSION_LABEL = "Gauntlet v0.6.4 candidate";

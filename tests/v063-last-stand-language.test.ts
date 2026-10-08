@@ -86,7 +86,7 @@ describe('PR #171 Last Stand terminology', () => {
 
   it('keeps published browser authority verified while preserving v0.6.3 corpus verification', () => {
     const rulebookApp = read('rulebook/app.js');
-    const corpus = read('rules-assistant/v063-public-corpus.js');
+    const corpus = read('legacy/rules-assistant/v063/v063-public-corpus.js');
 
     expect(rulebookApp).toContain("const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';");
     expect(rulebookApp).toContain('actualHash !== rulebook.sha256');
