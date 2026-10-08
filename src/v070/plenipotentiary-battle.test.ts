@@ -302,7 +302,7 @@ describe('Plenipotentiary battle effect', () => {
     state = reduceV070BattleAction(state, {
       type: 'offer_terms',
       playerId: 'B',
-      proposalId: 'de-escalation',
+      proposalId: 'open-channels',
     });
     state = reduceV070BattleAction(state, {
       type: 'respond_to_terms',
@@ -392,7 +392,8 @@ describe('Plenipotentiary battle effect', () => {
   });
 
   test('preserves final-territory victory when copied Diplomatic Recognition captures the last Territory', () => {
-    const state = activeBattle();
+    let state = activeBattle();
+    state = refuseDeEscalation(state);
     const source = injectHandCard(
       state,
       V070_PLENIPOTENTIARY_ID,
