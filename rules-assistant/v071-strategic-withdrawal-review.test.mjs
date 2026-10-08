@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { buildRulesCorpus, retrieveRules } from "./local-search.js";
-import { augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
+import { augmentRetrievalForContext, contextualQuery } from "../legacy/rules-assistant/v071/worker-v071.js";
 import { V071_CANONICAL_SOURCE_PATH, V071_RULEBOOK_SOURCE_PATH } from "../legacy/rules-assistant/v071/v071-public-corpus.js";
 
 const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, "utf8"));
 const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, "utf8");
-const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerSource = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown, siteOrigin: "https://gauntlet.run" });
 
 function sourcesFor(question) {

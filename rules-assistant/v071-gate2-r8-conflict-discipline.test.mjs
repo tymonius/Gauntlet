@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BEHAVIOR_REVISION, buildQuestionSpecificAdjudicationReminder } from "./worker-v071.js";
+import { BEHAVIOR_REVISION, buildQuestionSpecificAdjudicationReminder } from "../legacy/rules-assistant/v071/worker-v071.js";
 
 function sources(cardTitle, rulebookTitle, rulebookExcerpt) {
   return [
