@@ -116,6 +116,13 @@ export interface V070HellfireBattleRevealChoice {
   maximumConviction: number;
 }
 
+export interface V070PlenipotentiaryBattleRevealChoice {
+  kind: 'plenipotentiary';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidateProposalIds: string[];
+}
+
 export type V070FinancierPreDiceBattleRevealChoice =
   | {
       kind: 'financier_divestment';
@@ -156,6 +163,7 @@ export type V070BattleRevealChoice =
   | V070ReserveForceBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
   | V070HellfireBattleRevealChoice
+  | V070PlenipotentiaryBattleRevealChoice
   | V070FinancierPreDiceBattleRevealChoice;
 
 declare module './battle-types' {
@@ -180,6 +188,8 @@ declare module './battle-types' {
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
     pendingHellfireBattleRevealChoice?: V070HellfireBattleRevealChoice | null;
     hellfireBattleRevealChoiceOpen?: boolean;
+    pendingPlenipotentiaryBattleRevealChoice?: V070PlenipotentiaryBattleRevealChoice | null;
+    plenipotentiaryBattleRevealChoiceOpen?: boolean;
     pendingFinancierPreDiceBattleRevealChoice?: V070FinancierPreDiceBattleRevealChoice | null;
     financierPreDiceBattleRevealChoiceOpen?: boolean;
   }
@@ -203,6 +213,49 @@ export function queueV070FinancierPreDiceBattleRevealChoice(
   runtime.pendingFinancierPreDiceBattleRevealChoice =
     structuredClone(choice);
   runtime.financierPreDiceBattleRevealChoiceOpen = true;
+}
+
+export function queueV070PlenipotentiaryBattleRevealChoice(
+  state: V070GameState,
+  choice: V070PlenipotentiaryBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'A Plenipotentiary battle choice requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Plenipotentiary cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingPlenipotentiaryBattleRevealChoice = {
+    ...choice,
+    candidateProposalIds: [...choice.candidateProposalIds],
+  };
+  runtime.plenipotentiaryBattleRevealChoiceOpen = true;
+  appendV070Event(state, {
+    type: 'plenipotentiary_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'diplomats-plenipotentiary',
+      candidateCount: choice.candidateProposalIds.length,
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'plenipotentiary_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      proposalIds: [...choice.candidateProposalIds],
+      handInstanceIds: [...state.players[choice.owner].zones.hand],
+    },
+  });
 }
 
 export function queueV070HellfireBattleRevealChoice(
@@ -645,7 +698,8 @@ export function queueV070ReserveForceBattleRevealChoice(
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
+  return state.battleRuntime?.pendingPlenipotentiaryBattleRevealChoice
+    ?? state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
     ?? state.battleRuntime?.pendingReserveForceBattleRevealChoice
     ?? state.battleRuntime?.pendingContrabandBattleRevealChoice
     ?? state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
@@ -662,6 +716,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingPlenipotentiaryBattleRevealChoice) {
+    return Boolean(state.battleRuntime.plenipotentiaryBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice) {
     return Boolean(
       state.battleRuntime.operationalReassessmentBattleRevealChoiceOpen,
@@ -724,6 +781,23 @@ export function completeV070FinancierPreDiceBattleRevealChoice(
   }
   runtime.pendingFinancierPreDiceBattleRevealChoice = null;
   runtime.financierPreDiceBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070PlenipotentiaryBattleRevealChoice(
+  state: V070GameState,
+): V070PlenipotentiaryBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingPlenipotentiaryBattleRevealChoice;
+  if (!runtime
+    || !pending
+    || !runtime.plenipotentiaryBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Plenipotentiary battle choice.',
+    );
+  }
+  runtime.pendingPlenipotentiaryBattleRevealChoice = null;
+  runtime.plenipotentiaryBattleRevealChoiceOpen = false;
   return pending;
 }
 

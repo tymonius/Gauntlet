@@ -68,7 +68,10 @@ import {
   type V070BattleCardPostRollReroll,
   type V070BattleRuntime
 } from './battle-types';
-import { resolveV070AssetLimitRemoval } from './assets';
+import {
+  replaceableV070AssetInstanceIds,
+  resolveV070AssetLimitRemoval,
+} from './assets';
 import {
   applyV070ResistanceAssetOnsetEffects,
   bankV070ResistanceFromBattle,
@@ -213,6 +216,15 @@ import {
   v070WarCrimesAftermathEffects,
   v070WarCrimesForcesTacticGraveyard,
 } from './war-crimes-battle';
+import {
+  applyV070PlenipotentiaryBattleOutcome,
+  declineV070PlenipotentiaryAftermathEffect,
+  resolveV070PlenipotentiaryAftermathEffect,
+  v070PlenipotentiaryAftermathEffectEligible,
+  v070PlenipotentiaryAftermathEffectIsOptional,
+  v070PlenipotentiaryAftermathEffects,
+  v070PlenipotentiaryAftermathTargetInstanceIds,
+} from './plenipotentiary-battle';
 import {
   recordV070VictoryResultBenefit,
   v070VictoryResultBenefitProhibited,
@@ -2529,6 +2541,7 @@ function finalizeOutcome(
   }
 
   resolveV070CapitalGainsOnBattleLoss(state, outcome.loser);
+  applyV070PlenipotentiaryBattleOutcome(state, outcome);
   settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
@@ -3164,7 +3177,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'guilt_by_association'
     | 'hellfire'
     | 'redemption'
-    | 'war_crimes';
+    | 'war_crimes'
+    | 'plenipotentiary';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3331,6 +3345,12 @@ function pruneIneligibleBattleAftermathControlledEffects(
         v070WarCrimesAftermathEffectEligible(state, effect)
       );
   }
+  if (runtime.plenipotentiaryAftermathEffects) {
+    runtime.plenipotentiaryAftermathEffects =
+      runtime.plenipotentiaryAftermathEffects.filter(effect =>
+        v070PlenipotentiaryAftermathEffectEligible(state, effect)
+      );
+  }
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -3389,6 +3409,11 @@ function remainingBattleAftermathControlledEffects(
       sourceInstanceId: effect.sourceInstanceId,
       kind: 'war_crimes' as const,
     })),
+    ...v070PlenipotentiaryAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'plenipotentiary' as const,
+    })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
         owner: battle.defender,
@@ -3431,7 +3456,9 @@ function applyBattleAftermathControlledEffect(
 ): void {
   const runtime = requireRuntime(state);
 
-  if (effect.kind !== 'asset' && replaceAssetInstanceId) {
+  if (effect.kind !== 'asset'
+    && effect.kind !== 'plenipotentiary'
+    && replaceAssetInstanceId) {
     throw new V070GameActionError(
       'Asset replacement applies only to an Aftermath effect that banks an Asset.',
     );
@@ -3439,6 +3466,7 @@ function applyBattleAftermathControlledEffect(
   if (effect.kind !== 'destination'
     && effect.kind !== 'guilt_by_association'
     && effect.kind !== 'redemption'
+    && effect.kind !== 'plenipotentiary'
     && targetInstanceId) {
     throw new V070GameActionError(
       'A target card applies only to an Aftermath effect that chooses a card.',
@@ -3478,6 +3506,17 @@ function applyBattleAftermathControlledEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
+    );
+    return;
+  }
+
+  if (effect.kind === 'plenipotentiary') {
+    resolveV070PlenipotentiaryAftermathEffect(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+      targetInstanceId,
+      replaceAssetInstanceId,
     );
     return;
   }
@@ -3883,6 +3922,16 @@ function battleAftermathControlledEffectIsOptional(
       : false;
   }
   if (effect.kind === 'war_crimes') return true;
+  if (effect.kind === 'plenipotentiary') {
+    const plenipotentiary = v070PlenipotentiaryAftermathEffects(state).find(
+      candidate =>
+        candidate.owner === effect.owner
+        && candidate.sourceInstanceId === effect.sourceInstanceId,
+    );
+    return plenipotentiary
+      ? v070PlenipotentiaryAftermathEffectIsOptional(plenipotentiary)
+      : false;
+  }
   return false;
 }
 
@@ -3986,6 +4035,29 @@ function openBattleAftermathControlledEffectChoice(
             effect.sourceInstanceId,
           ),
         })),
+      plenipotentiaryTargetOptions: candidates
+        .filter(effect => effect.kind === 'plenipotentiary')
+        .map(effect => {
+          const plenipotentiary = v070PlenipotentiaryAftermathEffects(state)
+            .find(candidate =>
+              candidate.owner === effect.owner
+              && candidate.sourceInstanceId === effect.sourceInstanceId
+            );
+          return {
+            sourceInstanceId: effect.sourceInstanceId,
+            proposalId: plenipotentiary?.proposalId ?? null,
+            targetInstanceIds: plenipotentiary
+              ? v070PlenipotentiaryAftermathTargetInstanceIds(
+                  state,
+                  plenipotentiary,
+                )
+              : [],
+            replaceAssetInstanceIds:
+              plenipotentiary?.proposalId === 'rebuilding-pact'
+                ? replaceableV070AssetInstanceIds(state, effect.owner)
+                : [],
+          };
+        }),
       assetReplacementOptions: candidates
         .filter(effect => effect.kind === 'asset')
         .map(effect => ({
@@ -4160,6 +4232,13 @@ function passBattleAftermathControlledEffectChoice(
   }
   if (effect.kind === 'war_crimes') {
     declineV070WarCrimesAftermathEffect(
+      state,
+      playerId,
+      sourceInstanceId,
+    );
+  }
+  if (effect.kind === 'plenipotentiary') {
+    declineV070PlenipotentiaryAftermathEffect(
       state,
       playerId,
       sourceInstanceId,

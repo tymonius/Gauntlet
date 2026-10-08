@@ -103,6 +103,11 @@ import {
   registerV070WarCrimesBattleEffect,
 } from './war-crimes-battle';
 import {
+  V070_PLENIPOTENTIARY_BATTLE_TEXT,
+  V070_PLENIPOTENTIARY_ID,
+  registerV070PlenipotentiaryBattleEffect,
+} from './plenipotentiary-battle';
+import {
   V070_RESERVE_FORCE_BATTLE_TEXT,
   V070_RESERVE_FORCE_ID,
   registerV070ReserveForceBattleEffect,
@@ -394,6 +399,20 @@ const warCrimesHandler: V070SpecializedBattleEffectHandler = {
   },
 };
 
+const plenipotentiaryHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_PLENIPOTENTIARY_ID,
+  expectedText: V070_PLENIPOTENTIARY_BATTLE_TEXT,
+  timing: 'reveal',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070PlenipotentiaryBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const reserveForceHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_RESERVE_FORCE_ID,
   expectedText: V070_RESERVE_FORCE_BATTLE_TEXT,
@@ -439,6 +458,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [decoysHandler.cardId, decoysHandler],
   [holdTheLineHandler.cardId, holdTheLineHandler],
   [warCrimesHandler.cardId, warCrimesHandler],
+  [plenipotentiaryHandler.cardId, plenipotentiaryHandler],
   [reserveForceHandler.cardId, reserveForceHandler],
   [armisticeHandler.cardId, armisticeHandler],
   [invasionHandler.cardId, invasionHandler],

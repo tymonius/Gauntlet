@@ -38,6 +38,9 @@ import {
 import { recordV070MysticBattleEffectApplied } from './mystics';
 import { resolveV070HellfireBattleChoice } from './hellfire-battle';
 import {
+  resolveV070PlenipotentiaryBattleChoice,
+} from './plenipotentiary-battle';
+import {
   pendingV070ConfessionBattleChoice,
   resolveV070ConfessionBattleChoice,
 } from './confession-battle';
@@ -143,6 +146,12 @@ export type V070BattleAction =
       playerId: PlayerId;
       battleTotalBonus: number;
       aftermathCardCount: number;
+    }
+  | {
+      type: 'resolve_plenipotentiary_battle';
+      playerId: PlayerId;
+      proposalId: string;
+      discardInstanceId?: string;
     }
   | {
       type: 'resolve_confession_battle';
@@ -270,6 +279,24 @@ export function reduceV070BattleAction(
     if (advanceV070PreNormalRevealEffects(next, role)) return next;
     return previous.reduceV070BattleAction(next, action);
   }
+  if (pending?.kind === 'plenipotentiary'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_plenipotentiary_battle') {
+      throw new V070GameActionError(
+        'Choose the Proposal whose Refused effect Plenipotentiary applies before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070PlenipotentiaryBattleChoice(
+      next,
+      action.playerId,
+      action.proposalId,
+      action.discardInstanceId,
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
   if (pending?.kind === 'hellfire'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_hellfire_battle') {
