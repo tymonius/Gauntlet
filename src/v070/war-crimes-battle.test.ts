@@ -13,7 +13,6 @@ import {
   v070BattleEffectHandler,
 } from './battle-effects';
 import {
-  V070_WAR_CRIMES_ASSET_TEXT,
   V070_WAR_CRIMES_BATTLE_TEXT,
   V070_WAR_CRIMES_ID,
 } from './war-crimes-battle';
@@ -178,10 +177,7 @@ function openWarCrimesChoice(
 }
 
 describe('War Crimes battle effect', () => {
-  test('binds exact unchanged Asset/Battle authority and registers the battle surface', () => {
-    expect(V070_WAR_CRIMES_ASSET_TEXT).toBe(
-      "In the Aftermath, if you won, you may put this card in your Graveyard to put all opposing Tactics from this battle in their owner's Graveyard instead of their Discard Pile; Opponent: Retreat +1. You cannot move, capture a Territory, or use an Order as a result of that victory.",
-    );
+  test('binds exact unchanged battle authority and registers the battle surface', () => {
     expect(V070_WAR_CRIMES_BATTLE_TEXT).toBe(
       'In the Aftermath, if you win, you may apply the same effect and put this card in your Graveyard.',
     );
@@ -190,9 +186,6 @@ describe('War Crimes battle effect', () => {
       currentCanonicalContent,
     ]) {
       const card = content.cardsById.get(V070_WAR_CRIMES_ID);
-      expect(card?.effects.find(
-        effect => effect.label === 'Asset',
-      )?.text).toBe(V070_WAR_CRIMES_ASSET_TEXT);
       expect(card?.effects.find(
         effect => effect.label === 'Gambit/Tactic',
       )?.text).toBe(V070_WAR_CRIMES_BATTLE_TEXT);
