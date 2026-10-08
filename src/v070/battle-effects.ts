@@ -52,6 +52,11 @@ import {
   takeV070DeferredReserveForceGambits,
 } from './reserve-force-battle';
 import {
+  V070_HOLD_THE_LINE_ID,
+  deferV070HoldTheLineGambit,
+  takeV070DeferredHoldTheLineGambits,
+} from './hold-the-line-battle';
+import {
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
 import {
@@ -1041,6 +1046,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeV070DeferredReconnaissanceGambits(state),
         ...takeV070DeferredOperationalReassessmentGambits(state),
         ...takeV070DeferredReserveForceGambits(state),
+        ...takeV070DeferredHoldTheLineGambits(state),
         ...takeDeferredReinforcementsGambits(state),
         ...takeDeferredHellfireGambits(state),
       ]
@@ -1072,6 +1078,7 @@ export function resolveV070SupportedRevealEffects(
         || cardId === V070_RECONNAISSANCE_ID
         || cardId === V070_OPERATIONAL_REASSESSMENT_ID
         || cardId === V070_RESERVE_FORCE_ID
+        || cardId === V070_HOLD_THE_LINE_ID
         || cardId === V070_REINFORCEMENTS_ID
         || cardId === V070_HELLFIRE_ID
       )) {
@@ -1085,6 +1092,8 @@ export function resolveV070SupportedRevealEffects(
         deferV070OperationalReassessmentGambit(state, commitment);
       } else if (cardId === V070_RESERVE_FORCE_ID) {
         deferV070ReserveForceGambit(state, commitment);
+      } else if (cardId === V070_HOLD_THE_LINE_ID) {
+        deferV070HoldTheLineGambit(state, commitment);
       } else if (cardId === V070_REINFORCEMENTS_ID) {
         deferReinforcementsGambit(state, commitment);
       } else {

@@ -93,6 +93,11 @@ import {
   registerV070TariffsBattleEffect,
 } from './tariffs-battle';
 import {
+  V070_HOLD_THE_LINE_BATTLE_TEXT,
+  V070_HOLD_THE_LINE_ID,
+  registerV070HoldTheLineBattleEffect,
+} from './hold-the-line-battle';
+import {
   V070_RESERVE_FORCE_BATTLE_TEXT,
   V070_RESERVE_FORCE_ID,
   registerV070ReserveForceBattleEffect,
@@ -358,6 +363,19 @@ const reinforcementsHandler: V070SpecializedBattleEffectHandler = {
   },
 };
 
+const holdTheLineHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_HOLD_THE_LINE_ID,
+  expectedText: V070_HOLD_THE_LINE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070HoldTheLineBattleEffect(
+      state,
+      owner,
+      commitment,
+    );
+  },
+};
+
 const reserveForceHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_RESERVE_FORCE_ID,
   expectedText: V070_RESERVE_FORCE_BATTLE_TEXT,
@@ -401,6 +419,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [tyrannyHandler.cardId, tyrannyHandler],
   [sabotageHandler.cardId, sabotageHandler],
   [decoysHandler.cardId, decoysHandler],
+  [holdTheLineHandler.cardId, holdTheLineHandler],
   [reserveForceHandler.cardId, reserveForceHandler],
   [armisticeHandler.cardId, armisticeHandler],
   [invasionHandler.cardId, invasionHandler],
