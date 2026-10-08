@@ -19,8 +19,6 @@ import {
 } from './victory-result-restrictions';
 
 export const V070_WAR_CRIMES_ID = 'military-war-crimes' as const;
-export const V070_WAR_CRIMES_ASSET_TEXT =
-  "In the Aftermath, if you won, you may put this card in your Graveyard to put all opposing Tactics from this battle in their owner's Graveyard instead of their Discard Pile; Opponent: Retreat +1. You cannot move, capture a Territory, or use an Order as a result of that victory." as const;
 export const V070_WAR_CRIMES_BATTLE_TEXT =
   'In the Aftermath, if you win, you may apply the same effect and put this card in your Graveyard.' as const;
 
@@ -37,23 +35,35 @@ declare module './battle-types' {
 }
 
 function validateAuthority(): void {
-  for (const [label, content] of [
-    ['frozen v0.7.0', v070CanonicalContent],
-    ['current', currentCanonicalContent],
-  ] as const) {
-    const card = content.cardsById.get(V070_WAR_CRIMES_ID);
-    const asset = card?.effects.find(
-      effect => effect.label === 'Asset',
-    )?.text;
-    const battle = card?.effects.find(
-      effect => effect.label === 'Gambit/Tactic',
-    )?.text;
-    if (asset !== V070_WAR_CRIMES_ASSET_TEXT
-      || battle !== V070_WAR_CRIMES_BATTLE_TEXT) {
-      throw new Error(
-        `War Crimes text drifted from ${label} gameplay authority.`,
-      );
-    }
+  const frozen = v070CanonicalContent.cardsById.get(
+    V070_WAR_CRIMES_ID,
+  );
+  const current = currentCanonicalContent.cardsById.get(
+    V070_WAR_CRIMES_ID,
+  );
+  const frozenAsset = frozen?.effects.find(
+    effect => effect.label === 'Asset',
+  )?.text;
+  const currentAsset = current?.effects.find(
+    effect => effect.label === 'Asset',
+  )?.text;
+  const frozenBattle = frozen?.effects.find(
+    effect => effect.label === 'Gambit/Tactic',
+  )?.text;
+  const currentBattle = current?.effects.find(
+    effect => effect.label === 'Gambit/Tactic',
+  )?.text;
+
+  if (!frozenAsset || frozenAsset !== currentAsset) {
+    throw new Error(
+      'War Crimes Asset authority drifted between frozen and current data.',
+    );
+  }
+  if (frozenBattle !== V070_WAR_CRIMES_BATTLE_TEXT
+    || currentBattle !== V070_WAR_CRIMES_BATTLE_TEXT) {
+    throw new Error(
+      'War Crimes battle text drifted from frozen/current authority.',
+    );
   }
 }
 
