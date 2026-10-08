@@ -246,6 +246,7 @@ describe('Hold the Line battle effect', () => {
       V070_HOLD_THE_LINE_ID,
       'deferred-gambit',
     );
+    state = setAndRevealGambits(state, undefined, source);
     const [first, second] = putOnTopOfDrawPile(
       state,
       'B',
@@ -254,8 +255,6 @@ describe('Hold the Line battle effect', () => {
         { cardId: 'diplomats-clemency', suffix: 'gambit-second' },
       ],
     );
-
-    state = setAndRevealGambits(state, undefined, source);
 
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
     expect(
@@ -444,6 +443,7 @@ describe('Hold the Line battle effect', () => {
       V070_PATHS_OF_SHADOW_ID,
       'paths-gambit',
     );
+    state = setAndRevealGambits(state, undefined, paths);
     putOnTopOfDrawPile(
       state,
       'B',
@@ -452,7 +452,6 @@ describe('Hold the Line battle effect', () => {
         { cardId: 'diplomats-clemency', suffix: 'paths-second' },
       ],
     );
-    state = setAndRevealGambits(state, undefined, paths);
     const source = makeHoldTactic(state);
     state = chooseAndRevealTactics(state, undefined, source);
 
