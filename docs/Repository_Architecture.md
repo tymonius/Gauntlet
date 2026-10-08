@@ -121,7 +121,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the Rules Arbiter browser shell at `apps/rules-arbiter/` and embedded widget presentation source at `apps/rules-assistant-widget/` |
-| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and versioned compatibility support. Private admin tooling lives under `tools/rules-assistant/admin/`, refinement tooling under `tools/rules-assistant/refinement/`, and maintained QA/evaluation fixtures under `tools/rules-assistant/qa/evals/`. It is source-only for Pages except explicitly materialized shared browser modules. |
+| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility support. v0.7.0 compatibility source is archived under `legacy/rules-assistant/v070/` while its route remains live through the current Worker entry. Private admin/refinement/QA tooling lives under `tools/rules-assistant/`. |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
@@ -153,7 +153,8 @@ These contracts answer different questions and must not silently substitute for 
 
 | Path | Role |
 |---|---|
-| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`, while rules content is supplied by the lifecycle-selected frozen release package. |
+| `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`; `legacy/rules-assistant/` holds historically versioned Rules Arbiter implementation source that is still served only for compatibility. |
+| `legacy/rules-assistant/v070/` | Historical v0.7.0 Rules Arbiter Worker and frozen-release corpus loader; imported by the current Worker entry only to preserve `/api/v070/*` and `rulesVersion: v0.7.0` compatibility |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
 | `v0.7.1/` | Historical v0.7.1 versioned public entrypoint retained for release compatibility |

@@ -101,7 +101,7 @@
         "legacy"
       ],
       "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/, while current v0.7.2 rules content comes from the frozen release package. Compatibility-only card-design render/review entrypoints live under legacy/public-compatibility/card-design/ and are materialized back to their stable public URLs. Historical card-design studies include the v0.6.1 faction specimen, v0.6.4 Territory mockup, typography studies, and v0.6.3 playable-card rendering provenance; their old browser URLs remain materialized where required."
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/; compatibility-only card-design entrypoints live under legacy/public-compatibility/card-design/; historical Rules Arbiter compatibility source begins under legacy/rules-assistant/, including the still-routed v0.7.0 Worker/corpus at legacy/rules-assistant/v070/."
     },
     "media": {
       "role": "production_tooling",
@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and explicitly versioned compatibility implementations. Browser-public widget presentation lives under apps/rules-assistant-widget/; private admin review/export tooling lives under tools/rules-assistant/admin/; refinement tooling lives under tools/rules-assistant/refinement/; maintained QA/evaluation fixtures live under tools/rules-assistant/qa/evals/. The remaining root is source-only for Pages except explicitly materialized shared browser modules."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned compatibility implementations. v0.7.0 compatibility source has moved to legacy/rules-assistant/v070/ while its live versioned route is preserved by the current Worker entry. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their previously separated boundaries."
     },
     "scripts": {
       "role": "production_tooling",

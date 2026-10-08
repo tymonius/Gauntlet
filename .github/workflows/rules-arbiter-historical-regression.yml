@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'rules-assistant/**'
+      - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
   push:
@@ -11,6 +12,7 @@ on:
       - main
     paths:
       - 'rules-assistant/**'
+      - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
   workflow_dispatch:
