@@ -302,6 +302,42 @@ export function resolveV070PlenipotentiaryBattleChoice(
   });
 }
 
+export function applyV070PlenipotentiaryBattleOutcome(
+  state: V070GameState,
+  outcome: { winner: PlayerId; loser: PlayerId },
+): void {
+  const runtime = requireRuntime(state);
+  const effects = runtime.plenipotentiaryAftermathEffects ?? [];
+  const capitulations = effects.filter(
+    effect => effect.proposalId === 'capitulation',
+  );
+  runtime.plenipotentiaryAftermathEffects = effects.filter(
+    effect => effect.proposalId !== 'capitulation',
+  );
+
+  for (const effect of capitulations) {
+    if (outcome.loser !== effect.owner) continue;
+    drawIntoHand(
+      state,
+      effect.owner,
+      2,
+      'Plenipotentiary: Capitulation Refused-loss effect',
+    );
+    appendV070Event(state, {
+      type: 'plenipotentiary_battle_outcome_resolved',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: V070_PLENIPOTENTIARY_ID,
+        proposalId: effect.proposalId,
+        winner: outcome.winner,
+        loser: outcome.loser,
+      },
+    });
+  }
+}
+
 export function v070PlenipotentiaryAftermathEffects(
   state: V070GameState,
 ): V070PlenipotentiaryAftermathEffect[] {
@@ -330,9 +366,7 @@ export function v070PlenipotentiaryAftermathEffectEligible(
   const battle = state.battle;
   const runtime = state.battleRuntime;
   if (!battle || !runtime || runtime.stage !== 'aftermath') return false;
-  if (effect.proposalId === 'capitulation') {
-    return battle.loser === effect.owner;
-  }
+  if (effect.proposalId === 'capitulation') return false;
   if (effect.proposalId === 'prisoner-exchange') {
     return battle.loser === effect.owner
       && v070PlenipotentiaryAftermathTargetInstanceIds(
@@ -412,20 +446,7 @@ export function resolveV070PlenipotentiaryAftermathEffect(
     );
   }
 
-  if (pending.proposalId === 'capitulation') {
-    if (targetInstanceId || replaceAssetInstanceId) {
-      throw new V070GameActionError(
-        'Capitulation does not choose an Aftermath card.',
-      );
-    }
-    takeAftermathEffect(state, owner, sourceInstanceId);
-    drawIntoHand(
-      state,
-      owner,
-      2,
-      'Plenipotentiary: Capitulation Refused-loss effect',
-    );
-  } else if (pending.proposalId === 'prisoner-exchange') {
+  if (pending.proposalId === 'prisoner-exchange') {
     if (replaceAssetInstanceId) {
       throw new V070GameActionError(
         'Prisoner Exchange cannot replace an Asset.',
