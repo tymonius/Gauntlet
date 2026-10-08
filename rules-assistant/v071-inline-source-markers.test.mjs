@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { stripInlineSourceMarkers } from "./worker-v071.js";
+import { stripInlineSourceMarkers } from "../legacy/rules-assistant/v071/worker-v071.js";
 import { readFileSync } from "node:fs";
 
-const workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerV071 = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 
 describe("v0.7.1 player-facing source marker hygiene", () => {
   test("removes internal source IDs from the exact reviewed answer shape", () => {

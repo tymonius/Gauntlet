@@ -57,7 +57,7 @@ function resolution({
 test('rejects a source-required refinement manifest with only Arbiter implementation changes', () => {
   const manifestPath = 'artifacts/rules-refinement/source-specificity.json';
   const result = validateSourceFirstRefinements({
-    changedFiles: [manifestPath, REFINEMENT_LEDGER_PATH, 'rules-assistant/worker-v071.js'],
+    changedFiles: [manifestPath, REFINEMENT_LEDGER_PATH, 'legacy/rules-assistant/v071/worker-v071.js'],
     manifests: [{ path: manifestPath, manifest: requiredManifest }],
     resolutionLedger: ledger([resolution()]),
   });
@@ -70,7 +70,7 @@ test('rejects a source-required refinement manifest with only Arbiter implementa
 test('accepts a source-required refinement when authority and the resolution ledger change together', () => {
   const manifestPath = 'artifacts/rules-refinement/source-specificity.json';
   const result = validateSourceFirstRefinements({
-    changedFiles: [manifestPath, REFINEMENT_LEDGER_PATH, 'rulebook/player-facing/current-rulebook.md', 'rules-assistant/worker-v071.js'],
+    changedFiles: [manifestPath, REFINEMENT_LEDGER_PATH, 'rulebook/player-facing/current-rulebook.md', 'legacy/rules-assistant/v071/worker-v071.js'],
     manifests: [{ path: manifestPath, manifest: requiredManifest }],
     resolutionLedger: ledger([resolution()]),
   });

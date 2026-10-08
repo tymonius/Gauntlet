@@ -18,7 +18,7 @@ describe("Rules Arbiter Worker deployment gate", () => {
   it("reconciles the local behavior revision with the live Worker", () => {
     expect(workflow).toContain("Determine whether Rules Arbiter Worker needs deployment");
     expect(workflow).toContain("scripts/resolve-current-live-publication.mjs");
-    expect(workflow).not.toContain("rules-assistant/worker-v071.js");
+    expect(workflow).not.toContain("legacy/rules-assistant/v071/worker-v071.js");
     expect(workflow).not.toContain("https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health");
     const current = lifecycle.releases[lifecycle.current_release];
     expect(lifecycle.current_release).toBe('v0.7.2');

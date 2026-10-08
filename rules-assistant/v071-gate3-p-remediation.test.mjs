@@ -6,7 +6,7 @@ import {
   BEHAVIOR_REVISION,
   buildQuestionSpecificAdjudicationReminder,
   contextualQuery
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 import {
   normalizeR13RulingStatus,
   shouldResolveR27CombinedInteraction

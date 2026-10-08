@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const worker = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 const liveQa = readFileSync(new URL("../.github/workflows/v071-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 const publication = readFileSync(new URL("../.github/workflows/verify-current-live-publication.yml", import.meta.url), "utf8");
 const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));

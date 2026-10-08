@@ -10,7 +10,7 @@ on:
       - "tools/rules-assistant/refinement/**"
       - "legacy/rules-assistant/v070/**"
       - "rules-assistant/worker-entry.js"
-      - "rules-assistant/worker-v071.js"
+      - "legacy/rules-assistant/v071/worker-v071.js"
       - "rules-assistant/worker-v072-candidate.js"
       - "rules-assistant/v072-candidate-corpus.js"
       - "rules-assistant/worker-v072.js"
@@ -80,7 +80,7 @@ jobs:
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
           node --check rules-assistant/worker-entry.js
           node --check legacy/rules-assistant/v071/v071-public-corpus.js
-          node --check rules-assistant/worker-v071.js
+          node --check legacy/rules-assistant/v071/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js
           node --check rules-assistant/worker-v072.js
           npx vitest run \

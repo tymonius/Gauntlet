@@ -294,7 +294,17 @@ The frozen v071 release corpus loader is now separated from the transitional bac
 - the still-routed v071 Worker, scope precheck, admin review intelligence, and refinement scaffold now consume the archived corpus source explicitly;
 - deployment continues to watch and syntax-check the archived corpus because it remains a live compatibility dependency;
 - regression tests that exercise the historical release corpus now read the archived source directly;
-- the v071 Worker itself remains in `rules-assistant/` for a later tranche because its behavior module is referenced broadly by historical regression and current refinement support.
+- the v071 Worker was left in place during this corpus-only move and then mechanically classified and archived in the following subtranche.
+
+## Completed subtranche — Rules Assistant v071 Worker archive
+
+The still-routed v071 compatibility Worker is now separated from the backend root without changing its behavior:
+
+- `worker-v071.js` lives beside its frozen corpus under `legacy/rules-assistant/v071/`;
+- the archived Worker imports only the maintained shared runtime helpers it still needs from `rules-assistant/` plus its local frozen corpus;
+- `worker-entry.js` and the v071 scope precheck import the archived Worker while preserving the existing versioned route and requested-version dispatch;
+- historical regression tests, live-publication/source-first contracts, and refinement hints now follow the archived source location;
+- deployment and current-live verification already treat `legacy/rules-assistant/**` as a production compatibility dependency.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 

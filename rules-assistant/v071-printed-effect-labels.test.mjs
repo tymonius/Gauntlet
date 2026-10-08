@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { readFileSync } from "node:fs";
 
-const workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerV071 = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 
 describe("v0.7.1 printed effect-label fidelity", () => {
   test("does not relabel a banked Asset ability as an Action", () => {

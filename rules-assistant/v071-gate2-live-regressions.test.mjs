@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { augmentRetrievalForContext, BEHAVIOR_REVISION } from "./worker-v071.js";
+import { augmentRetrievalForContext, BEHAVIOR_REVISION } from "../legacy/rules-assistant/v071/worker-v071.js";
 import { classifyTransportInfrastructure } from "../scripts/v071-live-rules-qa-support.mjs";
 
-const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerSource = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 const runnerSource = readFileSync(new URL("../scripts/run-v071-live-rules-qa.mjs", import.meta.url), "utf8");
 const workflowSource = readFileSync(new URL("../.github/workflows/current-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 const corrections = JSON.parse(readFileSync(new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));

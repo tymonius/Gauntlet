@@ -1,6 +1,6 @@
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { buildOutOfScopeRuling, isClearlyOutOfScopeQuestion } from "./rules-status.js";
-import { BEHAVIOR_REVISION, RULES_VERSION } from "./worker-v071.js";
+import { BEHAVIOR_REVISION, RULES_VERSION } from "../legacy/rules-assistant/v071/worker-v071.js";
 import { V071_VERSION_LABEL } from "../legacy/rules-assistant/v071/v071-public-corpus.js";
 
 export const V071_SCOPE_PRECHECK_REVISION = "v071-scope-20260910-2";

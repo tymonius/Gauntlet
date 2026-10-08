@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
 const reviewIntelligence = readFileSync(new URL("../tools/rules-assistant/admin/review-intelligence.js", import.meta.url), "utf8");
-const workerV071 = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+const workerV071 = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
 const adminPage = readFileSync(new URL("../tools/rules-assistant/admin/admin-intelligence-page.js", import.meta.url), "utf8");
 const benchmark = JSON.parse(readFileSync(
   new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json", import.meta.url),
@@ -20,7 +20,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 answer logging preserves retrieval candidates for later review", () => {
-    expect(workerV071).toContain('import { persistSmartInteraction } from "./rules-persistence.js"');
+    expect(workerV071).toContain('import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js"');
     expect(workerV071).toContain("const retrievalQuery = contextualQuery(question, history)");
     expect(workerV071).toContain("retrievalQueries: [retrievalQuery]");
     expect(workerV071).toContain("candidateSources: retrieval.map(toDiagnosticSource)");

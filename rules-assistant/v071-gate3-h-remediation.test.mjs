@@ -8,7 +8,7 @@ import {
   buildQuestionSpecificAdjudicationReminder,
   contextualQuery,
   normalizeOutOfScopeAnswerR19
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),

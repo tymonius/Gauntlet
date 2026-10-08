@@ -171,7 +171,7 @@ describe("v0.7.2 player-site release", () => {
     expect(corpus).toContain("releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md");
     expect(corpus).toContain("releases/v0.7.2/Gauntlet_v0.7.2_Canonical_Data.json");
     expect(workerEntry).toContain('import v072Worker from "./worker-v072.js";');
-    expect(workerEntry).toContain('import worker from "./worker-v071.js";');
+    expect(workerEntry).toContain('import worker from "../legacy/rules-assistant/v071/worker-v071.js";');
     expect(workerEntry).toContain('requestedVersion === "v0.7.1"');
   });
   it("keeps the Deckbuilder on released v0.7.2 by default and hides the same-version candidate", () => {

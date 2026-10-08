@@ -3,7 +3,7 @@ import {
   BEHAVIOR_REVISION,
   normalizeModelRulingStatus,
   shouldPromoteDirectOverviewToExplicit
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 
 function source(title) {
   return { id: "S1", title, excerpt: "direct authority" };
