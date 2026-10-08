@@ -101,7 +101,7 @@
         "legacy"
       ],
       "transitional": false,
-      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/; compatibility-only card-design entrypoints live under legacy/public-compatibility/card-design/; historical Rules Arbiter compatibility source lives under legacy/rules-assistant/, including the still-routed v070 Worker/corpus and v071 Worker/corpus."
+      "note": "Explicitly non-authoritative historical implementation/publication/source provenance. The Browser Rulebook shell remains under legacy/rulebook-browser/ as a transitional deployment source for /rulebook/; compatibility-only card-design entrypoints live under legacy/public-compatibility/card-design/; historical Rules Arbiter compatibility source lives under legacy/rules-assistant/, including still-routed v063, v070, and v071 Worker/corpus implementations."
     },
     "media": {
       "role": "production_tooling",
@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned compatibility implementations. Historical v070 and v071 Worker/corpus source now lives under legacy/rules-assistant/ while the current Worker entry preserves their versioned routes. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned compatibility helpers. Historical v063, v070, and v071 Worker/corpus implementations now live under legacy/rules-assistant/ while the current Worker entry preserves their versioned routes. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries."
     },
     "scripts": {
       "role": "production_tooling",

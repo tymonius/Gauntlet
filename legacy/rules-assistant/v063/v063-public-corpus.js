@@ -1,5 +1,5 @@
-import { buildRulesCorpus } from "./local-search.js";
-import { normalizeV063LastStandText, normalizeV063LastStandValue } from "./v063-last-stand-language.js";
+import { buildRulesCorpus } from "../../../rules-assistant/local-search.js";
+import { normalizeV063LastStandText, normalizeV063LastStandValue } from "../../../rules-assistant/v063-last-stand-language.js";
 
 export const V063_RULES_VERSION = "v0.6.3";
 export const V063_VERSION_LABEL = "Gauntlet v0.6.3";

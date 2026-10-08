@@ -121,7 +121,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the Rules Arbiter browser shell at `apps/rules-arbiter/` and embedded widget presentation source at `apps/rules-assistant-widget/` |
-| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility support. Historical compatibility source is progressively moving under `legacy/rules-assistant/`; the v070 and v071 Worker/corpus implementations are already archived there. Private admin/refinement/QA tooling lives under `tools/rules-assistant/`. |
+| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility support. Historical compatibility source is progressively moving under `legacy/rules-assistant/`; the v063, v070, and v071 Worker/corpus implementations are already archived there. Private admin/refinement/QA tooling lives under `tools/rules-assistant/`. |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
@@ -154,6 +154,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`; `legacy/rules-assistant/` holds historically versioned Rules Arbiter implementation source that is still served only for compatibility. |
+| `legacy/rules-assistant/v063/` | Historical v063 Rules Arbiter Worker and certified public-corpus loader; imported by the current Worker entry to preserve the v063 compatibility route <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v070/` | Historical v0.7.0 Rules Arbiter Worker and frozen-release corpus loader; imported by the current Worker entry only to preserve `/api/v070/*` and `rulesVersion: v0.7.0` compatibility <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v071/` | Historical v071 compatibility Worker and frozen-release corpus loader; imported by current routing/review/refinement surfaces only to preserve the versioned compatibility behavior and historical analysis |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
