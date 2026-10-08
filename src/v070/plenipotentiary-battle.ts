@@ -360,6 +360,7 @@ export function v070PlenipotentiaryAftermathEffectEligible(
   const target = nextV070FrontLineTarget(state, effect.owner);
   return Boolean(
     territory
+    && territory.occupant === effect.owner
     && territory.controller !== effect.owner
     && target?.territoryInstanceId === territory.territoryInstanceId,
   );
