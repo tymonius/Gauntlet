@@ -3,7 +3,7 @@ import {
   BEHAVIOR_REVISION,
   augmentRetrievalForContext,
   buildQuestionSpecificAdjudicationReminder
-} from "./worker-v071.js";
+} from "../legacy/rules-assistant/v071/worker-v071.js";
 
 function document(id, title, body) {
   return {
