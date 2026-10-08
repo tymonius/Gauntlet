@@ -320,7 +320,7 @@ describe('Reserve Force battle effect', () => {
     const first = injectHand(
       state,
       'A',
-      'mystics-dark-omens',
+      'inquisition-divine-mercy',
       'nested-first',
     );
     const second = injectHand(
@@ -329,6 +329,14 @@ describe('Reserve Force battle effect', () => {
       'neutral-rallying-cry',
       'nested-second',
     );
+    const mercyTarget =
+      'reserve-force-B-divine-mercy-target';
+    state.cardInstances[mercyTarget] = {
+      instanceId: mercyTarget,
+      cardId: 'neutral-new-recruits',
+      owner: 'B',
+    };
+    state.players.B.zones.graveyard.push(mercyTarget);
 
     state = chooseAndRevealTactics(state, source);
     state = reduceV070BattleAction(state, {
@@ -339,7 +347,7 @@ describe('Reserve Force battle effect', () => {
 
     expect(pendingV070BattleRevealChoice(state)).toEqual(
       expect.objectContaining({
-        kind: 'dark_omens',
+        kind: 'divine_mercy',
         owner: 'A',
         sourceInstanceId: first,
       }),
@@ -352,16 +360,17 @@ describe('Reserve Force battle effect', () => {
     ]);
 
     state = reduceV070BattleAction(state, {
-      type: 'resolve_dark_omens_battle',
+      type: 'resolve_divine_mercy_battle',
       playerId: 'A',
-      use: false,
+      targetInstanceId: mercyTarget,
     });
 
     expect(pendingV070BattleRevealChoice(state)).toBeNull();
     expect(
       state.battleRuntime?.pendingReserveForceReplacementCommitments,
     ).toEqual([]);
-    expect(state.battleRuntime?.participants.A.battleModifier).toBe(1);
+    expect(state.battleRuntime?.participants.A.battleModifier).toBe(3);
+    expect(state.players.B.zones.discardPile).toContain(mercyTarget);
 
     const secondApplied = state.events.find(event =>
       event.type === 'battle_card_effect_applied'
