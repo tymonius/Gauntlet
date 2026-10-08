@@ -281,7 +281,7 @@ The Rules Arbiter evaluation corpus is now separated from both runtime source an
 The first live-routed historical Worker has been separated from the backend source root:
 
 - `worker-v070.js` and `v070-public-corpus.js` now live under `legacy/rules-assistant/v070/`;
-- the current `worker-entry.js` imports that legacy source and preserves the existing `/api/v070/*`, `/v070/*`, and `rulesVersion: v0.7.0` compatibility behavior;
+- the current `worker-entry.js` imports that legacy source and preserves the existing `/api/v070/*`, `/v070/*`, and `rulesVersion: v0.7.0` compatibility behavior; <!-- DOC-HISTORICAL -->
 - no v0.7.0 gameplay or corpus content was rewritten; only source placement/import paths changed;
 - Worker deployment, current-live verification, and historical-regression CI now treat `legacy/rules-assistant/**` as an imported production compatibility input;
 - the remaining v0.6.x/v0.7.1 versioned implementations stay in the transitional root until their consumers are classified with the same standard.

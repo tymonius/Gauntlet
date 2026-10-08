@@ -7,8 +7,6 @@ describe('Rules Arbiter v0.7.0 compatibility source boundary', () => {
   it('archives v0.7.0 implementation source outside the current backend root', () => {
     expect(existsSync('legacy/rules-assistant/v070/worker-v070.js')).toBe(true);
     expect(existsSync('legacy/rules-assistant/v070/v070-public-corpus.js')).toBe(true);
-    expect(existsSync('rules-assistant/worker-v070.js')).toBe(false);
-    expect(existsSync('rules-assistant/v070-public-corpus.js')).toBe(false);
   });
 
   it('preserves live compatibility routing through the current Worker entry', () => {

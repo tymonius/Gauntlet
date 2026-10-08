@@ -113,7 +113,7 @@ Historical Deckbuilder surfaces retained for versioned compatibility.
 
 ### rules-assistant/
 
-Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility implementations. Historical v0.7.0 compatibility source now lives under `legacy/rules-assistant/v070/` while its versioned route remains served by the current Worker entry. Browser widget presentation lives under `apps/rules-assistant-widget/`; admin/refinement/QA tooling lives under `tools/rules-assistant/`; retained QA audits live under `artifacts/rules-qa/audits/`.
+Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility implementations. Historical v0.7.0 compatibility source now lives under `legacy/rules-assistant/v070/` while its versioned route remains served by the current Worker entry. <!-- DOC-HISTORICAL --> Browser widget presentation lives under `apps/rules-assistant-widget/`; admin/refinement/QA tooling lives under `tools/rules-assistant/`; retained QA audits live under `artifacts/rules-qa/audits/`.
 
 ### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/rules-arbiter/, apps/rules-assistant-widget/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 
@@ -129,7 +129,7 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ### src/ and legacy/
 
-`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `legacy/` contains historical implementation material that is not current authority; this now includes `legacy/rules-assistant/v070/` for still-routed v0.7.0 Rules Arbiter compatibility source, plus the original prototype data under `legacy/digital-prototype-data/`.
+`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `legacy/` contains historical implementation material that is not current authority; this now includes `legacy/rules-assistant/v070/` for still-routed v0.7.0 Rules Arbiter compatibility source, plus the original prototype data under `legacy/digital-prototype-data/`. <!-- DOC-HISTORICAL -->
 
 ## Development workflow
 
