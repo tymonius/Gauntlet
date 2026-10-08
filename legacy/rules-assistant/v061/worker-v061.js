@@ -1,9 +1,9 @@
-import legacyWorker from "./worker.js";
+import legacyWorker from "../../../rules-assistant/worker.js";
 import {
   defaultSourceUrls,
   loadRulesCorpus,
   retrieveRules
-} from "./local-search.js";
+} from "../../../rules-assistant/local-search.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";

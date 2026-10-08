@@ -5,7 +5,7 @@ import baseWorker, {
   sanitizePlaytestContext,
   sanitizeSessionId
 } from "./worker-v061.js";
-import { defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
+import { defaultSourceUrls, loadRulesCorpus } from "../../../rules-assistant/local-search.js";
 import {
   analyzeQuestionLocally,
   buildCorpusReviewSnapshot,
@@ -15,25 +15,25 @@ import {
   sanitizeGameState,
   shouldUseSemanticPlanner,
   shouldVerifyAnswer
-} from "./rules-intelligence.js";
-import { answerQuestion, planQuestion, verifyDraft } from "./rules-openai.js";
-import { loadStoredHistoryV2 } from "./rules-history.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
-import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
+} from "../../../rules-assistant/rules-intelligence.js";
+import { answerQuestion, planQuestion, verifyDraft } from "../../../rules-assistant/rules-openai.js";
+import { loadStoredHistoryV2 } from "../../../rules-assistant/rules-history.js";
+import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
+import { enrichPlanFromEntityDocuments } from "../../../rules-assistant/rules-plan-enrichment.js";
 import {
   buildOutOfScopeRuling,
   buildScopeRecoveryRuling,
   isClearlyOutOfScopeQuestion,
   isGameplayQuestionPlan
-} from "./rules-status.js";
+} from "../../../rules-assistant/rules-status.js";
 import {
   buildRulePacket,
   prioritizeRulePacketSources
-} from "./rules-packets.js";
+} from "../../../rules-assistant/rules-packets.js";
 import {
   materializeDeterministicSources,
   resolveDeterministicRuling
-} from "./rules-deterministic.js";
+} from "../../../rules-assistant/rules-deterministic.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";

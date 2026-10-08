@@ -1,4 +1,5 @@
-import v061Worker from "./worker-v061.js";
+import v061Worker from "../legacy/rules-assistant/v061/worker-v061.js";
+import operationalWorker from "./worker.js";
 import v063Worker from "../legacy/rules-assistant/v063/worker-v063.js";
 import v070Worker from "../legacy/rules-assistant/v070/worker-v070.js";
 import worker from "../legacy/rules-assistant/v071/worker-v071.js";
@@ -6,8 +7,6 @@ import v072CandidateWorker from "./worker-v072-candidate.js";
 import v072Worker from "./worker-v072.js";
 import candidateWorker from "../legacy/rules-assistant/v062/worker-v062-candidate.js";
 import publishedWorker from "../legacy/rules-assistant/v062/worker-v062.js";
-import smartWorker from "./smart-worker.js";
-import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "../tools/rules-assistant/admin/admin-incremental-export-page.js";
 import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../tools/rules-assistant/admin/admin-intelligence-page.js";
 import { handleReviewExportCheckpoint } from "../tools/rules-assistant/admin/review-export-checkpoint.js";
@@ -293,7 +292,7 @@ export default {
     }
 
     if (request.method === "GET" && ["/admin", "/admin/"].includes(url.pathname)) {
-      const response = await v061Worker.fetch(request, env, context);
+      const response = await operationalWorker.fetch(request, env, context);
       const origin = siteOrigin(env);
       const headers = new Headers(response.headers);
       const contentSecurityPolicy = allowSiteAssets(headers.get("Content-Security-Policy"), origin);
@@ -305,9 +304,6 @@ export default {
       });
     }
 
-    if (String(env.RULES_RELIABLE_FALLBACK || "on").toLowerCase() === "off") {
-      return smartWorker.fetch(request, env, context);
-    }
-    return reliableWorker.fetch(request, env, context);
+    return operationalWorker.fetch(request, env, context);
   }
 };

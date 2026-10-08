@@ -4,13 +4,13 @@ import {
   defaultSourceUrls,
   loadRulesCorpus,
   retrieveRules
-} from "./local-search.js";
+} from "../../../rules-assistant/local-search.js";
 import {
   analyzeQuestionLocally,
   buildCorpusReviewSnapshot,
   sanitizeGameState
-} from "./rules-intelligence.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
+} from "../../../rules-assistant/rules-intelligence.js";
+import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
 import {
   sanitizePlaytestContext,
   sanitizeSessionId

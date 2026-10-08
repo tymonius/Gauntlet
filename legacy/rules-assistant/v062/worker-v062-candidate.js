@@ -16,7 +16,7 @@ import {
   normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
-} from "../../../rules-assistant/worker-v061.js";
+} from "../v061/worker-v061.js";
 import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
 
 const RULES_VERSION = "v0.6.2-candidate";
