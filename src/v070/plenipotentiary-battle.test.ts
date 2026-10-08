@@ -110,14 +110,15 @@ function injectHandCard(
   state: V070GameState,
   cardId: string,
   suffix: string,
+  owner: 'A' | 'B' = 'A',
 ): string {
   const instanceId = `plenipotentiary-${suffix}`;
   state.cardInstances[instanceId] = {
     instanceId,
     cardId,
-    owner: 'A',
+    owner,
   };
-  state.players.A.zones.hand.push(instanceId);
+  state.players[owner].zones.hand.push(instanceId);
   return instanceId;
 }
 
@@ -285,6 +286,92 @@ describe('Plenipotentiary battle effect', () => {
     expect(
       state.battleRuntime!.participants.A.reserve.length,
     ).toBe(reserveBefore + 1);
+  });
+
+  test('resolves copied Capitulation on loss before Senator Political Capital', () => {
+    let state = activeBattle(
+      'diplomats-senator-procedure-endures',
+    );
+    state.players.B.diplomats!.ratifiedProposals = ['capitulation'];
+
+    state = reduceV070BattleAction(state, {
+      type: 'pass_terms',
+      playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'offer_terms',
+      playerId: 'B',
+      proposalId: 'de-escalation',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'respond_to_terms',
+      playerId: 'A',
+      response: 'refuse',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'proceed_from_onset',
+      playerId: 'A',
+    });
+
+    const source = injectHandCard(
+      state,
+      V070_PLENIPOTENTIARY_ID,
+      'capitulation-source',
+      'B',
+    );
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits',
+      playerId: 'A',
+    });
+    expect(pendingV070BattleRevealChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'plenipotentiary',
+        owner: 'B',
+        candidateProposalIds: expect.arrayContaining([
+          'capitulation',
+        ]),
+      }),
+    );
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_plenipotentiary_battle',
+      playerId: 'B',
+      proposalId: 'capitulation',
+    });
+    state = chooseNoTactics(state);
+    state = reduceV070BattleAction(state, {
+      type: 'use_leverage',
+      playerId: 'B',
+      bonus: 0,
+    });
+    const handBeforeOutcome = state.players.B.zones.hand.length;
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+
+    expect(state.battle?.loser).toBe('B');
+    expect(state.players.B.zones.hand.length)
+      .toBe(handBeforeOutcome + 2);
+    expect(state.battleRuntime?.terms.stage)
+      .toBe('political_capital');
+    expect(state.battleRuntime?.terms.politicalCapitalPending)
+      .toBe(true);
   });
 
   test('does not let Plenipotentiary reuse the Proposal whose Terms were refused', () => {
