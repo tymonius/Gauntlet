@@ -217,6 +217,7 @@ import {
   v070WarCrimesForcesTacticGraveyard,
 } from './war-crimes-battle';
 import {
+  applyV070PlenipotentiaryBattleOutcome,
   declineV070PlenipotentiaryAftermathEffect,
   resolveV070PlenipotentiaryAftermathEffect,
   v070PlenipotentiaryAftermathEffectEligible,
@@ -2540,6 +2541,7 @@ function finalizeOutcome(
   }
 
   resolveV070CapitalGainsOnBattleLoss(state, outcome.loser);
+  applyV070PlenipotentiaryBattleOutcome(state, outcome);
   settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
