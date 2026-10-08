@@ -3247,6 +3247,14 @@ function pruneIneligibleBattleAftermathControlledEffects(
         )) {
         return false;
       }
+      if (capture.condition === 'owner_loss_after_retreat'
+        && (
+          battle.loser !== capture.owner
+          || battle.defender !== capture.owner
+          || !v070PlayerRetreatedInBattle(state, capture.owner)
+        )) {
+        return false;
+      }
       if (capture.requiresOpponentControlAtOnset
         && !battle.defenderControlsContested) {
         return false;
@@ -3701,13 +3709,14 @@ function applyBattleAftermathControlledEffect(
 
     let captured = false;
     let reachedOpponentEnd = false;
-    const nextTarget = nextV070FrontLineTarget(state, capture.owner);
+    const capturePlayer = capture.capturePlayer ?? capture.owner;
+    const nextTarget = nextV070FrontLineTarget(state, capturePlayer);
     if (territory
-      && territory.controller !== capture.owner
+      && territory.controller !== capturePlayer
       && nextTarget?.territoryInstanceId === capture.territoryInstanceId) {
       const result = advanceV070FrontLine(
         state,
-        capture.owner,
+        capturePlayer,
         1,
         `${capture.sourceCardId} battle Aftermath`,
       );
@@ -3731,7 +3740,7 @@ function applyBattleAftermathControlledEffect(
       battle.occupier = null;
       if (reachedOpponentEnd) {
         runtime.pendingGameVictory = {
-          winner: capture.owner,
+          winner: capturePlayer,
           route: 'final_territory_capture',
         };
       }
@@ -3749,6 +3758,7 @@ function applyBattleAftermathControlledEffect(
         captured,
         reachedOpponentEnd,
         deedOwnerAtOnset: runtime.contestedDeedOwnerAtOnset,
+        capturePlayer,
       },
     });
     return;
