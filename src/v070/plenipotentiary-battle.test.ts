@@ -20,7 +20,9 @@ import {
   V070_PLENIPOTENTIARY_ID,
 } from './plenipotentiary-battle';
 
-function activeBattle(): V070GameState {
+function activeBattle(
+  opponentDeckId = 'military-commandant-holdfast',
+): V070GameState {
   let state = createV070StarterGame({
     gameId: 'plenipotentiary-battle',
     seed: 'plenipotentiary-battle-seed',
@@ -31,7 +33,7 @@ function activeBattle(): V070GameState {
       },
       B: {
         name: 'Opponent',
-        starterDeckId: 'military-commandant-holdfast',
+        starterDeckId: opponentDeckId,
       },
     },
   });
@@ -238,6 +240,51 @@ describe('Plenipotentiary battle effect', () => {
       event.type === 'hand_revealed'
       && event.visibility === 'A'
     )).toBe(true);
+  });
+
+  test('also applies after the opponent\'s Terms are refused in a Diplomat mirror', () => {
+    let state = activeBattle(
+      'diplomats-senator-procedure-endures',
+    );
+    state.players.A.diplomats!.ratifiedProposals = ['open-channels'];
+
+    state = reduceV070BattleAction(state, {
+      type: 'pass_terms',
+      playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'offer_terms',
+      playerId: 'B',
+      proposalId: 'de-escalation',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'respond_to_terms',
+      playerId: 'A',
+      response: 'refuse',
+    });
+
+    const revealed = revealPlenipotentiary(state);
+    state = revealed.state;
+    expect(pendingV070BattleRevealChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'plenipotentiary',
+        owner: 'A',
+        candidateProposalIds: expect.arrayContaining([
+          'open-channels',
+        ]),
+      }),
+    );
+
+    const reserveBefore =
+      state.battleRuntime!.participants.A.reserve.length;
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_plenipotentiary_battle',
+      playerId: 'A',
+      proposalId: 'open-channels',
+    });
+    expect(
+      state.battleRuntime!.participants.A.reserve.length,
+    ).toBe(reserveBefore + 1);
   });
 
   test('does not let Plenipotentiary reuse the Proposal whose Terms were refused', () => {
