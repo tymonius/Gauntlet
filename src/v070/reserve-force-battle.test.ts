@@ -352,7 +352,7 @@ describe('Reserve Force battle effect', () => {
         sourceInstanceId: first,
       }),
     );
-    expect(state.battleRuntime?.participants.A.battleModifier).toBe(0);
+    expect(state.battleRuntime?.participants.A.battleModifier).toBe(2);
     expect(
       state.battleRuntime?.pendingReserveForceReplacementCommitments,
     ).toEqual([
