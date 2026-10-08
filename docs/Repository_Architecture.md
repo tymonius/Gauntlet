@@ -121,7 +121,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the Rules Arbiter browser shell at `apps/rules-arbiter/` and embedded widget presentation source at `apps/rules-assistant-widget/` |
-| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, QA/evals, and versioned compatibility support. Private admin review/export tooling lives under `tools/rules-assistant/admin/`, and refinement triage/scaffold/snapshot/governance helpers live under `tools/rules-assistant/refinement/`. It is source-only for Pages except explicitly materialized shared browser modules. |
+| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and versioned compatibility support. Private admin tooling lives under `tools/rules-assistant/admin/`, refinement tooling under `tools/rules-assistant/refinement/`, and maintained QA/evaluation fixtures under `tools/rules-assistant/qa/evals/`. It is source-only for Pages except explicitly materialized shared browser modules. |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
@@ -164,7 +164,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `releases/` | Immutable published release packages |
-| `artifacts/` | Reconstruction/build/QA evidence pending retention audit |
+| `artifacts/` | Reconstruction/build/QA evidence pending retention audit, including Rules Arbiter historical/manual QA audits under `artifacts/rules-qa/audits/` |
 | `tts/v*/` | Versioned TTS release artifacts/evidence, not current authoring authority |
 
 ### Documentation and assets
