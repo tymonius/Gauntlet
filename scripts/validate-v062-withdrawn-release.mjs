@@ -52,7 +52,7 @@ for (const file of [
 const homepage = read('index.html');
 const currentContent = read('src/content/current.ts');
 const publicWidget = read('rules-assistant/widget.js');
-const publishedWorker = read('rules-assistant/worker-v062.js');
+const publishedWorker = read('legacy/rules-assistant/v062/worker-v062.js');
 assert(homepage.includes('Current canonical playtest edition · v0.6.1'), 'root homepage is not pinned to v0.6.1 during v0.6.2 withdrawal');
 assert(!homepage.includes('Current canonical playtest edition · v0.6.2'), 'root homepage still identifies withdrawn v0.6.2 as current');
 assert(currentContent.includes("CURRENT_RULES_VERSION = 'v0.6.1'"), 'src/content/current.ts is not pinned to v0.6.1');
