@@ -23,6 +23,15 @@ import {
   resolveV070MonetaryCrisisAftermathChoice,
 } from './financier-aftermath-battle';
 import { useV070Subsidize } from './financiers';
+import {
+  hasV070ReserveForceReplacementEffectsPending,
+} from './reserve-force-battle';
+import {
+  pendingV070BattleRevealChoice,
+} from './battle-reveal-choices';
+import {
+  resumeV070SupportedRevealEffects,
+} from './battle-effects';
 
 export * from './battle-engine-pre-capital-gains';
 
@@ -191,7 +200,13 @@ export function reduceV070BattleAction(
     );
   }
 
-  return previous.reduceV070BattleAction(state, action);
+  const next = previous.reduceV070BattleAction(state, action);
+  if (hasV070ReserveForceReplacementEffectsPending(next)
+    && !pendingV070BattleRevealChoice(next)
+    && next.battleRuntime?.stage !== 'halted') {
+    resumeV070SupportedRevealEffects(next);
+  }
+  return next;
 }
 
 function resumeAfterFinancierAftermath(

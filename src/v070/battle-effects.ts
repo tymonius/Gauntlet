@@ -45,6 +45,16 @@ import {
   takeV070DeferredOperationalReassessmentGambits,
 } from './operational-reassessment-battle';
 import {
+  V070_RESERVE_FORCE_ID,
+  deferV070ReserveForceGambit,
+  hasV070ReserveForceReplacementEffectsPending,
+  takeNextV070ReserveForceReplacementCommitment,
+  takeV070DeferredReserveForceGambits,
+} from './reserve-force-battle';
+import {
+  pendingV070BattleRevealChoice,
+} from './battle-reveal-choices';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -909,6 +919,52 @@ export function applyV070PostTacticsReplacementRevealEffect(
   return [];
 }
 
+export function resumeV070SupportedRevealEffects(
+  state: V070GameState,
+): void {
+  while (hasV070ReserveForceReplacementEffectsPending(state)
+    && !pendingV070BattleRevealChoice(state)) {
+    const replacement =
+      takeNextV070ReserveForceReplacementCommitment(state);
+    if (!replacement) break;
+
+    const unsupported =
+      applyV070PostTacticsReplacementRevealEffect(
+        state,
+        replacement,
+      );
+    if (unsupported.length > 0) {
+      const runtime = state.battleRuntime;
+      if (!runtime) return;
+      runtime.unsupportedEffects.push(...unsupported);
+      runtime.stage = 'halted';
+      appendV070Event(state, {
+        type: 'battle_halted_unsupported_effect',
+        visibility: 'public',
+        payload: {
+          effects: unsupported.map(effect => ({
+            owner: effect.owner,
+            cardId: effect.cardId,
+            role: effect.role,
+            label: effect.label,
+            text: effect.text,
+            encounteredAt: effect.encounteredAt,
+          })),
+          source: 'Reserve Force replacement',
+        },
+      });
+      return;
+    }
+  }
+
+  if (hasV070ReserveForceReplacementEffectsPending(state)
+    || pendingV070BattleRevealChoice(state)
+    || state.battleRuntime?.stage === 'halted') {
+    return;
+  }
+  previous.resumeV070SupportedRevealEffects(state);
+}
+
 /**
  * Current-release audit adapter. Runtime resolution remains on the frozen
  * v0.7.0 handler graph until migrated deliberately; reviewed wording-only
@@ -984,6 +1040,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeDeferredRendTheVeilGambits(state),
         ...takeV070DeferredReconnaissanceGambits(state),
         ...takeV070DeferredOperationalReassessmentGambits(state),
+        ...takeV070DeferredReserveForceGambits(state),
         ...takeDeferredReinforcementsGambits(state),
         ...takeDeferredHellfireGambits(state),
       ]
@@ -1014,6 +1071,7 @@ export function resolveV070SupportedRevealEffects(
         || cardId === V070_REND_THE_VEIL_ID
         || cardId === V070_RECONNAISSANCE_ID
         || cardId === V070_OPERATIONAL_REASSESSMENT_ID
+        || cardId === V070_RESERVE_FORCE_ID
         || cardId === V070_REINFORCEMENTS_ID
         || cardId === V070_HELLFIRE_ID
       )) {
@@ -1025,6 +1083,8 @@ export function resolveV070SupportedRevealEffects(
         deferV070ReconnaissanceGambit(state, commitment);
       } else if (cardId === V070_OPERATIONAL_REASSESSMENT_ID) {
         deferV070OperationalReassessmentGambit(state, commitment);
+      } else if (cardId === V070_RESERVE_FORCE_ID) {
+        deferV070ReserveForceGambit(state, commitment);
       } else if (cardId === V070_REINFORCEMENTS_ID) {
         deferReinforcementsGambit(state, commitment);
       } else {

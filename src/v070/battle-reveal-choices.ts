@@ -90,6 +90,14 @@ export interface V070OperationalReassessmentBattleRevealChoice {
   candidateInstanceIds: string[];
 }
 
+export interface V070ReserveForceBattleRevealChoice {
+  kind: 'reserve_force';
+  owner: PlayerId;
+  sourceInstanceId: string;
+  role: 'gambit' | 'tactic';
+  candidateInstanceIds: string[];
+}
+
 export interface V070LateAdditionalTacticBattleRevealChoice {
   kind: 'late_additional_tactic';
   owner: PlayerId;
@@ -145,6 +153,7 @@ export type V070BattleRevealChoice =
   | V070ContrabandBattleRevealChoice
   | V070ReconnaissanceBattleRevealChoice
   | V070OperationalReassessmentBattleRevealChoice
+  | V070ReserveForceBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
   | V070HellfireBattleRevealChoice
   | V070FinancierPreDiceBattleRevealChoice;
@@ -165,6 +174,8 @@ declare module './battle-types' {
     reconnaissanceBattleRevealChoiceOpen?: boolean;
     pendingOperationalReassessmentBattleRevealChoice?: V070OperationalReassessmentBattleRevealChoice | null;
     operationalReassessmentBattleRevealChoiceOpen?: boolean;
+    pendingReserveForceBattleRevealChoice?: V070ReserveForceBattleRevealChoice | null;
+    reserveForceBattleRevealChoiceOpen?: boolean;
     pendingLateAdditionalTacticBattleRevealChoice?: V070LateAdditionalTacticBattleRevealChoice | null;
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
     pendingHellfireBattleRevealChoice?: V070HellfireBattleRevealChoice | null;
@@ -585,10 +596,57 @@ export function queueV070OperationalReassessmentBattleRevealChoice(
   });
 }
 
+export function queueV070ReserveForceBattleRevealChoice(
+  state: V070GameState,
+  choice: V070ReserveForceBattleRevealChoice,
+): void {
+  const runtime = state.battleRuntime;
+  if (!state.battle || !runtime) {
+    throw new V070GameActionError(
+      'Reserve Force battle resolution requires an active battle.',
+    );
+  }
+  if (pendingV070BattleRevealChoice(state)) {
+    throw new V070GameActionError(
+      'Reserve Force cannot open while another reveal-timing battle choice is pending.',
+    );
+  }
+  runtime.pendingReserveForceBattleRevealChoice = {
+    ...choice,
+    candidateInstanceIds: [...choice.candidateInstanceIds],
+  };
+  runtime.reserveForceBattleRevealChoiceOpen = true;
+  appendV070Event(state, {
+    type: 'reserve_force_battle_choice_pending',
+    actor: choice.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      sourceCardId: 'military-reserve-force',
+      role: choice.role,
+      candidateCount: choice.candidateInstanceIds.length,
+      maximumReplacements: 2,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'reserve_force_battle_choice_options',
+    actor: choice.owner,
+    visibility: choice.owner,
+    payload: {
+      sourceInstanceId: choice.sourceInstanceId,
+      role: choice.role,
+      candidateInstanceIds: [...choice.candidateInstanceIds],
+      maximumReplacements: 2,
+    },
+  });
+}
+
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
   return state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
+    ?? state.battleRuntime?.pendingReserveForceBattleRevealChoice
     ?? state.battleRuntime?.pendingContrabandBattleRevealChoice
     ?? state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
     ?? state.battleRuntime?.pendingHellfireBattleRevealChoice
@@ -608,6 +666,9 @@ export function isV070BattleRevealChoiceOpen(
     return Boolean(
       state.battleRuntime.operationalReassessmentBattleRevealChoiceOpen,
     );
+  }
+  if (state.battleRuntime?.pendingReserveForceBattleRevealChoice) {
+    return Boolean(state.battleRuntime.reserveForceBattleRevealChoiceOpen);
   }
   if (state.battleRuntime?.pendingContrabandBattleRevealChoice) {
     return Boolean(state.battleRuntime.contrabandBattleRevealChoiceOpen);
@@ -787,6 +848,23 @@ export function completeV070OperationalReassessmentBattleRevealChoice(
   }
   runtime.pendingOperationalReassessmentBattleRevealChoice = null;
   runtime.operationalReassessmentBattleRevealChoiceOpen = false;
+  return pending;
+}
+
+export function completeV070ReserveForceBattleRevealChoice(
+  state: V070GameState,
+): V070ReserveForceBattleRevealChoice {
+  const runtime = state.battleRuntime;
+  const pending = runtime?.pendingReserveForceBattleRevealChoice;
+  if (!runtime
+    || !pending
+    || !runtime.reserveForceBattleRevealChoiceOpen) {
+    throw new V070GameActionError(
+      'There is no open Reserve Force battle replacement choice.',
+    );
+  }
+  runtime.pendingReserveForceBattleRevealChoice = null;
+  runtime.reserveForceBattleRevealChoiceOpen = false;
   return pending;
 }
 

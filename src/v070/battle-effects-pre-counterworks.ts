@@ -93,6 +93,11 @@ import {
   registerV070TariffsBattleEffect,
 } from './tariffs-battle';
 import {
+  V070_RESERVE_FORCE_BATTLE_TEXT,
+  V070_RESERVE_FORCE_ID,
+  registerV070ReserveForceBattleEffect,
+} from './reserve-force-battle';
+import {
   V070_INVASION_BATTLE_TEXT,
   V070_INVASION_ID,
   V070_LIBERATION_BATTLE_TEXT,
@@ -353,6 +358,20 @@ const reinforcementsHandler: V070SpecializedBattleEffectHandler = {
   },
 };
 
+const reserveForceHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_RESERVE_FORCE_ID,
+  expectedText: V070_RESERVE_FORCE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070ReserveForceBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
+
 const armisticeHandler: V070SpecializedBattleEffectHandler = {
   cardId: V070_ARMISTICE_ID,
   expectedText: V070_ARMISTICE_BATTLE_TEXT,
@@ -382,6 +401,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [tyrannyHandler.cardId, tyrannyHandler],
   [sabotageHandler.cardId, sabotageHandler],
   [decoysHandler.cardId, decoysHandler],
+  [reserveForceHandler.cardId, reserveForceHandler],
   [armisticeHandler.cardId, armisticeHandler],
   [invasionHandler.cardId, invasionHandler],
   [liberationHandler.cardId, liberationHandler],
@@ -623,7 +643,9 @@ function revealEffectInterruptPending(state: V070GameState): boolean {
   return Boolean(
     pendingV070BattleRevealChoice(state)
     || pendingV070BattleRevealEffectOrderChoice(state)
-    || v070MysticInvocationPendingPlayers(state).length > 0,
+    || v070MysticInvocationPendingPlayers(state).length > 0
+    || (state.battleRuntime?.pendingReserveForceReplacementCommitments
+      ?.length ?? 0) > 0,
   );
 }
 
