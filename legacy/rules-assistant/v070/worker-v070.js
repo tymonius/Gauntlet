@@ -1,4 +1,4 @@
-import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
+import { buildLocalFallbackAnswer, retrieveRules } from "../../../rules-assistant/local-search.js";
 import {
   V070_RULES_VERSION,
   V070_VERSION_LABEL,

@@ -8,6 +8,7 @@ on:
       - "rules-assistant/admin-refinement-worker.js"
       - "tools/rules-assistant/admin/**"
       - "tools/rules-assistant/refinement/**"
+      - "legacy/rules-assistant/v070/**"
       - "rules-assistant/worker-entry.js"
       - "rules-assistant/worker-v071.js"
       - "rules-assistant/worker-v072-candidate.js"
@@ -75,6 +76,8 @@ jobs:
           node --check tools/rules-assistant/refinement/refinement-scaffold.js
           node --check tools/rules-assistant/refinement/refinement-snapshot.js
           node --check tools/rules-assistant/refinement/refinement-triage.js
+          node --check legacy/rules-assistant/v070/worker-v070.js
+          node --check legacy/rules-assistant/v070/v070-public-corpus.js
           node --check rules-assistant/worker-entry.js
           node --check rules-assistant/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js

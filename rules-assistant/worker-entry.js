@@ -1,6 +1,6 @@
 import v061Worker from "./worker-v061.js";
 import v063Worker from "./worker-v063.js";
-import v070Worker from "./worker-v070.js";
+import v070Worker from "../legacy/rules-assistant/v070/worker-v070.js";
 import worker from "./worker-v071.js";
 import v072CandidateWorker from "./worker-v072-candidate.js";
 import v072Worker from "./worker-v072.js";

@@ -11,8 +11,8 @@ const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
 const releasePublisher = readFileSync('scripts/publish-github-releases.mjs', 'utf8');
 const materializerPath = '.github/workflows/materialize-v070-release-package.yml';
 const materializer = existsSync(materializerPath) ? readFileSync(materializerPath, 'utf8') : '';
-const v070Corpus = readFileSync('rules-assistant/v070-public-corpus.js', 'utf8');
-const v070Worker = readFileSync('rules-assistant/worker-v070.js', 'utf8');
+const v070Corpus = readFileSync('legacy/rules-assistant/v070/v070-public-corpus.js', 'utf8');
+const v070Worker = readFileSync('legacy/rules-assistant/v070/worker-v070.js', 'utf8');
 const workerEntry = readFileSync('rules-assistant/worker-entry.js', 'utf8');
 const arbiterApp = readFileSync('apps/rules-arbiter/app.js', 'utf8');
 const arbiterIndex = readFileSync('apps/rules-arbiter/index.html', 'utf8');
@@ -163,7 +163,7 @@ describeV070Cutover('v0.7.0 historical publication boundary', () => {
   it('preserves the versioned v0.7.0 Rules Arbiter while the unversioned route advances to v0.7.1', () => {
     expect(v070Worker).toContain('export const RULES_VERSION = V070_RULES_VERSION');
     expect(v070Worker).toContain('current canonical v0.7.0 playtest edition');
-    expect(workerEntry).toContain('import v070Worker from "./worker-v070.js";');
+    expect(workerEntry).toContain('import v070Worker from "../legacy/rules-assistant/v070/worker-v070.js";');
     expect(workerEntry).toContain('import worker from "./worker-v071.js";');
     expect(workerEntry).toContain('requestedVersion === "v0.7.0"');
     expect(workerEntry).toContain('url.pathname === "/api/v070/rules"');

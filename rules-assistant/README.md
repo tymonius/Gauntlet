@@ -15,7 +15,8 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `v072-release-corpus.js` — current v0.7.2 frozen-release corpus loader and release/deployment validation.
 - `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.7.2 Worker while preserving explicitly versioned older routes.
 - `worker-v072.js` — current v0.7.2 Rules Arbiter Worker.
-- `worker-v061.js` and v0.6.2-specific files — retained versioned implementations and compatibility/history surfaces.
+- `../legacy/rules-assistant/v070/` — historical v0.7.0 Worker/corpus source; the current `worker-entry.js` still serves its stable versioned compatibility route.
+- `worker-v061.js`, v0.6.2/v0.6.3-specific files, and v0.7.1 compatibility source — remaining versioned implementations still awaiting the same mechanically verified archive split.
 - `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.
 - `../tools/rules-assistant/refinement/` — deterministic triage, scaffold, snapshot, current-validity, and resolution-ledger tooling used by admin refinement workflows and repository scripts.
 - `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests.
