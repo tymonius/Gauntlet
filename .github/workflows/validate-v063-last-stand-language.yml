@@ -58,7 +58,7 @@ jobs:
             legacy/rulebook-browser/app.js
             rulebook/player-facing/chapter-11.md
             rulebook/player-facing/corrections.js
-            rules-assistant/rules-deterministic-v063.js
+            legacy/rules-assistant/v063/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
             legacy/rules-assistant/v063/v063-public-corpus.js
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md

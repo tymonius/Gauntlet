@@ -24,7 +24,7 @@ const currentTextSurfaces = [
   'factions/military/index.html',
   'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
   'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
-  'rules-assistant/rules-deterministic-v063.js',
+  'legacy/rules-assistant/v063/rules-deterministic-v063.js',
 ];
 
 describe('PR #171 Last Stand terminology', () => {
