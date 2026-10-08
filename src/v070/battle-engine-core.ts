@@ -206,6 +206,17 @@ import {
   v070RedemptionAftermathEffects,
   v070RedemptionTargetInstanceIds,
 } from './redemption-battle';
+import {
+  declineV070WarCrimesAftermathEffect,
+  resolveV070WarCrimesAftermathEffect,
+  v070WarCrimesAftermathEffectEligible,
+  v070WarCrimesAftermathEffects,
+  v070WarCrimesForcesTacticGraveyard,
+} from './war-crimes-battle';
+import {
+  recordV070VictoryResultBenefit,
+  v070VictoryResultBenefitProhibited,
+} from './victory-result-restrictions';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -3152,7 +3163,8 @@ type V070BattleAftermathControlledEffectRef = {
     | 'financier'
     | 'guilt_by_association'
     | 'hellfire'
-    | 'redemption';
+    | 'redemption'
+    | 'war_crimes';
 };
 
 function battleAftermathDestinationChoiceCandidates(
@@ -3255,6 +3267,14 @@ function pruneIneligibleBattleAftermathControlledEffects(
         )) {
         return false;
       }
+      const capturePlayer = capture.capturePlayer ?? capture.owner;
+      if (v070VictoryResultBenefitProhibited(
+        state,
+        capturePlayer,
+        'capture',
+      )) {
+        return false;
+      }
       if (capture.requiresOpponentControlAtOnset
         && !battle.defenderControlsContested) {
         return false;
@@ -3303,6 +3323,12 @@ function pruneIneligibleBattleAftermathControlledEffects(
           effect.owner,
           effect.sourceInstanceId,
         ).length > 0
+      );
+  }
+  if (runtime.warCrimesAftermathEffects) {
+    runtime.warCrimesAftermathEffects =
+      runtime.warCrimesAftermathEffects.filter(effect =>
+        v070WarCrimesAftermathEffectEligible(state, effect)
       );
   }
 }
@@ -3357,6 +3383,11 @@ function remainingBattleAftermathControlledEffects(
       owner: effect.owner,
       sourceInstanceId: effect.sourceInstanceId,
       kind: 'redemption' as const,
+    })),
+    ...v070WarCrimesAftermathEffects(state).map(effect => ({
+      owner: effect.owner,
+      sourceInstanceId: effect.sourceInstanceId,
+      kind: 'war_crimes' as const,
     })),
     ...v070RetributionEligibleInstanceIds(state, battle.defender)
       .map(sourceInstanceId => ({
@@ -3435,6 +3466,15 @@ function applyBattleAftermathControlledEffect(
 
   if (effect.kind === 'hellfire') {
     resolveV070HellfireAftermathEffect(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+    );
+    return;
+  }
+
+  if (effect.kind === 'war_crimes') {
+    resolveV070WarCrimesAftermathEffect(
       state,
       effect.owner,
       effect.sourceInstanceId,
@@ -3736,6 +3776,11 @@ function applyBattleAftermathControlledEffect(
     }
 
     if (captured) {
+      recordV070VictoryResultBenefit(
+        state,
+        capturePlayer,
+        'capture',
+      );
       const battle = requireBattle(state);
       battle.occupier = null;
       if (reachedOpponentEnd) {
@@ -3837,6 +3882,7 @@ function battleAftermathControlledEffectIsOptional(
       ? v070FinancierAftermathEffectIsOptional(financier)
       : false;
   }
+  if (effect.kind === 'war_crimes') return true;
   return false;
 }
 
@@ -4107,6 +4153,13 @@ function passBattleAftermathControlledEffectChoice(
   }
   if (effect.kind === 'financier') {
     declineV070FinancierAftermathEffect(
+      state,
+      playerId,
+      sourceInstanceId,
+    );
+  }
+  if (effect.kind === 'war_crimes') {
+    declineV070WarCrimesAftermathEffect(
       state,
       playerId,
       sourceInstanceId,
@@ -4918,6 +4971,8 @@ function completeAftermathInternal(
       if (participant.tactic) {
         const instanceId = participant.tactic.instanceId;
         const condemned = v070CondemnationAppliesToPlayerTactic(state, playerId);
+        const warCrimes =
+          v070WarCrimesForcesTacticGraveyard(state, playerId);
         placeAftermathCard(
           state,
           playerId,
@@ -4931,7 +4986,7 @@ function completeAftermathInternal(
               playerId,
               instanceId,
               'tactic',
-              condemned ? 'graveyard' : 'discard',
+              condemned || warCrimes ? 'graveyard' : 'discard',
             ),
           ),
           graveyardedDuringAftermath[playerId],
@@ -4952,6 +5007,8 @@ function completeAftermathInternal(
       for (const additionalTactic of participant.additionalTactics) {
         const instanceId = additionalTactic.instanceId;
         const condemned = v070CondemnationAppliesToPlayerTactic(state, playerId);
+        const warCrimes =
+          v070WarCrimesForcesTacticGraveyard(state, playerId);
         placeAftermathCard(
           state,
           playerId,
@@ -4965,7 +5022,7 @@ function completeAftermathInternal(
               playerId,
               instanceId,
               'tactic',
-              condemned ? 'graveyard' : 'discard',
+              condemned || warCrimes ? 'graveyard' : 'discard',
             ),
           ),
           graveyardedDuringAftermath[playerId],

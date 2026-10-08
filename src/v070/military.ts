@@ -13,6 +13,11 @@ import {
   applyV070BattleRetreatStep,
   v070NormalBattleRetreatApplied,
 } from './retreat-step';
+import {
+  assertV070VictoryResultBenefitAllowed,
+  recordV070VictoryResultBenefit,
+  v070VictoryResultBenefitProhibited,
+} from './victory-result-restrictions';
 
 export const V070_MILITARY_COMMAND_MAX = 2 as const;
 
@@ -156,7 +161,17 @@ export function v070GeneralRoutAvailableAtEndOfAftermath(
   const attacker = state.players[battle.attacker];
   return attacker.leaderId === 'general'
     && Boolean(attacker.military)
-    && (attacker.military?.command ?? 0) >= 2;
+    && (attacker.military?.command ?? 0) >= 2
+    && !v070VictoryResultBenefitProhibited(
+      state,
+      battle.attacker,
+      'order',
+    )
+    && !v070VictoryResultBenefitProhibited(
+      state,
+      battle.attacker,
+      'movement',
+    );
 }
 
 export function useV070GeneralRout(
@@ -182,6 +197,18 @@ export function useV070GeneralRout(
       'Rout requires the active turn movement context.',
     );
   }
+  assertV070VictoryResultBenefitAllowed(
+    state,
+    playerId,
+    'order',
+    'Rout',
+  );
+  assertV070VictoryResultBenefitAllowed(
+    state,
+    playerId,
+    'movement',
+    'Rout',
+  );
 
   spendV070MilitaryCommand(state, playerId, 2, 'Rout');
   const phase = state.turnState.phase;
@@ -199,6 +226,8 @@ export function useV070GeneralRout(
     phase,
     movementRemaining: 1,
   });
+  recordV070VictoryResultBenefit(state, playerId, 'order');
+  recordV070VictoryResultBenefit(state, playerId, 'movement');
 }
 
 export function useV070GeneralRally(
@@ -263,6 +292,12 @@ export function useV070CommandantRepel(
     );
   }
 
+  assertV070VictoryResultBenefitAllowed(
+    state,
+    playerId,
+    'order',
+    'Repel',
+  );
   spendV070MilitaryCommand(state, playerId, 1, 'Repel');
 
   const loser = battle.attacker;
@@ -281,6 +316,7 @@ export function useV070CommandantRepel(
     to: result.to,
     moved: result.moved,
   });
+  recordV070VictoryResultBenefit(state, playerId, 'order');
 }
 
 export function useV070CommandantFortify(
@@ -310,6 +346,18 @@ export function useV070CommandantFortify(
     );
   }
 
+  assertV070VictoryResultBenefitAllowed(
+    state,
+    playerId,
+    'order',
+    'Fortify',
+  );
+  assertV070VictoryResultBenefitAllowed(
+    state,
+    playerId,
+    'capture',
+    'Fortify',
+  );
   spendV070MilitaryCommand(state, playerId, 2, 'Fortify');
   const result = advanceV070FrontLine(
     state,
@@ -322,6 +370,10 @@ export function useV070CommandantFortify(
     captures: result.captures,
     reachedOpponentEnd: result.reachedOpponentEnd,
   });
+  recordV070VictoryResultBenefit(state, playerId, 'order');
+  if (result.captures.length > 0) {
+    recordV070VictoryResultBenefit(state, playerId, 'capture');
+  }
 
   return { reachedOpponentEnd: result.reachedOpponentEnd };
 }

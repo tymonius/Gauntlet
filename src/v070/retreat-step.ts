@@ -98,6 +98,7 @@ export function applyV070BattleRetreatStep(
   }
 
   battle.positions[playerId] = to;
+  syncPostAftermathRetreatPosition(state, playerId, to);
   observeV070BattleRetreatStep(
     state,
     playerId,
@@ -106,6 +107,23 @@ export function applyV070BattleRetreatStep(
     source,
   );
   return { playerId, from, to, moved: true };
+}
+
+function syncPostAftermathRetreatPosition(
+  state: V070GameState,
+  playerId: PlayerId,
+  to: number,
+): void {
+  if (!state.battleRuntime?.aftermathPositionsSynchronized) return;
+
+  state.players[playerId].position = to;
+  for (const territory of state.board) {
+    if (territory.occupant === playerId) territory.occupant = null;
+  }
+  const destination = state.board.find(
+    territory => territory.position === to,
+  );
+  if (destination) destination.occupant = playerId;
 }
 
 /**
