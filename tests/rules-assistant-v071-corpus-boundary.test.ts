@@ -10,7 +10,7 @@ describe('Rules Arbiter v071 corpus compatibility boundary', () => {
   });
 
   it('keeps the versioned Worker and current review tooling pointed at the archived corpus', () => {
-    expect(read('legacy/rules-assistant/v071/worker-v071.js')).toContain('../legacy/rules-assistant/v071/v071-public-corpus.js');
+    expect(read('legacy/rules-assistant/v071/worker-v071.js')).toContain('./v071-public-corpus.js');
     expect(read('rules-assistant/v071-scope-precheck.js')).toContain('../legacy/rules-assistant/v071/v071-public-corpus.js');
     expect(read('tools/rules-assistant/admin/review-intelligence.js')).toContain('../../../legacy/rules-assistant/v071/v071-public-corpus.js');
     expect(read('tools/rules-assistant/refinement/refinement-scaffold.js')).toContain('legacy/rules-assistant/v071/v071-public-corpus.js');
