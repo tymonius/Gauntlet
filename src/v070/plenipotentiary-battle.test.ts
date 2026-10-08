@@ -18,6 +18,7 @@ import {
 import {
   V070_PLENIPOTENTIARY_BATTLE_TEXT,
   V070_PLENIPOTENTIARY_ID,
+  resolveV070PlenipotentiaryAftermathEffect,
 } from './plenipotentiary-battle';
 
 function activeBattle(
@@ -388,6 +389,49 @@ describe('Plenipotentiary battle effect', () => {
       && (event.payload as { sourceInstanceId?: string } | undefined)
         ?.sourceInstanceId === revealed.source
     )).toBe(true);
+  });
+
+  test('preserves final-territory victory when copied Diplomatic Recognition captures the last Territory', () => {
+    const state = activeBattle();
+    const source = injectHandCard(
+      state,
+      V070_PLENIPOTENTIARY_ID,
+      'recognition-source',
+      'B',
+    );
+    const contestedPosition = state.battle!.contestedPosition;
+    const contested = state.board.find(
+      territory => territory.position === contestedPosition,
+    )!;
+
+    state.board.forEach(territory => {
+      territory.controller = 'B';
+      territory.occupant = null;
+    });
+    contested.controller = 'A';
+    contested.occupant = 'B';
+    state.players.B.position = contestedPosition;
+    state.battle!.positions.B = contestedPosition;
+    state.battle!.winner = 'B';
+    state.battle!.loser = 'A';
+    state.battleRuntime!.stage = 'aftermath';
+    state.battleRuntime!.plenipotentiaryAftermathEffects = [{
+      owner: 'B',
+      sourceInstanceId: source,
+      proposalId: 'diplomatic-recognition',
+    }];
+
+    resolveV070PlenipotentiaryAftermathEffect(
+      state,
+      'B',
+      source,
+    );
+
+    expect(contested.controller).toBe('B');
+    expect(state.battleRuntime?.pendingGameVictory).toEqual({
+      winner: 'B',
+      route: 'final_territory_capture',
+    });
   });
 
   test('carries Rebuilding Pact into shared Aftermath timing and banks the chosen Asset', () => {
