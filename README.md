@@ -113,7 +113,7 @@ Historical Deckbuilder surfaces retained for versioned compatibility.
 
 ### rules-assistant/
 
-Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility implementations. Historical v0.7.0 compatibility source now lives under `legacy/rules-assistant/v070/` while its versioned route remains served by the current Worker entry. <!-- DOC-HISTORICAL --> The frozen v071 corpus loader is likewise archived under `legacy/rules-assistant/v071/` while its Worker remains in the transitional backend root. Browser widget presentation lives under `apps/rules-assistant-widget/`; admin/refinement/QA tooling lives under `tools/rules-assistant/`; retained QA audits live under `artifacts/rules-qa/audits/`.
+Transitional Rules Arbiter backend and shared-runtime boundary: Worker routing/retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility implementations. Historical v0.7.0 compatibility source now lives under `legacy/rules-assistant/v070/` while its versioned route remains served by the current Worker entry. <!-- DOC-HISTORICAL --> The v071 Worker and frozen corpus loader are likewise archived together under `legacy/rules-assistant/v071/` while their versioned route remains served by the current Worker entry. Browser widget presentation lives under `apps/rules-assistant-widget/`; admin/refinement/QA tooling lives under `tools/rules-assistant/`; retained QA audits live under `artifacts/rules-qa/audits/`.
 
 ### apps/card-reference/, apps/deckbuilder/, apps/factions/, apps/rules-arbiter/, apps/rules-assistant-widget/, apps/start/, apps/playtest/, and workers/playtest-sessions/
 
