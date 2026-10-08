@@ -37,7 +37,7 @@ describe("v0.7.1 reviewed Margin Loan withdrawal ruling", () => {
   });
 
   test("current classification guidance treats directly stated card text as explicit authority", () => {
-    const worker = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
+    const worker = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
     expect(worker).toContain("could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge");
     expect(worker).toContain('Do not label an explicit or inferred answer "Table ruling"');
     expect(worker).toContain("Silence is not explicit authority");

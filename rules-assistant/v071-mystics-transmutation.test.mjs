@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { buildRulesCorpus, retrieveRules } from "./local-search.js";
-import { augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
+import { augmentRetrievalForContext, contextualQuery } from "../legacy/rules-assistant/v071/worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
