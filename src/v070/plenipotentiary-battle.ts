@@ -89,7 +89,7 @@ function candidateProposalIds(
   const runtime = requireRuntime(state);
   const battle = state.battle!;
   const context = runtime.refusedTermsContext;
-  if (!context || context.offerer !== owner) return [];
+  if (!context) return [];
 
   const ratified = state.players[owner].diplomats?.ratifiedProposals ?? [];
   const refusedProposalId = runtime.terms.proposalId;
@@ -215,7 +215,12 @@ export function resolveV070PlenipotentiaryBattleChoice(
   }
 
   const runtime = requireRuntime(state);
-  const opponent = otherPlayer(playerId);
+  const refusingPlayer = runtime.refusedTermsContext?.opponent;
+  if (!refusingPlayer) {
+    throw new V070GameActionError(
+      'Plenipotentiary requires a battle following refused Terms.',
+    );
+  }
   switch (proposalId) {
     case 'de-escalation':
       if (discardInstanceId) {
@@ -245,7 +250,7 @@ export function resolveV070PlenipotentiaryBattleChoice(
           'A Hand discard applies only to Mutual Disarmament.',
         );
       }
-      revealHandTo(state, opponent, playerId);
+      revealHandTo(state, refusingPlayer, playerId);
       addReserveCard(state, playerId, proposalId);
       break;
     case 'mutual-disarmament':
