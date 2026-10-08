@@ -168,7 +168,7 @@ describeV070Cutover('v0.7.0 historical publication boundary', () => {
     expect(workerEntry).toContain('requestedVersion === "v0.7.0"');
     expect(workerEntry).toContain('url.pathname === "/api/v070/rules"');
     expect(workerEntry).toContain('url.pathname === "/api/v071/rules"');
-    expect(arbiterApp).toContain('../rules-assistant/v071-public-corpus.js');
+    expect(arbiterApp).toContain('../rules-assistant/v071-public-corpus.js'); // DOC-HISTORICAL
     expect(arbiterApp).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.1";');
   });
 

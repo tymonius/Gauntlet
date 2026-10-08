@@ -11,7 +11,7 @@ const benchmark = JSON.parse(readFileSync(
 
 describe("v0.7.1 Rules Arbiter QA foundation", () => {
   test("review exports use the actual current v0.7.1 published corpus", () => {
-    expect(reviewIntelligence).toContain('from "../../../rules-assistant/v071-public-corpus.js"');
+    expect(reviewIntelligence).toContain('from "../../../legacy/rules-assistant/v071/v071-public-corpus.js"');
     expect(reviewIntelligence).toContain("defaultV071SourceUrls");
     expect(reviewIntelligence).toContain("loadV071RulesCorpus");
     expect(reviewIntelligence).not.toContain("loadRulesCorpus(defaultSourceUrls");
