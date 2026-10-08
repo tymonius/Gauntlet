@@ -4,16 +4,16 @@ import { expect, test } from "vitest";
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase();
 
-const gate3 = loadJson("./evals/rules-arbiter-gate3-blind-c.v071.json");
-const playerLanguage = loadJson("./evals/rules-arbiter-gate3-blind-c-player-language.v071.json");
-const clarifications = loadJson("./evals/rules-arbiter-gate3-blind-c-clarifications.v071.json");
-const gate2 = loadJson("./evals/rules-arbiter-evals.v071.json");
-const trancheA = loadJson("./evals/rules-arbiter-gate3-blind-a.v071.json");
-const trancheAPlayer = loadJson("./evals/rules-arbiter-gate3-blind-a-player-language.v071.json");
-const trancheAClarifications = loadJson("./evals/rules-arbiter-gate3-blind-a-clarifications.v071.json");
-const trancheB = loadJson("./evals/rules-arbiter-gate3-blind-b.v071.json");
-const trancheBPlayer = loadJson("./evals/rules-arbiter-gate3-blind-b-player-language.v071.json");
-const trancheBClarifications = loadJson("./evals/rules-arbiter-gate3-blind-b-clarifications.v071.json");
+const gate3 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c.v071.json");
+const playerLanguage = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-player-language.v071.json");
+const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-clarifications.v071.json");
+const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const trancheA = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a.v071.json");
+const trancheAPlayer = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-player-language.v071.json");
+const trancheAClarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json");
+const trancheB = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b.v071.json");
+const trancheBPlayer = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-player-language.v071.json");
+const trancheBClarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json");
 
 const rulebook = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
 const canonical = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");

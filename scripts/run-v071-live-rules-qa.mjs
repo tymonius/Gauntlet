@@ -19,11 +19,11 @@ const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
   || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const benchmarkPath = resolve(
   process.env.GAUNTLET_RULES_QA_BENCHMARK
-  || "rules-assistant/evals/rules-arbiter-evals.v071.json"
+  || "tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
 );
 const benchmarkCorrectionsPath = resolve(
   process.env.GAUNTLET_RULES_QA_CORRECTIONS
-  || "rules-assistant/evals/rules-arbiter-evals.v071-corrections.json"
+  || "tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json"
 );
 const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");

@@ -26,10 +26,10 @@ const selectedExcerpts = {
 };
 
 const benchmark = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-v072-final-regression-replay.json", import.meta.url), "utf8"
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json", import.meta.url), "utf8"
 ));
 const corrections = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-v072-final-regression-replay-corrections.json", import.meta.url), "utf8"
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json", import.meta.url), "utf8"
 ));
 const amended = applyBenchmarkCorrections(benchmark, corrections);
 

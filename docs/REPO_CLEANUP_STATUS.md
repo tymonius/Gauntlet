@@ -266,12 +266,22 @@ The deterministic refinement engine is now separated from the deployed backend s
 - source-first governance now recognizes canonical `packages/game-data/current-game.json` rather than the retired pre-package path;
 - Worker deployment and current-live verification follow both extracted Rules Assistant tooling boundaries.
 
+## Completed subtranche — Rules Assistant QA/evaluation fixture extraction
+
+The Rules Arbiter evaluation corpus is now separated from both runtime source and retained evidence:
+
+- 74 executable JSON benchmark/regression/correction/clarification fixtures live under `tools/rules-assistant/qa/evals/`;
+- 14 historical/manual Markdown QA audit reports live under `artifacts/rules-qa/audits/` as retained evidence rather than executable tooling;
+- `rules-assistant/evals/` no longer exists;
+- QA runners, refinement tooling, workflows, and current regression tests now read the maintained tooling path directly;
+- fixture ownership is therefore independent from the deployable Worker root while preserving the exact benchmark data and workflow behavior.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
 
 - current Cloudflare Worker routing/deployment runtime, shared retrieval/runtime support, and D1 migrations;
-- current QA/eval corpora and regression harnesses;
+- runtime-adjacent regression harnesses/tests that are still colocated with the backend;
 - explicitly versioned historical/compatibility workers and corpora.
 
 Do not move versioned worker/corpus files until their live routing, QA, and historical compatibility consumers are mechanically classified.

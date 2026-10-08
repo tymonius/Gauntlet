@@ -34,9 +34,9 @@ jobs:
       RULES_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/rules
       HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/health
       CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v072/corpus-health
-      BENCHMARK: rules-assistant/evals/rules-arbiter-v072-final-regression-replay.json
-      CORRECTIONS: rules-assistant/evals/rules-arbiter-v072-final-regression-replay-corrections.json
-      CLARIFICATION_BENCHMARK: rules-assistant/evals/rules-arbiter-v072-final-clarification-replay.json
+      BENCHMARK: tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json
+      CORRECTIONS: tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json
+      CLARIFICATION_BENCHMARK: tools/rules-assistant/qa/evals/rules-arbiter-v072-final-clarification-replay.json
       REPORT: artifacts/rules-qa/v072-final-regression-replay.json
       CLARIFICATION_REPORT: artifacts/rules-qa/v072-final-regression-replay-clarifications.json
 

@@ -6,7 +6,7 @@ import { classifyTransportInfrastructure } from "../scripts/v071-live-rules-qa-s
 const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const runnerSource = readFileSync(new URL("../scripts/run-v071-live-rules-qa.mjs", import.meta.url), "utf8");
 const workflowSource = readFileSync(new URL("../.github/workflows/current-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
-const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
+const corrections = JSON.parse(readFileSync(new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
 
 describe("v0.7.1 Gate 2 live replay regressions", () => {
   test("pins the refined classification boundary", () => {

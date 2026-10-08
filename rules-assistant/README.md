@@ -18,6 +18,8 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `worker-v061.js` and v0.6.2-specific files — retained versioned implementations and compatibility/history surfaces.
 - `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.
 - `../tools/rules-assistant/refinement/` — deterministic triage, scaffold, snapshot, current-validity, and resolution-ledger tooling used by admin refinement workflows and repository scripts.
+- `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests.
+- `../artifacts/rules-qa/audits/` — retained historical/manual QA audit reports; evidence, not executable fixture authority.
 - `migrations/` — D1 schema migrations.
 - `wrangler.toml` — Worker deployment configuration.
 - focused Vitest regression suites — current and version-specific behavior checks.

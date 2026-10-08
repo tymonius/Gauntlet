@@ -2,11 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
 const benchmark = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-v072-candidate-regression-replay.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-candidate-regression-replay.json", import.meta.url),
   "utf8"
 ));
 const clarification = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-v072-candidate-clarification-replay.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-candidate-clarification-replay.json", import.meta.url),
   "utf8"
 ));
 const workflow = readFileSync(

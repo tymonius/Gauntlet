@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const runner = readFileSync('scripts/run-v071-live-rules-qa.mjs', 'utf8');
 const benchmark = JSON.parse(
-  readFileSync('rules-assistant/evals/rules-arbiter-evals.v071.json', 'utf8')
+  readFileSync('tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json', 'utf8')
 );
 
 describe('Rules Arbiter representative smoke and Chief Justice voice QA', () => {

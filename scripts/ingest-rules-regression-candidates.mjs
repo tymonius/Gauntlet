@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const DEFAULT_BENCHMARK = "rules-assistant/evals/rules-arbiter-evals.v071.json";
+const DEFAULT_BENCHMARK = "tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json";
 const ALLOWED_CLASSIFICATIONS = new Set(["explicit", "inferred", "provisional", "out_of_scope"]);
 
 export function mergeRegressionCandidates(benchmark, bundle) {

@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { BEHAVIOR_REVISION } from "./worker-v071.js";
 
 const workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
-const corrections = JSON.parse(readFileSync(new URL("./evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
+const corrections = JSON.parse(readFileSync(new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
 const wranglerSource = readFileSync(new URL("./wrangler.toml", import.meta.url), "utf8");
 const appSource = readFileSync(new URL("../apps/rules-arbiter/app.js", import.meta.url), "utf8");
 

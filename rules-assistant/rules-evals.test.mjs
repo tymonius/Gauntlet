@@ -14,7 +14,7 @@ const rulebookMarkdown = readFileSync(
   "utf8"
 );
 const benchmark = JSON.parse(readFileSync(
-  new URL("./evals/rules-arbiter-evals.v061.json", import.meta.url),
+  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v061.json", import.meta.url),
   "utf8"
 ));
 const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown });

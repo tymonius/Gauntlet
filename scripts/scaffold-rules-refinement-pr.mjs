@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 import { mergeRegressionCandidates } from "./ingest-rules-regression-candidates.mjs";
 import { refinementScaffold } from "../tools/rules-assistant/refinement/refinement-scaffold.js";
 
-const DEFAULT_BENCHMARK = "rules-assistant/evals/rules-arbiter-evals.v071.json";
+const DEFAULT_BENCHMARK = "tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json";
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

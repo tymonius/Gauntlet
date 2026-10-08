@@ -10,7 +10,7 @@ import {
 
 const benchmarkPath = resolve(
   process.env.GAUNTLET_RULES_QA_BENCHMARK
-  || "rules-assistant/evals/rules-arbiter-evals.v071.json"
+  || "tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
 );
 const inputPath = resolve(
   process.env.GAUNTLET_RULES_QA_SEMANTIC_INPUT
