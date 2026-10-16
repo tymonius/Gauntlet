@@ -21,6 +21,12 @@ export const V070_SHOCK_AND_AWE_ID = 'military-shock-and-awe' as const;
 export const V070_SHOCK_AND_AWE_BATTLE_TEXT =
   'When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Capture that Territory, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard.' as const;
 
+export const V070_FROZEN_SHOCK_AND_AWE_BATTLE_TEXT =
+  V070_SHOCK_AND_AWE_BATTLE_TEXT.replace(
+    'Consolidate — Capture that Territory, if able;',
+    'Consolidate — Advance Front Line 1, if able;',
+  );
+
 export const V070_SHOCK_AND_AWE_ASSET_TEXT =
   'During Onset, you may put this card in your Graveyard to apply its Gambit/Tactic effect after Tactics are revealed.' as const;
 
@@ -44,7 +50,9 @@ export function assertV070ShockAndAweAuthority(): void {
   ] as const) {
     const effects = content.cardsById.get(V070_SHOCK_AND_AWE_ID)?.effects;
     if (effects?.find(e => e.label === 'Gambit/Tactic')?.text
-      !== V070_SHOCK_AND_AWE_BATTLE_TEXT
+      !== (release === 'frozen v0.7.0'
+        ? V070_FROZEN_SHOCK_AND_AWE_BATTLE_TEXT
+        : V070_SHOCK_AND_AWE_BATTLE_TEXT)
       || effects.find(e => e.label === 'Asset')?.text
       !== V070_SHOCK_AND_AWE_ASSET_TEXT) {
       throw new Error(
