@@ -4,25 +4,28 @@ import { expect, test } from "vitest";
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase();
 
-const gate3 = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b.v071.json");
-const playerLanguage = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-player-language.v071.json");
-const clarifications = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json");
-const gate2 = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
-const trancheA = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a.v071.json");
-const trancheAPlayer = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-player-language.v071.json");
-const trancheAClarifications = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json");
+const gate3 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c.v071.json");
+const playerLanguage = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-player-language.v071.json");
+const clarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-c-clarifications.v071.json");
+const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const trancheA = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a.v071.json");
+const trancheAPlayer = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-player-language.v071.json");
+const trancheAClarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-a-clarifications.v071.json");
+const trancheB = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b.v071.json");
+const trancheBPlayer = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-player-language.v071.json");
+const trancheBClarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-b-clarifications.v071.json");
 
-const rulebook = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
-const canonical = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
+const canonical = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
-const EXPECTED_BEHAVIOR = "v071-qa-20260913-10";
+const EXPECTED_BEHAVIOR = "v071-qa-20260914-13";
 const EXPECTED_AUTHORITY = "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339";
 
-test("Gate 3 blind tranche B is frozen to the merged r10 candidate", () => {
+test("Gate 3 blind tranche C is frozen to the merged r13 candidate", () => {
   for (const dataset of [gate3, playerLanguage, clarifications]) {
     expect(dataset.rulesVersion).toBe("v0.7.1");
-    expect(dataset.tranche).toBe("B");
+    expect(dataset.tranche).toBe("C");
     expect(dataset.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
     expect(dataset.authoritySetId).toBe(EXPECTED_AUTHORITY);
   }
@@ -31,12 +34,15 @@ test("Gate 3 blind tranche B is frozen to the merged r10 candidate", () => {
   expect(clarifications.cases).toHaveLength(3);
 });
 
-test("Gate 3 tranche B does not exactly reuse Gate 2 or tranche A questions", () => {
+test("Gate 3 tranche C does not exactly reuse Gate 2, tranche A, or tranche B questions", () => {
   const prior = new Set([
     ...gate2.cases,
     ...trancheA.cases,
     ...trancheAPlayer.cases,
-    ...trancheAClarifications.cases
+    ...trancheAClarifications.cases,
+    ...trancheB.cases,
+    ...trancheBPlayer.cases,
+    ...trancheBClarifications.cases
   ].map((item) => normalize(item.question)));
   const fresh = [...gate3.cases, ...playerLanguage.cases, ...clarifications.cases];
   const ids = fresh.map((item) => item.id);
@@ -47,7 +53,7 @@ test("Gate 3 tranche B does not exactly reuse Gate 2 or tranche A questions", ()
   for (const question of questions) expect(prior.has(question)).toBe(false);
 });
 
-test("Gate 3 tranche B covers all required benchmark surfaces", () => {
+test("Gate 3 tranche C covers all required benchmark surfaces", () => {
   const categories = new Set(gate3.cases.map((item) => item.category));
   for (const category of [
     "core",
@@ -65,18 +71,18 @@ test("Gate 3 tranche B covers all required benchmark surfaces", () => {
   ]) expect(categories.has(category)).toBe(true);
 
   const leaderIds = [
-    "blind-b-general-rout-can-battle",
-    "blind-b-commandant-fortify-occupation",
-    "blind-b-ambassador-cordiality-limit",
-    "blind-b-senator-political-capital-trigger",
-    "blind-b-banker-line-credit-first-purchase",
-    "blind-b-executive-hostile-takeover-timing",
-    "blind-b-ranger-fieldcraft-card-effect",
-    "blind-b-spymaster-mission-control-same-turn",
-    "blind-b-alchemist-materia-prima-first-only",
-    "blind-b-spirit-walker-guardians-cost-three-rites",
-    "blind-b-grand-inquisitor-final-judgment-discount",
-    "blind-b-witch-hunter-pursuit-new-attacker"
+    "blind-c-general-onward-timing",
+    "blind-c-commandant-repel-order",
+    "blind-c-ambassador-cordiality-draw",
+    "blind-c-senator-political-capital-partial-recovery",
+    "blind-c-banker-line-credit-five-cost",
+    "blind-c-executive-hostile-takeover-occupier-cost",
+    "blind-c-ranger-fieldcraft-duration",
+    "blind-c-spymaster-mission-control-no-special-op",
+    "blind-c-alchemist-materia-prima-battle-draw-timing",
+    "blind-c-spirit-walker-guardians-one-rite-cost",
+    "blind-c-grand-inquisitor-final-judgment-after-clear",
+    "blind-c-witch-hunter-pursuit-defender-trigger"
   ];
   const ids = new Set(gate3.cases.map((item) => item.id));
   for (const id of leaderIds) expect(ids.has(id)).toBe(true);
@@ -88,7 +94,7 @@ test("Gate 3 tranche B covers all required benchmark surfaces", () => {
   expect(gate3.cases.some((item) => item.expectedClassification === "out_of_scope")).toBe(true);
 });
 
-test("Gate 3 tranche B scored authority patterns exist in frozen v0.7.1 authority", () => {
+test("Gate 3 tranche C scored authority patterns exist in frozen v0.7.1 authority", () => {
   const scored = [...gate3.cases, ...playerLanguage.cases];
   for (const item of scored) {
     if (!["explicit", "inferred"].includes(item.expectedClassification)) continue;
@@ -100,16 +106,16 @@ test("Gate 3 tranche B scored authority patterns exist in frozen v0.7.1 authorit
   }
 });
 
-test("Gate 3 tranche B player language remains novice-like rather than normalized", () => {
+test("Gate 3 tranche C player language remains novice-like rather than normalized", () => {
   expect(playerLanguage.cases.every((item) => item.category === "player-language")).toBe(true);
   const questions = playerLanguage.cases.map((item) => item.question);
   expect(questions.some((question) => question === question.toLowerCase())).toBe(true);
   expect(questions.some((question) => question.split(/\s+/).length <= 7)).toBe(true);
-  expect(questions).toContain("got two rites done can i use transmutation now");
-  expect(questions).toContain("sleeper network gets removed, do i play every card under it");
+  expect(questions).toContain("orders cost my normal action or just command");
+  expect(questions).toContain("witch hunter won while attacking, pursuit now?");
 });
 
-test("Gate 3 tranche B classification expectations use the live QA contract", () => {
+test("Gate 3 tranche C classification expectations use the live QA contract", () => {
   const allowed = new Set(["explicit", "inferred", "provisional", "out_of_scope"]);
   for (const item of [...gate3.cases, ...playerLanguage.cases]) {
     expect(allowed.has(item.expectedClassification)).toBe(true);
@@ -120,7 +126,7 @@ test("Gate 3 tranche B classification expectations use the live QA contract", ()
   }
 });
 
-test("Gate 3 tranche B clarification cases are fresh and genuinely ambiguous", () => {
+test("Gate 3 tranche C clarification cases are fresh and genuinely ambiguous", () => {
   const questions = clarifications.cases.map((item) => normalize(item.question));
   expect(new Set(questions).size).toBe(questions.length);
   for (const item of clarifications.cases) {
