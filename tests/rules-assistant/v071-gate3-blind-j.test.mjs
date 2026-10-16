@@ -3,39 +3,39 @@ import { describe, expect, test } from "vitest";
 import {
   sourceRequirementGroups,
   validateClassificationExpectations
-} from "../scripts/v071-live-rules-qa-support.mjs";
-import { validateSemanticBenchmark } from "../scripts/v071-semantic-rules-qa-support.mjs";
-import { githubActionsQaAuthContract } from "./github-actions-qa-auth.js";
+} from "../../scripts/v071-live-rules-qa-support.mjs";
+import { validateSemanticBenchmark } from "../../scripts/v071-semantic-rules-qa-support.mjs";
+import { githubActionsQaAuthContract } from "../../rules-assistant/github-actions-qa-auth.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const standard = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-i.v071.json");
-const player = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-i-player-language.v071.json");
-const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-i-clarifications.v071.json");
-const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const standard = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j.v071.json");
+const player = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-player-language.v071.json");
+const clarifications = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-clarifications.v071.json");
+const gate2 = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 
-const priorPaths = ["a","b","c","d","e","f","g","h"].flatMap((letter) => [
+const priorPaths = ["a","b","c","d","e","f","g","h","i"].flatMap((letter) => [
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
 ]);
 const prior = priorPaths.map(loadJson);
-const trancheH = prior.slice(-3);
+const trancheI = prior.slice(-3);
 
-const rulebook = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
-const canonical = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
+const canonical = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
-const EXPECTED_BEHAVIOR = "v071-qa-20260918-19";
-const H_FROZEN_BEHAVIOR = "v071-qa-20260917-18";
+const EXPECTED_BEHAVIOR = "v071-qa-20260918-20";
+const I_FROZEN_BEHAVIOR = "v071-qa-20260918-19";
 const EXPECTED_AUTHORITY = "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339";
 
-describe("Gate 3 blind tranche I certification freeze", () => {
-  test("pins fresh semantic benchmarks to r19 and frozen v0.7.1 authority", () => {
+describe("Gate 3 blind tranche J certification freeze", () => {
+  test("pins fresh semantic benchmarks to r20 and frozen v0.7.1 authority", () => {
     for (const dataset of [standard, player]) {
       expect(dataset.rulesVersion).toBe("v0.7.1");
-      expect(dataset.tranche).toBe("I");
+      expect(dataset.tranche).toBe("J");
       expect(dataset.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
       expect(dataset.authoritySetId).toBe(EXPECTED_AUTHORITY);
       expect(dataset.gradingMode).toBe("semantic-v1");
@@ -46,24 +46,24 @@ describe("Gate 3 blind tranche I certification freeze", () => {
     expect(player.cases).toHaveLength(18);
   });
 
-  test("pins clarification probes to r19 and the same authority", () => {
+  test("pins clarification probes to r20 and the same authority", () => {
     expect(clarifications.rulesVersion).toBe("v0.7.1");
-    expect(clarifications.tranche).toBe("I");
+    expect(clarifications.tranche).toBe("J");
     expect(clarifications.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
     expect(clarifications.authoritySetId).toBe(EXPECTED_AUTHORITY);
     expect(clarifications.cases).toHaveLength(5);
   });
 
-  test("preserves tranche H as immutable r18 evidence", () => {
-    for (const dataset of trancheH) {
+  test("preserves tranche I as immutable r19 evidence", () => {
+    for (const dataset of trancheI) {
       expect(dataset.rulesVersion).toBe("v0.7.1");
-      expect(dataset.tranche).toBe("H");
-      expect(dataset.behaviorRevision).toBe(H_FROZEN_BEHAVIOR);
+      expect(dataset.tranche).toBe("I");
+      expect(dataset.behaviorRevision).toBe(I_FROZEN_BEHAVIOR);
       expect(dataset.authoritySetId).toBe(EXPECTED_AUTHORITY);
     }
   });
 
-  test("does not exactly reuse Gate 2 or Gate 3 A/B/C/D/E/F/G/H cases", () => {
+  test("does not exactly reuse Gate 2 or Gate 3 A/B/C/D/E/F/G/H/I cases", () => {
     const priorCases = [
       ...(gate2.cases || []),
       ...prior.flatMap((dataset) => dataset.cases || [])
@@ -90,18 +90,18 @@ describe("Gate 3 blind tranche I certification freeze", () => {
     ]) expect(categories.has(category)).toBe(true);
 
     const leaderIds = [
-      "blind-i-general-rout-requires-attacking-win",
-      "blind-i-commandant-entrench-battle-not-initiated",
-      "blind-i-ambassador-cordiality-once-per-turn",
-      "blind-i-senator-political-capital-limited-by-cards",
-      "blind-i-banker-line-credit-only-first-purchase",
-      "blind-i-executive-hostile-takeover-needs-occupation",
-      "blind-i-ranger-fieldcraft-does-not-remove-defensive-edge",
-      "blind-i-spymaster-new-mission-not-special-operation",
-      "blind-i-alchemist-second-sacrifice-no-second-draw",
-      "blind-i-spirit-walker-cannot-save-position-loss",
-      "blind-i-grand-inquisitor-final-judgment-does-not-use-action-purge",
-      "blind-i-witch-hunter-pursuit-ends-opponent-turn"
+      "blind-j-general-onward-can-start-battle",
+      "blind-j-commandant-repel-if-able-edge",
+      "blind-j-ambassador-cordiality-draw-after-acceptance",
+      "blind-j-senator-political-capital-zero-hand",
+      "blind-j-banker-line-credit-treasury-collateral",
+      "blind-j-executive-takeover-cost-occupier",
+      "blind-j-ranger-fieldcraft-cost",
+      "blind-j-spymaster-new-mission-immediate-start",
+      "blind-j-alchemist-materia-nonqualifying-gambit",
+      "blind-j-spirit-walker-guardians-on-ritual-loss",
+      "blind-j-grand-inquisitor-final-judgment-cost-floor",
+      "blind-j-witch-hunter-pursuit-new-battle-attacker"
     ];
     const ids = new Set(standard.cases.map((item) => item.id));
     for (const id of leaderIds) expect(ids.has(id)).toBe(true);
@@ -156,13 +156,13 @@ describe("Gate 3 blind tranche I certification freeze", () => {
   });
 
   test("uses semantic-v2 evaluator behavior with semantic-v1 dataset schema", () => {
-    const evaluator = readFileSync(new URL("./qa-semantic-evaluator.js", import.meta.url), "utf8");
+    const evaluator = readFileSync(new URL("../../rules-assistant/qa-semantic-evaluator.js", import.meta.url), "utf8");
     expect(evaluator).toContain('QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2"');
   });
 
   test("later Gate 3 workflow advancement does not invalidate this frozen tranche and remains OIDC-authorized", () => {
     const workflowPath = ".github/workflows/current-rules-arbiter-gate3-blind.yml";
-    const workflow = readFileSync(new URL(`../${workflowPath}`, import.meta.url), "utf8");
+    const workflow = readFileSync(new URL(`../../${workflowPath}`, import.meta.url), "utf8");
     expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
