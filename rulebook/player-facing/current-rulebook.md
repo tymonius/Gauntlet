@@ -554,8 +554,6 @@ During the Aftermath, follow these steps in order:
 8. Apply effects triggered by cards leaving battle or entering another zone.
 9. Apply end-of-Aftermath effects, including any that grant follow-up movement.
 
-**Give Chase before Rout:** If a Give Chase Gambit/Tactic and the General's Rout Order are both available after the same attacking victory, first choose whether to take Give Chase's optional follow-up advance. If taken, resolve it before Rout. If that advance starts another battle, the original battle's Rout opportunity ends unused; the General does not use Rout and spends no Command. If Give Chase is declined or does not start another battle, Rout remains optional at its normal timing and cost. This priority applies to Give Chase's battle effect, not its separate Denouement Action.
-
 #### Normal result
 
 Unless an effect says otherwise:
