@@ -305,6 +305,7 @@ export function chooseInterceptedOrdersReplacement(
     payload: {
       sourceInstanceId: resolution.sourceInstanceId,
       cardInstanceId: instanceId,
+      cardId: state.cardInstances[instanceId]?.cardId ?? null,
       faceUp: true,
       role: 'tactic',
     },
