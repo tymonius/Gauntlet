@@ -357,8 +357,8 @@ The superseded v063 candidate stack is now co-located with the already archived 
 
 ## Completed subtranche — Rules Assistant v071/v072 QA suites migration
 
-- Nine v071/v072 QA, verifier, precheck, remediation, and corpus tests have moved from `rules-assistant/` to `tests/rules-assistant/`, following the validated baseline-suite pilot.
-- Historical regression coverage continues through the dedicated workflow introduced by #1968; maintained imports/fixture paths were retargeted without changing test assertions.
+- Nine v071/v072 QA, verifier, precheck, remediation, and corpus tests have moved from `rules-assistant/` to `tools/rules-assistant/qa/tests/`, adjacent to the QA fixtures and outside the card-authority test-evidence inventory.
+- Historical regression coverage continues through the dedicated workflow introduced by #1968, extended to the QA test directory; maintained imports/fixture paths were retargeted without changing test assertions.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 

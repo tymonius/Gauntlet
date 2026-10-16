@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 describe('Rules Assistant QA test migration tranche', () => {
   it('separates v071 and v072 regression tests from the runtime root', () => {
     const root = readdirSync('rules-assistant');
-    const dest = readdirSync('tests/rules-assistant');
+    const dest = readdirSync('tools/rules-assistant/qa/tests');
     for(const name of [
       'v071-answer-verifier.test.mjs',
       'v071-scope-precheck.test.mjs',

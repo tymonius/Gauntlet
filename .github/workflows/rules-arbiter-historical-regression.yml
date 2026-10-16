@@ -5,6 +5,7 @@ on:
     paths:
       - 'rules-assistant/**'
       - 'tests/rules-assistant/**'
+      - 'tools/rules-assistant/qa/tests/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'rules-assistant/**'
       - 'tests/rules-assistant/**'
+      - 'tools/rules-assistant/qa/tests/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -40,3 +42,4 @@ jobs:
         run: |
           npm run test:rules-assistant
           npx vitest run tests/rules-assistant/*.test.mjs
+          npx vitest run tools/rules-assistant/qa/tests/*.test.mjs
