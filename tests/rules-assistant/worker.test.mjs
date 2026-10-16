@@ -6,11 +6,11 @@ import worker, {
   normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
-} from "../legacy/rules-assistant/v061/worker-v061.js";
+} from "../../legacy/rules-assistant/v061/worker-v061.js";
 import {
   interactionsToCsv,
   isAdminAuthorized
-} from "./worker.js";
+} from "../../rules-assistant/worker.js";
 
 test("preserves valid anonymous session identifiers", () => {
   expect(sanitizeSessionId("session_12345678")).toBe("session_12345678");

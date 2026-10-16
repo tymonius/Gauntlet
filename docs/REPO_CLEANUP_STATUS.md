@@ -349,6 +349,17 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Its proposal/Territory regression tests import the archived corpus, which in turn imports the archived v063 corpus.
 - Gameplay/current-release authority and published Worker routing were not changed.
 
+## Completed subtranche — Rules Assistant test migration pilot
+
+- The v061 Worker behavior tests, rules-intelligence benchmark, and game-night regression suite now live in `tests/rules-assistant/` rather than the production backend root.
+- The existing `test:rules-assistant` script continues to cover tests at the transitional root, and the historical-regression workflow separately runs migrated tests in `tests/rules-assistant/`. The regular Vitest runner discovers both.
+- Relative imports and fixture paths are retargeted without altering test assertions or historical game data.
+
+## Completed subtranche — Rules Assistant v071/v072 QA suites migration
+
+- Nine v071/v072 QA, verifier, precheck, remediation, and corpus tests have moved from `rules-assistant/` to `tests/rules-assistant/`, following the validated baseline-suite pilot.
+- Historical regression coverage continues through the dedicated workflow introduced by #1968; maintained imports/fixture paths were retargeted without changing test assertions.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
