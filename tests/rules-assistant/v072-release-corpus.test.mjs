@@ -19,7 +19,7 @@ const paths = {
   freeze: "config/v072-release-freeze.json",
 };
 
-const read = path => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+const read = path => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
 const snapshot = () => Object.fromEntries(
   Object.entries(paths).filter(([key]) => key !== "freeze").map(([key, path]) => [key, read(path)])
 );
@@ -32,7 +32,7 @@ describe("frozen v0.7.2 release corpus", () => {
   test("builder reproduces the committed staged package byte-for-byte", () => {
     const before = snapshot();
     execFileSync(process.execPath, ["scripts/build-v072-release-source.mjs"], {
-      cwd: new URL("..", import.meta.url),
+      cwd: new URL("../..", import.meta.url),
       stdio: "pipe",
     });
     expect(snapshot()).toEqual(before);
