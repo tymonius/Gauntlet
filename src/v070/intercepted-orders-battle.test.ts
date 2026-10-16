@@ -10,6 +10,7 @@ import {
   INTERCEPTED_ORDERS_NEXT_TACTIC_TEXT,
   interceptedOrdersTacticTargets,
   interceptedOrdersReplacementCandidates,
+  completeInterceptedOrdersWithoutTarget,
   revealInterceptedOrdersOpposingReserve,
   returnInterceptedOrdersTactic,
   chooseInterceptedOrdersReplacement,
@@ -210,6 +211,10 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     expect(interceptedOrdersTacticTargets(state, 'A')).toEqual([]);
     expect(revealInterceptedOrdersOpposingReserve(state, 'A', source))
       .toEqual(expect.arrayContaining([replacement, target]));
+    completeInterceptedOrdersWithoutTarget(state, 'A', source);
+    expect(state.events.some(event =>
+      event.type === 'intercepted_orders_no_opposing_tactic'
+    )).toBe(true);
   });
 
   test('rejects attempt to return a Reserve card rather than a committed Tactic', () => {
