@@ -1,20 +1,20 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
-import { buildRulesCorpus } from "./local-search.js";
-import { buildRetrievalQueries } from "../legacy/rules-assistant/v061/worker-v061.js";
-import { analyzeQuestionLocally, retrieveIntelligentRules } from "./rules-intelligence.js";
-import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
+import { buildRulesCorpus } from "../../rules-assistant/local-search.js";
+import { buildRetrievalQueries } from "../../legacy/rules-assistant/v061/worker-v061.js";
+import { analyzeQuestionLocally, retrieveIntelligentRules } from "../../rules-assistant/rules-intelligence.js";
+import { enrichPlanFromEntityDocuments } from "../../rules-assistant/rules-plan-enrichment.js";
 
 const canonicalData = JSON.parse(readFileSync(
-  new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),
+  new URL("../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),
   "utf8"
 ));
 const rulebookMarkdown = readFileSync(
-  new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url),
+  new URL("../../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url),
   "utf8"
 );
 const benchmark = JSON.parse(readFileSync(
-  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v061.json", import.meta.url),
+  new URL("../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v061.json", import.meta.url),
   "utf8"
 ));
 const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown });

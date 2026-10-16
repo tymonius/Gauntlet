@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'rules-assistant/**'
+      - 'tests/rules-assistant/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -12,6 +13,7 @@ on:
       - main
     paths:
       - 'rules-assistant/**'
+      - 'tests/rules-assistant/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -35,4 +37,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Rules Arbiter historical suite
-        run: npm run test:rules-assistant
+        run: |
+          npm run test:rules-assistant
+          npx vitest run tests/rules-assistant/*.test.mjs
