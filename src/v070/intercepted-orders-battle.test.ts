@@ -7,6 +7,15 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import {
+  beginInterceptedOrdersAtTacticReveal,
+  pendingInterceptedOrdersChoice,
+  resolveInterceptedOrdersChoice,
+} from './intercepted-orders-battle-choices';
+import {
+  queueV070FaceUpTacticRevealReplacement,
+  resumeV070SupportedRevealEffects,
+} from './battle-effects-pre-counterworks';
+import {
   INTERCEPTED_ORDERS_NEXT_TACTIC_TEXT,
   interceptedOrdersTacticTargets,
   interceptedOrdersReplacementCandidates,
@@ -259,4 +268,100 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     expect(interceptedOrdersReplacementCandidates(state, 'B'))
       .not.toContain(replacement);
   });
+  test('normal reveal choice, Reserve disclosure, face-up replacement, and same-stage scheduler', () => {
+    const { state, source, target, replacement } = prepare(true);
+    // Simulate the normal Tactic reveal committing cards before its
+    // interference handler pauses. Published v0.7.2 still has old text.
+    state.battleRuntime!.participants.A.tactic!.faceUp = true;
+    state.battleRuntime!.participants.B.tactic!.faceUp = true;
+    state.cardInstances[replacement].cardId = 'diplomats-gunboat-diplomacy';
+    state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    state.battleRuntime!.pendingRevealEffectClass = 'interference';
+    state.battleRuntime!.pendingRevealEffectCommitments = [];
+    state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments = [
+      { instanceId: target, owner: 'B', role: 'tactic', faceUp: true },
+    ];
+
+    beginInterceptedOrdersAtTacticReveal(state, 'A', source);
+    expect(pendingInterceptedOrdersChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'replacement',
+        playerId: 'B',
+        sourceInstanceId: source,
+      }),
+    );
+    expect(state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments)
+      .not.toContainEqual(expect.objectContaining({ instanceId: target }));
+    expect(() => resolveInterceptedOrdersChoice(state, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'A',
+      cardInstanceId: replacement,
+    })).toThrow(/designated player/);
+    const chosen = resolveInterceptedOrdersChoice(state, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'B',
+      cardInstanceId: replacement,
+    });
+    expect(chosen?.faceUp).toBe(true);
+    expect(pendingInterceptedOrdersChoice(state)).toBeNull();
+    queueV070FaceUpTacticRevealReplacement(state, chosen!);
+    expect(state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments)
+      .toContainEqual(expect.objectContaining({ instanceId: replacement }));
+    expect(() => queueV070FaceUpTacticRevealReplacement(state, chosen!))
+      .toThrow(/already scheduled/);
+    resumeV070SupportedRevealEffects(state);
+    expect(state.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(2);
+    expect(state.battleRuntime!.participants.B.reserve).toContain(target);
+    expect(state.battleRuntime!.interceptedOrdersBarredInstanceIds)
+      .toContain(target);
+  });
+
+  test('multiple opposing Tactics pause for owner selection before offering a replacement', () => {
+    const { state, source, target, otherTarget } = prepare(true, true);
+    beginInterceptedOrdersAtTacticReveal(state, 'A', source);
+    expect(pendingInterceptedOrdersChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'target',
+        playerId: 'A',
+        candidateInstanceIds: [target, otherTarget],
+      }),
+    );
+    expect(() => resolveInterceptedOrdersChoice(state, {
+      type: 'resolve_intercepted_orders_target',
+      playerId: 'B',
+      targetInstanceId: otherTarget!,
+    })).toThrow(/designated player/);
+    resolveInterceptedOrdersChoice(state, {
+      type: 'resolve_intercepted_orders_target',
+      playerId: 'A',
+      targetInstanceId: otherTarget!,
+    });
+    expect(pendingInterceptedOrdersChoice(state)?.kind).toBe('replacement');
+    expect(state.battleRuntime!.participants.B.additionalTactics).toEqual([]);
+  });
+
+  test('no opposing Tactic completes at normal reveal without waiting for replacement', () => {
+    const { state, source } = prepare(true);
+    state.battleRuntime!.participants.B.tactic = null;
+    beginInterceptedOrdersAtTacticReveal(state, 'A', source);
+    expect(pendingInterceptedOrdersChoice(state)).toBeNull();
+    expect(state.events.some(event =>
+      event.type === 'intercepted_orders_no_opposing_tactic'
+    )).toBe(true);
+  });
+
+  test('face-up replacement never reopens an expired interference stage', () => {
+    const { state, source, target, replacement } = prepare(true);
+    const decision = returnInterceptedOrdersTactic(state, 'A', source, target);
+    const chosen = chooseInterceptedOrdersReplacement(state, decision, replacement);
+    state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    state.battleRuntime!.pendingRevealEffectClass = 'ordinary';
+    expect(() => queueV070FaceUpTacticRevealReplacement(
+      state, { ...chosen!, instanceId: replacement, faceUp: true },
+    )).not.toThrow();
+    expect(state.battleRuntime!.pendingRevealEffectCommitments)
+      .toContainEqual(expect.objectContaining({ instanceId: replacement }));
+  });
+
 });
