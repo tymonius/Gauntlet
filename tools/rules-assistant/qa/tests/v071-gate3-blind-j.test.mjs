@@ -3,17 +3,17 @@ import { describe, expect, test } from "vitest";
 import {
   sourceRequirementGroups,
   validateClassificationExpectations
-} from "../../scripts/v071-live-rules-qa-support.mjs";
-import { validateSemanticBenchmark } from "../../scripts/v071-semantic-rules-qa-support.mjs";
-import { githubActionsQaAuthContract } from "../../rules-assistant/github-actions-qa-auth.js";
+} from "../../../../scripts/v071-live-rules-qa-support.mjs";
+import { validateSemanticBenchmark } from "../../../../scripts/v071-semantic-rules-qa-support.mjs";
+import { githubActionsQaAuthContract } from "../../../../rules-assistant/github-actions-qa-auth.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const standard = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j.v071.json");
-const player = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-player-language.v071.json");
-const clarifications = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-clarifications.v071.json");
-const gate2 = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const standard = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j.v071.json");
+const player = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-player-language.v071.json");
+const clarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-j-clarifications.v071.json");
+const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 
 const priorPaths = ["a","b","c","d","e","f","g","h","i"].flatMap((letter) => [
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
@@ -23,8 +23,8 @@ const priorPaths = ["a","b","c","d","e","f","g","h","i"].flatMap((letter) => [
 const prior = priorPaths.map(loadJson);
 const trancheI = prior.slice(-3);
 
-const rulebook = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
-const canonical = readFileSync(new URL("../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
+const canonical = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
 const EXPECTED_BEHAVIOR = "v071-qa-20260918-20";
@@ -156,13 +156,13 @@ describe("Gate 3 blind tranche J certification freeze", () => {
   });
 
   test("uses semantic-v2 evaluator behavior with semantic-v1 dataset schema", () => {
-    const evaluator = readFileSync(new URL("../../rules-assistant/qa-semantic-evaluator.js", import.meta.url), "utf8");
+    const evaluator = readFileSync(new URL("../../../../rules-assistant/qa-semantic-evaluator.js", import.meta.url), "utf8");
     expect(evaluator).toContain('QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2"');
   });
 
   test("later Gate 3 workflow advancement does not invalidate this frozen tranche and remains OIDC-authorized", () => {
     const workflowPath = ".github/workflows/current-rules-arbiter-gate3-blind.yml";
-    const workflow = readFileSync(new URL(`../../${workflowPath}`, import.meta.url), "utf8");
+    const workflow = readFileSync(new URL(`../../../../${workflowPath}`, import.meta.url), "utf8");
     expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(

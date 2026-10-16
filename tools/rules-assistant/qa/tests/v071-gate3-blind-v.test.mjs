@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { githubActionsQaAuthContract } from "../../rules-assistant/github-actions-qa-auth.js";
+import { githubActionsQaAuthContract } from "../../../../rules-assistant/github-actions-qa-auth.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const clarifications = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-v-clarifications.v071.json");
-const gate2 = loadJson("../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const clarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-v-clarifications.v071.json");
+const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 const priorLetters = "abcdefghijklmnopqrstu".split("");
 const priorPaths = priorLetters.flatMap((letter) => [
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
@@ -51,7 +51,7 @@ describe("Gate 3 bounded clarification tranche V confirmation freeze", () => {
   });
 
   test("current Gate 3 workflow is clarification-only and pinned to V/r33", () => {
-    const workflow = readFileSync(new URL("../../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
+    const workflow = readFileSync(new URL("../../../../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
     expect(workflow).toContain("name: Rules Arbiter Gate 3 bounded clarification tranche V");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION: v071-qa-20260921-33");
     expect(workflow).toContain("rules-arbiter-gate3-blind-v-clarifications.v071.json");
