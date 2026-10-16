@@ -161,6 +161,30 @@ export function revealInterceptedOrdersOpposingReserve(
   return cards;
 }
 
+/** Complete the effect when the opponent committed no Tactic to return. */
+export function completeInterceptedOrdersWithoutTarget(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+): void {
+  assertSource(state, owner, sourceInstanceId);
+  if (interceptedOrdersTacticTargets(state, owner).length > 0) {
+    throw new V070GameActionError(
+      'Intercepted Orders still has an opposing Tactic to return.',
+    );
+  }
+  markV070BattleCardEffectApplied(state, sourceInstanceId);
+  appendV070Event(state, {
+    type: 'intercepted_orders_no_opposing_tactic',
+    actor: owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId: INTERCEPTED_ORDERS_CARD_ID,
+    },
+  });
+}
+
 /**
  * Resolve an explicitly selected committed Tactic. Do not negate its effect:
  * the card says Return, not Negate; earlier effects are never unwound.
