@@ -28,7 +28,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../artifacts/rules-qa/audits/` — retained historical/manual QA audit reports; evidence, not executable fixture authority.
 - `migrations/` — D1 schema migrations.
 - `wrangler.toml` — Worker deployment configuration.
-- focused Vitest regression suites — current and version-specific behavior checks.
+- regression suites are being migrated from the backend root into `../tests/rules-assistant/`; the historical npm test command explicitly runs both locations during the transition.
 
 ## Source policy
 
