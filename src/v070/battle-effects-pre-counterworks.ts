@@ -506,6 +506,56 @@ export function v070BattleRevealEffectsPending(
   return Boolean(state.battleRuntime?.pendingRevealEffectEncounteredAt);
 }
 
+/**
+ * Queue a face-up Tactic replacement into an IN-PROGRESS ordinary Tactic
+ * reveal, preserving interference-before-ordinary priority.
+ *
+ * This function does not open or replay the normal reveal stage. It is a
+ * future-release integration seam for Intercepted Orders; the current
+ * v0.7.2 card is intentionally not registered to call it.
+ */
+export function queueV070FaceUpTacticRevealReplacement(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime || runtime.pendingRevealEffectEncounteredAt !== 'reveal_tactics') {
+    throw new Error('A face-up Tactic replacement needs an active Tactic reveal scheduler.');
+  }
+  if (commitment.role !== 'tactic' || !commitment.faceUp) {
+    throw new Error('A replacement must be a face-up committed Tactic.');
+  }
+  const player = runtime.participants[commitment.owner];
+  if (![player.tactic, ...player.additionalTactics].some(
+    candidate => candidate?.instanceId === commitment.instanceId,
+  )) {
+    throw new Error('Only a Tactic actually committed to this battle may be queued.');
+  }
+  const existing = [
+    ...(runtime.pendingRevealEffectCommitments ?? []),
+    ...(runtime.pendingRevealDeferredOrdinaryCommitments ?? []),
+  ];
+  if (existing.some(candidate => candidate.instanceId === commitment.instanceId)) {
+    throw new Error('This Tactic is already scheduled to resolve.');
+  }
+  const revealClass = revealClassForCommitment(state, commitment);
+  if (revealClass === 'interference') {
+    if (runtime.pendingRevealEffectClass !== 'interference') {
+      // Never retroactively reopen a completed interference window.
+      throw new Error('The interference window has already passed.');
+    }
+    runtime.pendingRevealEffectCommitments ??= [];
+    runtime.pendingRevealEffectCommitments.push(commitment);
+  } else if (runtime.pendingRevealEffectClass === 'interference') {
+    runtime.pendingRevealDeferredOrdinaryCommitments ??= [];
+    runtime.pendingRevealDeferredOrdinaryCommitments.push(commitment);
+  } else {
+    runtime.pendingRevealEffectCommitments ??= [];
+    runtime.pendingRevealEffectCommitments.push(commitment);
+  }
+}
+
+
 export function resumeV070SupportedRevealEffects(
   state: V070GameState,
 ): void {
