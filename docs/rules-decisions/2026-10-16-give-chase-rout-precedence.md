@@ -1,7 +1,7 @@
 # Accepted rules decision: Give Chase before General Rout
 
 **Decision date:** 2026-10-16  
-**Status:** Accepted by game designer; **pending integration into the next formally versioned rules release**. The public already-published modular rulebooks and frozen release package are unchanged. This record is not a replacement for the currently published rules.
+**Status:** Accepted by game designer; **pending integration into the next formally versioned rules release**. The currently published modular rulebooks and frozen release package remain unchanged. This record is not a replacement for the currently published rules.
 
 **Related:** [issue #1953](https://github.com/tymonius/Gauntlet/issues/1953) (shared follow-up movement sequencing), [issue #1952](https://github.com/tymonius/Gauntlet/issues/1952) (Give Chase Action-mode scope), [Gauntlet digital engine parity](https://github.com/tymonius/Gauntlet/issues/741).
 
@@ -18,7 +18,7 @@ Give Chase is not forced merely because its follow-up has priority. Its distinct
 
 ## Basis and scope
 
-This is a new designer-approved specific precedence over the general shared-timing ordering rule. It is not a claim that the existing frozen already-published text already prescribed this priority.
+This is a new designer-approved specific precedence over the general shared-timing ordering rule. It is not a claim that the existing frozen published text already prescribed this priority.
 
 This decision settles **Give Chase vs. Rout**. It does **not** determine the sequencing of every pair of follow-up movement effects, including separate Countercharge or Shock and Awe cases. Do not close issue #1953 solely on the strength of this narrower decision.
 
@@ -27,7 +27,7 @@ The card's exact current Gambit/Tactic text grants an optional Advance following
 ## Release and implementation checklist
 
 - [x] Confirm designer's intended precedence, optionality, and Command treatment.
-- [x] Record the ruling outside the frozen already-published publication sources.
+- [x] Record the ruling outside the frozen published rules sources.
 - [ ] Integrate into the next release's authoritative comprehensive rules and Military faction guide through the governed publication process.
 - [ ] Implement Give Chase battle-mode follow-up and Rout interaction with regression tests.
 - [ ] Resolve remaining issue #1953 movement combinations independently.
