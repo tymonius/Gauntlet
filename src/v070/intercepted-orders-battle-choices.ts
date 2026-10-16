@@ -6,6 +6,10 @@ import {
 import type { PlayerId } from './rules';
 import type { V070BattleCardCommitment } from './battle-types';
 import {
+  queueV070FaceUpTacticRevealReplacement,
+} from './battle-effects-pre-counterworks';
+import { resumeV070SupportedRevealEffects } from './battle-effects';
+import {
   type InterceptedOrdersReturn,
   INTERCEPTED_ORDERS_CARD_ID,
   chooseInterceptedOrdersReplacement,
@@ -202,4 +206,24 @@ export function resolveInterceptedOrdersChoice(
   );
   state.battleRuntime!.pendingInterceptedOrdersChoice = null;
   return replacement;
+}
+
+/**
+ * Next-release reducer adapter: atomically resolve the decision, schedule a
+ * chosen face-up replacement in the same Tactic reveal, and resume any
+ * unblocked effects. This adapter is not registered in the published reducer.
+ */
+export function reduceStagedInterceptedOrdersRevealAction(
+  state: V070GameState,
+  action: InterceptedOrdersBattleAction,
+): V070GameState {
+  const next = structuredClone(state) as V070GameState;
+  const replacement = resolveInterceptedOrdersChoice(next, action);
+  if (replacement) {
+    queueV070FaceUpTacticRevealReplacement(next, replacement);
+  }
+  if (!pendingInterceptedOrdersChoice(next)) {
+    resumeV070SupportedRevealEffects(next);
+  }
+  return next;
 }
