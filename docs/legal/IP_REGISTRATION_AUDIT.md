@@ -13,9 +13,9 @@ The repository currently gives the following notice:
 
 > Copyright © 2026 Tymon Scott. All rights reserved.
 
-The repository is public and has no repository license declared. The current public project site is `gauntlet.run`, and the public v0.7.0 Tabletop Simulator Workshop mod is linked from the repository README.
+The repository is public and has no repository license declared. The public project site is `gauntlet.run`, and the public Tabletop Simulator Workshop mod is linked from the repository README. The v0.7.0 Workshop publication described in the historical sections below has since been superseded by the owner-confirmed v0.7.2 Workshop update.
 
-The README also calls Gauntlet an "unpublished playtest project." That wording should **not** be treated as a legal conclusion for Copyright Office purposes. Gauntlet materials have been made available online, including downloadable release materials. Publication status must be determined work-by-work and filing-by-filing before a copyright application is submitted.
+Some frozen historical release materials call Gauntlet an "unpublished playtest project"; the maintained README no longer does. Historical wording should **not** be treated as a legal conclusion for Copyright Office purposes. Gauntlet materials have been made available online, including downloadable release materials. Publication status must be determined work-by-work and filing-by-filing before a copyright application is submitted.
 
 ## 2. Documented publication/release timeline
 
