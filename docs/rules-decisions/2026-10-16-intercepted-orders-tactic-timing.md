@@ -1,50 +1,47 @@
 # Accepted design decision: Intercepted Orders becomes Tactic-only
 
 **Decision date:** 2026-10-16  
-**Status:** Designer-approved proposed text for the next versioned gameplay release; published card and rules are unchanged.  
+**Status:** Designer-approved proposed card text for a future versioned gameplay release. The currently published card and rules remain unchanged.  
 **Tracking:** [issue #1939](https://github.com/tymonius/Gauntlet/issues/1939)
 
 ## Decision
 
-Change the Intelligence card **Intercepted Orders** from **Gambit/Tactic** to **Tactic**, and retain the pre-normal-Tactic-reveal timing. Its **Asset** mode remains unchanged.
+Change the Intelligence card **Intercepted Orders** from **Gambit/Tactic** to **Tactic**, preserving its **Asset** effect.
 
-The designer briefly considered an opening that read `Play this Tactic face up; it takes effect immediately.`, but **reverted that proposal** because ordinary Tactic choices are made attacker first, defender second: an attacker's immediate effect can run before the defender has chosen any Tactic. Instead, return to the explicit **after both players choose Tactics, before they are normally revealed** timing.
+The designer considered and rejected both (a) immediate face-up Tactic play, which might resolve before the defender chooses a Tactic, and (b) a custom `after Tactics are chosen, before normal reveal` opening. The final direction is to **omit the timing sentence entirely**, relying on the ordinary Tactic reveal stage. The earlier instruction to reveal opposing committed face-down Tactics was also removed.
 
-The designer also directed that the phrase `each opposing face-down Tactic and` be **deleted** from the reveal sentence, leaving only the reveal of the opponent's Reserve.
-
-## Revised target card effect
+## Approved target card text
 
 **Tactic:**
 
-> After Tactics are chosen, before they are normally revealed, reveal this card if it is face down. Reveal the opponent's Reserve. Return 1 opposing Tactic to that Reserve; it cannot be chosen again this battle. The opponent may choose 1 eligible replacement from the Reserve.
+> Reveal the opponent's Reserve. Return 1 opposing Tactic to that Reserve; it cannot be chosen again this battle. The opponent may choose 1 eligible replacement from the Reserve.
 
 **Asset (unchanged):**
 
 > When the opponent forms their Reserve, before they choose Tactics, you may discard this card to reveal that Reserve and choose 1 card they cannot choose this battle.
 
-## Timing and mechanics
+## Current-rule timing analysis
 
-- The Tactic cannot be committed as a Gambit. Its effect occurs **after normal Tactic choices have been made**, so a target Tactic can already exist whether Intercepted Orders belongs to the attacker or defender.
-- It reveals **the opponent's Reserve**, not the opposing committed face-down Tactics. The effect's removal and replacement instructions remain as written.
-- **Important unresolved precision:** If the opponent has multiple face-down committed Tactics, the revised text does not specify whether the controller chooses a target blind, whether some other reveal is required, or how the target is identified. Do not silently assume that the committed Tactics have been revealed; the designer explicitly removed that instruction. Confirm targeting semantics before implementing ambiguous multi-Tactic cases.
-- If the opponent chose no Tactic, the return instruction has no applicable target. The card still contains a Reserve reveal instruction; how a zero-target case flows through any choice window must follow the game's existing effect-resolution rules.
-- Existing reveal protections, shared timing, and replacement rules remain applicable. Do not create extra Surveillance or Interference opportunities on a replacement without authoritative rules text.
+- Intercepted Orders is eligible only as a **Tactic** chosen from Reserve, not as a Gambit chosen from Hand. Its effect occurs at the **ordinary Tactic reveal stage**, after both players finish normal Tactic choices.
+- The current Rulebook's **Reveal-stage interference** procedure puts effects that return, replace, or otherwise prevent an opposing Tactic's normal resolution **ahead of ordinary effects at that stage**. Accordingly, the target Tactic can be returned before its ordinary effect resolves.
+- The final text reveals the **opponent's Reserve**, not opposing committed face-down Tactics separately. At the normal Tactic reveal stage, opposing Tactics follow the normal reveal procedure. If multiple opposing Tactics exist, the return instruction selects one; it does not return all of them.
+- If the opponent has not committed a Tactic, there is no legal target for the return instruction. The Reserve reveal remains a separately printed instruction.
+- Existing reveal protection, ordering, replacement, and Interference rules continue to apply as printed. No additional windows or timing override should be inferred from the decision.
 
-The pre-normal reveal timing has an existing engine precedent in **Confession** (`src/v070/confession-battle.ts`). That precedent does not license applying Confession's separate reveal behavior to Intercepted Orders.
+This choice eliminates the early-Gambit timing problem described in #1939 without introducing a new immediate-play or pre-reveal procedure.
 
-## Release and engine checklist
+## Release and implementation checklist
 
-- [x] Approve **Tactic** rather than **Gambit/Tactic**.
-- [x] Reject immediate face-up play; restore the explicit **post-choice, pre-reveal** timing.
-- [x] Remove exactly `each opposing face-down Tactic and` from the reveal instruction.
-- [x] Preserve the existing Asset, Tactic return, re-selection prohibition, and replacement text.
-- [ ] Confirm target selection among multiple face-down opposing Tactics, without silently reintroducing their reveal.
-- [ ] For the next governed gameplay release, update `packages/game-data/current-game.json`: change `effects[1].label` to `Tactic`, apply the revised exact Tactic text, remove the `gambit_tactic` mirror and add a matching `tactic` mirror.
-- [ ] Align authoritative rules, next-version printed card and release/public surfaces, keeping published packages frozen.
-- [ ] Implement and regression-test Tactic-only pre-normal-reveal execution: attacker/defender ordering, zero/one/multiple opposing Tactics, Reserve disclosure, reveal protections, card-return restriction, replacement, and interactions with other pre-reveal effects.
-- [ ] Update the current digital-engine registration surface key to `intelligence-intercepted-orders::1::Tactic`; **do not claim increased executable parity until implementation is complete**.
-- [ ] Close issue #1939 only when authority, publication, and implementation are complete.
+- [x] Approve **Tactic** instead of **Gambit/Tactic**.
+- [x] Remove the opening custom timing sentence entirely.
+- [x] Remove the phrase `each opposing face-down Tactic and` from the reveal sentence.
+- [x] Preserve the Asset, Reserve reveal, return/re-selection restriction, and replacement instructions.
+- [ ] Integrate with the next governed gameplay release: update **`packages/game-data/current-game.json`** `effects[1].label` to `Tactic`, use the approved text, remove the `gambit_tactic` mirror and introduce a matching `tactic` mirror.
+- [ ] Align the next published rulebook/card faces/public surfaces without mutating a previously published package.
+- [ ] Implement and regression-test the normal Tactic-reveal interference behavior in the digital engine, including zero, one, or multiple opposing Tactics; return and ineligibility; eligible replacement; reveal protections; and shared interference ordering.
+- [ ] Update the digital-engine unsupported surface key from `intelligence-intercepted-orders::1::Gambit/Tactic` to `intelligence-intercepted-orders::1::Tactic` when canonical gameplay authority changes, without falsely increasing executable parity.
+- [ ] Close #1939 only when updated authority, release presentation, and tested engine behavior are complete.
 
 ## Scope
 
-This is a forward-looking approved design revision. Do not overwrite the currently published card or claim the revised battle effect is already implemented.
+This is an approved future-release card revision, **not** a claim that the current frozen publication or digital engine already implements it.
