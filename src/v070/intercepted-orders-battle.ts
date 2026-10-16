@@ -254,14 +254,14 @@ export function returnInterceptedOrdersTactic(
 
 /**
  * Substitute into the vacated commitment slot. The returned card is barred.
- * The caller must pass any new face-up effect into the current-stage reveal
- * scheduler; this helper does NOT independently reopen a reveal stage.
+ * Per the approved designer ruling, replacements enter play face up.
+ * The caller must process only effects whose timing remains available
+ * in the current reveal scheduler; this helper does NOT reopen a stage.
  */
 export function chooseInterceptedOrdersReplacement(
   state: V070GameState,
   resolution: InterceptedOrdersReturn,
   instanceId?: string,
-  faceUp?: boolean,
 ): V070BattleCardCommitment | null {
   const runtime = state.battleRuntime;
   if (!runtime) {
@@ -277,11 +277,6 @@ export function chooseInterceptedOrdersReplacement(
       'Replacement must be an eligible Tactic from Reserve; the returned card is barred.',
     );
   }
-  if (typeof faceUp !== 'boolean') {
-    throw new V070GameActionError(
-      'The replacement face state requires an explicit rules decision.',
-    );
-  }
   const participant = runtime.participants[resolution.targetOwner];
   if (resolution.slot.kind === 'normal' && participant.tactic) {
     throw new V070GameActionError('The replaced normal Tactic slot is occupied.');
@@ -289,13 +284,13 @@ export function chooseInterceptedOrdersReplacement(
   const index = participant.reserve.indexOf(instanceId);
   participant.reserve.splice(index, 1);
 
-  // Face state must come from the next-release rules decision. The caller
-  // separately determines whether any effect timing remains available.
+  // The approved ruling fixes the replacement's face state. It does not
+  // independently authorize effects at timings that have already passed.
   const replacement: V070BattleCardCommitment = {
     instanceId,
     owner: resolution.targetOwner,
     role: 'tactic',
-    faceUp,
+    faceUp: true,
   };
   if (resolution.slot.kind === 'normal') {
     participant.tactic = replacement;
@@ -310,7 +305,7 @@ export function chooseInterceptedOrdersReplacement(
     payload: {
       sourceInstanceId: resolution.sourceInstanceId,
       cardInstanceId: instanceId,
-      faceUp,
+      faceUp: true,
       role: 'tactic',
     },
   });
