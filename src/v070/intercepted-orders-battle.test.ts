@@ -98,8 +98,8 @@ function prepare(
   const owner = attackerSource ? 'A' : 'B';
   const opponent = attackerSource ? 'B' : 'A';
   const source = inject(state, owner, 'intelligence-intercepted-orders', 'source');
-  const target = inject(state, opponent, 'neutral-rallying-cry', 'target');
-  const replacement = inject(state, opponent, 'neutral-disruption', 'replacement');
+  const target = inject(state, opponent, 'diplomats-gunboat-diplomacy', 'target');
+  const replacement = inject(state, opponent, 'inquisition-heresy', 'replacement');
   state.battleRuntime!.participants[owner].reserve.push(source);
   state.battleRuntime!.participants[opponent].reserve.push(target, replacement);
 
@@ -117,7 +117,7 @@ function prepare(
   let otherTarget: string | undefined;
   if (extraTarget) {
     otherTarget = inject(
-      state, opponent, 'neutral-rallying-cry', 'extra-target',
+      state, opponent, 'diplomats-gunboat-diplomacy', 'extra-target',
     );
     state.battleRuntime!.participants[opponent].additionalTactics.push({
       instanceId: otherTarget,
@@ -217,12 +217,15 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     )).toThrow(/currently committed opposing Tactic/);
   });
 
-  test('excludes same-battle Disruption banned replacements', () => {
+  test('only cards remaining in Reserve may be proposed as replacements', () => {
     const { state, target, replacement } = prepare(true);
-    state.battleRuntime!.disruptionProhibitedInstanceIds = [replacement];
     expect(interceptedOrdersReplacementCandidates(state, 'B'))
-      .not.toContain(replacement);
+      .toContain(replacement);
     expect(interceptedOrdersReplacementCandidates(state, 'B'))
       .not.toContain(target);
+    state.battleRuntime!.participants.B.reserve =
+      state.battleRuntime!.participants.B.reserve.filter(x => x !== replacement);
+    expect(interceptedOrdersReplacementCandidates(state, 'B'))
+      .not.toContain(replacement);
   });
 });
