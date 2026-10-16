@@ -6,7 +6,7 @@ import {
   isOccupationControlQuestion,
   recentNamedAuthority,
   shouldCarryImmediateHistory
-} from "./v071-gate3-c-remediation.js";
+} from "../../rules-assistant/v071-gate3-c-remediation.js";
 
 function source(canonicalId, title, excerpt = "") {
   return { id: "S1", canonicalId, title, heading: title.replace(/^(?:Card|Faction):\s*/i, ""), excerpt };

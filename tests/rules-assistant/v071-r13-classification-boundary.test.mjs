@@ -7,7 +7,7 @@ import {
   shouldPromoteDirectPhaseLegality,
   shouldPromoteExpandedDirectOverview,
   shouldPromoteNamedDirectAuthority
-} from "./r13-classification.js";
+} from "../../rules-assistant/r13-classification.js";
 
 function source(title, excerpt = "") {
   return { id: "S1", title, excerpt };
