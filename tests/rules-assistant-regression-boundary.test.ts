@@ -14,8 +14,8 @@ describe('Rules Assistant regression test boundary', () => {
   it('keeps both test locations in historical regression validation', () => {
     const pkg = readFileSync('package.json','utf8');
     const workflow = readFileSync('.github/workflows/rules-arbiter-historical-regression.yml','utf8');
-    expect(pkg).toContain('tests/rules-assistant/*.test.mjs');
     expect(pkg).toContain('rules-assistant/*.test.mjs');
+    expect(workflow).toContain('npx vitest run tests/rules-assistant/*.test.mjs');
     expect(workflow).toContain("'tests/rules-assistant/**'");
   });
 });
