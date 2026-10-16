@@ -20,7 +20,7 @@ function enterBattle(): V070GameState {
     gameId: 'intercepted-orders-next-release',
     seed: 'intercepted-orders-next-release-seed',
     players: {
-      A: { name: 'Alpha', starterDeckId: 'intelligence-spymaster-shadow-network' },
+      A: { name: 'Alpha', starterDeckId: 'financiers-banker-sound-investment' },
       B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
     },
   });
@@ -99,7 +99,7 @@ function prepare(
   const opponent = attackerSource ? 'B' : 'A';
   const source = inject(state, owner, 'intelligence-intercepted-orders', 'source');
   const target = inject(state, opponent, 'neutral-rallying-cry', 'target');
-  const replacement = inject(state, opponent, 'neutral-new-recruits', 'replacement');
+  const replacement = inject(state, opponent, 'neutral-disruption', 'replacement');
   state.battleRuntime!.participants[owner].reserve.push(source);
   state.battleRuntime!.participants[opponent].reserve.push(target, replacement);
 
@@ -117,7 +117,7 @@ function prepare(
   let otherTarget: string | undefined;
   if (extraTarget) {
     otherTarget = inject(
-      state, opponent, 'neutral-disruption', 'extra-target',
+      state, opponent, 'neutral-rallying-cry', 'extra-target',
     );
     state.battleRuntime!.participants[opponent].additionalTactics.push({
       instanceId: otherTarget,
