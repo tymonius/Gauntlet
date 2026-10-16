@@ -190,6 +190,7 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
       type: 'intercepted_orders_replacement_chosen',
       payload: expect.objectContaining({
         cardInstanceId: replacement,
+        cardId: 'inquisition-heresy',
         faceUp: true,
         role: 'tactic',
       }),
