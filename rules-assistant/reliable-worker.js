@@ -14,7 +14,7 @@ import { persistSmartInteraction } from "./rules-persistence.js";
 import {
   sanitizePlaytestContext,
   sanitizeSessionId
-} from "./worker-v061.js";
+} from "../legacy/rules-assistant/v061/worker-v061.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "local-source-lookup";

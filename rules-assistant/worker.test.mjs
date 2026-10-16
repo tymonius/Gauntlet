@@ -6,7 +6,7 @@ import worker, {
   normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
-} from "./worker-v061.js";
+} from "../legacy/rules-assistant/v061/worker-v061.js";
 import {
   interactionsToCsv,
   isAdminAuthorized

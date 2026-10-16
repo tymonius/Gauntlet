@@ -1,4 +1,4 @@
-import v061Worker from "./worker-v061.js";
+import v061Worker from "../legacy/rules-assistant/v061/worker-v061.js";
 import v063Worker from "../legacy/rules-assistant/v063/worker-v063.js";
 import v070Worker from "../legacy/rules-assistant/v070/worker-v070.js";
 import worker from "../legacy/rules-assistant/v071/worker-v071.js";

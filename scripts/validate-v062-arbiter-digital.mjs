@@ -45,7 +45,7 @@ const digitalRules = read("src/v062/rules.ts");
 const digitalTests = read("src/v062/rules.test.ts");
 const contentLoader = read("src/content/v062.ts");
 
-assert(workerEntry.includes('import worker from "./worker-v061.js"'), "historical v0.6.1 worker is not imported");
+assert(workerEntry.includes('import v061Worker from "../legacy/rules-assistant/v061/worker-v061.js"'), "historical v0.6.1 worker is not imported");
 assert(workerEntry.includes('import candidateWorker from "../legacy/rules-assistant/v062/worker-v062-candidate.js"'), "candidate worker is not imported");
 assert(workerEntry.includes('import publishedWorker from "../legacy/rules-assistant/v062/worker-v062.js"'), "published v0.6.2 worker is not imported");
 assert(workerEntry.includes('url.pathname.startsWith("/api/v062-candidate/")'), "candidate API route is not version-separated");

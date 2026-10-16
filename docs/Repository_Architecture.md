@@ -154,6 +154,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `legacy/` | Explicitly non-authoritative historical implementation/publication/source provenance. `legacy/rulebook-browser/` remains a transitional deployment shell for `/rulebook/`; `legacy/rules-assistant/` holds historically versioned Rules Arbiter implementation source that is still served only for compatibility. |
+| `legacy/rules-assistant/v061/` | Historical v0.6.1 compatibility Worker retained for explicitly versioned routing and legacy shared-runtime behavior <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v062/` | Withdrawn published v062 Rules Arbiter Worker/corpus plus the historical candidate Worker/corpus and shared deterministic rulings; imported only for explicit historical/candidate routes and validation <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v063/` | Historical v063 published Worker/corpus plus the earlier candidate Worker, development corpus, deterministic rulings, candidate entrypoint, and candidate Wrangler config; current routing imports only the published compatibility Worker <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v070/` | Historical v0.7.0 Rules Arbiter Worker and frozen-release corpus loader; imported by the current Worker entry only to preserve `/api/v070/*` and `rulesVersion: v0.7.0` compatibility <!-- DOC-HISTORICAL --> |

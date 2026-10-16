@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { buildRulesCorpus } from "./local-search.js";
-import { buildRetrievalQueries } from "./worker-v061.js";
+import { buildRetrievalQueries } from "../legacy/rules-assistant/v061/worker-v061.js";
 import { analyzeQuestionLocally, retrieveIntelligentRules } from "./rules-intelligence.js";
 import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
 

@@ -82,7 +82,7 @@ const workerEntry = read('rules-assistant/worker-entry.js');
 const worker = read('rules-assistant/worker-v063.js');
 const corpus = read('rules-assistant/v063-public-corpus.js');
 const widget = read('rules-assistant/widget.js');
-assert(workerEntry.includes('import v061Worker from "./worker-v061.js";'));
+assert(workerEntry.includes('import v061Worker from "../legacy/rules-assistant/v061/worker-v061.js";'));
 assert(workerEntry.includes('import worker from "./worker-v063.js";'));
 assert(workerEntry.includes('return v061Worker.fetch(rewriteVersionedPath(request), env, context);'));
 assert(workerEntry.includes('The unversioned public Rules Arbiter follows the current canonical release.'));
