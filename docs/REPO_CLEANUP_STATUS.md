@@ -336,6 +336,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - the active v063 Last Stand validation workflow watches the archived v063 source so historical compatibility changes cannot bypass its checks;
 - frozen recovery snapshots remain untouched.
 
+## Completed subtranche — Rules Assistant v064 candidate corpus archive
+
+- The superseded v0.6.4 corpus implementation resides at `legacy/rules-assistant/v064/v064-candidate-corpus.js`; current production dispatch does not import it. <!-- DOC-HISTORICAL -->
+- Its proposal/Territory regression tests import the archived corpus, which in turn imports the archived v063 corpus.
+- Gameplay/current-release authority and published Worker routing were not changed.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

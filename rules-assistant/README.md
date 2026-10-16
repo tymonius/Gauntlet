@@ -18,6 +18,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../legacy/rules-assistant/v070/` — historical v0.7.0 Worker/corpus source; the current `worker-entry.js` still serves its stable versioned compatibility route.
 - `../legacy/rules-assistant/v071/` — historical v071 Worker and frozen release corpus loader; `worker-entry.js` preserves the versioned route, while review/refinement tooling and regression tests read the archived implementation explicitly.
 - `../legacy/rules-assistant/v062/` — withdrawn published v062 Worker/corpus plus the historical candidate Worker/corpus and deterministic rulings; `worker-entry.js` preserves both explicit historical routes. <!-- DOC-HISTORICAL -->
+- `../legacy/rules-assistant/v064/` — superseded v0.6.4 candidate corpus, used for historical proposal/Territory regression coverage. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v063/` — historical v063 published Worker/corpus plus the earlier candidate Worker, development corpus, deterministic rulings, candidate entrypoint, and candidate Wrangler config; the current `worker-entry.js` preserves the explicit published v063 compatibility route. <!-- DOC-HISTORICAL -->
 - `worker-v061.js` and shared v063 publication-language helper material — remaining versioned/shared material still awaiting mechanically verified classification. <!-- DOC-HISTORICAL -->
 - `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.

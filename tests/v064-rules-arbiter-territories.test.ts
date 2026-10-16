@@ -6,7 +6,7 @@ import {
   applyV064TerritoryOverride,
   buildV064TerritoryDocuments,
   validateV064TerritorySource,
-} from '../rules-assistant/v064-candidate-corpus.js';
+} from '../legacy/rules-assistant/v064/v064-candidate-corpus.js';
 
 const source = JSON.parse(readFileSync('docs/v0.6.4-territories.json', 'utf8'));
 
