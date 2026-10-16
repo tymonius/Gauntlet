@@ -118,7 +118,7 @@ function validateCanonicalFooter(html, route) {
   assert(html.includes('/images/Gauntlet.svg'), `${route} footer does not use the canonical Gauntlet wordmark.`);
   assert(html.includes('/images/branding/tds-games-mark.svg'), `${route} footer does not use the TDS Games mark.`);
   assert(html.includes('Published by TDS Games'), `${route} footer is missing the TDS Games publisher line.`);
-  assert(html.includes('An imprint of Misty Hollow Enterprises'), `${route} footer is missing the parent-imprint line.`);
+  assert(html.includes('An imprint of Misty Hollow Enterprises, LLC'), `${route} footer is missing the current legal parent-imprint line.`);
   assert(html.includes('Copyright © 2026 Tymon Scott. All rights reserved.'), `${route} footer is missing the canonical copyright notice.`);
   const footerLinks = footerNavigationLinks(html, route);
   assert.deepEqual(
