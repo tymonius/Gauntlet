@@ -355,6 +355,17 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The existing `test:rules-assistant` script continues to cover tests at the transitional root, and the historical-regression workflow separately runs migrated tests in `tests/rules-assistant/`. The regular Vitest runner discovers both.
 - Relative imports and fixture paths are retargeted without altering test assertions or historical game data.
 
+## Completed subtranche — Rules Assistant v071/v072 QA suites migration
+
+- Nine v071/v072 QA, verifier, precheck, remediation, and corpus tests have moved from `rules-assistant/` to `tools/rules-assistant/qa/tests/`, adjacent to the QA fixtures and outside the card-authority test-evidence inventory.
+- Historical regression coverage continues through the dedicated workflow introduced by #1968, extended to the QA test directory; maintained imports/fixture paths were retargeted without changing test assertions.
+
+## Completed subtranche — Rules Assistant Gate 3 blind QA suite extraction
+
+- Fourteen historical v071 Gate 3 blind benchmark suites now live alongside their fixture corpus under `tools/rules-assistant/qa/tests/`, rather than the production `rules-assistant/` root.
+- Imports, fixture readers and workflow inspection paths are retargeted for the new test location; assertions and historical frozen sources are unchanged.
+- The historical-regression workflow introduced in #1969 already runs all `tools/rules-assistant/qa/tests/*.test.mjs` suites.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
