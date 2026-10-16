@@ -337,7 +337,7 @@ Resolve the Aftermath in this order:
 8. Apply effects triggered by cards leaving battle or entering another zone.
 9. Apply end-of-Aftermath effects, including any that grant follow-up movement.
 
-**Give Chase / General Rout priority.** If a Give Chase Gambit/Tactic offers a follow-up advance after an attacking victory and that same victory also qualifies the General for Rout, resolve Give Chase's advance first. If it initiates another battle, the preceding battle's Rout opportunity is not used and its 2 Command cost is not paid. If no new battle begins, Rout remains an optional Order at its printed timing and cost. Give Chase's separate Denouement Action is unaffected by this rule.
+**Give Chase / General Rout priority.** If a Give Chase Gambit/Tactic offers a follow-up advance after an attacking victory and that same victory also qualifies the General for Rout, first choose whether to take Give Chase's optional advance. If taken, resolve it before Rout. If it initiates another battle, the preceding battle's Rout opportunity is not used and its 2 Command cost is not paid. If Give Chase is declined or no new battle begins, Rout remains an optional Order at its printed timing and cost. Give Chase's separate Denouement Action is unaffected by this rule.
 
 When battle cards are cleared:
 
