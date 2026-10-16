@@ -4,7 +4,7 @@ import baseWorker, {
   normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
-} from "./worker-v061.js";
+} from "../legacy/rules-assistant/v061/worker-v061.js";
 import { defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
 import {
   analyzeQuestionLocally,
