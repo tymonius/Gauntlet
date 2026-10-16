@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { buildRulesCorpus } from "../../rules-assistant/local-search.js";
+import { buildRulesCorpus } from "../../../../rules-assistant/local-search.js";
 import {
   V071_CANONICAL_SOURCE_PATH,
   sanitizeV071CanonicalDataForRules
-} from "../../legacy/rules-assistant/v071/v071-public-corpus.js";
+} from "../../../../legacy/rules-assistant/v071/v071-public-corpus.js";
 
 const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, "utf8"));
 

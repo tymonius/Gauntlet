@@ -3,7 +3,7 @@ import {
   V071_SCOPE_PRECHECK_REVISION,
   classifyV071ScopePrecheck,
   handleV071ScopePrecheck
-} from "../../rules-assistant/v071-scope-precheck.js";
+} from "../../../../rules-assistant/v071-scope-precheck.js";
 
 const reviewedOutOfScope = [
   "What's changed about the game since I last read the rules, version 0.5?",

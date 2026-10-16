@@ -8,7 +8,7 @@ import {
   defaultV072SourceUrls,
   loadV072RulesCorpus,
   validateV072ReleaseData,
-} from "../../rules-assistant/v072-release-corpus.js";
+} from "../../../../rules-assistant/v072-release-corpus.js";
 
 const paths = {
   rules: "releases/v0.7.2/Gauntlet_v0.7.2_Complete_Rules.md",
@@ -19,7 +19,7 @@ const paths = {
   freeze: "config/v072-release-freeze.json",
 };
 
-const read = path => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
+const read = path => readFileSync(new URL(`../../../../${path}`, import.meta.url), "utf8");
 const snapshot = () => Object.fromEntries(
   Object.entries(paths).filter(([key]) => key !== "freeze").map(([key, path]) => [key, read(path)])
 );
@@ -32,7 +32,7 @@ describe("frozen v0.7.2 release corpus", () => {
   test("builder reproduces the committed staged package byte-for-byte", () => {
     const before = snapshot();
     execFileSync(process.execPath, ["scripts/build-v072-release-source.mjs"], {
-      cwd: new URL("../..", import.meta.url),
+      cwd: new URL("../../../..", import.meta.url),
       stdio: "pipe",
     });
     expect(snapshot()).toEqual(before);
@@ -88,7 +88,7 @@ describe("frozen v0.7.2 release corpus", () => {
   });
 
   test("registers v0.7.2 as the current public release", () => {
-    const lifecycle = JSON.parse(readFileSync(new URL("../../config/release-lifecycle.json", import.meta.url), "utf8"));
+    const lifecycle = JSON.parse(readFileSync(new URL("../../../../config/release-lifecycle.json", import.meta.url), "utf8"));
     expect(lifecycle.current_release).toBe("v0.7.2");
     expect(lifecycle.releases["v0.7.1"].status).toBe("historical");
     expect(lifecycle.releases["v0.7.2"].status).toBe("current");
@@ -98,7 +98,7 @@ describe("frozen v0.7.2 release corpus", () => {
   });
 
   test("publishes the frozen v0.7.2 release package through the explicit publication boundary", () => {
-    const boundary = JSON.parse(readFileSync(new URL("../../config/publication-boundary.json", import.meta.url), "utf8"));
+    const boundary = JSON.parse(readFileSync(new URL("../../../../config/publication-boundary.json", import.meta.url), "utf8"));
     expect(boundary.pages.sourceOnlyRepositoryRoots).toContain("releases");
     const published = boundary.materializedFiles
       .filter(item => item.kind === "current-release-runtime")
