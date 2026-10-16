@@ -179,15 +179,21 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
       state, decision, target,
     )).toThrow(/returned card is barred|Replacement must/i);
 
-    expect(() => chooseInterceptedOrdersReplacement(state, decision, replacement))
-      .toThrow(/face state requires an explicit rules decision/i);
-    const chosen = chooseInterceptedOrdersReplacement(state, decision, replacement, true);
+    const chosen = chooseInterceptedOrdersReplacement(state, decision, replacement);
     expect(chosen).toEqual(expect.objectContaining({
       instanceId: replacement, role: 'tactic', faceUp: true, owner: 'B',
     }));
     expect(state.battleRuntime!.participants.B.tactic?.instanceId)
       .toBe(replacement);
     expect(state.battleRuntime!.participants.B.reserve).not.toContain(replacement);
+    expect(state.events).toContainEqual(expect.objectContaining({
+      type: 'intercepted_orders_replacement_chosen',
+      payload: expect.objectContaining({
+        cardInstanceId: replacement,
+        faceUp: true,
+        role: 'tactic',
+      }),
+    }));
   });
 
   test('a second opposing Tactic is selectable; only the chosen one returns', () => {
@@ -202,6 +208,23 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     expect(state.battleRuntime!.participants.B.additionalTactics).toEqual([]);
     chooseInterceptedOrdersReplacement(state, decision);
     expect(state.battleRuntime!.participants.B.tactic?.instanceId).toBe(target);
+  });
+
+  test('an additional Tactic replacement is also played face up', () => {
+    const { state, source, otherTarget, replacement } = prepare(true, true);
+    const decision = returnInterceptedOrdersTactic(
+      state, 'A', source, otherTarget!,
+    );
+    const chosen = chooseInterceptedOrdersReplacement(
+      state, decision, replacement,
+    );
+    expect(chosen?.faceUp).toBe(true);
+    expect(state.battleRuntime!.participants.B.additionalTactics)
+      .toEqual([expect.objectContaining({
+        instanceId: replacement,
+        faceUp: true,
+        role: 'tactic',
+      })]);
   });
 
   test('without opposing Tactics, the Reserve is still revealed', () => {
