@@ -336,6 +336,13 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - the active v063 Last Stand validation workflow watches the archived v063 source so historical compatibility changes cannot bypass its checks;
 - frozen recovery snapshots remain untouched.
 
+## Completed subtranche — Rules Assistant v061 compatibility Worker archive
+
+- `worker-v061.js` lives in `legacy/rules-assistant/v061/` while `worker-entry.js` retains the explicit v0.6.1 dispatch. <!-- DOC-HISTORICAL -->
+- Earlier v062 archived Workers and maintained smart/reliable Workers retain their existing v061 helper imports at the new location.
+- The historical v0.6.0 `worker.js` and shared retrieval remain in the backend root because the v061 Worker still depends on them.
+- Regression tests and active deployment validation now read and check the archived source; recovery documents and hash-locked manifests are unchanged.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
