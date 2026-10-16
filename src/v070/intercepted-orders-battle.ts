@@ -237,6 +237,7 @@ export function chooseInterceptedOrdersReplacement(
   state: V070GameState,
   resolution: InterceptedOrdersReturn,
   instanceId?: string,
+  faceUp?: boolean,
 ): V070BattleCardCommitment | null {
   const runtime = state.battleRuntime;
   if (!runtime) {
@@ -252,22 +253,27 @@ export function chooseInterceptedOrdersReplacement(
       'Replacement must be an eligible Tactic from Reserve; the returned card is barred.',
     );
   }
+  if (typeof faceUp !== 'boolean') {
+    throw new V070GameActionError(
+      'The replacement face state requires an explicit rules decision.',
+    );
+  }
   const participant = runtime.participants[resolution.targetOwner];
+  if (resolution.slot.kind === 'normal' && participant.tactic) {
+    throw new V070GameActionError('The replaced normal Tactic slot is occupied.');
+  }
   const index = participant.reserve.indexOf(instanceId);
   participant.reserve.splice(index, 1);
 
-  // Normal Tactics have already revealed. A newly added card is exposed
-  // to the same-stage scheduler; it must not secretly apply an elapsed effect.
+  // Face state must come from the next-release rules decision. The caller
+  // separately determines whether any effect timing remains available.
   const replacement: V070BattleCardCommitment = {
     instanceId,
     owner: resolution.targetOwner,
     role: 'tactic',
-    faceUp: true,
+    faceUp,
   };
   if (resolution.slot.kind === 'normal') {
-    if (participant.tactic) {
-      throw new V070GameActionError('The replaced normal Tactic slot is occupied.');
-    }
     participant.tactic = replacement;
   } else {
     participant.additionalTactics.splice(resolution.slot.index, 0, replacement);
@@ -280,7 +286,7 @@ export function chooseInterceptedOrdersReplacement(
     payload: {
       sourceInstanceId: resolution.sourceInstanceId,
       cardInstanceId: instanceId,
-      faceUp: true,
+      faceUp,
       role: 'tactic',
     },
   });
