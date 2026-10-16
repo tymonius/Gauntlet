@@ -213,7 +213,7 @@ Current USPTO base filing fee: **$350 per class**, before possible additional fe
 
 The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises, LLC** for maintained development and future publication surfaces. Misty Hollow Enterprises, LLC is now formed in Virginia, and maintained current player-facing materials should use the exact legal entity name. Frozen published releases retain the publishing identity recorded at publication.
 
-Gauntlet copyright remains with **Tymon Scott**. The intended operating model is a written game-publishing license from the copyright owner to Misty Hollow Enterprises, LLC, operating through TDS Games; the publishing identity does not itself transfer copyright or trademark ownership.
+Gauntlet copyright remains with **Tymon Scott**. The owner reports that the written Gauntlet publishing license between Tymon Scott and Misty Hollow Enterprises, LLC (publishing through TDS Games) has been signed, and that the LLC operating agreement has also been signed. The signed documents are private and were not reviewed for this audit update; their execution status is recorded from the owner's confirmation. The publishing identity and reported execution of a license do not, by themselves, establish a copyright or trademark assignment. Consult the executed agreement before asserting specific licensing terms.
 
 Trademark ownership should be decided **before** filing, particularly if an intent-to-use application is contemplated.
 
@@ -243,7 +243,8 @@ Entity formation is no longer a blocker for copyright registration. Registration
 - [ ] Adopt contributor IP terms before accepting substantive outside contributions.
 - [ ] Document licenses for fonts, libraries, textures, and other third-party production assets.
 - [x] Establish working relationship: TDS Games is the Misty Hollow Enterprises, LLC game-publishing imprint; Gauntlet IP remains with Tymon Scott.
-- [ ] Finalize the written Gauntlet publishing license from Tymon Scott to Misty Hollow Enterprises, LLC.
+- [x] Execute the written Gauntlet publishing license from Tymon Scott to Misty Hollow Enterprises, LLC (owner-confirmed; signed copy held privately).
+- [x] Execute the Misty Hollow Enterprises, LLC operating agreement (owner-confirmed; signed copy held privately).
 - [ ] Evaluate website terms/privacy and commercial product-liability needs before paid release.
 
 ## 8. Authoritative reference points
