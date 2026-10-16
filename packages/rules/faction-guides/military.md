@@ -114,6 +114,8 @@ The General's Orders reward you for choosing the moment to attack and for keepin
 
 **Rout** happens only after you win as the attacker and the Aftermath reaches its end. It creates a new Advance after that battle is complete, so it can carry your pressure into a new position or even another battle.
 
+If you also played **Give Chase** as a Gambit or Tactic in the winning battle, its follow-up advance resolves **before Rout**. When that advance initiates another battle, you do not use Rout from the earlier battle and keep the 2 Command you would otherwise have spent. If Give Chase does not initiate a new battle, you may still choose Rout if eligible.
+
 ### Commandant
 
 **Playstyle:** defense, holding occupied ground, and battlefield control.
