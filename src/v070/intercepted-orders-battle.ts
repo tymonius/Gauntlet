@@ -97,8 +97,7 @@ function canChooseReplacement(
   const card = state.cardInstances[instanceId];
   const participant = state.battleRuntime?.participants[playerId];
   if (!card || card.owner !== playerId
-    || !participant?.reserve.includes(instanceId)
-    || participant.interceptedOrdersBarredInstanceIds?.includes(instanceId)) {
+    || !participant?.reserve.includes(instanceId)) {
     return false;
   }
   const banned = state.battleRuntime?.interceptedOrdersBarredInstanceIds ?? [];
