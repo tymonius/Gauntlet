@@ -178,7 +178,9 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
       state, decision, target,
     )).toThrow(/returned card is barred|Replacement must/i);
 
-    const chosen = chooseInterceptedOrdersReplacement(state, decision, replacement);
+    expect(() => chooseInterceptedOrdersReplacement(state, decision, replacement))
+      .toThrow(/face state requires an explicit rules decision/i);
+    const chosen = chooseInterceptedOrdersReplacement(state, decision, replacement, true);
     expect(chosen).toEqual(expect.objectContaining({
       instanceId: replacement, role: 'tactic', faceUp: true, owner: 'B',
     }));
