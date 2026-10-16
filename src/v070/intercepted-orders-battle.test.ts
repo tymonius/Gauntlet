@@ -10,6 +10,7 @@ import {
   beginInterceptedOrdersAtTacticReveal,
   pendingInterceptedOrdersChoice,
   resolveInterceptedOrdersChoice,
+  reduceStagedInterceptedOrdersRevealAction,
 } from './intercepted-orders-battle-choices';
 import {
   queueV070FaceUpTacticRevealReplacement,
@@ -349,6 +350,33 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     expect(state.events.some(event =>
       event.type === 'intercepted_orders_no_opposing_tactic'
     )).toBe(true);
+  });
+
+  test('staged reducer enqueues and resumes face-up replacement atomically', () => {
+    const { state, source, target, replacement } = prepare(true);
+    state.battleRuntime!.participants.A.tactic!.faceUp = true;
+    state.battleRuntime!.participants.B.tactic!.faceUp = true;
+    state.cardInstances[replacement].cardId = 'diplomats-gunboat-diplomacy';
+    state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    state.battleRuntime!.pendingRevealEffectClass = 'interference';
+    state.battleRuntime!.pendingRevealEffectCommitments = [];
+    state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments = [
+      { instanceId: target, owner: 'B', role: 'tactic', faceUp: true },
+    ];
+    beginInterceptedOrdersAtTacticReveal(state, 'A', source);
+    const next = reduceStagedInterceptedOrdersRevealAction(state, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'B',
+      cardInstanceId: replacement,
+    });
+    expect(pendingInterceptedOrdersChoice(state)?.kind).toBe('replacement');
+    expect(pendingInterceptedOrdersChoice(next)).toBeNull();
+    expect(next.battleRuntime!.participants.B.tactic?.instanceId).toBe(replacement);
+    expect(next.battleRuntime!.participants.B.tactic?.faceUp).toBe(true);
+    expect(next.battleRuntime!.participants.B.battleModifier).toBe(2);
+    expect(next.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(next.battleRuntime!.participants.B.reserve).toContain(target);
+    expect(next.battleRuntime!.interceptedOrdersBarredInstanceIds).toContain(target);
   });
 
   test('face-up replacement never reopens an expired interference stage', () => {
