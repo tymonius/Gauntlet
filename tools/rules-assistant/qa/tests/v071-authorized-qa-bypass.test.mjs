@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const entrypoint = readFileSync(new URL("./admin-refinement-worker.js", import.meta.url), "utf8");
-const wrangler = readFileSync(new URL("./wrangler.toml", import.meta.url), "utf8");
-const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
+const entrypoint = readFileSync(new URL("../../../../rules-assistant/admin-refinement-worker.js", import.meta.url), "utf8");
+const wrangler = readFileSync(new URL("../../../../rules-assistant/wrangler.toml", import.meta.url), "utf8");
+const workflow = readFileSync(new URL("../../../../.github/workflows/current-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 
 describe("authorized Rules Arbiter live QA", () => {
   test("bypasses only model-budget reservations after signed QA authorization", () => {

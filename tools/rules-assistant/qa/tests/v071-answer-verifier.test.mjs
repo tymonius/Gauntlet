@@ -3,7 +3,7 @@ import {
   applyHighRiskVerification,
   highRiskVerificationReasons,
   shouldVerifyHighRiskAnswer
-} from "./v071-answer-verifier.js";
+} from "../../../../rules-assistant/v071-answer-verifier.js";
 
 function source(id, text) {
   return {
