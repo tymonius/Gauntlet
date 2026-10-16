@@ -223,6 +223,19 @@ export function returnInterceptedOrdersTactic(
   if (!participant.reserve.includes(targetInstanceId)) {
     participant.reserve.push(targetInstanceId);
   }
+
+  // Returning the card removes its unexecuted reveal from BOTH queues.
+  // Merely removing the physical commitment is not sufficient: the staged
+  // reveal scheduler owns snapshots of the originally revealed Tactics.
+  runtime.pendingRevealEffectCommitments =
+    runtime.pendingRevealEffectCommitments?.filter(
+      item => item.instanceId !== targetInstanceId,
+    );
+  runtime.pendingRevealDeferredOrdinaryCommitments =
+    runtime.pendingRevealDeferredOrdinaryCommitments?.filter(
+      item => item.instanceId !== targetInstanceId,
+    );
+
   runtime.interceptedOrdersBarredInstanceIds ??= [];
   if (!runtime.interceptedOrdersBarredInstanceIds.includes(targetInstanceId)) {
     runtime.interceptedOrdersBarredInstanceIds.push(targetInstanceId);
