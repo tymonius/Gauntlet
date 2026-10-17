@@ -3,19 +3,19 @@ import { describe, expect, test } from "vitest";
 import {
   sourceRequirementGroups,
   validateClassificationExpectations
-} from "../scripts/v071-live-rules-qa-support.mjs";
-import { validateSemanticBenchmark } from "../scripts/v071-semantic-rules-qa-support.mjs";
-import { githubActionsQaAuthContract } from "./github-actions-qa-auth.js";
+} from "../../../../scripts/v071-live-rules-qa-support.mjs";
+import { validateSemanticBenchmark } from "../../../../scripts/v071-semantic-rules-qa-support.mjs";
+import { githubActionsQaAuthContract } from "../../../../rules-assistant/github-actions-qa-auth.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const standard = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-t.v071.json");
-const player = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-t-player-language.v071.json");
-const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-t-clarifications.v071.json");
-const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const standard = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s.v071.json");
+const player = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-player-language.v071.json");
+const clarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-clarifications.v071.json");
+const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 
-const priorLetters = "abcdefghijklmnopqrs".split("");
+const priorLetters = "abcdefghijklmnopqr".split("");
 const priorPaths = priorLetters.flatMap((letter) => [
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
   `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
@@ -23,37 +23,37 @@ const priorPaths = priorLetters.flatMap((letter) => [
 ]);
 const prior = priorPaths.map(loadJson);
 
-const rulebook = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
-const canonical = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
+const canonical = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
-const EXPECTED_BEHAVIOR = "v071-qa-20260919-31";
+const EXPECTED_BEHAVIOR = "v071-qa-20260919-30";
 const EXPECTED_AUTHORITY = "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339";
 
-describe("Gate 3 bounded blind tranche T confirmation freeze", () => {
-  test("pins fresh semantic benchmarks to r31 and frozen v0.7.1 authority", () => {
+describe("Gate 3 final blind tranche S certification freeze", () => {
+  test("pins fresh semantic benchmarks to r30 and frozen v0.7.1 authority", () => {
     for (const dataset of [standard, player]) {
       expect(dataset.rulesVersion).toBe("v0.7.1");
-      expect(dataset.tranche).toBe("T");
+      expect(dataset.tranche).toBe("S");
       expect(dataset.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
       expect(dataset.authoritySetId).toBe(EXPECTED_AUTHORITY);
       expect(dataset.gradingMode).toBe("semantic-v1");
       expect(validateSemanticBenchmark(dataset)).toEqual([]);
       expect(validateClassificationExpectations(dataset)).toEqual([]);
     }
-    expect(standard.cases).toHaveLength(31);
-    expect(player.cases).toHaveLength(8);
+    expect(standard.cases).toHaveLength(33);
+    expect(player.cases).toHaveLength(10);
   });
 
-  test("pins clarification probes to r31 and the same authority", () => {
+  test("pins clarification probes to r30 and the same authority", () => {
     expect(clarifications.rulesVersion).toBe("v0.7.1");
-    expect(clarifications.tranche).toBe("T");
+    expect(clarifications.tranche).toBe("S");
     expect(clarifications.behaviorRevision).toBe(EXPECTED_BEHAVIOR);
     expect(clarifications.authoritySetId).toBe(EXPECTED_AUTHORITY);
     expect(clarifications.cases).toHaveLength(5);
   });
 
-  test("does not exactly reuse Gate 2 or Gate 3 A through S questions", () => {
+  test("does not exactly reuse Gate 2 or Gate 3 A through R questions", () => {
     const priorCases = [
       ...(gate2.cases || []),
       ...prior.flatMap((dataset) => dataset.cases || [])
@@ -70,47 +70,31 @@ describe("Gate 3 bounded blind tranche T confirmation freeze", () => {
     }
   });
 
-  test("directly retests both S restraint families without reusing the S questions", () => {
-    const byId = new Map(standard.cases.map((item) => [item.id, item]));
-    expect(byId.get("blind-t-leverage-deictic")).toMatchObject({
-      expectedClassification: "explicit",
-      classificationBasis: "direct-authority"
-    });
-    expect(byId.get("blind-t-unsupported-off-table-die")).toMatchObject({
-      expectedClassification: "provisional",
-      classificationBasis: "rules-gap"
-    });
-    expect(byId.get("blind-t-defined-tiebreak-procedure")).toMatchObject({
-      expectedClassification: "explicit",
-      classificationBasis: "direct-authority"
-    });
-  });
-
-  test("covers all twelve Leaders plus broad core/faction/interaction canaries", () => {
+  test("covers all twelve Leaders plus core, interaction, gap, and scope surfaces", () => {
     const ids = new Set(standard.cases.map((item) => item.id));
     for (const id of [
-      "blind-t-general-rally-timing",
-      "blind-t-commandant-fortify-result",
-      "blind-t-ambassador-opponent-turn",
-      "blind-t-senator-recovery-cap",
-      "blind-t-banker-unused-collateral",
-      "blind-t-executive-occupier-cost",
-      "blind-t-ranger-defensive-edge",
-      "blind-t-spymaster-new-mission-delay",
-      "blind-t-alchemist-battle-draw-timing",
-      "blind-t-spirit-walker-one-rite-cost",
-      "blind-t-grand-inquisitor-minimum-cost",
-      "blind-t-witch-hunter-terms-followup"
+      "blind-s-general-onward",
+      "blind-s-commandant-entrench",
+      "blind-s-ambassador-cordiality-limit",
+      "blind-s-senator-partial-recovery",
+      "blind-s-banker-half-cap",
+      "blind-s-executive-occupation-required",
+      "blind-s-ranger-fieldcraft-action",
+      "blind-s-spymaster-mission-control-action",
+      "blind-s-alchemist-gambit-no-materia",
+      "blind-s-spirit-walker-position-requirement",
+      "blind-s-grand-inquisitor-purge-permission",
+      "blind-s-witch-hunter-followup-attacker"
     ]) expect(ids.has(id)).toBe(true);
 
     const categories = new Set(standard.cases.map((item) => item.category));
     for (const category of [
-      "core-rules","interaction","diplomats","financiers","intelligence",
-      "mystics","inquisition","leaders","unsupported","out-of-scope"
+      "core-rules","leaders","diplomats","financiers","intelligence","mystics",
+      "inquisition","interaction","cards","unsupported","out-of-scope"
     ]) expect(categories.has(category)).toBe(true);
   });
 
-  test("keeps semantic criteria question-scoped and direct source requirements grounded", () => {
+  test("keeps semantic criteria strictly question-scoped and source requirements valid", () => {
     for (const item of [...standard.cases, ...player.cases]) {
       expect(Object.hasOwn(item, "expectedAnswerPatterns"), item.id).toBe(false);
       expect(Object.hasOwn(item, "forbiddenAnswerPatterns"), item.id).toBe(false);
@@ -130,13 +114,13 @@ describe("Gate 3 bounded blind tranche T confirmation freeze", () => {
     }
   });
 
-  test("keeps player-language probes terse", () => {
+  test("keeps player-language probes terse and natural", () => {
     expect(player.cases.every((item) => item.category === "player-language")).toBe(true);
     expect(player.cases.every((item) => item.question === item.question.toLowerCase())).toBe(true);
-    expect(player.cases.filter((item) => item.question.split(/\s+/).length <= 12).length).toBeGreaterThanOrEqual(7);
+    expect(player.cases.filter((item) => item.question.split(/\s+/).length <= 11).length).toBeGreaterThanOrEqual(8);
   });
 
-  test("clarification probes retain multiple plausible antecedents", () => {
+  test("clarification probes preserve multiple plausible antecedents", () => {
     for (const item of clarifications.cases) {
       expect(Array.isArray(item.history), item.id).toBe(true);
       expect(item.history.length, item.id).toBeGreaterThanOrEqual(2);
@@ -144,8 +128,8 @@ describe("Gate 3 bounded blind tranche T confirmation freeze", () => {
     }
   });
 
-  test("later Gate 3 workflow advancement does not invalidate frozen T evidence and remains OIDC-authorized", () => {
-    const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
+  test("later Gate 3 workflow advancement does not invalidate frozen S evidence and remains OIDC-authorized", () => {
+    const workflow = readFileSync(new URL("../../../../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
     expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
