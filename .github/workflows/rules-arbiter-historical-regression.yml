@@ -7,6 +7,7 @@ on:
       - 'tests/rules-assistant/**'
       - 'tools/rules-assistant/qa/tests/**'
       - 'tools/rules-assistant/admin/tests/**'
+      - 'tools/rules-assistant/refinement/tests/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -18,6 +19,7 @@ on:
       - 'tests/rules-assistant/**'
       - 'tools/rules-assistant/qa/tests/**'
       - 'tools/rules-assistant/admin/tests/**'
+      - 'tools/rules-assistant/refinement/tests/**'
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
@@ -46,3 +48,4 @@ jobs:
           npx vitest run tests/rules-assistant/*.test.mjs
           npx vitest run tools/rules-assistant/qa/tests/*.test.mjs
           npx vitest run tools/rules-assistant/admin/tests/*.test.mjs
+          npx vitest run tools/rules-assistant/refinement/tests/*.test.mjs

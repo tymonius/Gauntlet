@@ -405,6 +405,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The existing `test:rules-assistant` script is unchanged; the historical-regression workflow explicitly executes the relocated admin suites in a separate command and watches the admin test directory. This preserves coverage without triggering unrelated full-suite test debt from a `package.json` change.
 - Imports still target the current Worker entrypoints and maintained admin modules; the deployed `admin-refinement-worker.js` and D1 schema remain in place.
 
+## Completed subtranche — Rules Assistant refinement regression-test boundary
+
+- Seven maintained refinement regression tests (current validity, filter order, loop, resolution ledger, scaffold, snapshot, triage) now live under `tools/rules-assistant/refinement/tests/`, beside maintained refinement implementation.
+- The historical-regression workflow watches this directory and explicitly runs its test suites; `package.json` remains unchanged to avoid unrelated full-Vitest failures documented in #1822.
+- Imports continue to reference maintained runtime helpers; assertions, active Worker and D1 migration logic remain unchanged.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
