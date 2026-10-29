@@ -1,18 +1,18 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
-import { buildRulesCorpus } from "./local-search.js";
-import { analyzeQuestionLocally } from "./rules-intelligence.js";
-import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
-import { buildRulePacket } from "./rules-packets.js";
-import { resolveDeterministicRuling } from "./rules-deterministic.js";
-import { isClearlyOutOfScopeQuestion } from "./rules-status.js";
+import { buildRulesCorpus } from "../../../../rules-assistant/local-search.js";
+import { analyzeQuestionLocally } from "../../../../rules-assistant/rules-intelligence.js";
+import { enrichPlanFromEntityDocuments } from "../../../../rules-assistant/rules-plan-enrichment.js";
+import { buildRulePacket } from "../../../../rules-assistant/rules-packets.js";
+import { resolveDeterministicRuling } from "../../../../rules-assistant/rules-deterministic.js";
+import { isClearlyOutOfScopeQuestion } from "../../../../rules-assistant/rules-status.js";
 
 const canonicalData = JSON.parse(readFileSync(
-  new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),
+  new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),
   "utf8"
 ));
 const rulebookMarkdown = readFileSync(
-  new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url),
+  new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url),
   "utf8"
 );
 const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown });
