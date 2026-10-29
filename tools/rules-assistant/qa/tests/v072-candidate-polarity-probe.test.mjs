@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
 const workflow = readFileSync(
-  new URL("../.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml", import.meta.url),
+  new URL("../../../../.github/workflows/v072-candidate-rules-arbiter-regression-replay.yml", import.meta.url),
   "utf8"
 );
 

@@ -9,14 +9,14 @@ import {
   loadV072CandidateRulesCorpus,
   sanitizeV072CandidateDataForRules,
   validateV072CandidateData,
-} from "./v072-candidate-corpus.js";
+} from "../../../../rules-assistant/v072-candidate-corpus.js";
 
 const currentGameText = readFileSync(
-  new URL("../packages/game-data/current-game.json", import.meta.url),
+  new URL("../../../../packages/game-data/current-game.json", import.meta.url),
   "utf8"
 );
 const completeRulesText = readFileSync(
-  new URL("../packages/rules/comprehensive/comprehensive-rules.md", import.meta.url),
+  new URL("../../../../packages/rules/comprehensive/comprehensive-rules.md", import.meta.url),
   "utf8"
 );
 const currentGame = JSON.parse(currentGameText);

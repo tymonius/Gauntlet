@@ -6,7 +6,7 @@ import {
   sourceRequirementGroups,
   sourceText,
   validateClassificationExpectations
-} from "../scripts/v071-live-rules-qa-support.mjs";
+} from "../../../../scripts/v071-live-rules-qa-support.mjs";
 
 // Original selected-source excerpts from GitHub Actions run 35879903652,
 // artifact current-rules-arbiter-live-qa-v0.7.2 / v072-live-answer-run.json.
@@ -26,10 +26,10 @@ const selectedExcerpts = {
 };
 
 const benchmark = JSON.parse(readFileSync(
-  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json", import.meta.url), "utf8"
+  new URL("../../../../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json", import.meta.url), "utf8"
 ));
 const corrections = JSON.parse(readFileSync(
-  new URL("../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json", import.meta.url), "utf8"
+  new URL("../../../../tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json", import.meta.url), "utf8"
 ));
 const amended = applyBenchmarkCorrections(benchmark, corrections);
 
