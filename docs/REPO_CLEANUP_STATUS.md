@@ -372,6 +372,13 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Imports and fixture readers now resolve the same archived v071 Worker and existing test assets from the QA location. Regression assertions, historical authority, and deployed runtime are unchanged.
 - The existing historical-regression workflow executes these relocated tests; a separate boundary guard prevents their return to the active backend root.
 
+## Completed subtranche — Rules Assistant Gate 3 remediation test extraction
+
+- Eighteen v071 Gate 3 certification and remediation regression suites (A/B, C integration, and D through Q) now live under `tools/rules-assistant/qa/tests/` rather than the production backend root.
+- Relative references to frozen v071 release evidence, archived Worker behavior, and retained shared backend helpers were mechanically retargeted without changing test assertions, authority data, or runtime implementation.
+- The existing Rules Arbiter historical-regression workflow picks up the relocated test suites; a new boundary test verifies the layout.
+- The supporting `v071-gate3-c-remediation.js` source remains in its existing root pending separate runtime-consumer classification; this tranche moves only tests.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

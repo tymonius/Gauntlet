@@ -1,24 +1,24 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { buildRulesCorpus, retrieveRules } from "./local-search.js";
+import { buildRulesCorpus, retrieveRules } from "../../../../rules-assistant/local-search.js";
 import {
   normalizeR13RulingStatus,
   shouldDemoteCombinedAuthorityInteraction,
   shouldDemoteNamedMovementInteraction,
   shouldForceAbsentProcedureGap
-} from "./r13-classification.js";
+} from "../../../../rules-assistant/r13-classification.js";
 import {
   augmentRetrievalForContext,
   BEHAVIOR_REVISION,
   contextualQuery
-} from "../legacy/rules-assistant/v071/worker-v071.js";
+} from "../../../../legacy/rules-assistant/v071/worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
-  new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
+  new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
   "utf8"
 ));
 const rulebookMarkdown = readFileSync(
-  new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url),
+  new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url),
   "utf8"
 );
 const corpus = buildRulesCorpus({
