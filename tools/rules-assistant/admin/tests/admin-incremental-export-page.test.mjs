@@ -2,8 +2,8 @@ import { expect, test } from "vitest";
 import {
   ADMIN_PAGE_WITH_INCREMENTAL_EXPORT,
   enhanceIncrementalExport
-} from "../tools/rules-assistant/admin/admin-incremental-export-page.js";
-import workerEntry from "./worker-entry.js";
+} from "../../../../tools/rules-assistant/admin/admin-incremental-export-page.js";
+import workerEntry from "../../../../rules-assistant/worker-entry.js";
 
 test("enhances the dashboard with scoped incremental review exports", () => {
   expect(ADMIN_PAGE_WITH_INCREMENTAL_EXPORT).toContain("Review new with ChatGPT");

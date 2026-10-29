@@ -22,7 +22,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../legacy/rules-assistant/v063/` — historical v063 published Worker/corpus plus the earlier candidate Worker, development corpus, deterministic rulings, candidate entrypoint, and candidate Wrangler config; the current `worker-entry.js` preserves the explicit published v063 compatibility route. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v061/` — v0.6.1 compatibility Worker; current routing and the maintained shared-runtime helpers still import it for explicitly versioned use. <!-- DOC-HISTORICAL -->
 - Shared v063 publication-language helpers and additional historical candidates remain for consumer classification. <!-- DOC-HISTORICAL -->
-- `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker.
+- `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker. Focused administrative regression suites live under `../tools/rules-assistant/admin/tests/` and are included in `test:rules-assistant`.
 - `../tools/rules-assistant/refinement/` — deterministic triage, scaffold, snapshot, current-validity, and resolution-ledger tooling used by admin refinement workflows and repository scripts.
 - `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests.
 - `../artifacts/rules-qa/audits/` — retained historical/manual QA audit reports; evidence, not executable fixture authority.

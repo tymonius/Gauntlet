@@ -399,6 +399,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The tests continue to use archived version-specific Worker/corpus implementations and preserved release fixtures; imports, the v062 variable corpus-source reader, and the v063 reconstruction-root reader have been adjusted for the QA location.
 - Current dispatcher code, frozen rule packages, and compatibility routes are unchanged. The dedicated historical-regression workflow executes these suites, with a QA-local boundary guard.
 
+## Completed subtranche — Rules Assistant administrative regression-test boundary
+
+- Seven active admin dashboard/refinement regression suites now live under `tools/rules-assistant/admin/tests/`, next to the existing admin implementation sources, rather than the mixed backend deployment root.
+- The `test:rules-assistant` script explicitly runs both remaining backend-root tests and admin test suites; the existing historical-regression workflow observes and executes the moved tests through that command.
+- Imports still target the current Worker entrypoints and maintained admin modules; the deployed `admin-refinement-worker.js` and D1 schema remain in place.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

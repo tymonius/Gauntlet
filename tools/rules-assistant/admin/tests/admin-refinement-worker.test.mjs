@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import worker from "./admin-refinement-worker.js";
-import { adminRefinementRuntimeSource } from "../tools/rules-assistant/admin/admin-refinement-runtime.js";
+import worker from "../../../../rules-assistant/admin-refinement-worker.js";
+import { adminRefinementRuntimeSource } from "../../../../tools/rules-assistant/admin/admin-refinement-runtime.js";
 
 function scriptsFrom(html) {
   return [...html.matchAll(/<script(?:\s+[^>]*)?>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
