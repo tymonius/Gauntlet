@@ -5,6 +5,7 @@ import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
 import { pendingV070ExcommunicationAftermath } from './excommunication-battle';
 import { pendingV070SuppliesAftermath } from './supplies-battle';
 import { pendingV070FinancierAftermathChoice } from './financier-aftermath-battle';
+import { pendingInterceptedOrdersChoice } from './intercepted-orders-battle-choices';
 
 export * from './views-pre-capital-gains';
 
@@ -45,11 +46,25 @@ export interface V070FinancierAftermathView {
   sourceOwner?: PlayerId;
 }
 
+/**
+ * Opponent-safe projection of a future-release reveal-stage decision.
+ * Only the deciding player sees which card instances can be selected.
+ */
+export interface V070InterceptedOrdersChoiceView {
+  kind: 'target' | 'replacement';
+  playerId: PlayerId;
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidateCount: number;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = previous.V070GameView & {
   pendingCapitalGainsAftermath: V070CapitalGainsAftermathView | null;
   pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
   pendingSuppliesAftermath: V070SuppliesAftermathView | null;
   pendingFinancierAftermath: V070FinancierAftermathView | null;
+  pendingInterceptedOrders: V070InterceptedOrdersChoiceView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -142,11 +157,27 @@ export function viewV070GameForPlayer(
         }
       : null;
 
+  const intercepted = pendingInterceptedOrdersChoice(state);
+  const pendingInterceptedOrders: V070InterceptedOrdersChoiceView | null =
+    intercepted
+      ? {
+          kind: intercepted.kind,
+          playerId: intercepted.playerId,
+          owner: intercepted.owner,
+          sourceInstanceId: intercepted.sourceInstanceId,
+          candidateCount: intercepted.candidateInstanceIds.length,
+          ...(viewer === intercepted.playerId
+            ? { candidateInstanceIds: [...intercepted.candidateInstanceIds] }
+            : {}),
+        }
+      : null;
+
   return {
     ...core,
     pendingCapitalGainsAftermath,
     pendingExcommunicationAftermath,
     pendingSuppliesAftermath,
     pendingFinancierAftermath,
+    pendingInterceptedOrders,
   };
 }
