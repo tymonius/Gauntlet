@@ -6,6 +6,19 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { viewV070GameForPlayer } from './views';
+import { currentCanonicalContent } from '../content/current-game';
+const eligible = currentCanonicalContent.content.cards;
+const playedCardId = eligible.find(card => card.allegiance === 'Neutral'
+  && card.cost === 1 && card.effects.some(effect =>
+    effect.label === 'Action' && effect.text === '+1 Card.'))?.id;
+const exchangedCostId = eligible.find(card => card.allegiance === 'Neutral'
+  && card.cost === 1 && card.id !== playedCardId)?.id;
+const unequalCostId = eligible.find(card => card.allegiance === 'Neutral'
+  && card.cost === 2)?.id;
+if (!playedCardId || !exchangedCostId || !unequalCostId) {
+  throw new Error('Current authority lacks required Equivalence fixtures.');
+}
+
 import {
   beginV070MysticRite,
   reconcileV070MysticEquivalenceHand,
@@ -44,8 +57,8 @@ function ready(): V070GameState {
 function exchangeCards(state: V070GameState): { handId: string; graveId: string } {
   const handId = 'equivalence-hand-cost';
   const graveId = 'equivalence-grave-card';
-  state.cardInstances[handId] = { instanceId: handId, owner: 'A', cardId: 'neutral-scouting-report' };
-  state.cardInstances[graveId] = { instanceId: graveId, owner: 'A', cardId: 'neutral-rallying-cry' };
+  state.cardInstances[handId] = { instanceId: handId, owner: 'A', cardId: exchangedCostId };
+  state.cardInstances[graveId] = { instanceId: graveId, owner: 'A', cardId: playedCardId };
   state.players.A.zones.hand.push(handId);
   state.players.A.zones.graveyard.push(graveId);
   return { handId, graveId };
@@ -79,7 +92,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     const opponent = viewV070GameForPlayer(state, 'B').players.A;
     expect(opponent.zones.hand).toBeUndefined();
     expect(opponent.zones.revealedHandCards).toEqual([
-      { instanceId: graveId, cardId: 'neutral-rallying-cry' },
+      { instanceId: graveId, cardId: playedCardId },
     ]);
     expect(opponent.mystics).not.toHaveProperty('selectedRiteIds');
     expect(JSON.stringify(opponent.zones)).not.toContain(handId);
@@ -94,7 +107,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
       equivalenceGraveyardInstanceId: handId,
     })).toThrow(/exchange one Hand card/);
     expect(state).toEqual(before);
-    state.cardInstances[handId].cardId = 'neutral-new-recruits';
+    state.cardInstances[handId].cardId = unequalCostId;
     const different = structuredClone(state);
     expect(() => beginV070MysticRite(state, 'A', 'equivalence', {
       equivalenceHandInstanceId: handId,
@@ -152,7 +165,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     const { graveId } = begin(state);
     const replacementId = 'another-instance-same-title';
     state.cardInstances[replacementId] = {
-      instanceId: replacementId, owner: 'A', cardId: 'neutral-rallying-cry',
+      instanceId: replacementId, owner: 'A', cardId: playedCardId,
     };
     state.players.A.zones.hand.push(replacementId);
     state.players.A.zones.hand.splice(state.players.A.zones.hand.indexOf(graveId), 1);
