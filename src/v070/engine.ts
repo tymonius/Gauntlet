@@ -540,6 +540,8 @@ export interface V070MysticRiteState {
   shatteringDiceBattleReached?: boolean;
   /** Consecration: the exact placed Overlay whose departure interrupts the Rite. */
   consecrationOverlayInstanceId?: string;
+  /** Equivalence: exact revealed card exchanged into Hand. */
+  equivalenceRevealedInstanceId?: string;
 }
 
 export interface V070MysticRitualState {

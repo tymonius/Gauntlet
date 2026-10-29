@@ -165,6 +165,8 @@ export interface V070PlayerZoneView {
   drawPileCount: number;
   handCount: number;
   hand?: V070VisibleCard[];
+  /** Publicly revealed Equivalence card, without exposing the rest of Hand. */
+  revealedHandCards?: V070VisibleCard[];
   discardPile: V070VisibleCard[];
   graveyard: V070VisibleCard[];
   assetBank: V070VisibleCard[];
@@ -496,6 +498,13 @@ function viewPlayer(
       drawPileCount: player.zones.drawPile.length,
       handCount: player.zones.hand.length,
       hand: isOwner ? visibleCards(state, player.zones.hand) : undefined,
+      revealedHandCards: player.mystics?.rites.equivalence.status === 'begun'
+        && player.mystics.rites.equivalence.equivalenceRevealedInstanceId
+        && player.zones.hand.includes(
+          player.mystics.rites.equivalence.equivalenceRevealedInstanceId
+        )
+        ? visibleCards(state, [player.mystics.rites.equivalence.equivalenceRevealedInstanceId])
+        : [],
       discardPile: visibleCards(state, player.zones.discardPile),
       graveyard: visibleCards(state, player.zones.graveyard),
       assetBank: visibleCards(state, player.zones.assetBank),

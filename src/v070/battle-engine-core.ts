@@ -165,6 +165,7 @@ import {
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
   recordV070MysticBattleEffectApplied,
+  reconcileV070MysticEquivalenceHand,
   recordV070MysticCrossingEligibility,
   recordV070MysticQualifyingHandSacrifice,
   passV070MysticInvocation,
@@ -610,6 +611,7 @@ export function reduceV070BattleAction(
       action.territoryPosition,
     );
     ensureBattleRuntime(next);
+    reconcileV070MysticEquivalenceHand(next);
     return next;
   }
 
@@ -991,6 +993,7 @@ export function reduceV070BattleAction(
       break;
   }
 
+  reconcileV070MysticEquivalenceHand(next);
   return next;
 }
 

@@ -34,6 +34,8 @@ export interface BeginV070MysticRiteOptions {
   shatteringAssetInstanceId?: string;
   consecrationOverlayInstanceId?: string;
   consecrationTerritoryPosition?: number;
+  equivalenceHandInstanceId?: string;
+  equivalenceGraveyardInstanceId?: string;
 }
 
 declare module './battle-types' {
@@ -86,11 +88,6 @@ export function beginV070MysticRite(
   // Full six-Rite state is now represented, but these three additional
   // printed procedures need dedicated, tested handlers. Never silently mark
   // an unsupported Rite as begun (or spend its cost) before that work exists.
-  if (riteId === 'equivalence') {
-    throw new V070GameActionError(
-      `Rite of ${riteName(riteId)} is not yet executable in the digital engine.`,
-    );
-  }
   const rite = mystics.rites[riteId];
 
   if (rite.status !== 'incomplete') {
@@ -120,6 +117,9 @@ export function beginV070MysticRite(
       break;
     case 'consecration':
       beginConsecration(state, playerId, options);
+      break;
+    case 'equivalence':
+      beginEquivalence(state, playerId, options);
       break;
   }
 
@@ -961,6 +961,77 @@ export function completeV070MysticConsecrationAfterBattleWin(
   completeRite(state, winner, 'consecration');
 }
 
+function beginEquivalence(
+  state: V070GameState,
+  playerId: PlayerId,
+  options: BeginV070MysticRiteOptions,
+): void {
+  const handId = options.equivalenceHandInstanceId;
+  const graveId = options.equivalenceGraveyardInstanceId;
+  const zones = state.players[playerId].zones;
+  if (!handId || !graveId || handId === graveId
+    || !zones.hand.includes(handId)
+    || !zones.graveyard.includes(graveId)) {
+    throw new V070GameActionError(
+      'Equivalence must exchange one Hand card with one Graveyard card.',
+    );
+  }
+  const handCardId = state.cardInstances[handId]?.cardId;
+  const graveCardId = state.cardInstances[graveId]?.cardId;
+  const handCard = handCardId ? currentCanonicalContent.cardsById.get(handCardId) : null;
+  const graveCard = graveCardId ? currentCanonicalContent.cardsById.get(graveCardId) : null;
+  if (!handCard || !graveCard || handCard.cost !== graveCard.cost) {
+    throw new V070GameActionError('Equivalence requires equal printed values.');
+  }
+  zones.hand.splice(zones.hand.indexOf(handId), 1);
+  zones.graveyard.splice(zones.graveyard.indexOf(graveId), 1);
+  zones.hand.push(graveId);
+  zones.graveyard.push(handId);
+  requireMystics(state, playerId).rites.equivalence.equivalenceRevealedInstanceId = graveId;
+  appendV070Event(state, {
+    type: 'mystic_equivalence_exchanged',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      revealedInstanceId: graveId,
+      revealedCardId: graveCardId,
+      graveyardedInstanceId: handId,
+      graveyardedCardId: handCardId,
+      value: handCard.cost,
+    },
+  });
+}
+
+/** A legal Action play satisfies printed-effect play; same-turn completion is barred. */
+export function resolveV070MysticEquivalenceActionPlay(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  if (!isV070MysticPlayer(state, playerId)) return;
+  const rite = requireMystics(state, playerId).rites.equivalence;
+  if (rite.status !== 'begun' || rite.equivalenceRevealedInstanceId !== instanceId) return;
+  if (rite.begunTurn === null || rite.begunTurn >= state.turnNumber) {
+    resetRite(state, playerId, 'equivalence', 'same_turn_exchanged_card_play');
+    return;
+  }
+  completeRite(state, playerId, 'equivalence');
+  delete rite.equivalenceRevealedInstanceId;
+}
+
+/** Validate card-identity continuity at the end of every successful reducer action. */
+export function reconcileV070MysticEquivalenceHand(state: V070GameState): void {
+  for (const playerId of ['A', 'B'] as const) {
+    if (!isV070MysticPlayer(state, playerId)) continue;
+    const rite = requireMystics(state, playerId).rites.equivalence;
+    if (rite.status !== 'begun') continue;
+    const cardId = rite.equivalenceRevealedInstanceId;
+    if (!cardId || !state.players[playerId].zones.hand.includes(cardId)) {
+      resetRite(state, playerId, 'equivalence', 'exchanged_card_left_hand');
+    }
+  }
+}
+
 function beginShattering(
   state: V070GameState,
   playerId: PlayerId,
@@ -1252,6 +1323,9 @@ function resetRite(
   if (riteId === 'consecration') {
     delete rite.consecrationOverlayInstanceId;
   }
+  if (riteId === 'equivalence') {
+    delete rite.equivalenceRevealedInstanceId;
+  }
 
   appendV070Event(state, {
     type: 'mystic_rite_interrupted',
@@ -1280,6 +1354,9 @@ function interruptV070MysticProgress(
   }
   if (consecrationBattleMatches(state, playerId)) {
     resetRite(state, playerId, 'consecration', reason);
+  }
+  if (mystics.rites.equivalence.status === 'begun') {
+    resetRite(state, playerId, 'equivalence', reason);
   }
 
   if (mystics.ritual.active) {
@@ -1310,7 +1387,8 @@ function interruptibleMysticProgress(
     || mystics.rites.blood.status === 'begun'
     || (mystics.rites.shattering.status === 'begun'
       && state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId))
-    || consecrationBattleMatches(state, playerId)) {
+    || consecrationBattleMatches(state, playerId)
+    || mystics.rites.equivalence.status === 'begun') {
     return 'rite';
   }
   return null;
