@@ -393,6 +393,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - A QA-local boundary guard permits only this documented quarantined v071 exception at the backend root and verifies historical test execution coverage. Other versioned Worker/runtime sources remain untouched.
 - A broader maintained-Vitest baseline debt surfaced when experimenting with the quarantine manifest (36 failing test files in the full gate). This is separate from the behavior-preserving test relocation and requires a dedicated cleanup tranche; it is not resolved by altering the authority baseline or dismissing failures.
 
+## Completed subtranche — pre-v071 historical compatibility regression tests
+
+- Five v061/v062/v063 compatibility regression suites have been moved from `rules-assistant/` to `tools/rules-assistant/qa/tests/` alongside other historical Rules Arbiter QA.
+- The tests continue to use archived version-specific Worker/corpus implementations and preserved release fixtures; imports, the v062 variable corpus-source reader, and the v063 reconstruction-root reader have been adjusted for the QA location.
+- Current dispatcher code, frozen rule packages, and compatibility routes are unchanged. The dedicated historical-regression workflow executes these suites, with a QA-local boundary guard.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

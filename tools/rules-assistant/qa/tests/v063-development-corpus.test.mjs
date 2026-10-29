@@ -2,15 +2,15 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { retrieveRules } from "./local-search.js";
+import { retrieveRules } from "../../../../rules-assistant/local-search.js";
 import {
   candidateRulebookHtmlToMarkdown,
   loadDevelopmentV063RulesCorpus,
   V063_RULES_VERSION
-} from "../legacy/rules-assistant/v063/v063-development-corpus.js";
+} from "../../../../legacy/rules-assistant/v063/v063-development-corpus.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(here, "..");
+const root = path.resolve(here, "../../../..");
 const rulebookMarkdown = await fs.readFile(
   path.join(root, "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md"),
   "utf8"
