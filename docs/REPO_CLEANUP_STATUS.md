@@ -388,7 +388,7 @@ The superseded v063 candidate stack is now co-located with the already archived 
 
 ## Completed subtranche — final v071 historical test extraction
 
-- The remaining 20 v071 historical test-only suites, including the corpus-sync guard and focused retrieval, publication, setup, workflow, and card review regressions, now reside in `tools/rules-assistant/qa/tests/`.
+- The remaining 20 v071 historical test-only suites, including the corpus-sync guard and focused retrieval, publication, setup, workflow, and card review regressions, now reside in `tools/rules-assistant/qa/tests/`. The corpus-sync guard retains its existing explicit Vitest quarantine because its retired workflow assertion has not been rehabilitated; its quarantine manifest entry follows the moved path.
 - Along with the preceding Gate 2/Gate 3 and retrieval/continuity QA extractions, this leaves **no `v071-*.test.mjs` suites under the active `rules-assistant/` backend root**. This is a test-source boundary only; historical Worker/runtime support and deployed routes are unchanged.
 - A regression boundary test enforces that no v071 test suite is reintroduced under the active backend root and the historical-regression workflow continues to execute QA tooling tests.
 
