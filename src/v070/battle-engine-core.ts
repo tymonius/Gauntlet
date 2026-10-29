@@ -161,6 +161,7 @@ import {
   applyV070MysticConvergence,
   applyV070MysticShatteringAtDiceEntry,
   completeV070MysticBloodAfterBattleWin,
+  completeV070MysticConsecrationAfterBattleWin,
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
   recordV070MysticBattleEffectApplied,
@@ -2514,6 +2515,7 @@ function finalizeOutcome(
     battle.contestedPosition,
   );
   completeV070MysticBloodAfterBattleWin(state, outcome.winner);
+  completeV070MysticConsecrationAfterBattleWin(state, outcome.winner);
   resolveV070MysticRitualVictory(state, outcome.winner);
   gainV070MilitaryCommandForBattleWin(state, outcome.winner);
   resolveV070UnbrokenRanksCommand(state, outcome.winner);

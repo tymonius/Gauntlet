@@ -538,6 +538,8 @@ export interface V070MysticRiteState {
   shatteringAssetValue?: number;
   /** Shattering: its one eligible later-turn dice battle has been reached. */
   shatteringDiceBattleReached?: boolean;
+  /** Consecration: the exact placed Overlay whose departure interrupts the Rite. */
+  consecrationOverlayInstanceId?: string;
 }
 
 export interface V070MysticRitualState {

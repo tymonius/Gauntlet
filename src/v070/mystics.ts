@@ -1,6 +1,7 @@
 import { v070CanonicalContent } from '../content/v070';
 import { currentCanonicalContent } from '../content/current-game';
 import { putV070AssetInGraveyardByEffect } from './assets';
+import { placeV070OverlayFromHand } from './overlays';
 import { applyV070BattleRetreatStep, v070NormalBattleRetreatApplied } from './retreat-step';
 import {
   V070GameActionError,
@@ -31,6 +32,8 @@ export interface BeginV070MysticRiteOptions {
   bloodCostInstanceId?: string;
   crossingCostInstanceId?: string;
   shatteringAssetInstanceId?: string;
+  consecrationOverlayInstanceId?: string;
+  consecrationTerritoryPosition?: number;
 }
 
 declare module './battle-types' {
@@ -83,8 +86,7 @@ export function beginV070MysticRite(
   // Full six-Rite state is now represented, but these three additional
   // printed procedures need dedicated, tested handlers. Never silently mark
   // an unsupported Rite as begun (or spend its cost) before that work exists.
-  if (riteId === 'consecration'
-    || riteId === 'equivalence') {
+  if (riteId === 'equivalence') {
     throw new V070GameActionError(
       `Rite of ${riteName(riteId)} is not yet executable in the digital engine.`,
     );
@@ -115,6 +117,9 @@ export function beginV070MysticRite(
       break;
     case 'shattering':
       beginShattering(state, playerId, options);
+      break;
+    case 'consecration':
+      beginConsecration(state, playerId, options);
       break;
   }
 
@@ -890,6 +895,72 @@ function beginEchoes(
   });
 }
 
+/** A consecrated Territory is identified by its instance, not its board position. */
+function consecrationBattleMatches(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const rite = requireMystics(state, playerId).rites.consecration;
+  if (rite.status !== 'begun' || !rite.territoryInstanceId) return false;
+  const contested = state.battle?.contestedPosition;
+  const territory = state.board.find(item => item.position === contested);
+  return territory?.territoryInstanceId === rite.territoryInstanceId;
+}
+
+function beginConsecration(
+  state: V070GameState,
+  playerId: PlayerId,
+  options: BeginV070MysticRiteOptions,
+): void {
+  const instanceId = options.consecrationOverlayInstanceId;
+  const position = options.consecrationTerritoryPosition;
+  if (!instanceId || position === undefined || !Number.isInteger(position)) {
+    throw new V070GameActionError(
+      'Rite of Consecration requires an Overlay from Hand and a Territory position.',
+    );
+  }
+  const overlay = placeV070OverlayFromHand(
+    state, playerId, instanceId, position, 'Rite of Consecration',
+  );
+  const rite = requireMystics(state, playerId).rites.consecration;
+  rite.territoryInstanceId = overlay.territoryInstanceId;
+  rite.consecrationOverlayInstanceId = instanceId;
+}
+
+/** The actual Overlay card leaving the Territory immediately interrupts the Rite. */
+export function interruptV070MysticConsecrationOnOverlayRemoval(
+  state: V070GameState,
+  overlayInstanceId: string,
+): void {
+  for (const playerId of ['A', 'B'] as const) {
+    if (!isV070MysticPlayer(state, playerId)) continue;
+    const rite = requireMystics(state, playerId).rites.consecration;
+    if (rite.status === 'begun'
+      && rite.consecrationOverlayInstanceId === overlayInstanceId) {
+      resetRite(state, playerId, 'consecration', 'consecrated_overlay_removed');
+    }
+  }
+}
+
+/** Completion is automatic on a later-turn victory on the exact Territory. */
+export function completeV070MysticConsecrationAfterBattleWin(
+  state: V070GameState,
+  winner: PlayerId,
+): void {
+  if (!isV070MysticPlayer(state, winner)
+    || !consecrationBattleMatches(state, winner)) return;
+  const rite = requireMystics(state, winner).rites.consecration;
+  if (rite.begunTurn === null || rite.begunTurn >= state.turnNumber) return;
+  if (!state.overlays.some(overlay =>
+    overlay.instanceId === rite.consecrationOverlayInstanceId
+    && overlay.territoryInstanceId === rite.territoryInstanceId
+  )) {
+    resetRite(state, winner, 'consecration', 'consecrated_overlay_removed');
+    return;
+  }
+  completeRite(state, winner, 'consecration');
+}
+
 function beginShattering(
   state: V070GameState,
   playerId: PlayerId,
@@ -1178,6 +1249,9 @@ function resetRite(
     delete rite.shatteringAssetValue;
     delete rite.shatteringDiceBattleReached;
   }
+  if (riteId === 'consecration') {
+    delete rite.consecrationOverlayInstanceId;
+  }
 
   appendV070Event(state, {
     type: 'mystic_rite_interrupted',
@@ -1203,6 +1277,9 @@ function interruptV070MysticProgress(
   }
   if (state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId)) {
     resetRite(state, playerId, 'shattering', reason);
+  }
+  if (consecrationBattleMatches(state, playerId)) {
+    resetRite(state, playerId, 'consecration', reason);
   }
 
   if (mystics.ritual.active) {
@@ -1232,7 +1309,8 @@ function interruptibleMysticProgress(
   if (mystics.rites.echoes.status === 'begun'
     || mystics.rites.blood.status === 'begun'
     || (mystics.rites.shattering.status === 'begun'
-      && state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId))) {
+      && state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId))
+    || consecrationBattleMatches(state, playerId)) {
     return 'rite';
   }
   return null;

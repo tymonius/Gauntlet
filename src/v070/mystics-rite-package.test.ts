@@ -103,11 +103,13 @@ describe('current six-Rite Mystics package state (pre-effect integration)', () =
   test('selected but unimplemented Rites cannot create false progress or spend a cost', () => {
     const state = game(['shattering', 'consecration', 'equivalence']);
     const baseline = structuredClone(state);
-    for (const rite of ['consecration', 'equivalence'] as const) {
-      expect(() => beginV070MysticRite(state, 'A', rite))
-        .toThrow(/not yet executable/);
-      expect(state).toEqual(baseline);
-    }
+    expect(() => beginV070MysticRite(state, 'A', 'equivalence'))
+      .toThrow(/not yet executable/);
+    expect(state).toEqual(baseline);
+    // Consecration is executable, but its beginning requires an Overlay.
+    expect(() => beginV070MysticRite(state, 'A', 'consecration'))
+      .toThrow(/requires an Overlay from Hand/);
+    expect(state).toEqual(baseline);
     // Shattering is now executable, but cannot begin without a banked Asset.
     expect(() => beginV070MysticRite(state, 'A', 'shattering'))
       .toThrow(/one banked Asset/);

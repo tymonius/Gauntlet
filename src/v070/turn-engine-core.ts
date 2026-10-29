@@ -193,6 +193,8 @@ export type V070TurnAction =
       bloodCostInstanceId?: string;
       crossingCostInstanceId?: string;
       shatteringAssetInstanceId?: string;
+      consecrationOverlayInstanceId?: string;
+      consecrationTerritoryPosition?: number;
     }
   | {
       type: 'mystics_begin_ritual';
@@ -2357,6 +2359,8 @@ function mysticsBeginRite(
       bloodCostInstanceId: action.bloodCostInstanceId,
       crossingCostInstanceId: action.crossingCostInstanceId,
       shatteringAssetInstanceId: action.shatteringAssetInstanceId,
+      consecrationOverlayInstanceId: action.consecrationOverlayInstanceId,
+      consecrationTerritoryPosition: action.consecrationTerritoryPosition,
     },
   );
 }

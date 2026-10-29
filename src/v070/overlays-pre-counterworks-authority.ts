@@ -12,6 +12,7 @@ import {
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { pauseV070ForSpiritHollowAfterBattleCardsCleared } from './spirit-hollow';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
+import { interruptV070MysticConsecrationOnOverlayRemoval } from './mystics';
 
 export const V070_DEMILITARIZED_ZONE_ID = 'diplomats-demilitarized-zone';
 
@@ -177,6 +178,7 @@ export function discardV070Overlay(
   const cardId = cardIdForV070Overlay(state, overlay);
   const territory = territoryByInstanceId(state, overlay.territoryInstanceId);
   state.players[overlay.owner].zones.discardPile.push(instanceId);
+  interruptV070MysticConsecrationOnOverlayRemoval(state, instanceId);
 
   appendV070Event(state, {
     type: 'overlay_discarded',
@@ -205,6 +207,7 @@ export function graveyardV070Overlay(
   const cardId = cardIdForV070Overlay(state, overlay);
   const territory = territoryByInstanceId(state, overlay.territoryInstanceId);
   state.players[overlay.owner].zones.graveyard.push(instanceId);
+  interruptV070MysticConsecrationOnOverlayRemoval(state, instanceId);
 
   appendV070Event(state, {
     type: 'overlay_graveyarded',
