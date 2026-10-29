@@ -27,12 +27,9 @@
       "reason": "Tests still pinned to v0.7.0/v0.7.1-era publication or presentation contracts while the current authority has moved into the v0.7.2 candidate cycle. Update the intended current contract before re-enabling.",
       "files": [
         "tests/current-public-faction-overviews.test.ts",
-        "tests/current-rulebook-player-experience.test.ts",
-        "tests/current-rulebook-source.test.ts",
         "tests/deckbuilder-current-leader-print.test.ts",
         "tests/public-faction-pages.test.ts",
         "tests/reference-card-universal-and-title-fit.test.ts",
-        "tests/rulebook-ruleset-toggle.test.ts",
         "tests/tts-card-render-authority.test.ts",
         "tests/tts-current-release.test.ts",
         "tests/tts-v071-candidate-qa.test.ts"

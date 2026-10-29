@@ -392,6 +392,8 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Along with the preceding Gate 2/Gate 3 and retrieval/continuity QA extractions, this leaves **no `v071-*.test.mjs` suites under the active `rules-assistant/` backend root**. This is a test-source boundary only; historical Worker/runtime support and deployed routes are unchanged.
 - A regression boundary test enforces that no v071 test suite is reintroduced under the active backend root and the historical-regression workflow continues to execute QA tooling tests.
 
+- The maintained Vitest classification manifest was reconciled with tracked source: three dangling Rulebook test entries from prior source cleanup were removed, while the retained v071 corpus-sync quarantine points to its new QA-tooling location. Historical baseline counts remain archival annotations.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
