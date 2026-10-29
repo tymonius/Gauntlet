@@ -419,9 +419,9 @@ Do not move versioned worker/corpus files until their live routing, QA, and hist
 - `rulebook/` remains residual compatibility/support material rather than gameplay authority.
 - Rulebook QR assets remain active Player Guide publication support.
 
-## Known documentation drift
+## Resolved documentation drift
 
-`docs/Repository_Architecture.md` still contains some pre-#1735 Browser Rulebook examples that describe source under `apps/rulebook/`. The machine contracts and current repository state are authoritative; align that human document in a follow-up rather than using its stale examples as premises for new moves.
+The outdated Browser Rulebook source/publication examples in `docs/Repository_Architecture.md` were corrected in #1980. The current `/rulebook/` route is staged from `legacy/rulebook-browser/` under `config/publication-boundary.json`; the former `apps/rulebook/` example is no longer used.
 
 ## Next top-down queue
 
