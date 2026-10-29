@@ -414,7 +414,7 @@ The superseded v063 candidate stack is now co-located with the already archived 
 ## Completed subtranche — Rules Assistant benchmark and semantic-QA regression suites
 
 - Seven older semantic-evaluator, blind benchmark/model-packet, and fallback-source-lookup regression suites now live under `tools/rules-assistant/qa/tests/` rather than beside live Worker sources.
-- Test imports continue to resolve maintained backend helpers, frozen v0.6.1 evidence, and current app paths; no authority, assertions, API routes, or live Worker modules moved.
+- Test imports continue to resolve maintained backend helpers, intentionally historical frozen release evidence, and current app paths; no authority, assertions, API routes, or live Worker modules moved.
 - Existing historical-regression workflow already watches and runs this QA test directory, preserving coverage.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
