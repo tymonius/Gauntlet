@@ -191,8 +191,11 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     expect(mystics?.rites.crossing.status).toBe('incomplete');
     expect(mystics?.ritual.active).toBe(false);
     expect(state.players.B.mystics).toBeNull();
-    expect(viewV070GameForPlayer(state, 'B').players.A.mystics)
+    expect(viewV070GameForPlayer(state, 'A').players.A.mystics)
       .toEqual(mystics);
+    const opponentView = viewV070GameForPlayer(state, 'B').players.A.mystics;
+    expect(opponentView).not.toHaveProperty('selectedRiteIds');
+    expect(opponentView?.rites).toEqual(mystics?.rites);
   });
 
   test('Alchemist begins Rite of Blood and Materia Prima draws immediately outside battle', () => {

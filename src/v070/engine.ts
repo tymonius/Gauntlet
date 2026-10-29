@@ -1,3 +1,7 @@
+import {
+  initialV070MysticRites,
+  selectV070MysticRitePackage,
+} from './mystics-rite-package';
 import { V070_RULES_VERSION } from '../content/v070';
 import { createV070TurnState, type PlayerId, type V070BattleState, type V070TurnState } from './rules';
 import { v070StarterDecks, type V070ResolvedStarterDeck } from './starter-decks';
@@ -513,7 +517,9 @@ export interface V070MilitaryState {
   commandGainTurn: number | null;
 }
 
-export type V070MysticRiteId = 'echoes' | 'blood' | 'crossing';
+export type V070MysticRiteId =
+  | 'echoes' | 'blood' | 'crossing'
+  | 'shattering' | 'consecration' | 'equivalence';
 export type V070MysticRiteStatus = 'incomplete' | 'begun' | 'completed';
 
 export interface V070MysticRiteState {
@@ -536,6 +542,8 @@ export interface V070MysticInvocationPending {
 }
 
 export interface V070MysticsState {
+  /** The three game-package Rites; not disclosed until begun. */
+  selectedRiteIds: V070MysticRiteId[];
   rites: Record<V070MysticRiteId, V070MysticRiteState>;
   riteCompletedTurn: number | null;
   crossingEligibilityTurn: number | null;
@@ -660,6 +668,8 @@ export interface CreateV070StarterGameInput {
   players: Record<PlayerId, {
     name: string;
     starterDeckId: string;
+    /** Optional explicit package selection; legacy starters default to the original three. */
+    selectedRiteIds?: readonly V070MysticRiteId[];
   }>;
 }
 
@@ -697,6 +707,12 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
   for (const playerId of ['A', 'B'] as const) {
     const playerInput = input.players[playerId];
     const starter = requireStarter(playerInput.starterDeckId);
+    if (starter.definition.factionId !== 'mystics'
+      && playerInput.selectedRiteIds !== undefined) {
+      throw new V070GameActionError(
+        'Only a Mystics game package may select Rites.',
+      );
+    }
     const deck = instantiateStarterDeck(playerId, starter, cardInstances);
     const shuffled = deterministicV070Shuffle(deck, `${input.seed}:${playerId}:opening-deck`);
     const openingSelection = shuffled.splice(0, 4);
@@ -726,26 +742,8 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
         : null,
       mystics: starter.definition.factionId === 'mystics'
         ? {
-            rites: {
-              echoes: {
-                status: 'incomplete',
-                begunTurn: null,
-                completedTurn: null,
-                territoryInstanceId: null,
-              },
-              blood: {
-                status: 'incomplete',
-                begunTurn: null,
-                completedTurn: null,
-                territoryInstanceId: null,
-              },
-              crossing: {
-                status: 'incomplete',
-                begunTurn: null,
-                completedTurn: null,
-                territoryInstanceId: null,
-              },
-            },
+            selectedRiteIds: selectV070MysticRitePackage(playerInput.selectedRiteIds),
+            rites: initialV070MysticRites(),
             riteCompletedTurn: null,
             crossingEligibilityTurn: null,
             crossingEligibilityTerritoryInstanceId: null,

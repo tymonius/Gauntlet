@@ -64,6 +64,21 @@ export function beginV070MysticRite(
   options: BeginV070MysticRiteOptions = {},
 ): void {
   const mystics = requireMystics(state, playerId);
+  if (!mystics.selectedRiteIds.includes(riteId)) {
+    throw new V070GameActionError(
+      'That Rite is not one of your three selected game-package Rites.',
+    );
+  }
+  // Full six-Rite state is now represented, but these three additional
+  // printed procedures need dedicated, tested handlers. Never silently mark
+  // an unsupported Rite as begun (or spend its cost) before that work exists.
+  if (riteId === 'shattering'
+    || riteId === 'consecration'
+    || riteId === 'equivalence') {
+    throw new V070GameActionError(
+      `Rite of ${riteName(riteId)} is not yet executable in the digital engine.`,
+    );
+  }
   const rite = mystics.rites[riteId];
 
   if (rite.status !== 'incomplete') {
@@ -1198,5 +1213,8 @@ function riteName(riteId: V070MysticRiteId): string {
     case 'echoes': return 'Echoes';
     case 'blood': return 'Blood';
     case 'crossing': return 'Crossing';
+    case 'shattering': return 'Shattering';
+    case 'consecration': return 'Consecration';
+    case 'equivalence': return 'Equivalence';
   }
 }

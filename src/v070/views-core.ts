@@ -220,7 +220,10 @@ export interface V070PlayerViewState {
   controlledTerritories: string[];
   assetLimit: number;
   military: V070GameState['players'][PlayerId]['military'];
-  mystics: V070GameState['players'][PlayerId]['mystics'];
+  mystics: (Omit<
+    NonNullable<V070GameState['players'][PlayerId]['mystics']>,
+    'selectedRiteIds'
+  > & { selectedRiteIds?: string[] }) | null;
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
   financiers: V070FinancierView | null;
@@ -458,6 +461,22 @@ function viewOverlays(state: V070GameState): V070OverlayView[] {
     });
 }
 
+/**
+ * Rite package selection is private until a Rite begins. The six possible
+ * Rite states are public (begun/completed Rites are already public), but
+ * this view never serializes the unseen three-choice package to an opponent.
+ */
+function viewMysticPackage(
+  mystics: V070GameState['players'][PlayerId]['mystics'],
+  isOwner: boolean,
+): V070PlayerViewState['mystics'] {
+  if (!mystics) return null;
+  const { selectedRiteIds, ...publicState } = structuredClone(mystics);
+  return isOwner
+    ? { ...publicState, selectedRiteIds: [...selectedRiteIds] }
+    : publicState;
+}
+
 function viewPlayer(
   state: V070GameState,
   playerId: PlayerId,
@@ -495,7 +514,7 @@ function viewPlayer(
     controlledTerritories: [...player.controlledTerritories],
     assetLimit: effectiveV070AssetLimit(state, playerId),
     military: player.military ? structuredClone(player.military) : null,
-    mystics: player.mystics ? structuredClone(player.mystics) : null,
+    mystics: viewMysticPackage(player.mystics, isOwner),
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
       ? {
