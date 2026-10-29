@@ -4,6 +4,7 @@ import {
   reduceV070SetupAction,
   type V070GameState,
 } from './engine';
+import { v070CanonicalContent } from '../content/v070';
 import { beginV070MysticRite } from './mystics';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
@@ -47,8 +48,12 @@ function ready(): V070GameState {
 
 function overlayInHand(state: V070GameState): string {
   const instanceId = 'consecration-overlay';
+  const cardId = [...v070CanonicalContent.cardsById.values()]
+    .find(card => card.allegiance === 'Military'
+      && card.card_form === 'Territory Overlay')?.id;
+  if (!cardId) throw new Error('Missing released Military Territory Overlay fixture.');
   state.cardInstances[instanceId] = {
-    instanceId, owner: 'A', cardId: 'military-encampment',
+    instanceId, owner: 'A', cardId,
   };
   state.players.A.zones.hand.push(instanceId);
   return instanceId;
