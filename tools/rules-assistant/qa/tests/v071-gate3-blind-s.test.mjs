@@ -3,28 +3,28 @@ import { describe, expect, test } from "vitest";
 import {
   sourceRequirementGroups,
   validateClassificationExpectations
-} from "../scripts/v071-live-rules-qa-support.mjs";
-import { validateSemanticBenchmark } from "../scripts/v071-semantic-rules-qa-support.mjs";
-import { githubActionsQaAuthContract } from "./github-actions-qa-auth.js";
+} from "../../../../scripts/v071-live-rules-qa-support.mjs";
+import { validateSemanticBenchmark } from "../../../../scripts/v071-semantic-rules-qa-support.mjs";
+import { githubActionsQaAuthContract } from "../../../../rules-assistant/github-actions-qa-auth.js";
 
 const loadJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const normalize = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-const standard = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s.v071.json");
-const player = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-player-language.v071.json");
-const clarifications = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-clarifications.v071.json");
-const gate2 = loadJson("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
+const standard = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s.v071.json");
+const player = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-player-language.v071.json");
+const clarifications = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-s-clarifications.v071.json");
+const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json");
 
 const priorLetters = "abcdefghijklmnopqr".split("");
 const priorPaths = priorLetters.flatMap((letter) => [
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
+  `../evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
+  `../evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
+  `../evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
 ]);
 const prior = priorPaths.map(loadJson);
 
-const rulebook = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
-const canonical = readFileSync(new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url), "utf8");
+const canonical = readFileSync(new URL("../../../../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url), "utf8");
 const authorityText = normalize(`${rulebook}\n${canonical}`);
 
 const EXPECTED_BEHAVIOR = "v071-qa-20260919-30";
@@ -129,7 +129,7 @@ describe("Gate 3 final blind tranche S certification freeze", () => {
   });
 
   test("later Gate 3 workflow advancement does not invalidate frozen S evidence and remains OIDC-authorized", () => {
-    const workflow = readFileSync(new URL("../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
+    const workflow = readFileSync(new URL("../../../../.github/workflows/current-rules-arbiter-gate3-blind.yml", import.meta.url), "utf8");
     expect(workflow).toContain("name: Rules Arbiter Gate 3 ");
     expect(workflow).toContain("GATE3_EXPECTED_BEHAVIOR_REVISION:");
     expect(githubActionsQaAuthContract.workflowRefs).toContain(
