@@ -707,6 +707,12 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
   for (const playerId of ['A', 'B'] as const) {
     const playerInput = input.players[playerId];
     const starter = requireStarter(playerInput.starterDeckId);
+    if (starter.definition.factionId !== 'mystics'
+      && playerInput.selectedRiteIds !== undefined) {
+      throw new V070GameActionError(
+        'Only a Mystics game package may select Rites.',
+      );
+    }
     const deck = instantiateStarterDeck(playerId, starter, cardInstances);
     const shuffled = deterministicV070Shuffle(deck, `${input.seed}:${playerId}:opening-deck`);
     const openingSelection = shuffled.splice(0, 4);
