@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { buildRulesCorpus, retrieveRules } from "./local-search.js";
+import { buildRulesCorpus, retrieveRules } from "../../../../rules-assistant/local-search.js";
 import {
   V071_CANONICAL_SOURCE_PATH,
   V071_RULEBOOK_SOURCE_PATH
-} from "../legacy/rules-assistant/v071/v071-public-corpus.js";
+} from "../../../../legacy/rules-assistant/v071/v071-public-corpus.js";
 
 const canonicalData = JSON.parse(readFileSync(V071_CANONICAL_SOURCE_PATH, "utf8"));
 const rulebookMarkdown = readFileSync(V071_RULEBOOK_SOURCE_PATH, "utf8");
@@ -37,7 +37,7 @@ describe("v0.7.1 reviewed Margin Loan withdrawal ruling", () => {
   });
 
   test("current classification guidance treats directly stated card text as explicit authority", () => {
-    const worker = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
+    const worker = readFileSync(new URL("../../../../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
     expect(worker).toContain("could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge");
     expect(worker).toContain('Do not label an explicit or inferred answer "Table ruling"');
     expect(worker).toContain("Silence is not explicit authority");
