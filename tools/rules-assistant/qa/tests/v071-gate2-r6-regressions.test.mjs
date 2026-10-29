@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
-import { BEHAVIOR_REVISION } from "../legacy/rules-assistant/v071/worker-v071.js";
+import { BEHAVIOR_REVISION } from "../../../../legacy/rules-assistant/v071/worker-v071.js";
 
-const workerSource = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
-const corrections = JSON.parse(readFileSync(new URL("../tools/rules-assistant/qa/evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
-const wranglerSource = readFileSync(new URL("./wrangler.toml", import.meta.url), "utf8");
-const appSource = readFileSync(new URL("../apps/rules-arbiter/app.js", import.meta.url), "utf8");
+const workerSource = readFileSync(new URL("../../../../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
+const corrections = JSON.parse(readFileSync(new URL("../evals/rules-arbiter-evals.v071-corrections.json", import.meta.url), "utf8"));
+const wranglerSource = readFileSync(new URL("../../../../rules-assistant/wrangler.toml", import.meta.url), "utf8");
+const appSource = readFileSync(new URL("../../../../apps/rules-arbiter/app.js", import.meta.url), "utf8");
 
 describe("v0.7.1 Gate 2 r6 regressions", () => {
   test("pins the strengthened multi-phase Feature timing rule", () => {
