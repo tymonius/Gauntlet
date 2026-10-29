@@ -15,10 +15,9 @@ describe('Rules Assistant admin test boundary', () => {
     const admin = readdirSync('tools/rules-assistant/admin/tests');
     for (const file of suites) { expect(backend).not.toContain(file); expect(admin).toContain(file); }
   });
-  it('keeps admin tests in the Rules Assistant command and CI watch', () => {
-    const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-    expect(pkg.scripts['test:rules-assistant']).toContain('tools/rules-assistant/admin/tests/*.test.mjs');
+  it('keeps admin tests in the historical regression workflow', () => {
     const workflow = readFileSync('.github/workflows/rules-arbiter-historical-regression.yml', 'utf8');
     expect(workflow).toContain('tools/rules-assistant/admin/tests/**');
+    expect(workflow).toContain('npx vitest run tools/rules-assistant/admin/tests/*.test.mjs');
   });
 });

@@ -402,7 +402,7 @@ The superseded v063 candidate stack is now co-located with the already archived 
 ## Completed subtranche — Rules Assistant administrative regression-test boundary
 
 - Seven active admin dashboard/refinement regression suites now live under `tools/rules-assistant/admin/tests/`, next to the existing admin implementation sources, rather than the mixed backend deployment root.
-- The `test:rules-assistant` script explicitly runs both remaining backend-root tests and admin test suites; the existing historical-regression workflow observes and executes the moved tests through that command.
+- The existing `test:rules-assistant` script is unchanged; the historical-regression workflow explicitly executes the relocated admin suites in a separate command and watches the admin test directory. This preserves coverage without triggering unrelated full-suite test debt from a `package.json` change.
 - Imports still target the current Worker entrypoints and maintained admin modules; the deployed `admin-refinement-worker.js` and D1 schema remain in place.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit

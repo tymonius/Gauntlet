@@ -45,3 +45,4 @@ jobs:
           npm run test:rules-assistant
           npx vitest run tests/rules-assistant/*.test.mjs
           npx vitest run tools/rules-assistant/qa/tests/*.test.mjs
+          npx vitest run tools/rules-assistant/admin/tests/*.test.mjs
