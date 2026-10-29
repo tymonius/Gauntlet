@@ -386,6 +386,13 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The existing historical regression workflow executes these suites, and a boundary regression test protects their new location.
 - The v071 corpus-sync guard, remaining v071 review/retrieval tests, and current v072 runtime-adjacent tests are deferred for a separate consumer classification rather than moved indiscriminately.
 
+## Completed subtranche — further maintained v071 historical test extraction
+
+- Nineteen additional maintained v071 historical regression suites for publication, setup, workflow, retrieval, and card review have been moved to `tools/rules-assistant/qa/tests/` without changing assertions or frozen authority.
+- The **quarantined** `rules-assistant/v071-corpus-sync-guard.test.mjs` deliberately remains at its original location, with its existing quarantine manifest entry intact. Its literal old-workflow assertions need separate rehabilitation or formal retirement; relocating it must not inadvertently reactivate it.
+- A QA-local boundary guard permits only this documented quarantined v071 exception at the backend root and verifies historical test execution coverage. Other versioned Worker/runtime sources remain untouched.
+- A broader maintained-Vitest baseline debt surfaced when experimenting with the quarantine manifest (36 failing test files in the full gate). This is separate from the behavior-preserving test relocation and requires a dedicated cleanup tranche; it is not resolved by altering the authority baseline or dismissing failures.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
