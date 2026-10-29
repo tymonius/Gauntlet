@@ -730,6 +730,7 @@ function clearPendingRevealProcedure(state: V070GameState): void {
 function revealEffectInterruptPending(state: V070GameState): boolean {
   return Boolean(
     pendingV070BattleRevealChoice(state)
+    || state.battleRuntime?.pendingInterceptedOrdersChoice
     || pendingV070BattleRevealEffectOrderChoice(state)
     || v070MysticInvocationPendingPlayers(state).length > 0
     || (state.battleRuntime?.pendingReserveForceReplacementCommitments
