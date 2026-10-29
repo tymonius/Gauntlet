@@ -32,17 +32,11 @@ import {
 import {
   resumeV070SupportedRevealEffects,
 } from './battle-effects';
-import {
-  pendingInterceptedOrdersChoice,
-  reduceStagedInterceptedOrdersRevealAction,
-  type InterceptedOrdersBattleAction,
-} from './intercepted-orders-battle-choices';
 
 export * from './battle-engine-pre-capital-gains';
 
 export type V070BattleAction =
   | previous.V070BattleAction
-  | InterceptedOrdersBattleAction
   | {
       type: 'resolve_corner_the_market_aftermath';
       playerId: PlayerId;
@@ -79,23 +73,6 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
-  // The forward-compatible Intercepted Orders choice can only be created
-  // by a next-release reveal handler. Current published authority cannot
-  // create it, and these actions are invalid without an actual pending choice.
-  if (pendingInterceptedOrdersChoice(state)) {
-    if (action.type !== 'resolve_intercepted_orders_target'
-      && action.type !== 'resolve_intercepted_orders_replacement') {
-      throw new V070GameActionError(
-        'Resolve the pending Intercepted Orders battle choice first.',
-      );
-    }
-    return reduceStagedInterceptedOrdersRevealAction(state, action);
-  }
-  if (action.type === 'resolve_intercepted_orders_target'
-    || action.type === 'resolve_intercepted_orders_replacement') {
-    throw new V070GameActionError('No Intercepted Orders choice is pending.');
-  }
-
   const financierAftermath = pendingV070FinancierAftermathChoice(state);
   if (financierAftermath) {
     const next = structuredClone(state) as V070GameState;
