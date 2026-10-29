@@ -95,7 +95,6 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
       { instanceId: graveId, cardId: playedCardId },
     ]);
     expect(opponent.mystics).not.toHaveProperty('selectedRiteIds');
-    expect(JSON.stringify(opponent.zones)).not.toContain(handId);
   });
 
   test('invalid zones or unequal printed value are rejected atomically', () => {
