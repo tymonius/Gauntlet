@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { ADMIN_PAGE_WITH_IMPORT, enhanceAdminPage } from "../tools/rules-assistant/admin/admin-import-page.js";
-import workerEntry, { addSiteFaviconLinks, allowSiteImages } from "./worker-entry.js";
+import { ADMIN_PAGE_WITH_IMPORT, enhanceAdminPage } from "../../../../tools/rules-assistant/admin/admin-import-page.js";
+import workerEntry, { addSiteFaviconLinks, allowSiteImages } from "../../../../rules-assistant/worker-entry.js";
 
 const SITE_ORIGIN = "https://gauntlet.run";
 const FAVICON_VERSION = "20260804-1";
