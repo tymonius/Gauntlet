@@ -75,7 +75,9 @@ describe('current six-Rite Mystics package state (pre-effect integration)', () =
     ['echoes', 'blood', 'crossing', 'shattering'],
     ['echoes', 'echoes', 'blood'],
     ['echoes', 'blood', 'not-a-rite'],
-  ])('rejects invalid package selection %j before setup', (candidate) => {
+  ].map(candidate => ({ candidate })))(
+    'rejects invalid package selection $candidate before setup',
+    ({ candidate }) => {
     expect(() => selectV070MysticRitePackage(
       candidate as V070MysticRiteId[],
     )).toThrow(/exactly 3 different Rites/);
