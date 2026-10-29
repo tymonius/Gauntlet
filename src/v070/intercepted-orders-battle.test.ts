@@ -6,7 +6,8 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
-import { viewV070GameForPlayer } from './views';
+import { viewNextReleaseGameForPlayer } from './intercepted-orders-next-views';
+import { reduceNextReleaseBattleAction } from './intercepted-orders-next-reducer';
 import {
   beginInterceptedOrdersAtTacticReveal,
   pendingInterceptedOrdersChoice,
@@ -398,30 +399,30 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
       .toContainEqual(expect.objectContaining({ instanceId: replacement }));
   });
 
-  test('live battle reducer rejects Intercepted Orders actions without a pending choice', () => {
+  test('next-release reducer rejects Intercepted Orders actions without a pending choice', () => {
     const state = enterBattle();
-    expect(() => reduceV070BattleAction(state, {
+    expect(() => reduceNextReleaseBattleAction(state, {
       type: 'resolve_intercepted_orders_target',
       playerId: 'A',
       targetInstanceId: 'not-a-target',
     })).toThrow(/No Intercepted Orders choice is pending/);
-    expect(() => reduceV070BattleAction(state, {
+    expect(() => reduceNextReleaseBattleAction(state, {
       type: 'resolve_intercepted_orders_replacement',
       playerId: 'B',
     })).toThrow(/No Intercepted Orders choice is pending/);
-    expect(viewV070GameForPlayer(state, 'A').pendingInterceptedOrders).toBeNull();
+    expect(viewNextReleaseGameForPlayer(state, 'A').pendingInterceptedOrders).toBeNull();
   });
 
-  test('battle reducer routes multi-target choice and pauses for opponent replacement', () => {
+  test('next-release reducer routes multi-target choice and pauses for opponent replacement', () => {
     const { state, source, target, otherTarget } = prepare(true, true);
     beginInterceptedOrdersAtTacticReveal(state, 'A', source);
 
-    expect(() => reduceV070BattleAction(state, {
+    expect(() => reduceNextReleaseBattleAction(state, {
       type: 'reveal_tactics', playerId: 'A',
     })).toThrow(/Resolve the pending Intercepted Orders/);
 
-    const ownerView = viewV070GameForPlayer(state, 'A').pendingInterceptedOrders;
-    const opponentView = viewV070GameForPlayer(state, 'B').pendingInterceptedOrders;
+    const ownerView = viewNextReleaseGameForPlayer(state, 'A').pendingInterceptedOrders;
+    const opponentView = viewNextReleaseGameForPlayer(state, 'B').pendingInterceptedOrders;
     expect(ownerView).toEqual(expect.objectContaining({
       kind: 'target',
       playerId: 'A',
@@ -434,15 +435,15 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     }));
     expect(opponentView).not.toHaveProperty('candidateInstanceIds');
 
-    const chosen = reduceV070BattleAction(state, {
+    const chosen = reduceNextReleaseBattleAction(state, {
       type: 'resolve_intercepted_orders_target',
       playerId: 'A',
       targetInstanceId: otherTarget!,
     });
     expect(pendingInterceptedOrdersChoice(state)?.kind).toBe('target');
     expect(pendingInterceptedOrdersChoice(chosen)?.kind).toBe('replacement');
-    const newOwnerView = viewV070GameForPlayer(chosen, 'A').pendingInterceptedOrders;
-    const newOpponentView = viewV070GameForPlayer(chosen, 'B').pendingInterceptedOrders;
+    const newOwnerView = viewNextReleaseGameForPlayer(chosen, 'A').pendingInterceptedOrders;
+    const newOpponentView = viewNextReleaseGameForPlayer(chosen, 'B').pendingInterceptedOrders;
     expect(newOwnerView).not.toHaveProperty('candidateInstanceIds');
     expect(newOpponentView).toEqual(expect.objectContaining({
       kind: 'replacement',
@@ -452,20 +453,20 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
       ]),
     }));
 
-    const declined = reduceV070BattleAction(chosen, {
+    const declined = reduceNextReleaseBattleAction(chosen, {
       type: 'resolve_intercepted_orders_replacement',
       playerId: 'B',
     });
     expect(pendingInterceptedOrdersChoice(declined)).toBeNull();
     expect(declined.battleRuntime!.participants.B.additionalTactics).toEqual([]);
     expect(declined.battleRuntime!.participants.B.reserve).toContain(otherTarget);
-    expect(() => reduceV070BattleAction(declined, {
+    expect(() => reduceNextReleaseBattleAction(declined, {
       type: 'resolve_intercepted_orders_replacement',
       playerId: 'B',
     })).toThrow(/No Intercepted Orders choice is pending/);
   });
 
-  test('battle reducer resolves a face-up replacement and resumes same reveal, not a second reveal', () => {
+  test('next-release reducer resolves a face-up replacement and resumes same reveal, not a second reveal', () => {
     const { state, source, target, replacement } = prepare(false);
     state.battleRuntime!.participants.A.tactic!.faceUp = true;
     state.battleRuntime!.participants.B.tactic!.faceUp = true;
@@ -478,9 +479,9 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     ];
 
     beginInterceptedOrdersAtTacticReveal(state, 'B', source);
-    expect(viewV070GameForPlayer(state, 'A').pendingInterceptedOrders)
+    expect(viewNextReleaseGameForPlayer(state, 'A').pendingInterceptedOrders)
       .toEqual(expect.objectContaining({ kind: 'replacement', playerId: 'A' }));
-    const next = reduceV070BattleAction(state, {
+    const next = reduceNextReleaseBattleAction(state, {
       type: 'resolve_intercepted_orders_replacement',
       playerId: 'A',
       cardInstanceId: replacement,
@@ -492,7 +493,7 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     expect(next.battleRuntime!.participants.A.reserve).toContain(target);
     expect(next.battleRuntime!.interceptedOrdersBarredInstanceIds)
       .toContain(target);
-    expect(viewV070GameForPlayer(next, 'A').pendingInterceptedOrders).toBeNull();
+    expect(viewNextReleaseGameForPlayer(next, 'A').pendingInterceptedOrders).toBeNull();
   });
 
 });
