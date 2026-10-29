@@ -527,6 +527,10 @@ export interface V070MysticRiteState {
   begunTurn: number | null;
   completedTurn: number | null;
   territoryInstanceId: string | null;
+  /** Shattering: value of the banked Asset paid when the Rite began. */
+  shatteringAssetValue?: number;
+  /** Shattering: its one eligible later-turn dice battle has been reached. */
+  shatteringDiceBattleReached?: boolean;
 }
 
 export interface V070MysticRitualState {

@@ -57,7 +57,8 @@ export interface V070BattleRetreatStepSource {
     | 'battle_card'
     | 'overlay'
     | 'fortifications'
-    | 'military_order';
+    | 'military_order'
+    | 'rite';
   label: string;
   sourceInstanceId?: string;
   sourceCardId?: string;

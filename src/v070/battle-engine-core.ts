@@ -159,6 +159,7 @@ import {
 } from './purge';
 import {
   applyV070MysticConvergence,
+  applyV070MysticShatteringAtDiceEntry,
   completeV070MysticBloodAfterBattleWin,
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
@@ -168,6 +169,7 @@ import {
   passV070MysticInvocation,
   resolveV070MateriaPrimaAfterAftermath,
   resolveV070MysticRitualVictory,
+  resolveV070MysticShatteringAtOutcome,
   useV070GuardiansOfTheCircle,
   useV070MysticInvocation,
   useV070MysticTransmutation,
@@ -1325,7 +1327,11 @@ function revealBattleRole(
   }
 
   runtime.stage = role === 'gambit' ? 'choose_tactics' : 'outcome';
-  if (role === 'gambit') openTrainingGroundsRedrawChoice(state);
+  if (role === 'gambit') {
+    openTrainingGroundsRedrawChoice(state);
+  } else {
+    applyV070MysticShatteringAtDiceEntry(state);
+  }
 }
 
 function openTrainingGroundsRedrawChoice(
@@ -2489,6 +2495,11 @@ function finalizeOutcome(
   } else {
     observeV070NormalBattleRetreat(state);
   }
+  // Shattering's Retreat +1 modifies the normal Retreat rather than creating
+  // movement after a Paths of Shadow replacement.
+  resolveV070MysticShatteringAtOutcome(
+    state, outcome.winner, outcome.loser,
+  );
   recordV070IntelligenceBattleOutcomeForMission(state, outcome);
   recordV070ExecutiveHostileTakeoverEligibility(
     state,

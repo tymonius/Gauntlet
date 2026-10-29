@@ -192,6 +192,7 @@ export type V070TurnAction =
       echoesHandInstanceId?: string;
       bloodCostInstanceId?: string;
       crossingCostInstanceId?: string;
+      shatteringAssetInstanceId?: string;
     }
   | {
       type: 'mystics_begin_ritual';
@@ -2342,6 +2343,7 @@ function mysticsBeginRite(
       echoesHandInstanceId: action.echoesHandInstanceId,
       bloodCostInstanceId: action.bloodCostInstanceId,
       crossingCostInstanceId: action.crossingCostInstanceId,
+      shatteringAssetInstanceId: action.shatteringAssetInstanceId,
     },
   );
 }
