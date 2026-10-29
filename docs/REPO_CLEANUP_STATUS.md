@@ -386,13 +386,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The existing historical regression workflow executes these suites, and a boundary regression test protects their new location.
 - The v071 corpus-sync guard, remaining v071 review/retrieval tests, and current v072 runtime-adjacent tests are deferred for a separate consumer classification rather than moved indiscriminately.
 
-## Completed subtranche — final v071 historical test extraction
+## Completed subtranche — further maintained v071 historical test extraction
 
-- The remaining 20 v071 historical test-only suites, including the corpus-sync guard and focused retrieval, publication, setup, workflow, and card review regressions, now reside in `tools/rules-assistant/qa/tests/`. The corpus-sync guard retains its existing explicit Vitest quarantine because its retired workflow assertion has not been rehabilitated; its quarantine manifest entry follows the moved path.
-- Along with the preceding Gate 2/Gate 3 and retrieval/continuity QA extractions, this leaves **no `v071-*.test.mjs` suites under the active `rules-assistant/` backend root**. This is a test-source boundary only; historical Worker/runtime support and deployed routes are unchanged.
-- A regression boundary test enforces that no v071 test suite is reintroduced under the active backend root and the historical-regression workflow continues to execute QA tooling tests.
-
-- The maintained Vitest classification manifest was reconciled with tracked source: three dangling Rulebook test entries from prior source cleanup were removed, while the retained v071 corpus-sync quarantine points to its new QA-tooling location. Historical baseline counts remain archival annotations.
+- Nineteen additional maintained v071 historical regression suites for publication, setup, workflow, retrieval, and card review have been moved to `tools/rules-assistant/qa/tests/` without changing assertions or frozen authority.
+- The **quarantined** `rules-assistant/v071-corpus-sync-guard.test.mjs` deliberately remains at its original location, with its existing quarantine manifest entry intact. Its literal old-workflow assertions need separate rehabilitation or formal retirement; relocating it must not inadvertently reactivate it.
+- A QA-local boundary guard permits only this documented quarantined v071 exception at the backend root and verifies historical test execution coverage. Other versioned Worker/runtime sources remain untouched.
+- A broader maintained-Vitest baseline debt surfaced when experimenting with the quarantine manifest (36 failing test files in the full gate). This is separate from the behavior-preserving test relocation and requires a dedicated cleanup tranche; it is not resolved by altering the authority baseline or dismissing failures.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
