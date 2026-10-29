@@ -2,9 +2,9 @@ import { describe, expect, test } from "vitest";
 import {
   deriveConversationQueryFocus,
   retrieveRules
-} from "./local-search.js";
-import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../tools/rules-assistant/admin/admin-intelligence-page.js";
-import { mergeRegressionCandidates } from "../scripts/ingest-rules-regression-candidates.mjs";
+} from "../../../../rules-assistant/local-search.js";
+import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "../../../../tools/rules-assistant/admin/admin-intelligence-page.js";
+import { mergeRegressionCandidates } from "../../../../scripts/ingest-rules-regression-candidates.mjs";
 
 function syntheticCorpus() {
   const documents = [
