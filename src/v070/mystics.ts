@@ -1,4 +1,7 @@
 import { v070CanonicalContent } from '../content/v070';
+import { currentCanonicalContent } from '../content/current-game';
+import { putV070AssetInGraveyardByEffect } from './assets';
+import { applyV070BattleRetreatStep, v070NormalBattleRetreatApplied } from './retreat-step';
 import {
   V070GameActionError,
   appendV070Event,
@@ -27,6 +30,14 @@ export interface BeginV070MysticRiteOptions {
   echoesHandInstanceId?: string;
   bloodCostInstanceId?: string;
   crossingCostInstanceId?: string;
+  shatteringAssetInstanceId?: string;
+}
+
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    /** The first later-turn dice battle in which Shattering took effect. */
+    mysticShatteringTriggeredPlayers?: PlayerId[];
+  }
 }
 
 export interface BeginV070MysticRitualOptions {
@@ -72,8 +83,7 @@ export function beginV070MysticRite(
   // Full six-Rite state is now represented, but these three additional
   // printed procedures need dedicated, tested handlers. Never silently mark
   // an unsupported Rite as begun (or spend its cost) before that work exists.
-  if (riteId === 'shattering'
-    || riteId === 'consecration'
+  if (riteId === 'consecration'
     || riteId === 'equivalence') {
     throw new V070GameActionError(
       `Rite of ${riteName(riteId)} is not yet executable in the digital engine.`,
@@ -102,6 +112,9 @@ export function beginV070MysticRite(
       break;
     case 'crossing':
       beginCrossing(state, playerId, options);
+      break;
+    case 'shattering':
+      beginShattering(state, playerId, options);
       break;
   }
 
@@ -877,6 +890,122 @@ function beginEchoes(
   });
 }
 
+function beginShattering(
+  state: V070GameState,
+  playerId: PlayerId,
+  options: BeginV070MysticRiteOptions,
+): void {
+  const instanceId = options.shatteringAssetInstanceId;
+  const bank = state.players[playerId].zones.assetBank;
+  if (!instanceId || !bank.includes(instanceId)) {
+    throw new V070GameActionError(
+      'Rite of Shattering requires one banked Asset to put in your Graveyard.',
+    );
+  }
+  const cardId = state.cardInstances[instanceId]?.cardId;
+  const card = cardId ? currentCanonicalContent.cardsById.get(cardId) : null;
+  if (!card || !card.effects.some(effect => effect.label === 'Asset')) {
+    throw new V070GameActionError(
+      'Rite of Shattering must use a valid banked Asset.',
+    );
+  }
+  // Reuse the shared Asset departure lifecycle, including bindings and
+  // face-state cleanup. Snapshot its printed value before leaving the Bank.
+  putV070AssetInGraveyardByEffect(
+    state, playerId, instanceId, 'Rite of Shattering beginning cost',
+  );
+  const rite = requireMystics(state, playerId).rites.shattering;
+  rite.shatteringAssetValue = card.cost;
+  rite.shatteringDiceBattleReached = false;
+  appendV070Event(state, {
+    type: 'mystic_shattering_asset_sacrificed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      assetInstanceId: instanceId,
+      assetCardId: cardId,
+      assetValue: card.cost,
+    },
+  });
+}
+
+/**
+ * Apply automatically as the shared reveal procedure enters Outcome/dice.
+ * Earlier same-turn battles and battles ending before dice cannot consume it.
+ */
+export function applyV070MysticShatteringAtDiceEntry(
+  state: V070GameState,
+): void {
+  const runtime = state.battleRuntime;
+  const battle = state.battle;
+  if (!runtime || !battle || runtime.stage !== 'outcome') return;
+  for (const playerId of [battle.attacker, battle.defender]) {
+    if (!isV070MysticPlayer(state, playerId)) continue;
+    const rite = requireMystics(state, playerId).rites.shattering;
+    if (rite.status !== 'begun'
+      || rite.begunTurn === null
+      || rite.begunTurn >= state.turnNumber
+      || rite.shatteringDiceBattleReached
+      || rite.shatteringAssetValue === undefined) continue;
+    if (runtime.participants.A.battleDice.length
+      || runtime.participants.B.battleDice.length) {
+      throw new V070GameActionError(
+        'Shattering Advantage must apply before battle dice are rolled.',
+      );
+    }
+    rite.shatteringDiceBattleReached = true;
+    runtime.mysticShatteringTriggeredPlayers ??= [];
+    runtime.mysticShatteringTriggeredPlayers.push(playerId);
+    runtime.participants[playerId].advantage += rite.shatteringAssetValue;
+    appendV070Event(state, {
+      type: 'mystic_shattering_advantage_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        rite: 'shattering',
+        assetValue: rite.shatteringAssetValue,
+        advantage: rite.shatteringAssetValue,
+        turnNumber: state.turnNumber,
+      },
+    });
+  }
+}
+
+/**
+ * Complete on victory in the first qualifying dice battle. Retreat +1 on a
+ * loss uses the normal shared Retreat-step pipeline. Paths of Shadow's
+ * replacement normal Retreat is not followed by a new Retreat step.
+ * Rite reset/Guardians resolution occurs separately in the Aftermath.
+ */
+export function resolveV070MysticShatteringAtOutcome(
+  state: V070GameState,
+  winner: PlayerId,
+  loser: PlayerId,
+): void {
+  const triggered = state.battleRuntime?.mysticShatteringTriggeredPlayers ?? [];
+  if (triggered.includes(winner)) {
+    completeRite(state, winner, 'shattering');
+  }
+  if (triggered.includes(loser)) {
+    const advanced = v070NormalBattleRetreatApplied(state)
+      ? applyV070BattleRetreatStep(state, loser, {
+          kind: 'rite',
+          label: 'Rite of Shattering Retreat +1',
+        })
+      : null;
+    appendV070Event(state, {
+      type: 'mystic_shattering_loss_retreat',
+      actor: loser,
+      visibility: 'public',
+      payload: {
+        rite: 'shattering',
+        normalRetreatApplied: v070NormalBattleRetreatApplied(state),
+        extraRetreatMoved: advanced?.moved ?? false,
+      },
+    });
+  }
+}
+
 function beginBlood(
   state: V070GameState,
   playerId: PlayerId,
@@ -1045,6 +1174,10 @@ function resetRite(
   rite.begunTurn = null;
   rite.completedTurn = null;
   rite.territoryInstanceId = null;
+  if (riteId === 'shattering') {
+    delete rite.shatteringAssetValue;
+    delete rite.shatteringDiceBattleReached;
+  }
 
   appendV070Event(state, {
     type: 'mystic_rite_interrupted',
@@ -1067,6 +1200,9 @@ function interruptV070MysticProgress(
     if (mystics.rites[riteId].status === 'begun') {
       resetRite(state, playerId, riteId, reason);
     }
+  }
+  if (state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId)) {
+    resetRite(state, playerId, 'shattering', reason);
   }
 
   if (mystics.ritual.active) {
@@ -1094,7 +1230,9 @@ function interruptibleMysticProgress(
   const mystics = requireMystics(state, playerId);
   if (mystics.ritual.active) return 'ritual';
   if (mystics.rites.echoes.status === 'begun'
-    || mystics.rites.blood.status === 'begun') {
+    || mystics.rites.blood.status === 'begun'
+    || (mystics.rites.shattering.status === 'begun'
+      && state.battleRuntime?.mysticShatteringTriggeredPlayers?.includes(playerId))) {
     return 'rite';
   }
   return null;
