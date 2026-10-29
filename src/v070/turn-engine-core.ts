@@ -477,6 +477,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_act_of_faith_reveal_count';
+      playerId: PlayerId;
+      revealCount: number;
+    }
+  | {
       type: 'choose_act_of_faith_graveyard_target';
       playerId: PlayerId;
       targetInstanceId: string;
@@ -746,6 +751,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_dark_omens_graveyard_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'act_of_faith_reveal_count'
+      && action.type === 'choose_act_of_faith_reveal_count'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'act_of_faith_graveyard_target'
       && action.type === 'choose_act_of_faith_graveyard_target'
       && action.playerId === pending.playerId
@@ -852,6 +861,7 @@ export function reduceV070TurnAction(
       'choose_excommunication_targets',
       'choose_opponent_hand_discard_target',
       'choose_dark_omens_graveyard_target',
+      'choose_act_of_faith_reveal_count',
       'choose_act_of_faith_graveyard_target',
       'resolve_threefold_vision_distribution',
       'choose_anathema_target',
@@ -1251,6 +1261,9 @@ export function reduceV070TurnAction(
         action.playerId,
         action.targetInstanceId,
       );
+      break;
+    case 'choose_act_of_faith_reveal_count':
+      chooseActOfFaithRevealCount(next, action.playerId, action.revealCount);
       break;
     case 'choose_act_of_faith_graveyard_target':
       chooseActOfFaithGraveyardTarget(
@@ -4583,56 +4596,28 @@ function continuePendingActionCard(state: V070GameState): void {
     }
     case 'inquisition-act-of-faith': {
       const opponentId = otherPlayer(pending.playerId);
-      const revealed = revealTopV070DrawCards(
-        state,
-        pending.playerId,
-        opponentId,
+      const maximumRevealCount = Math.min(
         3,
-        'Act of Faith',
+        state.players[opponentId].zones.drawPile.length,
       );
-      if (revealed.length === 0) {
-        appendV070Event(state, {
-          type: 'action_effect_incomplete',
-          actor: pending.playerId,
-          visibility: 'public',
-          payload: {
-            sourceActionInstanceId: pending.instanceId,
-            purpose: 'Act of Faith',
-            reason: 'required_opponent_draw_card_unavailable',
-          },
-        });
-        finishPendingActionCard(state);
-        return;
-      }
-      if (revealed.length === 1) {
-        routeActOfFaithRevealedCards(
-          state,
-          pending.playerId,
-          opponentId,
-          revealed,
-          revealed[0],
-        );
-        finishPendingActionCard(state);
-        return;
-      }
       state.pendingActionEffectChoice = {
-        kind: 'act_of_faith_graveyard_target',
+        kind: 'act_of_faith_reveal_count',
         playerId: pending.playerId,
         opponentId,
         sourceActionInstanceId: pending.instanceId,
-        revealedInstanceIds: [...revealed],
+        maximumRevealCount,
       };
       appendV070Event(state, {
         type: 'action_effect_choice_pending',
         actor: pending.playerId,
         visibility: 'public',
         payload: {
-          kind: 'act_of_faith_graveyard_target',
+          kind: 'act_of_faith_reveal_count',
           playerId: pending.playerId,
           opponentId,
           sourceActionInstanceId: pending.instanceId,
           purpose: 'Act of Faith',
-          targetInstanceIds: [...revealed],
+          maximumRevealCount,
         },
       });
       return;
@@ -5419,6 +5404,92 @@ function revealTopV070DrawCards(
     },
   });
   return instanceIds;
+}
+
+function chooseActOfFaithRevealCount(
+  state: V070GameState,
+  playerId: PlayerId,
+  revealCount: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'act_of_faith_reveal_count'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-act-of-faith') {
+    throw new V070GameActionError(
+      'No Act of Faith Action reveal-count choice is pending for that player.',
+    );
+  }
+  if (!Number.isInteger(revealCount)
+    || revealCount < 0
+    || revealCount > choice.maximumRevealCount) {
+    throw new V070GameActionError(
+      `Act of Faith may reveal from zero to ${choice.maximumRevealCount} card(s).`,
+    );
+  }
+  if (revealCount === 0) {
+    state.pendingActionEffectChoice = null;
+    appendV070Event(state, {
+      type: 'act_of_faith_action_reveal_declined',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId: pending.instanceId,
+        opponentId: choice.opponentId,
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (state.players[choice.opponentId].zones.drawPile.length < revealCount) {
+    throw new V070GameActionError(
+      'The opponent no longer has enough Draw Pile cards for that Act of Faith choice.',
+    );
+  }
+  const revealed = revealTopV070DrawCards(
+    state,
+    playerId,
+    choice.opponentId,
+    revealCount,
+    'Act of Faith',
+  );
+  if (revealed.length === 1) {
+    routeActOfFaithRevealedCards(
+      state,
+      playerId,
+      choice.opponentId,
+      revealed,
+      revealed[0],
+    );
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'act_of_faith_graveyard_target',
+    playerId,
+    opponentId: choice.opponentId,
+    sourceActionInstanceId: pending.instanceId,
+    revealedInstanceIds: [...revealed],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'act_of_faith_graveyard_target',
+      playerId,
+      opponentId: choice.opponentId,
+      sourceActionInstanceId: pending.instanceId,
+      purpose: 'Act of Faith',
+      targetInstanceIds: [...revealed],
+    },
+  });
 }
 
 function chooseActOfFaithGraveyardTarget(
