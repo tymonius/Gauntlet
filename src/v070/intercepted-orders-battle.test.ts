@@ -16,8 +16,8 @@ import {
 } from './intercepted-orders-battle-choices';
 import {
   queueV070FaceUpTacticRevealReplacement,
-  resumeV070SupportedRevealEffects,
 } from './battle-effects-pre-counterworks';
+import { resumeV070SupportedRevealEffects } from './battle-effects';
 import {
   INTERCEPTED_ORDERS_NEXT_TACTIC_TEXT,
   interceptedOrdersTacticTargets,
