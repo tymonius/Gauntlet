@@ -17,9 +17,9 @@ const gate2 = loadJson("../../../../tools/rules-assistant/qa/evals/rules-arbiter
 
 const priorLetters = "abcdefghijklmnopqrst".split("");
 const priorPaths = priorLetters.flatMap((letter) => [
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
-  `../tools/rules-assistant/qa/evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
+  `../evals/rules-arbiter-gate3-blind-${letter}.v071.json`,
+  `../evals/rules-arbiter-gate3-blind-${letter}-player-language.v071.json`,
+  `../evals/rules-arbiter-gate3-blind-${letter}-clarifications.v071.json`
 ]);
 const prior = priorPaths.map(loadJson);
 
