@@ -411,6 +411,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The historical-regression workflow watches this directory and explicitly runs its test suites; `package.json` remains unchanged to avoid unrelated full-Vitest failures documented in #1822.
 - Imports continue to reference maintained runtime helpers; assertions, active Worker and D1 migration logic remain unchanged.
 
+## Completed subtranche — Rules Assistant benchmark and semantic-QA regression suites
+
+- Seven older semantic-evaluator, blind benchmark/model-packet, and fallback-source-lookup regression suites now live under `tools/rules-assistant/qa/tests/` rather than beside live Worker sources.
+- Test imports continue to resolve maintained backend helpers, intentionally historical frozen release evidence, and current app paths; no authority, assertions, API routes, or live Worker modules moved.
+- Existing historical-regression workflow already watches and runs this QA test directory, preserving coverage.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   handleClientSourceLookupReview,
   sanitizeClientSourceLookupPayload
-} from "./source-lookup-review.js";
+} from "../../../../rules-assistant/source-lookup-review.js";
 
 function fakeDb() {
   const state = { batches: 0, runs: 0 };

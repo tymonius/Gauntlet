@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   QA_SEMANTIC_EVALUATOR_REVISION,
   deriveSemanticVerdict
-} from "./qa-semantic-evaluator.js";
+} from "../../../../rules-assistant/qa-semantic-evaluator.js";
 
 describe("semantic QA v2 extra-material telemetry", () => {
   test("does not fail or review an otherwise passing answer merely because extra material was reported", () => {

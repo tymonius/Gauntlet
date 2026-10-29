@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   deriveSemanticVerdict,
   validateSemanticEvaluationPayload
-} from "./qa-semantic-evaluator.js";
+} from "../../../../rules-assistant/qa-semantic-evaluator.js";
 
 function expected() {
   return {
