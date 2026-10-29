@@ -223,6 +223,22 @@ describe('v0.7.0 Act of Faith Action', () => {
       playerId: 'B',
       cardInstanceId: source,
     });
+    expect(state.pendingActionEffectChoice).toEqual({
+      kind: 'act_of_faith_reveal_count',
+      playerId: 'B',
+      opponentId: 'A',
+      sourceActionInstanceId: source,
+      maximumRevealCount: 3,
+    });
+    expect(state.events.some(event =>
+      event.type === 'draw_pile_cards_revealed'
+      && (event.payload as { purpose?: string })?.purpose === 'Act of Faith'
+    )).toBe(false);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B',
+      revealCount: 3,
+    });
 
     expect(state.players.A.zones.drawPile.slice(0, 3)).toEqual(revealed);
     expect(state.pendingActionEffectChoice).toEqual({
@@ -280,6 +296,15 @@ describe('v0.7.0 Act of Faith Action', () => {
       playerId: 'B',
       cardInstanceId: source,
     });
+    expect(state.pendingActionEffectChoice).toEqual(expect.objectContaining({
+      kind: 'act_of_faith_reveal_count',
+      maximumRevealCount: 2,
+    }));
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B',
+      revealCount: 2,
+    });
 
     expect(state.pendingActionEffectChoice).toEqual(expect.objectContaining({
       kind: 'act_of_faith_graveyard_target',
@@ -311,11 +336,135 @@ describe('v0.7.0 Act of Faith Action', () => {
       playerId: 'B',
       cardInstanceId: source,
     });
+    expect(state.pendingActionEffectChoice).toEqual(expect.objectContaining({
+      kind: 'act_of_faith_reveal_count',
+      maximumRevealCount: 1,
+    }));
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B',
+      revealCount: 1,
+    });
 
     expect(state.players.A.zones.drawPile).toHaveLength(0);
     expect(state.players.A.zones.graveyard).toContain(only);
     expect(state.pendingActionEffectChoice).toBeNull();
     expect(state.pendingActionCard).toBeNull();
+  });
+
+  test('zero-card choice resolves without revealing or moving opposing cards', () => {
+    let state = openingForB();
+    const original = [...state.players.A.zones.drawPile];
+    const source = injectCard(state, 'B', 'inquisition-act-of-faith', 'hand', 'zero');
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: source,
+    });
+    expect(state.pendingActionEffectChoice?.kind).toBe('act_of_faith_reveal_count');
+    expect(() => reduceV070TurnAction(state, {
+      type: 'pass_opening', playerId: 'B',
+    })).toThrow(/pending printed Action effect choice/);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count', playerId: 'B', revealCount: 0,
+    });
+    expect(state.players.A.zones.drawPile).toEqual(original);
+    expect(state.pendingActionEffectChoice).toBeNull();
+    expect(state.pendingActionCard).toBeNull();
+    expect(state.players.B.zones.discardPile).toContain(source);
+    expect(state.events.some(event => event.type === 'draw_pile_cards_revealed'
+      && (event.payload as { purpose?: string })?.purpose === 'Act of Faith')).toBe(false);
+    expect(state.events.some(event =>
+      event.type === 'act_of_faith_action_reveal_declined')).toBe(true);
+  });
+
+  test('two-card choice from a larger Draw Pile leaves the third card untouched', () => {
+    let state = openingForB();
+    const firstTwo = state.players.A.zones.drawPile.slice(0, 2);
+    const third = state.players.A.zones.drawPile[2];
+    const source = injectCard(state, 'B', 'inquisition-act-of-faith', 'hand', 'two');
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count', playerId: 'B', revealCount: 2,
+    });
+    expect(state.pendingActionEffectChoice).toEqual(expect.objectContaining({
+      kind: 'act_of_faith_graveyard_target',
+      revealedInstanceIds: firstTwo,
+    }));
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_graveyard_target',
+      playerId: 'B', targetInstanceId: firstTwo[0],
+    });
+    expect(state.players.A.zones.drawPile[0]).toBe(third);
+    expect(state.players.A.zones.graveyard).toContain(firstTwo[0]);
+    expect(state.players.A.zones.discardPile).toContain(firstTwo[1]);
+  });
+
+  test('rejects unauthorized, noninteger, negative, and excess reveal counts atomically', () => {
+    let state = openingForB();
+    const source = injectCard(state, 'B', 'inquisition-act-of-faith', 'hand', 'invalid');
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: source,
+    });
+    const initial = [...state.players.A.zones.drawPile];
+    for (const revealCount of [-1, 4, 1.5, Number.NaN]) {
+      expect(() => reduceV070TurnAction(state, {
+        type: 'choose_act_of_faith_reveal_count',
+        playerId: 'B',
+        revealCount,
+      })).toThrow(/may reveal from zero/);
+    }
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'A',
+      revealCount: 1,
+    })).toThrow();
+    expect(state.players.A.zones.drawPile).toEqual(initial);
+    expect(state.pendingActionEffectChoice?.kind).toBe('act_of_faith_reveal_count');
+    expect(state.events.some(event =>
+      event.type === 'draw_pile_cards_revealed'
+      && (event.payload as { purpose?: string })?.purpose === 'Act of Faith')).toBe(false);
+  });
+
+  test('rejects stale Draw Pile count and reordered revealed top cards', () => {
+    let state = openingForB();
+    const source = injectCard(state, 'B', 'inquisition-act-of-faith', 'hand', 'stale');
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: source,
+    });
+    // Simulate a stale/externally mutated pending state.
+    state.players.A.zones.drawPile = state.players.A.zones.drawPile.slice(0, 1);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B', revealCount: 2,
+    })).toThrow(/no longer has enough Draw Pile cards/);
+    expect(state.pendingActionEffectChoice?.kind).toBe('act_of_faith_reveal_count');
+    // Fresh count selection snapshots the exact revealed top cards.
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B', revealCount: 1,
+    });
+    expect(state.pendingActionEffectChoice).toBeNull();
+  });
+
+  test('count choice reveals no hidden Draw Pile identities in either player view', () => {
+    let state = openingForB();
+    const source = injectCard(state, 'B', 'inquisition-act-of-faith', 'hand', 'privacy');
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: source,
+    });
+    const ownerView = viewV070GameForPlayer(state, 'B');
+    const opponentView = viewV070GameForPlayer(state, 'A');
+    for (const view of [ownerView, opponentView]) {
+      expect(view.pendingActionEffectChoice).toEqual(expect.objectContaining({
+        kind: 'act_of_faith_reveal_count',
+        maximumRevealCount: 3,
+      }));
+      expect(JSON.stringify(view.pendingActionEffectChoice)).not.toContain('revealedInstanceIds');
+      expect(view.events.some(event =>
+        event.type === 'draw_pile_cards_revealed'
+        && (event.payload as { purpose?: string })?.purpose === 'Act of Faith')).toBe(false);
+    }
   });
 
   test('invalid Act of Faith choice leaves all revealed cards in place and preserves the pending choice', () => {
@@ -334,6 +483,11 @@ describe('v0.7.0 Act of Faith Action', () => {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_act_of_faith_reveal_count',
+      playerId: 'B',
+      revealCount: 3,
     });
 
     expect(() => reduceV070TurnAction(state, {
