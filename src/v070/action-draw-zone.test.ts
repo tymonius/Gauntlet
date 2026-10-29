@@ -445,6 +445,34 @@ describe('v0.7.0 Act of Faith Action', () => {
       playerId: 'B', revealCount: 1,
     });
     expect(state.pendingActionEffectChoice).toBeNull();
+
+    let reordered = openingForB();
+    const secondSource = injectCard(
+      reordered, 'B', 'inquisition-act-of-faith', 'hand', 'stale-reorder',
+    );
+    reordered = reduceV070TurnAction(reordered, {
+      type: 'play_action_card', playerId: 'B', cardInstanceId: secondSource,
+    });
+    reordered = reduceV070TurnAction(reordered, {
+      type: 'choose_act_of_faith_reveal_count', playerId: 'B', revealCount: 2,
+    });
+    const choice = reordered.pendingActionEffectChoice;
+    expect(choice?.kind).toBe('act_of_faith_graveyard_target');
+    if (!choice || choice.kind !== 'act_of_faith_graveyard_target') {
+      throw new Error('Act of Faith did not open its Graveyard choice.');
+    }
+    const top = choice.revealedInstanceIds;
+    [reordered.players.A.zones.drawPile[0], reordered.players.A.zones.drawPile[1]] = [
+      reordered.players.A.zones.drawPile[1],
+      reordered.players.A.zones.drawPile[0],
+    ];
+    expect(() => reduceV070TurnAction(reordered, {
+      type: 'choose_act_of_faith_graveyard_target',
+      playerId: 'B',
+      targetInstanceId: top[0],
+    })).toThrow(/no longer on top/);
+    expect(reordered.pendingActionEffectChoice?.kind).toBe('act_of_faith_graveyard_target');
+    expect(reordered.players.A.zones.graveyard).not.toContain(top[0]);
   });
 
   test('count choice reveals no hidden Draw Pile identities in either player view', () => {
