@@ -10,6 +10,7 @@ import {
   requiredV070BattleDice,
 } from './battle-engine';
 import { retreatV070Position } from './rules';
+import { currentCanonicalContent } from '../content/current-game';
 import {
   beginV070MysticRite,
   applyV070MysticShatteringAtDiceEntry,
@@ -53,7 +54,16 @@ function ready(): V070GameState {
   });
 }
 
-function bankAsset(state: V070GameState, cardId = 'neutral-entrenchment'): string {
+function bankAsset(state: V070GameState): string {
+  // Choose an ordinary cost-2 bankable Asset from current authority without
+  // making this Rite test assert historical behavior for an unrelated card.
+  const card = currentCanonicalContent.content.cards.find(candidate =>
+    candidate.cost === 2
+    && candidate.effects.some(effect => effect.label === 'Asset')
+    && candidate.allegiance === 'Neutral'
+  );
+  if (!card) throw new Error('Test requires an available cost-2 neutral Asset.');
+  const cardId = card.id;
   const instanceId = 'shattering-asset-for-cost';
   state.cardInstances[instanceId] = { instanceId, owner: 'A', cardId };
   state.players.A.zones.assetBank.push(instanceId);
