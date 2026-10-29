@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import dispatcher from './worker-entry.js';
+import dispatcher from '../../../../rules-assistant/worker-entry.js';
 
-const lifecycle = JSON.parse(readFileSync(new URL('../config/release-lifecycle.json', import.meta.url), 'utf8'));
+const lifecycle = JSON.parse(readFileSync(new URL('../../../../config/release-lifecycle.json', import.meta.url), 'utf8'));
 const stagedCurrentVersion = 'v0.7.2';
 
 async function health(path) {

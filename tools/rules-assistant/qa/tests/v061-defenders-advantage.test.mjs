@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 
-const rulebook = readFileSync(new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url), "utf8");
-const reference = readFileSync(new URL("../releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md", import.meta.url), "utf8");
+const rulebook = readFileSync(new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md", import.meta.url), "utf8");
+const reference = readFileSync(new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md", import.meta.url), "utf8");
 
 test("defines Defender's Advantage as a tie rule rather than ordinary advantage", () => {
   expect(rulebook).toContain("This is a tie rule, not an instance of the ordinary advantage mechanic.");
