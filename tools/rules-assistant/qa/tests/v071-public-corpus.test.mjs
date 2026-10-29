@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { validateV071PublishedData } from '../legacy/rules-assistant/v071/v071-public-corpus.js';
+import { validateV071PublishedData } from '../../../../legacy/rules-assistant/v071/v071-public-corpus.js';
 
-const releaseDir = new URL('../releases/v0.7.1/', import.meta.url);
+const releaseDir = new URL('../../../../releases/v0.7.1/', import.meta.url);
 const rulebookMarkdown = readFileSync(new URL('Gauntlet_v0.7.1_Rulebook.md', releaseDir), 'utf8');
 const canonicalData = JSON.parse(readFileSync(new URL('Gauntlet_v0.7.1_Canonical_Data.json', releaseDir), 'utf8'));
 const manifest = JSON.parse(readFileSync(new URL('Gauntlet_v0.7.1_Manifest.json', releaseDir), 'utf8'));

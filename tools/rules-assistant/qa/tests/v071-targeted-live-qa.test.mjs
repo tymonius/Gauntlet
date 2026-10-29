@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseRequestedCaseIds,
   selectBenchmarkCases
-} from "../scripts/v071-live-rules-qa-case-selection.mjs";
+} from "../../../../scripts/v071-live-rules-qa-case-selection.mjs";
 
 const cases = [
   { id: "alpha" },

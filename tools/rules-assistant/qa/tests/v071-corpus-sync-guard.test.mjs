@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const worker = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
-const liveQa = readFileSync(new URL("../.github/workflows/v071-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
-const publication = readFileSync(new URL("../.github/workflows/verify-current-live-publication.yml", import.meta.url), "utf8");
-const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));
-const materializeWorkflow = readFileSync(new URL("../.github/workflows/materialize-current-release-package.yml", import.meta.url), "utf8");
-const materializer = readFileSync(new URL("../scripts/build-v071-release-source.mjs", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../../../../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
+const liveQa = readFileSync(new URL("../../../../.github/workflows/v071-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
+const publication = readFileSync(new URL("../../../../.github/workflows/verify-current-live-publication.yml", import.meta.url), "utf8");
+const lifecycle = JSON.parse(readFileSync(new URL("../../../../config/release-lifecycle.json", import.meta.url), "utf8"));
+const materializeWorkflow = readFileSync(new URL("../../../../.github/workflows/materialize-current-release-package.yml", import.meta.url), "utf8");
+const materializer = readFileSync(new URL("../../../../scripts/build-v071-release-source.mjs", import.meta.url), "utf8");
 
 describe("v0.7.1 Rules Arbiter corpus synchronization guard", () => {
   test("release materialization no longer owns the maintained v0.7.1 landing", () => {
