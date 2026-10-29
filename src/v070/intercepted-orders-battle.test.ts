@@ -294,6 +294,11 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     );
     expect(state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments)
       .not.toContainEqual(expect.objectContaining({ instanceId: target }));
+    // A concurrent continuation cannot slip past the unresolved replacement.
+    resumeV070SupportedRevealEffects(state);
+    expect(pendingInterceptedOrdersChoice(state)?.kind).toBe('replacement');
+    expect(state.battleRuntime!.pendingRevealEffectEncounteredAt).toBe('reveal_tactics');
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(0);
     expect(() => resolveInterceptedOrdersChoice(state, {
       type: 'resolve_intercepted_orders_replacement',
       playerId: 'A',
