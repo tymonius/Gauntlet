@@ -66,7 +66,7 @@ Source organization may therefore change independently of deployed URL layout. C
 - `apps/factions/` → `/factions/`
 - `apps/press/` → `/press/`
 - `apps/privacy/` → `/privacy/`
-- `apps/rulebook/` → `/rulebook/`
+- `legacy/rulebook-browser/` → `/rulebook/` (transitional, lifecycle-selected modular Rulebook publication)
 - `apps/rules/` → `/rules/`
 - `apps/start/` → `/start/`
 - `apps/playtest/` → `/playtest/`
@@ -206,7 +206,8 @@ apps/
   privacy/
   deckbuilder/
   card-reference/
-  rulebook/
+  rules-arbiter/
+  rules-assistant-widget/
   factions/
   rules/
   start/
@@ -232,6 +233,7 @@ assets/
 docs/
 releases/
 legacy/
+  rulebook-browser/  # transitional deployment shell for /rulebook/
 ```
 
 This is a conceptual dependency target, not an instruction to move every existing directory immediately. Pages stages an explicit deployed tree, so source may move toward these boundaries while stable public URLs remain unchanged.
