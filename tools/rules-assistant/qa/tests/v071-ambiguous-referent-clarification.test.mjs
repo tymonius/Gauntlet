@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { BEHAVIOR_REVISION, buildAmbiguousReferentClarification } from "../legacy/rules-assistant/v071/worker-v071.js";
-import { normalizeCurrentAnswerMode, toLegacyAnswerMode } from "./rules-status.js";
+import { BEHAVIOR_REVISION, buildAmbiguousReferentClarification } from "../../../../legacy/rules-assistant/v071/worker-v071.js";
+import { normalizeCurrentAnswerMode, toLegacyAnswerMode } from "../../../../rules-assistant/rules-status.js";
 
 const reviewedHistory = [
   { role: "user", content: "I am the defender, I currently have advantage, and both players have committed their Battle Hands. What happens next?" },

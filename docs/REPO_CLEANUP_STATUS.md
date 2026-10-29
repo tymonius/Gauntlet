@@ -379,6 +379,13 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The existing Rules Arbiter historical-regression workflow picks up the relocated test suites; a new boundary test verifies the layout.
 - The supporting `v071-gate3-c-remediation.js` source remains in its existing root pending separate runtime-consumer classification; this tranche moves only tests.
 
+## Completed subtranche — Rules Assistant v071 retrieval and continuity QA extraction
+
+- Twenty historical v071 per-card, retrieval, clarification, state-continuity, and classification suites now reside in `tools/rules-assistant/qa/tests/` rather than the production backend root.
+- Test assertions and archived release mechanics are unchanged; relocated tests resolve their frozen v071 source, existing backend helpers, and QA assets through corrected imports/paths.
+- The existing historical regression workflow executes these suites, and a boundary regression test protects their new location.
+- The v071 corpus-sync guard, remaining v071 review/retrieval tests, and current v072 runtime-adjacent tests are deferred for a separate consumer classification rather than moved indiscriminately.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
@@ -412,9 +419,9 @@ Do not move versioned worker/corpus files until their live routing, QA, and hist
 - `rulebook/` remains residual compatibility/support material rather than gameplay authority.
 - Rulebook QR assets remain active Player Guide publication support.
 
-## Known documentation drift
+## Resolved documentation drift
 
-`docs/Repository_Architecture.md` still contains some pre-#1735 Browser Rulebook examples that describe source under `apps/rulebook/`. The machine contracts and current repository state are authoritative; align that human document in a follow-up rather than using its stale examples as premises for new moves.
+The outdated Browser Rulebook source/publication examples in `docs/Repository_Architecture.md` were corrected in #1980. The current `/rulebook/` route is staged from `legacy/rulebook-browser/` under `config/publication-boundary.json`; the former `apps/rulebook/` example is no longer used.
 
 ## Next top-down queue
 
