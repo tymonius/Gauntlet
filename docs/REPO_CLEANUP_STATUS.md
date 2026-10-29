@@ -366,6 +366,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Imports, fixture readers and workflow inspection paths are retargeted for the new test location; assertions and historical frozen sources are unchanged.
 - The historical-regression workflow introduced in #1969 already runs all `tools/rules-assistant/qa/tests/*.test.mjs` suites.
 
+## Completed subtranche — Rules Assistant Gate 2 historical regression extraction
+
+- Four v071 Gate 2 replay/regression tests have moved from the mixed backend root into `tools/rules-assistant/qa/tests/`, alongside the established historical QA fixture and regression suites.
+- Imports and fixture readers now resolve the same archived v071 Worker and existing test assets from the QA location. Regression assertions, historical authority, and deployed runtime are unchanged.
+- The existing historical-regression workflow executes these relocated tests; a separate boundary guard prevents their return to the active backend root.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
