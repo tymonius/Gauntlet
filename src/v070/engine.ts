@@ -344,6 +344,13 @@ export type V070PendingActionEffectChoice =
       candidateInstanceIds: string[];
     }
   | {
+      kind: 'act_of_faith_reveal_count';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      maximumRevealCount: number;
+    }
+  | {
       kind: 'act_of_faith_graveyard_target';
       playerId: PlayerId;
       opponentId: PlayerId;
