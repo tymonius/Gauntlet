@@ -6,6 +6,7 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
+import { viewV070GameForPlayer } from './views';
 import {
   beginInterceptedOrdersAtTacticReveal,
   pendingInterceptedOrdersChoice,
@@ -390,6 +391,103 @@ describe('future Intercepted Orders Tactic implementation primitives', () => {
     )).not.toThrow();
     expect(state.battleRuntime!.pendingRevealEffectCommitments)
       .toContainEqual(expect.objectContaining({ instanceId: replacement }));
+  });
+
+  test('live battle reducer rejects Intercepted Orders actions without a pending choice', () => {
+    const state = enterBattle();
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_intercepted_orders_target',
+      playerId: 'A',
+      targetInstanceId: 'not-a-target',
+    })).toThrow(/No Intercepted Orders choice is pending/);
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'B',
+    })).toThrow(/No Intercepted Orders choice is pending/);
+    expect(viewV070GameForPlayer(state, 'A').pendingInterceptedOrders).toBeNull();
+  });
+
+  test('battle reducer routes multi-target choice and pauses for opponent replacement', () => {
+    const { state, source, target, otherTarget } = prepare(true, true);
+    beginInterceptedOrdersAtTacticReveal(state, 'A', source);
+
+    expect(() => reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    })).toThrow(/Resolve the pending Intercepted Orders/);
+
+    const ownerView = viewV070GameForPlayer(state, 'A').pendingInterceptedOrders;
+    const opponentView = viewV070GameForPlayer(state, 'B').pendingInterceptedOrders;
+    expect(ownerView).toEqual(expect.objectContaining({
+      kind: 'target',
+      playerId: 'A',
+      candidateInstanceIds: [target, otherTarget],
+    }));
+    expect(opponentView).toEqual(expect.objectContaining({
+      kind: 'target',
+      playerId: 'A',
+      candidateCount: 2,
+    }));
+    expect(opponentView).not.toHaveProperty('candidateInstanceIds');
+
+    const chosen = reduceV070BattleAction(state, {
+      type: 'resolve_intercepted_orders_target',
+      playerId: 'A',
+      targetInstanceId: otherTarget!,
+    });
+    expect(pendingInterceptedOrdersChoice(state)?.kind).toBe('target');
+    expect(pendingInterceptedOrdersChoice(chosen)?.kind).toBe('replacement');
+    const newOwnerView = viewV070GameForPlayer(chosen, 'A').pendingInterceptedOrders;
+    const newOpponentView = viewV070GameForPlayer(chosen, 'B').pendingInterceptedOrders;
+    expect(newOwnerView).not.toHaveProperty('candidateInstanceIds');
+    expect(newOpponentView).toEqual(expect.objectContaining({
+      kind: 'replacement',
+      playerId: 'B',
+      candidateInstanceIds: expect.arrayContaining([
+        'intercepted-B-replacement',
+      ]),
+    }));
+
+    const declined = reduceV070BattleAction(chosen, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'B',
+    });
+    expect(pendingInterceptedOrdersChoice(declined)).toBeNull();
+    expect(declined.battleRuntime!.participants.B.additionalTactics).toEqual([]);
+    expect(declined.battleRuntime!.participants.B.reserve).toContain(otherTarget);
+    expect(() => reduceV070BattleAction(declined, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'B',
+    })).toThrow(/No Intercepted Orders choice is pending/);
+  });
+
+  test('battle reducer resolves a face-up replacement and resumes same reveal, not a second reveal', () => {
+    const { state, source, target, replacement } = prepare(false);
+    state.battleRuntime!.participants.A.tactic!.faceUp = true;
+    state.battleRuntime!.participants.B.tactic!.faceUp = true;
+    state.cardInstances[replacement].cardId = 'diplomats-gunboat-diplomacy';
+    state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    state.battleRuntime!.pendingRevealEffectClass = 'interference';
+    state.battleRuntime!.pendingRevealEffectCommitments = [];
+    state.battleRuntime!.pendingRevealDeferredOrdinaryCommitments = [
+      { instanceId: target, owner: 'A', role: 'tactic', faceUp: true },
+    ];
+
+    beginInterceptedOrdersAtTacticReveal(state, 'B', source);
+    expect(viewV070GameForPlayer(state, 'A').pendingInterceptedOrders)
+      .toEqual(expect.objectContaining({ kind: 'replacement', playerId: 'A' }));
+    const next = reduceV070BattleAction(state, {
+      type: 'resolve_intercepted_orders_replacement',
+      playerId: 'A',
+      cardInstanceId: replacement,
+    });
+    expect(next.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(next.battleRuntime!.participants.A.tactic?.faceUp).toBe(true);
+    expect(next.battleRuntime!.participants.A.tactic?.instanceId).toBe(replacement);
+    expect(next.battleRuntime!.participants.A.battleModifier).toBe(2);
+    expect(next.battleRuntime!.participants.A.reserve).toContain(target);
+    expect(next.battleRuntime!.interceptedOrdersBarredInstanceIds)
+      .toContain(target);
+    expect(viewV070GameForPlayer(next, 'A').pendingInterceptedOrders).toBeNull();
   });
 
 });
