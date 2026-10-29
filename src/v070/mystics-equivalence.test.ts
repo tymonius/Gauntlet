@@ -57,8 +57,8 @@ function ready(): V070GameState {
 function exchangeCards(state: V070GameState): { handId: string; graveId: string } {
   const handId = 'equivalence-hand-cost';
   const graveId = 'equivalence-grave-card';
-  state.cardInstances[handId] = { instanceId: handId, owner: 'A', cardId: exchangedCostId };
-  state.cardInstances[graveId] = { instanceId: graveId, owner: 'A', cardId: playedCardId };
+  state.cardInstances[handId] = { instanceId: handId, owner: 'A', cardId: exchangedCostId! };
+  state.cardInstances[graveId] = { instanceId: graveId, owner: 'A', cardId: playedCardId! };
   state.players.A.zones.hand.push(handId);
   state.players.A.zones.graveyard.push(graveId);
   return { handId, graveId };
@@ -92,7 +92,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     const opponent = viewV070GameForPlayer(state, 'B').players.A;
     expect(opponent.zones.hand).toBeUndefined();
     expect(opponent.zones.revealedHandCards).toEqual([
-      { instanceId: graveId, cardId: playedCardId },
+      { instanceId: graveId, cardId: playedCardId! },
     ]);
     expect(opponent.mystics).not.toHaveProperty('selectedRiteIds');
   });
@@ -106,7 +106,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
       equivalenceGraveyardInstanceId: handId,
     })).toThrow(/exchange one Hand card/);
     expect(state).toEqual(before);
-    state.cardInstances[handId].cardId = unequalCostId;
+    state.cardInstances[handId].cardId = unequalCostId!;
     const different = structuredClone(state);
     expect(() => beginV070MysticRite(state, 'A', 'equivalence', {
       equivalenceHandInstanceId: handId,
@@ -164,7 +164,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     const { graveId } = begin(state);
     const replacementId = 'another-instance-same-title';
     state.cardInstances[replacementId] = {
-      instanceId: replacementId, owner: 'A', cardId: playedCardId,
+      instanceId: replacementId, owner: 'A', cardId: playedCardId!,
     };
     state.players.A.zones.hand.push(replacementId);
     state.players.A.zones.hand.splice(state.players.A.zones.hand.indexOf(graveId), 1);
