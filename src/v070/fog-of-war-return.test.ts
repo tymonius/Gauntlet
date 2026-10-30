@@ -72,7 +72,7 @@ function fixture() {
     suffix: string,
     role: 'gambit' | 'tactic',
     sourceZone: 'hand' | 'reserve',
-    cardId = battleCardId,
+    cardId: string = battleCardId!,
   ): V070BattleCardCommitment {
     const instanceId = 'fog-source-' + suffix;
     state.cardInstances[instanceId] = { instanceId, owner, cardId };
