@@ -14,6 +14,7 @@ import type {
   V070UnsupportedBattleEffect,
 } from './battle-types';
 import { recordV070MysticBattleEffectApplied } from './mystics';
+import { applyV070ReversibleBattleNumericEffect } from './battle-reversible-numeric-effects';
 import {
   V070_FORTIFICATIONS_BATTLE_TEXT,
   applyV070FortificationsGambitTacticEffect,
@@ -100,33 +101,49 @@ const handlers: V070BattleEffectHandler[] = [
     cardId: 'neutral-forced-march',
     expectedText: 'Attacker — +1 Battle Total.',
     timing: 'reveal',
-    apply: ({ state, owner }) => {
-      if (state.battle?.attacker === owner) participant(state, owner).battleModifier += 1;
+    apply: ({ state, owner, commitment }) => {
+      if (state.battle?.attacker === owner) {
+        applyV070ReversibleBattleNumericEffect(
+          state, commitment.instanceId, 'neutral-forced-march', owner, 'battleModifier', 1,
+        );
+      }
     },
   },
   {
     cardId: 'neutral-stand-ground',
     expectedText: 'Defender — gain Advantage.',
     timing: 'reveal',
-    apply: ({ state, owner }) => {
-      if (state.battle?.defender === owner) participant(state, owner).advantage += 1;
+    apply: ({ state, owner, commitment }) => {
+      if (state.battle?.defender === owner) {
+        applyV070ReversibleBattleNumericEffect(
+          state, commitment.instanceId, 'neutral-stand-ground', owner, 'advantage', 1,
+        );
+      }
     },
   },
   {
     cardId: 'neutral-entrenchment',
     expectedText: 'Defender — opponent gains Disadvantage.',
     timing: 'reveal',
-    apply: ({ state, owner, opponent }) => {
-      if (state.battle?.defender === owner) participant(state, opponent).disadvantage += 1;
+    apply: ({ state, owner, opponent, commitment }) => {
+      if (state.battle?.defender === owner) {
+        applyV070ReversibleBattleNumericEffect(
+          state, commitment.instanceId, 'neutral-entrenchment', opponent, 'disadvantage', 1,
+        );
+      }
     },
   },
   {
     cardId: 'neutral-advance-guard',
     expectedText: 'Attacker without a Gambit — gain Advantage.',
     timing: 'reveal',
-    apply: ({ state, owner }) => {
+    apply: ({ state, owner, commitment }) => {
       if (state.battle?.attacker !== owner) return;
-      if (participant(state, owner).gambit === null) participant(state, owner).advantage += 1;
+      if (participant(state, owner).gambit === null) {
+        applyV070ReversibleBattleNumericEffect(
+          state, commitment.instanceId, 'neutral-advance-guard', owner, 'advantage', 1,
+        );
+      }
     },
   },
   {
@@ -748,8 +765,10 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
     cardId,
     expectedText,
     timing: 'reveal',
-    apply: ({ state, owner }) => {
-      participant(state, owner).battleModifier += amount;
+    apply: ({ state, owner, commitment }) => {
+      applyV070ReversibleBattleNumericEffect(
+        state, commitment.instanceId, cardId, owner, 'battleModifier', amount,
+      );
     },
   };
 }

@@ -10,6 +10,12 @@ import { v070CanonicalContent } from '../content/v070';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
 import { returnV070UnappliedFogOfWarBattleCards } from './fog-of-war-return';
 import type { V070BattleCardCommitment } from './battle-types';
+import { appendV070Event } from './engine';
+import { v070BattleEffectHandler } from './battle-effects';
+import { markV070BattleCardEffectApplied } from './battle-effect-status';
+import {
+  applyV070ReversibleBattleNumericEffect,
+} from './battle-reversible-numeric-effects';
 
 function battle(): V070GameState {
   let state = createV070StarterGame({
@@ -149,6 +155,73 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
         ]),
       }),
     }));
+  });
+
+  test('reverses only a selected Gambit contribution after the printed effect applied', () => {
+    const { state, fog, normalGambit, extraGambit } = fixture();
+    const a = state.battleRuntime!.participants.B;
+    for (const card of [normalGambit, extraGambit]) {
+      const cardId = state.cardInstances[card.instanceId].cardId;
+      const handler = v070BattleEffectHandler(cardId);
+      if (!handler) throw new Error('Missing printed numeric card handler.');
+      handler.apply({ state, owner: 'B', opponent: 'A', commitment: card });
+      markV070BattleCardEffectApplied(state, card.instanceId);
+      appendV070Event(state, {
+        type: 'battle_card_effect_applied', actor: 'B', visibility: 'public',
+        payload: { instanceId: card.instanceId, cardId, role: 'gambit', timing: 'reveal' },
+      });
+    }
+    const before = a.battleModifier;
+    expect(before).toBe(2);
+    returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId,
+      { choice: 'one_gambit', targetInstanceId: extraGambit.instanceId },
+    );
+    expect(a.battleModifier).toBe(1);
+    expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
+      .toContain(normalGambit.instanceId);
+    expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
+      .not.toContain(extraGambit.instanceId);
+    expect(state.events.some(event =>
+      event.type === 'battle_card_numeric_effect_reversed'
+      && (event.payload as { sourceInstanceId?: string }).sourceInstanceId
+        === extraGambit.instanceId,
+    )).toBe(true);
+  });
+
+  test('reverses numeric effects from mixed Hand/Reserve Tactics together', () => {
+    const { state, fog, reserveTactic, handTactic } = fixture();
+    const b = state.battleRuntime!.participants.B;
+    for (const card of [reserveTactic, handTactic]) {
+      applyV070ReversibleBattleNumericEffect(
+        state, card.instanceId, state.cardInstances[card.instanceId].cardId,
+        'B', 'battleModifier', 1,
+      );
+      markV070BattleCardEffectApplied(state, card.instanceId);
+    }
+    b.battleModifier += 4; // Independent modifier must survive the return.
+    returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId, { choice: 'all_tactics' },
+    );
+    expect(b.battleModifier).toBe(4);
+    expect(b.reserve).toContain(reserveTactic.instanceId);
+    expect(state.players.B.zones.hand).toContain(handTactic.instanceId);
+  });
+
+  test('rejects an applied untracked effect atomically even beside reversible cards', () => {
+    const { state, fog, reserveTactic, handTactic } = fixture();
+    applyV070ReversibleBattleNumericEffect(
+      state, reserveTactic.instanceId,
+      state.cardInstances[reserveTactic.instanceId].cardId,
+      'B', 'battleModifier', 1,
+    );
+    markV070BattleCardEffectApplied(state, reserveTactic.instanceId);
+    markV070BattleCardEffectApplied(state, handTactic.instanceId);
+    const before = structuredClone(state);
+    expect(() => returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId, { choice: 'all_tactics' },
+    )).toThrow(/applied effect/);
+    expect(state).toEqual(before);
   });
 
   test('rejects applied effects before changing any card or battle state', () => {
