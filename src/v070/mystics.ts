@@ -151,7 +151,10 @@ export function recordV070MysticCrossingEligibility(
   const territory = state.board.find(
     candidate => candidate.position === contestedPosition,
   );
-  if (!territory || territory.controller === winner) return;
+  // The Rite requires an opponent-controlled Territory, not merely a
+  // previously unoccupied/neutral Territory or one we already controlled.
+  const opponent: PlayerId = winner === 'A' ? 'B' : 'A';
+  if (!territory || territory.controller !== opponent) return;
 
   const mystics = requireMystics(state, winner);
   mystics.crossingEligibilityTurn = state.turnNumber;

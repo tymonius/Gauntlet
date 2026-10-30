@@ -11,6 +11,7 @@ import {
   beginV070MysticRite,
   beginV070MysticRitual,
   reconcileV070MysticCrossingOccupation,
+  recordV070MysticCrossingEligibility,
 } from './mystics';
 import { viewV070GameForPlayer } from './views';
 
@@ -436,6 +437,8 @@ describe('v0.7.0 Mystics progression and leaders', () => {
 
   test('Rite of Crossing records an occupation win and completes after the next Capture step', () => {
     let state = activeBattle();
+    // The opponent must have controlled the Territory before this battle.
+    state.board[3].controller = 'B';
     const arcaneCost = injectCard(
       state,
       'A',
@@ -492,6 +495,24 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     )?.controller).toBe('A');
   });
 
+
+  test('Crossing eligibility rejects neutral or already-owned Territories', () => {
+    const state = activeBattle();
+    const contested = state.battle!.contestedPosition;
+    const territory = state.board.find(item => item.position === contested)!;
+    for (const controller of [null, 'A'] as const) {
+      territory.controller = controller;
+      recordV070MysticCrossingEligibility(state, 'A', 'A', contested);
+      expect(state.players.A.mystics!.crossingEligibilityTurn).toBeNull();
+      expect(state.players.A.mystics!.crossingEligibilityTerritoryInstanceId)
+        .toBeNull();
+    }
+    territory.controller = 'B';
+    recordV070MysticCrossingEligibility(state, 'A', 'A', contested);
+    expect(state.players.A.mystics!.crossingEligibilityTurn).toBe(state.turnNumber);
+    expect(state.players.A.mystics!.crossingEligibilityTerritoryInstanceId)
+      .toBe(territory.territoryInstanceId);
+  });
 
   test('Crossing begins with no Arcane Hand or Discard cost whatsoever', () => {
     const state = toDenouement(readyGame());
