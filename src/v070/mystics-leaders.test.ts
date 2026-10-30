@@ -264,7 +264,16 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       echoesHandInstanceId: boundHand,
     });
     state.turnNumber = currentTurn;
-    expect(state.players.A.zones.drawPile[0]).toBe(matchingDrawPileInstanceId);
+    // Multiple copies can share a title; the searched instance need not be
+    // our injected copy if an existing Draw Pile copy already matched.
+    const searchedTop = state.players.A.zones.drawPile[0];
+    expect(state.cardInstances[searchedTop].cardId).toBe(
+      state.cardInstances[boundHand].cardId,
+    );
+    expect(state.events.some(event =>
+      event.type === 'mystic_echoes_drawpile_card_revealed'
+      && (event.payload as { instanceId?: string }).instanceId === searchedTop
+    )).toBe(true);
     expect(state.bindings.filter(binding =>
       binding.hostId === 'mystics:rite:A:echoes'
     ).every(binding => binding.faceUp)).toBe(true);
