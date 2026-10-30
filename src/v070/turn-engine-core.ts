@@ -167,6 +167,7 @@ import {
   passV070MysticInvocation,
   recordV070MysticQualifyingHandSacrifice,
   resolveV070MysticCrossingAfterCapture,
+  reconcileV070MysticCrossingOccupation,
   useV070MysticInvocation,
   v070MysticInvocationPendingPlayers,
 } from './mystics';
@@ -193,7 +194,6 @@ export type V070TurnAction =
       echoesGraveyardInstanceId?: string;
       echoesHandInstanceId?: string;
       bloodCostInstanceId?: string;
-      crossingCostInstanceId?: string;
       shatteringAssetInstanceId?: string;
       consecrationOverlayInstanceId?: string;
       consecrationTerritoryPosition?: number;
@@ -1365,6 +1365,7 @@ export function reduceV070TurnAction(
   }
 
   reconcileV070MysticEquivalenceHand(next);
+  reconcileV070MysticCrossingOccupation(next);
   return next;
 }
 
@@ -2363,7 +2364,6 @@ function mysticsBeginRite(
       echoesGraveyardInstanceId: action.echoesGraveyardInstanceId,
       echoesHandInstanceId: action.echoesHandInstanceId,
       bloodCostInstanceId: action.bloodCostInstanceId,
-      crossingCostInstanceId: action.crossingCostInstanceId,
       shatteringAssetInstanceId: action.shatteringAssetInstanceId,
       consecrationOverlayInstanceId: action.consecrationOverlayInstanceId,
       consecrationTerritoryPosition: action.consecrationTerritoryPosition,

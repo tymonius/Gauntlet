@@ -31,7 +31,6 @@ export interface BeginV070MysticRiteOptions {
   echoesGraveyardInstanceId?: string;
   echoesHandInstanceId?: string;
   bloodCostInstanceId?: string;
-  crossingCostInstanceId?: string;
   shatteringAssetInstanceId?: string;
   consecrationOverlayInstanceId?: string;
   consecrationTerritoryPosition?: number;
@@ -113,7 +112,7 @@ export function beginV070MysticRite(
       beginBlood(state, playerId, options);
       break;
     case 'crossing':
-      beginCrossing(state, playerId, options);
+      beginCrossing(state, playerId);
       break;
     case 'shattering':
       beginShattering(state, playerId, options);
@@ -202,6 +201,26 @@ export function resolveV070MysticCrossingAfterCapture(
   }
 
   resetRite(state, playerId, 'crossing', 'position_requirement_failed');
+}
+
+/**
+ * Crossing ends immediately if its occupier leaves the Territory before
+ * the next-turn Capture step. In particular, returning later must not undo
+ * that interruption; compare the immutable Territory instance, not a title.
+ */
+export function reconcileV070MysticCrossingOccupation(
+  state: V070GameState,
+): void {
+  for (const playerId of ['A', 'B'] as const) {
+    if (!isV070MysticPlayer(state, playerId)) continue;
+    const rite = requireMystics(state, playerId).rites.crossing;
+    if (rite.status !== 'begun') continue;
+    const territory = state.board.find(item =>
+      item.territoryInstanceId === rite.territoryInstanceId);
+    if (!territory || state.players[playerId].position !== territory.position) {
+      resetRite(state, playerId, 'crossing', 'ceased_to_occupy_territory');
+    }
+  }
 }
 
 export function recordV070MysticBattleEffectApplied(
@@ -1271,87 +1290,27 @@ function beginBlood(
 function beginCrossing(
   state: V070GameState,
   playerId: PlayerId,
-  options: BeginV070MysticRiteOptions,
 ): void {
   const mystics = requireMystics(state, playerId);
+  const territoryInstanceId = mystics.crossingEligibilityTerritoryInstanceId;
   if (mystics.crossingEligibilityTurn !== state.turnNumber
-    || !mystics.crossingEligibilityTerritoryInstanceId) {
+    || !territoryInstanceId) {
     throw new V070GameActionError(
       'Rite of Crossing requires a qualifying occupation battle won this turn.',
     );
   }
 
-  const handArcane = state.players[playerId].zones.hand.filter(instanceId => {
-    const cardId = state.cardInstances[instanceId]?.cardId;
-    return Boolean(cardId && isV070ArcaneCardId(cardId));
-  });
-  const cardInstanceId = options.crossingCostInstanceId;
-  if (!cardInstanceId) {
+  const territory = state.board.find(item =>
+    item.territoryInstanceId === territoryInstanceId);
+  if (!territory || state.players[playerId].position !== territory.position) {
     throw new V070GameActionError(
-      'Rite of Crossing requires an Arcane beginning-cost card.',
+      'Rite of Crossing requires you to still occupy the qualifying Territory.',
     );
   }
 
-  if (handArcane.length > 0) {
-    if (!handArcane.includes(cardInstanceId)) {
-      throw new V070GameActionError(
-        'Rite of Crossing must use an Arcane card from Hand while one is available.',
-      );
-    }
-    moveHandCardToGraveyard(
-      state,
-      playerId,
-      cardInstanceId,
-      'Rite of Crossing beginning cost',
-    );
-    recordV070MysticQualifyingHandSacrifice(
-      state,
-      playerId,
-      'Rite of Crossing',
-    );
-  } else {
-    const discard = state.players[playerId].zones.discardPile;
-    if (!discard.includes(cardInstanceId)
-      || !isV070ArcaneCardId(
-        state.cardInstances[cardInstanceId]?.cardId ?? '',
-      )) {
-      throw new V070GameActionError(
-        'With no Arcane card in Hand, Rite of Crossing must move an Arcane card from your Discard Pile to your Graveyard.',
-      );
-    }
-
-    appendV070Event(state, {
-      type: 'hand_revealed',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        playerId,
-        purpose: 'Rite of Crossing',
-        cards: state.players[playerId].zones.hand.map(instanceId => ({
-          instanceId,
-          cardId: state.cardInstances[instanceId]?.cardId,
-        })),
-      },
-    });
-
-    const index = discard.indexOf(cardInstanceId);
-    discard.splice(index, 1);
-    state.players[playerId].zones.graveyard.push(cardInstanceId);
-    appendV070Event(state, {
-      type: 'card_moved_to_graveyard',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        instanceId: cardInstanceId,
-        cardId: state.cardInstances[cardInstanceId]?.cardId,
-        purpose: 'Rite of Crossing beginning cost',
-        sourceZone: 'discard',
-      },
-    });
-  }
-
-  mystics.rites.crossing.territoryInstanceId =
-    mystics.crossingEligibilityTerritoryInstanceId;
+  // Current authority requires only the qualifying victory and a Denouement
+  // Action. There is no Arcane sacrifice, Hand disclosure, or Discard cost.
+  mystics.rites.crossing.territoryInstanceId = territoryInstanceId;
 }
 
 function completeRite(

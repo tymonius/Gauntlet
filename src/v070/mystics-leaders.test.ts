@@ -10,6 +10,7 @@ import { reduceV070BattleAction } from './battle-engine';
 import {
   beginV070MysticRite,
   beginV070MysticRitual,
+  reconcileV070MysticCrossingOccupation,
 } from './mystics';
 import { viewV070GameForPlayer } from './views';
 
@@ -463,12 +464,14 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     });
     expect(state.turnState?.phase).toBe('denouement');
 
+    const zonesBefore = structuredClone(state.players.A.zones);
     state = reduceV070TurnAction(state, {
       type: 'mystics_begin_rite',
       playerId: 'A',
       riteId: 'crossing',
-      crossingCostInstanceId: arcaneCost,
     });
+    expect(state.players.A.zones).toEqual(zonesBefore);
+    expect(state.players.A.zones.hand).toContain(arcaneCost);
     const territoryInstanceId =
       state.players.A.mystics?.rites.crossing.territoryInstanceId;
     expect(territoryInstanceId).toBeTruthy();
@@ -487,6 +490,61 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     expect(state.board.find(territory =>
       territory.territoryInstanceId === territoryInstanceId
     )?.controller).toBe('A');
+  });
+
+
+  test('Crossing begins with no Arcane Hand or Discard cost whatsoever', () => {
+    const state = toDenouement(readyGame());
+    const target = state.board.find(item =>
+      item.position === state.players.A.position,
+    )!;
+    state.players.A.zones.hand = [];
+    state.players.A.zones.discardPile = [];
+    state.players.A.mystics!.crossingEligibilityTurn = state.turnNumber;
+    state.players.A.mystics!.crossingEligibilityTerritoryInstanceId =
+      target.territoryInstanceId;
+    const before = structuredClone(state.players.A.zones);
+    beginV070MysticRite(state, 'A', 'crossing');
+    expect(state.players.A.mystics!.rites.crossing.status).toBe('begun');
+    expect(state.players.A.zones).toEqual(before);
+  });
+
+  test('Crossing cannot begin after the qualifying Territory has been vacated', () => {
+    const state = toDenouement(readyGame());
+    const target = state.board.find(item =>
+      item.position === state.players.A.position,
+    )!;
+    state.players.A.mystics!.crossingEligibilityTurn = state.turnNumber;
+    state.players.A.mystics!.crossingEligibilityTerritoryInstanceId =
+      target.territoryInstanceId;
+    state.players.A.position = state.players.A.position + 1;
+    const before = structuredClone(state);
+    expect(() => beginV070MysticRite(state, 'A', 'crossing'))
+      .toThrow(/still occupy the qualifying Territory/);
+    expect(state).toEqual(before);
+  });
+
+  test('Crossing resets when its occupier leaves, even if they later return', () => {
+    const state = toDenouement(readyGame());
+    const target = state.board.find(item =>
+      item.position === state.players.A.position,
+    )!;
+    state.players.A.mystics!.crossingEligibilityTurn = state.turnNumber;
+    state.players.A.mystics!.crossingEligibilityTerritoryInstanceId =
+      target.territoryInstanceId;
+    beginV070MysticRite(state, 'A', 'crossing');
+    const originalPosition = state.players.A.position;
+    state.players.A.position = originalPosition + 1;
+    reconcileV070MysticCrossingOccupation(state);
+    expect(state.players.A.mystics!.rites.crossing.status).toBe('incomplete');
+    expect(state.events.some(event =>
+      event.type === 'mystic_rite_interrupted'
+      && (event.payload as { reason?: string }).reason
+        === 'ceased_to_occupy_territory'
+    )).toBe(true);
+    state.players.A.position = originalPosition;
+    reconcileV070MysticCrossingOccupation(state);
+    expect(state.players.A.mystics!.rites.crossing.status).toBe('incomplete');
   });
 
   test('Invocation opens after an Arcane Action resolves and moves one Graveyard card to Discard once per turn', () => {
