@@ -5,7 +5,7 @@ const source = readFileSync(new URL("../../../../rules-assistant/worker-entry.js
 
 describe("Rules Arbiter semantic QA routing", () => {
   it("routes the dedicated semantic evaluator before public rules dispatch", () => {
-    const semanticImport = source.indexOf('import { handleQaSemanticEvaluation } from "../../../../rules-assistant/qa-semantic-evaluator.js";');
+    const semanticImport = source.indexOf('import { handleQaSemanticEvaluation } from "./qa-semantic-evaluator.js";');
     const semanticRoute = source.indexOf('url.pathname === "/api/qa/semantic-evaluate"');
     const publicRulesRoute = source.indexOf('url.pathname === "/api/rules"');
 

@@ -5,7 +5,7 @@ const entry = readFileSync(new URL("../../../../rules-assistant/worker-entry.js"
 
 describe("published v0.7.2 Rules Arbiter routing", () => {
   test("exposes explicit frozen v0.7.2 routes", () => {
-    expect(entry).toContain('import v072Worker from "../../../../rules-assistant/worker-v072.js";');
+    expect(entry).toContain('import v072Worker from "./worker-v072.js";');
     for (const path of [
       "/api/v072/rules",
       "/v072/rules",

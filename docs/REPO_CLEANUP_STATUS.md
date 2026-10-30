@@ -440,7 +440,7 @@ The superseded v063 candidate stack is now co-located with the already archived 
 
 - Six maintained Worker-entrypoint, current/candidate route, corpus-health, QA gating, theme, and deployment workflow tests now reside in `tools/rules-assistant/qa/tests/`, separate from production Worker source.
 - Source imports and the deployment-gate test's repository-root file reads were mechanically retargeted. Worker routing/health, deployment configuration, release lifecycle and D1 migrations remain unchanged.
-- The existing historical-regression workflow covers this directory. Only four intentionally quarantined test files remain under `rules-assistant/`; do not reactivate them without rehabilitation or explicit retirement.
+- The existing historical-regression workflow covers this directory. Four intentionally quarantined test files and a minimal active source/QA boundary guard remain under `rules-assistant/`. The guard preserves a meaningful backend test command while quarantined tests await rehabilitation.
 
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
