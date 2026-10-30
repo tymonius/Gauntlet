@@ -42,6 +42,7 @@ function battle(): V070GameState {
   state.board.forEach(space => { space.occupant = null; space.blank = true; });
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
+  state.board[3].controller = 'B';
   state = reduceV070TurnAction(state, {
     type: 'resolve_capture', playerId: 'A',
   });
