@@ -41,6 +41,13 @@ export function returnV070UnappliedFogOfWarBattleCards(
       'Fog of War card returns require an active post-Tactics battle.',
     );
   }
+  if (runtime.pendingOutcome
+    || (['A', 'B'] as const).some(playerId =>
+      runtime.participants[playerId].battleDice.length > 0)) {
+    throw new V070GameActionError(
+      'Fog of War returns must resolve before either player rolls battle dice.',
+    );
+  }
   // Do not remove a card from the battle while an earlier reveal-effect
   // sequence still holds a queued commitment that would apply afterward.
   if (runtime.pendingRevealEffectEncounteredAt) {
