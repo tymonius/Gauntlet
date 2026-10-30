@@ -4,7 +4,7 @@ import {
   defaultSourceUrls,
   parseRulebookSections,
   retrieveRules
-} from "./local-search.js";
+} from "../../../../rules-assistant/local-search.js";
 
 const rulebook = `# GAUNTLET
 

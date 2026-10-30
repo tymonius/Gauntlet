@@ -8,7 +8,7 @@ import {
   normalizeCurrentRulingStatus,
   toLegacyAnswerMode,
   toLegacyRulingStatus
-} from "./rules-status.js";
+} from "../../../../rules-assistant/rules-status.js";
 
 test("maps new classifications through the legacy database constraint", () => {
   expect(toLegacyRulingStatus("explicit")).toBe("explicit");
