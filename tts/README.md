@@ -61,11 +61,11 @@ npm run tts:save:promote
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
-## v0.7.2 candidate package
+## Current published TTS package
 
-The frozen v0.7.2 gameplay candidate is now the current-development TTS source. Pull-request TTS builds therefore regenerate playable-card sheets, Territory sheets, Leader faces, starter packages, supplemental/reference components, and the Review Scaffold from `packages/game-data/current-game.json` at `v0.7.2-candidate`.
+The source of current TTS development builds is `packages/game-data/current-game.json`, which currently identifies the published v0.7.2 release (`status: current-release`). Pull-request TTS builds regenerate playable-card sheets, Territory sheets, Leader faces, starter packages, supplemental/reference components, and the Review Scaffold using that authority rather than a frozen candidate source.
 
-The candidate inherits the ordinary data-driven TTS pipeline rather than maintaining a separate v0.7.2 card list. In particular, the generated package picks up the final v0.7.2 Territory/starter rebalance, revised starter Decks, New Recruits update, Financier reference changes, Intelligence reference changes, and Inquisition reference changes directly from current authority.
+The current release uses the ordinary data-driven TTS pipeline rather than maintaining a second release-specific card list. The generated package derives the Territory/starter rebalance, starter Decks, New Recruits change, and faction-reference changes directly from the current gameplay authority.
 
 The v0.7.2 TTS package also consumes the modular publication pipeline. It renders all eight current rules publications in both print-imposed and sequential reader forms, then stages only the reader-order Half Letter PDFs for TTS. The Player's Guide and Complete Rules are placed on the shared table; each starter Bag contains the reader-order guide for its faction. The Letter-landscape saddle-stitch impositions remain print artifacts and are never used as TTS Custom PDF sources.
 
@@ -142,7 +142,7 @@ There is no separate Territory-specific back asset.
 
 Leader export does not maintain a second copy of Leader rules or layout. The current-game authority supplies the roster and `/card-design/` supplies the production face, portrait, faction treatment, rules, and geometry.
 
-For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer. The frozen source retains its `v0.7.2-candidate` identity, while publication-verified stable v0.7.2 TTS faces are stamped `v0.7.2`; the historical v0.7.1 package remains frozen. Source provenance remains separately recorded in `leader-manifest.json`.
+For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer. The current-game authority and TTS publication target both now select the stable v0.7.2 identity for generated TTS faces; the earlier candidate and v0.7.1 packages remain historical. Source provenance remains separately recorded in `leader-manifest.json`.
 
 Leader Cards use faction-color component backs and deterministic one-card CustomDeck IDs.
 
