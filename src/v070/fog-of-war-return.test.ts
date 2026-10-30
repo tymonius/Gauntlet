@@ -15,7 +15,7 @@ function battle(): V070GameState {
     gameId: 'fog-return-foundation',
     seed: 'fog-return-foundation',
     players: {
-      A: { name: 'Alpha', starterDeckId: 'military-general-forward-doctrine' },
+      A: { name: 'Alpha', starterDeckId: 'mystics-alchemist-first-principles' },
       B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
     },
   });
