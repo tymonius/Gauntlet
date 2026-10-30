@@ -250,6 +250,13 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       'hand',
     );
 
+    const matchingDrawPileInstanceId = 'echoes-match-in-draw-pile';
+    state.cardInstances[matchingDrawPileInstanceId] = {
+      instanceId: matchingDrawPileInstanceId,
+      cardId: state.cardInstances[boundHand].cardId,
+      owner: 'A',
+    };
+    state.players.A.zones.drawPile.push(matchingDrawPileInstanceId);
     const currentTurn = state.turnNumber;
     state.turnNumber -= 1;
     beginV070MysticRite(state, 'A', 'echoes', {
@@ -257,6 +264,10 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       echoesHandInstanceId: boundHand,
     });
     state.turnNumber = currentTurn;
+    expect(state.players.A.zones.drawPile[0]).toBe(matchingDrawPileInstanceId);
+    expect(state.bindings.filter(binding =>
+      binding.hostId === 'mystics:rite:A:echoes'
+    ).every(binding => binding.faceUp)).toBe(true);
 
     state = reduceV070BattleAction(state, {
       type: 'proceed_from_onset',
@@ -276,8 +287,26 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       playerId: 'A',
     });
 
-    expect(state.players.A.mystics?.rites.echoes.status)
-      .toBe('completed');
+    // A printed Gambit effect does not complete Echoes until the
+    // battle is actually won.
+    expect(state.players.A.mystics?.rites.echoes.status).toBe('begun');
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [1],
+    });
+    expect(state.battle?.winner).toBe('A');
+    expect(state.players.A.mystics?.rites.echoes.status).toBe('completed');
     expect(state.players.A.zones.discardPile).toContain(boundGraveyard);
     expect(state.players.A.zones.graveyard).toContain(boundHand);
     expect(state.bindings.some(binding =>
