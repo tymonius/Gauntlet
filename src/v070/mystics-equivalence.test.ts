@@ -166,7 +166,7 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     expect(state.players.A.mystics!.rites.equivalence.status).toBe('incomplete');
     expect(state.events.some(event =>
       event.type === 'mystic_rite_interrupted'
-      && (event.payload as { reason?: string }).reason === 'same_turn_exchanged_card_play',
+      && (event.payload as { reason?: string }).reason === 'exchanged_card_played_without_completion',
     )).toBe(true);
   });
 
