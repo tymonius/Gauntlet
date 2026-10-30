@@ -73,7 +73,7 @@ jobs:
               exit 1
             fi
             test "${{ steps.plan.outputs.version }}" = "v0.7.2"
-            voice_case_ids="$(node --input-type=module -e 'import { VOICE_SMOKE_CASE_IDS } from "./rules-assistant/v072-voice-smoke-report.js"; process.stdout.write(VOICE_SMOKE_CASE_IDS.join(","));')"
+            voice_case_ids="$(node --input-type=module -e 'import { VOICE_SMOKE_CASE_IDS } from "./tools/rules-assistant/qa/v072-voice-smoke-report.js"; process.stdout.write(VOICE_SMOKE_CASE_IDS.join(","));')"
             echo "GAUNTLET_RULES_QA_CASE_IDS=$voice_case_ids" >> "$GITHUB_ENV"
             echo "GAUNTLET_RULES_QA_VOICE_ONLY=true" >> "$GITHUB_ENV"
             echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"

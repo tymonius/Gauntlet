@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { inspectVoiceSmokeReport } from "../rules-assistant/v072-voice-smoke-report.js";
+import { inspectVoiceSmokeReport } from "../tools/rules-assistant/qa/v072-voice-smoke-report.js";
 
 process.env.GAUNTLET_RULES_QA_BENCHMARK ??= "tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay.json";
 process.env.GAUNTLET_RULES_QA_CORRECTIONS ??= "tools/rules-assistant/qa/evals/rules-arbiter-v072-final-regression-replay-corrections.json";

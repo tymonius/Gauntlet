@@ -442,6 +442,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Source imports and the deployment-gate test's repository-root file reads were mechanically retargeted. Worker routing/health, deployment configuration, release lifecycle and D1 migrations remain unchanged.
 - The existing historical-regression workflow covers this directory. Four intentionally quarantined test files and a minimal active source/QA boundary guard remain under `rules-assistant/`. The guard preserves a meaningful backend test command while quarantined tests await rehabilitation.
 
+## Completed subtranche — QA-only voice smoke report source
+
+- The manually approved production voice-smoke report validator now lives in `tools/rules-assistant/qa/v072-voice-smoke-report.js` instead of the deployed Worker source root.
+- The live-QA script, manually dispatched paid-API workflow, and corresponding regression test reference the new QA-only source; its inspection logic and fixed smoke case selection are unchanged.
+- This is a source ownership change, not a live model call or a change to published rules or Worker behavior.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
