@@ -259,6 +259,7 @@ describe('v0.7.0 Brothers in Arms battle effect', () => {
         instanceId: candidate,
         owner: 'A',
         role: 'tactic',
+        sourceZone: 'hand',
         faceUp: false,
       },
     ]);

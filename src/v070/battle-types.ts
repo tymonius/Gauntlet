@@ -14,6 +14,12 @@ export type V070BattleRuntimeStage =
 
 export interface V070BattleCardCommitment {
   instanceId: string;
+  /**
+   * The physical zone this exact instance came from when it was committed.
+   * Optional only for backwards-compatible historical saved states/fixtures;
+   * live Hand- and Reserve-sourced commitments must populate it.
+   */
+  sourceZone?: 'hand' | 'reserve';
   owner: PlayerId;
   role: 'gambit' | 'tactic';
   faceUp: boolean;

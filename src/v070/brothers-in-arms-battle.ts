@@ -190,6 +190,7 @@ export function resolveV070BrothersInArmsAdditionalTacticChoice(
     instanceId: cardInstanceId,
     owner: playerId,
     role: 'tactic',
+    sourceZone: 'hand',
     faceUp,
   });
   runtime.battleCardAftermathDestinationOverrides.push({

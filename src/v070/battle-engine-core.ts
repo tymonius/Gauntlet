@@ -1192,7 +1192,7 @@ function setGambit(
     }
 
     player.zones.hand.splice(index, 1);
-    participant.gambit = commitment(instanceId, playerId, 'gambit');
+    participant.gambit = commitment(instanceId, playerId, 'gambit', 'hand');
     const forcedFaceUp = v070MysticEquivalenceRevealedCard(
       state, playerId, instanceId,
     ) || Boolean(
@@ -1528,7 +1528,7 @@ function chooseTactic(
     }
 
     participant.reserve.splice(index, 1);
-    const chosen = commitment(instanceId, playerId, 'tactic');
+    const chosen = commitment(instanceId, playerId, 'tactic', 'reserve');
     if (choiceNumber === 1) {
       participant.tactic = chosen;
     } else {
@@ -5490,11 +5490,13 @@ function commitment(
   instanceId: string,
   owner: PlayerId,
   role: 'gambit' | 'tactic',
+  sourceZone: 'hand' | 'reserve',
 ): V070BattleCardCommitment {
   return {
     instanceId,
     owner,
     role,
+    sourceZone,
     faceUp: false,
   };
 }
