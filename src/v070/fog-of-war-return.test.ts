@@ -5,6 +5,7 @@ import {
   type V070GameState,
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
+import { reduceV070BattleAction } from './battle-engine';
 import { v070CanonicalContent } from '../content/v070';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
 import { returnV070UnappliedFogOfWarBattleCards } from './fog-of-war-return';
@@ -54,6 +55,10 @@ function battle(): V070GameState {
   });
   state = reduceV070TurnAction(state, {
     type: 'choose_movement', playerId: 'A', choice: 'advance',
+  });
+  expect(state.battle?.attacker).toBe('A');
+  state = reduceV070BattleAction(state, {
+    type: 'proceed_from_onset', playerId: 'A',
   });
   expect(state.battleRuntime).not.toBeNull();
   state.battleRuntime!.stage = 'reveal_tactics';
