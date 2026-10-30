@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { addDeveloperToolChrome, allowSiteAssets } from "./worker-entry.js";
+import { addDeveloperToolChrome, allowSiteAssets } from "../../../../rules-assistant/worker-entry.js";
 
 test("wraps the Rules Arbiter admin page in Gauntlet Developer Tools chrome", () => {
   const html = addDeveloperToolChrome(

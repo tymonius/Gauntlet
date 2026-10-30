@@ -1,12 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const entry = readFileSync(new URL("./worker-entry.js", import.meta.url), "utf8");
-const candidate = readFileSync(new URL("./worker-v072-candidate.js", import.meta.url), "utf8");
+const entry = readFileSync(new URL("../../../../rules-assistant/worker-entry.js", import.meta.url), "utf8");
+const candidate = readFileSync(new URL("../../../../rules-assistant/worker-v072-candidate.js", import.meta.url), "utf8");
 
 describe("v0.7.2 candidate Rules Arbiter routing", () => {
   test("exposes explicit candidate rules, health, and corpus-health routes", () => {
-    expect(entry).toContain('import v072CandidateWorker from "./worker-v072-candidate.js";');
+    expect(entry).toContain('import v072CandidateWorker from "../../../../rules-assistant/worker-v072-candidate.js";');
     for (const path of [
       "/api/v072-candidate/rules",
       "/v072-candidate/rules",
