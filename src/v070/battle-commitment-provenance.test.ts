@@ -3,6 +3,7 @@ import { createV070StarterGame, reduceV070SetupAction } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { viewV070GameForPlayer } from './views';
+import { v070CanonicalContent } from '../content/v070';
 
 function readyBattle() {
   let state = createV070StarterGame({
@@ -52,11 +53,18 @@ describe('physical battle commitment source-zone provenance', () => {
     let state = readyBattle();
     const gambit = 'source-hand-gambit';
     const tactic = 'source-reserve-tactic';
+    const cardId = [...v070CanonicalContent.cardsById.values()]
+      .find(card => card.allegiance === 'Neutral'
+        && card.effects.some(effect =>
+          effect.label === 'Gambit/Tactic'
+          && effect.text === '+1 Battle Total.'
+        ))?.id;
+    if (!cardId) throw new Error('Missing eligible normal battle-card fixture.');
     state.cardInstances[gambit] = {
-      instanceId: gambit, cardId: 'neutral-rallying-cry', owner: 'A',
+      instanceId: gambit, cardId, owner: 'A',
     };
     state.cardInstances[tactic] = {
-      instanceId: tactic, cardId: 'neutral-rallying-cry', owner: 'A',
+      instanceId: tactic, cardId, owner: 'A',
     };
     state.players.A.zones.hand.push(gambit);
     state.players.A.zones.drawPile.unshift(tactic);
