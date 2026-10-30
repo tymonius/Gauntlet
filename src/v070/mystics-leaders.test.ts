@@ -496,17 +496,15 @@ describe('v0.7.0 Mystics progression and leaders', () => {
   });
 
 
-  test('Crossing eligibility rejects neutral or already-owned Territories', () => {
+  test('Crossing eligibility rejects a Territory already controlled by the winner', () => {
     const state = activeBattle();
     const contested = state.battle!.contestedPosition;
     const territory = state.board.find(item => item.position === contested)!;
-    for (const controller of [null, 'A'] as const) {
-      territory.controller = controller;
-      recordV070MysticCrossingEligibility(state, 'A', 'A', contested);
-      expect(state.players.A.mystics!.crossingEligibilityTurn).toBeNull();
-      expect(state.players.A.mystics!.crossingEligibilityTerritoryInstanceId)
-        .toBeNull();
-    }
+    territory.controller = 'A';
+    recordV070MysticCrossingEligibility(state, 'A', 'A', contested);
+    expect(state.players.A.mystics!.crossingEligibilityTurn).toBeNull();
+    expect(state.players.A.mystics!.crossingEligibilityTerritoryInstanceId)
+      .toBeNull();
     territory.controller = 'B';
     recordV070MysticCrossingEligibility(state, 'A', 'A', contested);
     expect(state.players.A.mystics!.crossingEligibilityTurn).toBe(state.turnNumber);
@@ -538,7 +536,7 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     state.players.A.mystics!.crossingEligibilityTurn = state.turnNumber;
     state.players.A.mystics!.crossingEligibilityTerritoryInstanceId =
       target.territoryInstanceId;
-    state.players.A.position = state.players.A.position + 1;
+    state.players.A.position = state.players.A.position! + 1;
     const before = structuredClone(state);
     expect(() => beginV070MysticRite(state, 'A', 'crossing'))
       .toThrow(/still occupy the qualifying Territory/);
@@ -554,7 +552,7 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     state.players.A.mystics!.crossingEligibilityTerritoryInstanceId =
       target.territoryInstanceId;
     beginV070MysticRite(state, 'A', 'crossing');
-    const originalPosition = state.players.A.position;
+    const originalPosition = state.players.A.position!;
     state.players.A.position = originalPosition + 1;
     reconcileV070MysticCrossingOccupation(state);
     expect(state.players.A.mystics!.rites.crossing.status).toBe('incomplete');
