@@ -4,6 +4,7 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import { activeV070CopiedEffectApplication } from './copied-effect-runtime';
 
 type NumericBattleStat = 'battleModifier' | 'advantage' | 'disadvantage';
 
@@ -54,6 +55,13 @@ export function applyV070ReversibleBattleNumericEffect(
     throw new V070GameActionError(
       'This printed battle-card effect cannot use numeric-only reversal.',
     );
+  }
+  // Repeating/copying a printed effect is attributed to its copier, not to
+  // the physical card whose text was copied. Returning that physical card
+  // must not reverse another card's independent copied contribution.
+  if (activeV070CopiedEffectApplication(state)) {
+    runtime.participants[targetPlayer][stat] += amount;
+    return;
   }
   runtime.reversibleBattleNumericEffects ??= [];
   runtime.participants[targetPlayer][stat] += amount;
