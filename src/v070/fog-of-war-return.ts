@@ -37,6 +37,13 @@ export function returnV070UnappliedFogOfWarBattleCards(
       'Fog of War card returns require an active post-Tactics battle.',
     );
   }
+  // Do not remove a card from the battle while an earlier reveal-effect
+  // sequence still holds a queued commitment that would apply afterward.
+  if (runtime.pendingRevealEffectEncounteredAt) {
+    throw new V070GameActionError(
+      'Resolve pending battle-card reveal effects before returning cards to their sources.',
+    );
+  }
   const fog = v070BattleCommitment(state, fogInstanceId);
   if (!fog || fog.owner !== fogOwner
     || state.cardInstances[fogInstanceId]?.cardId !== V070_FOG_OF_WAR_ID) {
