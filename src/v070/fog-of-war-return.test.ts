@@ -13,6 +13,7 @@ import type { V070BattleCardCommitment } from './battle-types';
 import { appendV070Event } from './engine';
 import { v070BattleEffectHandler } from './battle-effects';
 import { markV070BattleCardEffectApplied } from './battle-effect-status';
+import { withV070CopiedEffectApplication } from './copied-effect-runtime';
 import {
   applyV070ReversibleBattleNumericEffect,
 } from './battle-reversible-numeric-effects';
@@ -187,6 +188,38 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
       && (event.payload as { sourceInstanceId?: string }).sourceInstanceId
         === extraGambit.instanceId,
     )).toBe(true);
+  });
+
+  test('preserves a separate copied numeric effect when the printed source returns', () => {
+    const { state, fog, extraGambit } = fixture();
+    const cardId = state.cardInstances[extraGambit.instanceId].cardId;
+    const card = v070CanonicalContent.cardsById.get(cardId);
+    const printed = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
+    const handler = v070BattleEffectHandler(cardId);
+    if (!card || !printed || !handler) throw new Error('Missing fixture handler.');
+    handler.apply({
+      state, owner: 'B', opponent: 'A', commitment: extraGambit,
+    });
+    markV070BattleCardEffectApplied(state, extraGambit.instanceId);
+    withV070CopiedEffectApplication(state, {
+      cardId, cardName: card.name, label: 'Gambit/Tactic',
+      text: printed.text, controller: 'B', chainDepth: 1,
+      sourceCardMovesMerelyBecauseCopied: false,
+      printedEffectOrCallerMayMoveSource: true,
+      sourceCardIsPlayedSetOrChosen: false,
+      sourceEventTriggers: false, remakeChoices: true,
+      repayCosts: true, chainAllowsFurtherCopiedApplication: false,
+    }, () => {
+      handler.apply({
+        state, owner: 'B', opponent: 'A', commitment: extraGambit,
+      });
+    }, extraGambit.instanceId);
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(2);
+    returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId,
+      { choice: 'one_gambit', targetInstanceId: extraGambit.instanceId },
+    );
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(1);
   });
 
   test('reverses numeric effects from mixed Hand/Reserve Tactics together', () => {
