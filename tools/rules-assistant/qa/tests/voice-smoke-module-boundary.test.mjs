@@ -1,10 +1,10 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 describe('Rules Assistant QA-only voice smoke validator boundary', () => {
   it('places manual smoke validation under QA tooling, not Worker source', () => {
     expect(existsSync('tools/rules-assistant/qa/v072-voice-smoke-report.js')).toBe(true);
-    expect(existsSync('rules-assistant/v072-voice-smoke-report.js')).toBe(false);
+    expect(readdirSync('rules-assistant')).not.toContain('v072-voice-smoke-report.js');
   });
   it('keeps the manual live-QA script and workflow on the same implementation', () => {
     const script=readFileSync('scripts/run-v072-live-rules-qa.mjs','utf8');
