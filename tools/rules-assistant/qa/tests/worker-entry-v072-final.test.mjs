@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const entry = readFileSync(new URL("./worker-entry.js", import.meta.url), "utf8");
+const entry = readFileSync(new URL("../../../../rules-assistant/worker-entry.js", import.meta.url), "utf8");
 
 describe("published v0.7.2 Rules Arbiter routing", () => {
   test("exposes explicit frozen v0.7.2 routes", () => {

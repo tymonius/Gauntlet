@@ -24,11 +24,11 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - Shared v063 publication-language helpers and additional historical candidates remain for consumer classification. <!-- DOC-HISTORICAL -->
 - `../tools/rules-assistant/admin/` — private review-dashboard composition, review intelligence, incremental export/checkpoint handlers, and related admin tooling served by the Worker. Administrative dashboard, review-export, and review-intelligence regression suites live under `../tools/rules-assistant/admin/tests/` and are executed by the historical-regression CI workflow.
 - `../tools/rules-assistant/refinement/` — deterministic triage, scaffold, snapshot, current-validity, and resolution-ledger tooling used by admin refinement workflows and repository scripts. Regression tests live in `../tools/rules-assistant/refinement/tests/` and run explicitly in historical-regression CI.
-- `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests. Historical benchmark, runtime-helper, status, deterministic ruling, semantic-evaluator, fallback, and versioned regression test suites run from `../tools/rules-assistant/qa/tests/`.
+- `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests. Maintained Worker-entry/deployment, historical benchmark, runtime-helper, status, deterministic ruling, semantic-evaluator, fallback, and versioned regression test suites run from `../tools/rules-assistant/qa/tests/`.
 - `../artifacts/rules-qa/audits/` — retained historical/manual QA audit reports; evidence, not executable fixture authority.
 - `migrations/` — D1 schema migrations.
 - `wrangler.toml` — Worker deployment configuration.
-- regression suites are being migrated from the backend root into `../tests/rules-assistant/`; the historical-regression workflow runs both locations during the transition; the maintained full Vitest command discovers migrated tests, and historical QA-specific tests reside in `../tools/rules-assistant/qa/tests/` to preserve the card-authority proof inventory.
+- Maintained Rules Assistant regression suites live under `../tools/rules-assistant/qa/tests/`, with administrative and refinement tests in their respective `tools/` directories. The backend root retains a small source/QA boundary guard so the existing `test:rules-assistant` command remains runnable, while four known-stale suites remain explicitly quarantined. The historical-regression workflow covers all maintained locations.
 
 ## Source policy
 

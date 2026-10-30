@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync(new URL("./worker-entry.js", import.meta.url), "utf8");
+const source = readFileSync(new URL("../../../../rules-assistant/worker-entry.js", import.meta.url), "utf8");
 
 describe("Rules Arbiter corpus-health routing", () => {
   it("forwards current corpus-health routes unchanged to the v0.7.1 worker", () => {

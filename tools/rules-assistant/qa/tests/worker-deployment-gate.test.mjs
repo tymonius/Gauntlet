@@ -5,14 +5,14 @@ import { dirname, resolve } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const workflow = readFileSync(
-  resolve(here, "../.github/workflows/verify-current-live-publication.yml"),
+  resolve(here, "../../../../.github/workflows/verify-current-live-publication.yml"),
   "utf8"
 );
 const deployWorkflow = readFileSync(
-  resolve(here, "../.github/workflows/deploy-rules-arbiter.yml"),
+  resolve(here, "../../../../.github/workflows/deploy-rules-arbiter.yml"),
   "utf8"
 );
-const lifecycle = JSON.parse(readFileSync(resolve(here, "../config/release-lifecycle.json"), "utf8"));
+const lifecycle = JSON.parse(readFileSync(resolve(here, "../../../../config/release-lifecycle.json"), "utf8"));
 
 describe("Rules Arbiter Worker deployment gate", () => {
   it("reconciles the local behavior revision with the live Worker", () => {
