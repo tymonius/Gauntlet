@@ -423,6 +423,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Relative runtime imports and fixture-source readers are retargeted; exact-port comparison fixture strings and test assertions are deliberately preserved, as are current Workers and frozen game authority.
 - Existing historical-regression CI discovers this QA test directory without changing the package scripts or public routes.
 
+## Completed subtranche — administrative review/persistence regressions
+
+- Three additional review-export/checkpoint, review-scope, and review-intelligence tests now reside beside maintained admin modules under `tools/rules-assistant/admin/tests/`.
+- Imports and D1 migration fixtures were retargeted without changing assertions, production Worker entrypoints, or migrations.
+- Existing historical regression CI already watches and explicitly runs the entire admin test directory; no package scripts or publication paths changed.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

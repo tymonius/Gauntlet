@@ -7,7 +7,10 @@ const suites = [
   "admin-refinement-worker.test.mjs",
   "admin-runtime-execution.test.mjs",
   "admin-scaffold-page.test.mjs",
-  "admin-triage-page.test.mjs"
+  "admin-triage-page.test.mjs",
+  "review-export-checkpoint.test.mjs",
+  "review-export-scope.test.mjs",
+  "review-intelligence.test.mjs"
 ];
 describe('Rules Assistant admin test boundary', () => {
   it('keeps admin suites beside the maintained admin source', () => {
