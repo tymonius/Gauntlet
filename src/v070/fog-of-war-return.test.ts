@@ -96,7 +96,7 @@ function fixture() {
   return { state, fog, normalGambit, extraGambit, reserveTactic, handTactic };
 }
 
-describe('Fog of War physical source return primitive (unapplied cards only)', () => {
+describe('Post-Tactics physical source-return primitive (unapplied cards only)', () => {
   test('returns exactly one chosen Gambit to Hand and leaves the other commitments intact', () => {
     const { state, fog, normalGambit, extraGambit, reserveTactic } = fixture();
     const returned = returnV070UnappliedFogOfWarBattleCards(
