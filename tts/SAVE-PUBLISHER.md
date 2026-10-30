@@ -25,14 +25,14 @@ Individual stages remain available through the `tts:*` package scripts when a na
 
 ## Release identity and source provenance
 
-`game-data/current-game.json` is the identity source for current-development TTS builds. Their package version, display version, source version, and status are derived directly from that authority. `config/tts-release-target.json` remains a versioned publication/QA target for the frozen v0.7.0 release and does not control current-development TTS identity. Published-release metadata remains separate; generating a current-development TTS package does not move a Git tag or publish a GitHub Release by itself.
+`packages/game-data/current-game.json` is the identity source for current-development TTS builds. Their package version, display version, source version, and status are derived from that authority. `config/tts-release-target.json` selects the matching publication/QA target, currently the stable released edition, without superseding gameplay authority. Published-release metadata remains separate; generating a current-development TTS package does not move a Git tag or publish a GitHub Release by itself.
 
 ## Review Scaffold outputs
 
 The publisher writes the versioned Review Scaffold under the current-development identity, for example:
 
-- `tts/generated/v0.7.1-candidate/Gauntlet_v0.7.1-candidate_TTS_Review_Scaffold.json`
-- `tts/generated/current/Gauntlet_TTS_Review_Scaffold.json`
+- a versioned Review Scaffold path derived from the current game authority;
+- `tts/generated/current/Gauntlet_TTS_Review_Scaffold.json` (current alias).
 
 Generated output remains ignored by Git. Pull-request CI includes the generated TTS tree inside the `gauntlet-current-tts-card-assets` Actions artifact.
 
@@ -77,11 +77,11 @@ The bag description records the starter summary and recommended Territory order.
 
 ## Deckbuilder custom Deck import
 
-Deckbuilder-to-TTS import is a **v0.7.1 feature**. In the Deckbuilder, the existing ruleset toggle is the exposure boundary: the released v0.7.0 view does not show TTS export, while the `v0.7.1-candidate` view shows the Tabletop Simulator transfer section for private QA. The published v0.7.0 Workshop mod remains the only public TTS version during candidate testing.
+Deckbuilder-to-TTS import was introduced during the historical v0.7.1 development cycle. The old released-versus-candidate ruleset-toggle restrictions described that earlier private-QA rollout, not the current Workshop publication state. Import remains bound to the exact game version encoded in the Deck Code.
 
 The Deckbuilder copies a compact versioned `GDL1:` Deck Code containing the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids. Mystics codes additionally carry the three selected Rite ids.
 
-The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version.
+TTS saves built with the custom Deck Import feature install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version.
 
 During save generation, the importer captures a pruned snapshot of each fully assembled faction/Leader starter kit and stores each snapshot as its own locked, non-selectable internal Bag parked off-table. The compact Global Lua configuration stores only the direct GUID for each starter template; the large object trees remain native TTS save data rather than being serialized into script. A hard build-time size guard prevents the importer Global script from growing beyond 100 KB.
 
@@ -169,9 +169,9 @@ Promotion is deliberately excluded from `npm run tts:package`. The command refus
 2. all 18 required manual-QA checks are complete; and
 3. the QA record explicitly sets `approvedForWorkshop: true`.
 
-Candidate builds are not publication targets. The `v0.7.1-candidate` QA record deliberately leaves Workshop approval false, so the guarded promotion path cannot produce a publishable candidate mod. When the authority advances to stable v0.7.1, that version receives its own QA record before any final save is promoted.
+Candidate builds are not publication targets. Historical candidate QA records cannot authorize Workshop publication; only the corresponding stable release's machine-readiness evidence and explicit version-specific manual approval permit final save promotion.
 
-The already-promoted v0.7.0 save remains hosted at `https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json` and remains the save behind the public Workshop item `https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635`.
+The historical v0.7.0 save remains hosted at `https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json`. For the current release, `tts/release-qa/v0.7.2.json` records passed stable QA and explicit Workshop approval. The repository owner reports updating the permanent Workshop item `https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635` to v0.7.2; the Steam listing itself has not been independently retrieved.
 
 ## Review boundary
 
