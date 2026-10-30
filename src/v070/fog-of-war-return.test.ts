@@ -290,6 +290,19 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     expect(state).toEqual(before);
   });
 
+  test('rejects returns after dice have already been submitted', () => {
+    const { state, fog, reserveTactic } = fixture();
+    state.battleRuntime!.participants.B.battleDice = [4];
+    state.battleRuntime!.participants.B.selectedBattleDie = 4;
+    const before = structuredClone(state);
+    expect(() => returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId, { choice: 'all_tactics' },
+    )).toThrow(/before either player rolls battle dice/);
+    expect(state).toEqual(before);
+    expect(state.battleRuntime!.participants.B.tactic?.instanceId)
+      .toBe(reserveTactic.instanceId);
+  });
+
   test('rejects ineligible opponents and incorrect source cards', () => {
     const { state, fog } = fixture();
     const before = structuredClone(state);
