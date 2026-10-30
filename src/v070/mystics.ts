@@ -705,6 +705,28 @@ export function useV070GuardiansOfTheCircle(
   runtime.guardiansWindowOpen = false;
   runtime.mysticLossInterruptionResolved = true;
 
+  // Designer ruling: a Shattering loss protected by Guardians preserves
+  // the Rite *and* its opportunity to complete. Arm the next qualifying
+  // dice battle without repeating the original Asset sacrifice. The old
+  // battle's runtime remains marked as triggered, so it cannot apply its
+  // Advantage a second time in the same battle.
+  const shattering = mystics.rites.shattering;
+  if (shattering.status === 'begun'
+    && shattering.shatteringDiceBattleReached
+    && runtime.mysticShatteringTriggeredPlayers?.includes(playerId)) {
+    shattering.shatteringDiceBattleReached = false;
+    appendV070Event(state, {
+      type: 'mystic_shattering_retry_armed',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        rite: 'shattering',
+        assetValue: shattering.shatteringAssetValue,
+        turnNumber: state.turnNumber,
+      },
+    });
+  }
+
   appendV070Event(state, {
     type: 'mystic_guardians_used',
     actor: playerId,
@@ -1146,10 +1168,11 @@ export function applyV070MysticShatteringAtDiceEntry(
 }
 
 /**
- * Complete on victory in the first qualifying dice battle. Retreat +1 on a
+ * Complete on victory in a qualifying dice battle. Retreat +1 on a
  * loss uses the normal shared Retreat-step pipeline. Paths of Shadow's
  * replacement normal Retreat is not followed by a new Retreat step.
  * Rite reset/Guardians resolution occurs separately in the Aftermath.
+ * If Guardians protects a loss, the next qualifying dice battle retries.
  */
 export function resolveV070MysticShatteringAtOutcome(
   state: V070GameState,

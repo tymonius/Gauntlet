@@ -19,14 +19,16 @@ import {
 const mysticStarter = 'mystics-alchemist-first-principles';
 const militaryStarter = 'military-commandant-holdfast';
 
-function ready(): V070GameState {
+function ready(spiritWalker = false): V070GameState {
   let state = createV070StarterGame({
     gameId: 'rite-shattering-regression',
     seed: 'rite-shattering-seed',
     players: {
       A: {
         name: 'Mystic',
-        starterDeckId: mysticStarter,
+        starterDeckId: spiritWalker
+          ? 'mystics-spirit-walker-unbroken-circle'
+          : mysticStarter,
         selectedRiteIds: ['shattering', 'blood', 'crossing'],
       },
       B: { name: 'Military', starterDeckId: militaryStarter },
@@ -82,8 +84,8 @@ function toDenouement(): V070GameState {
   return state;
 }
 
-function activeBattle(): V070GameState {
-  let state = ready();
+function activeBattle(spiritWalker = false): V070GameState {
+  let state = ready(spiritWalker);
   state.players.A.position = 2;
   state.players.B.position = 3;
   state.board.forEach(x => { x.occupant = null; x.blank = true; });
@@ -227,4 +229,109 @@ describe('Rite of Shattering gameplay against current canonical wording', () => 
     expect(state.players.A.mystics!.rites.shattering.shatteringAssetValue)
       .toBeUndefined();
   });
+  test('Guardians protects a Shattering loss and rearms its next qualifying dice battle', () => {
+    let state = activeBattle(true);
+    simulateRiteFromPriorTurn(state, 2);
+    const protectionCardId = currentCanonicalContent.content.cards.find(card =>
+      card.trait === 'Arcane' && card.cost >= 1
+    )?.id;
+    if (!protectionCardId) throw new Error('Current authority needs a qualifying Arcane card.');
+    const guardianCost = 'guardians-shattering-protection';
+    state.cardInstances[guardianCost] = {
+      instanceId: guardianCost,
+      owner: 'A',
+      cardId: protectionCardId,
+    };
+    state.players.A.zones.hand.push(guardianCost);
+
+    state = revealNoCards(state);
+    expect(state.battleRuntime!.participants.A.advantage).toBe(2);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [1, 1, 1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [6],
+    });
+    expect(state.battle?.loser).toBe('A');
+    expect(state.battleRuntime?.guardiansWindowOpen).toBe(true);
+    // The loss's additional Retreat is still applied, even if its
+    // interruption is subsequently prevented by Guardians.
+    expect(state.events.some(event =>
+      event.type === 'mystic_shattering_loss_retreat'
+    )).toBe(true);
+    expect(state.players.A.mystics!.rites.shattering.shatteringDiceBattleReached)
+      .toBe(true);
+
+    state = reduceV070BattleAction(state, {
+      type: 'use_guardians_of_the_circle',
+      playerId: 'A', cardInstanceId: guardianCost,
+    });
+    const protectedRite = state.players.A.mystics!.rites.shattering;
+    expect(protectedRite.status).toBe('begun');
+    expect(protectedRite.shatteringDiceBattleReached).toBe(false);
+    expect(protectedRite.shatteringAssetValue).toBe(2);
+    expect(protectedRite.begunTurn).toBe(state.turnNumber - 1);
+    expect(state.players.A.zones.graveyard).toContain(guardianCost);
+    expect(state.players.A.mystics!.guardiansUsedTurn).toBe(state.turnNumber);
+    expect(state.events.filter(event =>
+      event.type === 'mystic_shattering_retry_armed')).toHaveLength(1);
+    expect(state.events.filter(event =>
+      event.type === 'mystic_rite_interrupted'
+      && (event.payload as { rite?: string }).rite === 'shattering'
+    )).toHaveLength(0);
+    // Re-running dice-entry on the same (already resolved) battle does
+    // not grant Advantage a second time.
+    applyV070MysticShatteringAtDiceEntry(state);
+    expect(state.events.filter(event =>
+      event.type === 'mystic_shattering_advantage_applied')).toHaveLength(1);
+
+    // Carry the preserved Rite into a fresh qualifying battle. This
+    // isolates the next-battle dice lifecycle from turn-advance mechanics.
+    let nextBattle = activeBattle(true);
+    nextBattle.players.A.mystics = structuredClone(state.players.A.mystics);
+    nextBattle = revealNoCards(nextBattle);
+    expect(nextBattle.battleRuntime!.participants.A.advantage).toBe(2);
+    expect(requiredV070BattleDice(nextBattle.battleRuntime!, 'A')).toBe(3);
+    expect(nextBattle.events.filter(event =>
+      event.type === 'mystic_shattering_advantage_applied')).toHaveLength(1);
+    nextBattle = reduceV070BattleAction(nextBattle, {
+      type: 'submit_battle_dice', playerId: 'A', values: [6, 2, 1],
+    });
+    nextBattle = reduceV070BattleAction(nextBattle, {
+      type: 'submit_battle_dice', playerId: 'B', values: [1],
+    });
+    expect(nextBattle.battle?.winner).toBe('A');
+    expect(nextBattle.players.A.mystics!.rites.shattering.status).toBe('completed');
+  });
+
+  test('declining Guardians resets Shattering and does not arm a retry', () => {
+    let state = activeBattle(true);
+    simulateRiteFromPriorTurn(state, 2);
+    const protectionCardId = currentCanonicalContent.content.cards.find(card =>
+      card.trait === 'Arcane' && card.cost >= 1
+    )?.id;
+    if (!protectionCardId) throw new Error('Current authority needs a qualifying Arcane card.');
+    const guardianCost = 'guardians-decline-shattering';
+    state.cardInstances[guardianCost] = {
+      instanceId: guardianCost, owner: 'A', cardId: protectionCardId,
+    };
+    state.players.A.zones.hand.push(guardianCost);
+    state = revealNoCards(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [1, 1, 1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [6],
+    });
+    expect(state.battleRuntime?.guardiansWindowOpen).toBe(true);
+    state = reduceV070BattleAction(state, {
+      type: 'pass_guardians_of_the_circle', playerId: 'A',
+    });
+    expect(state.players.A.mystics!.rites.shattering.status).toBe('incomplete');
+    expect(state.players.A.mystics!.rites.shattering.shatteringAssetValue)
+      .toBeUndefined();
+    expect(state.events.filter(event =>
+      event.type === 'mystic_shattering_retry_armed')).toHaveLength(0);
+  });
+
 });
