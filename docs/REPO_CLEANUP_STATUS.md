@@ -417,6 +417,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Test imports continue to resolve maintained backend helpers, intentionally historical frozen release evidence, and current app paths; no authority, assertions, API routes, or live Worker modules moved.
 - Existing historical-regression workflow already watches and runs this QA test directory, preserving coverage.
 
+## Completed subtranche — versioned Rules Arbiter candidate/final regression QA
+
+- Eight versioned candidate/final corpus, workflow, Worker-port, authority-link and citation regression suites now reside under `tools/rules-assistant/qa/tests/` instead of the mixed backend root.
+- Relative runtime imports and fixture-source readers are retargeted; exact-port comparison fixture strings and test assertions are deliberately preserved, as are current Workers and frozen game authority.
+- Existing historical-regression CI discovers this QA test directory without changing the package scripts or public routes.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:

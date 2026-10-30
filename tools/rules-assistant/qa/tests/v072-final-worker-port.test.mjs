@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const candidate = readFileSync(new URL("./worker-v072-candidate.js", import.meta.url), "utf8");
-const staged = readFileSync(new URL("./worker-v072.js", import.meta.url), "utf8");
+const candidate = readFileSync(new URL("../../../../rules-assistant/worker-v072-candidate.js", import.meta.url), "utf8");
+const staged = readFileSync(new URL("../../../../rules-assistant/worker-v072.js", import.meta.url), "utf8");
 
 function portCandidateToFinal(source) {
   let result = source;

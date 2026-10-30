@@ -2,8 +2,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
-const v071 = readFileSync(new URL("../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
-const candidate = readFileSync(new URL("./worker-v072-candidate.js", import.meta.url), "utf8");
+const v071 = readFileSync(new URL("../../../../legacy/rules-assistant/v071/worker-v071.js", import.meta.url), "utf8");
+const candidate = readFileSync(new URL("../../../../rules-assistant/worker-v072-candidate.js", import.meta.url), "utf8");
 
 function portR33Worker(source) {
   // Repository placement is not part of the r33 behavior port. Normalize the

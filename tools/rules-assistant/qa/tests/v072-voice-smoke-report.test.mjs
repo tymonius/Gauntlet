@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   inspectVoiceSmokeReport,
   VOICE_SMOKE_CASE_IDS
-} from "./v072-voice-smoke-report.js";
+} from "../../../../rules-assistant/v072-voice-smoke-report.js";
 
 function validReport() {
   return {
