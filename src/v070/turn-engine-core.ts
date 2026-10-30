@@ -162,7 +162,7 @@ import {
   beginV070MysticRite,
   beginV070MysticRitual,
   reconcileV070MysticEquivalenceHand,
-  resolveV070MysticEquivalenceActionPlay,
+  resolveV070MysticEquivalencePrintedPlay,
   openV070MysticInvocationAfterActionEffect,
   passV070MysticInvocation,
   recordV070MysticQualifyingHandSacrifice,
@@ -1933,6 +1933,7 @@ function bankAsset(
     cardInstanceId,
     replaceAssetInstanceId,
   );
+  resolveV070MysticEquivalencePrintedPlay(state, playerId, cardInstanceId, 'Asset');
 }
 
 function discardAsset(
@@ -3313,7 +3314,7 @@ function playActionCard(
         : {}),
     },
   });
-  resolveV070MysticEquivalenceActionPlay(state, playerId, cardInstanceId);
+  resolveV070MysticEquivalencePrintedPlay(state, playerId, cardInstanceId, 'Action');
   applyV070BlasphemyForActionPlay(
     state,
     playerId,

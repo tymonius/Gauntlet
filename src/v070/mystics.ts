@@ -976,6 +976,7 @@ function beginEquivalence(
       'Equivalence must exchange one Hand card with one Graveyard card.',
     );
   }
+  assertV070GraveyardExitAllowed(state, 'Rite of Equivalence');
   const handCardId = state.cardInstances[handId]?.cardId;
   const graveCardId = state.cardInstances[graveId]?.cardId;
   const handCard = handCardId ? currentCanonicalContent.cardsById.get(handCardId) : null;
@@ -1002,17 +1003,29 @@ function beginEquivalence(
   });
 }
 
-/** A legal Action play satisfies printed-effect play; same-turn completion is barred. */
-export function resolveV070MysticEquivalenceActionPlay(
+/** Any *legal printed mode* of the exchanged exact card qualifies.
+ * Caller must invoke this at the actual printed-effect use boundary.
+ */
+export function resolveV070MysticEquivalencePrintedPlay(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string,
+  mode: 'Action' | 'Asset' | 'Gambit' | 'Tactic',
 ): void {
   if (!isV070MysticPlayer(state, playerId)) return;
   const rite = requireMystics(state, playerId).rites.equivalence;
   if (rite.status !== 'begun' || rite.equivalenceRevealedInstanceId !== instanceId) return;
-  if (rite.begunTurn === null || rite.begunTurn >= state.turnNumber) {
-    resetRite(state, playerId, 'equivalence', 'same_turn_exchanged_card_play');
+  const cardId = state.cardInstances[instanceId]?.cardId;
+  const card = cardId ? currentCanonicalContent.cardsById.get(cardId) : null;
+  if (!card?.effects.some(effect =>
+    effect.label === mode || (mode === 'Gambit' || mode === 'Tactic')
+      && effect.label === 'Gambit/Tactic',
+  )) {
+    throw new V070GameActionError('Equivalence requires playing a printed effect of the exchanged card.');
+  }
+  if (rite.begunTurn === null || rite.begunTurn >= state.turnNumber
+    || requireMystics(state, playerId).riteCompletedTurn === state.turnNumber) {
+    resetRite(state, playerId, 'equivalence', 'exchanged_card_played_without_completion');
     return;
   }
   completeRite(state, playerId, 'equivalence');
@@ -1020,13 +1033,32 @@ export function resolveV070MysticEquivalenceActionPlay(
 }
 
 /** Validate card-identity continuity at the end of every successful reducer action. */
+export function v070MysticEquivalenceRevealedCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): boolean {
+  return isV070MysticPlayer(state, playerId)
+    && requireMystics(state, playerId).rites.equivalence.status === 'begun'
+    && requireMystics(state, playerId).rites.equivalence.equivalenceRevealedInstanceId === instanceId;
+}
+
 export function reconcileV070MysticEquivalenceHand(state: V070GameState): void {
   for (const playerId of ['A', 'B'] as const) {
     if (!isV070MysticPlayer(state, playerId)) continue;
     const rite = requireMystics(state, playerId).rites.equivalence;
     if (rite.status !== 'begun') continue;
-    const cardId = rite.equivalenceRevealedInstanceId;
-    if (!cardId || !state.players[playerId].zones.hand.includes(cardId)) {
+    const instanceId = rite.equivalenceRevealedInstanceId;
+    const participant = state.battleRuntime?.participants[playerId];
+    // Setting a Gambit temporarily moves the card out of Hand; do not
+    // interrupt until its selected printed Gambit effect actually resolves.
+    // An abandoned commitment is still an ordinary Hand departure.
+    const committedForPrintedEffect = Boolean(instanceId && participant
+      && [participant.gambit, ...participant.additionalGambits,
+        participant.tactic, ...participant.additionalTactics]
+        .some(commitment => commitment?.instanceId === instanceId));
+    if (!instanceId || (!state.players[playerId].zones.hand.includes(instanceId)
+      && !committedForPrintedEffect)) {
       resetRite(state, playerId, 'equivalence', 'exchanged_card_left_hand');
     }
   }

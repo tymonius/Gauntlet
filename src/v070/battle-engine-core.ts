@@ -166,6 +166,8 @@ import {
   prepareV070MysticLossInterruption,
   recordV070MysticBattleEffectApplied,
   reconcileV070MysticEquivalenceHand,
+  resolveV070MysticEquivalencePrintedPlay,
+  v070MysticEquivalenceRevealedCard,
   recordV070MysticCrossingEligibility,
   recordV070MysticQualifyingHandSacrifice,
   passV070MysticInvocation,
@@ -1187,7 +1189,9 @@ function setGambit(
 
     player.zones.hand.splice(index, 1);
     participant.gambit = commitment(instanceId, playerId, 'gambit');
-    const forcedFaceUp = Boolean(
+    const forcedFaceUp = v070MysticEquivalenceRevealedCard(
+      state, playerId, instanceId,
+    ) || Boolean(
       order
       && playerId === order.firstPlayer
       && order.firstCommitmentFaceUp,
@@ -1328,6 +1332,15 @@ function revealBattleRole(
       },
     });
     return;
+  }
+
+  // Completion follows a supported printed battle-card play, not the
+  // face-down commitment step or a merely attempted/unsupported effect.
+  for (const item of commitments) {
+    resolveV070MysticEquivalencePrintedPlay(
+      state, item.owner, item.instanceId,
+      role === 'gambit' ? 'Gambit' : 'Tactic',
+    );
   }
 
   runtime.stage = role === 'gambit' ? 'choose_tactics' : 'outcome';
