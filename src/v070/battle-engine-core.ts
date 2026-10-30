@@ -167,6 +167,7 @@ import {
   prepareV070MysticLossInterruption,
   recordV070MysticBattleEffectApplied,
   reconcileV070MysticEquivalenceHand,
+  reconcileV070MysticCrossingOccupation,
   resolveV070MysticEquivalencePrintedPlay,
   v070MysticEquivalenceRevealedCard,
   recordV070MysticCrossingEligibility,
@@ -615,6 +616,7 @@ export function reduceV070BattleAction(
     );
     ensureBattleRuntime(next);
     reconcileV070MysticEquivalenceHand(next);
+    reconcileV070MysticCrossingOccupation(next);
     return next;
   }
 
@@ -997,6 +999,7 @@ export function reduceV070BattleAction(
   }
 
   reconcileV070MysticEquivalenceHand(next);
+  reconcileV070MysticCrossingOccupation(next);
   return next;
 }
 
