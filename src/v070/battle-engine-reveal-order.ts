@@ -430,6 +430,7 @@ export function reduceV070BattleAction(
       instanceId: action.cardInstanceId,
       owner: action.playerId,
       role: 'tactic' as const,
+      sourceZone: candidateZone,
       faceUp: true,
     };
     participant.additionalTactics.push(commitment);

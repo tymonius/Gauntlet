@@ -240,6 +240,7 @@ function replaceSourceWithHandCards(
     instanceId,
     owner,
     role,
+    sourceZone: 'hand',
     faceUp: true,
   } satisfies V070BattleCardCommitment));
 

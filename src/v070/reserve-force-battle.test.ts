@@ -289,12 +289,14 @@ describe('Reserve Force battle effect', () => {
 
     const participant = state.battleRuntime!.participants.A;
     expect(participant.tactic?.instanceId).toBe(first);
+    expect(participant.tactic?.sourceZone).toBe('hand');
     expect(participant.tactic?.faceUp).toBe(true);
     expect(participant.additionalTactics).toContainEqual(
       expect.objectContaining({
         instanceId: second,
         owner: 'A',
         role: 'tactic',
+        sourceZone: 'hand',
         faceUp: true,
       }),
     );
