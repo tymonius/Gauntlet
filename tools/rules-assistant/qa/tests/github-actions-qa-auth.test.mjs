@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   claimsAreAuthorized,
   githubActionsQaAuthContract
-} from "./github-actions-qa-auth.js";
+} from "../../../../rules-assistant/github-actions-qa-auth.js";
 
 const now = 1_789_124_400;
 

@@ -7,8 +7,8 @@ import {
   retrieveIntelligentRules,
   sanitizeGameState,
   shouldVerifyAnswer
-} from "./rules-intelligence.js";
-import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
+} from "../../../../rules-assistant/rules-intelligence.js";
+import { enrichPlanFromEntityDocuments } from "../../../../rules-assistant/rules-plan-enrichment.js";
 
 const corpus = {
   version: "v0.6.1",

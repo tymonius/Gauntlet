@@ -429,6 +429,13 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - Imports and D1 migration fixtures were retargeted without changing assertions, production Worker entrypoints, or migrations.
 - Existing historical regression CI already watches and explicitly runs the entire admin test directory; no package scripts or publication paths changed.
 
+## Completed subtranche — Rules Assistant runtime-helper test separation
+
+- Eight maintained runtime-helper, retrieval, status, deterministic-ruling, legacy regression, and persistence-contract test suites now live in `tools/rules-assistant/qa/tests/` rather than the deployed Worker source directory.
+- Their shared runtime imports and historical fixture reads use corrected relative paths; tests' assertions, release files, current gameplay authority, and Worker code are unchanged.
+- The established historical-regression workflow already watches and runs this QA directory, so no deployment contract or package-script changes are required.
+- The four explicitly quarantined backend-root test files remain in place pending separate test rehabilitation.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
