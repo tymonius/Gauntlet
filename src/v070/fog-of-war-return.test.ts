@@ -167,6 +167,17 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     expect(state).toEqual(before);
   });
 
+  test('rejects an unresolved reveal queue before it can replay a returned effect', () => {
+    const { state, fog, handTactic } = fixture();
+    state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    state.battleRuntime!.pendingRevealEffectCommitments = [handTactic];
+    const before = structuredClone(state);
+    expect(() => returnV070UnappliedFogOfWarBattleCards(
+      state, 'A', fog.instanceId, { choice: 'all_tactics' },
+    )).toThrow(/Resolve pending battle-card reveal effects/);
+    expect(state).toEqual(before);
+  });
+
   test('rejects ineligible opponents and incorrect source cards', () => {
     const { state, fog } = fixture();
     const before = structuredClone(state);
