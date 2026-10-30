@@ -12,8 +12,8 @@ import type { V070BattleCardCommitment } from './battle-types';
 
 function battle(): V070GameState {
   let state = createV070StarterGame({
-    gameId: 'fog-return-foundation',
-    seed: 'fog-return-foundation',
+    gameId: 'commitment-provenance-regression',
+    seed: 'commitment-provenance-regression',
     players: {
       A: { name: 'Alpha', starterDeckId: 'mystics-alchemist-first-principles' },
       B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
