@@ -161,6 +161,8 @@ import {
 import {
   beginV070MysticRite,
   beginV070MysticRitual,
+  reconcileV070MysticEquivalenceHand,
+  resolveV070MysticEquivalencePrintedPlay,
   openV070MysticInvocationAfterActionEffect,
   passV070MysticInvocation,
   recordV070MysticQualifyingHandSacrifice,
@@ -195,6 +197,8 @@ export type V070TurnAction =
       shatteringAssetInstanceId?: string;
       consecrationOverlayInstanceId?: string;
       consecrationTerritoryPosition?: number;
+      equivalenceHandInstanceId?: string;
+      equivalenceGraveyardInstanceId?: string;
     }
   | {
       type: 'mystics_begin_ritual';
@@ -1360,6 +1364,7 @@ export function reduceV070TurnAction(
       break;
   }
 
+  reconcileV070MysticEquivalenceHand(next);
   return next;
 }
 
@@ -1928,6 +1933,7 @@ function bankAsset(
     cardInstanceId,
     replaceAssetInstanceId,
   );
+  resolveV070MysticEquivalencePrintedPlay(state, playerId, cardInstanceId, 'Asset');
 }
 
 function discardAsset(
@@ -2361,6 +2367,8 @@ function mysticsBeginRite(
       shatteringAssetInstanceId: action.shatteringAssetInstanceId,
       consecrationOverlayInstanceId: action.consecrationOverlayInstanceId,
       consecrationTerritoryPosition: action.consecrationTerritoryPosition,
+      equivalenceHandInstanceId: action.equivalenceHandInstanceId,
+      equivalenceGraveyardInstanceId: action.equivalenceGraveyardInstanceId,
     },
   );
 }
@@ -3306,6 +3314,7 @@ function playActionCard(
         : {}),
     },
   });
+  resolveV070MysticEquivalencePrintedPlay(state, playerId, cardInstanceId, 'Action');
   applyV070BlasphemyForActionPlay(
     state,
     playerId,
