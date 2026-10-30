@@ -250,6 +250,13 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       'hand',
     );
 
+    const matchingDrawPileInstanceId = 'echoes-match-in-draw-pile';
+    state.cardInstances[matchingDrawPileInstanceId] = {
+      instanceId: matchingDrawPileInstanceId,
+      cardId: state.cardInstances[boundHand].cardId,
+      owner: 'A',
+    };
+    state.players.A.zones.drawPile.push(matchingDrawPileInstanceId);
     const currentTurn = state.turnNumber;
     state.turnNumber -= 1;
     beginV070MysticRite(state, 'A', 'echoes', {
@@ -257,6 +264,19 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       echoesHandInstanceId: boundHand,
     });
     state.turnNumber = currentTurn;
+    // Multiple copies can share a title; the searched instance need not be
+    // our injected copy if an existing Draw Pile copy already matched.
+    const searchedTop = state.players.A.zones.drawPile[0];
+    expect(state.cardInstances[searchedTop].cardId).toBe(
+      state.cardInstances[boundHand].cardId,
+    );
+    expect(state.events.some(event =>
+      event.type === 'mystic_echoes_drawpile_card_revealed'
+      && (event.payload as { instanceId?: string }).instanceId === searchedTop
+    )).toBe(true);
+    expect(state.bindings.filter(binding =>
+      binding.hostId === 'mystics:rite:A:echoes'
+    ).every(binding => binding.faceUp)).toBe(true);
 
     state = reduceV070BattleAction(state, {
       type: 'proceed_from_onset',
@@ -276,13 +296,117 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       playerId: 'A',
     });
 
-    expect(state.players.A.mystics?.rites.echoes.status)
-      .toBe('completed');
+    // A printed Gambit effect does not complete Echoes until the
+    // battle is actually won.
+    expect(state.players.A.mystics?.rites.echoes.status).toBe('begun');
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [1],
+    });
+    expect(state.battle?.winner).toBe('A');
+    expect(state.players.A.mystics?.rites.echoes.status).toBe('completed');
     expect(state.players.A.zones.discardPile).toContain(boundGraveyard);
     expect(state.players.A.zones.graveyard).toContain(boundHand);
     expect(state.bindings.some(binding =>
       binding.hostId === 'mystics:rite:A:echoes'
     )).toBe(false);
+  });
+
+  test('Echoes cannot begin from a duplicate outside Draw Pile and does not mutate state', () => {
+    const state = readyGame();
+    const graveId = injectCard(
+      state, 'A', 'neutral-new-recruits', 'echoes-draw-required-grave', 'graveyard',
+    );
+    const handId = injectCard(
+      state, 'A', 'neutral-rallying-cry', 'echoes-draw-required-hand', 'hand',
+    );
+    const handTitle = state.cardInstances[handId].cardId;
+    const remaining = state.players.A.zones.drawPile.filter(instanceId =>
+      state.cardInstances[instanceId]?.cardId !== handTitle
+    );
+    const removed = state.players.A.zones.drawPile.filter(instanceId =>
+      state.cardInstances[instanceId]?.cardId === handTitle
+    );
+    state.players.A.zones.drawPile = remaining;
+    state.players.A.zones.discardPile.push(...removed);
+    const before = structuredClone(state);
+    expect(() => beginV070MysticRite(state, 'A', 'echoes', {
+      echoesGraveyardInstanceId: graveId,
+      echoesHandInstanceId: handId,
+    })).toThrow(/matches a card in your Draw Pile/);
+    expect(state).toEqual(before);
+  });
+
+  test('a matching Echoes Gambit in a lost battle cannot complete the Rite', () => {
+    let state = activeBattle();
+    const boundGraveId = injectCard(
+      state, 'A', 'neutral-new-recruits', 'echoes-loss-grave', 'graveyard',
+    );
+    const boundHandId = injectCard(
+      state, 'A', 'neutral-rallying-cry', 'echoes-loss-hand', 'hand',
+    );
+    const activeGambitId = injectCard(
+      state, 'A', 'neutral-rallying-cry', 'echoes-loss-gambit', 'hand',
+    );
+    const matchingDrawId = 'echoes-loss-draw-copy';
+    state.cardInstances[matchingDrawId] = {
+      instanceId: matchingDrawId,
+      cardId: state.cardInstances[boundHandId].cardId,
+      owner: 'A',
+    };
+    state.players.A.zones.drawPile.push(matchingDrawId);
+    const originalTurn = state.turnNumber;
+    state.turnNumber -= 1;
+    beginV070MysticRite(state, 'A', 'echoes', {
+      echoesGraveyardInstanceId: boundGraveId,
+      echoesHandInstanceId: boundHandId,
+    });
+    state.turnNumber = originalTurn;
+
+    state = reduceV070BattleAction(state, {
+      type: 'proceed_from_onset', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'A', cardInstanceId: activeGambitId,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'A',
+    });
+    expect(state.players.A.mystics!.rites.echoes.status).toBe('begun');
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [6],
+    });
+    expect(state.battle?.loser).toBe('A');
+    expect(state.players.A.mystics!.rites.echoes.status).toBe('incomplete');
+    expect(state.players.A.zones.graveyard).toContain(boundGraveId);
+    expect(state.players.A.zones.graveyard).toContain(boundHandId);
+    expect(state.players.A.zones.discardPile).not.toContain(boundGraveId);
   });
 
   test('Rite of Blood completes on a later-turn win with no Gambit or Tactic', () => {

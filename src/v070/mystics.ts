@@ -6,6 +6,7 @@ import { applyV070BattleRetreatStep, v070NormalBattleRetreatApplied } from './re
 import {
   V070GameActionError,
   appendV070Event,
+  deterministicV070Shuffle,
   type V070GameState,
   type V070MysticRiteId,
   type V070MysticRiteState,
@@ -42,6 +43,8 @@ declare module './battle-types' {
   interface V070BattleRuntime {
     /** The first later-turn dice battle in which Shattering took effect. */
     mysticShatteringTriggeredPlayers?: PlayerId[];
+    /** Echoes: a matching Gambit/Tactic printed effect resolved in this battle. */
+    mysticEchoesQualifyingEffectPlayers?: PlayerId[];
   }
 }
 
@@ -219,28 +222,20 @@ export function recordV070MysticBattleEffectApplied(
     const hostId = riteHostId(playerId, 'echoes');
     const handBinding = v070BindingsForHost(state, hostId)
       .find(binding => binding.purpose === ECHOES_HAND_PURPOSE);
-
     if (handBinding && handBinding.cardInstanceId !== sourceInstanceId) {
-      const boundCardId =
-        state.cardInstances[handBinding.cardInstanceId]?.cardId;
-      const sourceCardId =
-        state.cardInstances[sourceInstanceId]?.cardId;
-      if (boundCardId && boundCardId === sourceCardId) {
-        releaseV070BoundCardsForPurpose(
-          state,
-          hostId,
-          ECHOES_GRAVEYARD_PURPOSE,
-          'discard',
-          'Rite of Echoes completion',
-        );
-        releaseV070BoundCardsForPurpose(
-          state,
-          hostId,
-          ECHOES_HAND_PURPOSE,
-          'graveyard',
-          'Rite of Echoes completion',
-        );
-        completeRite(state, playerId, 'echoes');
+      const boundCardId = state.cardInstances[handBinding.cardInstanceId]?.cardId;
+      const sourceCardId = state.cardInstances[sourceInstanceId]?.cardId;
+      const runtime = state.battleRuntime;
+      if (runtime && boundCardId && boundCardId === sourceCardId) {
+        runtime.mysticEchoesQualifyingEffectPlayers ??= [];
+        if (!runtime.mysticEchoesQualifyingEffectPlayers.includes(playerId)) {
+          runtime.mysticEchoesQualifyingEffectPlayers.push(playerId);
+        }
+        // An effect may resolve after the battle outcome; a win is still
+        // required, rather than completing immediately at card reveal.
+        if (state.battle?.winner === playerId) {
+          completeV070MysticEchoesAfterBattleWin(state, playerId);
+        }
       }
     }
   }
@@ -253,6 +248,33 @@ export function recordV070MysticBattleEffectApplied(
       true,
     );
   }
+}
+
+/**
+ * Echoes requires BOTH a matching printed Gambit/Tactic effect and victory
+ * in that battle. Merely applying a matching effect during reveal cannot
+ * complete a Rite before the battle has been won.
+ */
+export function completeV070MysticEchoesAfterBattleWin(
+  state: V070GameState,
+  winner: PlayerId,
+): void {
+  if (!isV070MysticPlayer(state, winner)
+    || state.battle?.winner !== winner
+    || !state.battleRuntime?.mysticEchoesQualifyingEffectPlayers?.includes(winner)) return;
+  const mystics = requireMystics(state, winner);
+  const rite = mystics.rites.echoes;
+  if (rite.status !== 'begun' || rite.begunTurn === null
+    || rite.begunTurn >= state.turnNumber
+    || mystics.riteCompletedTurn === state.turnNumber) return;
+  const hostId = riteHostId(winner, 'echoes');
+  releaseV070BoundCardsForPurpose(
+    state, hostId, ECHOES_GRAVEYARD_PURPOSE, 'discard', 'Rite of Echoes completion',
+  );
+  releaseV070BoundCardsForPurpose(
+    state, hostId, ECHOES_HAND_PURPOSE, 'graveyard', 'Rite of Echoes completion',
+  );
+  completeRite(state, winner, 'echoes');
 }
 
 export function openV070MysticInvocationAfterActionEffect(
@@ -887,14 +909,13 @@ function beginEchoes(
       'Rite of Echoes requires a known Hand card.',
     );
   }
-  const duplicateExists = Object.values(state.cardInstances).some(instance =>
-    instance.owner === playerId
-    && instance.instanceId !== handInstanceId
-    && instance.cardId === handCardId
+  const drawPile = state.players[playerId].zones.drawPile;
+  const matchingDrawInstanceId = drawPile.find(instanceId =>
+    state.cardInstances[instanceId]?.cardId === handCardId
   );
-  if (!duplicateExists) {
+  if (!matchingDrawInstanceId) {
     throw new V070GameActionError(
-      'Rite of Echoes requires a Hand card whose title matches another card in your Deck.',
+      'Rite of Echoes requires a Hand card whose title matches a card in your Draw Pile.',
     );
   }
 
@@ -912,8 +933,28 @@ function beginEchoes(
     owner: playerId,
     cardInstanceId: handInstanceId,
     sourceZone: 'hand',
-    faceUp: false,
+    faceUp: true,
     purpose: ECHOES_HAND_PURPOSE,
+  });
+
+  // Search, publicly reveal the matching card, shuffle the remaining Draw
+  // Pile, and place the revealed instance on top per the current Rite text.
+  const matchingIndex = drawPile.indexOf(matchingDrawInstanceId);
+  drawPile.splice(matchingIndex, 1);
+  const shuffled = deterministicV070Shuffle(
+    drawPile,
+    `${state.seed}:${playerId}:echoes:${state.turnNumber}:${state.events.length}`,
+  );
+  drawPile.splice(0, drawPile.length, matchingDrawInstanceId, ...shuffled);
+  appendV070Event(state, {
+    type: 'mystic_echoes_drawpile_card_revealed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: matchingDrawInstanceId,
+      cardId: handCardId,
+      drawPileCount: drawPile.length,
+    },
   });
 }
 
