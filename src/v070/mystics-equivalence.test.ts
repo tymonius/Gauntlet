@@ -5,6 +5,7 @@ import {
   type V070GameState,
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
+import { reduceV070BattleAction } from './battle-engine';
 import { viewV070GameForPlayer } from './views';
 import { currentCanonicalContent } from '../content/current-game';
 const eligible = currentCanonicalContent.content.cards;
@@ -22,6 +23,7 @@ if (!playedCardId || !exchangedCostId || !unequalCostId) {
 import {
   beginV070MysticRite,
   reconcileV070MysticEquivalenceHand,
+  resolveV070MysticEquivalencePrintedPlay,
 } from './mystics';
 
 function ready(): V070GameState {
@@ -77,6 +79,29 @@ function toOpening(state: V070GameState): V070GameState {
   state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
   return reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
 }
+
+function activeBattle(): V070GameState {
+  let state = ready();
+  state.players.A.position = 2;
+  state.players.B.position = 3;
+  state.board.forEach(t => { t.occupant = null; t.blank = true; });
+  state.board[2].occupant = 'A';
+  state.board[3].occupant = 'B';
+  state.board[3].controller = 'B';
+  state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
+  state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
+  state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'A' });
+  state = reduceV070TurnAction(state, {
+    type: 'choose_movement', playerId: 'A', choice: 'advance',
+  });
+  expect(state.battle?.attacker).toBe('A');
+  return state;
+}
+const assetCardId = eligible.find(card => card.allegiance === 'Neutral'
+  && card.cost === 1
+  && card.effects.some(effect => effect.label === 'Asset')
+  && !card.effects.some(effect => effect.label === 'Action'))?.id;
+if (!assetCardId) throw new Error('Missing eligible current-authority Asset');
 
 describe('Rite of Equivalence against current selected-Rite authority', () => {
   test('equal-value exchange changes exact instances and publicly reveals only the exchanged card', () => {
@@ -171,4 +196,58 @@ describe('Rite of Equivalence against current selected-Rite authority', () => {
     reconcileV070MysticEquivalenceHand(state);
     expect(state.players.A.mystics!.rites.equivalence.status).toBe('incomplete');
   });
+  test('a revealed Gambit remains active through commitment and completes at printed effect use', () => {
+    let state = activeBattle();
+    const { graveId } = begin(state);
+    state.players.A.mystics!.rites.equivalence.begunTurn = state.turnNumber - 1;
+    state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'A', cardInstanceId: graveId,
+    });
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('begun');
+    expect(state.battleRuntime?.participants.A.gambit?.faceUp).toBe(true);
+    expect(viewV070GameForPlayer(state, 'B').battleRuntime?.participants.A.gambit)
+      .toEqual({ instanceId: graveId, cardId: playedCardId! });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('begun');
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('completed');
+    expect(state.players.A.mystics!.rites.equivalence.equivalenceRevealedInstanceId)
+      .toBeUndefined();
+  });
+
+  test('Gambit used on its beginning turn cannot complete the Rite', () => {
+    let state = activeBattle();
+    const { graveId } = begin(state);
+    state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'A', cardInstanceId: graveId,
+    });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('incomplete');
+  });
+
+  test('banking the exchanged card for its printed Asset effect completes the Rite', () => {
+    let state = toOpening(ready());
+    const { graveId } = begin(state);
+    state.cardInstances[graveId].cardId = assetCardId!;
+    state.players.A.mystics!.rites.equivalence.begunTurn = state.turnNumber - 1;
+    state = reduceV070TurnAction(state, {
+      type: 'bank_asset', playerId: 'A', cardInstanceId: graveId,
+    });
+    expect(state.players.A.zones.assetBank).toContain(graveId);
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('completed');
+  });
+
+  test('the printed Tactic mode qualifies for exactly the exchanged instance', () => {
+    const state = ready();
+    const { graveId, handId } = begin(state);
+    state.players.A.mystics!.rites.equivalence.begunTurn = state.turnNumber - 1;
+    resolveV070MysticEquivalencePrintedPlay(state, 'A', handId, 'Gambit');
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('begun');
+    resolveV070MysticEquivalencePrintedPlay(state, 'A', graveId, 'Tactic');
+    expect(state.players.A.mystics!.rites.equivalence.status).toBe('completed');
+  });
+
 });
