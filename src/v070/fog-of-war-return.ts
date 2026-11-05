@@ -5,15 +5,8 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import type { V070BattleCardCommitment } from './battle-types';
-import {
-  hasV070BattleCardEffectApplied,
-  v070BattleCommitment,
-} from './battle-effect-status';
+import { v070BattleCommitment } from './battle-effect-status';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
-import {
-  canReverseV070BattleNumericEffects,
-  reverseV070BattleNumericEffects,
-} from './battle-reversible-numeric-effects';
 
 export type V070FogOfWarReturnSelection =
   | { choice: 'one_gambit'; targetInstanceId: string }
@@ -21,13 +14,13 @@ export type V070FogOfWarReturnSelection =
 
 /**
  * Physical, source-aware card return primitive for Fog of War. This function
- * accepts unapplied effects or effects tracked as strictly reversible numeric
- * changes. Other already-applied Gambit/Tactic effects remain blocked; the
- * printed after-Tactics choice is not enabled until those cases are addressed.
+ * returns the physical card, not its already-applied effect. Under the
+ * current rulebook, applied effects cannot be canceled retroactively.
  *
- * This is not an implementation of the Fog of War printed battle choice.
+ * This is not yet an implementation of the printed reveal-stage choice: a
+ * pending effect queue must be handled separately before this is invoked.
  */
-export function returnV070UnappliedFogOfWarBattleCards(
+export function returnV070FogOfWarBattleCards(
   state: V070GameState,
   fogOwner: PlayerId,
   fogInstanceId: string,
@@ -97,17 +90,6 @@ export function returnV070UnappliedFogOfWarBattleCards(
         'Cannot return a battle card whose exact source zone was not recorded.',
       );
     }
-    const hasAppliedEffect = hasV070BattleCardEffectApplied(state, card.instanceId)
-      || state.events.some(event =>
-        event.type === 'battle_card_effect_applied'
-        && (event.payload as { instanceId?: string } | undefined)
-          ?.instanceId === card.instanceId);
-    if (hasAppliedEffect
-      && !canReverseV070BattleNumericEffects(state, card.instanceId)) {
-      throw new V070GameActionError(
-        'Cannot return a battle card with an applied effect until its effects can be reversed.',
-      );
-    }
     if (state.players[opponent].zones.hand.includes(card.instanceId)
       || participant.reserve.includes(card.instanceId)) {
       throw new V070GameActionError(
@@ -116,11 +98,6 @@ export function returnV070UnappliedFogOfWarBattleCards(
     }
   }
 
-  // Once every target has been validated, reverse its recorded, purely
-  // numeric effect contribution. No other card's contribution is touched.
-  for (const card of targets) {
-    reverseV070BattleNumericEffects(state, card.instanceId);
-  }
   const targetIds = new Set(targets.map(card => card.instanceId));
   if (selection.choice === 'one_gambit') {
     if (participant.gambit && targetIds.has(participant.gambit.instanceId)) {
