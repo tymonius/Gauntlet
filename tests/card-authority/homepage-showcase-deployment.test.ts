@@ -6,7 +6,7 @@ import {
   buildHomepageShowcaseManifest,
 } from '../../scripts/build-homepage-showcase-manifest.mjs';
 
-const source = JSON.parse(readFileSync('media/compositions.json', 'utf8'));
+const source = JSON.parse(readFileSync('config/media-compositions.json', 'utf8'));
 const publicManifest = JSON.parse(readFileSync('assets/homepage-card-showcase.json', 'utf8'));
 const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const publicationBoundary = JSON.parse(readFileSync('config/publication-boundary.json', 'utf8'));

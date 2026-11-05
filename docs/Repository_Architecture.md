@@ -147,7 +147,7 @@ These contracts answer different questions and must not silently substitute for 
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
 | `tests/` | Repository-wide contract/regression harness; root placement is deliberate |
-| `media/` | Reproducible media/composition configuration and export tooling; lifecycle still needs audit |
+| `media/` | Generated card-media output and its documentation; maintained composition definition lives at `config/media-compositions.json` and builder code at `scripts/`; lifecycle still needs audit |
 
 ### Historical compatibility
 

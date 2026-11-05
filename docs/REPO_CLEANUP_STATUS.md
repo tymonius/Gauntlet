@@ -491,6 +491,12 @@ Do not move versioned worker/corpus files until their live routing, QA, and hist
 
 The outdated Browser Rulebook source/publication examples in `docs/Repository_Architecture.md` were corrected in #1980. The current `/rulebook/` route is staged from `legacy/rulebook-browser/` under `config/publication-boundary.json`; the former `apps/rulebook/` example is no longer used.
 
+## Completed subtranche — Card-media composition configuration boundary
+
+- Promoted the maintained deterministic homepage/promotional composition configuration from `media/compositions.json` into `config/media-compositions.json`. The file contents, selected cards, canvas geometry, output profiles, and version identity are byte-for-byte unchanged.
+- Updated the card-media composition generator, homepage showcase manifest builder, source-boundary regression, card-authority path trigger, media documentation, and human/machine architecture maps to read the single config authority.
+- `media/generated/` remains the ignored export output location, and the published `/images/media/` URL and release/website staging are untouched. No production media assets were rebuilt or published by this change.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
