@@ -70,15 +70,23 @@ describe("game-data source/deployment boundary", () => {
     expect(read("src/content/v064.ts")).toContain("../../packages/game-data/current-game.json");
   });
 
-  it("maps the stable browser game-data route to package source in direct local renderers", () => {
+  it("maps the stable browser game-data route through the shared publication contract in direct local renderers", () => {
+    const contract = JSON.parse(read("config/publication-boundary.json"));
+    expect(contract.materializedRoutes).toContainEqual(expect.objectContaining({
+      source: "packages/game-data",
+      publicPath: "/game-data/",
+    }));
+    const resolver = read("scripts/publication-boundary.mjs");
+    expect(resolver).toContain("export function sourcePathForPublicPath(contract, urlPath)");
     for (const name of [
       "generate-tts-card-assets.mjs",
       "generate-tts-territory-assets.mjs",
       "generate-tts-leader-assets.mjs",
     ]) {
       const renderer = read(join("scripts", name));
-      expect(renderer, name).toContain("requestPath.startsWith('game-data/')");
-      expect(renderer, name).toMatch(/packages\/(?:game-data|\$\{requestPath\})/);
+      expect(renderer, name).toContain("loadPublicationBoundary(ROOT)");
+      expect(renderer, name).toContain("sourcePathForPublicPath(PUBLICATION_CONTRACT, publicPath)");
+      expect(renderer, name).toContain("resolve(ROOT, sourcePath || 'index.html')");
     }
   });
 
