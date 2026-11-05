@@ -448,6 +448,12 @@ The superseded v063 candidate stack is now co-located with the already archived 
 - The live-QA script, manually dispatched paid-API workflow, and corresponding regression test reference the new QA-only source; its inspection logic and fixed smoke case selection are unchanged.
 - This is a source ownership change, not a live model call or a change to published rules or Worker behavior.
 
+## Completed subtranche — TTS publisher documentation identity reconciliation
+
+- Reconciled the maintained TTS README and save-publisher instructions with the authoritative current-game identity, release lifecycle, and TTS publication target. Earlier candidate-only wording was explicitly distinguished from the current stable publication.
+- Document-only changes: no changes to gameplay, save generation, Steam publication, manual-QA approval, generated assets, or package/workflow commands.
+- Further TTS source relocation must preserve the current callers in package scripts, card-authority CI, and release-asset generation. No TTS runtime script was moved in this tranche.
+
 ## Current tranche — Rules Assistant backend/admin/eval/versioned split audit
 
 The remaining `rules-assistant/` root is still architecturally mixed. Classify and separate:
