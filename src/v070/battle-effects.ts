@@ -60,6 +60,15 @@ import {
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
 import {
+  configureV070UnifiedRevealRegistry,
+  resolveV070UnifiedFogRevealEffects,
+} from './battle-effects-pre-counterworks';
+import {
+  V070_FOG_OF_WAR_ID,
+  V070_FOG_OF_WAR_BATTLE_TEXT,
+} from './fog-of-war';
+import { queueV070FogOfWarBattleChoice } from './fog-of-war-return';
+import {
   registerV070DeferredBattleAftermathCarrier,
 } from './battle-aftermath-carrier';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
@@ -205,6 +214,7 @@ declare module './battle-types' {
     deferredRendTheVeilGambitCommitments?: V070BattleCardCommitment[];
     deferredReinforcementsGambitCommitments?: V070BattleCardCommitment[];
     deferredHellfireGambitCommitments?: V070BattleCardCommitment[];
+    deferredFogOfWarGambitCommitments?: V070BattleCardCommitment[];
   }
 }
 
@@ -699,7 +709,17 @@ const monetaryCrisisHandler: previous.V070BattleEffectHandler = {
   },
 };
 
+const fogOfWarHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_FOG_OF_WAR_ID,
+  expectedText: V070_FOG_OF_WAR_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    queueV070FogOfWarBattleChoice(state, owner, commitment.instanceId);
+  },
+};
+
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
+  [V070_FOG_OF_WAR_ID, fogOfWarHandler],
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_PATHS_OF_SHADOW_ID, pathsOfShadowHandler],
   [V070_NATURES_ALTAR_ID, naturesAltarHandler],
@@ -1002,10 +1022,15 @@ export function currentBattleEffectHandler(
 }
 
 configureV070WitchcraftBattleEffectHandlerResolver(v070BattleEffectHandler);
+configureV070UnifiedRevealRegistry({
+  handler: v070BattleEffectHandler,
+  revealClass: v070BattleRevealEffectClass,
+});
 
 export function v070BattleRevealEffectClass(
   cardId: string,
 ): previous.V070RevealEffectClass {
+  if (cardId === V070_FOG_OF_WAR_ID) return 'interference';
   if (cardId === V070_SCOUTING_REPORT_ID) return 'interference';
   if (deferredHandlers.has(cardId)) return 'ordinary';
   return previous.v070BattleRevealEffectClass(cardId);
@@ -1049,6 +1074,7 @@ export function resolveV070SupportedRevealEffects(
         ...takeV070DeferredHoldTheLineGambits(state),
         ...takeDeferredReinforcementsGambits(state),
         ...takeDeferredHellfireGambits(state),
+        ...takeDeferredFogOfWarGambits(state),
       ]
     : [];
   const effectiveCommitments = [...commitments, ...deferredPostTactics];
@@ -1062,9 +1088,38 @@ export function resolveV070SupportedRevealEffects(
   );
   if (unsupported.length > 0) return unsupported;
 
+  // Fog's post-Tactics return is reveal-stage interference. Route ALL
+  // simultaneous card handlers through the shared priority scheduler, rather
+  // than registering a later-layer ordinary effect before Fog can remove it.
+  if (encounteredAt === 'reveal_tactics'
+    && effectiveCommitments.some(commitment =>
+      state.cardInstances[commitment.instanceId]?.cardId
+        === V070_FOG_OF_WAR_ID)) {
+    return resolveV070UnifiedFogRevealEffects(
+      state, effectiveCommitments, encounteredAt,
+    );
+  }
+
   const forwarded: V070BattleCardCommitment[] = [];
   for (const commitment of effectiveCommitments) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+
+    if (encounteredAt === 'reveal_gambits'
+      && commitment.role === 'gambit'
+      && cardId === V070_FOG_OF_WAR_ID) {
+      deferFogOfWarGambit(state, commitment);
+      appendV070Event(state, {
+        type: 'fog_of_war_battle_effect_deferred',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          role: commitment.role,
+          until: 'after_tactics_revealed',
+        },
+      });
+      continue;
+    }
 
     // Witchcraft, Rend the Veil, and Reconnaissance have printed
     // Gambit/Tactic text that resolves only after Tactics are revealed. A
@@ -1168,6 +1223,31 @@ export function resolveV070SupportedRevealEffects(
     forwarded,
     encounteredAt,
   );
+}
+
+function deferFogOfWarGambit(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) return;
+  runtime.deferredFogOfWarGambitCommitments ??= [];
+  if (!runtime.deferredFogOfWarGambitCommitments.some(
+    card => card.instanceId === commitment.instanceId,
+  )) runtime.deferredFogOfWarGambitCommitments.push({ ...commitment });
+}
+
+function takeDeferredFogOfWarGambits(
+  state: V070GameState,
+): V070BattleCardCommitment[] {
+  const runtime = state.battleRuntime;
+  if (!runtime) return [];
+  const deferred = runtime.deferredFogOfWarGambitCommitments ?? [];
+  runtime.deferredFogOfWarGambitCommitments = [];
+  return deferred.filter(card =>
+    state.cardInstances[card.instanceId]?.cardId === V070_FOG_OF_WAR_ID
+    && !isV070BattleCardEffectNegated(state, card.instanceId)
+    && battleContainsCommitment(state, card));
 }
 
 function deferWitchcraftGambit(
