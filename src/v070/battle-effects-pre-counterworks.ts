@@ -146,6 +146,49 @@ export {
 export type V070RevealEffectClass = 'interference' | 'ordinary';
 type V070RevealEncounteredAt = 'reveal_gambits' | 'reveal_tactics';
 
+// The most recent runtime handlers are injected from the leaf facade to
+// avoid importing it back into the older, ordered reveal scheduler.
+interface V070UnifiedRevealRegistry {
+  handler: (cardId: string) => core.V070BattleEffectHandler | undefined;
+  revealClass: (cardId: string) => V070RevealEffectClass;
+}
+let unifiedRevealRegistry: V070UnifiedRevealRegistry | null = null;
+
+export function configureV070UnifiedRevealRegistry(
+  registry: V070UnifiedRevealRegistry,
+): void {
+  unifiedRevealRegistry = registry;
+}
+
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    unifiedFogRevealScheduler?: boolean;
+  }
+}
+
+export function resolveV070UnifiedFogRevealEffects(
+  state: V070GameState,
+  commitments: readonly V070BattleCardCommitment[],
+  encounteredAt: V070RevealEncounteredAt,
+): V070UnsupportedBattleEffect[] {
+  const runtime = state.battleRuntime;
+  if (!runtime || !unifiedRevealRegistry) {
+    throw new Error('Unified Fog reveal scheduler is not configured.');
+  }
+  runtime.unifiedFogRevealScheduler = true;
+  return resolveV070SupportedRevealEffects(state, commitments, encounteredAt);
+}
+
+function handlerForReveal(
+  state: V070GameState,
+  cardId: string,
+): core.V070BattleEffectHandler | undefined {
+  if (state.battleRuntime?.unifiedFogRevealScheduler) {
+    return unifiedRevealRegistry?.handler(cardId);
+  }
+  return v070BattleEffectHandler(cardId);
+}
+
 interface V070SpecializedBattleEffectHandler
   extends core.V070BattleEffectHandler {
   revealClass?: V070RevealEffectClass;
@@ -675,6 +718,7 @@ function clearPendingRevealProcedure(state: V070GameState): void {
   runtime.pendingRevealEffectNextPlayer = null;
   runtime.pendingRevealForcedInstanceId = null;
   runtime.pendingRevealEffectOrderChoice = null;
+  runtime.unifiedFogRevealScheduler = false;
 }
 
 function revealEffectInterruptPending(state: V070GameState): boolean {
@@ -692,6 +736,9 @@ function revealClassForCommitment(
   commitment: V070BattleCardCommitment,
 ): V070RevealEffectClass {
   const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  if (state.battleRuntime?.unifiedFogRevealScheduler) {
+    return unifiedRevealRegistry?.revealClass(cardId) ?? 'ordinary';
+  }
   return v070BattleRevealEffectClass(cardId);
 }
 
@@ -731,6 +778,43 @@ function applyValidatedRevealCommitment(
   }
 
   const specialized = specializedHandlers.get(cardId);
+  const registered = state.battleRuntime?.unifiedFogRevealScheduler
+    ? unifiedRevealRegistry?.handler(cardId)
+    : undefined;
+  // Only bypass an older handler if a later layer actually replaced or
+  // added it. Existing specialized handlers retain their own queue and
+  // mark-applied policy.
+  if (!specialized && registered
+    && registered !== core.v070BattleEffectHandler(cardId)) {
+    registered.apply({
+      state,
+      owner: commitment.owner,
+      opponent: commitment.owner === 'A' ? 'B' : 'A',
+      commitment,
+    });
+    // An open Fog return is not completed until the opponent chooses.
+    const fogPending = state.battleRuntime?.pendingFogOfWarBattleRevealChoice
+      ?.sourceInstanceId === commitment.instanceId;
+    if (!fogPending
+      && !isDeferredOnlyRevealEffect(cardId, registered.expectedText)) {
+      markV070BattleCardEffectApplied(state, commitment.instanceId);
+    }
+    appendV070Event(state, {
+      type: fogPending
+        ? 'battle_card_effect_pending'
+        : 'battle_card_effect_applied',
+      actor: commitment.owner,
+      visibility: 'public',
+      payload: {
+        instanceId: commitment.instanceId,
+        cardId,
+        role: commitment.role,
+        timing: registered.timing,
+        revealClass: revealClassForCommitment(state, commitment),
+      },
+    });
+    return;
+  }
   if (!specialized) {
     const handler = core.v070BattleEffectHandler(cardId);
     const coreUnsupported = core.resolveV070SupportedRevealEffects(
@@ -814,7 +898,7 @@ function unsupportedRevealEffect(
   );
   if (relevant.length === 0) return [];
 
-  const handler = v070BattleEffectHandler(cardId);
+  const handler = handlerForReveal(state, cardId);
   if (handler
     && relevant.length === 1
     && relevant[0]?.text === handler.expectedText) return [];

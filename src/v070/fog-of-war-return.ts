@@ -128,6 +128,11 @@ export function returnV070FogOfWarBattleCards(
       && targetIds.has(runtime.pendingRevealForcedInstanceId)) {
       runtime.pendingRevealForcedInstanceId = null;
     }
+    // A previously opened order-of-effects selection must not retain a
+    // returned card as a candidate while the reveal scheduler resumes.
+    if (runtime.pendingRevealEffectOrderChoice) {
+      runtime.pendingRevealEffectOrderChoice = null;
+    }
   }
   if (selection.choice === 'one_gambit') {
     if (participant.gambit && targetIds.has(participant.gambit.instanceId)) {
@@ -273,6 +278,16 @@ export function resolveV070FogOfWarBattleChoice(
   runtime.pendingFogOfWarBattleRevealChoice = null;
   runtime.fogOfWarBattleRevealChoiceOpen = false;
   markV070BattleCardEffectApplied(state, pending.sourceInstanceId);
+  appendV070Event(state, {
+    type: 'battle_card_effect_applied',
+    actor: pending.owner, visibility: 'public',
+    payload: {
+      instanceId: pending.sourceInstanceId,
+      cardId: V070_FOG_OF_WAR_ID,
+      timing: 'reveal',
+      revealClass: 'interference',
+    },
+  });
   appendV070Event(state, {
     type: 'fog_of_war_battle_choice_resolved',
     actor: playerId, visibility: 'public',

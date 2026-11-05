@@ -11,6 +11,8 @@ export const V070_FOG_OF_WAR_ID = 'intelligence-fog-of-war' as const;
 export const CURRENT_FOG_OF_WAR_ACTION_TEXT = 'Any Territory.' as const;
 export const V070_FOG_OF_WAR_OVERLAY_TEXT =
   "In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle." as const;
+export const V070_FOG_OF_WAR_BATTLE_TEXT =
+  'After Tactics are revealed, if your opponent has both a Gambit and a Tactic, they return either one Gambit or all Tactics to their sources.' as const;
 
 function validateFogOfWarAuthority(): void {
   const frozen = v070CanonicalContent.cardsById.get(V070_FOG_OF_WAR_ID);
@@ -26,6 +28,14 @@ function validateFogOfWarAuthority(): void {
     !== CURRENT_FOG_OF_WAR_ACTION_TEXT) {
     throw new Error(
       'Fog of War Action text drifted from current gameplay authority.',
+    );
+  }
+  if (frozen?.effects.find(effect => effect.label === 'Gambit/Tactic')?.text
+    !== V070_FOG_OF_WAR_BATTLE_TEXT
+    || current?.effects.find(effect => effect.label === 'Gambit/Tactic')?.text
+      !== V070_FOG_OF_WAR_BATTLE_TEXT) {
+    throw new Error(
+      'Fog of War battle text drifted between frozen and current authority.',
     );
   }
   if (frozen?.effects.find(effect => effect.label === 'Overlay')?.text
