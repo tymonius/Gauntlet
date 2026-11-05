@@ -6,7 +6,7 @@ import { buildCatalog } from './tts-current-catalog.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const VERSION = 'v0.6.2';
-const CONFIG_PATH = join(ROOT, 'media', 'compositions.json');
+const CONFIG_PATH = join(ROOT, 'config', 'media-compositions.json');
 const GENERATED_ROOT = join(ROOT, 'media', 'generated', VERSION);
 const CARD_MANIFEST_PATH = join(GENERATED_ROOT, 'manifest.json');
 const COMPOSITION_ROOT = join(GENERATED_ROOT, 'compositions');

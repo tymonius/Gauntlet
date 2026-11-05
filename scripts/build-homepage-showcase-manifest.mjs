@@ -59,7 +59,7 @@ export async function materializeHomepageShowcaseManifest(sourcePath, outputPath
 
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : '';
 if (invokedPath && import.meta.url === pathToFileURL(invokedPath).href) {
-  const sourcePath = resolve(process.argv[2] || 'media/compositions.json');
+  const sourcePath = resolve(process.argv[2] || 'config/media-compositions.json');
   const outputPath = resolve(process.argv[3] || 'assets/homepage-card-showcase.json');
   const manifest = await materializeHomepageShowcaseManifest(sourcePath, outputPath);
   console.log(`Materialized ${manifest.cards.length}-card homepage showcase manifest at ${outputPath}.`);

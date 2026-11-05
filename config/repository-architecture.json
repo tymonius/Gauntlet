@@ -110,7 +110,7 @@
         "tools"
       ],
       "transitional": true,
-      "note": "Current reproducible media/composition configuration and export tooling."
+      "note": "Media export documentation and generated raster output location. Maintained composition configuration lives under config/media-compositions.json, and renderer/generator code lives under scripts/. Retained as transitional output root."
     },
     "packages": {
       "role": "authority",

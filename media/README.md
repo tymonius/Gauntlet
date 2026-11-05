@@ -6,7 +6,7 @@ This directory defines the supported export path for finished card images used o
 
 The media exporter does not maintain an independent card design. It reads the current-game card authority and approved artwork through the same catalog path as the TTS exporter, then renders through the shared card component under `card-design/` and `tts/renderer/`.
 
-Promotional compositions follow the same rule. They are assembled from generated canonical card renders through `media/compositions.json`; they do not redraw, approximate, or regenerate card faces. Card IDs, placement, scale, rotation, stacking, canvas dimensions, and output profiles remain explicit and reproducible.
+Promotional compositions follow the same rule. They are assembled from generated canonical card renders through `config/media-compositions.json`; they do not redraw, approximate, or regenerate card faces. Card IDs, placement, scale, rotation, stacking, canvas dimensions, and output profiles remain explicit and reproducible.
 
 The generated raster files are derivatives and are not committed to Git. GitHub Actions uploads them as downloadable artifacts. Selected public derivatives can also be published directly from the renderer to the production media endpoint without adding the raster to source control.
 
@@ -22,7 +22,7 @@ The exporter renders one 1500 × 2100 master from the live HTML/CSS card compone
 
 ## Compositions
 
-`media/compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile.
+`config/media-compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile.
 
 Current compositions:
 
