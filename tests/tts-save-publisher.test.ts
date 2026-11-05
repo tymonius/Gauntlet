@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { makeSharedRulebook, starterBagTransform } from '../scripts/generate-tts-save.mjs';
 
 const publisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
-const validator = readFileSync('tts/validate-current-authoritative-save.mjs', 'utf8');
+const validator = readFileSync('tools/tts/validate-current-authoritative-save.mjs', 'utf8');
+const validatorCli = readFileSync('tts/validate-current-authoritative-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -131,6 +132,7 @@ describe('TTS save publisher', () => {
   it('runs staged assets -> save/layout -> supplemental assembly -> validation in that order', () => {
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-save.mjs --check');
     expect(packageJson.scripts['tts:package']).toContain('tts:save:assemble');
+    expect(validatorCli).toContain("import '../tools/tts/validate-current-authoritative-save.mjs'");
     expect(packageJson.scripts['tts:package']).toContain('validate-current-authoritative-save.mjs');
     expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
 

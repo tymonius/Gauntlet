@@ -34,6 +34,7 @@ on:
       - 'scripts/tts-component-contract.mjs'
       - 'scripts/tts-sliding-trackers.mjs'
       - 'tts/**'
+      - 'tools/tts/validate-current-authoritative-save.mjs'
       - 'card-design/**'
       - 'tools/card-design/artwork-authoring/**'
       - 'releases/**'
@@ -141,7 +142,7 @@ jobs:
 
                 for file in "${changed_files[@]}"; do
                   case "$file" in
-                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-current-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
+                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-current-authoritative-save.mjs|tools/tts/validate-current-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
                       ;;
                     scripts/generate-tts-finalized-supplementals.mjs|tts/finalized-supplemental-renderer/*)
                       render_finalized=true

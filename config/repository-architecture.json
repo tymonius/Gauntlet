@@ -179,7 +179,7 @@
         "releases"
       ],
       "transitional": true,
-      "note": "TTS generation/packaging plus versioned release evidence."
+      "note": "TTS packaging, render/QA assets, and versioned release evidence. The maintained save validator implementation lives under tools/tts/, while the old root path remains a CLI compatibility entrypoint."
     },
     "v0.7.1": {
       "role": "historical_compatibility",
@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; contains card-design authoring/review tooling and Rules Arbiter admin, refinement, and QA/evaluation tooling under tools/rules-assistant/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS save-contract validation under tools/tts/."
     }
   }
 }
