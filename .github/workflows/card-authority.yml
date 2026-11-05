@@ -59,6 +59,8 @@ jobs:
                   'config/media-compositions.json',
                   'tts/run-with-game-data-route.mjs',
                   'tools/tts/run-with-game-data-route.mjs',
+                  'scripts/tts-face-publication.mjs',
+                  'tools/tts/tts-face-publication.mjs',
                   'scripts/generate-tts-card-assets.mjs',
                   'scripts/generate-tts-leader-assets.mjs',
                   'scripts/generate-tts-territory-assets.mjs',
