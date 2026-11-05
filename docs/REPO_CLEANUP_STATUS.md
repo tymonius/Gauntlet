@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-10-07
+Last updated: 2026-11-05
 
 ## Governing objective
 
@@ -514,6 +514,14 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Extracted the maintained TTS tabletop layout/placement implementation to `tools/tts/apply-table-layout.mjs`, preserving all exported calculation functions for tests through the original `tts/apply-table-layout.mjs` shim.
 - Both the canonical module and original CLI entrypoint support direct execution. The same `main()` path and all existing layout validation, counts, positions, and generated-save writes are preserved; only the runner was made an explicit exported function for safe compatibility forwarding.
 - The TTS build scope watches the new canonical source. Added regression coverage for the shim and updated human/machine architecture descriptions without changing package scripts, release behavior, or gameplay authority.
+
+## Completed subtranche — TTS publication helper ownership
+
+- Moved the maintained TTS face-publication parity and printed-version stamping helper from `scripts/tts-face-publication.mjs` to `tools/tts/tts-face-publication.mjs`, retaining the original import path as a named export-forwarding shim. The canonical module still calls the existing published-asset parity validator under `scripts/`; only its relative import changed.
+- Moved the pure TTS Rulebook reader-order/de-imposition helper from `scripts/tts-rulebook-imposition.mjs` to `tools/tts/tts-rulebook-imposition.mjs`, likewise preserving its original import path as a named export-forwarding shim.
+- The existing TTS generators and their gameplay/renderer/release behaviors are unchanged. Tests now exercise canonical exports while asserting that legacy imports are the same functions.
+- The TTS build workflow explicitly watches both canonical helper paths and their shims, triggers card/Territory/Leader capture for face-publication changes, and stages rules PDFs for imposition changes. Card Authority also treats the face-publication helper as a rendered-face change.
+- No canonical current-game, frozen release, TTS assets, generated output, or published URL was modified. Check CI and TTS/Pages QA before merging.
 
 ## Next top-down queue
 
