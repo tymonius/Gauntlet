@@ -8,6 +8,7 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
+import { viewV070GameForPlayer } from './views';
 import {
   V070_SUPPORTED_REVEAL_EFFECT_IDS,
   v070BattleEffectHandler,
@@ -242,6 +243,47 @@ describe('Plenipotentiary battle effect', () => {
       event.type === 'hand_revealed'
       && event.visibility === 'A'
     )).toBe(true);
+  });
+
+  test('protects the private Proposal choice and rejects invalid decisions atomically', () => {
+    let state = activeBattle();
+    state.players.A.diplomats!.ratifiedProposals = ['open-channels'];
+    state = revealPlenipotentiary(refuseDeEscalation(state)).state;
+
+    const pending = pendingV070BattleRevealChoice(state);
+    expect(pending?.kind).toBe('plenipotentiary');
+    const ownerView = viewV070GameForPlayer(state, 'A');
+    const opponentView = viewV070GameForPlayer(state, 'B');
+    expect(ownerView.events.some(event =>
+      event.type === 'plenipotentiary_battle_choice_options'
+    )).toBe(true);
+    expect(opponentView.events.some(event =>
+      event.type === 'plenipotentiary_battle_choice_options'
+    )).toBe(false);
+    expect(opponentView.events.some(event =>
+      event.type === 'plenipotentiary_battle_choice_pending'
+    )).toBe(true);
+
+    const before = structuredClone(state);
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_plenipotentiary_battle',
+      playerId: 'B',
+      proposalId: 'open-channels',
+    })).toThrow(/Only the Plenipotentiary controller/);
+    expect(state).toEqual(before);
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_plenipotentiary_battle',
+      playerId: 'A',
+      proposalId: 'de-escalation',
+    })).toThrow(/not an eligible Plenipotentiary choice/);
+    expect(state).toEqual(before);
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_plenipotentiary_battle',
+      playerId: 'A',
+      proposalId: 'open-channels',
+    });
+    expect(pendingV070BattleRevealChoice(state)?.kind).not.toBe('plenipotentiary');
   });
 
   test('also applies after the opponent\'s Terms are refused in a Diplomat mirror', () => {
