@@ -38,6 +38,7 @@ import {
 import { recordV070MysticBattleEffectApplied } from './mystics';
 import { resolveV070FogOfWarBattleChoice } from './fog-of-war-return';
 import { resolveV070HellfireBattleChoice } from './hellfire-battle';
+import { resolveV070PlenipotentiaryBattleChoice } from './plenipotentiary-battle';
 import {
   pendingV070ConfessionBattleChoice,
   resolveV070ConfessionBattleChoice,
@@ -155,6 +156,12 @@ export type V070BattleAction =
       type: 'resolve_fog_of_war_battle';
       playerId: PlayerId;
       choice: 'all_tactics';
+    }
+  | {
+      type: 'resolve_plenipotentiary_battle';
+      playerId: PlayerId;
+      proposalId: string;
+      discardInstanceId?: string;
     }
   | {
       type: 'resolve_confession_battle';
@@ -296,6 +303,24 @@ export function reduceV070BattleAction(
       action.choice === 'one_gambit'
         ? { choice: 'one_gambit', targetInstanceId: action.targetInstanceId }
         : { choice: 'all_tactics' },
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
+  if (pending?.kind === 'plenipotentiary'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_plenipotentiary_battle') {
+      throw new V070GameActionError(
+        'Choose the Proposal whose Refused effect Plenipotentiary applies before continuing the battle.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070PlenipotentiaryBattleChoice(
+      next,
+      action.playerId,
+      action.proposalId,
+      action.discardInstanceId,
     );
     resumeV070SupportedRevealEffects(next);
     return next;
