@@ -24,7 +24,7 @@ const TEST_ENVIRONMENT = {
 };
 
 describe('authoritative TTS table layout', () => {
-  it('keeps stable package CLI/test imports forwarded to the canonical tooling implementation', () => {
+  it('keeps stable package CLI/test imports forwarded to the maintained tooling implementation', () => {
     const cli = readFileSync('tts/apply-table-layout.mjs', 'utf8');
     const source = readFileSync('tools/tts/apply-table-layout.mjs', 'utf8');
     expect(cli).toContain("export * from '../tools/tts/apply-table-layout.mjs'");
