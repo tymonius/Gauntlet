@@ -179,7 +179,7 @@
         "releases"
       ],
       "transitional": true,
-      "note": "TTS packaging, render/QA assets, and versioned release evidence. Maintained save validation and temporary game-data route materialization live under tools/tts/, with the old TTS root paths kept as CLI compatibility entrypoints."
+      "note": "TTS packaging, render/QA assets, and versioned release evidence. Maintained table-layout, save validation, and temporary game-data route tooling live under tools/tts/, with the old TTS root paths retained as CLI and test-import compatibility entrypoints."
     },
     "v0.7.1": {
       "role": "historical_compatibility",
@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS save-contract validation and game-data compatibility-route tooling under tools/tts/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS table-layout, save-contract validation, and game-data compatibility-route tooling under tools/tts/."
     }
   }
 }

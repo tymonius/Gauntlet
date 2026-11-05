@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
   applyTableLayout,
   buildTableSnapPoints,
@@ -23,6 +24,15 @@ const TEST_ENVIRONMENT = {
 };
 
 describe('authoritative TTS table layout', () => {
+  it('keeps stable package CLI/test imports forwarded to the maintained tooling implementation', () => {
+    const cli = readFileSync('tts/apply-table-layout.mjs', 'utf8');
+    const source = readFileSync('tools/tts/apply-table-layout.mjs', 'utf8');
+    expect(cli).toContain("export * from '../tools/tts/apply-table-layout.mjs'");
+    expect(cli).toContain('runTableLayoutCli()');
+    expect(source).toContain('export function runTableLayoutCli()');
+    expect(source).toContain("from '../../scripts/tts-current-catalog.mjs'");
+  });
+
   it('uses functional east/west workspace grouping with wide private strips', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
