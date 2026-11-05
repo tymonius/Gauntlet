@@ -497,6 +497,12 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Updated the card-media composition generator, homepage showcase manifest builder, source-boundary regression, card-authority path trigger, media documentation, and human/machine architecture maps to read the single config authority.
 - `media/generated/` remains the ignored export output location, and the published `/images/media/` URL and release/website staging are untouched. No production media assets were rebuilt or published by this change.
 
+## Completed subtranche — TTS authoritative-save validator source boundary
+
+- Moved the maintained authoritative TTS save-contract validator implementation to `tools/tts/validate-current-authoritative-save.mjs` while retaining its original `tts/validate-current-authoritative-save.mjs` command path as a thin module-import CLI shim.
+- Retargeted the implementation's relative `scripts/` imports, tests that inspect validator logic, and the incremental TTS workflow's source-change classification and pull-request path filter.
+- Existing `package.json` commands, historical `tts/validate-v070-authoritative-save.mjs` wrapper, generated `tts/generated/` outputs, and deployment paths stay unchanged. No validator checks/assertions or gameplay rules were altered.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.

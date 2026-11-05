@@ -59,6 +59,8 @@ npm run tts:save:promote
 
 `tts:package` is the complete **Review Scaffold** build. It renders and assembles the package, validates the authoritative save contract, and writes a non-strict readiness report, but it deliberately does not promote the save to final Workshop identity.
 
+The authoritative-save validator implementation lives in `../tools/tts/validate-current-authoritative-save.mjs`; the `tts/validate-current-authoritative-save.mjs` CLI path is retained as a compatibility entrypoint for existing package scripts and workflows.
+
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
 ## Current published TTS package
