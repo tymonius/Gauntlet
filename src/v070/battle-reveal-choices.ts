@@ -116,6 +116,15 @@ export interface V070HellfireBattleRevealChoice {
   maximumConviction: number;
 }
 
+export interface V070FogOfWarBattleRevealChoice {
+  kind: 'fog_of_war';
+  owner: PlayerId;
+  opponent: PlayerId;
+  sourceInstanceId: string;
+  gambitInstanceIds: string[];
+  tacticInstanceIds: string[];
+}
+
 export type V070FinancierPreDiceBattleRevealChoice =
   | {
       kind: 'financier_divestment';
@@ -156,6 +165,7 @@ export type V070BattleRevealChoice =
   | V070ReserveForceBattleRevealChoice
   | V070LateAdditionalTacticBattleRevealChoice
   | V070HellfireBattleRevealChoice
+  | V070FogOfWarBattleRevealChoice
   | V070FinancierPreDiceBattleRevealChoice;
 
 declare module './battle-types' {
@@ -180,6 +190,8 @@ declare module './battle-types' {
     lateAdditionalTacticBattleRevealChoiceOpen?: boolean;
     pendingHellfireBattleRevealChoice?: V070HellfireBattleRevealChoice | null;
     hellfireBattleRevealChoiceOpen?: boolean;
+    pendingFogOfWarBattleRevealChoice?: V070FogOfWarBattleRevealChoice | null;
+    fogOfWarBattleRevealChoiceOpen?: boolean;
     pendingFinancierPreDiceBattleRevealChoice?: V070FinancierPreDiceBattleRevealChoice | null;
     financierPreDiceBattleRevealChoiceOpen?: boolean;
   }
@@ -645,7 +657,8 @@ export function queueV070ReserveForceBattleRevealChoice(
 export function pendingV070BattleRevealChoice(
   state: V070GameState,
 ): V070BattleRevealChoice | null {
-  return state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
+  return state.battleRuntime?.pendingFogOfWarBattleRevealChoice
+    ?? state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice
     ?? state.battleRuntime?.pendingReserveForceBattleRevealChoice
     ?? state.battleRuntime?.pendingContrabandBattleRevealChoice
     ?? state.battleRuntime?.pendingFinancierPreDiceBattleRevealChoice
@@ -662,6 +675,9 @@ export function pendingV070BattleRevealChoice(
 export function isV070BattleRevealChoiceOpen(
   state: V070GameState,
 ): boolean {
+  if (state.battleRuntime?.pendingFogOfWarBattleRevealChoice) {
+    return Boolean(state.battleRuntime.fogOfWarBattleRevealChoiceOpen);
+  }
   if (state.battleRuntime?.pendingOperationalReassessmentBattleRevealChoice) {
     return Boolean(
       state.battleRuntime.operationalReassessmentBattleRevealChoiceOpen,

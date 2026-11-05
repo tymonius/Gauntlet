@@ -36,6 +36,7 @@ import {
   resolveV070MarginLoanBattleChoice,
 } from './financier-pre-dice-battle';
 import { recordV070MysticBattleEffectApplied } from './mystics';
+import { resolveV070FogOfWarBattleChoice } from './fog-of-war-return';
 import { resolveV070HellfireBattleChoice } from './hellfire-battle';
 import {
   pendingV070ConfessionBattleChoice,
@@ -143,6 +144,17 @@ export type V070BattleAction =
       playerId: PlayerId;
       battleTotalBonus: number;
       aftermathCardCount: number;
+    }
+  | {
+      type: 'resolve_fog_of_war_battle';
+      playerId: PlayerId;
+      choice: 'one_gambit';
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_fog_of_war_battle';
+      playerId: PlayerId;
+      choice: 'all_tactics';
     }
   | {
       type: 'resolve_confession_battle';
@@ -270,6 +282,25 @@ export function reduceV070BattleAction(
     if (advanceV070PreNormalRevealEffects(next, role)) return next;
     return previous.reduceV070BattleAction(next, action);
   }
+  if (pending?.kind === 'fog_of_war'
+    && isV070BattleRevealChoiceOpen(state)) {
+    if (action.type !== 'resolve_fog_of_war_battle') {
+      throw new V070GameActionError(
+        'The opposing player must choose one Gambit or all Tactics to return before continuing.',
+      );
+    }
+    const next = structuredClone(state) as V070GameState;
+    resolveV070FogOfWarBattleChoice(
+      next,
+      action.playerId,
+      action.choice === 'one_gambit'
+        ? { choice: 'one_gambit', targetInstanceId: action.targetInstanceId }
+        : { choice: 'all_tactics' },
+    );
+    resumeV070SupportedRevealEffects(next);
+    return next;
+  }
+
   if (pending?.kind === 'hellfire'
     && isV070BattleRevealChoiceOpen(state)) {
     if (action.type !== 'resolve_hellfire_battle') {
@@ -691,6 +722,9 @@ export function reduceV070BattleAction(
     return next;
   }
 
+  if (action.type === 'resolve_fog_of_war_battle') {
+    throw new V070GameActionError('There is no open Fog of War battle choice.');
+  }
   if (action.type === 'resolve_late_additional_tactic') {
     throw new V070GameActionError(
       'There is no open late additional-Tactic choice.',

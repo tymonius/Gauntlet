@@ -8,7 +8,10 @@ import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { v070CanonicalContent } from '../content/v070';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
-import { returnV070FogOfWarBattleCards } from './fog-of-war-return';
+import {
+  queueV070FogOfWarBattleChoice,
+  returnV070FogOfWarBattleCards,
+} from './fog-of-war-return';
 import type { V070BattleCardCommitment } from './battle-types';
 import { appendV070Event } from './engine';
 import { v070BattleEffectHandler } from './battle-effects';
@@ -283,6 +286,71 @@ describe('Post-Tactics physical source-return primitive (completed effects persi
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     )).toThrow(/source zone was not recorded/);
     expect(state).toEqual(before);
+  });
+
+  test('the target player resolves a queued post-Tactics choice and cancels pending Tactic effects', () => {
+    const { state, fog, reserveTactic, handTactic } = fixture();
+    const runtime = state.battleRuntime!;
+    runtime.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    runtime.pendingRevealEffectClass = 'ordinary';
+    runtime.pendingRevealEffectCommitments = [reserveTactic, handTactic];
+    expect(queueV070FogOfWarBattleChoice(state, 'A', fog.instanceId)).toBe(true);
+    expect(runtime.pendingFogOfWarBattleRevealChoice).toMatchObject({
+      kind: 'fog_of_war', opponent: 'B',
+    });
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_fog_of_war_battle',
+      playerId: 'A', choice: 'all_tactics',
+    })).toThrow(/opponent/);
+    const next = reduceV070BattleAction(state, {
+      type: 'resolve_fog_of_war_battle',
+      playerId: 'B', choice: 'all_tactics',
+    });
+    expect(next.players.B.zones.hand).toContain(handTactic.instanceId);
+    expect(next.battleRuntime!.participants.B.reserve).toContain(reserveTactic.instanceId);
+    expect(next.battleRuntime!.participants.B.battleModifier).toBe(0);
+    expect(next.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(next.battleRuntime!.pendingFogOfWarBattleRevealChoice).toBeNull();
+  });
+
+  test('a queued source return preserves prior Gambit effects while later Tactics resolve', () => {
+    const { state, fog, extraGambit, reserveTactic } = fixture();
+    const runtime = state.battleRuntime!;
+    applyV070ReversibleBattleNumericEffect(
+      state, extraGambit.instanceId,
+      state.cardInstances[extraGambit.instanceId].cardId,
+      'B', 'battleModifier', 1,
+    );
+    markV070BattleCardEffectApplied(state, extraGambit.instanceId);
+    runtime.pendingRevealEffectEncounteredAt = 'reveal_tactics';
+    runtime.pendingRevealEffectClass = 'ordinary';
+    runtime.pendingRevealEffectCommitments = [reserveTactic];
+    expect(queueV070FogOfWarBattleChoice(state, 'A', fog.instanceId)).toBe(true);
+    const next = reduceV070BattleAction(state, {
+      type: 'resolve_fog_of_war_battle',
+      playerId: 'B', choice: 'one_gambit',
+      targetInstanceId: extraGambit.instanceId,
+    });
+    expect(next.players.B.zones.hand).toContain(extraGambit.instanceId);
+    expect(next.battleRuntime!.participants.B.battleModifier).toBe(2);
+    expect(next.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+  });
+
+  test('the opponent must have both roles; invalid choices keep the pending state', () => {
+    const { state, fog } = fixture();
+    const runtime = state.battleRuntime!;
+    expect(queueV070FogOfWarBattleChoice(state, 'A', fog.instanceId)).toBe(true);
+    const before = structuredClone(state);
+    expect(() => reduceV070BattleAction(state, {
+      type: 'resolve_fog_of_war_battle',
+      playerId: 'B', choice: 'one_gambit', targetInstanceId: 'not-in-battle',
+    })).toThrow(/Gambit/);
+    expect(state).toEqual(before);
+    runtime.participants.B.tactic = null;
+    runtime.participants.B.additionalTactics = [];
+    runtime.pendingFogOfWarBattleRevealChoice = null;
+    runtime.fogOfWarBattleRevealChoiceOpen = false;
+    expect(queueV070FogOfWarBattleChoice(state, 'A', fog.instanceId)).toBe(false);
   });
 
   test('rejects an unresolved reveal queue before it can replay a returned effect', () => {
