@@ -4,7 +4,8 @@ import { resolveCurrentTtsRelease } from '../scripts/tts-current-catalog.mjs';
 import {
   stampTtsFacePublicationVersion,
   validateTtsFacePublicationSource,
-} from '../scripts/tts-face-publication.mjs';
+} from '../tools/tts/tts-face-publication.mjs';
+import * as legacyFacePublication from '../scripts/tts-face-publication.mjs';
 
 function facePage(version, datasetVersionKey = null) {
   const footer = { textContent: version };
@@ -21,6 +22,11 @@ function facePage(version, datasetVersionKey = null) {
 }
 
 describe('TTS face publication labels', () => {
+  it('retains the existing script import as an exact canonical export', () => {
+    expect(legacyFacePublication.validateTtsFacePublicationSource).toBe(validateTtsFacePublicationSource);
+    expect(legacyFacePublication.stampTtsFacePublicationVersion).toBe(stampTtsFacePublicationVersion);
+  });
+
   it('requires frozen-published authority parity before rendering stable TTS faces', async () => {
     const release = await resolveCurrentTtsRelease();
     expect(release.version).toBe('v0.7.2');

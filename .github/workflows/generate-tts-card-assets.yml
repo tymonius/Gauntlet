@@ -24,6 +24,9 @@ on:
       - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/generate-tts-rulebook-reader.mjs'
       - 'scripts/tts-rulebook-imposition.mjs'
+      - 'scripts/tts-face-publication.mjs'
+      - 'tools/tts/tts-rulebook-imposition.mjs'
+      - 'tools/tts/tts-face-publication.mjs'
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/tts-deck-importer.mjs'
@@ -152,6 +155,11 @@ jobs:
                     scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|card-design/universal-reference.css|card-design/reference-card.js|card-design/reference-card.css|card-design/supplemental-refinements.css|images/Gauntlet-G.svg|images/artwork/supplemental/*)
                       render_supplementals=true
                       ;;
+                    scripts/tts-face-publication.mjs|tools/tts/tts-face-publication.mjs)
+                      render_cards=true
+                      render_territories=true
+                      render_leaders=true
+                      ;;
                     scripts/generate-tts-card-assets.mjs|images/artwork/cards/*)
                       render_cards=true
                       ;;
@@ -164,7 +172,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs)
                       render_starters=true
                       ;;
-                    scripts/generate-tts-environment-assets.mjs|scripts/generate-tts-rulebook-reader.mjs|scripts/tts-rulebook-imposition.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/generate-tts-rulebook-reader.mjs|scripts/tts-rulebook-imposition.mjs|tools/tts/tts-rulebook-imposition.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
