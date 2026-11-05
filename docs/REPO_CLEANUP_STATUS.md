@@ -509,6 +509,12 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Retargeted the one import-relative repository-root resolution to keep the same authoritative `packages/game-data/` source and transient `game-data/` route. Existing protection against overwriting a real route and guaranteed cleanup remain unchanged.
 - Updated the source-inspection test, Card Authority render classification, TTS workflow path scope, and architecture/handoff documents. All package commands, public URLs, rule data, and generated outputs remain unchanged.
 
+## Completed subtranche — TTS table-layout tooling source boundary
+
+- Extracted the maintained TTS tabletop layout/placement implementation to `tools/tts/apply-table-layout.mjs`, preserving all exported calculation functions for tests through the original `tts/apply-table-layout.mjs` shim.
+- Both the canonical module and original CLI entrypoint support direct execution. The same `main()` path and all existing layout validation, counts, positions, and generated-save writes are preserved; only the runner was made an explicit exported function for safe compatibility forwarding.
+- The TTS build scope watches the new canonical source. Added regression coverage for the shim and updated human/machine architecture descriptions without changing package scripts, release behavior, or gameplay authority.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.

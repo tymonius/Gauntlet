@@ -61,6 +61,8 @@ npm run tts:save:promote
 
 The authoritative-save validator implementation lives in `../tools/tts/validate-current-authoritative-save.mjs`; the `tts/validate-current-authoritative-save.mjs` CLI path is retained as a compatibility entrypoint for existing package scripts and workflows.
 
+The `tts/apply-table-layout.mjs` CLI and import path likewise forwards to the maintained `../tools/tts/apply-table-layout.mjs` implementation, preserving the existing package command and test imports. The CLI can run directly through either location.
+
 The `tts/run-with-game-data-route.mjs` command likewise remains a stable entrypoint. Its maintained source is `../tools/tts/run-with-game-data-route.mjs`, which temporarily materializes the canonical game-data package at the historical browser route for compatible card/media renderers.
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
