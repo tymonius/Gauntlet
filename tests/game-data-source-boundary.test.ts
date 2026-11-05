@@ -99,7 +99,9 @@ describe("game-data source/deployment boundary", () => {
       "node tts/run-with-game-data-route.mjs scripts/card-authority/validate-homepage-showcase.mjs",
     );
 
-    const runner = read("tts/run-with-game-data-route.mjs");
+    const runner = read("tools/tts/run-with-game-data-route.mjs");
+    const wrapper = read("tts/run-with-game-data-route.mjs");
+    expect(wrapper).toContain("export * from '../tools/tts/run-with-game-data-route.mjs'");
     expect(runner).toContain("resolve(ROOT, 'packages/game-data')");
     expect(runner).toContain("resolve(ROOT, 'game-data')");
     expect(runner).toContain("await cp(GAME_DATA_SOURCE, GAME_DATA_ROUTE, { recursive: true })");

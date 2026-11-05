@@ -503,6 +503,12 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Retargeted the implementation's relative `scripts/` imports, tests that inspect validator logic, and the incremental TTS workflow's source-change classification and pull-request path filter.
 - Existing `package.json` commands, historical `tts/validate-v070-authoritative-save.mjs` wrapper, generated `tts/generated/` outputs, and deployment paths stay unchanged. No validator checks/assertions or gameplay rules were altered.
 
+## Completed subtranche — TTS game-data compatibility-route source boundary
+
+- Separated the source of the temporary browser-compatible game-data route materializer into `tools/tts/run-with-game-data-route.mjs`, retaining `tts/run-with-game-data-route.mjs` as an export-forwarding, executable module shim for all established callers.
+- Retargeted the one import-relative repository-root resolution to keep the same authoritative `packages/game-data/` source and transient `game-data/` route. Existing protection against overwriting a real route and guaranteed cleanup remain unchanged.
+- Updated the source-inspection test, Card Authority render classification, TTS workflow path scope, and architecture/handoff documents. All package commands, public URLs, rule data, and generated outputs remain unchanged.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.

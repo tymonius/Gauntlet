@@ -57,6 +57,8 @@ jobs:
                   'homepage-card-showcase.js',
                   'homepage-card-showcase.css',
                   'config/media-compositions.json',
+                  'tts/run-with-game-data-route.mjs',
+                  'tools/tts/run-with-game-data-route.mjs',
                   'scripts/generate-tts-card-assets.mjs',
                   'scripts/generate-tts-leader-assets.mjs',
                   'scripts/generate-tts-territory-assets.mjs',

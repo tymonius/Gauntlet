@@ -142,8 +142,8 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `card-design/` | Browser face rendering and component-presentation tooling; transitional as classified tooling moves behind stable `/card-design/` URLs |
-| `tools/` | Canonical maintained production-tooling container; includes `tools/tts/` authoritative-save contract validation; established card-design boundaries are `tools/card-design/artwork-authoring/` and `tools/card-design/review/` |
-| `tts/` | TTS packaging, renderer support, QA/release evidence, and compatibility CLI entrypoints; maintained save-contract validation source lives under `tools/tts/` |
+| `tools/` | Canonical maintained production-tooling container; includes `tools/tts/` authoritative-save validation and temporary game-data route materialization; established card-design boundaries are `tools/card-design/artwork-authoring/` and `tools/card-design/review/` |
+| `tts/` | TTS packaging, renderer support, QA/release evidence, and compatibility CLI entrypoints; maintained save-contract validation and game-data compatibility-route tooling live under `tools/tts/` |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
 | `tests/` | Repository-wide contract/regression harness; root placement is deliberate |
