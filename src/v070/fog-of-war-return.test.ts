@@ -112,6 +112,114 @@ function fixture() {
   return { state, fog, normalGambit, extraGambit, reserveTactic, handTactic };
 }
 
+describe('Normal battle reveal integrates post-Tactics physical card returns', () => {
+  test('defers a Gambit, opens the opponent choice, and suppresses returned Tactics', () => {
+    const { state, fog, normalGambit, reserveTactic, handTactic } = fixture();
+    state.battleRuntime!.participants.B.additionalGambits = [];
+    state.battleRuntime!.stage = 'reveal_gambits';
+    const gambits = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'A',
+    });
+    expect(gambits.battleRuntime!.stage).toBe('choose_tactics');
+    expect(gambits.battleRuntime!.participants.B.battleModifier).toBe(1);
+    expect(gambits.battleRuntime!.deferredFogOfWarGambitCommitments)
+      .toContainEqual(expect.objectContaining({ instanceId: fog.instanceId }));
+    gambits.battleRuntime!.stage = 'reveal_tactics';
+    const revealed = reduceV070BattleAction(gambits, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    expect(revealed.battleRuntime!.pendingFogOfWarBattleRevealChoice)
+      .toMatchObject({ owner: 'A', opponent: 'B', sourceInstanceId: fog.instanceId });
+    expect(revealed.battleRuntime!.participants.B.battleModifier).toBe(1);
+    const returned = reduceV070BattleAction(revealed, {
+      type: 'resolve_fog_of_war_battle', playerId: 'B',
+      choice: 'all_tactics',
+    });
+    expect(returned.battleRuntime!.participants.B.battleModifier).toBe(1);
+    expect(returned.battleRuntime!.participants.B.gambit?.instanceId)
+      .toBe(normalGambit.instanceId);
+    expect(returned.battleRuntime!.participants.B.reserve).toContain(reserveTactic.instanceId);
+    expect(returned.players.B.zones.hand).toContain(handTactic.instanceId);
+    expect(returned.battleRuntime!.pendingFogOfWarBattleRevealChoice).toBeNull();
+    expect(returned.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(returned.events.some(event =>
+      event.type === 'battle_card_effect_applied'
+      && [reserveTactic.instanceId, handTactic.instanceId].includes(
+        (event.payload as { instanceId?: string }).instanceId ?? '',
+      ),
+    )).toBe(false);
+  });
+
+  test('a Fog Tactic resolves before ordinary Tactics and the opponent can return a Gambit', () => {
+    const { state, fog, extraGambit, reserveTactic, handTactic } = fixture();
+    const runtime = state.battleRuntime!;
+    runtime.participants.A.gambit = null;
+    runtime.participants.A.tactic = { ...fog, role: 'tactic', sourceZone: 'reserve' };
+    runtime.participants.B.additionalGambits = [];
+    runtime.stage = 'reveal_gambits';
+    const gambits = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'A',
+    });
+    gambits.battleRuntime!.stage = 'reveal_tactics';
+    const revealed = reduceV070BattleAction(gambits, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    expect(revealed.battleRuntime!.pendingFogOfWarBattleRevealChoice?.kind)
+      .toBe('fog_of_war');
+    const returned = reduceV070BattleAction(revealed, {
+      type: 'resolve_fog_of_war_battle', playerId: 'B',
+      choice: 'one_gambit',
+      targetInstanceId: revealed.battleRuntime!.participants.B.gambit!.instanceId,
+    });
+    expect(returned.battleRuntime!.participants.B.gambit).toBeNull();
+    expect(returned.battleRuntime!.participants.B.battleModifier).toBe(3);
+    expect(returned.battleRuntime!.participants.B.reserve).not.toContain(reserveTactic.instanceId);
+    expect(returned.battleRuntime!.participants.B.tactic?.instanceId)
+      .toBe(reserveTactic.instanceId);
+    expect(returned.battleRuntime!.participants.B.additionalTactics)
+      .toContainEqual(expect.objectContaining({ instanceId: handTactic.instanceId }));
+    expect(returned.battleRuntime!.pendingRevealEffectEncounteredAt).toBeNull();
+    expect(returned.players.B.zones.hand).not.toContain(extraGambit.instanceId);
+  });
+
+  test('returns a deferred-registration Tactic before its ordinary handler registers', () => {
+    const { state, fog, reserveTactic } = fixture();
+    const runtime = state.battleRuntime!;
+    const delayedCardId = [...v070CanonicalContent.cardsById.values()]
+      .find(card => card.effects.some(effect =>
+        effect.label === 'Gambit/Tactic'
+        && effect.text.startsWith('If you lose this battle and retreat')
+      ))?.id;
+    if (!delayedCardId) throw new Error('No deferred-registration fixture.');
+    state.cardInstances[reserveTactic.instanceId].cardId = delayedCardId;
+    runtime.participants.B.additionalGambits = [];
+    runtime.participants.B.additionalTactics = [];
+    runtime.stage = 'reveal_gambits';
+    const gambits = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'A',
+    });
+    gambits.battleRuntime!.stage = 'reveal_tactics';
+    const revealed = reduceV070BattleAction(gambits, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    expect(revealed.battleRuntime!.pendingFogOfWarBattleRevealChoice?.kind)
+      .toBe('fog_of_war');
+    const returned = reduceV070BattleAction(revealed, {
+      type: 'resolve_fog_of_war_battle', playerId: 'B',
+      choice: 'all_tactics',
+    });
+    expect(returned.events.some(event =>
+      event.type === 'battle_card_effect_applied'
+      && (event.payload as { instanceId?: string }).instanceId
+        === reserveTactic.instanceId,
+    )).toBe(false);
+    expect(returned.battleRuntime!.participants.B.reserve)
+      .toContain(reserveTactic.instanceId);
+  });
+
+
+});
+
 describe('Post-Tactics physical source-return primitive (completed effects persist)', () => {
   test('returns exactly one chosen Gambit to Hand and leaves the other commitments intact', () => {
     const { state, fog, normalGambit, extraGambit, reserveTactic } = fixture();
