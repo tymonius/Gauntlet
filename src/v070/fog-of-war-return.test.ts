@@ -8,7 +8,7 @@ import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { v070CanonicalContent } from '../content/v070';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
-import { returnV070UnappliedFogOfWarBattleCards } from './fog-of-war-return';
+import { returnV070FogOfWarBattleCards } from './fog-of-war-return';
 import type { V070BattleCardCommitment } from './battle-types';
 import { appendV070Event } from './engine';
 import { v070BattleEffectHandler } from './battle-effects';
@@ -109,10 +109,10 @@ function fixture() {
   return { state, fog, normalGambit, extraGambit, reserveTactic, handTactic };
 }
 
-describe('Post-Tactics physical source-return primitive (unapplied cards only)', () => {
+describe('Post-Tactics physical source-return primitive (completed effects persist)', () => {
   test('returns exactly one chosen Gambit to Hand and leaves the other commitments intact', () => {
     const { state, fog, normalGambit, extraGambit, reserveTactic } = fixture();
-    const returned = returnV070UnappliedFogOfWarBattleCards(
+    const returned = returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId,
       { choice: 'one_gambit', targetInstanceId: extraGambit.instanceId },
     );
@@ -127,7 +127,7 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
 
   test('returns all Tactics to their distinct Reserve and Hand sources', () => {
     const { state, fog, reserveTactic, handTactic, normalGambit } = fixture();
-    const returned = returnV070UnappliedFogOfWarBattleCards(
+    const returned = returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     );
     expect(returned).toEqual([reserveTactic.instanceId, handTactic.instanceId]);
@@ -158,7 +158,7 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     }));
   });
 
-  test('reverses only a selected Gambit contribution after the printed effect applied', () => {
+  test('returns an applied Gambit while preserving its completed printed effect', () => {
     const { state, fog, normalGambit, extraGambit } = fixture();
     const a = state.battleRuntime!.participants.B;
     for (const card of [normalGambit, extraGambit]) {
@@ -174,23 +174,24 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     }
     const before = a.battleModifier;
     expect(before).toBe(2);
-    returnV070UnappliedFogOfWarBattleCards(
+    returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId,
       { choice: 'one_gambit', targetInstanceId: extraGambit.instanceId },
     );
-    expect(a.battleModifier).toBe(1);
+    expect(a.battleModifier).toBe(2);
     expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
       .toContain(normalGambit.instanceId);
     expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
-      .not.toContain(extraGambit.instanceId);
+      .toContain(extraGambit.instanceId);
+    expect(state.players.B.zones.hand).toContain(extraGambit.instanceId);
     expect(state.events.some(event =>
       event.type === 'battle_card_numeric_effect_reversed'
       && (event.payload as { sourceInstanceId?: string }).sourceInstanceId
         === extraGambit.instanceId,
-    )).toBe(true);
+    )).toBe(false);
   });
 
-  test('preserves a separate copied numeric effect when the printed source returns', () => {
+  test('preserves original and copied numeric effects when the source returns', () => {
     const { state, fog, extraGambit } = fixture();
     const cardId = state.cardInstances[extraGambit.instanceId].cardId;
     const card = v070CanonicalContent.cardsById.get(cardId);
@@ -215,14 +216,14 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
       });
     }, extraGambit.instanceId);
     expect(state.battleRuntime!.participants.B.battleModifier).toBe(2);
-    returnV070UnappliedFogOfWarBattleCards(
+    returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId,
       { choice: 'one_gambit', targetInstanceId: extraGambit.instanceId },
     );
-    expect(state.battleRuntime!.participants.B.battleModifier).toBe(1);
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(2);
   });
 
-  test('reverses numeric effects from mixed Hand/Reserve Tactics together', () => {
+  test('preserves applied numeric effects from mixed Hand/Reserve Tactics', () => {
     const { state, fog, reserveTactic, handTactic } = fixture();
     const b = state.battleRuntime!.participants.B;
     for (const card of [reserveTactic, handTactic]) {
@@ -233,15 +234,15 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
       markV070BattleCardEffectApplied(state, card.instanceId);
     }
     b.battleModifier += 4; // Independent modifier must survive the return.
-    returnV070UnappliedFogOfWarBattleCards(
+    returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     );
-    expect(b.battleModifier).toBe(4);
+    expect(b.battleModifier).toBe(6);
     expect(b.reserve).toContain(reserveTactic.instanceId);
     expect(state.players.B.zones.hand).toContain(handTactic.instanceId);
   });
 
-  test('rejects an applied untracked effect atomically even beside reversible cards', () => {
+  test('returns an applied untracked effect without retroactive cancellation', () => {
     const { state, fog, reserveTactic, handTactic } = fixture();
     applyV070ReversibleBattleNumericEffect(
       state, reserveTactic.instanceId,
@@ -250,30 +251,35 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     );
     markV070BattleCardEffectApplied(state, reserveTactic.instanceId);
     markV070BattleCardEffectApplied(state, handTactic.instanceId);
-    const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    const returned = returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
-    )).toThrow(/applied effect/);
-    expect(state).toEqual(before);
+    );
+    expect(returned).toEqual([reserveTactic.instanceId, handTactic.instanceId]);
+    expect(state.battleRuntime!.participants.B.battleModifier).toBe(1);
+    expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
+      .toContain(reserveTactic.instanceId);
+    expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
+      .toContain(handTactic.instanceId);
   });
 
-  test('rejects applied effects before changing any card or battle state', () => {
+  test('returns a Tactic with an already-applied effect without erasing history', () => {
     const { state, fog, reserveTactic } = fixture();
     state.battleRuntime!.appliedBattleCardEffectInstanceIds = [
       reserveTactic.instanceId,
     ];
-    const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    const returned = returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
-    )).toThrow(/applied effect/);
-    expect(state).toEqual(before);
+    );
+    expect(returned).toContain(reserveTactic.instanceId);
+    expect(state.battleRuntime!.appliedBattleCardEffectInstanceIds)
+      .toContain(reserveTactic.instanceId);
   });
 
   test('rejects a missing origin before partially returning mixed-source Tactics', () => {
     const { state, fog } = fixture();
     delete state.battleRuntime!.participants.B.additionalTactics[0].sourceZone;
     const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    expect(() => returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     )).toThrow(/source zone was not recorded/);
     expect(state).toEqual(before);
@@ -284,7 +290,7 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     state.battleRuntime!.pendingRevealEffectEncounteredAt = 'reveal_tactics';
     state.battleRuntime!.pendingRevealEffectCommitments = [handTactic];
     const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    expect(() => returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     )).toThrow(/Resolve pending battle-card reveal effects/);
     expect(state).toEqual(before);
@@ -295,7 +301,7 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
     state.battleRuntime!.participants.B.battleDice = [4];
     state.battleRuntime!.participants.B.selectedBattleDie = 4;
     const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    expect(() => returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'all_tactics' },
     )).toThrow(/before either player rolls battle dice/);
     expect(state).toEqual(before);
@@ -306,13 +312,13 @@ describe('Post-Tactics physical source-return primitive (unapplied cards only)',
   test('rejects ineligible opponents and incorrect source cards', () => {
     const { state, fog } = fixture();
     const before = structuredClone(state);
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    expect(() => returnV070FogOfWarBattleCards(
       state, 'B', fog.instanceId, { choice: 'all_tactics' },
     )).toThrow(/own committed battle card/);
     expect(state).toEqual(before);
     state.battleRuntime!.participants.B.tactic = null;
     state.battleRuntime!.participants.B.additionalTactics = [];
-    expect(() => returnV070UnappliedFogOfWarBattleCards(
+    expect(() => returnV070FogOfWarBattleCards(
       state, 'A', fog.instanceId, { choice: 'one_gambit', targetInstanceId: 'none' },
     )).toThrow(/Gambit and a Tactic/);
   });
