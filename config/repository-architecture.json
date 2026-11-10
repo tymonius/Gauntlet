@@ -179,7 +179,7 @@
         "releases"
       ],
       "transitional": true,
-      "note": "TTS packaging, render/QA assets, and versioned release evidence. Maintained table-layout, save validation, temporary game-data route tooling, face-publication parity, and Rulebook de-imposition helpers live under tools/tts/. Original TTS command paths and script-level helper imports remain compatibility entrypoints."
+      "note": "TTS packaging, render/QA assets, and versioned release evidence. Maintained table-layout, save validation, temporary game-data route tooling, face-publication parity, Rulebook de-imposition, sliding-tracker capture, and supplemental geometry helpers live under tools/tts/. Original TTS command paths and script-level helper imports remain compatibility entrypoints."
     },
     "v0.7.1": {
       "role": "historical_compatibility",
@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, and Rulebook de-imposition tooling under tools/tts/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, and supplemental geometry tooling under tools/tts/."
     }
   }
 }

@@ -523,6 +523,14 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - The TTS build workflow explicitly watches both canonical helper paths and their shims, triggers card/Territory/Leader capture for face-publication changes, and stages rules PDFs for imposition changes. Card Authority also treats the face-publication helper as a rendered-face change.
 - No canonical current-game, frozen release, TTS assets, generated output, or published URL was modified. Check CI and TTS/Pages QA before merging.
 
+## Proposed subtranche — TTS tracker capture and geometry source boundary
+
+- Separate the maintained sliding-tracker capture and physical/snap geometry implementations under `tools/tts/`, leaving the original `scripts/` import paths as thin, exact export-forwarding compatibility modules.
+- Adjust canonical imports to the retained browser production-surface authority; keep generator commands and emitted TTS representation unchanged. Migrate source-inspection tests to maintained files, update existing consumers where already inside `tools/tts/`, and add a compatibility/ownership regression.
+- The incremental TTS workflow now treats physical geometry source edits as a full render (the prior no-op classification could miss Territory orientation and component changes), and watches/recaptures supplementals for changes to the tracker capture helper. Card Authority recognizes the canonical capture helper as a rendered-face input.
+- Correct the sliding-tracker documentation to describe on-load Lua `setSnapPoints` registration from actual TTS bounds, rather than inaccurately claiming serialized `AttachedSnapPoints`.
+- This tranche changes no canonical gameplay, published route, release artifact, rendered-card source authority, or production feature logic. Merge only after CI and TTS quality gates pass.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
