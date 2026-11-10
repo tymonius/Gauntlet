@@ -5,6 +5,7 @@ import {
   type V070GameState,
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
+import { reduceV070BattleAction } from './battle-engine';
 import { viewV070GameForPlayer } from './views';
 import { beginV070OffTurnEffectMovement } from './off-turn-movement';
 
@@ -95,6 +96,51 @@ describe('off-turn effect-granted movement foundation', () => {
       && event.actor === 'B'
       && (event.payload as { attacker?: string }).attacker === 'B'
     )).toBe(true);
+  });
+
+  test('a completed follow-up battle returns to the original player’s turn', () => {
+    let state = ready(3);
+    beginV070OffTurnEffectMovement(state, 'B', step);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'proceed_from_onset', playerId: 'B',
+    });
+    for (const playerId of ['B', 'A'] as const) {
+      state = reduceV070BattleAction(state, {
+        type: 'set_gambit', playerId,
+      });
+    }
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'B',
+    });
+    for (const playerId of ['B', 'A'] as const) {
+      state = reduceV070BattleAction(state, {
+        type: 'choose_tactic', playerId,
+      });
+    }
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'B', values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice', playerId: 'A', values: [6],
+    });
+    expect(state.battle).toEqual(expect.objectContaining({
+      winner: 'A', loser: 'B',
+    }));
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath', playerId: 'B',
+    });
+    expect(state.battle).toBeNull();
+    expect(state.activePlayer).toBe('A');
+    expect(state.turnState?.phase).toBe('denouement');
+    expect(state.turnState?.effectMovementController).toBeUndefined();
+    expect(state.players.A.position).toBe(2);
+    expect(state.players.B.position).toBe(3);
   });
 
   test('rejects both active-player hijacking and unrelated off-turn actions atomically', () => {
