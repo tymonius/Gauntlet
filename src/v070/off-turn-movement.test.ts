@@ -20,7 +20,7 @@ function ready(offTurnPosition = 4): V070GameState {
     seed: 'off-turn-movement-seed',
     players: {
       A: { name: 'Turn owner', starterDeckId: 'military-commandant-holdfast' },
-      B: { name: 'Off-turn mover', starterDeckId: 'military-general-forced-march' },
+      B: { name: 'Off-turn mover', starterDeckId: 'military-general-forward-doctrine' },
     },
   });
   for (const playerId of ['A', 'B'] as const) {
