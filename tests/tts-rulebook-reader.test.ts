@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { imposedPlacementForLogicalPage } from '../scripts/tts-rulebook-imposition.mjs';
+import { imposedPlacementForLogicalPage } from '../tools/tts/tts-rulebook-imposition.mjs';
+import { imposedPlacementForLogicalPage as legacyImposition } from '../scripts/tts-rulebook-imposition.mjs';
 
 describe('TTS Rulebook reader de-imposition', () => {
+  it('retains the existing reader import as an exact canonical export', () => {
+    expect(legacyImposition).toBe(imposedPlacementForLogicalPage);
+  });
+
   it('reconstructs logical reading order from booklet imposition', () => {
     expect(imposedPlacementForLogicalPage(8, 0)).toEqual({ imposedPageIndex: 0, slot: 'right' });
     expect(imposedPlacementForLogicalPage(8, 1)).toEqual({ imposedPageIndex: 1, slot: 'left' });

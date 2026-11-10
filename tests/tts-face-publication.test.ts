@@ -4,7 +4,8 @@ import { resolveCurrentTtsRelease } from '../scripts/tts-current-catalog.mjs';
 import {
   stampTtsFacePublicationVersion,
   validateTtsFacePublicationSource,
-} from '../scripts/tts-face-publication.mjs';
+} from '../tools/tts/tts-face-publication.mjs';
+import * as legacyFacePublication from '../scripts/tts-face-publication.mjs';
 
 function facePage(version, datasetVersionKey = null) {
   const footer = { textContent: version };
@@ -21,13 +22,34 @@ function facePage(version, datasetVersionKey = null) {
 }
 
 describe('TTS face publication labels', () => {
-  it('requires frozen-published authority parity before rendering stable TTS faces', async () => {
+  it('retains the existing script import as an exact canonical export', () => {
+    expect(legacyFacePublication.validateTtsFacePublicationSource).toBe(validateTtsFacePublicationSource);
+    expect(legacyFacePublication.stampTtsFacePublicationVersion).toBe(stampTtsFacePublicationVersion);
+  });
+
+  it('uses the current stable authority without requiring candidate relabeling', async () => {
     const release = await resolveCurrentTtsRelease();
-    expect(release.version).toBe('v0.7.2');
-    expect(release.authorityVersion).toBe('v0.7.2-candidate');
+    const current = JSON.parse(readFileSync(release.currentGameSource, 'utf8'));
+    expect(release.authorityVersion).toBe(current.version);
+    expect(release.version).toBe(current.version);
+    expect(release.displayVersion).toBe(current.displayVersion);
+    expect(release.publicationTargetActive).toBe(true);
     await expect(validateTtsFacePublicationSource(release)).resolves.toBeUndefined();
+
+    const face = facePage(current.version);
+    await stampTtsFacePublicationVersion(
+      face.page, release, '.gauntlet-card', '.card-footer span:last-child',
+    );
+    expect(face.footer.textContent).toBe(current.version);
+  });
+
+  it('rejects missing authority and misaligned legacy candidate publication', async () => {
+    const release = await resolveCurrentTtsRelease();
     await expect(validateTtsFacePublicationSource({
-      ...release, publicationTargetActive: false,
+      ...release, authorityVersion: '',
+    })).rejects.toThrow(/explicit gameplay authority provenance/);
+    await expect(validateTtsFacePublicationSource({
+      ...release, authorityVersion: 'v0.7.2-candidate', publicationTargetActive: false,
     })).rejects.toThrow(/aligned release target/);
   });
 

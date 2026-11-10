@@ -65,6 +65,8 @@ The `tts/apply-table-layout.mjs` CLI and import path likewise forwards to the ma
 
 The `tts/run-with-game-data-route.mjs` command likewise remains a stable entrypoint. Its maintained source is `../tools/tts/run-with-game-data-route.mjs`, which temporarily materializes the canonical game-data package at the historical browser route for compatible card/media renderers.
 
+The TTS face-publication parity/label helper and reader-order booklet de-imposition helper now live in `../tools/tts/tts-face-publication.mjs` and `../tools/tts/tts-rulebook-imposition.mjs`. Existing `scripts/tts-face-publication.mjs` and `scripts/tts-rulebook-imposition.mjs` imports remain executable-free compatibility re-exports; generator and test imports can migrate independently without changing release behavior.
+
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
 ## Current published TTS package
