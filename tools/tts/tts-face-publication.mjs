@@ -1,8 +1,8 @@
 import { resolvePublishedAssetTarget } from '../../scripts/stage-tts-release-assets.mjs';
 
-// Frozen current-game retains its candidate source identity after public cutover.
-// Before rendering a stable-labelled TTS face, verify the mechanics and starter
-// Decks still match the actual published release snapshot.
+// When a publication target's displayed version differs from its gameplay
+// authority version, verify parity with the frozen release before rendering.
+// The current stable release needs no relabeling when both versions match.
 export async function validateTtsFacePublicationSource(release) {
   if (!release.authorityVersion) {
     throw new Error('TTS face publication requires explicit gameplay authority provenance.');
