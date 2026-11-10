@@ -71,14 +71,16 @@ describe('TTS GitHub Release asset hosting', () => {
       .toThrow(/SHA-256 digest/);
   });
 
-  it('publishes frozen v0.7.2 TTS assets to the actual current release rather than a candidate-only tag', async () => {
+  it('publishes current v0.7.2 TTS assets against its frozen release contract', async () => {
     const { resolveCurrentTtsRelease } = await import('../scripts/tts-current-catalog.mjs');
     const { resolvePublishedAssetTarget } = await import('../scripts/stage-tts-release-assets.mjs');
     const release = await resolveCurrentTtsRelease();
     const target = await resolvePublishedAssetTarget(release);
 
+    const canonical = JSON.parse(readFileSync(release.currentGameSource, 'utf8'));
     expect(release.version).toBe('v0.7.2');
-    expect(release.authorityVersion).toBe('v0.7.2-candidate');
+    expect(release.authorityVersion).toBe(canonical.version);
+    expect(release.displayVersion).toBe(canonical.displayVersion);
     expect(release.publicationTargetActive).toBe(true);
     expect(target.releaseTag).toBe('v0.7.2');
     expect(target.prefix).toBe('Gauntlet_v0.7.2_TTS');
