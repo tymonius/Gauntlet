@@ -569,7 +569,11 @@ export function reduceV070TurnAction(
     || action.type === 'resolve_sleeper_network_bound_action'
     || action.type === 'choose_sequestration_keep_asset'
     || action.type === 'resolve_penance_choice'
-    || action.type === 'resolve_inquisition_purge_hand_choice') {
+    || action.type === 'resolve_inquisition_purge_hand_choice'
+    || (action.type === 'choose_movement'
+      && state.turnState?.effectMovementController === action.playerId
+      && state.turnState.movementSequenceOpen
+      && state.turnState.movementSequenceSource === 'effect')) {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -10088,6 +10092,12 @@ function chooseMovement(
 ): void {
   const turnState = requireTurnState(state);
   const sequenceSource = turnState.movementSequenceSource;
+  if (turnState.effectMovementController
+      && turnState.effectMovementController !== playerId) {
+    throw new V070GameActionError(
+      'Only the designated player may resolve this effect-granted movement.',
+    );
+  }
   if (!turnState.movementSequenceOpen || !sequenceSource) {
     throw new V070GameActionError('No movement sequence is currently open.');
   }
@@ -10104,6 +10114,9 @@ function chooseMovement(
       );
     }
     state.turnState = applyV070MovementChoice(turnState, choice);
+    if (!state.turnState.movementSequenceOpen) {
+      delete state.turnState.effectMovementController;
+    }
     appendV070Event(state, {
       type: 'movement_hold',
       actor: playerId,
@@ -10183,6 +10196,10 @@ function chooseMovement(
       ...nextMovementState,
       denouementCardActionBlockedByTerritory: true,
     };
+  }
+
+  if (!nextMovementState.movementSequenceOpen) {
+    delete nextMovementState.effectMovementController;
   }
 
   if (initiatesBattle) {

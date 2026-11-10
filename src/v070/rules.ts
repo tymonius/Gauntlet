@@ -129,6 +129,8 @@ export interface V070TurnState {
   movementSequenceOpen: boolean;
   battleInitiated: boolean;
   movementSequenceSource: V070MovementSequenceSource | null;
+  /** Non-active player explicitly granted this effect-movement decision. */
+  effectMovementController?: PlayerId;
   pendingNormalMovementSteps: V070MovementStep[];
   movementStepQueue: V070MovementStep[];
   territoryMovementBonus: number;
