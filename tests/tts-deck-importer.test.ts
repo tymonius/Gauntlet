@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import * as compatibilityDeckImporter from '../scripts/tts-deck-importer.mjs';
 import {
   buildDeckImporterConfig,
   installDeckImporter,
@@ -7,7 +9,27 @@ import {
   validateGeneratedLuaStrings,
   isDeckImporterReleaseVersion,
   TTS_DECK_IMPORTER_MIN_VERSION,
-} from '../scripts/tts-deck-importer.mjs';
+} from '../tools/tts/tts-deck-importer.mjs';
+
+describe('TTS deck importer tooling boundary', () => {
+  it('preserves all existing script-level exports as exact canonical functions and constants', async () => {
+    const canonical = await import('../tools/tts/tts-deck-importer.mjs');
+    expect(Object.keys(compatibilityDeckImporter).sort()).toEqual(Object.keys(canonical).sort());
+    for (const [name, value] of Object.entries(canonical)) {
+      expect(compatibilityDeckImporter[name]).toBe(value);
+    }
+  });
+
+  it('retains a forwarding-only shim and explicit TTS workflow dependency', () => {
+    const shim = readFileSync('scripts/tts-deck-importer.mjs', 'utf8');
+    const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
+    expect(shim).toContain("export * from '../tools/tts/tts-deck-importer.mjs'");
+    expect(shim).not.toContain('function buildDeckImporterConfig');
+    expect(shim).not.toContain('function installDeckImporter');
+    expect(workflow).toContain("'tools/tts/tts-deck-importer.mjs'");
+    expect(workflow).toContain('scripts/tts-deck-importer.mjs|tools/tts/tts-deck-importer.mjs');
+  });
+});
 
 const version = 'v0.7.0';
 const releaseAssets = {

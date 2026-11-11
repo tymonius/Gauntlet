@@ -67,6 +67,8 @@ The `tts/run-with-game-data-route.mjs` command likewise remains a stable entrypo
 
 The TTS face-publication parity/label helper and reader-order booklet de-imposition helper now live in `../tools/tts/tts-face-publication.mjs` and `../tools/tts/tts-rulebook-imposition.mjs`. Existing `scripts/tts-face-publication.mjs` and `scripts/tts-rulebook-imposition.mjs` imports remain executable-free compatibility re-exports; generator and test imports can migrate independently without changing release behavior.
 
+The maintained Deckbuilder-to-TTS custom-deck importer now lives in `../tools/tts/tts-deck-importer.mjs`. The original `scripts/tts-deck-importer.mjs` import remains an export-forwarding compatibility module for the save assembler and other existing callers; generated Lua/UI, save assembly, and package commands are unchanged.
+
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
 ## Current published TTS package
