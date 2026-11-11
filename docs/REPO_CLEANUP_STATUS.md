@@ -531,13 +531,20 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Correct the sliding-tracker documentation to describe on-load Lua `setSnapPoints` registration from actual TTS bounds, rather than inaccurately claiming serialized `AttachedSnapPoints`.
 - This tranche changes no canonical gameplay, published route, release artifact, rendered-card source authority, or production feature logic. It follows merged [#2008](https://github.com/tymonius/Gauntlet/pull/2008) and was completed in merged [#2009](https://github.com/tymonius/Gauntlet/pull/2009), after all applicable checks passed.
 
-## Current subtranche — TTS Deckbuilder importer tooling boundary
+## Completed subtranche — TTS Deckbuilder importer tooling boundary
 
 - The maintained Deckbuilder-to-TTS import implementation moves from the transitional `scripts/tts-deck-importer.mjs` root path into `tools/tts/tts-deck-importer.mjs`. Its sole existing relative import continues to resolve the same `scripts/generate-tts-save.mjs` hosted-URL helper.
 - The old `scripts/tts-deck-importer.mjs` becomes an exact re-export shim, preserving the established save-assembler dependency and all eight named exports. Existing package commands and generated Lua/UI content are unchanged.
 - The importer test suite now imports canonical tooling and checks that every compatibility export has identical identity. The TTS PR workflow watches both paths and retains its conservative full-render classification for importer changes, so asset/save validation cannot be bypassed by the source move.
 - Machine and human architecture maps and the TTS README classify the new maintained tooling location. No gameplay authority, frozen release, public URL, deployment contract, or published Workshop package is modified.
-- Merge only after the PR Quality Gate, repository tests, governance, Card Authority, TTS render and preview checks pass.
+- Merged as [#2011](https://github.com/tymonius/Gauntlet/pull/2011) after the PR Quality Gate, repository tests, governance, Card Authority, TTS render and preview checks passed.
+
+## Current subtranche — TTS physical-component contract validator boundary
+
+- Move the maintained `scripts/tts-component-contract.mjs` implementation into `tools/tts/tts-component-contract.mjs`, retaining the canonical gameplay authority at `packages/game-data/current-game.json#componentContract` and the current physical-card validation behavior.
+- Preserve the original `scripts/tts-component-contract.mjs` import and executable CLI path through a small forwarding shim. The canonical module also remains directly executable; both invoke the same exported validator runner, and `npm run tts:components:check` is unchanged.
+- Retarget three source-inspection regression tests to the canonical maintained module, add export-identity and direct-CLI parity tests, and include both paths in the TTS PR workflow with conservative full-render classification.
+- Reconcile TTS README and human/machine architecture descriptions. Do not change any gameplay data, frozen release assets, public URLs, or published TTS save. Merge only after required tests, governance, Card Authority, and TTS render/preview checks are green.
 
 ## Next top-down queue
 

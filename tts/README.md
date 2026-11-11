@@ -69,6 +69,8 @@ The TTS face-publication parity/label helper and reader-order booklet de-imposit
 
 The maintained Deckbuilder-to-TTS custom-deck importer now lives in `../tools/tts/tts-deck-importer.mjs`. The original `scripts/tts-deck-importer.mjs` import remains an export-forwarding compatibility module for the save assembler and other existing callers; generated Lua/UI, save assembly, and package commands are unchanged.
 
+The canonical physical-component contract validator is now maintained at `../tools/tts/tts-component-contract.mjs`, reading `packages/game-data/current-game.json` as gameplay authority. Its original `scripts/tts-component-contract.mjs` path remains both an import-compatible shim and the executable CLI used by `npm run tts:components:check`; both direct CLI paths use the same validator.
+
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
 ## Current published TTS package
