@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-11-09
+Last updated: 2026-11-11
 
 ## Governing objective
 
@@ -529,7 +529,15 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Adjust canonical imports to the retained browser production-surface authority; keep generator commands and emitted TTS representation unchanged. Migrate source-inspection tests to maintained files, update existing consumers where already inside `tools/tts/`, and add a compatibility/ownership regression.
 - The incremental TTS workflow now treats physical geometry source edits as a full render (the prior no-op classification could miss Territory orientation and component changes), and watches/recaptures supplementals for changes to the tracker capture helper. Card Authority recognizes the canonical capture helper as a rendered-face input.
 - Correct the sliding-tracker documentation to describe on-load Lua `setSnapPoints` registration from actual TTS bounds, rather than inaccurately claiming serialized `AttachedSnapPoints`.
-- This tranche changes no canonical gameplay, published route, release artifact, rendered-card source authority, or production feature logic. It follows merged [#2008](https://github.com/tymonius/Gauntlet/pull/2008) and is proposed in [#2009](https://github.com/tymonius/Gauntlet/pull/2009). Its initial Test, Governance, Card Authority, TTS render, and PR-preview checks passed; verify the post-retarget PR Quality Gate before merging.
+- This tranche changes no canonical gameplay, published route, release artifact, rendered-card source authority, or production feature logic. It follows merged [#2008](https://github.com/tymonius/Gauntlet/pull/2008) and was completed in merged [#2009](https://github.com/tymonius/Gauntlet/pull/2009), after all applicable checks passed.
+
+## Current subtranche — TTS Deckbuilder importer tooling boundary
+
+- The maintained Deckbuilder-to-TTS import implementation moves from the transitional `scripts/tts-deck-importer.mjs` root path into `tools/tts/tts-deck-importer.mjs`. Its sole existing relative import continues to resolve the same `scripts/generate-tts-save.mjs` hosted-URL helper.
+- The old `scripts/tts-deck-importer.mjs` becomes an exact re-export shim, preserving the established save-assembler dependency and all eight named exports. Existing package commands and generated Lua/UI content are unchanged.
+- The importer test suite now imports canonical tooling and checks that every compatibility export has identical identity. The TTS PR workflow watches both paths and retains its conservative full-render classification for importer changes, so asset/save validation cannot be bypassed by the source move.
+- Machine and human architecture maps and the TTS README classify the new maintained tooling location. No gameplay authority, frozen release, public URL, deployment contract, or published Workshop package is modified.
+- Merge only after the PR Quality Gate, repository tests, governance, Card Authority, TTS render and preview checks pass.
 
 ## Next top-down queue
 
