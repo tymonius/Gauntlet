@@ -17,7 +17,7 @@ The current production components are:
 
 Rules maxima and physical tracker capacity remain deliberately separate. For example, Command currently has a rules maximum of 2 while the production tracker has physical headroom through 4. Intel, Operation Progress, and the Financiers' derived Capital Limit have no fixed rules maximum but use finite practical printed scales. The Capital Limit tracker exposes values 1–15; value 0 is the normal fully covered position rather than a printed band. TTS follows the rendered physical component rather than converting a rules maximum into tracker geometry.
 
-In the save, each tracker is a non-stackable `Custom_Tile` using its production raster as `ImageURL` and the starter's resolved standard card back as `ImageSecondaryURL`. Its measured registrations are written as object-attached snap points. Each snap set has a unique tag, and only the declared physical cover receives that tag. This keeps the interaction physical and manual: dragging the cover card or cover tracker to a registration snaps it into place, while no Lua rule changes the resource automatically.
+In the save, each tracker is a non-stackable `Custom_Tile` using its production raster as `ImageURL` and the starter's resolved standard card back as `ImageSecondaryURL`. Its measured registrations are embedded in the tracker tile's Lua script; after TTS reports the live tile bounds, the script calls `setSnapPoints` to register local snap positions. Each snap set has a unique tag, and only the declared physical cover receives that tag. This keeps the interaction physical and manual: dragging the cover card or cover tracker to a registration snaps it into place, while no Lua rule changes the resource automatically.
 
 ## Intelligence three-card stack
 
@@ -32,3 +32,7 @@ The Intel Tracker receives the `intelligence-operation-progress` snap tag, so th
 Every tracker tile is also authored with TTS `Sticky` enabled. That makes the lower object the physical carrier for whatever is resting on it: lifting a normal tracker carries its snapped Leader, lifting the Intel Tracker carries its snapped Leader, and lifting the Operation Progress Tracker carries the complete Intel Tracker + Leader assembly without changing either relative snap position.
 
 This cover chain is encoded directly in the component contract: the Intel Tracker declares the selected Leader as its cover, while the Operation Progress Tracker declares the Intel Tracker as its cover. The Mission and Operations Reference Cards are not part of the sliding assembly.
+
+## Maintained tooling ownership
+
+`tools/tts/tts-sliding-trackers.mjs` captures the approved face renderer and measures tracker registration lines. `tools/tts/tts-supplemental-geometry.mjs` converts those fractions to physical TTS tile geometry and Lua snap registration. The historical `scripts/tts-sliding-trackers.mjs` and `scripts/tts-supplemental-geometry.mjs` module paths remain exact export-forwarding compatibility shims for established generators and tests.

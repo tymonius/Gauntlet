@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from '../../scripts/tts-current-catalog.mjs';
-import { trackerPresentation } from '../../scripts/tts-supplemental-geometry.mjs';
+import { trackerPresentation } from './tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';

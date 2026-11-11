@@ -31,11 +31,13 @@ on:
       - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/tts-deck-importer.mjs'
       - 'scripts/tts-supplemental-geometry.mjs'
+      - 'tools/tts/tts-supplemental-geometry.mjs'
       - 'scripts/promote-tts-save.mjs'
       - 'scripts/check-tts-release-readiness.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/tts-component-contract.mjs'
       - 'scripts/tts-sliding-trackers.mjs'
+      - 'tools/tts/tts-sliding-trackers.mjs'
       - 'tts/**'
       - 'tools/tts/validate-current-authoritative-save.mjs'
       - 'tools/tts/run-with-game-data-route.mjs'
@@ -147,12 +149,16 @@ jobs:
 
                 for file in "${changed_files[@]}"; do
                   case "$file" in
-                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tools/tts/apply-table-layout.mjs|tts/validate-current-authoritative-save.mjs|tools/tts/validate-current-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
+                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|tts/apply-table-layout.mjs|tools/tts/apply-table-layout.mjs|tts/validate-current-authoritative-save.mjs|tools/tts/validate-current-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
+                      ;;
+                    scripts/tts-supplemental-geometry.mjs|tools/tts/tts-supplemental-geometry.mjs)
+                      # Geometry affects Territory rotations, supplemental tiles, and assembled saves.
+                      full_render=true
                       ;;
                     scripts/generate-tts-finalized-supplementals.mjs|tts/finalized-supplemental-renderer/*)
                       render_finalized=true
                       ;;
-                    scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|card-design/universal-reference.css|card-design/reference-card.js|card-design/reference-card.css|card-design/supplemental-refinements.css|images/Gauntlet-G.svg|images/artwork/supplemental/*)
+                    scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tools/tts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|card-design/universal-reference.css|card-design/reference-card.js|card-design/reference-card.css|card-design/supplemental-refinements.css|images/Gauntlet-G.svg|images/artwork/supplemental/*)
                       render_supplementals=true
                       ;;
                     scripts/tts-face-publication.mjs|tools/tts/tts-face-publication.mjs)

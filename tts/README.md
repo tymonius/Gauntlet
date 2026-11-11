@@ -195,7 +195,9 @@ The generated package currently includes six sliding trackers:
 - Intelligence Operation Progress; and
 - Inquisition Conviction.
 
-Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. `scripts/tts-supplemental-geometry.mjs` owns the single conversion from printed-card geometry to TTS `Custom_Tile` geometry, including the card-sized tile footprint, rounded-rectangle tile type, and local snap coordinates. The assembler writes that final geometry directly into each tracker object; no post-generation physical correction pass exists.
+Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. `../tools/tts/tts-supplemental-geometry.mjs` owns the single conversion from printed-card geometry to TTS `Custom_Tile` geometry, including the card-sized tile footprint, rounded-rectangle tile type, and local snap coordinates. The assembler writes that final geometry directly into each tracker object; no post-generation physical correction pass exists.
+
+The maintained sliding-tracker capture helper lives in `../tools/tts/tts-sliding-trackers.mjs`; the prior `scripts/tts-sliding-trackers.mjs` and `scripts/tts-supplemental-geometry.mjs` imports remain forwarding shims. The existing TTS package scripts and generation entrypoints are unchanged.
 
 The Intelligence trackers share a nested assembly while remaining independently draggable through separate layers/tags.
 

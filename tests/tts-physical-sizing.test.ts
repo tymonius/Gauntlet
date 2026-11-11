@@ -6,7 +6,7 @@ import {
   STANDARD_CARD_LONG_EDGE,
   STANDARD_CARD_SHORT_EDGE,
   trackerPresentation,
-} from '../scripts/tts-supplemental-geometry.mjs';
+} from '../tools/tts/tts-supplemental-geometry.mjs';
 
 function trackerComponent() {
   return {

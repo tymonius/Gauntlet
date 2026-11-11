@@ -6,8 +6,8 @@ import { loadTtsComponentContract } from '../scripts/tts-component-contract.mjs'
 
 const contract = await loadTtsComponentContract();
 const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
-const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
-const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
+const trackerHelper = readFileSync('tools/tts/tts-sliding-trackers.mjs', 'utf8');
+const geometry = readFileSync('tools/tts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');

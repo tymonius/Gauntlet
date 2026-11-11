@@ -67,6 +67,7 @@ jobs:
                   'scripts/generate-tts-supplemental-assets.mjs',
                   'scripts/generate-tts-finalized-supplementals.mjs',
                   'scripts/tts-sliding-trackers.mjs',
+                  'tools/tts/tts-sliding-trackers.mjs',
                   'package.json',
                   'package-lock.json',
                   '.github/workflows/card-authority.yml',

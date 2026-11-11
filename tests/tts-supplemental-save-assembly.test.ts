@@ -4,7 +4,7 @@ import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental
 import {
   CUSTOM_TILE_CARD_LINEAR_SCALE,
   ROUNDED_RECTANGLE_TILE_TYPE,
-} from '../scripts/tts-supplemental-geometry.mjs';
+} from '../tools/tts/tts-supplemental-geometry.mjs';
 
 const PENDING_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
 
