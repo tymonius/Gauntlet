@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
-const validator = readFileSync('scripts/tts-component-contract.mjs', 'utf8');
+const validator = readFileSync('tools/tts/tts-component-contract.mjs', 'utf8');
 const supplementalRenderer = readFileSync('card-design/supplemental-card.js', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const deckbuilderComponents = readFileSync('apps/deckbuilder/faction-components.js', 'utf8');
