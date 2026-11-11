@@ -83,17 +83,29 @@ function revealCountercharge(state: V070GameState): [V070GameState, string] {
   state = reduceV070BattleAction(state, {
     type: 'reveal_gambits', playerId: 'A',
   });
-  const tactic = state.battleRuntime!.participants.B.reserve[0]!;
-  state.cardInstances[tactic].cardId = V070_COUNTERCHARGE_ID;
   state = reduceV070BattleAction(state, {
     type: 'choose_tactic', playerId: 'A',
   });
   state = reduceV070BattleAction(state, {
-    type: 'choose_tactic', playerId: 'B', cardInstanceId: tactic,
+    type: 'choose_tactic', playerId: 'B',
   });
   state = reduceV070BattleAction(state, {
     type: 'reveal_tactics', playerId: 'A',
   });
+  // This is an isolated staging test, not a live reveal test. Countercharge
+  // correctly halts the real reducer until its full handler is registered.
+  // Inject a physical revealed commitment only after the supported battle
+  // envelope completes its reveal, without pretending the card is playable.
+  const participant = state.battleRuntime!.participants.B;
+  const tactic = participant.reserve.shift()!;
+  state.cardInstances[tactic].cardId = V070_COUNTERCHARGE_ID;
+  participant.tactic = {
+    instanceId: tactic,
+    sourceZone: 'reserve',
+    owner: 'B',
+    role: 'tactic',
+    faceUp: true,
+  };
   stageV070CounterchargeBattleEffect(state, 'B', tactic);
   return [state, tactic];
 }
