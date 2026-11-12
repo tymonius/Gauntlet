@@ -1,7 +1,7 @@
 # Accepted rules decision: Multiple follow-up movement effects from one battle
 
 **Decision date:** 2026-11-12  
-**Status:** Accepted by game designer; **pending integration into the next formally versioned rules release and digital engine**. The frozen v0.7.2 release and its currently published rulebooks remain unchanged.
+**Status:** Accepted by game designer; **pending integration into the next formally versioned rules release and digital engine**. The currently published frozen release and its rulebooks remain unchanged.
 
 **Related:** [issue #1953](https://github.com/tymonius/Gauntlet/issues/1953), [previous Give Chase / General Rout ruling](2026-10-16-give-chase-rout-precedence.md), [Countercharge architecture #1941](https://github.com/tymonius/Gauntlet/issues/1941), [Give Chase Action-mode scope #1952](https://github.com/tymonius/Gauntlet/issues/1952).
 
@@ -14,7 +14,7 @@ When two or more separate, otherwise eligible effects from the **same battle** g
 3. If an effect's movement does **not** initiate a new battle, proceed to the next otherwise eligible follow-up effect at that timing, following ordinary choice/order rules. An optional effect may be declined; declining does not spend an unchosen Order's cost.
 4. Do not confuse an unused movement **step within a sequence** (already covered by the published movement rule) with an unresolved **separate effect**. This decision explicitly governs the latter.
 
-This is a designer-approved clarification **for a future version**, not an assertion that frozen v0.7.2 already specified the expiration behavior.
+This is a designer-approved clarification **for a future version**, not an assertion that the frozen published rules already specified the expiration behavior.
 
 ## Concrete same-card combinations
 
