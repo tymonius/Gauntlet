@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8'));
 const githubReleaseContract = JSON.parse(readFileSync('config/github-release-contract.json', 'utf8'));
-const catalogSource = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
+const catalogSource = readFileSync('tools/tts/tts-current-catalog.mjs', 'utf8');
 const componentValidator = readFileSync('tools/tts/tts-component-contract.mjs', 'utf8');
 const cardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 const territoryGenerator = readFileSync('scripts/generate-tts-territory-assets.mjs', 'utf8');
@@ -51,7 +51,7 @@ describe('durable current-game TTS pipeline', () => {
     expect(currentGame).not.toHaveProperty('resolution');
     expect(currentGame.provenance.note).toContain('not runtime inputs');
 
-    expect(catalogSource).toContain("const CURRENT_GAME_SOURCE = 'game-data/current-game.json'");
+    expect(catalogSource).toContain("const CURRENT_GAME_SOURCE = 'packages/game-data/current-game.json'");
     expect(catalogSource).toContain('loadCurrentGameAuthority');
     expect(catalogSource).toContain('const gameplay = authority.gameplay');
     expect(catalogSource).toContain('const starterDecks = authority.starterDecks');
@@ -148,7 +148,7 @@ describe('durable current-game TTS pipeline', () => {
   });
 
   it('keeps TTS CI watching every authority dependency needed by the sparse checkout', () => {
-    expect(workflow).toContain("'game-data/**'");
+    expect(workflow).toContain("'packages/game-data/**'");
     expect(workflow).not.toMatch(/deckbuilder\/starter-decks\.json/);
     expect(workflow).toContain('scripts/current-game-authority.mjs');
     expect(workflow).toContain('scripts/tts-current-catalog.mjs');

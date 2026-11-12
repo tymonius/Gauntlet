@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const assembler = readFileSync('scripts/generate-tts-starter-decks.mjs', 'utf8');
-const catalogSource = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
+const catalogSource = readFileSync('tools/tts/tts-current-catalog.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
