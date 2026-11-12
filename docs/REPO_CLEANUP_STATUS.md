@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-11-11
+Last updated: 2026-11-12
 
 ## Governing objective
 
@@ -539,12 +539,21 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Machine and human architecture maps and the TTS README classify the new maintained tooling location. No gameplay authority, frozen release, public URL, deployment contract, or published Workshop package is modified.
 - Merged as [#2011](https://github.com/tymonius/Gauntlet/pull/2011) after the PR Quality Gate, repository tests, governance, Card Authority, TTS render and preview checks passed.
 
-## Current subtranche — TTS physical-component contract validator boundary
+## Completed subtranche — TTS physical-component contract validator boundary
 
 - Move the maintained `scripts/tts-component-contract.mjs` implementation into `tools/tts/tts-component-contract.mjs`, retaining the canonical gameplay authority at `packages/game-data/current-game.json#componentContract` and the current physical-card validation behavior.
 - Preserve the original `scripts/tts-component-contract.mjs` import and executable CLI path through a small forwarding shim. The canonical module also remains directly executable; both invoke the same exported validator runner, and `npm run tts:components:check` is unchanged.
 - Retarget three source-inspection regression tests to the canonical maintained module, add export-identity and direct-CLI parity tests, and include both paths in the TTS PR workflow with conservative full-render classification.
-- Reconcile TTS README and human/machine architecture descriptions. Do not change any gameplay data, frozen release assets, public URLs, or published TTS save. Merge only after required tests, governance, Card Authority, and TTS render/preview checks are green.
+- Reconciled the TTS README and human/machine architecture descriptions without changing gameplay data, frozen release assets, public URLs, or the published TTS save. Merged in [#2013](https://github.com/tymonius/Gauntlet/pull/2013) after the required tests, governance, Card Authority, and TTS render/preview checks passed.
+
+## Current subtranche — current TTS catalog source ownership and cross-consumer coverage
+
+- Verified the maintained `scripts/tts-current-catalog.mjs` implementation provides release identity, the playable/Territory/Leader/starter derived catalog, and the `tts/generated/<version>/` and `tts/generated/current/` output contracts. It is a TTS catalog, but both maintained card-media generators import its `buildCatalog` API; `.github/workflows/deploy-pages.yml` also watches the catalog path because Pages builds card-media assets.
+- Moved the sole implementation to `tools/tts/tts-current-catalog.mjs`, retargeting only its relative imports and repository-root URL resolution. Kept `scripts/tts-current-catalog.mjs` as the exact export-forwarding import boundary for all existing consumers. No caller import, public URL, package command, or output location was changed.
+- Retargeted source-inspection tests to the maintained file; regression coverage checks the old and new exports are identical, their resolved repository/output roots agree, and TTS, Pages, Card Authority, and card-media use the same implementation.
+- Both TTS and Pages workflows now watch either source location, while TTS conservatively forces a full render when the catalog authority changes. Card Authority also recognizes the catalog source as a face/media-render dependency.
+- Repaired the active TTS release-target test's stale v0.7.2-candidate expectations, using the actual stable v0.7.2 current-game identity and release target. The quarantined legacy TTS-current-release source inspection was pointed to maintained source while retaining its quarantine status pending a separate rehabilitation.
+- No current-game data, frozen release evidence, generated files, Workshop save, or deployed URLs were changed. Require PR tests, governance, Card Authority, TTS render/preview, and Pages validation before merging.
 
 ## Next top-down queue
 
