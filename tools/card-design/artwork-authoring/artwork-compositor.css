@@ -242,6 +242,28 @@
 .art-compositor-crosshair::after { width: 1px; height: 24px; }
 .is-comparing-smart .art-compositor-crosshair { opacity: 0.55; }
 
+.art-compositor-preview-help {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+
+.art-compositor-preview-help button {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.3);
+  color: #e8dac9;
+  padding: 7px 13px;
+  font: 650 0.72rem/1.2 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.art-compositor-preview-help button[aria-pressed="true"] {
+  background: #e8dcc9;
+  color: #211c18;
+}
+
 .art-compositor-help {
   margin: 0;
   text-align: center;
