@@ -287,7 +287,7 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
       ? 'allowed_no_gambit' as const : 'allowed' as const,
   };
   if (grant.kind === 'give-chase-battle') {
-    const lastStart = next.events.findLastIndex(event => event.type === 'turn_started');
+    const lastStart = next.events.map(event => event.type).lastIndexOf('turn_started');
     const earlierBattles = next.events.filter((event, index) =>
       index > lastStart && event.type === 'battle_initiated').length;
     next.v073GiveChasePendingRestriction = {
