@@ -785,7 +785,7 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.players.A.military!.command).toBe(2);
     expect(state.activePlayer).toBe('A');
     expect(state.turnNumber).toBe(turnNumber);
-    const resolution = state.events.findLast(e =>
+    const resolution = [...state.events].reverse().find(e =>
       e.type === 'follow_up_movement_resolved');
     expect((resolution?.payload as { expired?: string[] }).expired).toEqual([
       'give-chase:' + gambit, 'general-rout:A',
