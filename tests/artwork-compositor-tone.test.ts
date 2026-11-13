@@ -12,6 +12,9 @@ const compositor = readFileSync('tools/card-design/artwork-authoring/artwork-com
 const faceRender = readFileSync('card-design/face-render.mjs', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const indexHtml = readFileSync('tools/card-design/review/index.html', 'utf8');
+const cardReferenceHtml = readFileSync('apps/card-reference/index.html', 'utf8');
+const cardReferenceApp = readFileSync('apps/card-reference/app.js', 'utf8');
+const targets = readFileSync('tools/card-design/artwork-authoring/artwork-compositor-targets.js', 'utf8');
 const worker = readFileSync('workers/artwork-authoring/src/format.js', 'utf8');
 
 type MockNode = {
@@ -140,6 +143,12 @@ describe('canonical artwork tonal compositor', () => {
     expect(faceRender).toContain('artwork.composition.direction');
     expect(faceSpec).toContain('composition: artDirectionSpec(game, card.id)');
     expect(indexHtml).toContain('artwork-crop.js?v=20261113-1');
+    expect(cardReferenceHtml).toContain('/card-design/artwork-compositor.js?v=20261113-1');
+    expect(cardReferenceHtml).toContain('/card-design/artwork-crop.js?v=20261113-1');
+    expect(compositor).toContain("target.sourceElement.closest('.reference-preview.rendered-preview')");
+    expect(compositor).toContain("reference.querySelector('.preview-actions')");
+    expect(cardReferenceApp).toContain("el.preview.querySelector('.preview-actions > .art-compositor-launch')?.remove()");
+    expect(targets).toContain("/card-design/artwork-authoring-client.js?v=20260902-2");
     expect(compositor).toContain('function toneFromControls()');
     expect(compositor).toContain('...toneFromControls()');
     expect(compositor).toContain('showOriginalTone');
