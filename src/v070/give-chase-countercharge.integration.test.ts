@@ -7,6 +7,7 @@ import { v070CanonicalContent } from '../content/v070';
 import { placeV070OverlayFromHand, registerV070DmzEntryLock } from './overlays';
 import { V070_DEMILITARIZED_ZONE_ID } from './overlays-pre-counterworks-authority';
 import { V070_FOG_OF_WAR_ID } from './fog-of-war';
+import { v073UnfulfillableAdvanceReason } from '../v073/mandatory-advance-legality';
 import {
   associateV070Sanction,
   reduceV070SanctionAction,
@@ -379,6 +380,13 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     // This does not establish a gameplay resolution for inherently impossible grants.
     state.players.B.position = 0;
     const before = state.events.length;
+    const unchanged = structuredClone(state);
+    for (const choice of ['hold', 'fall_back'] as const) {
+      expect(() => reduceV070TurnAction(state, {
+        type: 'choose_movement', playerId: 'B', choice,
+      })).toThrow(/requires an Advance/);
+      expect(state).toEqual(unchanged);
+    }
     state = reduceV070TurnAction(state, {
       type: 'choose_movement', playerId: 'B', choice: 'advance',
     });
@@ -632,6 +640,79 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.events.some(e => e.type === 'follow_up_movement_unfulfilled'))
       .toBe(false);
     expect(state.v073FollowUpQueue).toBeUndefined();
+  });
+
+
+  test('unpayable Toll Bridge cost fails mandatory Countercharge without movement or spending cards', () => {
+    let [state, source] = revealGambit(setup(), 'B', 'military-countercharge');
+    state = complete(settle(state, 'B'));
+    const origin = state.board.find(t => t.position === state.players.B.position)!;
+    origin.territoryId = 'territory-toll-bridge';
+    origin.blank = false;
+    // The printed Toll Bridge movement charge cannot be paid without a Hand card.
+    state.players.B.zones.discardPile.push(...state.players.B.zones.hand.splice(0));
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toMatch(/cost cannot be paid/);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement',
+      playerId: 'B', grantKey: 'countercharge-battle:' + source,
+    });
+    expect(state.players.B.position).toBe(3);
+    expect(state.players.B.zones.graveyard).toContain(source);
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.events.some(e => e.type === 'follow_up_movement_unfulfilled')).toBe(true);
+  });
+
+  test('a covering Overlay masks Toll Bridge and permits an otherwise legal follow-up', () => {
+    let [state, source] = revealGambit(setup(), 'B', 'military-countercharge');
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+    const origin = state.board.find(t => t.position === 3)!;
+    origin.territoryId = 'territory-toll-bridge';
+    origin.blank = false;
+    const overlay = placeOverlayOnFollowUpDestination(state, V070_FOG_OF_WAR_ID, 3);
+    state.players.B.zones.discardPile.push(...state.players.B.zones.hand.splice(0));
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toBeNull();
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement',
+      playerId: 'B', grantKey: 'countercharge-battle:' + source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.players.B.position).toBe(2);
+    expect(state.battle).toBeNull();
+    expect(state.overlays.some(o => o.instanceId === overlay)).toBe(true);
+    expect(state.events.some(e => e.type === 'territory_cost_paid')).toBe(false);
+    expect(state.events.some(e => e.type === 'follow_up_movement_unfulfilled')).toBe(false);
+  });
+
+  test('an out-of-board Last Stand destination does not waive an origin Toll Bridge cost', () => {
+    const state = setup();
+    const atEnd = state.board.find(t => t.position === 0)!;
+    atEnd.territoryId = 'territory-toll-bridge';
+    atEnd.blank = false;
+    state.players.B.position = 0;
+    state.players.A.position = -1;
+    state.players.B.zones.discardPile.push(...state.players.B.zones.hand.splice(0));
+    // The Advance is a possible Last Stand, but the cost is still checked
+    // by the normal movement reducer at the origin.
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toMatch(/cost cannot be paid/);
+    state.players.B.zones.hand.push(state.players.B.zones.discardPile.pop()!);
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toBeNull();
+  });
+
+  test('simultaneous legal DMZ and Toll Bridge costs need two distinct Hand cards', () => {
+    const state = setup();
+    const origin = state.board.find(t => t.position === 3)!;
+    origin.territoryId = 'territory-toll-bridge';
+    origin.blank = false;
+    placeOverlayOnFollowUpDestination(state, V070_DEMILITARIZED_ZONE_ID, 2);
+    const hand = state.players.B.zones.hand;
+    state.players.B.zones.discardPile.push(...hand.splice(1));
+    expect(hand).toHaveLength(1);
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toMatch(/cost cannot be paid/);
+    hand.push(state.players.B.zones.discardPile.pop()!);
+    expect(v073UnfulfillableAdvanceReason(state, 'B')).toBeNull();
   });
 
   test('forged unrelated actor cannot take the offered effect or move another player', () => {

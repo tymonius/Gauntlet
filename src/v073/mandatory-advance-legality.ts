@@ -55,8 +55,7 @@ export function v073UnfulfillableAdvanceReason(
   // including the overlay masking and movement-window suppression rules.
   const originTerritory = state.board.find(t => t.position === position);
   const tollDiscardNeeded = Boolean(
-    destinationTerritory
-    && originTerritory?.territoryId === 'territory-toll-bridge'
+    originTerritory?.territoryId === 'territory-toll-bridge'
     && !originTerritory.blank
     && !activeOverlayOn(originTerritory.territoryInstanceId)
     && !state.territoryEffectSuppressions.some(suppression =>
