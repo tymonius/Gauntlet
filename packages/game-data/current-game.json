@@ -8880,7 +8880,10 @@
       "focusX": 1,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 40,
+      "contrast": 101,
+      "saturation": 114
     },
     "inquisition-malleus-maleficarum": {
       "fit": "cover",
