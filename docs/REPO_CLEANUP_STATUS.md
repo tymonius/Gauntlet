@@ -580,7 +580,7 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 
 ## Current subtranche — Rules Arbiter GitHub Actions QA authorization ownership
 
-- Audited the shared GitHub Actions OIDC authorization implementation in `rules-assistant/github-actions-qa-auth.js`. It is a live security policy imported by the current v0.7.2 Worker, candidate and v071 compatibility Workers, semantic evaluator, and admin refinement Worker. It is not an archived candidate fixture.
+- Audited the shared GitHub Actions OIDC authorization implementation in `rules-assistant/github-actions-qa-auth.js`. It is a live security policy imported by the current-release Worker, explicitly versioned compatibility and candidate Workers, semantic evaluator, and admin refinement Worker. It is not an archived candidate fixture.
 - Move its unchanged implementation to `tools/rules-assistant/qa/github-actions-qa-auth.js`, leaving the original import path as an exact export-forwarding shim. The canonical semantic evaluator imports the maintained sibling directly, while all other Worker paths keep their established imports.
 - The authorized-workflow allowlist, GitHub OIDC issuer/JWKS signature verification, token rejection rules, JWKS cache, and all runtime API behavior remain byte-for-byte unchanged in the maintained source. Add exact-export identity and rejection-parity regressions alongside existing authorization and historical suites.
 - Add explicit canonical source path coverage to protected Worker deployment, historical regression, and current live-publication workflow scope detection. Syntax-check maintained source in predeployment validation. Do not skip any live or candidate health check.
