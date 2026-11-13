@@ -16,6 +16,8 @@ Active-development game authority comes from:
 
 Generated current-development metadata takes its version and display identity from `current-game`, while the currently published release is resolved independently from release metadata.
 
+The maintained current TTS release/catalog source lives in `../tools/tts/tts-current-catalog.mjs`. The former `scripts/tts-current-catalog.mjs` path remains an exact re-export compatibility module for TTS generators, both card-media generators, and the other existing importers. Its repository-root resolution is unchanged, and the generated `tts/generated/<version>/` and `tts/generated/current/` paths remain the same. The TTS and Pages workflows both watch the maintained implementation and the compatibility import; the public `/game-data/` route is not its source authority.
+
 The runtime does not hard-code starter, card, Leader, or Territory counts.
 
 ## Single card-face render authority

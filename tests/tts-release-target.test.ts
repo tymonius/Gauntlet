@@ -6,15 +6,16 @@ const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8')
 const currentGame = JSON.parse(readFileSync('packages/game-data/current-game.json', 'utf8'));
 
 describe('TTS development and publication identity', () => {
-  it('targets stable v0.7.2 publication while retaining the frozen current-game candidate authority', () => {
+  it('keeps stable v0.7.2 publication aligned with the current-game authority', () => {
     expect(target.releaseTag).toBe('v0.7.2');
     expect(target.displayVersion).toBe('v0.7.2');
     expect(target.sourceVersion).toBe('v0.7.2');
     expect(target.currentGameAuthority).toBe('packages/game-data/current-game.json');
-    expect(target.status).toBe('release-candidate');
+    expect(target.status).toBe('current-release');
+    expect(currentGame.status).toBe('current-release');
 
     expect(currentGame.authority).toBe('current-game');
-    expect(currentGame.version).toBe('v0.7.2-candidate');
+    expect(currentGame.version).toBe('v0.7.2');
     expect(currentGame.version.replace(/-candidate$/, '')).toBe(target.sourceVersion);
   });
 
@@ -36,7 +37,7 @@ describe('TTS development and publication identity', () => {
     const catalog = await buildCatalog();
 
     expect(catalog.gameVersion).toBe('v0.7.2');
-    expect(catalog.release.authorityVersion).toBe('v0.7.2-candidate');
+    expect(catalog.release.authorityVersion).toBe(currentGame.version);
     expect(catalog.release.sourceVersion).toBe('v0.7.2');
     expect(catalog.release.canonicalDataVersion).toBe('v0.7.2');
     expect(catalog.release.publicationTargetActive).toBe(true);

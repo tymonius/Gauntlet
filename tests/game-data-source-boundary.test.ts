@@ -66,7 +66,7 @@ describe("game-data source/deployment boundary", () => {
 
   it("keeps repository-only consumers on the canonical package source", () => {
     expect(read("scripts/current-game-authority.mjs")).toContain("../packages/game-data/current-game-validation.mjs");
-    expect(read("scripts/tts-current-catalog.mjs")).toContain("../packages/game-data/art-direction.mjs");
+    expect(read("tools/tts/tts-current-catalog.mjs")).toContain("../../packages/game-data/art-direction.mjs");
     expect(read("src/content/v064.ts")).toContain("../../packages/game-data/current-game.json");
   });
 
