@@ -9150,10 +9150,14 @@
     },
     "mystics-accursed-wager": {
       "fit": "cover",
-      "focusX": 0.5625,
+      "focusX": 0.563,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 107,
+      "shadows": 32,
+      "contrast": 103,
+      "saturation": 131
     },
     "mystics-black-covenant": {
       "fit": "cover",
