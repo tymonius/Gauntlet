@@ -293,7 +293,7 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     for (let index = 0; index < v070CanonicalContent.content.battle.normal_reserve_size + 1; index++) {
       const fillerId = 'test-third-battle-reserve-' + index;
       state.cardInstances[fillerId] = {
-        instanceId: fillerId, owner: 'A', cardId: 'neutral-rallying-cry',
+        instanceId: fillerId, owner: 'A', cardId: 'military-give-chase',
       };
       state.players.A.zones.drawPile.push(fillerId);
     }
