@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "version": "v0.7.3-candidate",
+  "status": "candidate-review",
+  "published": false,
+  "baseRelease": "v0.7.2",
+  "sourceMainCommit": "86deae7a1a659421c3e77f5accacf6d1f1c23367",
+  "authority": {
+    "gameplay": "releases/v0.7.3-candidate/current-game.json",
+    "rulebook": "releases/v0.7.3-candidate/current-rulebook.md",
+    "comprehensive": "releases/v0.7.3-candidate/comprehensive-rules.md",
+    "playerGuide": "releases/v0.7.3-candidate/player-guide.md",
+    "factionGuideDirectory": "releases/v0.7.3-candidate/faction-guides/"
+  },
+  "acceptedDecisions": [
+    {
+      "date": "2026-10-16",
+      "id": "intercepted-orders-tactic-only",
+      "source": "docs/rules-decisions/2026-10-16-intercepted-orders-tactic-timing.md",
+      "status": "candidate-integrated",
+      "changes": [
+        "Tactic-only role",
+        "Exact approved Tactic text",
+        "Unchanged Asset",
+        "Remove Gambit/Tactic mirror; add Tactic mirror",
+        "Describe ordinary Tactic reveal and interference precedence"
+      ]
+    },
+    {
+      "date": "2026-10-16",
+      "id": "give-chase-rout-priority",
+      "source": "docs/rules-decisions/2026-10-16-give-chase-rout-precedence.md",
+      "status": "candidate-integrated",
+      "changes": [
+        "Offer Give Chase Gambit/Tactic advance before General Rout",
+        "An unused Rout costs no Command",
+        "If Give Chase begins a new battle the Rout opportunity expires",
+        "Give Chase Denouement Action unchanged"
+      ]
+    },
+    {
+      "date": "2026-11-12",
+      "id": "separate-follow-up-movement-expiry",
+      "source": "docs/rules-decisions/2026-11-12-duplicate-follow-up-movement-expiry.md",
+      "status": "candidate-integrated",
+      "changes": [
+        "Resolve separate effects individually in proper shared-timing order",
+        "If an advance creates a new battle old-battle unresolved effects expire",
+        "If no battle starts resolve remaining eligible effects",
+        "Covers duplicate Give Chase and Countercharge including otherwise mandatory effect"
+      ]
+    }
+  ],
+  "exclusions": [
+    "Unresolved Give Chase Action-mode follow-up battle restrictions, issue #1952",
+    "Spies reveal/revision procedure issue #1945",
+    "Treason copied deferred effect identity issue #1946",
+    "Field Command order lifecycle issue #1956",
+    "Shock and Awe separate Breakthrough implementation issue #1953",
+    "Any unsupported current-release digital-engine battle effect"
+  ],
+  "runtimeIntegration": "None. This candidate is an isolated review package and does not alter active game consumers, frozen v0.7.2, TTS, rulebooks served by website, or executable engine registration.",
+  "pending": [
+    "review candidate gameplay and reader-facing text",
+    "validate candidate presentation and card rendering after promotion planning",
+    "implement candidate battle mechanics and test full interactions",
+    "promote via governed release process"
+  ],
+  "files": [
+    "releases/v0.7.3-candidate/current-game.json",
+    "releases/v0.7.3-candidate/current-rulebook.md",
+    "releases/v0.7.3-candidate/comprehensive-rules.md",
+    "releases/v0.7.3-candidate/player-guide.md",
+    "releases/v0.7.3-candidate/faction-guides/military.md",
+    "releases/v0.7.3-candidate/faction-guides/intelligence.md",
+    "releases/v0.7.3-candidate/faction-guides/diplomats.md",
+    "releases/v0.7.3-candidate/faction-guides/financiers.md",
+    "releases/v0.7.3-candidate/faction-guides/mystics.md",
+    "releases/v0.7.3-candidate/faction-guides/inquisition.md"
+  ]
+}
