@@ -19,6 +19,7 @@
   let previewImage;
   let state = null;
   let compareMode = 'manual';
+  let showOriginalTone = false;
   let pointerState = null;
   let scanQueued = false;
   const divergences = new Map();
@@ -362,7 +363,10 @@
                 <span class="art-compositor-crosshair" aria-hidden="true"></span>
               </figure>
             </div>
-            <p class="art-compositor-help">Drag to reposition · wheel to zoom · arrows nudge · Shift + arrows move faster</p>
+            <div class="art-compositor-preview-help">
+              <button type="button" data-action="compare-tone" aria-pressed="false">Show original tone</button>
+              <p class="art-compositor-help">Drag to reposition · wheel to zoom · arrows nudge · Shift + arrows move faster</p>
+            </div>
           </section>
           <aside class="art-compositor-controls">
             <div class="art-compositor-axis">
@@ -442,6 +446,7 @@
       zoomLabel: dialog.querySelector('[data-zoom-label]'),
       fit: dialog.querySelector('.art-compositor-fit select'),
       tone: {},
+      compareTone: dialog.querySelector('[data-action="compare-tone"]'),
     });
 
     dialog.querySelector('.art-compositor-close').addEventListener('click', closeDialog);
@@ -469,6 +474,12 @@
         manualRender();
       });
     }
+    ui.compareTone.addEventListener('click', () => {
+      showOriginalTone = !showOriginalTone;
+      ui.compareTone.setAttribute('aria-pressed', String(showOriginalTone));
+      ui.compareTone.textContent = showOriginalTone ? 'Show adjusted tone' : 'Show original tone';
+      renderPreview();
+    });
     dialog.querySelector('[data-action="reset-tone"]').addEventListener('click', () => {
       setToneControls({});
       manualRender();
@@ -543,6 +554,11 @@
   }
 
   function manualRender() {
+    if (showOriginalTone) {
+      showOriginalTone = false;
+      ui.compareTone.setAttribute('aria-pressed', 'false');
+      ui.compareTone.textContent = 'Show original tone';
+    }
     if (compareMode !== 'manual') setCompare('manual');
     else {
       ui.xRange.disabled = ui.xAuto.checked;
@@ -617,9 +633,12 @@
       ui.status.textContent = 'Shared artwork crop engine is unavailable.';
       return;
     }
+    const tone = showOriginalTone
+      ? Object.fromEntries(TONE_FIELDS.map(field => [field.key, field.baseline]))
+      : toneFromControls();
     const direction = compareMode === 'smart'
-      ? { fit: 'cover', zoom: 1, ...toneFromControls() }
-      : directionFromControls();
+      ? { fit: 'cover', zoom: 1, ...tone }
+      : { ...directionFromControls(), ...tone };
     const result = window.GauntletArtworkCrop.apply(previewImage, direction, {
       id: `${SMART_ID_PREFIX}${state.id}`,
       label: state.label,
@@ -666,6 +685,9 @@
       return;
     }
 
+    showOriginalTone = false;
+    ui.compareTone.setAttribute('aria-pressed', 'false');
+    ui.compareTone.textContent = 'Show original tone';
     const sourceDirection = stableDirection({ ...target, window: resolved.window });
     state = { ...target, ...resolved, sourceDirection };
     const x = focusFrom(sourceDirection, 'x');
