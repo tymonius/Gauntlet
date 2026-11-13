@@ -84,6 +84,12 @@ function revealGambit(state: V070GameState, owner: 'A' | 'B', cardId: string): [
 }
 
 function settle(state: V070GameState, winner: 'A' | 'B'): V070GameState {
+  if (state.battleRuntime?.terms.stage === 'refused'
+    && !state.battleRuntime.terms.leverageResolved) {
+    state = reduceV070BattleAction(state, {
+      type: 'use_leverage', playerId: 'A', bonus: 0,
+    });
+  }
   state = reduceV070BattleAction(state, {
     type: 'submit_battle_dice', playerId: 'A', values: [winner === 'A' ? 6 : 1],
   });
