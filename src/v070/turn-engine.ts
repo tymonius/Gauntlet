@@ -270,7 +270,12 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
     spendV070MilitaryCommand(next, grant.owner, 2, 'Rout');
     appendV070Event(next, {
       type: 'military_order_used', actor: grant.owner, visibility: 'public',
-      payload: { order: 'Rout', cost: 2, source: 'follow_up_movement' },
+      payload: {
+        order: 'Rout',
+        commandCost: 2,
+        commandRemaining: next.players[grant.owner].military?.command ?? 0,
+        source: 'follow_up_movement',
+      },
     });
   } else if (grant.kind === 'countercharge-asset') {
     putV070AssetInGraveyardByEffect(
