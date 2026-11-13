@@ -88,8 +88,8 @@ describe('canonical artwork tonal compositor', () => {
       brightness: 112, shadows: 40, contrast: 104, saturation: 105,
     };
     expect(normalizeArtDirection(direction)).toEqual(direction);
-    const text = serializeArtDirectionMap({ 'intelligence-spies': direction });
-    expect(parseArtDirectionSource(text)['intelligence-spies']).toEqual(direction);
+    const text = serializeArtDirectionMap({ 'sample-artwork': direction });
+    expect(parseArtDirectionSource(text)['sample-artwork']).toEqual(direction);
     for (const field of ['brightness', 'shadows', 'contrast', 'saturation']) {
       expect(worker).toContain(field);
       expect(compositor).toContain(`data-tone-range="${field}"`);
