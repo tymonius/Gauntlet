@@ -387,17 +387,6 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
   });
 
 
-  function counterchargeAssetWindow(): V070GameState {
-    let state = setup();
-    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
-    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
-    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
-    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
-    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
-    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
-    return complete(settle(state, 'B'));
-  }
-
   function setUnoccupiedAdvanceDestination(state: V070GameState): void {
     // Defender B starts at 3 after winning. A is moved away only to
     // isolate the no-battle DMZ entry interaction in the test.
