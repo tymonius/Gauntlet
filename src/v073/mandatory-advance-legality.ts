@@ -1,20 +1,14 @@
 import type { V070GameState } from '../v070/engine';
 import type { PlayerId } from '../v070/rules';
-import {
-  activeV070Overlay,
-  cardIdForV070Overlay,
-  v070DmzBlocksEntryThisTurn,
-  V070_DEMILITARIZED_ZONE_ID,
-} from '../v070/overlays-pre-counterworks-authority';
-import { v070TollBridgeAdvanceCostActive } from '../v070/territories-core';
 
 /**
  * Preflight only movement constraints that are intrinsically impossible to
  * satisfy from the current state. Omitting a required discard when one is
  * available is a retriable player-action error, NOT an impossible Advance.
  *
- * Actual movement still passes through the ordinary turn reducer so it owns
- * costs, occupancy, battles, and any new restrictions added later.
+ * This low-level check intentionally has no runtime engine imports: the
+ * normal turn reducer still owns actual movement legality, Overlay entry,
+ * movement costs, Onset, and effects when a movement is performed.
  */
 export function v073UnfulfillableAdvanceReason(
   state: V070GameState,
@@ -32,23 +26,45 @@ export function v073UnfulfillableAdvanceReason(
     return 'No legal Position exists for the mandatory Advance.';
   }
 
-  if (destinationTerritory && v070DmzBlocksEntryThisTurn(state, destination)) {
+  if (destinationTerritory && state.territoryTurnRestrictions.some(restriction =>
+    restriction.kind === 'no_entry'
+    && restriction.source === 'demilitarized_zone'
+    && restriction.territoryInstanceId === destinationTerritory.territoryInstanceId
+    && restriction.turnNumber === state.turnNumber
+  )) {
     return 'Demilitarized Zone forbids entering that Territory this turn.';
   }
 
+  // Mirror activeV070Overlay's topmost Overlay rule without importing its
+  // engine-dependent module (which creates a circular turn-engine import).
+  const activeOverlayOn = (territoryInstanceId: string) =>
+    state.overlays.filter(overlay =>
+      overlay.territoryInstanceId === territoryInstanceId,
+    ).reduce((active, overlay) =>
+      !active || overlay.sequence > active.sequence ? overlay : active,
+    null as (typeof state.overlays)[number] | null);
   const overlay = destinationTerritory
-    ? activeV070Overlay(state, destination)
+    ? activeOverlayOn(destinationTerritory.territoryInstanceId)
     : null;
   const dmzEntryDiscardNeeded = Boolean(
     overlay
-    && cardIdForV070Overlay(state, overlay) === V070_DEMILITARIZED_ZONE_ID
+    && state.cardInstances[overlay.instanceId]?.cardId === 'diplomats-demilitarized-zone'
     && destinationTerritory?.occupant === null,
   );
-  // Mirror the existing movement reducer's Toll Bridge payment check;
-  // no cost is waived by this clarification.
+  // Mirror v070TollBridgeAdvanceCostActive's printed/unsuppressed condition,
+  // including the overlay masking and movement-window suppression rules.
+  const originTerritory = state.board.find(t => t.position === position);
   const tollDiscardNeeded = Boolean(
     destinationTerritory
-    && v070TollBridgeAdvanceCostActive(state, owner, position),
+    && originTerritory?.territoryId === 'territory-toll-bridge'
+    && !originTerritory.blank
+    && !activeOverlayOn(originTerritory.territoryInstanceId)
+    && !state.territoryEffectSuppressions.some(suppression =>
+      suppression.territoryInstanceId === originTerritory.territoryInstanceId
+      && suppression.turnNumber === state.turnNumber
+      && suppression.playerId === owner
+      && (suppression.scope === 'movement' || suppression.scope === 'turn'),
+    ),
   );
   const requiredHandCards = Number(dmzEntryDiscardNeeded) + Number(tollDiscardNeeded);
   if (state.players[owner].zones.hand.length < requiredHandCards) {
