@@ -5,6 +5,7 @@ on:
       - '.github/workflows/current-card-artwork-darkness-audit.yml'
       - 'scripts/audit-card-artwork-brightness.py'
       - 'scripts/audit-nonplayable-artwork-brightness.py'
+      - 'scripts/compare-print-tone-adjustments.py'
       - 'images/artwork/cards/**'
       - 'images/artwork/cardbacks/**'
       - 'images/artwork/supplemental/**'
@@ -28,12 +29,19 @@ jobs:
             images/*.png
             scripts/audit-card-artwork-brightness.py
             scripts/audit-nonplayable-artwork-brightness.py
+            scripts/compare-print-tone-adjustments.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install 'Pillow>=11,<13'
+      - name: Load latest canonical game data
+        run: |
+          git fetch --depth=1 origin main
+          git show FETCH_HEAD:packages/game-data/current-game.json > packages/game-data/current-game.json
       - name: Rank all 142 current card artworks
         run: python scripts/audit-card-artwork-brightness.py
+      - name: Compare before and after current print-tone edits
+        run: python scripts/compare-print-tone-adjustments.py
       - name: Rank all illustrated non-playable card faces
         run: python scripts/audit-nonplayable-artwork-brightness.py
       - uses: actions/upload-artifact@v4
