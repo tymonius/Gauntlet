@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { createV070StarterGame, reduceV070SetupAction, type V070GameState } from '../v070/engine';
-import { reduceV070TurnAction } from '../v070/turn-engine';
-import { reduceV070BattleAction } from '../v070/battle-engine';
-import { viewV070GameForPlayer } from '../v070/views';
+import { createV070StarterGame, reduceV070SetupAction, type V070GameState } from './engine';
+import { reduceV070TurnAction } from './turn-engine';
+import { reduceV070BattleAction } from './battle-engine';
+import { viewV070GameForPlayer } from './views';
 
 function setup(): V070GameState {
   let state = createV070StarterGame({
@@ -85,6 +85,19 @@ function asset(state: V070GameState, owner: 'A' | 'B'): string {
   return id;
 }
 describe('actual v0.7.3 follow-up reducer integration', () => {
+  test('exact frozen and current canonical battle text is registered', async () => {
+    const { v070CanonicalContent } = await import('../content/v070');
+    const { currentCanonicalContent } = await import('../content/current-game');
+    const { v070BattleEffectHandler } = await import('./battle-effects');
+    for (const content of [v070CanonicalContent, currentCanonicalContent]) {
+      for (const id of ['military-countercharge', 'military-give-chase']) {
+        const battleText = content.cardsById.get(id)?.effects.find(effect =>
+          effect.label === 'Gambit/Tactic')?.text;
+        expect(v070BattleEffectHandler(id)?.expectedText).toBe(battleText);
+      }
+    }
+  });
+
   test('winning attacker reveals Give Chase, starts a fresh restricted battle, and leaves Rout unpaid', () => {
     let [state, id] = revealGambit(setup(), 'A', 'military-give-chase');
     state = settle(state, 'A');
@@ -188,6 +201,34 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.players.B.zones.graveyard).toContain(a2);
   });
 
+  test('a second Countercharge opportunity expires when the first Advance creates a battle', () => {
+    let state = setup();
+    const c1 = asset(state, 'B');
+    const c2 = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    expect(state.v073FollowUpQueue?.pending.length).toBe(2);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + c1,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.battle?.attacker).toBe('B');
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.players.B.zones.assetBank).toContain(c2);
+    expect(state.players.B.zones.graveyard).not.toContain(c2);
+    expect(state.events.some(e =>
+      e.type === 'follow_up_movement_resolved'
+      && (e.payload as {expired?: string[]}).expired?.includes('countercharge-asset:' + c2)
+    )).toBe(true);
+  });
   test('forged unrelated actor cannot take the offered effect or move another player', () => {
     let [state, id] = revealGambit(setup(), 'B', 'military-countercharge');
     state = complete(settle(state, 'B'));

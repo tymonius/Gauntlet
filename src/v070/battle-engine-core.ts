@@ -4991,6 +4991,12 @@ function placeAftermathCard(
   destination: 'discard' | 'graveyard' | 'hand' | 'draw_top',
   graveyarded: string[],
 ): void {
+  // Give Chase's printed battle text sends the card to its Graveyard
+  // following the Aftermath whether or not the optional Advance is taken.
+  if (destination === 'discard'
+    && state.cardInstances[instanceId]?.cardId === 'military-give-chase') {
+    destination = 'graveyard';
+  }
   if (state.overlays.some(overlay => overlay.instanceId === instanceId)
     || state.board.some(
       territory => territory.territoryInstanceId === instanceId,

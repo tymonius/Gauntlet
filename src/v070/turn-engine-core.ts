@@ -10342,7 +10342,7 @@ function chooseMovement(
 
   if (!state.turnState.movementSequenceOpen
     && (sequenceSource === 'normal'
-      || movementStep.source === 'General Rout')) {
+      || (movementStep.source === 'General Rout' && !state.v073FollowUpQueue))) {
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendPhaseEvent(state);
   }
