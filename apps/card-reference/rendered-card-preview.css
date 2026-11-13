@@ -52,6 +52,12 @@
   margin-top: 28px;
 }
 
+.rendered-preview .preview-actions > .art-compositor-launch {
+  margin: 0;
+  align-self: center;
+  min-height: 2.3rem;
+}
+
 .rendered-preview .preview-source {
   max-width: 34rem;
 }
