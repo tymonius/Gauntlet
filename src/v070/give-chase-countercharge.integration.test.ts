@@ -4,7 +4,9 @@ import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { viewV070GameForPlayer } from './views';
 import { v070CanonicalContent } from '../content/v070';
-import { placeV070OverlayFromHand } from './overlays';
+import { placeV070OverlayFromHand, registerV070DmzEntryLock } from './overlays';
+import { V070_DEMILITARIZED_ZONE_ID } from './overlays-pre-counterworks-authority';
+import { V070_FOG_OF_WAR_ID } from './fog-of-war';
 import {
   associateV070Sanction,
   reduceV070SanctionAction,
@@ -382,6 +384,139 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     })).toThrow();
     expect(state).toEqual(snapshot);
     expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(source);
+  });
+
+
+  function setUnoccupiedAdvanceDestination(state: V070GameState): void {
+    // Defender B starts at 3 after winning. A is moved away only to
+    // isolate the no-battle DMZ entry interaction in the test.
+    state.board.forEach(t => { if (t.occupant === 'A') t.occupant = null; });
+    state.players.A.position = 0;
+    state.board[0].occupant = 'A';
+    expect(state.players.B.position).toBe(3);
+    expect(state.board[2].occupant).toBeNull();
+  }
+
+  function placeOverlayOnFollowUpDestination(
+    state: V070GameState, cardId: string, position: number,
+  ): string {
+    const sourceId = state.players.A.zones.hand[0]!;
+    state.cardInstances[sourceId].cardId = cardId;
+    placeV070OverlayFromHand(
+      state, 'A', sourceId, position, 'follow-up movement overlay regression',
+    );
+    return sourceId;
+  }
+
+  test('unoccupied Demilitarized Zone requires a real discard, then permits next Countercharge', () => {
+    let state = setup();
+    const first = asset(state, 'B');
+    const second = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+    const overlay = placeOverlayOnFollowUpDestination(
+      state, V070_DEMILITARIZED_ZONE_ID, 2,
+    );
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
+    const before = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    })).toThrow(/Entering an unoccupied Demilitarized Zone/);
+    expect(state).toEqual(before);
+    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(first);
+
+    const payment = state.players.B.zones.hand[0]!;
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+      discardInstanceId: payment,
+    });
+    expect(state.battle).toBeNull();
+    expect(state.players.B.position).toBe(2);
+    expect(state.players.B.zones.discardPile).toContain(payment);
+    expect(state.overlays.some(o => o.instanceId === overlay)).toBe(true);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([second]);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + second,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.players.B.position).toBe(1);
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.activePlayer).toBe('A');
+  });
+
+  test('same-turn Demilitarized Zone entry lock rejects Advance without expiring queue', () => {
+    let state = setup();
+    const first = asset(state, 'B');
+    const second = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+    const overlay = placeOverlayOnFollowUpDestination(
+      state, V070_DEMILITARIZED_ZONE_ID, 2,
+    );
+    registerV070DmzEntryLock(state, 2, overlay);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
+    const snapshot = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+      discardInstanceId: state.players.B.zones.hand[0],
+    })).toThrow(/Neither player may enter/);
+    expect(state).toEqual(snapshot);
+    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(first);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([second]);
+    // The resulting inability to complete mandatory movement is a separate
+    // designer decision; the engine must not invent an automatic exemption.
+  });
+
+  test('Fog of War on a follow-up battle territory survives into its actual Onset', () => {
+    let state = setup();
+    const first = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    const fog = placeOverlayOnFollowUpDestination(state, V070_FOG_OF_WAR_ID, 2);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.battle?.attacker).toBe('B');
+    expect(state.battle?.contestedPosition).toBe(2);
+    expect(state.activePlayer).toBe('A');
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    state = reduceV070BattleAction(state, {
+      type: 'proceed_from_onset', playerId: 'B',
+    });
+    expect(state.battleRuntime?.activeOverlayAtOnset).toBe(fog);
+    expect(state.overlays.some(o => o.instanceId === fog)).toBe(true);
   });
 
   test('forged unrelated actor cannot take the offered effect or move another player', () => {
