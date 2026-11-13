@@ -35,7 +35,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../tools/rules-assistant/qa/evals/` — maintained Rules Arbiter benchmark, regression-replay, player-language, clarification, and correction fixtures consumed by QA scripts/workflows/tests.
 - `../tools/rules-assistant/qa/v072-voice-smoke-report.js` — manually approved production voice-smoke case selection and report validation used by the live-QA script/workflow. It is not part of the deployed Worker. Maintained Worker-entry/deployment, historical benchmark, runtime-helper, status, deterministic ruling, semantic-evaluator, fallback, and versioned regression test suites run from `../tools/rules-assistant/qa/tests/`.
 - `../artifacts/rules-qa/audits/` — retained historical/manual QA audit reports; evidence, not executable fixture authority.
-- `migrations/` — D1 schema migrations.
+- `migrations/` — shared D1 schema migrations used by the Rules Arbiter and `../workers/playtest-sessions/` Worker, whose Wrangler configuration points to this directory. This is a cross-service schema boundary; reclassify its ownership and deployment dependencies before any physical relocation.
 - `wrangler.toml` — Worker deployment configuration.
 - Maintained Rules Assistant regression suites live under `../tools/rules-assistant/qa/tests/`, with administrative and refinement tests in their respective `tools/` directories. The backend root retains a small source/QA boundary guard so the existing `test:rules-assistant` command remains runnable, while four known-stale suites remain explicitly quarantined. The historical-regression workflow covers all maintained locations.
 
