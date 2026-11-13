@@ -30,6 +30,8 @@ on:
       - "rules-assistant/v071-answer-verifier.js"
       - "rules-assistant/rules-persistence.js"
       - "rules-assistant/github-actions-qa-auth.js"
+      - "rules-assistant/qa-semantic-evaluator.js"
+      - "tools/rules-assistant/qa/qa-semantic-evaluator.js"
       - "rules-assistant/wrangler.toml"
       - ".github/workflows/deploy-rules-arbiter.yml"
       - ".github/workflows/v072-final-rules-arbiter-qa.yml"
@@ -71,6 +73,8 @@ jobs:
       - name: Validate Rules Arbiter runtime
         run: |
           node --check rules-assistant/admin-refinement-worker.js
+          node --check rules-assistant/qa-semantic-evaluator.js
+          node --check tools/rules-assistant/qa/qa-semantic-evaluator.js
           node --check tools/rules-assistant/admin/review-export.js
           node --check tools/rules-assistant/admin/review-intelligence.js
           node --check tools/rules-assistant/admin/review-export-checkpoint.js

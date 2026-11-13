@@ -5,6 +5,7 @@ on:
     paths:
       - 'rules-assistant/**'
       - 'tests/rules-assistant/**'
+      - 'tools/rules-assistant/qa/qa-semantic-evaluator.js'
       - 'tools/rules-assistant/qa/tests/**'
       - 'tools/rules-assistant/admin/tests/**'
       - 'tools/rules-assistant/refinement/tests/**'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'rules-assistant/**'
       - 'tests/rules-assistant/**'
+      - 'tools/rules-assistant/qa/qa-semantic-evaluator.js'
       - 'tools/rules-assistant/qa/tests/**'
       - 'tools/rules-assistant/admin/tests/**'
       - 'tools/rules-assistant/refinement/tests/**'
