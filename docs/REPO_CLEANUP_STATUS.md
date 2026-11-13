@@ -622,6 +622,13 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Prioritize high-level backend entrypoint versus reusable runtime support separation, including how D1 migrations, source retrieval, historical routing and deployed compatibility shims should be represented. Check the human and machine architecture contracts before any file relocation; do not make a cosmetic move that creates more transitional shims without a clear owner.
 - Any moved runtime file must remain covered by protected deployment and independent live-publication source-change detection. Preserve the exact current, candidate, frozen stable and historical health/corpus routes, QA authorization, and model-budget gates.
 
+## In-progress classification subtranche — v063 historical Last Stand publication normalizer
+
+- The v063 language normalizer has a version-specific transformation table and only historical publication/compatibility consumers: the archived v063 public corpus, v063 booklet/canonical-publication scripts and their validators. It is not a current v072 Worker/rules authority, unlike shared retrieval and persistence helpers.
+- Make `legacy/rules-assistant/v063/v063-last-stand-language.js` its sole maintained implementation, keeping `rules-assistant/v063-last-stand-language.js` as an exact export-forwarding import for historical scripts. Bind the archived corpus directly to the co-located source. Adjust only the correction-layer relative import, not the transformations, frozen source hashes, release output or routes.
+- Include the archived source in sparse publication/booklet/terminology checkouts, in the PR quality-gate v063 classification, in protected Worker syntax validation, and in independent live-publication changed-input detection. Direct boundary regression verifies export identity, archived import ownership, and deployment/source coverage.
+- Keep current release authority, frozen v063 certified inputs, deployed current/candidate/historical routes, D1 schema, QA auth and model-budget gates unchanged. Production verification is required after merge; no paid live QA is implied by this architecture-only change.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
