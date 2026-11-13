@@ -12,6 +12,7 @@ on:
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
+      - '.github/workflows/deploy-rules-arbiter.yml'
   push:
     branches:
       - main
@@ -25,6 +26,7 @@ on:
       - 'legacy/rules-assistant/**'
       - 'scripts/v071-*.mjs'
       - '.github/workflows/rules-arbiter-historical-regression.yml'
+      - '.github/workflows/deploy-rules-arbiter.yml'
   workflow_dispatch:
 
 permissions:

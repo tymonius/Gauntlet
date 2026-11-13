@@ -99,14 +99,14 @@ jobs:
           node --check rules-assistant/worker-v072-candidate.js
           node --check rules-assistant/worker-v072.js
           npx vitest run \
-            rules-assistant/v071-gate3-h-remediation.test.mjs \
-            rules-assistant/v071-gate3-i-remediation.test.mjs \
-            rules-assistant/v072-candidate-corpus.test.mjs \
-            rules-assistant/v072-r33-worker-port.test.mjs \
-            rules-assistant/worker-entry-v072-candidate.test.mjs \
-            rules-assistant/v072-release-corpus.test.mjs \
-            rules-assistant/v072-final-worker-port.test.mjs \
-            rules-assistant/worker-entry-v072-final.test.mjs
+            tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \
+            tools/rules-assistant/qa/tests/v071-gate3-i-remediation.test.mjs \
+            tools/rules-assistant/qa/tests/v072-candidate-corpus.test.mjs \
+            tools/rules-assistant/qa/tests/v072-r33-worker-port.test.mjs \
+            tools/rules-assistant/qa/tests/worker-entry-v072-candidate.test.mjs \
+            tools/rules-assistant/qa/tests/v072-release-corpus.test.mjs \
+            tools/rules-assistant/qa/tests/v072-final-worker-port.test.mjs \
+            tools/rules-assistant/qa/tests/worker-entry-v072-final.test.mjs
 
       - name: Resolve expected behavior revision
         id: revision
