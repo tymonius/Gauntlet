@@ -1,7 +1,7 @@
 # Accepted rules decision: Impossible mandatory Advance
 
 **Decision date:** 2026-11-13  
-**Status:** Accepted by game designer for the v0.7.3 candidate. The published frozen v0.7.2 rules and current gameplay authority remain unchanged.  
+**Status:** Accepted by game designer for the next candidate release. The frozen published rules and active gameplay authority remain unchanged.  
 **Related:** [issue #1953](https://github.com/tymonius/Gauntlet/issues/1953), [Countercharge implementation #1941](https://github.com/tymonius/Gauntlet/issues/1941), [prior follow-up movement expiration decision](2026-11-12-duplicate-follow-up-movement-expiry.md).
 
 ## Ruling
