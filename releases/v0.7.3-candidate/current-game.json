@@ -206,7 +206,7 @@
           "other_pre_clear_aftermath_effects": "Apply other Aftermath effects that occur before cards leave battle.",
           "clear_battle_cards": "Clear the battle cards.",
           "card_movement_triggers": "Apply effects triggered by cards leaving battle or entering another zone.",
-          "end_of_aftermath": "Apply end-of-Aftermath effects, including any that grant follow-up movement. Resolve separate follow-up movement effects individually. If a resolved advance initiates a new battle, enter that battle's Onset immediately; all other unresolved follow-up movement effects from the previous battle expire and do not resume after the new battle. Otherwise, continue with remaining eligible effects at their applicable timing."
+          "end_of_aftermath": "Apply end-of-Aftermath effects, including any that grant follow-up movement. Resolve separate follow-up movement effects individually. If a resolved advance initiates a new battle, enter that battle's Onset immediately; all other unresolved follow-up movement effects from the previous battle expire and do not resume after the new battle. Otherwise, continue with remaining eligible effects at their applicable timing. If an instructed mandatory Advance is legally impossible, do not move; finish the effect's other instructions, including moving its source card to the Graveyard, then continue with other eligible effects. No new battle or old-battle movement expiry occurs from a failed Advance."
         },
         "battle_card_clear": {
           "gambits": "Gambits go to their owners' Graveyards.",
@@ -5013,7 +5013,8 @@
         "may_initiate_legal_last_stand_by_default": true,
         "pending_battle_ends_sequence": true,
         "unresolved_follow_up_effects_after_new_battle": "If a follow-up advance from an effect of the previous battle initiates a new battle, all remaining unresolved follow-up movement effects from that previous battle expire; they neither resolve before the new battle's Onset nor resume after that battle.",
-        "remaining_follow_up_effects_without_new_battle": "If the resolved follow-up movement does not initiate a new battle, continue resolving remaining eligible follow-up movement effects at their applicable timing and in the proper controlled order."
+        "remaining_follow_up_effects_without_new_battle": "If the resolved follow-up movement does not initiate a new battle, continue resolving remaining eligible follow-up movement effects at their applicable timing and in the proper controlled order.",
+        "impossible_mandatory_advance": "When a card effect directs an Advance without saying 'may', but no legal Advance exists, the Advance does not occur. All other instructions of the effect still resolve, including putting its source card in the Graveyard. This does not waive movement prohibitions or required costs and does not make the effect optional. An unperformed Advance does not start a battle or cause separate unresolved follow-up movement effects to expire."
       },
       "additional_tactics": {
         "default_source": "Reserve",

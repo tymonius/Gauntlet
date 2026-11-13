@@ -339,6 +339,8 @@ Resolve the Aftermath in this order:
 
 **Multiple follow-up movements.** Resolve separate end-of-Aftermath and following-Aftermath movement effects from the same battle individually at their applicable timing. Use normal shared-timing alternation and controller-selected order, except where a specific precedence rule applies. Resolve each selected effect's movement immediately. If it initiates a new battle, enter Onset immediately and expire every still-unresolved follow-up movement effect from the former battle; none resolves before the new battle or resumes afterward, even when an old-battle effect would otherwise be mandatory. If no new battle begins, remaining eligible effects continue at their applicable timing. An unchosen Order incurs no cost. This expiration concerns separate unresolved effects, not unused steps of one movement sequence.
 
+**Legally impossible mandatory Advance.** When a resolved effect directs an Advance without 'may', but no legally permitted Advance exists, the movement fails without repositioning the token or beginning a battle. All other instructions of that effect are still performed, including moving the card to the Graveyard as instructed. This neither permits entry through a restriction nor waives required discards. The mandatory grant is resolved with no movement; other still-eligible separate follow-up effects are not expired and continue in their proper order. Do not apply this exception merely because a player omits a cost they could pay.
+
 When battle cards are cleared:
 
 - Gambits go to their owners' Graveyards.

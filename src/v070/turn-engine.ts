@@ -1,9 +1,10 @@
 import { v070CanonicalContent } from '../content/v070';
 import { beginV070OffTurnEffectMovement } from './off-turn-movement';
-import { beginEffectGrantedV070Movement } from './rules';
+import { beginEffectGrantedV070Movement, endV070MovementSequence } from './rules';
+import { v073UnfulfillableAdvanceReason } from '../v073/mandatory-advance-legality';
 import { putV070AssetInGraveyardByEffect } from './assets';
 import { spendV070MilitaryCommand } from './military';
-import { v073ChooseFollowUpGrant, v073CompleteFollowUpGrant, v073DeclineFollowUpGrant, v073OfferedFollowUpGrants, type V073FollowUpGrant } from '../v073/follow-up-movement';
+import { v073ChooseFollowUpGrant, v073CompleteFollowUpGrant, v073DeclineFollowUpGrant, v073MarkFollowUpAdvanceUnfulfilled, v073OfferedFollowUpGrants, type V073FollowUpGrant } from '../v073/follow-up-movement';
 import {
   V070GameActionError,
   appendV070Event,
@@ -222,6 +223,14 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
     if (action.type !== 'choose_movement' || queue.active.owner !== action.playerId) {
       throw new V070GameActionError('The follow-up controller must resolve their chosen Advance.');
     }
+    const impossible = v073UnfulfillableAdvanceReason(state, action.playerId);
+    if (impossible && !queue.active.optional) {
+      const next = structuredClone(state) as V070GameState;
+      next.turnState = endV070MovementSequence(next.turnState!);
+      delete next.turnState.effectMovementController;
+      markMandatoryAdvanceFailed(next, impossible);
+      return next;
+    }
     const next = reducePostDrawAndObserveReembodiment(state, action);
     const live = next.v073FollowUpQueue!;
     if (next.battle || !next.turnState?.movementSequenceOpen) {
@@ -267,6 +276,16 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
     if (!live.pending.length) delete next.v073FollowUpQueue;
     return next;
   }
+  const impossible = v073UnfulfillableAdvanceReason(next, grant.owner);
+  // Optional effects remain declinable: do not pay or graveyard a banked
+  // Asset/Order merely because the chosen Advance is illegal.
+  if (impossible && grant.optional) {
+    throw new V070GameActionError(
+      'That optional follow-up cannot Advance: ' + impossible
+      + ' Decline the optional effect instead.',
+    );
+  }
+
   v073ChooseFollowUpGrant(live, grant.key);
   if (grant.kind === 'general-rout') {
     if (grant.owner !== next.activePlayer || next.players[grant.owner].leaderId !== 'general') {
@@ -289,6 +308,11 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
   } else {
     putFollowUpCardInGraveyard(next, grant);
   }
+  if (impossible) {
+    markMandatoryAdvanceFailed(next, impossible);
+    return next;
+  }
+
   const step = {
     source: grant.kind === 'general-rout' ? 'General Rout'
       : grant.kind === 'give-chase-battle' ? 'Give Chase battle' : 'Countercharge battle',
@@ -316,6 +340,25 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
   });
   return next;
 }
+function markMandatoryAdvanceFailed(state: V070GameState, reason: string): void {
+  const queue = state.v073FollowUpQueue;
+  if (!queue) throw new Error('Mandatory follow-up failure requires its active queue.');
+  const grant = v073MarkFollowUpAdvanceUnfulfilled(queue);
+  delete state.v073GiveChasePendingRestriction;
+  appendV070Event(state, {
+    type: 'follow_up_movement_unfulfilled',
+    actor: grant.owner,
+    visibility: 'public',
+    payload: {
+      key: grant.key,
+      kind: grant.kind,
+      sourceInstanceId: grant.sourceInstanceId,
+      reason,
+    },
+  });
+  if (queue.closed) delete state.v073FollowUpQueue;
+}
+
 function putFollowUpCardInGraveyard(state: V070GameState, grant: V073FollowUpGrant): void {
   const id = grant.sourceInstanceId;
   if (!id) throw new V070GameActionError('Follow-up card source is missing.');

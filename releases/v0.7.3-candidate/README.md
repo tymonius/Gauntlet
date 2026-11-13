@@ -10,6 +10,8 @@ This directory contains a **complete review snapshot** of the gameplay authority
 2. **Give Chase before General Rout:** Give Chase's optional Gambit/Tactic follow-up advances take priority over Rout. If an Advance starts another battle, the original Rout option expires and no Command is paid. If no battle starts, Rout may still be used if eligible. Denouement Action unchanged. [Accepted decision](../../docs/rules-decisions/2026-10-16-give-chase-rout-precedence.md) / [PR #1967](https://github.com/tymonius/Gauntlet/pull/1967).
 3. **Unresolved follow-up movement expires:** When separate eligible effects from one battle provide movement, process them individually. A movement that begins a new battle immediately enters Onset; remaining unresolved old-battle movement effects expire without resuming, including duplicate Countercharge and duplicate Give Chase cases. Otherwise continue with remaining eligible effects. [Accepted decision](../../docs/rules-decisions/2026-11-12-duplicate-follow-up-movement-expiry.md) / [PR #2015](https://github.com/tymonius/Gauntlet/pull/2015).
 
+4. **Legally impossible mandatory Advance:** If Countercharge Gambit/Tactic requires an Advance but the only forward move is prohibited or an unavoidable movement cost cannot be paid, the movement simply fails; the card still goes to the Graveyard. No battle or follow-up expiry occurs from that failed movement. [Accepted decision](../../docs/rules-decisions/2026-11-13-impossible-mandatory-advance.md) / [issue #1953](https://github.com/tymonius/Gauntlet/issues/1953).
+
 ## Still unresolved; deliberately excluded
 
 - Give Chase **Action-mode** follow-up-battle restrictions ([#1952](https://github.com/tymonius/Gauntlet/issues/1952)).

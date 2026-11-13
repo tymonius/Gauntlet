@@ -38,6 +38,8 @@ export interface V073FollowUpQueue {
   resolved: V073FollowUpGrant[];
   declined: V073FollowUpGrant[];
   expired: V073FollowUpGrant[];
+  /** Mandatory grant whose movement could not be legally completed. */
+  unfulfilled: V073FollowUpGrant[];
   closed: boolean;
 }
 
@@ -133,6 +135,7 @@ export function v073CreateFollowUpQueue(
     resolved: [],
     declined: [],
     expired: [],
+    unfulfilled: [],
     closed: false,
   };
 }
@@ -215,4 +218,20 @@ export function v073CompleteFollowUpGrant(
   } else if (queue.pending.length === 0) {
     queue.closed = true;
   }
+}
+
+/** The mandatory effect resolves, but its illegal Advance does not occur.
+ * Unlike starting another battle, this does not expire unrelated grants.
+ */
+export function v073MarkFollowUpAdvanceUnfulfilled(
+  queue: V073FollowUpQueue,
+): V073FollowUpGrant {
+  if (!queue.active || queue.closed || queue.active.optional) {
+    throw new Error('Only an active mandatory Advance may fail as unfulfillable.');
+  }
+  const grant = queue.active;
+  queue.unfulfilled.push(grant);
+  queue.active = null;
+  if (queue.pending.length === 0) queue.closed = true;
+  return grant;
 }

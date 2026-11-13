@@ -368,7 +368,7 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.players.B.zones.graveyard).toContain(second);
   });
 
-  test('an illegal mandatory Advance leaves the selected grant intact without phantom expiration', () => {
+  test('an Advance that becomes impossible after selection resolves without leaving a stuck queue', () => {
     let [state, source] = revealGambit(setup(), 'B', 'military-countercharge');
     state = complete(settle(state, 'B'));
     state = reduceV070TurnAction(state, {
@@ -378,12 +378,18 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     // Force an out-of-bounds movement attempt as a legality-only regression.
     // This does not establish a gameplay resolution for inherently impossible grants.
     state.players.B.position = 0;
-    const snapshot = structuredClone(state);
-    expect(() => reduceV070TurnAction(state, {
+    const before = state.events.length;
+    state = reduceV070TurnAction(state, {
       type: 'choose_movement', playerId: 'B', choice: 'advance',
-    })).toThrow();
-    expect(state).toEqual(snapshot);
-    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(source);
+    });
+    expect(state.players.B.position).toBe(0);
+    expect(state.battle).toBeNull();
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.turnState?.movementSequenceOpen).toBe(false);
+    expect(state.turnState?.effectMovementController).toBeUndefined();
+    expect(state.events.slice(before).map(event => event.type))
+      .toContain('follow_up_movement_unfulfilled');
+    expect(state.players.B.zones.graveyard).toContain(source);
   });
 
 
@@ -457,7 +463,7 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.activePlayer).toBe('A');
   });
 
-  test('same-turn Demilitarized Zone entry lock rejects Advance without expiring queue', () => {
+  test('same-turn DMZ lock prevents choosing an optional Countercharge without spending its Asset', () => {
     let state = setup();
     const first = asset(state, 'B');
     const second = asset(state, 'B');
@@ -473,21 +479,23 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
       state, V070_DEMILITARIZED_ZONE_ID, 2,
     );
     registerV070DmzEntryLock(state, 2, overlay);
-    state = reduceV070TurnAction(state, {
-      type: 'choose_follow_up_movement', playerId: 'B',
-      grantKey: 'countercharge-asset:' + first,
-    });
     const snapshot = structuredClone(state);
     expect(() => reduceV070TurnAction(state, {
-      type: 'choose_movement', playerId: 'B', choice: 'advance',
-      discardInstanceId: state.players.B.zones.hand[0],
-    })).toThrow(/Neither player may enter/);
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    })).toThrow(/optional follow-up cannot Advance/);
     expect(state).toEqual(snapshot);
-    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(first);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([first, second]);
+    expect(state.players.B.zones.assetBank).toContain(first);
+    state = reduceV070TurnAction(state, {
+      type: 'decline_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
     expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
       .toEqual([second]);
-    // The resulting inability to complete mandatory movement is a separate
-    // designer decision; the engine must not invent an automatic exemption.
+    expect(state.players.B.zones.assetBank).toContain(first);
+    expect(state.players.B.zones.graveyard).not.toContain(first);
   });
 
   test('Fog of War on a follow-up battle territory survives into its actual Onset', () => {
@@ -517,6 +525,113 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     });
     expect(state.battleRuntime?.activeOverlayAtOnset).toBe(fog);
     expect(state.overlays.some(o => o.instanceId === fog)).toBe(true);
+  });
+
+
+  test('mandatory Countercharge Gambit fails at same-turn DMZ lock, but other grants remain', () => {
+    let state = setup();
+    const assetId = asset(state, 'B');
+    let source: string;
+    [state, source] = revealGambit(state, 'B', 'military-countercharge');
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+    const overlay = placeOverlayOnFollowUpDestination(
+      state, V070_DEMILITARIZED_ZONE_ID, 2,
+    );
+    registerV070DmzEntryLock(state, 2, overlay);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.kind))
+      .toEqual(['countercharge-battle', 'countercharge-asset']);
+    const beforeEvents = state.events.length;
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement',
+      playerId: 'B',
+      grantKey: 'countercharge-battle:' + source,
+    });
+    expect(state.players.B.position).toBe(3);
+    expect(state.battle).toBeNull();
+    expect(state.players.B.zones.graveyard).toContain(source);
+    expect(state.turnState?.movementSequenceOpen).toBe(false);
+    expect(state.v073FollowUpQueue?.active).toBeNull();
+    expect(state.v073FollowUpQueue?.unfulfilled.map(g => g.sourceInstanceId))
+      .toEqual([source]);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([assetId]);
+    expect(state.events.slice(beforeEvents).map(e => e.type))
+      .toContain('follow_up_movement_unfulfilled');
+    expect(state.events.slice(beforeEvents).map(e => e.type))
+      .not.toContain('battle_initiated');
+    expect(state.activePlayer).toBe('A');
+
+    state = reduceV070TurnAction(state, {
+      type: 'decline_follow_up_movement',
+      playerId: 'B', grantKey: 'countercharge-asset:' + assetId,
+    });
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.players.B.zones.assetBank).toContain(assetId);
+  });
+
+  test('mandatory Countercharge Tactic goes from Discard to Graveyard when DMZ cost is unpayable', () => {
+    let state = setup();
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    const source = state.battleRuntime!.participants.B.reserve[0]!;
+    state.cardInstances[source].cardId = 'military-countercharge';
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B', cardInstanceId: source,
+    });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    expect(state.players.B.zones.discardPile).toContain(source);
+    setUnoccupiedAdvanceDestination(state);
+    placeOverlayOnFollowUpDestination(state, V070_DEMILITARIZED_ZONE_ID, 2);
+    // No Hand card exists that could pay the Overlay's entry cost.
+    state.players.B.zones.discardPile.push(...state.players.B.zones.hand.splice(0));
+    expect(state.players.B.zones.hand).toHaveLength(0);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement',
+      playerId: 'B',
+      grantKey: 'countercharge-battle:' + source,
+    });
+    expect(state.players.B.position).toBe(3);
+    expect(state.players.B.zones.graveyard).toContain(source);
+    expect(state.players.B.zones.discardPile).not.toContain(source);
+    expect(state.battle).toBeNull();
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.events.some(e => e.type === 'follow_up_movement_unfulfilled'))
+      .toBe(true);
+    expect(state.activePlayer).toBe('A');
+  });
+
+  test('mandatory Countercharge requires paying an available DMZ entry discard', () => {
+    let [state, source] = revealGambit(setup(), 'B', 'military-countercharge');
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+    placeOverlayOnFollowUpDestination(state, V070_DEMILITARIZED_ZONE_ID, 2);
+    expect(state.players.B.zones.hand.length).toBeGreaterThan(0);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement',
+      playerId: 'B',
+      grantKey: 'countercharge-battle:' + source,
+    });
+    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(source);
+    const snapshot = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    })).toThrow(/Entering an unoccupied Demilitarized Zone/);
+    expect(state).toEqual(snapshot);
+    const payment = state.players.B.zones.hand[0]!;
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+      discardInstanceId: payment,
+    });
+    expect(state.players.B.position).toBe(2);
+    expect(state.players.B.zones.discardPile).toContain(payment);
+    expect(state.players.B.zones.graveyard).toContain(source);
+    expect(state.events.some(e => e.type === 'follow_up_movement_unfulfilled'))
+      .toBe(false);
+    expect(state.v073FollowUpQueue).toBeUndefined();
   });
 
   test('forged unrelated actor cannot take the offered effect or move another player', () => {
