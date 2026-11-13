@@ -13,7 +13,9 @@ on:
       - "legacy/rules-assistant/v063/**"
       - "legacy/rules-assistant/v070/**"
       - "legacy/rules-assistant/v072-candidate/**"
+      - "rules-assistant/*.js"
       - "rules-assistant/worker-entry.js"
+      - "legacy/rules-assistant/v071/**"
       - "legacy/rules-assistant/v071/worker-v071.js"
       - "legacy/rules-assistant/v071/v071-scope-precheck.js"
       - "rules-assistant/v071-scope-precheck.js"
@@ -101,6 +103,11 @@ jobs:
           node --check legacy/rules-assistant/v063/v063-public-corpus.js
           node --check legacy/rules-assistant/v070/worker-v070.js
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
+          # All root Worker helpers, including the smart/reliable compatibility fallbacks,
+          # are bundled by the active entrypoint. Syntax-check new helpers automatically.
+          for runtime_source in rules-assistant/*.js; do
+            node --check "$runtime_source"
+          done
           node --check rules-assistant/worker-entry.js
           node --check rules-assistant/source-lookup-review.js
           node --check legacy/rules-assistant/v071/v071-public-corpus.js
@@ -111,6 +118,7 @@ jobs:
           node --check legacy/rules-assistant/v072-candidate/frozen-sources.mjs
           node --check rules-assistant/worker-v072.js
           npx vitest run \
+            tools/rules-assistant/qa/tests/worker-runtime-trigger-coverage.test.mjs \
             tools/rules-assistant/qa/tests/fallback-source-lookup-regression.test.mjs \
             tools/rules-assistant/qa/tests/v071-scope-precheck.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \
