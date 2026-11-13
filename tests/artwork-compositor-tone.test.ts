@@ -11,6 +11,8 @@ const cropSource = readFileSync('tools/card-design/artwork-authoring/artwork-cro
 const compositor = readFileSync('tools/card-design/artwork-authoring/artwork-compositor.js', 'utf8');
 const faceRender = readFileSync('card-design/face-render.mjs', 'utf8');
 const faceRenderHtml = readFileSync('card-design/face-render.html', 'utf8');
+const productionPrintSource = readFileSync('apps/deckbuilder/production-print.js', 'utf8');
+const deckbuilderEntry = readFileSync('apps/deckbuilder/index.html', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const indexHtml = readFileSync('tools/card-design/review/index.html', 'utf8');
 const cardReferenceHtml = readFileSync('apps/card-reference/index.html', 'utf8');
@@ -143,6 +145,8 @@ describe('canonical artwork tonal compositor', () => {
     expect(faceRender).toContain('window.GauntletArtworkCrop.apply');
     expect(faceRender).toContain("loadClassicScript('/card-design/artwork-crop.js?v=20261113-1'");
     expect(faceRenderHtml).toContain('face-render.mjs?v=20261113-tone-1');
+    expect(productionPrintSource).toContain('&renderRevision=20261113-tone-1');
+    expect(deckbuilderEntry).toContain('production-print.js?v=20261113-tone-1');
     expect(faceRender).toContain('artwork.composition.direction');
     expect(faceSpec).toContain('composition: artDirectionSpec(game, card.id)');
     expect(indexHtml).toContain('artwork-crop.js?v=20261113-1');
