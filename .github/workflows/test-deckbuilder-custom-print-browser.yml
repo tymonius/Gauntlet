@@ -161,6 +161,59 @@ jobs:
           await browser.close();
           NODE
 
+      - name: Exercise Card Reference tonal compositor in Chromium
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+          const errors = [];
+          page.on('pageerror', error => errors.push(error.message));
+
+          const response = await page.goto('http://127.0.0.1:8000/card-reference/', { waitUntil: 'domcontentloaded' });
+          if (!response?.ok()) throw new Error('Card Reference did not load.');
+          await page.waitForSelector('#app:not([hidden])', { timeout: 60000 });
+          await page.fill('#searchInput', 'Spies');
+          const entry = page.locator('.reference-row').filter({ hasText: 'Spies' }).first();
+          await entry.click();
+          await page.waitForFunction(
+            () => document.querySelector('.rendered-card-frame')?.contentDocument?.body?.dataset.renderReady === 'true',
+            null,
+            { timeout: 60000 },
+          );
+
+          const launch = page.locator('.preview-actions > .art-compositor-launch');
+          await launch.waitFor({ timeout: 30000 });
+          await launch.click();
+          const editor = page.locator('.art-compositor-dialog[open]');
+          await editor.waitFor();
+          const preview = page.locator('.art-compositor-preview');
+          await page.waitForFunction(() => document.querySelector('.art-compositor-preview img')?.naturalWidth > 0);
+          const original = await preview.screenshot();
+
+          await page.locator('[data-tone-number="shadows"]').fill('50');
+          await page.waitForFunction(() =>
+            document.querySelector('.art-compositor-preview img')?.style.filter.includes('url("#gauntlet-art-tone-'),
+          );
+          const adjusted = await preview.screenshot();
+          if (original.equals(adjusted)) throw new Error('Shadow lift did not visually change the preview.');
+
+          await page.locator('[data-action="compare-tone"]').click();
+          const before = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (before !== '') throw new Error('Original tone comparison did not clear adjustments.');
+          await page.locator('[data-action="compare-tone"]').click();
+          const restored = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (!restored.includes('url("#gauntlet-art-tone-')) throw new Error('Adjusted tone was not restored.');
+
+          await page.locator('[data-action="reset-tone"]').click();
+          const reset = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (reset !== '') throw new Error('Tone reset did not return to neutral.');
+          if (errors.length) throw new Error(`Card Reference compositor errors: ${errors.join('; ')}`);
+          await page.screenshot({ path: '/tmp/card-reference-artwork-tone-editor.png' });
+          await browser.close();
+          NODE
+
       - name: Upload browser screenshots
         uses: actions/upload-artifact@v4
         with:
