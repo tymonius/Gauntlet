@@ -3,13 +3,25 @@ import { createV070StarterGame, reduceV070SetupAction, type V070GameState } from
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { viewV070GameForPlayer } from './views';
+import { v070CanonicalContent } from '../content/v070';
+import { placeV070OverlayFromHand } from './overlays';
+import {
+  associateV070Sanction,
+  reduceV070SanctionAction,
+  V070_SANCTIONS_BLOCKADE_ID,
+} from './sanctions';
 
-function setup(): V070GameState {
+function setup(ambassador = false): V070GameState {
   let state = createV070StarterGame({
     gameId: 'candidate-follow-up-live',
     seed: 'candidate-follow-up-live-seed',
     players: {
-      A: { name: 'General', starterDeckId: 'military-general-forward-doctrine' },
+      A: {
+        name: ambassador ? 'Ambassador' : 'General',
+        starterDeckId: ambassador
+          ? 'diplomats-ambassador-open-channels'
+          : 'military-general-forward-doctrine',
+      },
       B: { name: 'Commandant', starterDeckId: 'military-commandant-holdfast' },
     },
   });
@@ -39,6 +51,14 @@ function setup(): V070GameState {
   state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'choose_movement', playerId: 'A', choice: 'advance' });
+  if (ambassador) {
+    state = reduceV070BattleAction(state, {
+      type: 'offer_terms', playerId: 'A', proposalId: 'de-escalation',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'respond_to_terms', playerId: 'B', response: 'refuse',
+    });
+  }
   state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
   return state;
 }
@@ -229,6 +249,123 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
       && (e.payload as {expired?: string[]}).expired?.includes('countercharge-asset:' + c2)
     )).toBe(true);
   });
+  test('Give Chase after two actual battles reduces the third battle Reserve by one', () => {
+    let [state, first] = revealGambit(setup(), 'A', 'military-give-chase');
+    state = complete(settle(state, 'A'));
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'A', grantKey: 'give-chase:' + first,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'A', choice: 'advance',
+    });
+    expect(state.battle?.attackerGambitProhibited).toBe(true);
+    // This is battle two. The printed restriction prohibits a Gambit, not a Tactic.
+    state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    const second = state.battleRuntime!.participants.A.reserve[0]!;
+    state.cardInstances[second].cardId = 'military-give-chase';
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A', cardInstanceId: second,
+    });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'A'));
+    expect(state.v073FollowUpQueue?.pending.some(g => g.sourceInstanceId === second))
+      .toBe(true);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'A', grantKey: 'give-chase:' + second,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'A', choice: 'advance',
+    });
+    expect(state.v073GiveChaseBattleRestriction?.reservePenalty).toBe(1);
+    expect(state.battle?.attackerGambitProhibited).toBe(true);
+    state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
+    expect(state.battleRuntime?.participants.A.reserve.length).toBe(
+      v070CanonicalContent.content.battle.normal_reserve_size - 1,
+    );
+    expect(state.activePlayer).toBe('A');
+    expect(state.events.filter(e => e.type === 'battle_initiated')).toHaveLength(3);
+  });
+
+  test('Blockade departure interrupts repeated Countercharge movement until resolved', () => {
+    let state = setup(true);
+    const first = asset(state, 'B');
+    const second = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+
+    const blockade = state.players.A.zones.hand[0]!;
+    state.cardInstances[blockade].cardId = V070_SANCTIONS_BLOCKADE_ID;
+    placeV070OverlayFromHand(state, 'A', blockade, 3, 'follow-up Blockade regression');
+    associateV070Sanction(state, {
+      instanceId: blockade, owner: 'A', opponent: 'B', kind: 'overlay',
+    });
+    // The A token is safely separated so the first Countercharge does not begin a battle.
+    state.board.forEach(t => { if (t.occupant === 'A') t.occupant = null; });
+    state.players.A.position = 0;
+    state.board[0].occupant = 'A';
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.pendingSanctionChoices).toEqual([
+      expect.objectContaining({
+        kind: 'blockade_movement', sanctionInstanceId: blockade,
+        playerId: 'B', movement: 'leave',
+      }),
+    ]);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId)).toEqual([second]);
+    expect(viewV070GameForPlayer(state, 'B').pendingFollowUpMovement?.options).toEqual([]);
+    const snapshot = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + second,
+    })).toThrow(/pending Sanction/);
+    expect(state).toEqual(snapshot);
+    const payment = state.players.B.zones.hand[0]!;
+    state = reduceV070SanctionAction(state, {
+      type: 'resolve_blockade_choice', playerId: 'B',
+      sanctionInstanceId: blockade, choice: 'discard', discardInstanceId: payment,
+    });
+    expect(state.pendingSanctionChoices).toEqual([]);
+    expect(viewV070GameForPlayer(state, 'B').pendingFollowUpMovement?.options)
+      .toEqual([expect.objectContaining({ key: 'countercharge-asset:' + second })]);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + second,
+    });
+    expect(state.players.B.zones.graveyard).toContain(second);
+  });
+
+  test('an illegal mandatory Advance leaves the selected grant intact without phantom expiration', () => {
+    let [state, source] = revealGambit(setup(), 'B', 'military-countercharge');
+    state = complete(settle(state, 'B'));
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-battle:' + source,
+    });
+    // Force an out-of-bounds movement attempt as a legality-only regression.
+    // This does not establish a gameplay resolution for inherently impossible grants.
+    state.players.B.position = 0;
+    const snapshot = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    })).toThrow();
+    expect(state).toEqual(snapshot);
+    expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(source);
+  });
+
   test('forged unrelated actor cannot take the offered effect or move another player', () => {
     let [state, id] = revealGambit(setup(), 'B', 'military-countercharge');
     state = complete(settle(state, 'B'));
