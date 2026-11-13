@@ -4,7 +4,11 @@ on:
     paths:
       - '.github/workflows/current-card-artwork-darkness-audit.yml'
       - 'scripts/audit-card-artwork-brightness.py'
+      - 'scripts/audit-nonplayable-artwork-brightness.py'
       - 'images/artwork/cards/**'
+      - 'images/artwork/cardbacks/**'
+      - 'images/artwork/supplemental/**'
+      - 'images/*.png'
       - 'packages/game-data/current-game.json'
   workflow_dispatch:
 jobs:
@@ -19,14 +23,22 @@ jobs:
           sparse-checkout: |
             packages/game-data/current-game.json
             images/artwork/cards
+            images/artwork/cardbacks
+            images/artwork/supplemental
+            images/*.png
             scripts/audit-card-artwork-brightness.py
+            scripts/audit-nonplayable-artwork-brightness.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install 'Pillow>=11,<13'
       - name: Rank all 142 current card artworks
         run: python scripts/audit-card-artwork-brightness.py
+      - name: Rank all illustrated non-playable card faces
+        run: python scripts/audit-nonplayable-artwork-brightness.py
       - uses: actions/upload-artifact@v4
         with:
           name: current-card-artwork-darkness-csv
-          path: artwork-brightness-audit.csv
+          path: |
+            artwork-brightness-audit.csv
+            nonplayable-artwork-brightness-audit.csv
