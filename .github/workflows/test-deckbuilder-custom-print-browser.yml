@@ -218,5 +218,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deckbuilder-custom-print-browser-smoke
-          path: /tmp/deckbuilder-custom-print-*.png
+          path: |
+            /tmp/deckbuilder-custom-print-*.png
+            /tmp/card-reference-artwork-tone-editor.png
           if-no-files-found: error
