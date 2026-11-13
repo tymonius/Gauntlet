@@ -1,4 +1,4 @@
-import { authorizeGitHubActionsQa } from "../../../rules-assistant/github-actions-qa-auth.js";
+import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 
 export const QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2";
 

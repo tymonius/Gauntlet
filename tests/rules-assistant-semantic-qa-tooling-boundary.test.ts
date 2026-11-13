@@ -17,7 +17,7 @@ describe('Rules Arbiter semantic QA implementation boundary', () => {
     const worker = readFileSync('rules-assistant/worker-entry.js', 'utf8');
     expect(wrapper).toContain('export * from "../tools/rules-assistant/qa/qa-semantic-evaluator.js"');
     expect(wrapper).not.toContain('function handleQaSemanticEvaluation');
-    expect(implementation).toContain('from "../../../rules-assistant/github-actions-qa-auth.js"');
+    expect(implementation).toContain('from "./github-actions-qa-auth.js"');
     expect(worker).toContain('import { handleQaSemanticEvaluation } from "./qa-semantic-evaluator.js"');
     expect(worker).toContain('url.pathname === "/api/qa/semantic-evaluate"');
     expect(worker).toContain('handleQaSemanticEvaluation(request, env)');
