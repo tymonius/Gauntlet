@@ -9214,10 +9214,14 @@
     },
     "mystics-rend-the-veil": {
       "fit": "cover",
-      "focusX": 0.4167,
+      "focusX": 0.417,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 31,
+      "contrast": 103,
+      "saturation": 111
     },
     "mystics-sacrifice-recovery": {
       "fit": "cover",
