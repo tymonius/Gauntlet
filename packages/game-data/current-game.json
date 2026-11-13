@@ -9026,10 +9026,10 @@
       "focusY": 0.273,
       "smart": false,
       "zoom": 1,
-      "brightness": 126,
-      "shadows": 21,
-      "contrast": 102,
-      "saturation": 113
+      "brightness": 111,
+      "shadows": 52,
+      "contrast": 105,
+      "saturation": 134
     },
     "intelligence-subversion": {
       "fit": "cover",
@@ -9597,9 +9597,9 @@
       "smart": false,
       "zoom": 1,
       "brightness": 109,
-      "shadows": 26,
-      "contrast": 101,
-      "saturation": 118
+      "shadows": 55,
+      "contrast": 107,
+      "saturation": 134
     },
     "neutral-sequestration": {
       "fit": "cover",
