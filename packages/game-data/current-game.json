@@ -9164,7 +9164,11 @@
       "focusX": 0.375,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 13,
+      "contrast": 101,
+      "saturation": 126
     },
     "mystics-circle-of-bones": {
       "fit": "cover",
