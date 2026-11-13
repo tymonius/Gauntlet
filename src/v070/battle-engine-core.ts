@@ -5399,6 +5399,7 @@ function finalizeAftermathForRelentlessPursuit(
 
   state.battle = null;
   state.battleRuntime = null;
+  delete state.v073GiveChaseBattleRestriction;
 
   let turnState = state.turnState;
   if (!turnState) {
@@ -5446,6 +5447,7 @@ function useGeneralRoutAtEndOfAftermath(
 
   state.battle = null;
   state.battleRuntime = null;
+  delete state.v073GiveChaseBattleRestriction;
 
   appendV070Event(state, {
     type: 'military_rout_movement_started',

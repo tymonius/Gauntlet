@@ -1,4 +1,5 @@
 import type { PlayerId } from './rules';
+import { v073OfferedFollowUpGrants } from '../v073/follow-up-movement';
 import type { V070GameState } from './engine';
 import * as previous from './views-pre-capital-gains';
 import { pendingV070CapitalGainsAftermath } from './capital-gains-battle';
@@ -50,6 +51,11 @@ export type V070GameView = previous.V070GameView & {
   pendingExcommunicationAftermath: V070ExcommunicationAftermathView | null;
   pendingSuppliesAftermath: V070SuppliesAftermathView | null;
   pendingFinancierAftermath: V070FinancierAftermathView | null;
+  pendingFollowUpMovement: {
+    active: boolean;
+    owner: PlayerId | null;
+    options: Array<{ key: string; kind: string; optional: boolean }>;
+  } | null;
 };
 
 export function viewV070GameForPlayer(
@@ -148,5 +154,14 @@ export function viewV070GameForPlayer(
     pendingExcommunicationAftermath,
     pendingSuppliesAftermath,
     pendingFinancierAftermath,
+    pendingFollowUpMovement: state.v073FollowUpQueue
+      ? {
+          active: Boolean(state.v073FollowUpQueue.active),
+          owner: state.v073FollowUpQueue.active?.owner
+            ?? v073OfferedFollowUpGrants(state.v073FollowUpQueue)[0]?.owner ?? null,
+          options: v073OfferedFollowUpGrants(state.v073FollowUpQueue)
+            .map(grant => ({ key: grant.key, kind: grant.kind, optional: grant.optional })),
+        }
+      : null,
   };
 }
