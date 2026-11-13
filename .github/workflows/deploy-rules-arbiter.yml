@@ -15,6 +15,8 @@ on:
       - "legacy/rules-assistant/v072-candidate/**"
       - "rules-assistant/worker-entry.js"
       - "legacy/rules-assistant/v071/worker-v071.js"
+      - "legacy/rules-assistant/v071/v071-scope-precheck.js"
+      - "rules-assistant/v071-scope-precheck.js"
       - "rules-assistant/worker-v072-candidate.js"
       - "rules-assistant/v072-candidate-corpus.js"
       - "rules-assistant/worker-v072.js"
@@ -100,10 +102,13 @@ jobs:
           node --check rules-assistant/worker-entry.js
           node --check legacy/rules-assistant/v071/v071-public-corpus.js
           node --check legacy/rules-assistant/v071/worker-v071.js
+          node --check legacy/rules-assistant/v071/v071-scope-precheck.js
+          node --check rules-assistant/v071-scope-precheck.js
           node --check rules-assistant/worker-v072-candidate.js
           node --check legacy/rules-assistant/v072-candidate/frozen-sources.mjs
           node --check rules-assistant/worker-v072.js
           npx vitest run \
+            tools/rules-assistant/qa/tests/v071-scope-precheck.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-i-remediation.test.mjs \
             tools/rules-assistant/qa/tests/v072-candidate-corpus.test.mjs \
