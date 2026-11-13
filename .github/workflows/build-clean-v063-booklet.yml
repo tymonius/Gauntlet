@@ -31,6 +31,7 @@ jobs:
             /scripts/materialize-clean-v063-booklet.mjs
             /scripts/publication-utils.mjs
             /rules-assistant/v063-last-stand-language.js
+            /legacy/rules-assistant/v063/v063-last-stand-language.js
             /legacy/rulebook-browser/index.html
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
