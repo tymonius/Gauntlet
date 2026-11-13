@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned/shared compatibility helpers. Historical v061, v062, v063 (published and candidate), v070, and v071 Worker/corpus implementations now live under legacy/rules-assistant/. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned/shared compatibility helpers. Historical v061, v062, v063 (published and candidate), v070, and v071 Worker/corpus implementations now live under legacy/rules-assistant/. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries. The deployed semantic QA route continues through a compatibility import from tools/rules-assistant/qa/; explicit historical/candidate routes remain active compatibility contracts."
     },
     "scripts": {
       "role": "production_tooling",
@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling, and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS release/catalog implementation under tools/tts/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling (including the semantic evaluator still served by the Worker), and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS release/catalog implementation under tools/tts/."
     }
   }
 }

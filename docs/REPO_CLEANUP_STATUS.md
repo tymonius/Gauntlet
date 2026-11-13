@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 ## Governing objective
 
@@ -546,14 +546,22 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Retarget three source-inspection regression tests to the canonical maintained module, add export-identity and direct-CLI parity tests, and include both paths in the TTS PR workflow with conservative full-render classification.
 - Reconciled the TTS README and human/machine architecture descriptions without changing gameplay data, frozen release assets, public URLs, or the published TTS save. Merged in [#2013](https://github.com/tymonius/Gauntlet/pull/2013) after the required tests, governance, Card Authority, and TTS render/preview checks passed.
 
-## Current subtranche — current TTS catalog source ownership and cross-consumer coverage
+## Completed subtranche — current TTS catalog source ownership and cross-consumer coverage
 
 - Verified the maintained `scripts/tts-current-catalog.mjs` implementation provides release identity, the playable/Territory/Leader/starter derived catalog, and the `tts/generated/<version>/` and `tts/generated/current/` output contracts. It is a TTS catalog, but both maintained card-media generators import its `buildCatalog` API; `.github/workflows/deploy-pages.yml` also watches the catalog path because Pages builds card-media assets.
 - Moved the sole implementation to `tools/tts/tts-current-catalog.mjs`, retargeting only its relative imports and repository-root URL resolution. Kept `scripts/tts-current-catalog.mjs` as the exact export-forwarding import boundary for all existing consumers. No caller import, public URL, package command, or output location was changed.
 - Retargeted source-inspection tests to the maintained file; regression coverage checks the old and new exports are identical, their resolved repository/output roots agree, and TTS, Pages, Card Authority, and card-media use the same implementation.
 - Both TTS and Pages workflows now watch either source location, while TTS conservatively forces a full render when the catalog authority changes. Card Authority also recognizes the catalog source as a face/media-render dependency.
 - Repaired the active TTS release-target test's stale candidate-status expectations, using the canonical current-game identity and lifecycle-selected release target rather than a historical candidate assumption. The quarantined legacy TTS-current-release source inspection now points to maintained source while retaining its quarantine status pending a separate rehabilitation.
-- No current-game data, frozen release evidence, generated files, Workshop save, or deployed URLs were changed. Require PR tests, governance, Card Authority, TTS render/preview, and Pages validation before merging.
+- No current-game data, frozen release evidence, generated files, Workshop save, or deployed URLs were changed. Merged in [#2014](https://github.com/tymonius/Gauntlet/pull/2014) after PR tests, governance, Card Authority, TTS render/preview, and Pages validation passed.
+
+## Current subtranche — Rules Arbiter semantic QA implementation ownership
+
+- Audited the active deployment boundary: `rules-assistant/wrangler.toml` deploys `rules-assistant/admin-refinement-worker.js`, which layers `worker-entry.js` with admin refinement. The entrypoint serves public and historical/candidate routes, and also serves a live authorized `/api/qa/semantic-evaluate` endpoint. This endpoint is not a retired QA-only fixture; it must remain bundled and deployed.
+- Move the maintained semantic evaluator/handler implementation to `tools/rules-assistant/qa/qa-semantic-evaluator.js`, keeping `rules-assistant/qa-semantic-evaluator.js` as an exact export-forwarding module for the unchanged Worker import. Only the relative path to the existing GitHub Actions QA authorization helper changes; evaluator prompts, validation, response status, verdict semantics, endpoint routing, and authentication remain unchanged.
+- Retarget direct implementation/source-inspection QA regression tests to the maintained module. Add exact-export/route/authorization/CI contract checks that ensure the live Worker still uses the compatibility import.
+- Explicitly watch both evaluator module paths in the production Rules Arbiter deployment workflow, add Node syntax validation for both, and extend the historical-regression workflow triggers to include the maintained evaluator path. This corrects a dependency-gap where updating that imported deployed handler would not trigger a production build.
+- Keep admin/refinement ownership under `tools/rules-assistant/` and all current/historical/candidate Worker route contracts untouched. Do not change canonical gameplay, frozen release corpus, model budget or security semantics, or QA evaluation criteria. Check repository tests, historical regression, and governance before merging; deployment to production happens through the existing deployment workflow after merge.
 
 ## Next top-down queue
 

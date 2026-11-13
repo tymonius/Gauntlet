@@ -121,7 +121,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `apps/` | Canonical source container for maintained applications separated from deployed URL layout, including the Rules Arbiter browser shell at `apps/rules-arbiter/` and embedded widget presentation source at `apps/rules-assistant-widget/` |
-| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility support. Historical compatibility source is progressively moving under `legacy/rules-assistant/`; the v062, v063, v070, and v071 Worker/corpus implementations are already archived there. Private admin/refinement/QA tooling lives under `tools/rules-assistant/`. |
+| `rules-assistant/` | Transitional Rules Arbiter backend/shared-runtime root: Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining versioned compatibility support. Historical compatibility source is progressively moving under `legacy/rules-assistant/`; the v062, v063, v070, and v071 Worker/corpus implementations are already archived there. Admin/refinement/QA implementations live under `tools/rules-assistant/`; deployed QA endpoints can still import maintained tools through compatibility modules without becoming historical-only services. |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; historical implementations live under `legacy/` |
 
@@ -142,7 +142,7 @@ These contracts answer different questions and must not silently substitute for 
 | Path | Role |
 |---|---|
 | `card-design/` | Browser face rendering and component-presentation tooling; transitional as classified tooling moves behind stable `/card-design/` URLs |
-| `tools/` | Canonical maintained production-tooling container; includes `tools/tts/` table layout, authoritative-save validation, temporary game-data route materialization, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS catalog implementation; established card-design boundaries are `tools/card-design/artwork-authoring/` and `tools/card-design/review/` |
+| `tools/` | Canonical maintained production-tooling container; includes `tools/tts/` table layout, authoritative-save validation, temporary game-data route materialization, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS catalog implementation; Rules Arbiter semantic evaluator under `tools/rules-assistant/qa/`, and card-design boundaries `tools/card-design/artwork-authoring/` and `tools/card-design/review/` |
 | `tts/` | TTS packaging, renderer support, QA/release evidence, and compatibility CLI entrypoints; maintained table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the release/catalog implementation consumed by TTS and card-media live under `tools/tts/` |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
 | `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
