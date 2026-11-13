@@ -8918,7 +8918,9 @@
       "focusX": 0,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 36,
+      "saturation": 111
     },
     "inquisition-witch-hunter": {
       "fit": "cover",
