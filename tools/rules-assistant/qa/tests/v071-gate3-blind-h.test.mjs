@@ -155,7 +155,7 @@ describe("Gate 3 blind tranche H certification freeze", () => {
   });
 
   test("uses semantic-v2 evaluator behavior with semantic-v1 dataset schema", () => {
-    const evaluator = readFileSync(new URL("../../../../rules-assistant/qa-semantic-evaluator.js", import.meta.url), "utf8");
+    const evaluator = readFileSync(new URL("../qa-semantic-evaluator.js", import.meta.url), "utf8");
     expect(evaluator).toContain('QA_SEMANTIC_EVALUATOR_REVISION = "semantic-v2"');
   });
 
