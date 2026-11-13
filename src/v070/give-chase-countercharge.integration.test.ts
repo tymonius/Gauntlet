@@ -430,7 +430,7 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     const before = structuredClone(state);
     expect(() => reduceV070TurnAction(state, {
       type: 'choose_movement', playerId: 'B', choice: 'advance',
-    })).toThrow(/Demilitarized Zone entry/);
+    })).toThrow(/Entering an unoccupied Demilitarized Zone/);
     expect(state).toEqual(before);
     expect(state.v073FollowUpQueue?.active?.sourceInstanceId).toBe(first);
 
