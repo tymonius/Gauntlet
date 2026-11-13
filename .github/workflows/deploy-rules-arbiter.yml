@@ -12,6 +12,7 @@ on:
       - "legacy/rules-assistant/v062/**"
       - "legacy/rules-assistant/v063/**"
       - "legacy/rules-assistant/v070/**"
+      - "legacy/rules-assistant/v072-candidate/**"
       - "rules-assistant/worker-entry.js"
       - "legacy/rules-assistant/v071/worker-v071.js"
       - "rules-assistant/worker-v072-candidate.js"
@@ -97,6 +98,7 @@ jobs:
           node --check legacy/rules-assistant/v071/v071-public-corpus.js
           node --check legacy/rules-assistant/v071/worker-v071.js
           node --check rules-assistant/worker-v072-candidate.js
+          node --check legacy/rules-assistant/v072-candidate/frozen-sources.mjs
           node --check rules-assistant/worker-v072.js
           npx vitest run \
             tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \

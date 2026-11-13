@@ -563,12 +563,20 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Explicitly watch both evaluator module paths in the production Rules Arbiter deployment workflow, add Node syntax validation for both, and extend the historical-regression workflow triggers to include the maintained evaluator path. This corrects a dependency-gap where updating that imported deployed handler would not trigger a production build.
 - Keep admin/refinement ownership under `tools/rules-assistant/` and all current/historical/candidate Worker route contracts untouched. No gameplay, release corpus, model budget, security or QA evaluation changes. Merged in [#2019](https://github.com/tymonius/Gauntlet/pull/2019) after repository tests, historical regression, Card Authority, governance and the PR gate passed. The triggered production deploy surfaced a pre-existing blocker: its test command still used paths from before QA tests were moved to `tools/rules-assistant/qa/tests/`. No Worker deployment occurred on that run.
 
-## Current subtranche — deployed Rules Arbiter QA regression path repair
+## Completed subtranche — deployed Rules Arbiter QA regression path repair
 
 - Production deployment workflow run [43443135430](https://github.com/tymonius/Gauntlet/actions/runs/43443135430) failed during its predeploy validation: all eight `npx vitest run` arguments referenced nonexistent `rules-assistant/*.test.mjs` paths. The suites have already moved to `tools/rules-assistant/qa/tests/` and passed the historical-regression CI for #2019. This was not an evaluator logic or live-health failure.
 - Retarget the eight exact predeploy QA test arguments to their maintained locations, preserving the same test set and all deployment, QA approval, Worker routing, and production-health commands.
 - Add a regression contract that verifies each of the eight deployment-gate test paths resolves to a maintained file. This prevents another silent tooling move from breaking the production rollout step.
-- Require green CI before merging this fix. Then verify the resulting push-triggered production Worker deployment and health checks rather than treating PR CI success as deployment success.
+- Merged in [#2021](https://github.com/tymonius/Gauntlet/pull/2021) after PR checks passed. The subsequent production deployment reached and passed unversioned health, but the still-served candidate route failed corpus-health verification because it consumed promoted stable public source URLs. Tracked as [#2022](https://github.com/tymonius/Gauntlet/issues/2022).
+
+## Current subtranche — frozen historical candidate Worker corpus repair
+
+- Restore the still-live candidate route from the exact pre-release source blobs recorded by `config/v072-release-freeze.json`. Both source blobs were independently verified at immutable commit `5f2012690e4574c4f675e3d13db642c6fb1db87f`. Embed their verbatim text under `legacy/rules-assistant/v072-candidate/`, not by changing stable `packages/game-data/current-game.json`.
+- The candidate loader now hashes its embedded source pair against the recorded frozen authority-set ID before parsing, and serves immutable GitHub source permalinks in citations instead of moving current-game and Rulebook URLs. Its historical candidate identity and active route are retained.
+- Explicit historical conflict: the earlier manual paid-QA replay fixture records a distinct authority ID (`faacd55458ec1595f480798449033a2c8705e018d828ae8034c5fe2b2a6f35b0`), whereas the final release-freeze source pair records `ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84`. Keep the earlier replay pinned to its own benchmark provenance; its approval gates must not be repurposed for the final pre-release snapshot, and it must fail its old preflight rather than consume paid API calls against a mismatched route. <!-- DOC-HISTORICAL -->
+- Add Git-blob SHA-1, combined SHA-256, offline corpus, candidate citation/route, and failure-closed regression coverage. Watch embedded sources in production deployment. Do not change stable or unversioned gameplay, candidate behavior code, Worker authentication, public routes, or freeze artifacts.
+- Merge only after repository tests, governance, Rules Arbiter historical regression, and other required checks pass. Then verify the full production deploy including unversioned, candidate, and stable frozen-release corpus-health stages.
 
 ## Next top-down queue
 

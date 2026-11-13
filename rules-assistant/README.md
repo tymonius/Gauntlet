@@ -15,6 +15,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `v072-release-corpus.js` — current v0.7.2 frozen-release corpus loader and release/deployment validation.
 - `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.7.2 Worker while preserving explicitly versioned older routes.
 - `worker-v072.js` — current v0.7.2 Rules Arbiter Worker.
+- `../legacy/rules-assistant/v072-candidate/frozen-sources.mjs` — exact source bytes for the last pre-release candidate, pinned to `config/v072-release-freeze.json` and served by the still-live explicit candidate Worker route. The former live `/game-data/` and Rulebook source URLs are not used to load this versioned corpus. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v070/` — historical v0.7.0 Worker/corpus source; the current `worker-entry.js` still serves its stable versioned compatibility route.
 - `../legacy/rules-assistant/v071/` — historical v071 Worker and frozen release corpus loader; `worker-entry.js` preserves the versioned route, while review/refinement tooling and regression tests read the archived implementation explicitly.
 - `../legacy/rules-assistant/v062/` — withdrawn published v062 Worker/corpus plus the historical candidate Worker/corpus and deterministic rulings; `worker-entry.js` preserves both explicit historical routes. <!-- DOC-HISTORICAL -->

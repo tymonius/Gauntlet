@@ -1,8 +1,16 @@
 // Candidate corpus port: production routing remains intentionally unchanged.
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import {
+  frozenV072CandidateCurrentGameSource,
+  frozenV072CandidateCompleteRulesSource
+} from "../../../../legacy/rules-assistant/v072-candidate/frozen-sources.mjs";
 import { describe, expect, test } from "vitest";
+import worker from "../../../../rules-assistant/worker-entry.js";
 import {
   V072_CANDIDATE_RULES_VERSION,
+  V072_CANDIDATE_FROZEN_COMMIT,
+  V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID,
   V072_COMPLETE_RULES_SOURCE_PATH,
   V072_CURRENT_GAME_SOURCE_PATH,
   defaultV072CandidateSourceUrls,
@@ -15,27 +23,42 @@ const currentGameText = readFileSync(
   new URL("../../../../packages/game-data/current-game.json", import.meta.url),
   "utf8"
 );
-const completeRulesText = readFileSync(
-  new URL("../../../../packages/rules/comprehensive/comprehensive-rules.md", import.meta.url),
-  "utf8"
-);
+const completeRulesText = frozenV072CandidateCompleteRulesSource;
 const currentGame = JSON.parse(currentGameText);
-const candidateGame = {
-  ...currentGame,
-  version: V072_CANDIDATE_RULES_VERSION,
-  displayVersion: V072_CANDIDATE_RULES_VERSION,
-  status: "active-development",
-};
-const candidateGameText = JSON.stringify(candidateGame);
+const candidateGame = JSON.parse(frozenV072CandidateCurrentGameSource);
+const frozenCommit = "5f2012690e4574c4f675e3d13db642c6fb1db87f";
 
-function responseFor(body) {
-  return new Response(body, {
-    status: 200,
-    headers: { "content-type": "text/plain; charset=utf-8" },
-  });
+function gitBlobSha(text) {
+  return createHash("sha1")
+    .update(`blob ${Buffer.byteLength(text)}\0`)
+    .update(text)
+    .digest("hex");
 }
 
 describe("v0.7.2 candidate Rules Arbiter corpus", () => {
+  test("matches both frozen Git source blobs and their combined release authority set", () => {
+    const freeze = JSON.parse(readFileSync(new URL("../../../../config/v072-release-freeze.json", import.meta.url), "utf8"));
+    expect(V072_CANDIDATE_FROZEN_COMMIT).toBe(frozenCommit);
+    expect(gitBlobSha(frozenV072CandidateCurrentGameSource)).toBe(freeze.sources.currentGame.gitBlob);
+    expect(gitBlobSha(frozenV072CandidateCompleteRulesSource)).toBe(freeze.sources.completeRules.gitBlob);
+    const hash = createHash("sha256")
+      .update(frozenV072CandidateCurrentGameSource)
+      .update(Buffer.from([0]))
+      .update(frozenV072CandidateCompleteRulesSource)
+      .digest("hex");
+    expect(hash).toBe(freeze.authoritySetId);
+    expect(V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID).toBe(freeze.authoritySetId);
+    expect(candidateGame.version).toBe(V072_CANDIDATE_RULES_VERSION);
+    expect(candidateGame.status).toBe("active-development");
+    expect(candidateGame.authority).toBe("current-game");
+  });
+
+  test("recognizes the prior manually approved replay as a distinct historical source snapshot", () => {
+    const replay = JSON.parse(readFileSync(new URL("../evals/rules-arbiter-v072-candidate-regression-replay.json", import.meta.url), "utf8"));
+    expect(replay.authoritySetId).toBe("faacd55458ec1595f480798449033a2c8705e018d828ae8034c5fe2b2a6f35b0");
+    expect(replay.authoritySetId).not.toBe(V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID);
+  });
+
   test("validates candidate identity without requiring the live authority to remain a candidate", () => {
     expect(() => validateV072CandidateData({
       currentGame,
@@ -53,13 +76,34 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
     expect(completeRulesText).toContain("<!-- RULES-REVIEW-MODE:reviewed-technical -->");
   });
 
-  test("uses the public candidate materialization paths rather than source-only package URLs", () => {
+  test("uses immutable historical GitHub source links rather than current-game aliases", () => {
+    const root = `https://github.com/tymonius/Gauntlet/blob/${frozenCommit}`;
     expect(defaultV072CandidateSourceUrls("https://gauntlet.run/")).toEqual({
       siteOrigin: "https://gauntlet.run",
-      currentGameUrl: "https://gauntlet.run/game-data/current-game.json",
-      completeRulesUrl: "https://gauntlet.run/rulebook/sources/complete-rules.md",
-      rulebookBrowserUrl: "https://gauntlet.run/rulebook/?rules=candidate&doc=complete-rules",
+      currentGameUrl: `${root}/packages/game-data/current-game.json`,
+      completeRulesUrl: `${root}/packages/rules/comprehensive/comprehensive-rules.md`,
+      rulebookBrowserUrl: `${root}/packages/rules/comprehensive/comprehensive-rules.md`,
     });
+  });
+
+  test("serves the frozen candidate corpus through the existing Worker route without network fetch", async () => {
+    const response = await worker.fetch(new Request("https://gauntlet-rules-assistant.example.workers.dev/api/v072-candidate/corpus-health"), {
+      SITE_ORIGIN: "https://gauntlet.run",
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.ok).toBe(true);
+    expect(body.version).toBe(V072_CANDIDATE_RULES_VERSION);
+    expect(body.currentPublicRelease).toBe("v0.7.2");
+    expect(body.authoritySetId).toBe(V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID);
+
+    const health = await worker.fetch(new Request("https://gauntlet-rules-assistant.example.workers.dev/api/v072-candidate/health"), {
+      SITE_ORIGIN: "https://gauntlet.run",
+    });
+    expect(health.status).toBe(200);
+    const healthBody = await health.json();
+    expect(healthBody.published).toBe(false);
+    expect(healthBody.version).toBe(V072_CANDIDATE_RULES_VERSION);
   });
 
   test("removes duplicate legacy card-face fields when structured effects are authoritative", () => {
@@ -76,20 +120,17 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
 
   test("builds a deterministic candidate corpus with player-facing and canonical source binding", async () => {
     const urls = defaultV072CandidateSourceUrls();
-    const fetchImpl = async url => {
-      if (url === urls.currentGameUrl) return responseFor(candidateGameText);
-      if (url === urls.completeRulesUrl) return responseFor(completeRulesText);
-      return new Response("not found", { status: 404 });
-    };
-
+    let attemptedFetches = 0;
+    const fetchImpl = () => { attemptedFetches += 1; throw new Error("Unexpected moving-source fetch"); };
     const first = await loadV072CandidateRulesCorpus({ fetchImpl });
     const second = await loadV072CandidateRulesCorpus({ fetchImpl });
+    expect(attemptedFetches).toBe(0);
 
     expect(first.version).toBe(V072_CANDIDATE_RULES_VERSION);
     expect(first.candidate).toBe(true);
     expect(first.published).toBe(false);
     expect(first.currentPublicRelease).toBe("v0.7.2");
-    expect(first.authoritySetId).toMatch(/^[a-f0-9]{64}$/);
+    expect(first.authoritySetId).toBe(V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID);
     expect(second.authoritySetId).toBe(first.authoritySetId);
 
     expect(first.documents.length).toBeGreaterThan(150);
