@@ -88,12 +88,12 @@ def main():
     summary=os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary,"a",encoding="utf-8") as f:
-            f.write("\\n## Canonical print-tone edits: before vs adjusted (estimated)\\n\\n")
-            f.write("Read-only source-art comparison, approximating in-browser sRGB filters; actual ink/paper and rendered crop not measured.\\n\\n")
-            f.write("| Card | Before mean | After mean | Delta | Before <64 | After <64 | Tone controls |\\n|---|---:|---:|---:|---:|---:|---|\\n")
+            f.write("\n## Canonical print-tone edits: before vs adjusted (estimated)\n\n")
+            f.write("Read-only source-art comparison, approximating in-browser sRGB filters; actual ink/paper and rendered crop not measured.\n\n")
+            f.write("| Card | Before mean | After mean | Delta | Before <64 | After <64 | Tone controls |\n|---|---:|---:|---:|---:|---:|---|\n")
             for name,id,before,after,settings in sorted(rows,key=lambda x:x[2][0]):
                 filters=", ".join(f"{k}={settings[k]}" for k in TONE_FIELDS if k in settings)
-                f.write(f"| {name} | {before[0]} | {after[0]} | {after[0]-before[0]:+.1f} | {before[1]}% | {after[1]}% | {filters} |\\n")
+                f.write(f"| {name} | {before[0]} | {after[0]} | {after[0]-before[0]:+.1f} | {before[1]}% | {after[1]}% | {filters} |\n")
 
 if __name__=="__main__":
     main()
