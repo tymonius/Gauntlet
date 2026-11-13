@@ -41,6 +41,7 @@ jobs:
             /scripts/verify-v072-live-publication.mjs
             /docs/releases/github/*.md
             /rules-assistant/v063-last-stand-language.js
+            /legacy/rules-assistant/v063/v063-last-stand-language.js
             /rules-assistant/worker-v*.js
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js

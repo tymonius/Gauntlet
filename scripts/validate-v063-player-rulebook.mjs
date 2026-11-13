@@ -119,7 +119,7 @@ if (!app.includes('if (actualHash !== document.source.sha256)')) {
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
 }
-if (!read('rules-assistant/v063-last-stand-language.js').includes('applyV063PlayerFacingRulebookCorrections')) {
+if (!read('legacy/rules-assistant/v063/v063-last-stand-language.js').includes('applyV063PlayerFacingRulebookCorrections')) {
   fail('Archived Browser Rulebook and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
 }
 
@@ -131,6 +131,7 @@ const qualityGate = read('.github/workflows/pr-quality-gate.yml');
 for (const requiredRoute of [
   "under('rulebook/player-facing/')",
   "exact('rules-assistant/v063-last-stand-language.js')",
+  "exact('legacy/rules-assistant/v063/v063-last-stand-language.js')",
   "exact('scripts/publication-utils.mjs')",
 ]) {
   if (!qualityGate.includes(requiredRoute)) {

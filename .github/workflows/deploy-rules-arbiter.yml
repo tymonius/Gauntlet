@@ -101,6 +101,7 @@ jobs:
           node --check legacy/rules-assistant/v062/rules-deterministic-v062.js
           node --check legacy/rules-assistant/v063/worker-v063.js
           node --check legacy/rules-assistant/v063/v063-public-corpus.js
+          node --check legacy/rules-assistant/v063/v063-last-stand-language.js
           node --check legacy/rules-assistant/v070/worker-v070.js
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
           # All root Worker helpers, including the smart/reliable compatibility fallbacks,
