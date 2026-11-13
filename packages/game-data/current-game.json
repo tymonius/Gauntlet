@@ -9542,10 +9542,11 @@
     },
     "neutral-sabotage": {
       "fit": "cover",
-      "focusX": 0.3333,
+      "focusX": 0.333,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 31
     },
     "neutral-salvage": {
       "fit": "cover",
