@@ -85,6 +85,7 @@ jobs:
           }
 
           await addFirstOfType('Playable card', 'Rallying Cry');
+          await addFirstOfType('Playable card', 'Spies');
           await addFirstOfType('Leader', 'General');
           await addFirstOfType('Territory');
           await addFirstOfType('Reference', 'Universal Reference');
@@ -94,9 +95,9 @@ jobs:
           await addFirstOfType('Deed', 'Deed');
 
           const selectedRows = page.locator('#customPrintSelection .custom-print-row');
-          if (await selectedRows.count() !== 8) throw new Error(`Expected 8 selected physical cards, found ${await selectedRows.count()}`);
+          if (await selectedRows.count() !== 9) throw new Error(`Expected 9 selected physical cards, found ${await selectedRows.count()}`);
           const summary = await page.locator('#customPrintSummary').textContent();
-          if (!summary?.includes('8 selected faces') || !summary.includes('1 sheet') || !summary.includes('2 print pages')) {
+          if (!summary?.includes('9 selected faces') || !summary.includes('1 sheet') || !summary.includes('2 print pages')) {
             throw new Error(`Unexpected custom print summary: ${summary}`);
           }
 
@@ -112,7 +113,7 @@ jobs:
           if (await printPage.locator('.custom-back-page').count() !== 1) throw new Error('Expected one paired reverse sheet.');
           const frontFrames = await printPage.locator('.custom-front-page [data-custom-render-frame]').count();
           const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
-          if (frontFrames !== 8 || backFrames !== 8) throw new Error(`Expected 8 front and 8 reverse/back frames, found ${frontFrames}/${backFrames}`);
+          if (frontFrames !== 9 || backFrames !== 9) throw new Error(`Expected 9 front and 9 reverse/back frames, found ${frontFrames}/${backFrames}`);
           if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
           const playableFrame = printPage.locator('iframe[src*="face-render.html"][src*="card%3Aneutral-rallying-cry"]').first();
           if (await playableFrame.count() !== 1) throw new Error('Playable card did not use the canonical face renderer.');
@@ -124,6 +125,50 @@ jobs:
           if (playableFrameState.ready !== 'true' || playableFrameState.faceId !== 'card:neutral-rallying-cry' || !playableFrameState.source.includes('/images/artwork/cards/')) {
             throw new Error(`Playable canonical face failed: ${JSON.stringify(playableFrameState)}`);
           }
+          // Print-output contract: production faces must load today's tonal
+          // overrides, rather than an older cached crop-only script.
+          const spiesFrame = printPage.locator('iframe[src*="card%3Aintelligence-spies"]').first();
+          if (await spiesFrame.count() !== 1) throw new Error('Spies is missing from custom print.');
+          const spiesState = await spiesFrame.evaluate(frame => {
+            const doc = frame.contentDocument;
+            const image = doc?.querySelector('.card-art img');
+            const expected = frame.contentWindow?.GAUNTLET_ART_DIRECTION?.['intelligence-spies'] || {};
+            return {
+              ready: doc?.body?.dataset?.renderReady,
+              script: [...(doc?.scripts || [])].map(script => script.src).find(src => src.includes('artwork-crop.js')) || '',
+              expected,
+              brightness: image?.dataset?.artBrightness,
+              shadows: image?.dataset?.artShadows,
+              contrast: image?.dataset?.artContrast,
+              saturation: image?.dataset?.artSaturation,
+              inlineFilter: image?.style?.filter,
+              computedFilter: image && frame.contentWindow.getComputedStyle(image).filter,
+            };
+          });
+          if (spiesState.ready !== 'true'
+              || spiesState.brightness !== String(spiesState.expected.brightness)
+              || spiesState.shadows !== String(spiesState.expected.shadows)
+              || spiesState.contrast !== String(spiesState.expected.contrast)
+              || spiesState.saturation !== String(spiesState.expected.saturation)
+              || !spiesState.script.includes('artwork-crop.js?v=20261113-1')
+              || !spiesState.computedFilter?.includes('brightness(1.26)')
+              || !spiesState.computedFilter?.includes('url("#gauntlet-art-tone-')) {
+            throw new Error(`Custom print lost canonical tonal corrections: ${JSON.stringify(spiesState)}`);
+          }
+          await printPage.emulateMedia({ media: 'print' });
+          const adjustedSpies = await spiesFrame.screenshot();
+          await spiesFrame.evaluate(frame => {
+            frame.contentDocument.querySelector('.card-art img').style.filter = 'none';
+          });
+          const unadjustedSpies = await spiesFrame.screenshot();
+          if (adjustedSpies.equals(unadjustedSpies)) {
+            throw new Error('Print-media artwork is visually unchanged by its tone settings.');
+          }
+          await spiesFrame.evaluate((frame, originalFilter) => {
+            frame.contentDocument.querySelector('.card-art img').style.filter = originalFilter;
+          }, spiesState.inlineFilter);
+          await printPage.emulateMedia({ media: 'screen' });
+
           if (await printPage.locator('iframe[src*="leader%3Amilitary-general"]').count() < 1) throw new Error('Leader canonical face was not used.');
           if (await printPage.locator('iframe[src*="component%3Auniversal-reference%3A"]').count() < 2) throw new Error('Reference front/reverse faces were not paired.');
           if (await printPage.locator('iframe[src*="component%3Adiplomats-proposal-"]').count() < 2) throw new Error('Proposal front/reverse faces were not paired.');

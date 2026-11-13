@@ -907,6 +907,11 @@
     window.addEventListener('gauntlet-artwork-authoring-status', queueScan);
     new MutationObserver(queueScan).observe(document.body, { childList: true, subtree: true });
     window.addEventListener('load', scan);
+    // Lazy Card Review iframes may finish rendering after window.load.
+    // Frame load events do not bubble, so capture them explicitly.
+    document.addEventListener('load', event => {
+      if (event.target instanceof HTMLIFrameElement) queueScan();
+    }, true);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });

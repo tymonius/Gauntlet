@@ -105,7 +105,7 @@ async function applyCanonicalArtwork(spec, result) {
   if (!result.artworkImage) throw new Error(`Face ${spec.id} has crop artwork but its template exposes no artwork image.`);
 
   const source = await attachArtwork(result.artworkImage, artwork.source);
-  await loadClassicScript('/card-design/artwork-crop.js', () => Boolean(window.GauntletArtworkCrop?.apply));
+  await loadClassicScript('/card-design/artwork-crop.js?v=20261113-1', () => Boolean(window.GauntletArtworkCrop?.apply));
   const crop = window.GauntletArtworkCrop.apply(
     result.artworkImage,
     artwork.composition.direction,
