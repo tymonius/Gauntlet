@@ -9011,9 +9011,13 @@
     "intelligence-spies": {
       "fit": "cover",
       "focusX": 0.5,
-      "focusY": 0.2727,
+      "focusY": 0.273,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 126,
+      "shadows": 21,
+      "contrast": 102,
+      "saturation": 113
     },
     "intelligence-subversion": {
       "fit": "cover",
