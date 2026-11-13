@@ -9573,7 +9573,11 @@
       "focusX": 0,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 26,
+      "contrast": 101,
+      "saturation": 118
     },
     "neutral-sequestration": {
       "fit": "cover",
