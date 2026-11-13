@@ -1,0 +1,24 @@
+name: Current-card artwork darkness audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/current-card-artwork-darkness-audit.yml'
+      - 'scripts/audit-card-artwork-brightness.py'
+      - 'images/artwork/cards/**'
+      - 'packages/game-data/current-game.json'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'Pillow>=11,<13'
+      - name: Rank all 142 current card artworks
+        run: python scripts/audit-card-artwork-brightness.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: current-card-artwork-darkness-csv
+          path: artwork-brightness-audit.csv
