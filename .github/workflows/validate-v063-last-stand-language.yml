@@ -62,6 +62,7 @@ jobs:
             rulebook/player-facing/corrections.js
             legacy/rules-assistant/v063/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
+            legacy/rules-assistant/v063/v063-last-stand-language.js
             legacy/rules-assistant/v063/v063-public-corpus.js
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
             docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md
