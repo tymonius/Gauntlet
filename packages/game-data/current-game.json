@@ -8934,7 +8934,11 @@
       "focusX": 0.5,
       "focusY": 0,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 112,
+      "shadows": 43,
+      "contrast": 101,
+      "saturation": 114
     },
     "intelligence-deep-cover": {
       "fit": "cover",
