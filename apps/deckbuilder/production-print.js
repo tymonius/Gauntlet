@@ -195,7 +195,7 @@
   }
 
   function faceRenderSource(faceId) {
-    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
+    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}&renderRevision=20261113-tone-1`;
   }
 
   function productionCardSource(cardId) {
