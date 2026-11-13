@@ -12,6 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            packages/game-data/current-game.json
+            images/artwork/cards
+            scripts/audit-card-artwork-brightness.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
