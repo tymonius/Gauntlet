@@ -298,6 +298,9 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
       state.players.A.zones.drawPile.push(fillerId);
     }
     state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
+    // Reserves are actually formed after both players finish their Gambit choices.
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
     expect(state.battleRuntime?.participants.A.reserve.length).toBe(
       v070CanonicalContent.content.battle.normal_reserve_size - 1,
     );
