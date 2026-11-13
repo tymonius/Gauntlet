@@ -798,12 +798,19 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     let { state, gambit, tactic } = twoPhysicalGiveChaseCopies();
     // Move the winning attacker's opponent far enough away for two separate
     // legal, no-battle advances. The third Advance from Rout reaches that opponent.
-    const attackerPosition = state.players.A.position!;
-    expect(attackerPosition).toBe(3);
+    // Reposition both tokens within the actual board for a three-step
+    // follow-up sequence. The initiating battle and card sources above
+    // remain real reducer outcomes; only this scenario's spacing is staged.
+    const attackerPosition = state.board.length - 4;
+    expect(attackerPosition).toBeGreaterThanOrEqual(0);
     const routTarget = attackerPosition + 3;
     state.board.forEach(territory => {
-      if (territory.occupant === 'B') territory.occupant = null;
+      if (territory.occupant === 'A' || territory.occupant === 'B') {
+        territory.occupant = null;
+      }
     });
+    state.players.A.position = attackerPosition;
+    state.board[attackerPosition].occupant = 'A';
     state.players.B.position = routTarget;
     state.board[routTarget].occupant = 'B';
 
