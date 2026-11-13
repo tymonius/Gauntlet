@@ -9003,10 +9003,13 @@
     },
     "intelligence-spectral-surveillance": {
       "fit": "cover",
-      "focusX": 0.1875,
+      "focusX": 0.188,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 134,
+      "shadows": 4,
+      "saturation": 138
     },
     "intelligence-spies": {
       "fit": "cover",
