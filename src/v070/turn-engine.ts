@@ -223,6 +223,12 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
     if (action.type !== 'choose_movement' || queue.active.owner !== action.playerId) {
       throw new V070GameActionError('The follow-up controller must resolve their chosen Advance.');
     }
+    // Validate the command BEFORE the impossibility fallback. Otherwise a
+    // deliberately submitted Hold or Fall Back can resolve a mandatory
+    // Countercharge merely because its Advance has become blocked.
+    if (action.choice !== 'advance') {
+      throw new V070GameActionError('The chosen follow-up movement requires an Advance.');
+    }
     const impossible = v073UnfulfillableAdvanceReason(state, action.playerId);
     if (impossible && !queue.active.optional) {
       const next = structuredClone(state) as V070GameState;

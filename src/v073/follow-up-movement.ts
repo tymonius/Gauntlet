@@ -10,13 +10,13 @@ import { v070GeneralRoutAvailableAtEndOfAftermath } from '../v070/military';
 import { v070VictoryResultBenefitProhibited } from '../v070/victory-result-restrictions';
 
 /**
- * Candidate-only scheduling contract for the accepted follow-up movement
- * decisions in the v0.7.3-candidate package. This module is deliberately not
- * called by the published v0.7.2 battle reducer or live reveal registry.
+ * Scheduling contract for accepted v0.7.3-candidate follow-up movement
+ * decisions. The reusable battle and turn reducers already invoke this
+ * scheduler, but candidate gameplay/rulebook authorities are not promoted
+ * into public release consumers.
  *
- * In particular, selecting a grant does NOT spend Command, move a physical
- * card, start movement, or claim battle-effect registration. Those transitions
- * must occur in the live reducer after the candidate is promoted.
+ * Selecting a grant here does not itself spend Command, move a source card,
+ * or start movement. The turn reducer performs those side effects separately.
  */
 export type V073FollowUpKind =
   | 'countercharge-battle'
