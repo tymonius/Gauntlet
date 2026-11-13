@@ -159,7 +159,7 @@ These contracts answer different questions and must not silently substitute for 
 | `legacy/rules-assistant/v064/` | Superseded v0.6.4 candidate corpus, retained for historical proposal/Territory regression tests; not current gameplay authority <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v063/` | Historical v063 published Worker/corpus plus the earlier candidate Worker, development corpus, deterministic rulings, candidate entrypoint, and candidate Wrangler config; current routing imports only the published compatibility Worker <!-- DOC-HISTORICAL --> |
 | `legacy/rules-assistant/v070/` | Historical v0.7.0 Rules Arbiter Worker and frozen-release corpus loader; imported by the current Worker entry only to preserve `/api/v070/*` and `rulesVersion: v0.7.0` compatibility <!-- DOC-HISTORICAL --> |
-| `legacy/rules-assistant/v071/` | Historical v071 compatibility Worker and frozen-release corpus loader; imported by current routing/review/refinement surfaces only to preserve the versioned compatibility behavior and historical analysis |
+| `legacy/rules-assistant/v071/` | Historical v071 compatibility Worker, frozen-release corpus loader, and scope-precheck implementation; the current admin-refinement Worker retains the active compatibility import for version-specific prechecking, without making this historical logic current gameplay authority <!-- DOC-HISTORICAL --> |
 | `legacy/public-compatibility/` | Canonical source for retired browser compatibility surfaces staged to stable public URLs |
 | `legacy/public-versions/` | Canonical source for historical versioned browser surfaces staged to stable public URLs |
 | `v0.7.1/` | Historical v0.7.1 versioned public entrypoint retained for release compatibility |

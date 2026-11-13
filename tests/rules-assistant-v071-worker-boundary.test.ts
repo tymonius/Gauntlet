@@ -8,16 +8,17 @@ describe('Rules Arbiter v071 Worker compatibility boundary', () => {
     const archived = readdirSync('legacy/rules-assistant/v071');
     expect(archived).toContain('worker-v071.js');
     expect(archived).toContain('v071-public-corpus.js');
+    expect(archived).toContain('v071-scope-precheck.js');
     expect(readdirSync('rules-assistant')).not.toContain('worker-v071.js');
   });
 
   it('preserves live versioned routing through the current Worker entry and scope precheck', () => {
     const entry = read('rules-assistant/worker-entry.js');
-    const scope = read('rules-assistant/v071-scope-precheck.js');
+    const scope = read('legacy/rules-assistant/v071/v071-scope-precheck.js');
     expect(entry).toContain('import worker from "../legacy/rules-assistant/v071/worker-v071.js";');
     expect(entry).toContain('url.pathname === "/api/v071/rules"');
     expect(entry).toContain('requestedVersion === "v0.7.1"');
-    expect(scope).toContain('from "../legacy/rules-assistant/v071/worker-v071.js"');
+    expect(scope).toContain('from "./worker-v071.js"');
   });
 
   it('keeps the archived Worker coupled only to maintained shared helpers and its frozen corpus', () => {

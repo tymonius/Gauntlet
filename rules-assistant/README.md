@@ -12,12 +12,16 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../apps/rules-assistant-widget/widget.css` — isolated responsive widget styling.
 - `../apps/rules-assistant-widget/feedback.css`, answer-presentation assets, and mobile overrides — browser presentation support materialized with the widget.
 - `local-search.js` — generic document builder, retrieval, and lexical-fallback support shared by current and versioned corpora.
+- `rules-intelligence.js` — shared retrieval and question-analysis support consumed by the smart/reliable compatibility paths and packet/deterministic helpers; retain under active shared-runtime ownership.
+- `rules-status.js` — shared ruling/answer-mode normalization and out-of-scope logic consumed by persistence, smart-worker, and the archived v071 precheck; retain under active shared-runtime ownership.
+- `rules-history.js` — D1 interaction-history helper imported by the smart-worker; retain under shared-runtime ownership pending a broader v061 compatibility consolidation.
+- `source-lookup-review.js` — currently deployed unversioned `/api/source-lookup-review` review-capture handler, distinct from its version-specific payload acceptance policy. Its current-page version mismatch is tracked as a behavior defect in [#2032](https://github.com/tymonius/Gauntlet/issues/2032), not silently resolved by moving the handler.
 - `v072-release-corpus.js` — current v0.7.2 frozen-release corpus loader and release/deployment validation.
 - `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.7.2 Worker while preserving explicitly versioned older routes.
 - `worker-v072.js` — current v0.7.2 Rules Arbiter Worker.
 - `../legacy/rules-assistant/v072-candidate/frozen-sources.mjs` — exact source bytes for the last pre-release candidate, pinned to `config/v072-release-freeze.json` and served by the still-live explicit candidate Worker route. The former live `/game-data/` and Rulebook source URLs are not used to load this versioned corpus. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v070/` — historical v0.7.0 Worker/corpus source; the current `worker-entry.js` still serves its stable versioned compatibility route.
-- `../legacy/rules-assistant/v071/` — historical v071 Worker and frozen release corpus loader; `worker-entry.js` preserves the versioned route, while review/refinement tooling and regression tests read the archived implementation explicitly.
+- `../legacy/rules-assistant/v071/` — historical v071 Worker, frozen release corpus loader, and its version-specific scope precheck; the deployed admin-refinement entrypoint continues to call the precheck through the exact `v071-scope-precheck.js` compatibility export, and `worker-entry.js` preserves the versioned Worker route. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v062/` — withdrawn published v062 Worker/corpus plus the historical candidate Worker/corpus and deterministic rulings; `worker-entry.js` preserves both explicit historical routes. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v064/` — superseded v0.6.4 candidate corpus, used for historical Proposal/Territory regression coverage. <!-- DOC-HISTORICAL -->
 - `../legacy/rules-assistant/v063/` — historical v063 published Worker/corpus plus the earlier candidate Worker, development corpus, deterministic rulings, candidate entrypoint, and candidate Wrangler config; the current `worker-entry.js` preserves the explicit published v063 compatibility route. <!-- DOC-HISTORICAL -->
