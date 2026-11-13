@@ -288,6 +288,15 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     });
     expect(state.v073GiveChaseBattleRestriction?.reservePenalty).toBe(1);
     expect(state.battle?.attackerGambitProhibited).toBe(true);
+    // This fixture has already drawn two Reserves from a small starter deck.
+    // Supply enough physical cards to test the penalty rather than deck exhaustion.
+    for (let index = 0; index < v070CanonicalContent.content.battle.normal_reserve_size + 1; index++) {
+      const fillerId = 'test-third-battle-reserve-' + index;
+      state.cardInstances[fillerId] = {
+        instanceId: fillerId, owner: 'A', cardId: 'neutral-rallying-cry',
+      };
+      state.players.A.zones.drawPile.push(fillerId);
+    }
     state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
     expect(state.battleRuntime?.participants.A.reserve.length).toBe(
       v070CanonicalContent.content.battle.normal_reserve_size - 1,
