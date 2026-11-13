@@ -11,6 +11,7 @@ import {
 } from '../v070/countercharge-battle';
 import {
   v073ChooseFollowUpGrant,
+  v073MarkFollowUpAdvanceUnfulfilled,
   v073CollectFollowUpGrants,
   v073CompleteFollowUpGrant,
   v073CreateFollowUpQueue,
@@ -190,6 +191,27 @@ describe('candidate follow-up movement sequencing (not registered in v0.7.2)', (
     ]);
     expect(queue.pending).toEqual([]);
     expect(v073OfferedFollowUpGrants(queue)).toEqual([]);
+  });
+
+
+  test('an unfulfillable mandatory grant does not consume other grants', () => {
+    const c1 = countercharge('c1', false);
+    const c2 = countercharge('c2', false);
+    const queue = v073CreateFollowUpQueue([c1, c2]);
+    v073ChooseFollowUpGrant(queue, c1.key);
+    const unavailable = v073MarkFollowUpAdvanceUnfulfilled(queue);
+    expect(unavailable).toEqual(c1);
+    expect(queue.unfulfilled).toEqual([c1]);
+    expect(queue.expired).toEqual([]);
+    expect(v073OfferedFollowUpGrants(queue)).toEqual([c2]);
+    v073ChooseFollowUpGrant(queue, c2.key);
+    v073MarkFollowUpAdvanceUnfulfilled(queue);
+    expect(queue.closed).toBe(true);
+    expect(queue.resolved).toEqual([]);
+    const optional = v073CreateFollowUpQueue([countercharge('asset', true)]);
+    v073ChooseFollowUpGrant(optional, 'countercharge-asset:asset');
+    expect(() => v073MarkFollowUpAdvanceUnfulfilled(optional))
+      .toThrow(/mandatory/);
   });
 
   test('duplicate source keys or overlapping uncompleted movement are rejected', () => {
