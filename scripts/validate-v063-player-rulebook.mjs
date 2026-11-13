@@ -131,6 +131,7 @@ const qualityGate = read('.github/workflows/pr-quality-gate.yml');
 for (const requiredRoute of [
   "under('rulebook/player-facing/')",
   "exact('rules-assistant/v063-last-stand-language.js')",
+  "exact('legacy/rules-assistant/v063/v063-last-stand-language.js')",
   "exact('scripts/publication-utils.mjs')",
 ]) {
   if (!qualityGate.includes(requiredRoute)) {
