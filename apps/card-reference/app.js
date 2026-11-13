@@ -483,10 +483,6 @@ function switchPreviewFace(entry, faceIndex) {
 
   const frame = el.preview.querySelector('.rendered-card-frame');
   const standalone = document.getElementById('standaloneRender');
-  // The artwork editor belongs to the currently selected illustrated face.
-  // Remove the previous face's launcher/marker before the iframe changes.
-  el.preview.querySelector('.preview-actions > .art-compositor-launch')?.remove();
-  el.preview.querySelectorAll('.preview-actions > .art-compositor-divergence-badge').forEach(node => node.remove());
   if (frame) {
     frame.src = face.rendererUrl;
     frame.dataset.renderOrientation = face.orientation || entry.orientation || 'portrait';
