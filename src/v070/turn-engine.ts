@@ -240,6 +240,11 @@ function reduceCandidateFollowUpMovement(state: V070GameState, action: V070TurnA
     }
     return next;
   }
+  if (state.pendingSanctionChoices.length > 0) {
+    throw new V070GameActionError(
+      'Resolve the pending Sanction movement choice before another follow-up movement.',
+    );
+  }
   if (action.type !== 'choose_follow_up_movement'
     && action.type !== 'decline_follow_up_movement') {
     throw new V070GameActionError('Resolve or decline the pending follow-up before continuing.');

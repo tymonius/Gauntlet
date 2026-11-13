@@ -159,8 +159,10 @@ export function viewV070GameForPlayer(
           active: Boolean(state.v073FollowUpQueue.active),
           owner: state.v073FollowUpQueue.active?.owner
             ?? v073OfferedFollowUpGrants(state.v073FollowUpQueue)[0]?.owner ?? null,
-          options: v073OfferedFollowUpGrants(state.v073FollowUpQueue)
-            .map(grant => ({ key: grant.key, kind: grant.kind, optional: grant.optional })),
+          options: state.pendingSanctionChoices.length > 0
+            ? []
+            : v073OfferedFollowUpGrants(state.v073FollowUpQueue)
+              .map(grant => ({ key: grant.key, kind: grant.kind, optional: grant.optional })),
         }
       : null,
   };
