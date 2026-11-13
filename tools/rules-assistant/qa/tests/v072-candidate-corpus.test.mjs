@@ -6,6 +6,7 @@ import {
   frozenV072CandidateCompleteRulesSource
 } from "../../../../legacy/rules-assistant/v072-candidate/frozen-sources.mjs";
 import { describe, expect, test } from "vitest";
+import worker from "../../../../rules-assistant/worker-entry.js";
 import {
   V072_CANDIDATE_RULES_VERSION,
   V072_CANDIDATE_FROZEN_COMMIT,
@@ -29,7 +30,7 @@ const frozenCommit = "5f2012690e4574c4f675e3d13db642c6fb1db87f";
 
 function gitBlobSha(text) {
   return createHash("sha1")
-    .update(`blob ${Buffer.byteLength(text)}\\0`)
+    .update(`blob ${Buffer.byteLength(text)}\0`)
     .update(text)
     .digest("hex");
 }
@@ -83,6 +84,26 @@ describe("v0.7.2 candidate Rules Arbiter corpus", () => {
       completeRulesUrl: `${root}/packages/rules/comprehensive/comprehensive-rules.md`,
       rulebookBrowserUrl: `${root}/packages/rules/comprehensive/comprehensive-rules.md`,
     });
+  });
+
+  test("serves the frozen candidate corpus through the existing Worker route without network fetch", async () => {
+    const response = await worker.fetch(new Request("https://gauntlet-rules-assistant.example.workers.dev/api/v072-candidate/corpus-health"), {
+      SITE_ORIGIN: "https://gauntlet.run",
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.ok).toBe(true);
+    expect(body.version).toBe(V072_CANDIDATE_RULES_VERSION);
+    expect(body.currentPublicRelease).toBe("v0.7.2");
+    expect(body.authoritySetId).toBe(V072_CANDIDATE_FROZEN_AUTHORITY_SET_ID);
+
+    const health = await worker.fetch(new Request("https://gauntlet-rules-assistant.example.workers.dev/api/v072-candidate/health"), {
+      SITE_ORIGIN: "https://gauntlet.run",
+    });
+    expect(health.status).toBe(200);
+    const healthBody = await health.json();
+    expect(healthBody.published).toBe(false);
+    expect(healthBody.version).toBe(V072_CANDIDATE_RULES_VERSION);
   });
 
   test("removes duplicate legacy card-face fields when structured effects are authoritative", () => {
