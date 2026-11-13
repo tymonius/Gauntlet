@@ -570,13 +570,21 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Add a regression contract that verifies each of the eight deployment-gate test paths resolves to a maintained file. This prevents another silent tooling move from breaking the production rollout step.
 - Merged in [#2021](https://github.com/tymonius/Gauntlet/pull/2021) after PR checks passed. The subsequent production deployment reached and passed unversioned health, but the still-served candidate route failed corpus-health verification because it consumed promoted stable public source URLs. Tracked as [#2022](https://github.com/tymonius/Gauntlet/issues/2022).
 
-## Current subtranche — frozen historical candidate Worker corpus repair
+## Completed subtranche — frozen historical candidate Worker corpus repair
 
 - Restore the still-live candidate route from the exact pre-release source blobs recorded by `config/v072-release-freeze.json`. Both source blobs were independently verified at immutable commit `5f2012690e4574c4f675e3d13db642c6fb1db87f`. Embed their verbatim text under `legacy/rules-assistant/v072-candidate/`, not by changing stable `packages/game-data/current-game.json`.
 - The candidate loader now hashes its embedded source pair against the recorded frozen authority-set ID before parsing, and serves immutable GitHub source permalinks in citations instead of moving current-game and Rulebook URLs. Its historical candidate identity and active route are retained.
 - Explicit historical conflict: the earlier manual paid-QA replay fixture records a distinct authority ID (`faacd55458ec1595f480798449033a2c8705e018d828ae8034c5fe2b2a6f35b0`), whereas the final release-freeze source pair records `ab0125ae280accfb03d53bdadf5b6ae006f98aeab897e20a4b2269d89ed9eb84`. Keep the earlier replay pinned to its own benchmark provenance; its approval gates must not be repurposed for the final pre-release snapshot, and it must fail its old preflight rather than consume paid API calls against a mismatched route. <!-- DOC-HISTORICAL -->
 - Add Git-blob SHA-1, combined SHA-256, offline corpus, candidate citation/route, and failure-closed regression coverage. Watch embedded sources in production deployment. Do not change stable or unversioned gameplay, candidate behavior code, Worker authentication, public routes, or freeze artifacts.
-- Merge only after repository tests, governance, Rules Arbiter historical regression, and other required checks pass. Then verify the full production deploy including unversioned, candidate, and stable frozen-release corpus-health stages.
+- Merged in [#2025](https://github.com/tymonius/Gauntlet/pull/2025) with all required PR checks green. [Production deployment #43448828444](https://github.com/tymonius/Gauntlet/actions/runs/43448828444) passed runtime validation, unversioned production health, historical candidate health and corpus, and frozen stable v0.7.2 health and corpus. [Incident #2022](https://github.com/tymonius/Gauntlet/issues/2022) is closed.
+
+## Current subtranche — Rules Arbiter GitHub Actions QA authorization ownership
+
+- Audited the shared GitHub Actions OIDC authorization implementation in `rules-assistant/github-actions-qa-auth.js`. It is a live security policy imported by the current v0.7.2 Worker, candidate and v071 compatibility Workers, semantic evaluator, and admin refinement Worker. It is not an archived candidate fixture.
+- Move its unchanged implementation to `tools/rules-assistant/qa/github-actions-qa-auth.js`, leaving the original import path as an exact export-forwarding shim. The canonical semantic evaluator imports the maintained sibling directly, while all other Worker paths keep their established imports.
+- The authorized-workflow allowlist, GitHub OIDC issuer/JWKS signature verification, token rejection rules, JWKS cache, and all runtime API behavior remain byte-for-byte unchanged in the maintained source. Add exact-export identity and rejection-parity regressions alongside existing authorization and historical suites.
+- Add explicit canonical source path coverage to protected Worker deployment, historical regression, and current live-publication workflow scope detection. Syntax-check maintained source in predeployment validation. Do not skip any live or candidate health check.
+- No gameplay/card rules, current-game authority, frozen release corpus, public endpoint, D1 schema, or model budget changes. Require PR tests, governance, historical regression, and successful production health checks before marking the tranche complete.
 
 ## Next top-down queue
 

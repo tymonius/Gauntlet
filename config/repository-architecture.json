@@ -211,7 +211,7 @@
         "tools"
       ],
       "transitional": false,
-      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling (including the semantic evaluator still served by the Worker), and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS release/catalog implementation under tools/tts/."
+      "note": "Canonical container for maintained production tooling whose source placement is independent from public routes; includes card-design authoring/review, Rules Arbiter admin/refinement/QA tooling (including the semantic evaluator and shared QA OIDC authorization used by deployed Workers), and TTS table-layout, save-contract validation, game-data compatibility-route, face-publication parity, Rulebook de-imposition, sliding-tracker capture, supplemental geometry, Deckbuilder import, physical-component contract validation, and the shared-consumer TTS release/catalog implementation under tools/tts/."
     }
   }
 }
