@@ -8880,7 +8880,10 @@
       "focusX": 1,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 40,
+      "contrast": 101,
+      "saturation": 114
     },
     "inquisition-malleus-maleficarum": {
       "fit": "cover",
@@ -8915,7 +8918,9 @@
       "focusX": 0,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 36,
+      "saturation": 111
     },
     "inquisition-witch-hunter": {
       "fit": "cover",
@@ -9003,17 +9008,24 @@
     },
     "intelligence-spectral-surveillance": {
       "fit": "cover",
-      "focusX": 0.1875,
+      "focusX": 0.188,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 134,
+      "shadows": 4,
+      "saturation": 138
     },
     "intelligence-spies": {
       "fit": "cover",
       "focusX": 0.5,
-      "focusY": 0.2727,
+      "focusY": 0.273,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 126,
+      "shadows": 21,
+      "contrast": 102,
+      "saturation": 113
     },
     "intelligence-subversion": {
       "fit": "cover",
@@ -9143,17 +9155,25 @@
     },
     "mystics-accursed-wager": {
       "fit": "cover",
-      "focusX": 0.5625,
+      "focusX": 0.563,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 107,
+      "shadows": 32,
+      "contrast": 103,
+      "saturation": 131
     },
     "mystics-black-covenant": {
       "fit": "cover",
       "focusX": 0.375,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 13,
+      "contrast": 101,
+      "saturation": 126
     },
     "mystics-circle-of-bones": {
       "fit": "cover",
@@ -9199,10 +9219,14 @@
     },
     "mystics-rend-the-veil": {
       "fit": "cover",
-      "focusX": 0.4167,
+      "focusX": 0.417,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 31,
+      "contrast": 103,
+      "saturation": 111
     },
     "mystics-sacrifice-recovery": {
       "fit": "cover",
@@ -9535,10 +9559,11 @@
     },
     "neutral-sabotage": {
       "fit": "cover",
-      "focusX": 0.3333,
+      "focusX": 0.333,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "shadows": 31
     },
     "neutral-salvage": {
       "fit": "cover",
@@ -9566,7 +9591,11 @@
       "focusX": 0,
       "focusY": 0.52,
       "smart": false,
-      "zoom": 1
+      "zoom": 1,
+      "brightness": 109,
+      "shadows": 26,
+      "contrast": 101,
+      "saturation": 118
     },
     "neutral-sequestration": {
       "fit": "cover",
