@@ -198,6 +198,8 @@
 
   function hostFor(target) {
     if (target.sourceElement instanceof HTMLIFrameElement) {
+      const reference = target.sourceElement.closest('.reference-preview.rendered-preview');
+      if (reference) return reference.querySelector('.preview-actions') || reference;
       return target.sourceElement.closest('.specimen-column, .territory-review-item, .review-card-pair') || target.sourceElement.parentElement;
     }
     return target.sourceElement.closest('.leader-specimen, .specimen-column, .territory-review-item, .proposal-specimen, .rite-specimen, .supplemental-specimen') || target.sourceElement.parentElement;
@@ -235,7 +237,7 @@
     summary.append(strong, detail);
 
     if (!existing) {
-      const main = document.querySelector('.developer-catalog-main');
+      const main = document.querySelector('.developer-catalog-main, .reference-main');
       if (main) main.prepend(summary);
       else document.body.prepend(summary);
     }
@@ -266,8 +268,12 @@
 
   function installLauncher(target) {
     const host = hostFor(target);
-    if (!host || host.querySelector(':scope > .art-compositor-launch')) return;
+    if (!host) return;
+    const existing = host.querySelector(':scope > .art-compositor-launch');
+    if (existing?.dataset.artDirectionId === target.id) return;
+    existing?.remove();
     const button = document.createElement('button');
+    button.dataset.artDirectionId = target.id;
     button.type = 'button';
     button.className = 'art-compositor-launch screen-only';
     button.textContent = 'Edit artwork';
