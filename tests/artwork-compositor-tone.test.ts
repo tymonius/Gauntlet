@@ -158,6 +158,7 @@ describe('canonical artwork tonal compositor', () => {
     expect(deckbuilderHtml).not.toContain('artwork-compositor-targets.js');
     expect(compositor).not.toContain("target.sourceElement.closest('.reference-preview.rendered-preview')");
     expect(targets).toContain("artwork-authoring-client.js?v=20260902-2");
+    expect(compositor).toContain("document.addEventListener('load', event => {");
     expect(compositor).toContain('function toneFromControls()');
     expect(compositor).toContain('...toneFromControls()');
     expect(compositor).toContain('showOriginalTone');
