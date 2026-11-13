@@ -1,6 +1,13 @@
 import { persistSmartInteraction } from "./rules-persistence.js";
+import releaseLifecycle from "../config/release-lifecycle.json" with { type: "json" };
 
-const RULES_VERSION = "v0.7.1";
+const CURRENT_RULES_VERSION = releaseLifecycle.current_release;
+// Existing v0.7.1 browser queues remain valid historical evidence after cutover.
+const HISTORICAL_REVIEW_VERSION = "v0.7.1";
+if (releaseLifecycle.releases?.[CURRENT_RULES_VERSION]?.status !== "current") {
+  throw new Error("Source-lookup review requires a valid current release lifecycle entry.");
+}
+const ACCEPTED_REVIEW_VERSIONS = new Set([CURRENT_RULES_VERSION, HISTORICAL_REVIEW_VERSION]);
 const DEFAULT_ALLOWED_ORIGINS = ["https://gauntlet.run", "https://www.gauntlet.run"];
 
 function allowedOrigins(env) {
@@ -42,7 +49,9 @@ export function sanitizeClientSourceLookupPayload(payload) {
   const question = String(payload.question || "").trim();
   const answer = String(payload.answer || "").trim();
 
-  if (rulesVersion !== RULES_VERSION) throw new Error(`Only ${RULES_VERSION} source lookups can be recorded here.`);
+  if (!ACCEPTED_REVIEW_VERSIONS.has(rulesVersion)) {
+    throw new Error(`Only ${CURRENT_RULES_VERSION} (current) or ${HISTORICAL_REVIEW_VERSION} (historical) source lookups can be recorded here.`);
+  }
   if (!/^[a-zA-Z0-9_-]{8,80}$/.test(sessionId)) throw new Error("Invalid Rules Arbiter session id.");
   if (!question || question.length > 2000) throw new Error("Question must contain 1–2000 characters.");
   if (!answer || answer.length > 4000) throw new Error("Answer must contain 1–4000 characters.");
@@ -59,7 +68,7 @@ export function sanitizeClientSourceLookupPayload(payload) {
     sessionId,
     question,
     answer,
-    gameVersion: RULES_VERSION,
+    gameVersion: rulesVersion,
     rulingStatus: "source_lookup",
     confidence: "low",
     mode: "source_lookup",

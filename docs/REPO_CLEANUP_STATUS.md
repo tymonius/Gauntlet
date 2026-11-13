@@ -601,6 +601,14 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Retarget v071 source-inspection and direct unit tests to the canonical archived implementation; add exact export-identity, deployed-entrypoint runtime behavior, and protected/independent deployment-trigger tests. Watch and syntax-check both old and new paths in protected Worker deployment, including the actual v071 precheck test suite; recognize archived compatibility helpers in current-publication changed-input classification. Historical regression already covers both folders.
 - Keep canonical gameplay and all published/frozen corpora unchanged. Merge only with green repository/Rules Arbiter/governance checks; verify the protected Worker and independent published-site health paths after production deployment.
 
+## Current functional repair — live source-lookup review version alignment
+
+- [#2032](https://github.com/tymonius/Gauntlet/issues/2032) identified a live mismatch: the current browser Rules Arbiter queues fallback reports with the release version derived from its frozen current corpus while the deployed `/api/source-lookup-review` handler still accepted only a historical release. The endpoint was reachable, but these current reports were rejected before D1 persistence.
+- Repair only the accepted version contract: derive the current accepted version from `config/release-lifecycle.json`, retain explicit historical v0.7.1 acceptance so already-queued legacy submissions remain attributable to their actual version, and save the **submitted** validated `gameVersion`. No historical record is relabeled as current. <!-- DOC-HISTORICAL -->
+- Keep all existing browser payload sizes, origin checks, sanitization, model-null/low-confidence source-lookup classification, D1 failure-closed behavior, and all published rules untouched. Reject unsupported versions including candidates; do not invoke AI for fallback-report capture.
+- Add direct sanitizer/historical-replay tests and a routed deployed-Worker test against the actual browser payload. Make the deployment trigger watch both handler and lifecycle JSON; add predeployment source syntax/test and independent live-publication changed-input detection.
+- The behavior fix is separate from the source-ownership migration in [#2034](https://github.com/tymonius/Gauntlet/pull/2034). Require full PR CI, protected Worker deployment with current/candidate/frozen corpus health and independent live-publication checks before closing #2032.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.

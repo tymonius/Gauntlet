@@ -32,6 +32,8 @@ on:
       - "rules-assistant/v071-gate3-c-remediation.js"
       - "rules-assistant/v071-answer-verifier.js"
       - "rules-assistant/rules-persistence.js"
+      - "rules-assistant/source-lookup-review.js"
+      - "config/release-lifecycle.json"
       - "rules-assistant/github-actions-qa-auth.js"
       - "tools/rules-assistant/qa/github-actions-qa-auth.js"
       - "rules-assistant/qa-semantic-evaluator.js"
@@ -100,6 +102,7 @@ jobs:
           node --check legacy/rules-assistant/v070/worker-v070.js
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
           node --check rules-assistant/worker-entry.js
+          node --check rules-assistant/source-lookup-review.js
           node --check legacy/rules-assistant/v071/v071-public-corpus.js
           node --check legacy/rules-assistant/v071/worker-v071.js
           node --check legacy/rules-assistant/v071/v071-scope-precheck.js
@@ -108,6 +111,7 @@ jobs:
           node --check legacy/rules-assistant/v072-candidate/frozen-sources.mjs
           node --check rules-assistant/worker-v072.js
           npx vitest run \
+            tools/rules-assistant/qa/tests/fallback-source-lookup-regression.test.mjs \
             tools/rules-assistant/qa/tests/v071-scope-precheck.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-i-remediation.test.mjs \
