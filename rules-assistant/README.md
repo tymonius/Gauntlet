@@ -12,6 +12,7 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `../apps/rules-assistant-widget/widget.css` — isolated responsive widget styling.
 - `../apps/rules-assistant-widget/feedback.css`, answer-presentation assets, and mobile overrides — browser presentation support materialized with the widget.
 - `local-search.js` — generic document builder, retrieval, and lexical-fallback support shared by current and versioned corpora.
+- **Deployment ownership:** the deployed `admin-refinement-worker.js` imports `worker-entry.js`, which also imports the smart/reliable compatibility fallback paths and their shared runtime dependencies. All root `rules-assistant/*.js` modules are watched by the protected Worker deployment and independent live-publication source classifier, so editing a fallback helper cannot silently leave a different bundled version deployed. Protected predeploy validation checks root `.js` syntax and its static dependency/trigger regression.
 - `rules-intelligence.js` — shared retrieval and question-analysis support consumed by the smart/reliable compatibility paths and packet/deterministic helpers; retain under active shared-runtime ownership.
 - `rules-status.js` — shared ruling/answer-mode normalization and out-of-scope logic consumed by persistence, smart-worker, and the archived v071 precheck; retain under active shared-runtime ownership.
 - `rules-history.js` — D1 interaction-history helper imported by the smart-worker; retain under shared-runtime ownership pending a broader v061 compatibility consolidation.
