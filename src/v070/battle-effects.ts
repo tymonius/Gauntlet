@@ -1,5 +1,15 @@
 import { v070CanonicalContent } from '../content/v070';
 import {
+  V070_COUNTERCHARGE_ID,
+  V070_COUNTERCHARGE_BATTLE_TEXT,
+  stageV070CounterchargeBattleEffect,
+} from './countercharge-battle';
+import {
+  V070_GIVE_CHASE_ID,
+  V070_GIVE_CHASE_BATTLE_TEXT,
+  stageV070GiveChaseBattleEffect,
+} from './give-chase-battle';
+import {
   appendV070Event,
   type V070GameState,
 } from './engine';
@@ -217,6 +227,24 @@ declare module './battle-types' {
     deferredFogOfWarGambitCommitments?: V070BattleCardCommitment[];
   }
 }
+
+const counterchargeHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_COUNTERCHARGE_ID,
+  expectedText: V070_COUNTERCHARGE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    stageV070CounterchargeBattleEffect(state, owner, commitment.instanceId);
+  },
+};
+
+const giveChaseHandler: previous.V070BattleEffectHandler = {
+  cardId: V070_GIVE_CHASE_ID,
+  expectedText: V070_GIVE_CHASE_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    stageV070GiveChaseBattleEffect(state, owner, commitment.instanceId);
+  },
+};
 
 const capitalGainsHandler: previous.V070BattleEffectHandler = {
   cardId: V070_CAPITAL_GAINS_ID,
@@ -719,6 +747,8 @@ const fogOfWarHandler: previous.V070BattleEffectHandler = {
 };
 
 const deferredHandlers = new Map<string, previous.V070BattleEffectHandler>([
+  [V070_COUNTERCHARGE_ID, counterchargeHandler],
+  [V070_GIVE_CHASE_ID, giveChaseHandler],
   [V070_FOG_OF_WAR_ID, fogOfWarHandler],
   [V070_REARGUARD_ID, rearguardHandler],
   [V070_PATHS_OF_SHADOW_ID, pathsOfShadowHandler],

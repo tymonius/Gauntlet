@@ -2,7 +2,7 @@
 
 **Status:** Draft candidate; not a published release. Derived from active v0.7.2 at commit `86deae7a1a659421c3e77f5accacf6d1f1c23367`.
 
-This directory contains a **complete review snapshot** of the gameplay authority and the player-facing Rulebook, Comprehensive Rules, Player's Guide, and six Faction Guides. It is intentionally **not wired into runtime or publication**. Until a governed candidate promotion, all current consumers continue using `packages/game-data/current-game.json` and the maintained live rules sources. Published v0.7.2 release files and hashes must remain unchanged.
+This directory contains a **complete review snapshot** of the gameplay authority and the player-facing Rulebook, Comprehensive Rules, Player's Guide, and six Faction Guides. The candidate **authority snapshot itself is not loaded by live consumers or public publication**. The already-approved Countercharge, Give Chase, and Rout battle-mode follow-up behavior has now been implemented in the reusable digital reducer, with regression tests; that engine integration is **not** a governed candidate promotion. All current public rules consumers continue using `packages/game-data/current-game.json` and the maintained live rules sources. Published v0.7.2 release files and hashes must remain unchanged.
 
 ## Approved decisions included
 
@@ -13,7 +13,7 @@ This directory contains a **complete review snapshot** of the gameplay authority
 ## Still unresolved; deliberately excluded
 
 - Give Chase **Action-mode** follow-up-battle restrictions ([#1952](https://github.com/tymonius/Gauntlet/issues/1952)).
-- Unresolved mechanical parity for Intercepted Orders, Spies, Treason, Field Command, and Shock and Awe; this candidate does **not** claim any digital engine support.
+- Unresolved mechanical parity for Intercepted Orders, Spies, Treason, Field Command, and Shock and Awe. Countercharge and Give Chase battle-mode follow-up handling is now registered and tested, but this is not a claim that their unrelated Asset/Action modes or every edge case has been exhaustively certified.
 - Any unapproved wording changes or inferred movement timing interactions.
 
 The candidate `current-game.json` is the **complete candidate source**, not a patch to apply to the active game. Its status is `active-development`, and its `runtimePolicy` identifies this release as a review-only candidate.
@@ -27,4 +27,6 @@ The candidate `current-game.json` is the **complete candidate source**, not a pa
 - `faction-guides/` — six complete guides, with Military and Intelligence updated
 - `candidate-manifest.json` — source versions, recorded decisions, exclusions, integration status
 
-**Release boundary:** These copies are for review and future promotion. They are not a new public rulebook version, a release manifest, a rules-arbiter corpus, or a claim of runtime parity.
+**Reducer integration:** [PR #2026](https://github.com/tymonius/Gauntlet/pull/2026) integrates the printed Countercharge and Give Chase battle effects with the shared follow-up scheduler, real movement, off-turn ownership, Rout payment and Give Chase restrictions. Engine registration is **108/113** battle effects after this tranche; supported registration is not a substitute for exhaustive release-level verification. Give Chase's distinct Denouement Action ambiguity remains tracked in #1952.
+
+**Release boundary:** These copies are for review and future promotion. They are not a new public rulebook version, a release manifest, or a rules-arbiter corpus.

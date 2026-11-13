@@ -1,5 +1,6 @@
 import type { PlayerId } from '../v070/rules';
 import type { V070GameState } from '../v070/engine';
+import type { V070BattleRuntime } from '../v070/battle-types';
 import {
   isV070BattleCardEffectNegated,
   v070BattleCommitment,
@@ -40,10 +41,28 @@ export interface V073FollowUpQueue {
   closed: boolean;
 }
 
+declare module '../v070/engine' {
+  interface V070GameState {
+    /** Candidate follow-ups spanning a completed battle and separate movement sequences. */
+    v073FollowUpQueue?: V073FollowUpQueue | null;
+    /** Printed Give Chase restrictions only when its Advance starts a new battle. */
+    v073GiveChaseBattleRestriction?: { owner: PlayerId; reservePenalty: number };
+    /** Pending Give Chase restriction while its effect-granted Advance is in progress. */
+    v073GiveChasePendingRestriction?: { owner: PlayerId; reservePenalty: number };
+  }
+}
+
+declare module '../v070/battle-types' {
+  interface V070BattleRuntime {
+    giveChaseBattleSourceInstanceIds?: string[];
+  }
+}
+
 /** Collect only physically eligible grants; never deduplicate by card title. */
 export function v073CollectFollowUpGrants(
   state: V070GameState,
-  revealedGiveChaseSourceInstanceIds: readonly string[] = [],
+  revealedGiveChaseSourceInstanceIds: readonly string[] =
+    state.battleRuntime?.giveChaseBattleSourceInstanceIds ?? [],
 ): V073FollowUpGrant[] {
   const battle = state.battle;
   const runtime = state.battleRuntime;

@@ -159,6 +159,7 @@ export function v070GeneralRoutAvailableAtEndOfAftermath(
     return false;
   }
   const attacker = state.players[battle.attacker];
+  if (state.v073GiveChaseBattleRestriction?.owner === battle.attacker) return false;
   return attacker.leaderId === 'general'
     && Boolean(attacker.military)
     && (attacker.military?.command ?? 0) >= 2

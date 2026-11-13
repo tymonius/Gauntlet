@@ -56,14 +56,14 @@
     "Spies reveal/revision procedure issue #1945",
     "Treason copied deferred effect identity issue #1946",
     "Field Command order lifecycle issue #1956",
-    "Shock and Awe separate Breakthrough implementation issue #1953",
+    "Shock and Awe separate Breakthrough implementation tracked in PR #1963",
     "Any unsupported current-release digital-engine battle effect"
   ],
-  "runtimeIntegration": "None. This candidate is an isolated review package and does not alter active game consumers, frozen v0.7.2, TTS, rulebooks served by website, or executable engine registration.",
+  "runtimeIntegration": "Countercharge and Give Chase Gambit/Tactic follow-up effects are now integrated into the reusable digital reducer (PR #2026), with physical source registration, off-turn movement, Rout precedence and Command payment, battle-initiated expiry, Give Chase battle restrictions, and end-to-end regression coverage. Registration is 108/113 battle effects; no published v0.7.3 cutover, TTS version switch, website data promotion, or rules-arbiter corpus update. The separate Intercepted Orders candidate wording has not been activated in the engine.",
   "pending": [
     "review candidate gameplay and reader-facing text",
     "validate candidate presentation and card rendering after promotion planning",
-    "implement candidate battle mechanics and test full interactions",
+    "continue cross-effect and release-level regression validation; unresolved card behaviors still require governed implementation",
     "promote via governed release process"
   ],
   "files": [
