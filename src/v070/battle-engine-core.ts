@@ -1,4 +1,5 @@
 import { v070CanonicalContent } from '../content/v070';
+import { v073CollectFollowUpGrants, v073CreateFollowUpQueue } from '../v073/follow-up-movement';
 import {
   advanceV070TurnPhase,
   applyV070BattleOutcome,
@@ -618,6 +619,15 @@ export function reduceV070BattleAction(
     );
   }
 
+  if (state.v073GiveChaseBattleRestriction?.owner === state.battle.attacker
+    && (action.type === 'use_general_rally'
+      || action.type === 'use_general_rout'
+      || action.type === 'use_commandant_entrench'
+      || action.type === 'use_commandant_repel'
+      || action.type === 'use_commandant_fortify')) {
+    throw new V070GameActionError('Give Chase prohibits Orders in the battle it initiated.');
+  }
+
   const next = structuredClone(state) as V070GameState;
 
   if (action.type === 'use_ranger_fieldcraft' && !next.battleRuntime) {
@@ -1068,6 +1078,10 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
     applyV070AdvancedBattleTerritoryEffects(state);
     applyV070FogOfWarOverlayAtBattleOnset(state);
     applyV070ResistanceAssetOnsetEffects(state);
+    if (state.v073GiveChaseBattleRestriction?.owner === state.battle.attacker) {
+      state.battleRuntime.participants[state.battle.attacker].reserveBonus -=
+        state.v073GiveChaseBattleRestriction.reservePenalty;
+    }
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -1248,8 +1262,8 @@ function formReserves(state: V070GameState): void {
     const result = drawV070Cards(
       state,
       playerId,
-      v070CanonicalContent.content.battle.normal_reserve_size
-        + runtime.participants[playerId].reserveBonus,
+      Math.max(0, v070CanonicalContent.content.battle.normal_reserve_size
+        + runtime.participants[playerId].reserveBonus),
       'battle_reserve',
     );
     runtime.participants[playerId].reserve = result.drawn;
@@ -5227,6 +5241,24 @@ function completeAftermathInternal(
     return;
   }
 
+  // The accepted candidate rule only takes over when a live Countercharge or
+  // Give Chase battle/Asset grant is present. Ordinary Rout-only battles keep
+  // their established end-of-Aftermath path.
+  const followUps = v073CollectFollowUpGrants(state);
+  if (followUps.some(grant => grant.kind !== 'general-rout')) {
+    state.v073FollowUpQueue = v073CreateFollowUpQueue(followUps);
+    appendV070Event(state, {
+      type: 'follow_up_movement_window_opened',
+      visibility: 'public',
+      payload: { candidates: followUps.map(grant => ({
+        kind: grant.kind, owner: grant.owner, key: grant.key,
+        optional: grant.optional,
+      })) },
+    });
+    finalizeCompletedAftermath(state);
+    return;
+  }
+
   if (v070GeneralRoutAvailableAtEndOfAftermath(state)) {
     runtime.routWindowOpen = true;
     appendV070Event(state, {
@@ -5444,6 +5476,7 @@ function finalizeCompletedAftermath(state: V070GameState): void {
 
   state.battle = null;
   state.battleRuntime = null;
+  delete state.v073GiveChaseBattleRestriction;
 
   if (pendingGameVictory) {
     state.stage = 'ended';
