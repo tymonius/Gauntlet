@@ -715,6 +715,152 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(v073UnfulfillableAdvanceReason(state, 'B')).toBeNull();
   });
 
+
+  function twoPhysicalGiveChaseCopies(): {
+    state: V070GameState;
+    gambit: string;
+    tactic: string;
+  } {
+    let state = setup();
+    const gambit = state.players.A.zones.hand[0]!;
+    state.cardInstances[gambit].cardId = 'military-give-chase';
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'A', cardInstanceId: gambit,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits', playerId: 'A',
+    });
+    const tactic = state.battleRuntime!.participants.A.reserve[0]!;
+    expect(tactic).not.toBe(gambit);
+    state.cardInstances[tactic].cardId = 'military-give-chase';
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'A', cardInstanceId: tactic,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic', playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics', playerId: 'A',
+    });
+    state.players.A.military!.command = 2;
+    state = complete(settle(state, 'A'));
+    expect(state.v073FollowUpQueue?.pending.map(g => g.kind)).toEqual([
+      'give-chase-battle', 'give-chase-battle', 'general-rout',
+    ]);
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([gambit, tactic, null]);
+    expect(state.players.A.zones.graveyard).toContain(gambit);
+    expect(state.players.A.zones.graveyard).toContain(tactic);
+    return { state, gambit, tactic };
+  }
+
+  test('two revealed Give Chase copies are physically distinct, and the first battle expires the other and Rout', () => {
+    let { state, gambit, tactic } = twoPhysicalGiveChaseCopies();
+    const turnNumber = state.turnNumber;
+    const offered = viewV070GameForPlayer(state, 'A').pendingFollowUpMovement?.options;
+    expect(offered?.map(o => o.key)).toEqual([
+      'give-chase:' + gambit, 'give-chase:' + tactic,
+    ]);
+    const before = structuredClone(state);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'A',
+      grantKey: 'general-rout:A',
+    })).toThrow(/not offered/);
+    expect(state).toEqual(before);
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'A',
+      grantKey: 'give-chase:' + tactic,
+    });
+    expect(state.players.A.military!.command).toBe(2);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'A', choice: 'advance',
+    });
+    expect(state.battle?.attacker).toBe('A');
+    expect(state.battle?.attackerGambitProhibited).toBe(true);
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.players.A.military!.command).toBe(2);
+    expect(state.activePlayer).toBe('A');
+    expect(state.turnNumber).toBe(turnNumber);
+    const resolution = [...state.events].reverse().find(e =>
+      e.type === 'follow_up_movement_resolved');
+    expect((resolution?.payload as { expired?: string[] }).expired).toEqual([
+      'give-chase:' + gambit, 'general-rout:A',
+    ]);
+    expect(state.players.A.zones.graveyard).toContain(gambit);
+    expect(state.players.A.zones.graveyard).toContain(tactic);
+  });
+
+  test('two Give Chase advances without battles retain Rout; only Rout spends Command when finally chosen', () => {
+    let { state, gambit, tactic } = twoPhysicalGiveChaseCopies();
+    // Move the winning attacker's opponent far enough away for two separate
+    // legal, no-battle advances. The third Advance from Rout reaches that opponent.
+    // Reposition both tokens within the actual board for a three-step
+    // follow-up sequence. The initiating battle and card sources above
+    // remain real reducer outcomes; only this scenario's spacing is staged.
+    const attackerPosition = state.board.length - 4;
+    expect(attackerPosition).toBeGreaterThanOrEqual(0);
+    const routTarget = attackerPosition + 3;
+    state.board.forEach(territory => {
+      if (territory.occupant === 'A' || territory.occupant === 'B') {
+        territory.occupant = null;
+      }
+    });
+    state.players.A.position = attackerPosition;
+    state.board[attackerPosition].occupant = 'A';
+    state.players.B.position = routTarget;
+    state.board[routTarget].occupant = 'B';
+
+    for (const [copy, remaining] of [
+      [gambit, tactic],
+      [tactic, null],
+    ] as const) {
+      const snap = structuredClone(state);
+      expect(() => reduceV070TurnAction(state, {
+        type: 'choose_follow_up_movement', playerId: 'A',
+        grantKey: 'general-rout:A',
+      })).toThrow(/not offered/);
+      expect(state).toEqual(snap);
+      state = reduceV070TurnAction(state, {
+        type: 'choose_follow_up_movement', playerId: 'A',
+        grantKey: 'give-chase:' + copy,
+      });
+      state = reduceV070TurnAction(state, {
+        type: 'choose_movement', playerId: 'A', choice: 'advance',
+      });
+      expect(state.battle).toBeNull();
+      expect(state.players.A.military!.command).toBe(2);
+      expect(state.v073FollowUpQueue?.pending.map(g => g.key)).toEqual(
+        remaining ? ['give-chase:' + remaining, 'general-rout:A']
+          : ['general-rout:A'],
+      );
+      expect(state.v073FollowUpQueue?.resolved.map(g => g.sourceInstanceId)
+        .includes(copy)).toBe(true);
+    }
+
+    expect(state.players.A.position).toBe(routTarget - 1);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'A',
+      grantKey: 'general-rout:A',
+    });
+    expect(state.players.A.military!.command).toBe(0);
+    expect(state.turnState?.movementSequenceOpen).toBe(true);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'A', choice: 'advance',
+    });
+    expect(state.battle?.attacker).toBe('A');
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.events.filter(e =>
+      e.type === 'military_order_used'
+      && (e.payload as { order?: string }).order === 'Rout',
+    )).toHaveLength(1);
+    expect(state.players.A.zones.graveyard).toContain(gambit);
+    expect(state.players.A.zones.graveyard).toContain(tactic);
+  });
+
   test('forged unrelated actor cannot take the offered effect or move another player', () => {
     let [state, id] = revealGambit(setup(), 'B', 'military-countercharge');
     state = complete(settle(state, 'B'));
