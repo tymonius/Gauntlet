@@ -118,6 +118,8 @@ The General's Orders reward you for choosing the moment to attack and for keepin
 
 **Multiple copies:** Give Chase and Countercharge are non-Unique. If multiple separate follow-up effects were eligible from the same battle, resolve them one at a time. Once one Advance initiates another battle, any unresolved follow-up movements from the first battle expire rather than carrying into or resuming after the new battle. Countercharge applies to a **winning defender**; Give Chase and Rout apply to a **winning attacker**, so those two categories cannot trigger for the same winner in one battle.
 
+**Countercharge when blocked:** Its Gambit/Tactic mode tells you to advance (not “you may”). If that Advance is legally impossible—for example, a Demilitarized Zone bars entry—you still put Countercharge in the Graveyard, but do **not** move. This does not ignore the Zone's restriction or its discard costs. Other unresolved eligible follow-up effects remain available if no new battle begins.
+
 ### Commandant
 
 **Playstyle:** defense, holding occupied ground, and battlefield control.

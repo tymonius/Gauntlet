@@ -560,6 +560,8 @@ When more than one separate effect from the same battle grants movement at the e
 
 Resolve each chosen effect's movement immediately. **If an Advance starts another battle, enter that battle's Onset immediately.** Every other unresolved follow-up movement effect from the preceding battle expires: it does not resolve before the new battle, carry into that battle, or resume afterward. This applies even to an otherwise mandatory old-battle follow-up effect. If no new battle begins, the remaining eligible follow-up effects may resolve in order. An optional effect may be declined; an unused Order is not paid for.
 
+**When a mandatory Advance is impossible:** If an effect instructs you to Advance without saying “may,” but no legal Advance is possible (for example, a Territory cannot be entered under a Demilitarized Zone restriction), **the Advance simply does not happen**. Still follow the effect's other instructions, including putting its card in the Graveyard. This does not waive a movement prohibition or payment requirement, and does not turn the mandatory instruction into an optional choice. Since no new battle begins, other unresolved eligible follow-up effects remain available at their proper timing.
+
 This differs from losing unused **movement steps** within a single movement sequence: the rule above governs **separate effects** that have not yet resolved.
 
 #### Normal result

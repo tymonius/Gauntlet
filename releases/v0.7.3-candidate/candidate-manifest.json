@@ -49,6 +49,19 @@
         "If no battle starts resolve remaining eligible effects",
         "Covers duplicate Give Chase and Countercharge including otherwise mandatory effect"
       ]
+    },
+    {
+      "date": "2026-11-13",
+      "id": "impossible-mandatory-advance-no-movement",
+      "source": "docs/rules-decisions/2026-11-13-impossible-mandatory-advance.md",
+      "status": "candidate-integrated",
+      "changes": [
+        "A mandatory Advance that has no legal destination does not move the token or start a battle",
+        "All other instructions including the source card going to Graveyard still occur",
+        "No movement prohibition or required discard is waived",
+        "No new battle starts, so remaining old-battle follow-up effects do not expire",
+        "An available cost that is merely omitted is a retriable action error, not an impossible Advance"
+      ]
     }
   ],
   "exclusions": [
@@ -59,7 +72,7 @@
     "Shock and Awe separate Breakthrough implementation tracked in PR #1963",
     "Any unsupported current-release digital-engine battle effect"
   ],
-  "runtimeIntegration": "Countercharge and Give Chase Gambit/Tactic follow-up effects are now integrated into the reusable digital reducer (PR #2026), with physical source registration, off-turn movement, Rout precedence and Command payment, battle-initiated expiry, Give Chase battle restrictions, and end-to-end regression coverage. Registration is 108/113 battle effects; no published v0.7.3 cutover, TTS version switch, website data promotion, or rules-arbiter corpus update. The separate Intercepted Orders candidate wording has not been activated in the engine.",
+  "runtimeIntegration": "Countercharge and Give Chase Gambit/Tactic follow-up effects are now integrated into the reusable digital reducer (PR #2026), with physical source registration, off-turn movement, Rout precedence and Command payment, battle-initiated expiry, Give Chase battle restrictions, and end-to-end regression coverage. Registration is 108/113 battle effects; no published v0.7.3 cutover, TTS version switch, website data promotion, or rules-arbiter corpus update. The separate Intercepted Orders candidate wording has not been activated in the engine. Mandatory Countercharge inability now has an explicit no-movement effect resolution path in the reducer (2026-11-13), while a legal but omitted payment continues to require payment.",
   "pending": [
     "review candidate gameplay and reader-facing text",
     "validate candidate presentation and card rendering after promotion planning",
