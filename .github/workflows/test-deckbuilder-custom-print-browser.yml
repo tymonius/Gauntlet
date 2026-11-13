@@ -184,7 +184,18 @@ jobs:
           );
 
           const launch = page.locator('.preview-actions > .art-compositor-launch');
-          await launch.waitFor({ timeout: 30000 });
+          console.log('Card Reference compositor diagnostics', JSON.stringify(await page.evaluate(() => {
+            const frame = document.querySelector('.rendered-card-frame');
+            return {
+              frame: frame?.src,
+              artId: frame?.contentDocument?.body?.dataset.artDirectionId,
+              renderReady: frame?.contentDocument?.body?.dataset.renderReady,
+              images: frame?.contentDocument?.querySelectorAll('.card-art img, .territory-art img')?.length,
+              launchers: [...document.querySelectorAll('.art-compositor-launch')].map(el => ({ parent: el.parentElement?.className, id: el.dataset.artDirectionId })),
+              scripts: [...document.scripts].filter(el => el.src.includes('artwork')).map(el => el.src),
+            };
+          })), 'errors', errors);
+          await launch.waitFor({ timeout: 5000 });
           await launch.click();
           const editor = page.locator('.art-compositor-dialog[open]');
           await editor.waitFor();
