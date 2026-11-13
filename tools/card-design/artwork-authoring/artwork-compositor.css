@@ -242,6 +242,28 @@
 .art-compositor-crosshair::after { width: 1px; height: 24px; }
 .is-comparing-smart .art-compositor-crosshair { opacity: 0.55; }
 
+.art-compositor-preview-help {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+
+.art-compositor-preview-help button {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.3);
+  color: #e8dac9;
+  padding: 7px 13px;
+  font: 650 0.72rem/1.2 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.art-compositor-preview-help button[aria-pressed="true"] {
+  background: #e8dcc9;
+  color: #211c18;
+}
+
 .art-compositor-help {
   margin: 0;
   text-align: center;
@@ -321,6 +343,50 @@
   border-bottom: 1px solid rgb(255 255 255 / 0.09);
   color: #f2e9dc;
   font: 600 0.78rem/1.2 system-ui, sans-serif;
+}
+
+.art-compositor-tone {
+  min-width: 0;
+  margin: 16px 0 0;
+  padding: 12px 14px 14px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 10px;
+}
+
+.art-compositor-tone legend {
+  color: #fff4df;
+  font: 700 0.84rem/1.2 system-ui, sans-serif;
+  padding: 0 5px;
+}
+
+.art-compositor-tone p {
+  margin: 0 0 4px;
+  color: #bdad99;
+  font: 500 0.7rem/1.45 system-ui, sans-serif;
+}
+
+.art-compositor-tone .art-compositor-axis {
+  padding: 11px 0;
+}
+
+.art-compositor-tone .art-compositor-control-heading span {
+  font-size: 0.68rem;
+}
+
+.art-compositor-reset-tone {
+  margin-top: 12px;
+  padding: 8px 11px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 7px;
+  background: #302b26;
+  color: #e8dac9;
+  font: 650 0.72rem/1.2 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.art-compositor-reset-tone:hover,
+.art-compositor-reset-tone:focus-visible {
+  border-color: #e8dac9;
 }
 
 .art-compositor-shortcuts,

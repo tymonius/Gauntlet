@@ -161,9 +161,76 @@ jobs:
           await browser.close();
           NODE
 
+      - name: Exercise internal Card Review tonal compositor and exclude public pages
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+          const errors = [];
+          page.on('pageerror', error => errors.push(error.message));
+
+          const response = await page.goto('http://127.0.0.1:8000/card-design/?type=playable&faction=intelligence', { waitUntil: 'domcontentloaded' });
+          if (!response?.ok()) throw new Error('Card Review did not load.');
+
+          const card = page.locator('.specimen-column:has(iframe[src*="intelligence-spies"])').first();
+          await card.waitFor({ timeout: 60000 });
+          const frame = card.locator('iframe[src*="intelligence-spies"]');
+          await frame.scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => {
+            const frame = document.querySelector('.specimen-column iframe[src*="intelligence-spies"]');
+            return frame?.contentDocument?.body?.dataset.renderReady === 'true';
+          }, null, { timeout: 60000 });
+
+          const launch = card.locator(':scope > .art-compositor-launch');
+          await launch.waitFor({ timeout: 30000 });
+          await launch.click();
+          const editor = page.locator('.art-compositor-dialog[open]');
+          await editor.waitFor();
+          const preview = page.locator('.art-compositor-preview');
+          await page.waitForFunction(() => document.querySelector('.art-compositor-preview img')?.naturalWidth > 0);
+          const original = await preview.screenshot();
+
+          await page.locator('[data-tone-number="shadows"]').fill('50');
+          await page.waitForFunction(() =>
+            document.querySelector('.art-compositor-preview img')?.style.filter.includes('url("#gauntlet-art-tone-'),
+          );
+          const adjusted = await preview.screenshot();
+          if (original.equals(adjusted)) throw new Error('Shadow lift did not visually change the preview.');
+
+          await page.locator('[data-action="compare-tone"]').click();
+          const before = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (before !== '') throw new Error('Original tone comparison did not clear adjustments.');
+          await page.locator('[data-action="compare-tone"]').click();
+          const restored = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (!restored.includes('url("#gauntlet-art-tone-')) throw new Error('Adjusted tone was not restored.');
+
+          await page.locator('[data-action="reset-tone"]').click();
+          const reset = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
+          if (reset !== '') throw new Error('Tone reset did not return to neutral.');
+          await page.screenshot({ path: '/tmp/card-review-artwork-tone-editor.png' });
+
+          for (const publicPath of ['/card-reference/', '/deckbuilder/']) {
+            await page.goto(`http://127.0.0.1:8000${publicPath}`, { waitUntil: 'domcontentloaded' });
+            const exposed = await page.evaluate(() => ({
+              script: [...document.scripts].some(node => /artwork-compositor(?:-targets)?\.js/.test(node.src)),
+              launcher: Boolean(document.querySelector('.art-compositor-launch')),
+              editor: Boolean(document.querySelector('.art-compositor-dialog')),
+            }));
+            if (Object.values(exposed).some(Boolean)) {
+              throw new Error(`Artwork authoring controls exposed on ${publicPath}: ${JSON.stringify(exposed)}`);
+            }
+          }
+          if (errors.length) throw new Error(`Card Review compositor errors: ${errors.join('; ')}`);
+          await browser.close();
+          NODE
+
       - name: Upload browser screenshots
         uses: actions/upload-artifact@v4
         with:
           name: deckbuilder-custom-print-browser-smoke
-          path: /tmp/deckbuilder-custom-print-*.png
+          path: |
+            /tmp/deckbuilder-custom-print-*.png
+            /tmp/card-review-artwork-tone-editor.png
           if-no-files-found: error

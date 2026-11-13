@@ -4,6 +4,12 @@
   const SAVE_ENDPOINT = '/api/art-direction';
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 1.8;
+  const TONE_FIELDS = Object.freeze([
+    { key: 'brightness', baseline: 100, min: 70, max: 150 },
+    { key: 'shadows', baseline: 0, min: 0, max: 100 },
+    { key: 'contrast', baseline: 100, min: 70, max: 130 },
+    { key: 'saturation', baseline: 100, min: 70, max: 150 },
+  ]);
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const round = (value, digits = 3) => Number(Number(value).toFixed(digits));
   const slugify = (value) => String(value ?? '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -13,6 +19,7 @@
   let previewImage;
   let state = null;
   let compareMode = 'manual';
+  let showOriginalTone = false;
   let pointerState = null;
   let scanQueued = false;
   const divergences = new Map();
@@ -97,6 +104,10 @@
         focusY: normalized.focusY,
         smart: normalized.smart,
         zoom: normalized.zoom,
+        brightness: normalized.brightness,
+        shadows: normalized.shadows,
+        contrast: normalized.contrast,
+        saturation: normalized.saturation,
       });
     }
     return JSON.stringify(direction || {});
@@ -259,8 +270,8 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'art-compositor-launch screen-only';
-    button.textContent = 'Position art';
-    button.setAttribute('aria-label', `Manually position artwork for ${target.label}`);
+    button.textContent = 'Edit artwork';
+    button.setAttribute('aria-label', `Adjust artwork composition and print tone for ${target.label}`);
     button.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -334,7 +345,7 @@
       <div class="art-compositor-shell">
         <header class="art-compositor-header">
           <div>
-            <p class="art-compositor-kicker">Manual artwork positioning</p>
+            <p class="art-compositor-kicker">Composition &amp; print tone</p>
             <h2 class="art-compositor-title">Artwork compositor</h2>
             <p class="art-compositor-source"></p>
           </div>
@@ -352,7 +363,10 @@
                 <span class="art-compositor-crosshair" aria-hidden="true"></span>
               </figure>
             </div>
-            <p class="art-compositor-help">Drag to reposition · wheel to zoom · arrows nudge · Shift + arrows move faster</p>
+            <div class="art-compositor-preview-help">
+              <button type="button" data-action="compare-tone" aria-pressed="false">Show original tone</button>
+              <p class="art-compositor-help">Drag to reposition · wheel to zoom · arrows nudge · Shift + arrows move faster</p>
+            </div>
           </section>
           <aside class="art-compositor-controls">
             <div class="art-compositor-axis">
@@ -370,6 +384,27 @@
               <div class="art-compositor-range-row"><input type="range" min="1" max="1.8" step="0.01" value="1" data-range="zoom" /><input type="number" min="1" max="1.8" step="0.01" value="1" data-number="zoom" /><span>×</span></div>
             </div>
             <label class="art-compositor-fit"><span>Fit</span><select><option value="cover">Cover</option><option value="contain">Contain</option></select></label>
+            <fieldset class="art-compositor-tone">
+              <legend>Print tone</legend>
+              <p>Lift dark artwork without changing its crop, frame, or text. Neutral values leave the image unchanged.</p>
+              <div class="art-compositor-axis">
+                <div class="art-compositor-control-heading"><strong>Brightness</strong><span>100% = original</span></div>
+                <div class="art-compositor-range-row"><input type="range" min="70" max="150" step="1" value="100" data-tone-range="brightness" aria-label="Artwork brightness" /><input type="number" min="70" max="150" step="1" value="100" data-tone-number="brightness" aria-label="Artwork brightness percent" /><span>%</span></div>
+              </div>
+              <div class="art-compositor-axis">
+                <div class="art-compositor-control-heading"><strong>Shadows</strong><span>0% = original</span></div>
+                <div class="art-compositor-range-row"><input type="range" min="0" max="100" step="1" value="0" data-tone-range="shadows" aria-label="Artwork shadow lift" /><input type="number" min="0" max="100" step="1" value="0" data-tone-number="shadows" aria-label="Artwork shadow lift percent" /><span>%</span></div>
+              </div>
+              <div class="art-compositor-axis">
+                <div class="art-compositor-control-heading"><strong>Contrast</strong><span>100% = original</span></div>
+                <div class="art-compositor-range-row"><input type="range" min="70" max="130" step="1" value="100" data-tone-range="contrast" aria-label="Artwork contrast" /><input type="number" min="70" max="130" step="1" value="100" data-tone-number="contrast" aria-label="Artwork contrast percent" /><span>%</span></div>
+              </div>
+              <div class="art-compositor-axis">
+                <div class="art-compositor-control-heading"><strong>Saturation</strong><span>100% = original</span></div>
+                <div class="art-compositor-range-row"><input type="range" min="70" max="150" step="1" value="100" data-tone-range="saturation" aria-label="Artwork saturation" /><input type="number" min="70" max="150" step="1" value="100" data-tone-number="saturation" aria-label="Artwork saturation percent" /><span>%</span></div>
+              </div>
+              <button type="button" data-action="reset-tone" class="art-compositor-reset-tone">Reset tone to original</button>
+            </fieldset>
             <div class="art-compositor-shortcuts">
               <button type="button" data-action="center">Center</button>
               <button type="button" data-action="smart">Smart baseline</button>
@@ -380,7 +415,7 @@
               <code></code>
             </div>
             <div class="art-compositor-actions">
-              <button type="button" class="art-compositor-save" data-action="save">Save position</button>
+              <button type="button" class="art-compositor-save" data-action="save">Save artwork</button>
               <button type="button" data-action="copy">Copy override</button>
             </div>
             <p class="art-compositor-save-status" role="status" aria-live="polite"></p>
@@ -410,6 +445,8 @@
       zoomNumber: dialog.querySelector('[data-number="zoom"]'),
       zoomLabel: dialog.querySelector('[data-zoom-label]'),
       fit: dialog.querySelector('.art-compositor-fit select'),
+      tone: {},
+      compareTone: dialog.querySelector('[data-action="compare-tone"]'),
     });
 
     dialog.querySelector('.art-compositor-close').addEventListener('click', closeDialog);
@@ -427,6 +464,26 @@
       manualRender();
     });
     ui.fit.addEventListener('change', manualRender);
+    for (const field of TONE_FIELDS) {
+      const range = dialog.querySelector(`[data-tone-range="${field.key}"]`);
+      const number = dialog.querySelector(`[data-tone-number="${field.key}"]`);
+      ui.tone[field.key] = { range, number };
+      bindPair(range, number, () => {
+        const value = clamp(Number(number.value), field.min, field.max);
+        range.value = number.value = String(Number.isFinite(value) ? value : field.baseline);
+        manualRender();
+      });
+    }
+    ui.compareTone.addEventListener('click', () => {
+      showOriginalTone = !showOriginalTone;
+      ui.compareTone.setAttribute('aria-pressed', String(showOriginalTone));
+      ui.compareTone.textContent = showOriginalTone ? 'Show adjusted tone' : 'Show original tone';
+      renderPreview();
+    });
+    dialog.querySelector('[data-action="reset-tone"]').addEventListener('click', () => {
+      setToneControls({});
+      manualRender();
+    });
 
     dialog.querySelector('[data-action="center"]').addEventListener('click', () => {
       ui.xAuto.checked = false;
@@ -497,6 +554,11 @@
   }
 
   function manualRender() {
+    if (showOriginalTone) {
+      showOriginalTone = false;
+      ui.compareTone.setAttribute('aria-pressed', 'false');
+      ui.compareTone.textContent = 'Show original tone';
+    }
     if (compareMode !== 'manual') setCompare('manual');
     else {
       ui.xRange.disabled = ui.xAuto.checked;
@@ -505,6 +567,26 @@
       ui.yNumber.disabled = ui.yAuto.checked;
       renderPreview();
     }
+  }
+
+  function setToneControls(direction = {}) {
+    for (const field of TONE_FIELDS) {
+      const raw = Number(direction[field.key]);
+      const value = direction[field.key] === undefined || !Number.isFinite(raw)
+        ? field.baseline : clamp(raw, field.min, field.max);
+      ui.tone[field.key].range.value = String(value);
+      ui.tone[field.key].number.value = String(value);
+    }
+  }
+
+  function toneFromControls() {
+    const tone = {};
+    for (const field of TONE_FIELDS) {
+      const raw = Number(ui.tone[field.key].number.value);
+      const value = Number.isFinite(raw) ? clamp(raw, field.min, field.max) : field.baseline;
+      if (value !== field.baseline) tone[field.key] = round(value, 2);
+    }
+    return tone;
   }
 
   function directionFromControls() {
@@ -517,7 +599,7 @@
     const zoom = clamp(Number.parseFloat(ui.zoomNumber.value) || 1, MIN_ZOOM, MAX_ZOOM);
     if (Math.abs(zoom - 1) > 0.0001) direction.zoom = round(zoom, 2);
     if (ui.fit.value === 'contain') direction.fit = 'contain';
-    return direction;
+    return { ...direction, ...toneFromControls() };
   }
 
   function explicitDirectionFromResolved(result) {
@@ -530,6 +612,7 @@
       focusY: round(Number(result.focusY) / 100, 4),
       smart: false,
       zoom: round(clamp(Number.parseFloat(ui.zoomNumber.value) || 1, MIN_ZOOM, MAX_ZOOM), 4),
+      ...toneFromControls(),
     };
   }
 
@@ -550,7 +633,12 @@
       ui.status.textContent = 'Shared artwork crop engine is unavailable.';
       return;
     }
-    const direction = compareMode === 'smart' ? { fit: 'cover', zoom: 1 } : directionFromControls();
+    const tone = showOriginalTone
+      ? Object.fromEntries(TONE_FIELDS.map(field => [field.key, field.baseline]))
+      : toneFromControls();
+    const direction = compareMode === 'smart'
+      ? { fit: 'cover', zoom: 1, ...tone }
+      : { ...directionFromControls(), ...tone };
     const result = window.GauntletArtworkCrop.apply(previewImage, direction, {
       id: `${SMART_ID_PREFIX}${state.id}`,
       label: state.label,
@@ -578,6 +666,9 @@
     if (direction.zoom !== undefined) parts.push(`zoom: ${direction.zoom}`);
     if (direction.fit !== undefined) parts.push(`fit: "${direction.fit}"`);
     if (direction.smart === false) parts.push('smart: false');
+    for (const field of TONE_FIELDS) {
+      if (direction[field.key] !== undefined) parts.push(`${field.key}: ${direction[field.key]}`);
+    }
     return `'${id.replaceAll("'", "\\'")}': { ${parts.join(', ')} },`;
   }
 
@@ -594,6 +685,9 @@
       return;
     }
 
+    showOriginalTone = false;
+    ui.compareTone.setAttribute('aria-pressed', 'false');
+    ui.compareTone.textContent = 'Show original tone';
     const sourceDirection = stableDirection({ ...target, window: resolved.window });
     state = { ...target, ...resolved, sourceDirection };
     const x = focusFrom(sourceDirection, 'x');
@@ -606,6 +700,7 @@
     ui.zoomRange.value = ui.zoomNumber.value = String(zoom);
     ui.zoomLabel.textContent = `${zoom.toFixed(2)}×`;
     ui.fit.value = fitFrom(sourceDirection);
+    setToneControls(sourceDirection);
     ui.title.textContent = target.label;
     ui.source.textContent = `${target.id} · ${Math.round(rect.width)}×${Math.round(rect.height)} art window`;
     ui.status.textContent = draftDiffersFromCanonical(target)
@@ -644,6 +739,7 @@
     ui.zoomRange.value = ui.zoomNumber.value = String(zoom);
     ui.zoomLabel.textContent = `${zoom.toFixed(2)}×`;
     ui.fit.value = fitFrom(direction);
+    setToneControls(direction);
     manualRender();
     ui.status.textContent = 'Restored the saved source override.';
   }
@@ -704,7 +800,7 @@
 
     ui.status.textContent = unpublished
       ? `Saved to unpublished artwork batch PR #${payload.pr.number}; the red card marker remains until that batch is published.`
-      : 'Saved to game-data/current-game.json. Reloading the canonical catalog to verify the persisted position…';
+      : 'Saved to game-data/current-game.json. Reloading the canonical catalog to verify the persisted artwork…';
 
     if (!unpublished) window.setTimeout(() => window.location.reload(), 500);
   }

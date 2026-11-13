@@ -4,6 +4,7 @@
   const PRIORITY_STDDEV_WEIGHT = 0.45;
   const BOUNDARY_BAND_FRACTION = 0.035;
   const analysisCache = new Map();
+  let nextToneFilterId = 0;
 
   function apply(image, direction = null, options = {}) {
     if (!image?.naturalWidth || !image?.naturalHeight) return null;
@@ -16,6 +17,7 @@
     const authored = normalizeDirection(mergeDirections(override, direction));
     image.style.objectFit = authored.fit;
     image.style.transform = authored.zoom === 1 ? '' : `scale(${authored.zoom})`;
+    applyTone(image, authored);
 
     if (authored.fit !== 'cover' || authored.smart === false) {
       const result = setPosition(
@@ -99,7 +101,85 @@
       hasFocus: focusX !== null || focusY !== null,
       smart: source.smart !== false,
       zoom: Number.isFinite(zoomValue) ? clamp(zoomValue, 1, 1.8) : 1,
+      brightness: toneValue(source.brightness, 100, 70, 150),
+      shadows: toneValue(source.shadows, 0, 0, 100),
+      contrast: toneValue(source.contrast, 100, 70, 130),
+      saturation: toneValue(source.saturation, 100, 70, 150),
     };
+  }
+
+  function toneValue(value, fallback, min, max) {
+    const numeric = Number(value);
+    return value === undefined || value === null || value === '' || !Number.isFinite(numeric)
+      ? fallback : clamp(numeric, min, max);
+  }
+
+  // A smooth component-transfer curve lifts shadows while preserving white and
+  // the brightest highlights. CSS brightness alone would wash out light sources.
+  // The filter is attached only to the artwork <img>, never the card frame/text.
+  function shadowTable(strength) {
+    const values = [];
+    for (let index = 0; index <= 32; index += 1) {
+      const x = index / 32;
+      const lift = (strength / 100) * 0.32 * (1 - x) ** 2 * (0.3 + 0.7 * Math.sqrt(x));
+      values.push(Math.min(1, x + lift).toFixed(5));
+    }
+    return values.join(' ');
+  }
+
+  function shadowFilterId(image, strength) {
+    const doc = image.ownerDocument || document;
+    let id = image.dataset.gauntletToneId;
+    let svg = id && doc.getElementById(id);
+    if (!svg) {
+      id = `gauntlet-art-tone-${++nextToneFilterId}`;
+      const ns = 'http://www.w3.org/2000/svg';
+      svg = doc.createElementNS(ns, 'svg');
+      svg.id = id;
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+      const defs = doc.createElementNS(ns, 'defs');
+      const filter = doc.createElementNS(ns, 'filter');
+      filter.id = `${id}-curve`;
+      filter.setAttribute('color-interpolation-filters', 'sRGB');
+      filter.setAttribute('x', '-50%');
+      filter.setAttribute('y', '-50%');
+      filter.setAttribute('width', '200%');
+      filter.setAttribute('height', '200%');
+      const transfer = doc.createElementNS(ns, 'feComponentTransfer');
+      for (const channel of ['R', 'G', 'B']) {
+        const func = doc.createElementNS(ns, `feFunc${channel}`);
+        func.setAttribute('type', 'table');
+        transfer.appendChild(func);
+      }
+      filter.appendChild(transfer);
+      defs.appendChild(filter);
+      svg.appendChild(defs);
+      doc.body.appendChild(svg);
+      image.dataset.gauntletToneId = id;
+    }
+    const table = shadowTable(strength);
+    svg.querySelectorAll('feFuncR, feFuncG, feFuncB').forEach(func => {
+      func.setAttribute('tableValues', table);
+    });
+    return `${id}-curve`;
+  }
+
+  function applyTone(image, direction) {
+    const { brightness, shadows, contrast, saturation } = direction;
+    const filters = [];
+    if (shadows > 0) {
+      filters.push(`url("#${shadowFilterId(image, shadows)}")`);
+    }
+    if (brightness !== 100) filters.push(`brightness(${(brightness / 100).toFixed(3)})`);
+    if (contrast !== 100) filters.push(`contrast(${(contrast / 100).toFixed(3)})`);
+    if (saturation !== 100) filters.push(`saturate(${(saturation / 100).toFixed(3)})`);
+    image.style.filter = filters.join(' ');
+    image.dataset.artBrightness = String(brightness);
+    image.dataset.artShadows = String(shadows);
+    image.dataset.artContrast = String(contrast);
+    image.dataset.artSaturation = String(saturation);
   }
 
   function normalizeFocus(value) {
