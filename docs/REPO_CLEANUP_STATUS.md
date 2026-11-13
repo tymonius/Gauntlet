@@ -555,13 +555,20 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Repaired the active TTS release-target test's stale candidate-status expectations, using the canonical current-game identity and lifecycle-selected release target rather than a historical candidate assumption. The quarantined legacy TTS-current-release source inspection now points to maintained source while retaining its quarantine status pending a separate rehabilitation.
 - No current-game data, frozen release evidence, generated files, Workshop save, or deployed URLs were changed. Merged in [#2014](https://github.com/tymonius/Gauntlet/pull/2014) after PR tests, governance, Card Authority, TTS render/preview, and Pages validation passed.
 
-## Current subtranche — Rules Arbiter semantic QA implementation ownership
+## Completed subtranche — Rules Arbiter semantic QA implementation ownership
 
 - Audited the active deployment boundary: `rules-assistant/wrangler.toml` deploys `rules-assistant/admin-refinement-worker.js`, which layers `worker-entry.js` with admin refinement. The entrypoint serves public and historical/candidate routes, and also serves a live authorized `/api/qa/semantic-evaluate` endpoint. This endpoint is not a retired QA-only fixture; it must remain bundled and deployed.
 - Move the maintained semantic evaluator/handler implementation to `tools/rules-assistant/qa/qa-semantic-evaluator.js`, keeping `rules-assistant/qa-semantic-evaluator.js` as an exact export-forwarding module for the unchanged Worker import. Only the relative path to the existing GitHub Actions QA authorization helper changes; evaluator prompts, validation, response status, verdict semantics, endpoint routing, and authentication remain unchanged.
 - Retarget direct implementation/source-inspection QA regression tests to the maintained module. Add exact-export/route/authorization/CI contract checks that ensure the live Worker still uses the compatibility import.
 - Explicitly watch both evaluator module paths in the production Rules Arbiter deployment workflow, add Node syntax validation for both, and extend the historical-regression workflow triggers to include the maintained evaluator path. This corrects a dependency-gap where updating that imported deployed handler would not trigger a production build.
-- Keep admin/refinement ownership under `tools/rules-assistant/` and all current/historical/candidate Worker route contracts untouched. Do not change canonical gameplay, frozen release corpus, model budget or security semantics, or QA evaluation criteria. Check repository tests, historical regression, and governance before merging; deployment to production happens through the existing deployment workflow after merge.
+- Keep admin/refinement ownership under `tools/rules-assistant/` and all current/historical/candidate Worker route contracts untouched. No gameplay, release corpus, model budget, security or QA evaluation changes. Merged in [#2019](https://github.com/tymonius/Gauntlet/pull/2019) after repository tests, historical regression, Card Authority, governance and the PR gate passed. The triggered production deploy surfaced a pre-existing blocker: its test command still used paths from before QA tests were moved to `tools/rules-assistant/qa/tests/`. No Worker deployment occurred on that run.
+
+## Current subtranche — deployed Rules Arbiter QA regression path repair
+
+- Production deployment workflow run [43443135430](https://github.com/tymonius/Gauntlet/actions/runs/43443135430) failed during its predeploy validation: all eight `npx vitest run` arguments referenced nonexistent `rules-assistant/*.test.mjs` paths. The suites have already moved to `tools/rules-assistant/qa/tests/` and passed the historical-regression CI for #2019. This was not an evaluator logic or live-health failure.
+- Retarget the eight exact predeploy QA test arguments to their maintained locations, preserving the same test set and all deployment, QA approval, Worker routing, and production-health commands.
+- Add a regression contract that verifies each of the eight deployment-gate test paths resolves to a maintained file. This prevents another silent tooling move from breaking the production rollout step.
+- Require green CI before merging this fix. Then verify the resulting push-triggered production Worker deployment and health checks rather than treating PR CI success as deployment success.
 
 ## Next top-down queue
 
