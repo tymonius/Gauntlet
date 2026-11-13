@@ -11,6 +11,10 @@ export const ART_DIRECTION_HEADER = `// Canonical artwork composition authority.
 //   zoom                 1.0..1.8; scales around the chosen focal point
 //   fit                  "cover" or "contain"
 //   smart                false disables runtime focal analysis
+//   brightness           70..150 percent (100 = unchanged)
+//   shadows              0..100 percent shadow lift (0 = unchanged)
+//   contrast             70..130 percent (100 = unchanged)
+//   saturation           70..150 percent (100 = unchanged)
 `;
 
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
@@ -29,6 +33,24 @@ function normalizeFocus(value) {
   const number = Number.parseFloat(value);
   if (!Number.isFinite(number)) return undefined;
   return round(clamp(number > 1 ? number / 100 : number, 0, 1), 4);
+}
+
+function normalizeTone(source) {
+  const tonal = {};
+  for (const [key, baseline, minimum, maximum] of [
+    ['brightness', 100, 70, 150],
+    ['shadows', 0, 0, 100],
+    ['contrast', 100, 70, 130],
+    ['saturation', 100, 70, 150],
+  ]) {
+    const raw = source[key];
+    if (raw === undefined || raw === null || raw === '') continue;
+    const number = Number(raw);
+    if (!Number.isFinite(number)) throw new Error(`Invalid artwork ${key}: ${String(raw)}`);
+    const value = round(clamp(number, minimum, maximum), 2);
+    if (value !== baseline) tonal[key] = value;
+  }
+  return tonal;
 }
 
 export function normalizeArtDirection(value) {
@@ -51,6 +73,7 @@ export function normalizeArtDirection(value) {
       focusY,
       smart: false,
       zoom: round(clamp(zoom, 1, 1.8), 4),
+      ...normalizeTone(source),
     };
   }
 
@@ -65,6 +88,7 @@ export function normalizeArtDirection(value) {
 
   if (source.fit === 'contain') direction.fit = 'contain';
   if (source.smart === false) direction.smart = false;
+  Object.assign(direction, normalizeTone(source));
   return direction;
 }
 
@@ -96,6 +120,9 @@ function serializeDirection(direction) {
   if (normalized.zoom !== undefined) properties.push(`zoom: ${serializeValue(normalized.zoom)}`);
   if (normalized.fit !== undefined) properties.push(`fit: ${serializeValue(normalized.fit)}`);
   if (normalized.smart !== undefined) properties.push(`smart: ${serializeValue(normalized.smart)}`);
+  for (const key of ['brightness', 'shadows', 'contrast', 'saturation']) {
+    if (normalized[key] !== undefined) properties.push(`${key}: ${serializeValue(normalized[key])}`);
+  }
   return `{ ${properties.join(', ')} }`;
 }
 
