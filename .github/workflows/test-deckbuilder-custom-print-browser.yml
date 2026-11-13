@@ -161,7 +161,7 @@ jobs:
           await browser.close();
           NODE
 
-      - name: Exercise Card Reference tonal compositor in Chromium
+      - name: Exercise internal Card Review tonal compositor and exclude public pages
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -171,31 +171,20 @@ jobs:
           const errors = [];
           page.on('pageerror', error => errors.push(error.message));
 
-          const response = await page.goto('http://127.0.0.1:8000/card-reference/', { waitUntil: 'domcontentloaded' });
-          if (!response?.ok()) throw new Error('Card Reference did not load.');
-          await page.waitForSelector('#app:not([hidden])', { timeout: 60000 });
-          await page.fill('#searchInput', 'Spies');
-          const entry = page.locator('.reference-row').filter({ hasText: 'Spies' }).first();
-          await entry.click();
-          await page.waitForFunction(
-            () => document.querySelector('.rendered-card-frame')?.contentDocument?.body?.dataset.renderReady === 'true',
-            null,
-            { timeout: 60000 },
-          );
+          const response = await page.goto('http://127.0.0.1:8000/card-design/?type=playable&faction=intelligence', { waitUntil: 'domcontentloaded' });
+          if (!response?.ok()) throw new Error('Card Review did not load.');
 
-          const launch = page.locator('.preview-actions > .art-compositor-launch');
-          console.log('Card Reference compositor diagnostics', JSON.stringify(await page.evaluate(() => {
-            const frame = document.querySelector('.rendered-card-frame');
-            return {
-              frame: frame?.src,
-              artId: frame?.contentDocument?.body?.dataset.artDirectionId,
-              renderReady: frame?.contentDocument?.body?.dataset.renderReady,
-              images: frame?.contentDocument?.querySelectorAll('.card-art img, .territory-art img')?.length,
-              launchers: [...document.querySelectorAll('.art-compositor-launch')].map(el => ({ parent: el.parentElement?.className, id: el.dataset.artDirectionId })),
-              scripts: [...document.scripts].filter(el => el.src.includes('artwork')).map(el => el.src),
-            };
-          })), 'errors', errors);
-          await launch.waitFor({ timeout: 5000 });
+          const card = page.locator('.specimen-column:has(iframe[src*="intelligence-spies"])').first();
+          await card.waitFor({ timeout: 60000 });
+          const frame = card.locator('iframe[src*="intelligence-spies"]');
+          await frame.scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => {
+            const frame = document.querySelector('.specimen-column iframe[src*="intelligence-spies"]');
+            return frame?.contentDocument?.body?.dataset.renderReady === 'true';
+          }, null, { timeout: 60000 });
+
+          const launch = card.locator(':scope > .art-compositor-launch');
+          await launch.waitFor({ timeout: 30000 });
           await launch.click();
           const editor = page.locator('.art-compositor-dialog[open]');
           await editor.waitFor();
@@ -220,8 +209,20 @@ jobs:
           await page.locator('[data-action="reset-tone"]').click();
           const reset = await page.locator('.art-compositor-preview img').evaluate(image => image.style.filter);
           if (reset !== '') throw new Error('Tone reset did not return to neutral.');
-          if (errors.length) throw new Error(`Card Reference compositor errors: ${errors.join('; ')}`);
-          await page.screenshot({ path: '/tmp/card-reference-artwork-tone-editor.png' });
+          await page.screenshot({ path: '/tmp/card-review-artwork-tone-editor.png' });
+
+          for (const publicPath of ['/card-reference/', '/deckbuilder/']) {
+            await page.goto(`http://127.0.0.1:8000${publicPath}`, { waitUntil: 'domcontentloaded' });
+            const exposed = await page.evaluate(() => ({
+              script: [...document.scripts].some(node => /artwork-compositor(?:-targets)?\.js/.test(node.src)),
+              launcher: Boolean(document.querySelector('.art-compositor-launch')),
+              editor: Boolean(document.querySelector('.art-compositor-dialog')),
+            }));
+            if (Object.values(exposed).some(Boolean)) {
+              throw new Error(`Artwork authoring controls exposed on ${publicPath}: ${JSON.stringify(exposed)}`);
+            }
+          }
+          if (errors.length) throw new Error(`Card Review compositor errors: ${errors.join('; ')}`);
           await browser.close();
           NODE
 
@@ -231,5 +232,5 @@ jobs:
           name: deckbuilder-custom-print-browser-smoke
           path: |
             /tmp/deckbuilder-custom-print-*.png
-            /tmp/card-reference-artwork-tone-editor.png
+            /tmp/card-review-artwork-tone-editor.png
           if-no-files-found: error
