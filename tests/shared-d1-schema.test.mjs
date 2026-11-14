@@ -30,7 +30,7 @@ describe("shared D1 schema ownership and migration history", () => {
     const modified = structuredClone(original);
     modified.consumer_configs = ["rules-assistant/wrangler.toml", "missing/wrangler.toml"];
     expect(check(modified)).toEqual(expect.arrayContaining([
-      expect.stringContaining("Missing D1 consumer config"),
+      expect.stringContaining("Expected both Rules Arbiter and Playtest Session D1 consumer configs"),
     ]));
   });
 
