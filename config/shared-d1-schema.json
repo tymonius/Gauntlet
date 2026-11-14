@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "purpose": "One shared Cloudflare D1 schema consumed by the Rules Arbiter and Playtest Session Workers; migration history is append-only.",
+  "canonical_migrations_path": "rules-assistant/migrations",
+  "ownership": "shared operational data contract; directory placement is transitional, not exclusive Rules Arbiter ownership",
+  "consumer_configs": [
+    "rules-assistant/wrangler.toml",
+    "workers/playtest-sessions/wrangler.toml"
+  ],
+  "migration_executor": {
+    "workflow": ".github/workflows/deploy-playtest-sessions.yml",
+    "wrangler_config": "rules-assistant/wrangler.toml",
+    "step": "Apply shared D1 migrations",
+    "sequence_before": "Deploy playtest session service"
+  },
+  "migrations": [
+    {
+      "filename": "0001_rules_interactions.sql",
+      "git_blob_sha": "bbf1a23ec6d7b85c1a73e46f13d76755b5543459"
+    },
+    {
+      "filename": "0002_review_export_checkpoints.sql",
+      "git_blob_sha": "ca9a2ef2afa92ee348d9612c31dc27d5dc1ccdca"
+    },
+    {
+      "filename": "0003_playtest_sessions.sql",
+      "git_blob_sha": "9a88ed8d0c18f37119b8ff63e23afa005ac341f2"
+    },
+    {
+      "filename": "0004_event_game_sessions.sql",
+      "git_blob_sha": "4dd8816a9c884f460a63909526c86deed57e352a"
+    },
+    {
+      "filename": "0005_tracked_playtests.sql",
+      "git_blob_sha": "5e069e8f9dab6822c359a5259d105bb02e2e2fd7"
+    },
+    {
+      "filename": "0006_playtest_analysis_exclusions.sql",
+      "git_blob_sha": "aa61b59f213c71d9747300327168839e49b57f85"
+    },
+    {
+      "filename": "0007_rules_intelligence.sql",
+      "git_blob_sha": "feee6e32359c2b622a4348b05155daffd442eccc"
+    },
+    {
+      "filename": "0008_rules_status_v2.sql",
+      "git_blob_sha": "d9f47978e0711a5df457a1e910e8e49aca24c314"
+    },
+    {
+      "filename": "0009_rules_answer_mode_v2.sql",
+      "git_blob_sha": "70c8cc7b1231bd79d5f62afe56ffde02659b21d5"
+    },
+    {
+      "filename": "0010_playtest_decision_experience.sql",
+      "git_blob_sha": "d57eac0bc24ef3bd997265cea81b6e1a691347cd"
+    },
+    {
+      "filename": "0011_rules_model_usage_budget.sql",
+      "git_blob_sha": "985bb510c943a78ec173646faf614d8fb41fa8ba"
+    }
+  ]
+}

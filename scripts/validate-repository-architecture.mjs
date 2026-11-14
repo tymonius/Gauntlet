@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { validateSharedD1Schema } from './validate-shared-d1-schema.mjs';
 import path from 'node:path';
 
 const root = process.cwd();
@@ -128,6 +129,10 @@ if (!fs.existsSync(currentMaterializer)) {
   if (!currentMaterializerSource.includes('scripts/render-current-rulebook-booklet.mjs --plan')) {
     failures.push('Current release materialization must select its release through the lifecycle-driven render plan.');
   }
+}
+
+for (const error of validateSharedD1Schema()) {
+  failures.push('Shared D1 schema: ' + error);
 }
 
 if (failures.length) {

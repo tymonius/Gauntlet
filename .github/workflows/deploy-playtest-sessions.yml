@@ -3,6 +3,8 @@ name: Validate and Deploy Playtest Session Worker
 on:
   pull_request:
     paths:
+      - "config/shared-d1-schema.json"
+      - "scripts/validate-shared-d1-schema.mjs"
       - "workers/playtest-sessions/**"
       - "rules-assistant/migrations/**"
       - "rules-assistant/local-search.js"
@@ -69,6 +71,7 @@ jobs:
 
       - name: Validate playtest session service
         run: |
+          node scripts/validate-shared-d1-schema.mjs
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           npm run test:tracked-session-e2e

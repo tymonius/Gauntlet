@@ -146,7 +146,7 @@
         "legacy"
       ],
       "transitional": true,
-      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, D1 migrations, runtime-adjacent regression tests, and remaining explicitly versioned/shared compatibility helpers. Historical v061, v062, v063 (published and candidate), v070, and v071 Worker/corpus implementations now live under legacy/rules-assistant/; the version-specific v071 scope precheck now lives beside its archived Worker, with a live export-forwarding shim in the deployed backend root. The v063-only Last Stand publication-language normalizer lives with its archived v063 corpus and retains a forwarding import for historical publication scripts. The still-served v072 candidate has immutable source snapshots under legacy/rules-assistant/v072-candidate/ while its active route/handler remains in rules-assistant/. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries. The deployed semantic QA route continues through a compatibility import from tools/rules-assistant/qa/; explicit historical/candidate routes remain active compatibility contracts."
+      "note": "Transitional Rules Arbiter backend/shared-runtime root: current Worker routing and retrieval, cross-service D1 migrations (pinned by config/shared-d1-schema.json; retained here as a transitional location), runtime-adjacent regression tests, and remaining explicitly versioned/shared compatibility helpers. Historical v061, v062, v063 (published and candidate), v070, and v071 Worker/corpus implementations now live under legacy/rules-assistant/; the version-specific v071 scope precheck now lives beside its archived Worker, with a live export-forwarding shim in the deployed backend root. The v063-only Last Stand publication-language normalizer lives with its archived v063 corpus and retains a forwarding import for historical publication scripts. The still-served v072 candidate has immutable source snapshots under legacy/rules-assistant/v072-candidate/ while its active route/handler remains in rules-assistant/. Browser presentation, admin/refinement/QA tooling, and retained QA evidence live in their separated boundaries. The deployed semantic QA route continues through a compatibility import from tools/rules-assistant/qa/; explicit historical/candidate routes remain active compatibility contracts."
     },
     "scripts": {
       "role": "production_tooling",
@@ -195,7 +195,7 @@
         "apps"
       ],
       "transitional": true,
-      "note": "Deployed support services."
+      "note": "Deployed support services, including Playtest Sessions, which shares the Rules Arbiter D1 migration history under the cross-service schema contract."
     },
     "v0.7.2": {
       "role": "active_application",

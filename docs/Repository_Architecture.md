@@ -94,11 +94,20 @@ Version-specific scripts and workflows are acceptable when a release genuinely n
 
 Large image, PDF, TTS, and other binary outputs should have an explicit lifecycle: canonical source asset, generated current artifact, frozen release artifact, or disposable build output. Binary-storage strategy is a separate cleanup tranche; do not rewrite Git history or introduce Git LFS casually.
 
+### 8. Shared D1 schema is a cross-service operational contract
+
+The Rules Arbiter Worker and Playtest Session Worker use the same Cloudflare D1 database. The single ordered SQL migration history still resides at `rules-assistant/migrations/` **as a transitional location**, not as private Rules Arbiter schema authority. The shared ownership and deployed consumer boundary is recorded in `config/shared-d1-schema.json` and checked by `scripts/validate-shared-d1-schema.mjs`.
+
+Both Workers' `wrangler.toml` configurations must resolve to the same migration directory and same D1 binding/database. The only automatic remote migration executor is `.github/workflows/deploy-playtest-sessions.yml`; it uses the Rules Arbiter Wrangler configuration and applies migrations before deploying the Playtest service. This describes the current operational dependency, not a guarantee that every migration has already been applied remotely.
+
+Existing migration files are append-only history. The contract pins their Git blob identities so changed SQL bytes or an unregistered migration fail validation. Future schema changes require a new numbered SQL file, a corresponding manifest entry, and the usual cross-service validation and deployment review. This is a source-history guard, not proof of live database state. Moving the migration directory requires updating both Wrangler configs, the executor workflow, tests and source-path consumers in a separate tranche; do not create a duplicate canonical migration tree.
+
 ## Machine-readable contracts
 
 | Contract | Responsibility |
 |---|---|
 | `config/repository-architecture.json` | Top-level repository ownership, lifecycle role, target architectural group, and transition status |
+| `config/shared-d1-schema.json` | Shared D1 migration history, two consumer Wrangler configurations, and the single automatic remote migration executor |
 | `config/publication-boundary.json` | Public/deployment graph: direct Pages roots, source-only roots, source→route mappings, materialized files, managed routes, versioned routes |
 | `config/rules-surface-contract.json` | Relationship between canonical gameplay authority and active technical/teaching rules surfaces |
 | `config/release-lifecycle.json` | Current/historical/withdrawn release lifecycle and current-release selection |
