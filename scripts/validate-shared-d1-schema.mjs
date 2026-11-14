@@ -84,7 +84,10 @@ export function validateSharedD1Schema(options = {}) {
   }
 
   const databaseBindings = [];
-  if (!Array.isArray(contract.consumer_configs) || contract.consumer_configs.length !== 2) {
+  const requiredConsumers = ["rules-assistant/wrangler.toml", "workers/playtest-sessions/wrangler.toml"];
+  if (!Array.isArray(contract.consumer_configs) ||
+      contract.consumer_configs.length !== requiredConsumers.length ||
+      JSON.stringify([...contract.consumer_configs].sort()) !== JSON.stringify([...requiredConsumers].sort())) {
     fail("Expected both Rules Arbiter and Playtest Session D1 consumer configs.");
   } else {
     for (const config of contract.consumer_configs) {
@@ -120,6 +123,9 @@ export function validateSharedD1Schema(options = {}) {
     fail("Shared D1 migration executor is not designated.");
   } else {
     const workflow = path.join(root, executor.workflow);
+    if (!contract.consumer_configs?.includes(executor.wrangler_config)) {
+      fail("Migration executor must use a declared consumer Wrangler configuration.");
+    }
     if (!fs.existsSync(workflow)) {
       fail("Designated migration workflow is missing: " + executor.workflow);
     } else {
