@@ -150,7 +150,7 @@ export function validateSharedD1Schema(options = {}) {
           fail("Playtest PR validation does not watch " + needed);
         }
       }
-      if (!source.includes("npm run db:schema:check")) {
+      if (!source.includes("node scripts/validate-shared-d1-schema.mjs")) {
         fail("Playtest deployment validation must check the shared D1 schema contract.");
       }
     }
