@@ -978,7 +978,8 @@ export function resumeV070SupportedRevealEffects(
   state: V070GameState,
 ): void {
   while (hasV070ReserveForceReplacementEffectsPending(state)
-    && !pendingV070BattleRevealChoice(state)) {
+    && !pendingV070BattleRevealChoice(state)
+    && !state.battleRuntime?.pendingInterceptedOrdersChoice) {
     const replacement =
       takeNextV070ReserveForceReplacementCommitment(state);
     if (!replacement) break;
@@ -1014,6 +1015,7 @@ export function resumeV070SupportedRevealEffects(
 
   if (hasV070ReserveForceReplacementEffectsPending(state)
     || pendingV070BattleRevealChoice(state)
+    || state.battleRuntime?.pendingInterceptedOrdersChoice
     || state.battleRuntime?.stage === 'halted') {
     return;
   }
