@@ -71,7 +71,7 @@ jobs:
 
       - name: Validate playtest session service
         run: |
-          npm run db:schema:check
+          node scripts/validate-shared-d1-schema.mjs
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           npm run test:tracked-session-e2e
