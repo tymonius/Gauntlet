@@ -11,6 +11,7 @@ const adminSources = [
   'admin-triage-page.js',
   'admin-scaffold-page.js',
   'admin-refinement-runtime.js',
+  'admin-shared.js',
   'review-export-checkpoint.js',
   'review-export.js',
   'review-intelligence.js',
@@ -35,6 +36,17 @@ describe('Rules Assistant admin tooling boundary', () => {
     expect(refinement).toContain('../tools/rules-assistant/admin/admin-refinement-runtime.js');
     expect(refinement).toContain('../tools/rules-assistant/admin/admin-scaffold-page.js');
     expect(worker).toContain('../tools/rules-assistant/admin/admin-page.js');
+    expect(worker).toContain('../tools/rules-assistant/admin/admin-shared.js');
+    for (const file of ['review-export.js', 'review-export-checkpoint.js', 'review-intelligence.js']) {
+      const source = read(`tools/rules-assistant/admin/${file}`);
+      expect(source).toContain('from "./admin-shared.js"');
+      expect(source).not.toContain('from "../../../rules-assistant/worker.js"');
+    }
+    const shared = read('tools/rules-assistant/admin/admin-shared.js');
+    expect(shared).toContain('export async function isAdminAuthorized');
+    expect(shared).toContain('export function interactionsToCsv');
+    expect(worker).not.toContain('async function safeEqual(');
+    expect(worker).not.toContain('function csvCell(');
   });
 
   it('routes admin-tooling changes through Worker deployment validation', () => {
@@ -43,5 +55,7 @@ describe('Rules Assistant admin tooling boundary', () => {
     expect(workflow).toContain('node --check tools/rules-assistant/admin/review-export.js');
     expect(workflow).toContain('node --check tools/rules-assistant/admin/review-intelligence.js');
     expect(workflow).toContain('node --check tools/rules-assistant/admin/review-export-checkpoint.js');
+    expect(workflow).toContain('node --check tools/rules-assistant/admin/admin-shared.js');
+    expect(workflow).toContain('tools/rules-assistant/admin/tests/admin-shared.test.mjs');
   });
 });
