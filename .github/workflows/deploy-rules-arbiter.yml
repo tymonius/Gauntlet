@@ -85,6 +85,7 @@ jobs:
           node --check tools/rules-assistant/qa/qa-semantic-evaluator.js
           node --check rules-assistant/github-actions-qa-auth.js
           node --check tools/rules-assistant/qa/github-actions-qa-auth.js
+          node --check tools/rules-assistant/admin/admin-shared.js
           node --check tools/rules-assistant/admin/review-export.js
           node --check tools/rules-assistant/admin/review-intelligence.js
           node --check tools/rules-assistant/admin/review-export-checkpoint.js
@@ -119,6 +120,7 @@ jobs:
           node --check legacy/rules-assistant/v072-candidate/frozen-sources.mjs
           node --check rules-assistant/worker-v072.js
           npx vitest run \
+            tools/rules-assistant/admin/tests/admin-shared.test.mjs \
             tools/rules-assistant/qa/tests/worker-runtime-trigger-coverage.test.mjs \
             tools/rules-assistant/qa/tests/fallback-source-lookup-regression.test.mjs \
             tools/rules-assistant/qa/tests/v071-scope-precheck.test.mjs \
