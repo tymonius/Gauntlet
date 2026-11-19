@@ -1,4 +1,4 @@
-import { isAdminAuthorized } from "../../../rules-assistant/worker.js";
+import { isAdminAuthorized } from "./admin-shared.js";
 import { buildRulesCorpus } from "../../../rules-assistant/local-search.js";
 import { V071_RULES_VERSION, defaultV071SourceUrls, loadV071RulesCorpus } from "../../../legacy/rules-assistant/v071/v071-public-corpus.js";
 import { buildCorpusReviewSnapshot } from "../../../rules-assistant/rules-intelligence.js";
