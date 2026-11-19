@@ -1,4 +1,4 @@
-import legacyWorker from "../../../rules-assistant/worker.js";
+import legacyWorker from "../v060/worker-v060.js";
 import {
   defaultSourceUrls,
   loadRulesCorpus,
