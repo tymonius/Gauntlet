@@ -643,6 +643,14 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 
 
 
+## In-progress subtranche — decouple live admin helpers from the historical base Worker
+
+- The deployed `admin-refinement-worker.js` delegates to `worker-entry.js`, which imports maintained admin export, export-checkpoint and review-intelligence handlers. Those three handlers imported `isAdminAuthorized` and/or `interactionsToCsv` from `rules-assistant/worker.js`, the old v0.6.0 base Worker still imported by the archived v061 compatibility Worker. Thus maintained admin tooling was coupled to a legacy Worker implementation for two small helpers. <!-- DOC-HISTORICAL -->
+- Promote the exact auth/token-comparison and CSV formatting code into `tools/rules-assistant/admin/admin-shared.js`. Update the three maintained handlers to use it directly. Preserve `rules-assistant/worker.js`'s named export identity by importing and re-exporting the same functions there, leaving its historical Worker routes, D1 operations and other behavior unchanged.
+- Add direct regression coverage for token authorization, CSV escaping, import/export identity and the absence of backward imports from admin tools to the legacy Worker. Protected Worker deployment must syntax-check and run the admin-shared tests before deployment. Admin tooling already belongs to the protected deployment watch scope.
+- Do not yet move the historical base Worker itself: it remains imported by the archived v061 implementation, and additional regression/route references must be classified before rehoming it. Likewise preserve current v072, candidate, v071 and other historical routes and shared smart/reliable fallback paths.
+- Scope is source ownership only. No current-game authority, gameplay mechanics, frozen corpus, model-budget limits, shared D1 schema or public API route changes.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.
