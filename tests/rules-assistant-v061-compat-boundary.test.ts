@@ -22,10 +22,15 @@ describe('Rules Arbiter v061 compatibility boundary', () => {
 
   it('retains the maintained legacy-base dependency and deployment syntax checks', () => {
     const worker = read('legacy/rules-assistant/v061/worker-v061.js');
-    expect(worker).toContain('from "../../../rules-assistant/worker.js"');
+    expect(worker).toContain('from "../v060/worker-v060.js"');
+    expect(readdirSync('legacy/rules-assistant/v060')).toContain('worker-v060.js');
+    expect(readdirSync('rules-assistant')).not.toContain('worker.js');
     expect(worker).toContain('from "../../../rules-assistant/local-search.js"');
     const workflow = read('.github/workflows/deploy-rules-arbiter.yml');
     expect(workflow).toContain('"legacy/rules-assistant/v061/**"');
+    expect(workflow).toContain('"legacy/rules-assistant/v060/**"');
+    expect(workflow).toContain('node --check legacy/rules-assistant/v060/worker-v060.js');
+    expect(read('.github/workflows/verify-current-live-publication.yml')).toContain('legacy/rules-assistant/v060/*.js');
     expect(workflow).toContain('node --check legacy/rules-assistant/v061/worker-v061.js');
   });
 });

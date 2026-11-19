@@ -10,7 +10,7 @@ import worker, {
 import {
   interactionsToCsv,
   isAdminAuthorized
-} from "../../rules-assistant/worker.js";
+} from "../../legacy/rules-assistant/v060/worker-v060.js";
 
 test("preserves valid anonymous session identifiers", () => {
   expect(sanitizeSessionId("session_12345678")).toBe("session_12345678");

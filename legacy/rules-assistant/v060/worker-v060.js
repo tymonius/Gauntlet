@@ -1,11 +1,11 @@
-import { isAdminAuthorized, interactionsToCsv } from "../tools/rules-assistant/admin/admin-shared.js";
-export { isAdminAuthorized, interactionsToCsv } from "../tools/rules-assistant/admin/admin-shared.js";
-import { ADMIN_PAGE } from "../tools/rules-assistant/admin/admin-page.js";
+import { isAdminAuthorized, interactionsToCsv } from "../../../tools/rules-assistant/admin/admin-shared.js";
+export { isAdminAuthorized, interactionsToCsv } from "../../../tools/rules-assistant/admin/admin-shared.js";
+import { ADMIN_PAGE } from "../../../tools/rules-assistant/admin/admin-page.js";
 import {
   defaultSourceUrls,
   loadRulesCorpus,
   retrieveRules
-} from "./local-search.js";
+} from "../../../rules-assistant/local-search.js";
 
 const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the canonical v0.6.0 pre-release playtest edition.
 

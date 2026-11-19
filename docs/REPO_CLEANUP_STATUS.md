@@ -643,13 +643,21 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 
 
 
-## In-progress subtranche — decouple live admin helpers from the historical base Worker
+## Completed subtranche — decouple live admin helpers from the historical base Worker
 
 - The deployed `admin-refinement-worker.js` delegates to `worker-entry.js`, which imports maintained admin export, export-checkpoint and review-intelligence handlers. Those three handlers imported `isAdminAuthorized` and/or `interactionsToCsv` from `rules-assistant/worker.js`, the old v0.6.0 base Worker still imported by the archived v061 compatibility Worker. Thus maintained admin tooling was coupled to a legacy Worker implementation for two small helpers. <!-- DOC-HISTORICAL -->
 - Promote the exact auth/token-comparison and CSV formatting code into `tools/rules-assistant/admin/admin-shared.js`. Update the three maintained handlers to use it directly. Preserve `rules-assistant/worker.js`'s named export identity by importing and re-exporting the same functions there, leaving its historical Worker routes, D1 operations and other behavior unchanged.
 - Add direct regression coverage for token authorization, CSV escaping, import/export identity and the absence of backward imports from admin tools to the legacy Worker. Protected Worker deployment must syntax-check and run the admin-shared tests before deployment. Admin tooling already belongs to the protected deployment watch scope.
 - Do not yet move the historical base Worker itself: it remains imported by the archived v061 implementation, and additional regression/route references must be classified before rehoming it. Likewise preserve current v072, candidate, v071 and other historical routes and shared smart/reliable fallback paths.
 - Scope is source ownership only. No current-game authority, gameplay mechanics, frozen corpus, model-budget limits, shared D1 schema or public API route changes.
+- [PR #2047](https://github.com/tymonius/Gauntlet/pull/2047) merged after all six PR checks passed. [Protected Worker deployment #44478592686](https://github.com/tymonius/Gauntlet/actions/runs/44478592686) passed runtime syntax/test, production health, candidate corpus and frozen stable corpus health. [Independent live-publication #44478592754](https://github.com/tymonius/Gauntlet/actions/runs/44478592754) passed current deployed-site/authority and corpus refresh verification. <!-- DOC-HISTORICAL -->
+
+## In-progress subtranche — archive the still-routed v060 base Worker
+
+- After PR #2047, maintained admin handlers no longer import the historical root `rules-assistant/worker.js`; they import `tools/rules-assistant/admin/admin-shared.js` directly. The only maintained runtime consumer of the old base Worker is `legacy/rules-assistant/v061/worker-v061.js`, whose published versioned route is still invoked by `worker-entry.js` and smart/reliable compatibility modules. The base Worker identifies itself as the v0.6.0-era implementation. <!-- DOC-HISTORICAL -->
+- Relocate the base Worker to `legacy/rules-assistant/v060/worker-v060.js`, adjust only its three repository-relative import paths (shared retrieval and admin page/shared utilities), and point the archived v061 consumer directly at this historical file. Remove `rules-assistant/worker.js` entirely: the repository has no remaining maintained admin source that needs a root alias.
+- Preserve the original default Worker API, session sanitizer, and forwarded authentication/CSV exports. Retarget the historical and admin tests to the archived path. Add the new v060 source path to protected Worker deploy triggers/syntax validation and to independent live-publication Worker change detection; historical regression already watches `legacy/rules-assistant/**`.
+- Treat frozen recovery locks and snapshots as recorded historical references, not live source imports. Do not rewrite archived evidence, modify game-data authority, frozen rule corpora, route dispatch, D1, QA authentication or model budget semantics. Full PR regression and post-merge production verification required.
 
 ## Next top-down queue
 

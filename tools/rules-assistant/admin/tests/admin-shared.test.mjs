@@ -6,7 +6,7 @@ import {
 import {
   isAdminAuthorized as legacyIsAdminAuthorized,
   interactionsToCsv as legacyInteractionsToCsv
-} from "../../../../rules-assistant/worker.js";
+} from "../../../../legacy/rules-assistant/v060/worker-v060.js";
 
 describe("admin-owned authentication and CSV helpers", () => {
   it("preserves exact historical Worker export identity", () => {
