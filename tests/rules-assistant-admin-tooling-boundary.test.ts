@@ -28,15 +28,16 @@ describe('Rules Assistant admin tooling boundary', () => {
   it('keeps deployed Worker entrypoints in the backend boundary while importing admin tooling', () => {
     const entry = read('rules-assistant/worker-entry.js');
     const refinement = read('rules-assistant/admin-refinement-worker.js');
-    const worker = read('rules-assistant/worker.js');
+    const worker = read('legacy/rules-assistant/v060/worker-v060.js');
+    expect(existsSync('rules-assistant/worker.js')).toBe(false);
 
     expect(entry).toContain('../tools/rules-assistant/admin/admin-intelligence-page.js');
     expect(entry).toContain('../tools/rules-assistant/admin/review-export.js');
     expect(entry).toContain('../tools/rules-assistant/admin/review-intelligence.js');
     expect(refinement).toContain('../tools/rules-assistant/admin/admin-refinement-runtime.js');
     expect(refinement).toContain('../tools/rules-assistant/admin/admin-scaffold-page.js');
-    expect(worker).toContain('../tools/rules-assistant/admin/admin-page.js');
-    expect(worker).toContain('../tools/rules-assistant/admin/admin-shared.js');
+    expect(worker).toContain('../../../tools/rules-assistant/admin/admin-page.js');
+    expect(worker).toContain('../../../tools/rules-assistant/admin/admin-shared.js');
     for (const file of ['review-export.js', 'review-export-checkpoint.js', 'review-intelligence.js']) {
       const source = read(`tools/rules-assistant/admin/${file}`);
       expect(source).toContain('from "./admin-shared.js"');
