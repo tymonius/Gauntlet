@@ -10192,10 +10192,15 @@ function chooseMovement(
     nextMovementState = endV070MovementSequence(
       nextMovementState,
     );
-    nextMovementState = {
-      ...nextMovementState,
-      denouementCardActionBlockedByTerritory: true,
-    };
+    // An off-turn effect may move the defender during the opponent's turn.
+    // Difficult Terrain ends that player's movement, but its Denouement
+    // restriction must not be applied to the active opponent.
+    if (playerId === state.activePlayer) {
+      nextMovementState = {
+        ...nextMovementState,
+        denouementCardActionBlockedByTerritory: true,
+      };
+    }
   }
 
   if (!nextMovementState.movementSequenceOpen) {

@@ -471,6 +471,63 @@ describe('actual v0.7.3 follow-up reducer integration', () => {
     expect(state.activePlayer).toBe('A');
   });
 
+  test('off-turn Countercharge entering Difficult Terrain ends movement without blocking the active player', () => {
+    let state = setup();
+    const first = asset(state, 'B');
+    const second = asset(state, 'B');
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
+    state = complete(settle(state, 'B'));
+    setUnoccupiedAdvanceDestination(state);
+
+    const destination = state.board.find(t => t.position === 2)!;
+    destination.territoryId = 'territory-difficult-terrain';
+    destination.blank = false;
+    const turnOwnerBlockBefore = state.turnState?.denouementCardActionBlockedByTerritory;
+    expect(turnOwnerBlockBefore).toBeFalsy();
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + first,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+
+    expect(state.players.B.position).toBe(2);
+    expect(state.turnState?.movementSequenceOpen).toBe(false);
+    expect(state.turnState?.effectMovementController).toBeUndefined();
+    expect(state.activePlayer).toBe('A');
+    expect(state.turnState?.denouementCardActionBlockedByTerritory)
+      .toBe(turnOwnerBlockBefore);
+    expect(state.events.some(e =>
+      e.type === 'territory_effect_applied'
+      && e.actor === 'B'
+      && (e.payload as { effect?: string }).effect === 'movement_ended_on_entry'
+    )).toBe(true);
+    // The first movement ended on Terrain, but no new battle began:
+    // the other physical Countercharge grant is still eligible.
+    expect(state.v073FollowUpQueue?.pending.map(g => g.sourceInstanceId))
+      .toEqual([second]);
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_follow_up_movement', playerId: 'B',
+      grantKey: 'countercharge-asset:' + second,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.players.B.position).toBe(1);
+    expect(state.v073FollowUpQueue).toBeUndefined();
+    expect(state.turnState?.denouementCardActionBlockedByTerritory)
+      .toBe(turnOwnerBlockBefore);
+    expect(state.activePlayer).toBe('A');
+  });
+
   test('same-turn DMZ lock prevents choosing an optional Countercharge without spending its Asset', () => {
     let state = setup();
     const first = asset(state, 'B');
