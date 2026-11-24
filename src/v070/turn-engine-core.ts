@@ -142,6 +142,7 @@ import {
   v070DifficultTerrainEntryActive,
   v070DisruptedSupplyLinesSelectionRequired,
   v070QuicksandCapsMovement,
+  v070QuicksandEntryActive,
   v070RefugeFallBackDrawActive,
   v070RuinedStorehouseDrawAvailable,
   v070TollBridgeAdvanceCostActive,
@@ -10188,10 +10189,15 @@ function chooseMovement(
       playerId,
       destination,
     );
+  const quicksandEntered = v070QuicksandEntryActive(
+    state,
+    playerId,
+    destination,
+  );
+  if (difficultTerrainEntered || quicksandEntered) {
+    nextMovementState = endV070MovementSequence(nextMovementState);
+  }
   if (difficultTerrainEntered) {
-    nextMovementState = endV070MovementSequence(
-      nextMovementState,
-    );
     // An off-turn effect may move the defender during the opponent's turn.
     // Difficult Terrain ends that player's movement, but its Denouement
     // restriction must not be applied to the active opponent.
@@ -10299,13 +10305,15 @@ function chooseMovement(
     payload: { choice, from: origin, to: destination },
   });
 
-  if (difficultTerrainEntered) {
+  if (difficultTerrainEntered || quicksandEntered) {
     appendV070Event(state, {
       type: 'territory_effect_applied',
       actor: playerId,
       visibility: 'public',
       payload: {
-        territoryId: 'territory-difficult-terrain',
+        territoryId: difficultTerrainEntered
+          ? 'territory-difficult-terrain'
+          : 'territory-quicksand',
         effect: 'movement_ended_on_entry',
         territoryPosition: destination,
       },
