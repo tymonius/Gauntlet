@@ -1,4 +1,4 @@
-import { persistSmartInteraction } from "./rules-persistence.js";
+import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
 import releaseLifecycle from "../config/release-lifecycle.json" with { type: "json" };
 
 const CURRENT_RULES_VERSION = releaseLifecycle.current_release;

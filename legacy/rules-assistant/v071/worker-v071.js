@@ -5,7 +5,7 @@ import {
   defaultV071SourceUrls,
   loadV071RulesCorpus
 } from "./v071-public-corpus.js";
-import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
+import { persistSmartInteraction } from "../../../packages/rules-arbiter-runtime/rules-persistence.js";
 import { authorizeGitHubActionsQa } from "../../../rules-assistant/github-actions-qa-auth.js";
 import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "../../../rules-assistant/r13-classification.js";
 import {

@@ -17,7 +17,7 @@ import {
   sanitizePlaytestContext,
   sanitizeSessionId
 } from "../v061/worker-v061.js";
-import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
+import { persistSmartInteraction } from "../../../packages/rules-arbiter-runtime/rules-persistence.js";
 
 const RULES_VERSION = "v0.6.2";
 const ACCEPTED_VERSION_ALIASES = new Set([RULES_VERSION, "v0.6.2-candidate"]);

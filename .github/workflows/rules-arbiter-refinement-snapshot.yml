@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/rules-arbiter-refinement-snapshot.yml'
       - 'rules-assistant/**'
+      - 'packages/rules-arbiter-runtime/**'
       - 'scripts/build-rules-refinement-snapshot.mjs'
       - 'artifacts/rules-refinement/resolution-ledger.json'
 

@@ -10,7 +10,7 @@ import {
   buildCorpusReviewSnapshot,
   sanitizeGameState
 } from "./rules-intelligence.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
+import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
 import {
   sanitizePlaytestContext,
   sanitizeSessionId

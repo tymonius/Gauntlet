@@ -5,7 +5,7 @@ import {
   defaultV072CandidateSourceUrls,
   loadV072CandidateRulesCorpus
 } from "./v072-candidate-corpus.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
+import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
 import { authorizeGitHubActionsQa } from "./github-actions-qa-auth.js";
 import { normalizeR13RulingStatus, shouldForceAbsentProcedureGap, shouldResolveR27CombinedInteraction } from "./r13-classification.js";
 import {

@@ -25,7 +25,7 @@ describe('Rules Arbiter v071 Worker compatibility boundary', () => {
     const worker = read('legacy/rules-assistant/v071/worker-v071.js');
     expect(worker).toContain('from "../../../rules-assistant/local-search.js"');
     expect(worker).toContain('from "./v071-public-corpus.js"');
-    expect(worker).toContain('from "../../../rules-assistant/rules-persistence.js"');
+    expect(worker).toContain('from "../../../packages/rules-arbiter-runtime/rules-persistence.js"');
     expect(worker).toContain('from "../../../rules-assistant/v071-answer-verifier.js"');
   });
 

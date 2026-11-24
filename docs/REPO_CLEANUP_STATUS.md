@@ -667,6 +667,13 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Next classify which shared runtime support belongs in a dedicated `packages/` boundary versus retained backend entrypoint/application ownership. Before moving any helper, enumerate every consumer, keep protected Worker and independent publication changed-input detection aligned, and preserve current/candidate/frozen/historical health, QA authorization and model-budget gates.
 - The shared D1 schema is separately pinned by `config/shared-d1-schema.json`; do not merge migration-directory relocation into runtime package extraction or create a second migration executor.
 
+## In-progress subtranche — shared interaction runtime package
+
+- The current and candidate Workers, archived Workers, smart/reliable fallbacks, and source-lookup review handler consume the same version-compatible interaction persistence/status logic. Session history is used by the smart fallback. The three modules have no entrypoint dependencies; persistence imports only its sibling status module.
+- Establish `packages/rules-arbiter-runtime/` as the maintained shared runtime package, initially owning `rules-status.js`, `rules-history.js`, and `rules-persistence.js`. Move the exact existing Git blobs intact, with no forwarding shims or behavior modifications. Update every maintained source and regression import/reference, including the candidate mechanical-port normalization.
+- Keep `local-search.js` in place: the browser publication boundary explicitly stages it at a public URL, so relocating it needs a separate consumer-aware publication change. Keep Worker entrypoints, classification, retrieval, packet/deterministic helpers, D1 SQL and existing database configuration unchanged in this tranche.
+- Protected Worker deployment, independent live-publication change detection, historical regression and refinement snapshot triggers must watch the new package. Extend deployed dependency tracing and test package independence from entrypoints.
+
 ## Next top-down queue
 
 1. Complete the Rules Assistant public/backend/admin/eval/versioned-support split after mechanically classifying consumers.

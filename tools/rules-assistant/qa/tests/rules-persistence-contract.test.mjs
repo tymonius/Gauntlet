@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 
-const persistence = readFileSync(new URL("../../../../rules-assistant/rules-persistence.js", import.meta.url), "utf8");
+const persistence = readFileSync(new URL("../../../../packages/rules-arbiter-runtime/rules-persistence.js", import.meta.url), "utf8");
 const migration = readFileSync(
   new URL("../../../../rules-assistant/migrations/0009_rules_answer_mode_v2.sql", import.meta.url),
   "utf8"

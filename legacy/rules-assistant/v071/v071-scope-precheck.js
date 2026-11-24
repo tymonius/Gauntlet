@@ -1,5 +1,5 @@
-import { persistSmartInteraction } from "../../../rules-assistant/rules-persistence.js";
-import { buildOutOfScopeRuling, isClearlyOutOfScopeQuestion } from "../../../rules-assistant/rules-status.js";
+import { persistSmartInteraction } from "../../../packages/rules-arbiter-runtime/rules-persistence.js";
+import { buildOutOfScopeRuling, isClearlyOutOfScopeQuestion } from "../../../packages/rules-arbiter-runtime/rules-status.js";
 import { BEHAVIOR_REVISION, RULES_VERSION } from "./worker-v071.js";
 import { V071_VERSION_LABEL } from "./v071-public-corpus.js";
 

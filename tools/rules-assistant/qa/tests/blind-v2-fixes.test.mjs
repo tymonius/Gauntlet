@@ -5,7 +5,7 @@ import { analyzeQuestionLocally } from "../../../../rules-assistant/rules-intell
 import { enrichPlanFromEntityDocuments } from "../../../../rules-assistant/rules-plan-enrichment.js";
 import { buildRulePacket } from "../../../../rules-assistant/rules-packets.js";
 import { resolveDeterministicRuling } from "../../../../rules-assistant/rules-deterministic.js";
-import { isClearlyOutOfScopeQuestion } from "../../../../rules-assistant/rules-status.js";
+import { isClearlyOutOfScopeQuestion } from "../../../../packages/rules-arbiter-runtime/rules-status.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),
