@@ -176,7 +176,7 @@ describe('v0.7.0 movement and start-turn Territory effects', () => {
   test.each([
     ['advance', 2],
     ['fall_back', 4],
-  ] as const)('entering Quicksand by %s ends the remaining Movement under current authority', (choice, destinationPosition) => {
+  ] as const)('entering Quicksand by %s ends the remaining Movement', (choice, destinationPosition) => {
     let state = reachOpening(openingForB(militaryGeneral));
     putBAt(state, 3);
     const origin = state.board.find(t => t.position === 3)!;
