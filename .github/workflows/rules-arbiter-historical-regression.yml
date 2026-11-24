@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'rules-assistant/**'
+      - 'packages/rules-arbiter-runtime/**'
       - 'tests/rules-assistant/**'
       - 'tools/rules-assistant/qa/qa-semantic-evaluator.js'
       - 'tools/rules-assistant/qa/github-actions-qa-auth.js'
@@ -19,6 +20,7 @@ on:
       - main
     paths:
       - 'rules-assistant/**'
+      - 'packages/rules-arbiter-runtime/**'
       - 'tests/rules-assistant/**'
       - 'tools/rules-assistant/qa/qa-semantic-evaluator.js'
       - 'tools/rules-assistant/qa/github-actions-qa-auth.js'

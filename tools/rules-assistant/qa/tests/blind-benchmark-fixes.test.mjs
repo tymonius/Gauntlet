@@ -5,7 +5,7 @@ import { analyzeQuestionLocally, buildCorpusReviewSnapshot } from "../../../../r
 import { enrichPlanFromEntityDocuments } from "../../../../rules-assistant/rules-plan-enrichment.js";
 import { buildRulePacket, prioritizeRulePacketSources } from "../../../../rules-assistant/rules-packets.js";
 import { resolveDeterministicRuling } from "../../../../rules-assistant/rules-deterministic.js";
-import { loadStoredHistoryV2 } from "../../../../rules-assistant/rules-history.js";
+import { loadStoredHistoryV2 } from "../../../../packages/rules-arbiter-runtime/rules-history.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../../../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json", import.meta.url),

@@ -34,7 +34,7 @@ on:
       - "rules-assistant/r13-classification.js"
       - "rules-assistant/v071-gate3-c-remediation.js"
       - "rules-assistant/v071-answer-verifier.js"
-      - "rules-assistant/rules-persistence.js"
+      - "packages/rules-arbiter-runtime/**"
       - "rules-assistant/source-lookup-review.js"
       - "config/release-lifecycle.json"
       - "rules-assistant/github-actions-qa-auth.js"
@@ -109,7 +109,7 @@ jobs:
           node --check legacy/rules-assistant/v070/v070-public-corpus.js
           # All root Worker helpers, including the smart/reliable compatibility fallbacks,
           # are bundled by the active entrypoint. Syntax-check new helpers automatically.
-          for runtime_source in rules-assistant/*.js; do
+          for runtime_source in rules-assistant/*.js packages/rules-arbiter-runtime/*.js; do
             node --check "$runtime_source"
           done
           node --check rules-assistant/worker-entry.js

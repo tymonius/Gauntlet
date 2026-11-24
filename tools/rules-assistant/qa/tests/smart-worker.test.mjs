@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import worker from "../../../../rules-assistant/smart-worker.js";
 
 const source = readFileSync(new URL("../../../../rules-assistant/smart-worker.js", import.meta.url), "utf8");
-const persistenceSource = readFileSync(new URL("../../../../rules-assistant/rules-persistence.js", import.meta.url), "utf8");
+const persistenceSource = readFileSync(new URL("../../../../packages/rules-arbiter-runtime/rules-persistence.js", import.meta.url), "utf8");
 
 test("smart worker advertises deterministic packets and the experimental accuracy gate", async () => {
   const response = await worker.fetch(new Request("https://rules.example/health"), {}, {});

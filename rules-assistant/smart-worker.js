@@ -17,15 +17,15 @@ import {
   shouldVerifyAnswer
 } from "./rules-intelligence.js";
 import { answerQuestion, planQuestion, verifyDraft } from "./rules-openai.js";
-import { loadStoredHistoryV2 } from "./rules-history.js";
-import { persistSmartInteraction } from "./rules-persistence.js";
+import { loadStoredHistoryV2 } from "../packages/rules-arbiter-runtime/rules-history.js";
+import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
 import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
 import {
   buildOutOfScopeRuling,
   buildScopeRecoveryRuling,
   isClearlyOutOfScopeQuestion,
   isGameplayQuestionPlan
-} from "./rules-status.js";
+} from "../packages/rules-arbiter-runtime/rules-status.js";
 import {
   buildRulePacket,
   prioritizeRulePacketSources

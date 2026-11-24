@@ -3,7 +3,7 @@ import { posix } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const DEPLOYED_ENTRYPOINT = "rules-assistant/admin-refinement-worker.js";
-const WORKER_RUNTIME_ROOT = "rules-assistant/";
+const WORKER_RUNTIME_ROOTS = ["rules-assistant/", "packages/rules-arbiter-runtime/"];
 const read = (path) => readFileSync(path, "utf8");
 
 function rootRuntimeImports(path) {
@@ -14,7 +14,7 @@ function rootRuntimeImports(path) {
     const target = match[1];
     if (!target.startsWith(".")) continue;
     const resolved = posix.normalize(posix.join(posix.dirname(path), target));
-    if (resolved.startsWith(WORKER_RUNTIME_ROOT) && resolved.endsWith(".js")) {
+    if (WORKER_RUNTIME_ROOTS.some(root => resolved.startsWith(root)) && resolved.endsWith(".js")) {
       expect(existsSync(resolved), `${path} imports missing ${resolved}`).toBe(true);
       imports.push(resolved);
     }
@@ -34,7 +34,7 @@ function reachableRootRuntimeModules() {
   return seen;
 }
 
-describe("deployed Rules Arbiter root-runtime source coverage", () => {
+describe("deployed Rules Arbiter root and shared-package runtime source coverage", () => {
   it("traces the real Worker entry through both compatibility fallback branches", () => {
     const files = reachableRootRuntimeModules();
     for (const path of [
@@ -46,10 +46,10 @@ describe("deployed Rules Arbiter root-runtime source coverage", () => {
       "rules-assistant/local-search.js",
       "rules-assistant/rules-intelligence.js",
       "rules-assistant/rules-openai.js",
-      "rules-assistant/rules-history.js",
-      "rules-assistant/rules-persistence.js",
+      "packages/rules-arbiter-runtime/rules-history.js",
+      "packages/rules-arbiter-runtime/rules-persistence.js",
       "rules-assistant/rules-plan-enrichment.js",
-      "rules-assistant/rules-status.js",
+      "packages/rules-arbiter-runtime/rules-status.js",
       "rules-assistant/rules-packets.js",
       "rules-assistant/rules-deterministic.js",
       "rules-assistant/source-lookup-review.js",
@@ -62,24 +62,39 @@ describe("deployed Rules Arbiter root-runtime source coverage", () => {
     expect(read("rules-assistant/worker-entry.js")).toContain('import reliableWorker from "./reliable-worker.js"');
   });
 
-  it("watches every root .js dependency in both independent production workflows", () => {
+  it("keeps interaction modules independent of Worker entrypoints", () => {
+    const packageRoot = "packages/rules-arbiter-runtime/";
+    for (const name of ["rules-status.js", "rules-history.js", "rules-persistence.js"]) {
+      const source = read(packageRoot + name);
+      for (const match of source.matchAll(/^\s*(?:import|export)\s+[^;]*?\bfrom\s+["']([^"']+)["']/gm)) {
+        expect(match[1]).toMatch(/^\.\/[^/]+\.js$/);
+        expect(existsSync(posix.join(packageRoot, match[1]))).toBe(true);
+      }
+    }
+    expect(read(".github/workflows/rules-arbiter-historical-regression.yml").split("'packages/rules-arbiter-runtime/**'").length - 1).toBe(2);
+  });
+
+  it("watches every root and shared-package .js dependency in both independent production workflows", () => {
     const deploy = read(".github/workflows/deploy-rules-arbiter.yml");
     const live = read(".github/workflows/verify-current-live-publication.yml");
     const reachable = reachableRootRuntimeModules();
     expect(deploy).toMatch(/^\s+- "rules-assistant\/\*\.js"$/m);
+    expect(deploy).toContain('"packages/rules-arbiter-runtime/**"');
+    expect(live).toContain("packages/rules-arbiter-runtime/*.js|");
+    expect(live).toContain("      - 'packages/rules-arbiter-runtime/**'");
     expect(deploy).toMatch(/^\s+- "legacy\/rules-assistant\/v071\/\*\*"$/m);
     expect(live).toContain("rules-assistant/*.js|");
     expect(live).toContain("      - 'rules-assistant/**'");
     expect(live).toContain("reason=worker_inputs_changed");
-    // Root-JavaScript scoping covers new shared helpers without listing each name.
+    // Root and package JavaScript scoping cover new shared helpers without listing each name.
     for (const path of reachable) {
-      expect(path).toMatch(/^rules-assistant\/[^/]+\.js$/);
+      expect(path).toMatch(/^(?:rules-assistant|packages\/rules-arbiter-runtime)\/[^/]+\.js$/);
     }
   });
 
   it("syntax-checks root modules and runs this regression before deploying", () => {
     const deploy = read(".github/workflows/deploy-rules-arbiter.yml");
-    expect(deploy).toContain("for runtime_source in rules-assistant/*.js; do");
+    expect(deploy).toContain("for runtime_source in rules-assistant/*.js packages/rules-arbiter-runtime/*.js; do");
     expect(deploy).toContain('node --check "$runtime_source"');
     expect(deploy).toContain("tools/rules-assistant/qa/tests/worker-runtime-trigger-coverage.test.mjs");
     expect(deploy).toContain("Verify production health");

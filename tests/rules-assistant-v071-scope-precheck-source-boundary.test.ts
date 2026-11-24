@@ -16,8 +16,8 @@ describe('historical v071 scope-precheck implementation boundary', () => {
     expect(shim).not.toContain('function classifyV071ScopePrecheck');
     expect(source).toContain('from "./worker-v071.js"');
     expect(source).toContain('from "./v071-public-corpus.js"');
-    expect(source).toContain('from "../../../rules-assistant/rules-persistence.js"');
-    expect(source).toContain('from "../../../rules-assistant/rules-status.js"');
+    expect(source).toContain('from "../../../packages/rules-arbiter-runtime/rules-persistence.js"');
+    expect(source).toContain('from "../../../packages/rules-arbiter-runtime/rules-status.js"');
     expect(source).toContain('export async function handleV071ScopePrecheck');
   });
 
