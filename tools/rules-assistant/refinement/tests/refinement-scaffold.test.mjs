@@ -46,7 +46,8 @@ test("builds a cluster-specific branch, PR, and resolution scaffold", () => {
   expect(scaffold.schema).toBe("gauntlet.rules-refinement-scaffold.v1");
   expect(scaffold.branch.suggestedName).toBe("fix/rules-arbiter-conversation-continuity-20260905");
   expect(scaffold.cluster.interactionIds).toHaveLength(2);
-  expect(scaffold.implementationHints.likelyFiles).toContain("rules-assistant/local-search.js");
+  expect(scaffold.implementationHints.likelyFiles).toContain("packages/rules-arbiter-runtime/local-search.js");
+  expect(scaffold.implementationHints.likelyFiles).not.toContain("rules-assistant/local-search.js");
   expect(scaffold.pullRequest.draft).toBe(true);
   expect(scaffold.remediation.sourceAuthorityRequired).toBe(false);
   expect(scaffold.resolutionRequest.ledgerPath).toBe("artifacts/rules-refinement/resolution-ledger.json");
