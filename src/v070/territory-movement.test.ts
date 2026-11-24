@@ -173,6 +173,75 @@ describe('v0.7.0 movement and start-turn Territory effects', () => {
     )).toBe(true);
   });
 
+  test.each([
+    ['advance', 2],
+    ['fall_back', 4],
+  ] as const)('entering Quicksand by %s ends the remaining Movement under current authority', (choice, destinationPosition) => {
+    let state = reachOpening(openingForB(militaryGeneral));
+    putBAt(state, 3);
+    const origin = state.board.find(t => t.position === 3)!;
+    origin.territoryId = 'territory-garrison';
+    origin.blank = false;
+    const destination = state.board.find(t => t.position === destinationPosition)!;
+    destination.territoryId = 'territory-quicksand';
+    destination.blank = false;
+    state.turnState!.territoryMovementBonus = 1;
+
+    state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'B' });
+    expect(state.turnState?.movementRemaining).toBe(2);
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice,
+    });
+    expect(state.players.B.position).toBe(destinationPosition);
+    expect(state.turnState?.phase).toBe('denouement');
+    expect(state.turnState?.movementRemaining).toBe(0);
+    expect(state.turnState?.movementStepQueue).toEqual([]);
+    expect(state.turnState?.movementSequenceOpen).toBe(false);
+    // Quicksand is not Difficult Terrain and imposes no Denouement Action lock.
+    expect(state.turnState?.denouementCardActionBlockedByTerritory).toBeFalsy();
+    expect(state.events.some(event =>
+      event.type === 'territory_effect_applied'
+      && event.actor === 'B'
+      && (event.payload as { territoryId?: string }).territoryId === 'territory-quicksand'
+      && (event.payload as { effect?: string }).effect === 'movement_ended_on_entry'
+    )).toBe(true);
+  });
+
+  test.each(['overlay', 'suppression'] as const)('Quicksand entry does not end movement when masked by %s', (mask) => {
+    let state = reachOpening(openingForB(militaryGeneral));
+    putBAt(state, 3);
+    const origin = state.board.find(t => t.position === 3)!;
+    origin.territoryId = 'territory-garrison';
+    origin.blank = false;
+    const destination = state.board.find(t => t.position === 2)!;
+    destination.territoryId = 'territory-quicksand';
+    destination.blank = false;
+    state.turnState!.territoryMovementBonus = 1;
+
+    if (mask === 'overlay') {
+      const overlay = injectHandCard(state, 'B', 'mystics-circle-of-bones', 'quicksand-overlay');
+      placeV070OverlayFromHand(state, 'B', overlay, destination.position, 'test');
+    } else {
+      suppressV070PrintedTerritoryDuringMovement(state, 'B', destination.position, 'test');
+    }
+    expect(v070PrintedTerritoryEffectActive(state, destination, 'B', 'movement')).toBe(false);
+    state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'B' });
+    expect(state.turnState?.movementRemaining).toBe(2);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement', playerId: 'B', choice: 'advance',
+    });
+    expect(state.players.B.position).toBe(2);
+    expect(state.turnState?.phase).toBe('movement');
+    expect(state.turnState?.movementRemaining).toBe(1);
+    expect(state.turnState?.movementSequenceOpen).toBe(true);
+    expect(state.events.some(event =>
+      event.type === 'territory_effect_applied'
+      && (event.payload as { territoryId?: string }).territoryId === 'territory-quicksand'
+      && (event.payload as { effect?: string }).effect === 'movement_ended_on_entry'
+    )).toBe(false);
+  });
+
   test('entering Difficult Terrain ends movement and blocks only printed card Actions during Denouement', () => {
     let state = openingForB(intelligenceRanger);
     state = reachOpening(state);
