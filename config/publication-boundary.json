@@ -236,7 +236,7 @@
       "kind": "current-app"
     },
     {
-      "source": "rules-assistant/local-search.js",
+      "source": "packages/rules-arbiter-runtime/local-search.js",
       "publicPath": "/rules-assistant/local-search.js",
       "kind": "shared-browser-contract"
     },

@@ -1,4 +1,4 @@
-import { buildRulesCorpus } from "./local-search.js";
+import { buildRulesCorpus } from "../packages/rules-arbiter-runtime/local-search.js";
 import {
   frozenV072CandidateCurrentGameSource,
   frozenV072CandidateCompleteRulesSource

@@ -4,12 +4,12 @@ import {
   defaultSourceUrls,
   loadRulesCorpus,
   retrieveRules
-} from "./local-search.js";
+} from "../packages/rules-arbiter-runtime/local-search.js";
 import {
   analyzeQuestionLocally,
   buildCorpusReviewSnapshot,
   sanitizeGameState
-} from "./rules-intelligence.js";
+} from "../packages/rules-arbiter-runtime/rules-intelligence.js";
 import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
 import {
   sanitizePlaytestContext,

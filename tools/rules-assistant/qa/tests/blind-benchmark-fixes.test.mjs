@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
-import { buildRulesCorpus } from "../../../../rules-assistant/local-search.js";
-import { analyzeQuestionLocally, buildCorpusReviewSnapshot } from "../../../../rules-assistant/rules-intelligence.js";
-import { enrichPlanFromEntityDocuments } from "../../../../rules-assistant/rules-plan-enrichment.js";
-import { buildRulePacket, prioritizeRulePacketSources } from "../../../../rules-assistant/rules-packets.js";
-import { resolveDeterministicRuling } from "../../../../rules-assistant/rules-deterministic.js";
+import { buildRulesCorpus } from "../../../../packages/rules-arbiter-runtime/local-search.js";
+import { analyzeQuestionLocally, buildCorpusReviewSnapshot } from "../../../../packages/rules-arbiter-runtime/rules-intelligence.js";
+import { enrichPlanFromEntityDocuments } from "../../../../packages/rules-arbiter-runtime/rules-plan-enrichment.js";
+import { buildRulePacket, prioritizeRulePacketSources } from "../../../../packages/rules-arbiter-runtime/rules-packets.js";
+import { resolveDeterministicRuling } from "../../../../packages/rules-arbiter-runtime/rules-deterministic.js";
 import { loadStoredHistoryV2 } from "../../../../packages/rules-arbiter-runtime/rules-history.js";
 
 const canonicalData = JSON.parse(readFileSync(

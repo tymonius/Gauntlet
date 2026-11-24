@@ -124,6 +124,7 @@ jobs:
           npx vitest run \
             tools/rules-assistant/admin/tests/admin-shared.test.mjs \
             tools/rules-assistant/qa/tests/worker-runtime-trigger-coverage.test.mjs \
+            tools/rules-assistant/qa/tests/local-search-publication.test.mjs \
             tools/rules-assistant/qa/tests/fallback-source-lookup-regression.test.mjs \
             tools/rules-assistant/qa/tests/v071-scope-precheck.test.mjs \
             tools/rules-assistant/qa/tests/v071-gate3-h-remediation.test.mjs \

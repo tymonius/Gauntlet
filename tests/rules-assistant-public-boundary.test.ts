@@ -28,7 +28,7 @@ describe('Rules Assistant public/source boundary', () => {
       expect(existsSync(`apps/rules-assistant-widget/${file}`)).toBe(true);
       expect(existsSync(`rules-assistant/${file}`)).toBe(false);
     }
-    expect(materialized.get('/rules-assistant/local-search.js')).toBe('rules-assistant/local-search.js');
+    expect(materialized.get('/rules-assistant/local-search.js')).toBe('packages/rules-arbiter-runtime/local-search.js');
     expect(materialized.get('/rules-assistant/v072-release-corpus.js')).toBe('rules-assistant/v072-release-corpus.js');
   });
 
@@ -45,7 +45,8 @@ describe('Rules Assistant public/source boundary', () => {
     const live = read('.github/workflows/verify-current-live-publication.yml');
 
     expect(pages).toContain("'apps/rules-assistant-widget/**'");
-    expect(pages).toContain("'rules-assistant/local-search.js'");
+    expect(pages).toContain("'packages/rules-arbiter-runtime/local-search.js'");
+    expect(gate).toContain("exact('packages/rules-arbiter-runtime/local-search.js')");
     expect(pages).toContain("'rules-assistant/v072-release-corpus.js'");
     expect(gate).toContain("under('apps/rules-assistant-widget/')");
     expect(gate).toContain("exact('config/publication-boundary.json')");

@@ -20,7 +20,7 @@ const CURRENT_PLAYER_LANGUAGE_DIRECTORIES = [
   'card-design/reference-copy/v0.7.0',
 ];
 const CURRENT_PLAYER_LANGUAGE_FILES = [
-  'rules-assistant/rules-deterministic.js',
+  'packages/rules-arbiter-runtime/rules-deterministic.js',
   'apps/rules-assistant-widget/answer-presentation.js',
   'apps/start/index.html',
 ];
@@ -207,7 +207,7 @@ function validateCurrentPlayerFacingSurfaces(authority, rulebook) {
   for (const path of [
     'legacy/public-compatibility/faction-sheets/diplomat.js',
     'apps/rules-assistant-widget/answer-presentation.js',
-    'rules-assistant/rules-deterministic.js',
+    'packages/rules-arbiter-runtime/rules-deterministic.js',
   ]) {
     const source = readText(path);
     if (!source.includes(`${thresholdWord} different Proposals`)) {

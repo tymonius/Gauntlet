@@ -44,14 +44,15 @@ describe("deployed Rules Arbiter root and shared-package runtime source coverage
       "rules-assistant/smart-worker.js",
       "rules-assistant/reliable-worker.js",
       "rules-assistant/local-search.js",
-      "rules-assistant/rules-intelligence.js",
-      "rules-assistant/rules-openai.js",
+      "packages/rules-arbiter-runtime/local-search.js",
+      "packages/rules-arbiter-runtime/rules-intelligence.js",
+      "packages/rules-arbiter-runtime/rules-openai.js",
       "packages/rules-arbiter-runtime/rules-history.js",
       "packages/rules-arbiter-runtime/rules-persistence.js",
-      "rules-assistant/rules-plan-enrichment.js",
+      "packages/rules-arbiter-runtime/rules-plan-enrichment.js",
       "packages/rules-arbiter-runtime/rules-status.js",
-      "rules-assistant/rules-packets.js",
-      "rules-assistant/rules-deterministic.js",
+      "packages/rules-arbiter-runtime/rules-packets.js",
+      "packages/rules-arbiter-runtime/rules-deterministic.js",
       "rules-assistant/source-lookup-review.js",
       "rules-assistant/github-actions-qa-auth.js",
       "rules-assistant/qa-semantic-evaluator.js"
@@ -62,9 +63,9 @@ describe("deployed Rules Arbiter root and shared-package runtime source coverage
     expect(read("rules-assistant/worker-entry.js")).toContain('import reliableWorker from "./reliable-worker.js"');
   });
 
-  it("keeps interaction modules independent of Worker entrypoints", () => {
+  it("keeps shared runtime modules independent of Worker entrypoints", () => {
     const packageRoot = "packages/rules-arbiter-runtime/";
-    for (const name of ["rules-status.js", "rules-history.js", "rules-persistence.js"]) {
+    for (const name of ["rules-status.js", "rules-history.js", "rules-persistence.js", "local-search.js", "rules-intelligence.js", "rules-packets.js", "rules-deterministic.js", "rules-plan-enrichment.js", "rules-openai.js"]) {
       const source = read(packageRoot + name);
       for (const match of source.matchAll(/^\s*(?:import|export)\s+[^;]*?\bfrom\s+["']([^"']+)["']/gm)) {
         expect(match[1]).toMatch(/^\.\/[^/]+\.js$/);

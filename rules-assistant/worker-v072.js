@@ -1,4 +1,4 @@
-import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
+import { buildLocalFallbackAnswer, retrieveRules } from "../packages/rules-arbiter-runtime/local-search.js";
 import {
   V072_RULES_VERSION,
   V072_VERSION_LABEL,
