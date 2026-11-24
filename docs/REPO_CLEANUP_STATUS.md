@@ -675,12 +675,17 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Protected Worker deployment, independent live-publication change detection, historical regression and refinement snapshot triggers must watch the new package. Extend deployed dependency tracing and test package independence from entrypoints.
 - [PR #2053](https://github.com/tymonius/Gauntlet/pull/2053) merged after all six PR workflows passed. The three module renames preserve exact Git blobs with zero changed lines; maintained consumers use direct package imports. [Protected Worker deployment #45320166038](https://github.com/tymonius/Gauntlet/actions/runs/45320166038) passed package-aware runtime validation, current production health and candidate/frozen stable corpus checks. [Independent live-publication #45320166081](https://github.com/tymonius/Gauntlet/actions/runs/45320166081) deployed and passed deployed-site contract, published authority and corpus refresh. The refinement snapshot workflow also completed successfully. No SQL, gameplay, public route or corpus changes. <!-- DOC-HISTORICAL -->
 
-## Current next subtranche — shared retrieval and adjudication support
+## In-progress subtranche — shared retrieval and adjudication support
 
 - Continue the package extraction in dependency order. The retrieval core `local-search.js` has a stable browser publication path and numerous current, archived and tooling consumers. Classify all consumers and the publication materialization/validation contract before relocating it; preserve the exact browser URL and source behavior.
 - The remaining shared helper graph is `rules-intelligence.js` importing retrieval, `rules-packets.js` importing intelligence, and `rules-deterministic.js` importing intelligence and packets. Plan-enrichment and OpenAI helpers also have maintained smart-fallback consumers. Audit source-inspection contracts, historical reconstruction references and deployment triggers before moving that coherent graph; do not turn the shared package into a dependency on application entrypoints.
 - Leave smart/reliable and current/candidate Worker route handlers under active backend ownership; the shared D1 schema remains separately governed. Preserve QA authorization, model-budget guards and all historical/public routes.
 
+
+- Relocate the six implementation blobs (`local-search.js`, `rules-intelligence.js`, `rules-packets.js`, `rules-deterministic.js`, `rules-plan-enrichment.js`, `rules-openai.js`) intact into the existing shared runtime package. Update maintained server consumers and the adjudication/QA and authority-inspection references. No entrypoint dependencies are introduced.
+- Change the publication mapping to stage the package retrieval implementation itself at `/rules-assistant/local-search.js`; retain an exact repository-side forwarding export for the dual-use published corpus loader's relative import and historical/reconstruction consumers. Do not publish the shim or any server-only runtime helpers. The dedicated publication regression compares staged bytes, verifies export identity and confirms that the public corpus loader's relative import resolves.
+- Keep Pages PR and publication gates watching the new retrieval implementation, include it in sparse publication checkout, and execute the new regression in historical and protected deployment validation. The package is already watched by independent live publication and Worker deployment.
+- Preserve frozen historical scripts/locks, current/candidate/frozen corpus bytes, model-budget behavior, D1 schema, public URLs and gameplay authority.
 
 ## Next top-down queue
 

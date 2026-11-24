@@ -21,6 +21,7 @@ on:
       - 'apps/card-reference/**'
       - 'apps/rules-arbiter/**'
       - 'apps/rules-assistant-widget/**'
+      - 'packages/rules-arbiter-runtime/local-search.js'
       - 'rules-assistant/local-search.js'
       - 'rules-assistant/v072-release-corpus.js'
       - 'apps/deckbuilder/**'

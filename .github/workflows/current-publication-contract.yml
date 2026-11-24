@@ -54,6 +54,7 @@ jobs:
             /apps/
             /packages/game-data/**
             /packages/rules/**
+            /packages/rules-arbiter-runtime/local-search.js
             /404.html
             /robots.txt
             /sitemap.xml

@@ -26,7 +26,7 @@ describe('Diplomat Peace Treaty threshold', () => {
     for (const path of [
       'legacy/public-compatibility/faction-sheets/diplomat.js',
       'apps/rules-assistant-widget/answer-presentation.js',
-      'rules-assistant/rules-deterministic.js',
+      'packages/rules-arbiter-runtime/rules-deterministic.js',
     ]) {
       const source = read(path);
       expect(source, path).toContain(`${thresholdWord} different Proposals`);

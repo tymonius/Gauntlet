@@ -10,14 +10,14 @@ const RESOLUTION_LEDGER_PATH = "artifacts/rules-refinement/resolution-ledger.jso
 export function createRefinementScaffoldEngine() {
   const TARGETS = {
     conversation_continuity: {
-      likelyFiles: ["rules-assistant/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
+      likelyFiles: ["packages/rules-arbiter-runtime/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
       deterministicChecks: [
         "npx vitest run rules-assistant/refinement-loop.test.mjs rules-assistant/refinement-triage.test.mjs",
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"
       ]
     },
     retrieval: {
-      likelyFiles: ["rules-assistant/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
+      likelyFiles: ["packages/rules-arbiter-runtime/local-search.js", "legacy/rules-assistant/v071/worker-v071.js"],
       deterministicChecks: [
         "npx vitest run rules-assistant/refinement-loop.test.mjs",
         "npx vitest related --run --passWithNoTests tools/rules-assistant/qa/evals/rules-arbiter-evals.v071.json"

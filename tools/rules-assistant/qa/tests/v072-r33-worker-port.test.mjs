@@ -9,7 +9,7 @@ function portR33Worker(source) {
   // Repository placement is not part of the r33 behavior port. Normalize the
   // archived v071 Worker's shared-runtime import paths before comparing logic.
   let result = source
-    .replaceAll('../../../rules-assistant/local-search.js', './local-search.js')
+    .replaceAll('../../../rules-assistant/local-search.js', '../packages/rules-arbiter-runtime/local-search.js')
     .replaceAll('../../../packages/rules-arbiter-runtime/rules-persistence.js', '../packages/rules-arbiter-runtime/rules-persistence.js')
     .replaceAll('../../../rules-assistant/github-actions-qa-auth.js', './github-actions-qa-auth.js')
     .replaceAll('../../../rules-assistant/r13-classification.js', './r13-classification.js')

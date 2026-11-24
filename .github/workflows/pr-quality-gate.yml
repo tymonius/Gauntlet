@@ -66,6 +66,7 @@ jobs:
               under('apps/rules-arbiter/'),
               under('apps/rules-assistant-widget/'),
               exact('rules-assistant/local-search.js'),
+              exact('packages/rules-arbiter-runtime/local-search.js'),
               exact('rules-assistant/v072-release-corpus.js'),
               exact('design-tokens.css'),
               under('images/faction-symbols/')

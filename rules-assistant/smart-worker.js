@@ -5,7 +5,7 @@ import baseWorker, {
   sanitizePlaytestContext,
   sanitizeSessionId
 } from "../legacy/rules-assistant/v061/worker-v061.js";
-import { defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
+import { defaultSourceUrls, loadRulesCorpus } from "../packages/rules-arbiter-runtime/local-search.js";
 import {
   analyzeQuestionLocally,
   buildCorpusReviewSnapshot,
@@ -15,11 +15,11 @@ import {
   sanitizeGameState,
   shouldUseSemanticPlanner,
   shouldVerifyAnswer
-} from "./rules-intelligence.js";
-import { answerQuestion, planQuestion, verifyDraft } from "./rules-openai.js";
+} from "../packages/rules-arbiter-runtime/rules-intelligence.js";
+import { answerQuestion, planQuestion, verifyDraft } from "../packages/rules-arbiter-runtime/rules-openai.js";
 import { loadStoredHistoryV2 } from "../packages/rules-arbiter-runtime/rules-history.js";
 import { persistSmartInteraction } from "../packages/rules-arbiter-runtime/rules-persistence.js";
-import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
+import { enrichPlanFromEntityDocuments } from "../packages/rules-arbiter-runtime/rules-plan-enrichment.js";
 import {
   buildOutOfScopeRuling,
   buildScopeRecoveryRuling,
@@ -29,11 +29,11 @@ import {
 import {
   buildRulePacket,
   prioritizeRulePacketSources
-} from "./rules-packets.js";
+} from "../packages/rules-arbiter-runtime/rules-packets.js";
 import {
   materializeDeterministicSources,
   resolveDeterministicRuling
-} from "./rules-deterministic.js";
+} from "../packages/rules-arbiter-runtime/rules-deterministic.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
