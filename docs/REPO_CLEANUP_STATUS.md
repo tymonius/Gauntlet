@@ -660,19 +660,27 @@ The outdated Browser Rulebook source/publication examples in `docs/Repository_Ar
 - Treat frozen recovery locks and snapshots as recorded historical references, not live source imports. Do not rewrite archived evidence, game-data authority, frozen rule corpora, route dispatch, D1, QA authorization or model-budget semantics.
 - [PR #2050](https://github.com/tymonius/Gauntlet/pull/2050) merged after all six final PR workflows passed. [Protected Worker deployment #44479501462](https://github.com/tymonius/Gauntlet/actions/runs/44479501462) passed runtime validation, current production health, candidate corpus, and frozen stable corpus checks; [independent live-publication #44479501257](https://github.com/tymonius/Gauntlet/actions/runs/44479501257) passed deployed-site authority, publication, and corpus-refresh checks. The old root `worker.js` is absent; the archived v060 implementation remains routed via v061. <!-- DOC-HISTORICAL -->
 
-## Current next subtranche — classify remaining active backend/runtime ownership
+## Completed classification — active backend/runtime ownership
 
 - The deployed `admin-refinement-worker.js` and `worker-entry.js` remain active entrypoints, including current v072, candidate and explicit versioned historical route dispatch. Root `worker-v072.js` and `worker-v072-candidate.js` are actively served, not historical evidence. <!-- DOC-HISTORICAL -->
 - `smart-worker.js` and `reliable-worker.js` remain reachable default fallback implementations from the deployed entrypoint. Their shared dependencies (`local-search.js`, `rules-intelligence.js`, `rules-status.js`, `rules-history.js`, `rules-openai.js`, `rules-packets.js`, `rules-persistence.js`, `rules-plan-enrichment.js`, `rules-deterministic.js`) remain active runtime sources; historical import consumers alone do not make them legacy.
 - Next classify which shared runtime support belongs in a dedicated `packages/` boundary versus retained backend entrypoint/application ownership. Before moving any helper, enumerate every consumer, keep protected Worker and independent publication changed-input detection aligned, and preserve current/candidate/frozen/historical health, QA authorization and model-budget gates.
 - The shared D1 schema is separately pinned by `config/shared-d1-schema.json`; do not merge migration-directory relocation into runtime package extraction or create a second migration executor.
 
-## In-progress subtranche — shared interaction runtime package
+## Completed subtranche — shared interaction runtime package
 
 - The current and candidate Workers, archived Workers, smart/reliable fallbacks, and source-lookup review handler consume the same version-compatible interaction persistence/status logic. Session history is used by the smart fallback. The three modules have no entrypoint dependencies; persistence imports only its sibling status module.
 - Establish `packages/rules-arbiter-runtime/` as the maintained shared runtime package, initially owning `rules-status.js`, `rules-history.js`, and `rules-persistence.js`. Move the exact existing Git blobs intact, with no forwarding shims or behavior modifications. Update every maintained source and regression import/reference, including the candidate mechanical-port normalization.
 - Keep `local-search.js` in place: the browser publication boundary explicitly stages it at a public URL, so relocating it needs a separate consumer-aware publication change. Keep Worker entrypoints, classification, retrieval, packet/deterministic helpers, D1 SQL and existing database configuration unchanged in this tranche.
 - Protected Worker deployment, independent live-publication change detection, historical regression and refinement snapshot triggers must watch the new package. Extend deployed dependency tracing and test package independence from entrypoints.
+- [PR #2053](https://github.com/tymonius/Gauntlet/pull/2053) merged after all six PR workflows passed. The three module renames preserve exact Git blobs with zero changed lines; maintained consumers use direct package imports. [Protected Worker deployment #45320166038](https://github.com/tymonius/Gauntlet/actions/runs/45320166038) passed package-aware runtime validation, current production health and candidate/frozen stable corpus checks. [Independent live-publication #45320166081](https://github.com/tymonius/Gauntlet/actions/runs/45320166081) deployed and passed deployed-site contract, published authority and corpus refresh. The refinement snapshot workflow also completed successfully. No SQL, gameplay, public route or corpus changes. <!-- DOC-HISTORICAL -->
+
+## Current next subtranche — shared retrieval and adjudication support
+
+- Continue the package extraction in dependency order. The retrieval core `local-search.js` has a stable browser publication path and numerous current, archived and tooling consumers. Classify all consumers and the publication materialization/validation contract before relocating it; preserve the exact browser URL and source behavior.
+- The remaining shared helper graph is `rules-intelligence.js` importing retrieval, `rules-packets.js` importing intelligence, and `rules-deterministic.js` importing intelligence and packets. Plan-enrichment and OpenAI helpers also have maintained smart-fallback consumers. Audit source-inspection contracts, historical reconstruction references and deployment triggers before moving that coherent graph; do not turn the shared package into a dependency on application entrypoints.
+- Leave smart/reliable and current/candidate Worker route handlers under active backend ownership; the shared D1 schema remains separately governed. Preserve QA authorization, model-budget guards and all historical/public routes.
+
 
 ## Next top-down queue
 
