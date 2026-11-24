@@ -304,8 +304,16 @@ export function v070QuicksandCapsMovement(
   playerId: PlayerId,
 ): boolean {
   const position = state.players[playerId].position;
-  if (position === null) return false;
-  const territory = territoryAtV070Position(state, position);
+  return position !== null
+    && v070QuicksandEntryActive(state, playerId, position);
+}
+
+export function v070QuicksandEntryActive(
+  state: V070GameState,
+  playerId: PlayerId,
+  destination: number,
+): boolean {
+  const territory = territoryAtV070Position(state, destination);
   return Boolean(
     territory
     && territory.territoryId === V070_QUICKSAND_ID
